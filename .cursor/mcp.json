@@ -1,0 +1,100 @@
+{
+  "tools": [
+    {
+      "name": "view_logs",
+      "description": "Récupère et affiche les logs du serveur de l'application",
+      "command": "node scripts/getLogs.js",
+      "require_approval": false
+    },
+    {
+      "name": "view_collection",
+      "description": "Affiche le contenu actuel du fichier collection.json",
+      "command": "cat data/collection.json",
+      "require_approval": false
+    },
+    {
+      "name": "view_debug",
+      "description": "Affiche les fichiers de débogage dans le dossier debug",
+      "command": "ls -la debug && cat debug/last_page.html",
+      "require_approval": false
+    },
+    {
+      "name": "check_server_status",
+      "description": "Vérifie si le serveur de l'application est en cours d'exécution",
+      "command": "ps aux | grep 'ts-node' | grep -v grep",
+      "require_approval": false
+    },
+    {
+      "name": "run_tests",
+      "description": "Exécute les tests unitaires de l'application",
+      "command": "npm run test",
+      "require_approval": true
+    },
+    {
+      "name": "start_dev_server",
+      "description": "Démarre le serveur de développement",
+      "command": "npm run dev",
+      "require_approval": true
+    },
+    {
+      "name": "stop_dev_server",
+      "description": "Arrête le serveur de développement",
+      "command": "pkill -f 'ts-node'",
+      "require_approval": true
+    },
+    {
+      "name": "analyze_bundle",
+      "description": "Analyse la taille du bundle de l'application",
+      "command": "npx vite-bundle-analyzer",
+      "require_approval": true
+    },
+    {
+      "name": "inspect_pinia_store",
+      "description": "Inspecte l'état actuel du store Pinia",
+      "command": "npx tsx scripts/inspectStore.ts",
+      "require_approval": false
+    },
+    {
+      "name": "check_card_data",
+      "description": "Vérifie l'intégrité des données des cartes",
+      "command": "npx tsx scripts/checkCards.ts",
+      "require_approval": false
+    },
+    {
+      "name": "optimize_images",
+      "description": "Optimise les images des cartes pour améliorer les performances",
+      "command": "npx tsx scripts/optimizeImages.ts",
+      "require_approval": true
+    },
+    {
+      "name": "debug_route",
+      "description": "Débogue une route spécifique de l'application",
+      "command": "npx tsx scripts/debugRoute.ts",
+      "require_approval": true
+    },
+    {
+      "name": "analyze_performance",
+      "description": "Analyse les performances de l'application avec Lighthouse",
+      "command": "npx lighthouse http://localhost:3000 --output-path=./debug/lighthouse-report.html --view",
+      "require_approval": true
+    },
+    {
+      "name": "check_auth_status",
+      "description": "Vérifie l'état d'authentification Supabase actuel",
+      "command": "npx tsx scripts/checkAuthStatus.ts",
+      "require_approval": false
+    },
+    {
+      "name": "test_supabase_sync",
+      "description": "Teste la synchronisation des données avec Supabase",
+      "command": "npx tsx scripts/testSupabaseSync.ts",
+      "require_approval": false
+    },
+    {
+      "name": "inspect_supabase_data",
+      "description": "Inspecte les données stockées sur Supabase",
+      "command": "npx tsx scripts/inspectSupabaseData.ts",
+      "require_approval": false
+    }
+  ]
+} 
