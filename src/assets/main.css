@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Animations personnalisées */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Styles globaux */
+body {
+  @apply bg-base-200 min-h-screen;
+}
+
+.card-container {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4;
+}
+
+/* Styles pour les cartes */
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-xl hover:-translate-y-1;
+}
+
+/* Styles pour les boutons d'action */
+.action-button {
+  @apply btn btn-sm btn-circle;
+}
+
+/* Styles pour les badges */
+.badge-quantity {
+  @apply badge badge-lg absolute -top-2 -right-2 z-10;
+}
+
+@layer base {
+  html {
+    font-family: Inter var, system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply font-semibold;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+} 
