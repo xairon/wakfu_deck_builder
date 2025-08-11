@@ -26,17 +26,21 @@
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
           >
-            <DialogPanel class="relative w-full max-w-4xl rounded-lg bg-base-100 shadow-xl">
+            <DialogPanel
+              class="relative w-full max-w-4xl rounded-lg bg-base-100 shadow-xl"
+            >
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
                 <!-- Image de la carte -->
-                <div class="relative aspect-[2/3] bg-base-200 rounded-lg overflow-hidden">
+                <div
+                  class="relative aspect-[2/3] bg-base-200 rounded-lg overflow-hidden"
+                >
                   <img
                     :src="getImagePath"
                     :alt="card.name"
                     class="w-full h-full object-contain transform transition-transform duration-500 hover:scale-110"
                     @error="handleImageError"
                   />
-                  
+
                   <!-- Overlay de rareté -->
                   <div
                     class="absolute bottom-0 left-0 right-0 h-1"
@@ -54,8 +58,11 @@
                       <span class="badge badge-lg" :class="typeClass">
                         {{ card.mainType }}
                       </span>
-                      <span v-if="card.element" class="badge badge-lg badge-outline">
-                        {{ card.element }}
+                      <span
+                        v-if="getCardElement()"
+                        class="badge badge-lg badge-outline"
+                      >
+                        {{ getCardElement() }}
                       </span>
                       <span class="badge badge-lg" :class="rarityBadgeClass">
                         {{ card.rarity }}
@@ -67,15 +74,21 @@
                   <div v-if="hasStats" class="stats shadow">
                     <div v-if="card.stats.health" class="stat">
                       <div class="stat-title">Points de vie</div>
-                      <div class="stat-value text-error">{{ card.stats.health }}</div>
+                      <div class="stat-value text-error">
+                        {{ card.stats.health }}
+                      </div>
                     </div>
                     <div v-if="card.stats.power" class="stat">
                       <div class="stat-title">Points d'action</div>
-                      <div class="stat-value text-warning">{{ card.stats.power }}</div>
+                      <div class="stat-value text-warning">
+                        {{ card.stats.power }}
+                      </div>
                     </div>
                     <div v-if="card.stats.movement" class="stat">
                       <div class="stat-title">Points de mouvement</div>
-                      <div class="stat-value text-info">{{ card.stats.movement }}</div>
+                      <div class="stat-value text-info">
+                        {{ card.stats.movement }}
+                      </div>
                     </div>
                   </div>
 
@@ -128,7 +141,9 @@
                         >
                           <span class="i-carbon-subtract"></span>
                         </button>
-                        <span class="text-xl font-bold w-8 text-center">{{ quantity }}</span>
+                        <span class="text-xl font-bold w-8 text-center">{{
+                          quantity
+                        }}</span>
                         <button
                           class="btn btn-circle btn-sm"
                           @click="updateQuantity(1)"
@@ -137,10 +152,14 @@
                         </button>
                       </div>
                       <div class="flex-1">
-                        <div class="progress-wrapper h-2 bg-base-200 rounded-full overflow-hidden">
+                        <div
+                          class="progress-wrapper h-2 bg-base-200 rounded-full overflow-hidden"
+                        >
                           <div
                             class="progress-bar h-full bg-primary transition-all duration-300"
-                            :style="{ width: `${(quantity / maxQuantity) * 100}%` }"
+                            :style="{
+                              width: `${(quantity / maxQuantity) * 100}%`,
+                            }"
                           ></div>
                         </div>
                         <div class="text-xs text-base-content/70 mt-1">
@@ -169,7 +188,9 @@
               </div>
 
               <!-- Actions -->
-              <div class="flex items-center justify-end gap-2 bg-base-200 px-6 py-4 rounded-b-lg">
+              <div
+                class="flex items-center justify-end gap-2 bg-base-200 px-6 py-4 rounded-b-lg"
+              >
                 <button class="btn" @click="onClose">Fermer</button>
               </div>
             </DialogPanel>
@@ -221,7 +242,8 @@ const getImagePath = computed(() => {
     const urlParts = props.card.url.split('/')
     extensionName = urlParts[urlParts.length - 2] // Prend l'avant-dernier segment de l'URL
   }
-  const extension = extensionName?.toLowerCase().replace(/\s+/g, '-') || 'unknown'
+  const extension =
+    extensionName?.toLowerCase().replace(/\s+/g, '-') || 'unknown'
   return `/images/cards/${props.card.id}-${extension}.webp`
 })
 
@@ -283,7 +305,7 @@ const onClose = () => {
 
 const updateQuantity = async (delta: number) => {
   const newQuantity = Math.max(0, Math.min(maxQuantity, props.quantity + delta))
-  
+
   if (newQuantity === props.quantity) return
 
   try {
@@ -294,7 +316,7 @@ const updateQuantity = async (delta: number) => {
       await cardStore.removeFromCollection(props.card, Math.abs(delta))
       toast.info(`${props.card.name} retirée de la collection`)
     }
-    
+
     emit('update:quantity', newQuantity)
   } catch (error) {
     toast.error('Erreur lors de la mise à jour de la collection')
@@ -306,20 +328,30 @@ const handleImageError = () => {
 }
 
 function formatStats(stats: any) {
-  if (!stats) return [];
+  if (!stats) return []
   return Object.entries(stats)
     .filter(([_, value]) => value !== undefined)
     .map(([key, value]: [string, any]) => {
       if (typeof value === 'object' && 'value' in value && 'element' in value) {
-        return `${key}: ${value.value} (${value.element})`;
+        return `${key}: ${value.value} (${value.element})`
       }
-      return `${key}: ${value}`;
-    });
+      return `${key}: ${value}`
+    })
 }
 
 function formatKeywords(keywords: any[]) {
-  if (!keywords) return [];
-  return keywords.map(k => `${k.name}${k.description ? ': ' + k.description : ''}`);
+  if (!keywords) return []
+  return keywords.map(
+    (k) => `${k.name}${k.description ? ': ' + k.description : ''}`
+  )
+}
+
+function getCardElement(): string | null {
+  if (!props.card || !props.card.stats) return null
+
+  return (
+    props.card.stats.niveau?.element || props.card.stats.force?.element || null
+  )
 }
 </script>
 
@@ -335,7 +367,11 @@ function formatKeywords(keywords: any[]) {
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-focus) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--primary) 0%,
+    var(--primary-focus) 100%
+  );
   transition: width 0.3s ease;
 }
 
@@ -361,4 +397,4 @@ function formatKeywords(keywords: any[]) {
     left: 100%;
   }
 }
-</style> 
+</style>

@@ -7,7 +7,7 @@
         class="btn btn-ghost btn-circle"
         :class="{
           'btn-active': modelValue.includes(element),
-          [getElementColor(element)]: modelValue.includes(element)
+          [getElementColor(element)]: modelValue.includes(element),
         }"
         @click="toggleElement(element)"
       >
@@ -34,13 +34,13 @@ const { elements, getElementColor } = useElements()
 function toggleElement(element: Element) {
   const newValue = [...props.modelValue]
   const index = newValue.indexOf(element)
-  
+
   if (index === -1) {
     newValue.push(element)
   } else {
     newValue.splice(index, 1)
   }
-  
+
   emit('update:modelValue', newValue)
 }
-</script> 
+</script>

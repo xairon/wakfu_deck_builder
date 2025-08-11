@@ -14,11 +14,7 @@ export function useNetworkRetry() {
     operation: () => Promise<T>,
     options: RetryOptions = {}
   ): Promise<T> {
-    const {
-      maxRetries = 3,
-      baseDelay = 1000,
-      maxDelay = 10000
-    } = options
+    const { maxRetries = 3, baseDelay = 1000, maxDelay = 10000 } = options
 
     isLoading.value = true
     error.value = null
@@ -34,12 +30,9 @@ export function useNetworkRetry() {
           isLoading.value = false
           throw e
         }
-        
-        const delay = Math.min(
-          baseDelay * Math.pow(2, attempt),
-          maxDelay
-        )
-        await new Promise(resolve => setTimeout(resolve, delay))
+
+        const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay)
+        await new Promise((resolve) => setTimeout(resolve, delay))
       }
     }
 
@@ -50,6 +43,6 @@ export function useNetworkRetry() {
   return {
     isLoading,
     error,
-    withRetry
+    withRetry,
   }
-} 
+}

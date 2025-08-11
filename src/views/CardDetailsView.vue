@@ -4,11 +4,7 @@
       <!-- Image de la carte -->
       <div class="w-full md:w-1/3">
         <div class="sticky top-8">
-          <CardComponent
-            :card="card"
-            size="lg"
-            :interactive="false"
-          />
+          <CardComponent :card="card" size="lg" :interactive="false" />
         </div>
       </div>
 
@@ -20,18 +16,18 @@
             <h1 class="text-3xl font-bold">{{ card.name }}</h1>
             <div class="flex items-center gap-2 mt-2">
               <span class="badge badge-lg">{{ card.mainType }}</span>
-              <span v-if="card.element" class="badge badge-lg badge-outline">
-                {{ card.element }}
+              <span
+                v-if="getCardElement()"
+                class="badge badge-lg badge-outline"
+              >
+                {{ getCardElement() }}
               </span>
             </div>
           </div>
 
           <!-- Actions -->
           <div class="flex gap-2">
-            <button
-              class="btn btn-primary"
-              @click="addToCollection"
-            >
+            <button class="btn btn-primary" @click="addToCollection">
               Ajouter à la collection
             </button>
             <button
@@ -99,9 +95,7 @@
             <div class="card-body">
               <h2 class="card-title">Extension</h2>
               <p>{{ card.extension }}</p>
-              <p class="text-sm text-base-content/70">
-                #{{ card.numero }}
-              </p>
+              <p class="text-sm text-base-content/70">#{{ card.numero }}</p>
             </div>
           </div>
           <div class="card bg-base-200">
@@ -125,7 +119,10 @@
   </div>
 
   <!-- Message de chargement -->
-  <div v-else-if="loading" class="flex justify-center items-center min-h-[50vh]">
+  <div
+    v-else-if="loading"
+    class="flex justify-center items-center min-h-[50vh]"
+  >
     <div class="loading loading-spinner loading-lg"></div>
   </div>
 
@@ -160,7 +157,9 @@ const loading = ref(true)
 
 // Propriétés calculées
 const canAddToDeck = computed(() => {
-  return card.value?.mainType !== 'Héros' && card.value?.mainType !== 'Havre-Sac'
+  return (
+    card.value?.mainType !== 'Héros' && card.value?.mainType !== 'Havre-Sac'
+  )
 })
 
 // Méthodes
@@ -168,11 +167,11 @@ async function loadCard() {
   try {
     const cardId = route.params.id as string
     const loadedCard = await cardStore.getCardById(cardId)
-    
+
     if (!loadedCard) {
       throw new Error('Card not found')
     }
-    
+
     card.value = loadedCard
   } catch (error) {
     console.error('Error loading card:', error)
@@ -190,19 +189,28 @@ async function addToCollection() {
     toast.success('Carte ajoutée à la collection')
   } catch (error) {
     console.error('Error adding to collection:', error)
-    toast.error('Erreur lors de l\'ajout à la collection')
+    toast.error("Erreur lors de l'ajout à la collection")
   }
 }
 
 async function addToDeck() {
   if (!card.value) return
-  
+
   // TODO: Implémenter la logique d'ajout au deck
   toast.info('Fonctionnalité en cours de développement')
+}
+
+// Fonction pour déterminer l'élément de la carte
+function getCardElement(): string | null {
+  if (!card.value || !card.value.stats) return null
+
+  return (
+    card.value.stats.niveau?.element || card.value.stats.force?.element || null
+  )
 }
 
 // Cycle de vie
 onMounted(() => {
   loadCard()
 })
-</script> 
+</script>

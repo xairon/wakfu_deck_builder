@@ -8,10 +8,7 @@
       <!-- En-tête -->
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">{{ card?.name }}</h2>
-        <button
-          class="btn btn-ghost btn-sm"
-          @click="$emit('close')"
-        >
+        <button class="btn btn-ghost btn-sm" @click="$emit('close')">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -20,19 +17,22 @@
       <div v-if="card" class="flex gap-4">
         <!-- Image de la carte -->
         <div class="w-1/3">
-          <CardComponent
-            :card="card"
-            :interactive="false"
-          />
+          <CardComponent :card="card" :interactive="false" />
         </div>
 
         <!-- Détails -->
         <div class="w-2/3 space-y-4">
           <!-- Type et extension -->
           <div class="flex gap-2">
-            <div class="badge badge-primary">{{ card.mainType || card.type }}</div>
+            <div class="badge badge-primary">
+              {{ card.mainType || card.type }}
+            </div>
             <div class="badge badge-secondary">
-              {{ typeof card.extension === 'string' ? card.extension : card.extension.name }}
+              {{
+                typeof card.extension === 'string'
+                  ? card.extension
+                  : card.extension.name
+              }}
             </div>
           </div>
 
@@ -41,7 +41,7 @@
             <div v-if="displayedStats.niveau" class="stat">
               <div class="stat-title">Niveau</div>
               <div class="stat-value">
-                <StatWithElement 
+                <StatWithElement
                   :value="displayedStats.niveau.value"
                   :element="displayedStats.niveau.element"
                 />
@@ -50,7 +50,7 @@
             <div v-if="displayedStats.force" class="stat">
               <div class="stat-title">Force</div>
               <div class="stat-value">
-                <StatWithElement 
+                <StatWithElement
                   :value="displayedStats.force.value"
                   :element="displayedStats.force.element"
                 />
@@ -81,12 +81,12 @@
                 :title="keyword.description"
               >
                 {{ keyword.name }}
-                <span 
-                  v-if="keyword.elements?.length" 
+                <span
+                  v-if="keyword.elements?.length"
                   class="ml-1 flex items-center gap-1"
                 >
-                  <ElementIcon 
-                    v-for="element in keyword.elements" 
+                  <ElementIcon
+                    v-for="element in keyword.elements"
                     :key="element"
                     :element="element"
                     size="sm"
@@ -111,9 +111,14 @@
           </div>
 
           <!-- Citation -->
-          <div v-if="card.flavor" class="mt-4 text-sm italic text-base-content/70">
+          <div
+            v-if="card.flavor"
+            class="mt-4 text-sm italic text-base-content/70"
+          >
             {{ card.flavor.text }}
-            <span v-if="card.flavor.attribution">- {{ card.flavor.attribution }}</span>
+            <span v-if="card.flavor.attribution"
+              >- {{ card.flavor.attribution }}</span
+            >
           </div>
         </div>
       </div>
@@ -142,32 +147,39 @@ defineEmits<{
 onMounted(() => {
   console.log('🔍 CardDetailsModal - onMounted:', {
     isOpen: props.isOpen,
-    card: props.card
+    card: props.card,
   })
 })
 
 onUpdated(() => {
   console.log('🔍 CardDetailsModal - onUpdated:', {
     isOpen: props.isOpen,
-    card: props.card
+    card: props.card,
   })
 })
 
-watch(() => props.isOpen, (newValue, oldValue) => {
-  console.log('🔍 CardDetailsModal - watch isOpen:', {
-    old: oldValue,
-    new: newValue,
-    card: props.card
-  })
-})
+watch(
+  () => props.isOpen,
+  (newValue, oldValue) => {
+    console.log('🔍 CardDetailsModal - watch isOpen:', {
+      old: oldValue,
+      new: newValue,
+      card: props.card,
+    })
+  }
+)
 
-watch(() => props.card, (newValue, oldValue) => {
-  console.log('🔍 CardDetailsModal - watch card:', {
-    old: oldValue,
-    new: newValue,
-    isOpen: props.isOpen
-  })
-}, { deep: true })
+watch(
+  () => props.card,
+  (newValue, oldValue) => {
+    console.log('🔍 CardDetailsModal - watch card:', {
+      old: oldValue,
+      new: newValue,
+      isOpen: props.isOpen,
+    })
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
@@ -190,4 +202,4 @@ watch(() => props.card, (newValue, oldValue) => {
 .element-icon {
   @apply inline-block;
 }
-</style> 
+</style>

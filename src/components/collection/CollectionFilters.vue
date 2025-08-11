@@ -3,23 +3,23 @@
     <!-- Recherche et extension -->
     <div class="flex flex-wrap gap-4 items-center">
       <div class="form-control flex-1">
-        <input 
-          type="text" 
-          v-model="searchQuery" 
-          placeholder="Rechercher une carte..." 
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Rechercher une carte..."
           class="input input-bordered w-full"
           @input="emitSearchQuery"
         />
       </div>
-      <select 
-        v-model="selectedExtension" 
+      <select
+        v-model="selectedExtension"
         class="select select-bordered"
         @change="emitSelectedExtension"
       >
         <option value="">Toutes les extensions</option>
-        <option 
-          v-for="extension in extensions" 
-          :key="extension" 
+        <option
+          v-for="extension in extensions"
+          :key="extension"
           :value="extension"
         >
           {{ extension }}
@@ -27,9 +27,9 @@
       </select>
       <label class="cursor-pointer label gap-2">
         <span class="label-text">Masquer les cartes non possédées</span>
-        <input 
-          type="checkbox" 
-          v-model="hideNotOwned" 
+        <input
+          type="checkbox"
+          v-model="hideNotOwned"
           class="toggle toggle-primary"
           @change="emitHideNotOwned"
         />
@@ -41,8 +41,8 @@
       <!-- Tri -->
       <div class="flex flex-wrap items-center gap-4">
         <div class="join">
-          <select 
-            v-model="selectedSortField" 
+          <select
+            v-model="selectedSortField"
             class="select select-bordered join-item"
             @change="emitSelectedSortField"
           >
@@ -52,14 +52,14 @@
             <option value="element">Élément</option>
             <option value="force">Force</option>
           </select>
-          <button 
+          <button
             class="btn join-item"
             :class="{ 'btn-active': !isDescending }"
             @click="toggleSortDirection(false)"
           >
             ↑
           </button>
-          <button 
+          <button
             class="btn join-item"
             :class="{ 'btn-active': isDescending }"
             @click="toggleSortDirection(true)"
@@ -70,68 +70,76 @@
       </div>
 
       <!-- Type principal -->
-      <select 
-        v-model="selectedMainType" 
+      <select
+        v-model="selectedMainType"
         class="select select-bordered"
         @change="emitSelectedMainType"
       >
         <option value="">Tous les types</option>
-        <option 
-          v-for="type in mainTypes" 
-          :key="type" 
-          :value="type"
-        >
+        <option v-for="type in mainTypes" :key="type" :value="type">
           {{ type }}
         </option>
       </select>
 
       <!-- Sous-type -->
-      <select 
-        v-model="selectedSubType" 
+      <select
+        v-model="selectedSubType"
         class="select select-bordered"
         @change="emitSelectedSubType"
       >
         <option value="">Tous les sous-types</option>
-        <option 
-          v-for="type in subTypes" 
-          :key="type" 
-          :value="type"
-        >
+        <option v-for="type in subTypes" :key="type" :value="type">
           {{ type }}
         </option>
       </select>
 
       <!-- Rareté (ajout) -->
-      <select 
-        v-model="selectedRarity" 
+      <select
+        v-model="selectedRarity"
         class="select select-bordered"
         @change="emitSelectedRarity"
       >
         <option value="">Toutes les raretés</option>
-        <option 
-          v-for="rarity in rarities" 
-          :key="rarity" 
-          :value="rarity"
-        >
+        <option v-for="rarity in rarities" :key="rarity" :value="rarity">
           {{ rarity }}
         </option>
       </select>
 
       <!-- Élément (ajout) -->
-      <select 
-        v-model="selectedElement" 
+      <select
+        v-model="selectedElement"
         class="select select-bordered"
         @change="emitSelectedElement"
       >
         <option value="">Tous les éléments</option>
-        <option 
-          v-for="element in elements" 
-          :key="element" 
-          :value="element"
-        >
+        <option v-for="element in elements" :key="element" :value="element">
           {{ element }}
         </option>
       </select>
+
+      <!-- Coût (PA) -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm">PA:</span>
+        <input
+          type="number"
+          v-model="minCost"
+          placeholder="Min"
+          class="input input-bordered w-16"
+          min="0"
+          max="10"
+          @input="emitMinCost"
+        />
+        <span class="text-sm">-</span>
+        <input
+          type="number"
+          v-model="maxCost"
+          placeholder="Max"
+          class="input input-bordered w-16"
+          min="0"
+          max="10"
+          @input="emitMaxCost"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -150,7 +158,7 @@ const props = defineProps<{
   subTypes: string[]
   rarities: string[]
   elements: string[]
-  
+
   // État initial des filtres
   searchQuery: string
   selectedExtension: string
@@ -163,6 +171,8 @@ const props = defineProps<{
   selectedElement: string
   minLevel: number | null
   maxLevel: number | null
+  minCost: number | null
+  maxCost: number | null
 }>()
 
 // État local des filtres (synchronisé avec les props)
@@ -177,19 +187,62 @@ const selectedRarity = ref(props.selectedRarity)
 const selectedElement = ref(props.selectedElement)
 const minLevel = ref(props.minLevel)
 const maxLevel = ref(props.maxLevel)
+const minCost = ref(props.minCost)
+const maxCost = ref(props.maxCost)
 
 // Synchroniser les refs locales avec les props quand elles changent
-watch(() => props.searchQuery, (newVal) => searchQuery.value = newVal)
-watch(() => props.selectedExtension, (newVal) => selectedExtension.value = newVal)
-watch(() => props.hideNotOwned, (newVal) => hideNotOwned.value = newVal)
-watch(() => props.selectedSortField, (newVal) => selectedSortField.value = newVal)
-watch(() => props.isDescending, (newVal) => isDescending.value = newVal)
-watch(() => props.selectedMainType, (newVal) => selectedMainType.value = newVal)
-watch(() => props.selectedSubType, (newVal) => selectedSubType.value = newVal)
-watch(() => props.selectedRarity, (newVal) => selectedRarity.value = newVal)
-watch(() => props.selectedElement, (newVal) => selectedElement.value = newVal)
-watch(() => props.minLevel, (newVal) => minLevel.value = newVal)
-watch(() => props.maxLevel, (newVal) => maxLevel.value = newVal)
+watch(
+  () => props.searchQuery,
+  (newVal) => (searchQuery.value = newVal)
+)
+watch(
+  () => props.selectedExtension,
+  (newVal) => (selectedExtension.value = newVal)
+)
+watch(
+  () => props.hideNotOwned,
+  (newVal) => (hideNotOwned.value = newVal)
+)
+watch(
+  () => props.selectedSortField,
+  (newVal) => (selectedSortField.value = newVal)
+)
+watch(
+  () => props.isDescending,
+  (newVal) => (isDescending.value = newVal)
+)
+watch(
+  () => props.selectedMainType,
+  (newVal) => (selectedMainType.value = newVal)
+)
+watch(
+  () => props.selectedSubType,
+  (newVal) => (selectedSubType.value = newVal)
+)
+watch(
+  () => props.selectedRarity,
+  (newVal) => (selectedRarity.value = newVal)
+)
+watch(
+  () => props.selectedElement,
+  (newVal) => (selectedElement.value = newVal)
+)
+watch(
+  () => props.minLevel,
+  (newVal) => (minLevel.value = newVal)
+)
+watch(
+  () => props.maxLevel,
+  (newVal) => (maxLevel.value = newVal)
+)
+watch(
+  () => props.minCost,
+  (newVal) => (minCost.value = newVal)
+)
+watch(
+  () => props.maxCost,
+  (newVal) => (maxCost.value = newVal)
+)
 
 // Définition des émissions
 const emit = defineEmits<{
@@ -201,9 +254,11 @@ const emit = defineEmits<{
   'update:selected-main-type': [value: string]
   'update:selected-sub-type': [value: string]
   'update:selected-rarity': [value: string]
-  'update:selected-element': [value: string] 
+  'update:selected-element': [value: string]
   'update:min-level': [value: number | null]
   'update:max-level': [value: number | null]
+  'update:min-cost': [value: number | null]
+  'update:max-cost': [value: number | null]
 }>()
 
 // Fonctions pour émettre les changements de filtres
@@ -239,9 +294,17 @@ function emitSelectedElement() {
   emit('update:selected-element', selectedElement.value)
 }
 
+function emitMinCost() {
+  emit('update:min-cost', minCost.value)
+}
+
+function emitMaxCost() {
+  emit('update:max-cost', maxCost.value)
+}
+
 // Helper pour changer la direction de tri
 function toggleSortDirection(descending: boolean) {
   isDescending.value = descending
   emit('update:is-descending', descending)
 }
-</script> 
+</script>

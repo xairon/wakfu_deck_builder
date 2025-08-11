@@ -1,20 +1,31 @@
 <template>
-  <div 
+  <div
     class="card-container relative hover:z-10"
     @click="emitCardSelect"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
+    <!-- DEV: Indicateur de débogage visible uniquement pour les administrateurs -->
+    <div
+      v-if="false"
+      class="absolute top-0 left-0 bg-black/70 text-white text-xs p-1 z-50"
+    >
+      Q: {{ quantity }} / F: {{ foilQuantity }}
+    </div>
+
     <!-- Conteneur principal centré sur l'image -->
-    <div 
+    <div
       class="card-frame relative rounded-lg overflow-hidden shadow-lg transition-all duration-300 transform hover:shadow-xl cursor-pointer"
-      :class="{ 
-        'grayscale opacity-80 hover:grayscale-0 hover:opacity-100': quantity === 0 && foilQuantity === 0,
-        'hero-card': isHeroCard 
+      :class="{
+        'grayscale opacity-80 hover:grayscale-0 hover:opacity-100':
+          quantity === 0 && foilQuantity === 0,
+        'hero-card': isHeroCard,
       }"
     >
       <!-- Image (élément principal) -->
-      <div class="image-container relative aspect-[7/10] flex items-center justify-center overflow-hidden bg-base-300">
+      <div
+        class="image-container relative aspect-[7/10] flex items-center justify-center overflow-hidden bg-base-300"
+      >
         <img
           :src="cardImagePath"
           :alt="card?.name || 'Carte Wakfu'"
@@ -22,63 +33,87 @@
           loading="lazy"
           @error="handleImageError"
         />
-        
+
         <!-- Overlay de nom (en bas) - disparaît au survol -->
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white transition-opacity duration-300 card-overlay">
-          <h3 class="font-bold text-center truncate">{{ card?.name || 'Carte sans nom' }}</h3>
+        <div
+          class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white transition-opacity duration-300 card-overlay"
+        >
+          <h3 class="font-bold text-center truncate">
+            {{ card?.name || 'Carte sans nom' }}
+          </h3>
         </div>
       </div>
-      
+
       <!-- Compteurs (en bas à droite) - style amélioré -->
-      <div class="absolute right-2 bottom-12 flex flex-col gap-1 transition-opacity duration-300 card-counter">
+      <div class="absolute right-2 bottom-12 flex flex-col gap-1 z-10">
         <!-- Normal -->
-        <div class="badge badge-md bg-base-100 text-base-content shadow-sm" :class="quantity > 0 ? 'badge-primary' : 'badge-ghost opacity-60'">
-          {{ quantity }}
+        <div
+          class="badge badge-md bg-base-100 text-base-content shadow-md"
+          :class="quantity > 0 ? 'badge-primary' : 'badge-ghost opacity-60'"
+        >
+          {{ quantity > 0 ? quantity : '0' }}
         </div>
         <!-- Foil -->
-        <div class="badge badge-md bg-base-100 text-base-content shadow-sm" :class="foilQuantity > 0 ? 'badge-secondary' : 'badge-ghost opacity-60'">
-          {{ foilQuantity }} ✨
+        <div
+          class="badge badge-md bg-base-100 text-base-content shadow-md"
+          :class="
+            foilQuantity > 0 ? 'badge-secondary' : 'badge-ghost opacity-60'
+          "
+        >
+          {{ foilQuantity > 0 ? foilQuantity : '0' }} ✨
         </div>
       </div>
-      
+
+      <!-- Bouton d'ajout au deck (uniquement en mode constructeur de deck) -->
+      <button
+        v-if="enableAddToDeck && isHovered"
+        @click.stop="emitAddToDeck"
+        class="add-to-deck-button absolute top-3 left-3 btn btn-circle btn-sm btn-success bg-success/80 hover:bg-success z-20"
+        :title="'Ajouter au deck'"
+      >
+        <span>+</span>
+      </button>
+
       <!-- Bouton de retournement pour les cartes héros (reste visible au survol) -->
-      <button 
-        v-if="isHeroCard && isHovered" 
+      <button
+        v-if="isHeroCard && isHovered"
         @click.stop="toggleCardSide"
         class="flip-button absolute top-3 right-3 btn btn-circle btn-sm btn-primary bg-primary/80 hover:bg-primary z-20"
       >
         <span v-if="showVerso">↺</span>
         <span v-else>↻</span>
       </button>
-      
+
       <!-- Indicateur recto/verso en mode hover -->
-      <div 
-        v-if="isHeroCard && isHovered" 
+      <div
+        v-if="isHeroCard && isHovered"
         class="absolute top-3 left-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs z-20 card-side-indicator"
       >
         {{ showVerso ? 'Verso' : 'Recto' }}
       </div>
-      
+
       <!-- Boutons d'action (visibles en mode hover) -->
-      <div 
-        v-if="isHovered" 
+      <div
+        v-if="isHovered"
         class="action-controls absolute inset-0 flex flex-col items-center justify-center z-20"
         @click.stop
       >
-        <div class="action-panel bg-base-300/80 backdrop-blur-sm p-3 rounded-lg shadow-lg">
+        <div
+          class="action-panel bg-base-300/80 backdrop-blur-sm p-3 rounded-lg shadow-lg"
+        >
           <div class="flex flex-col gap-4">
             <!-- Compteur et contrôle normaux -->
             <div class="flex items-center gap-3">
               <div class="badge badge-lg badge-primary">{{ quantity }}</div>
               <div class="join">
-                <button 
+                <button
                   class="join-item btn btn-sm btn-error"
                   @click.stop="updateQuantity(-1, false)"
                   :disabled="quantity <= 0"
                 >
                   -
                 </button>
-                <button 
+                <button
                   class="join-item btn btn-sm btn-primary"
                   @click.stop="updateQuantity(1, false)"
                 >
@@ -86,19 +121,21 @@
                 </button>
               </div>
             </div>
-            
+
             <!-- Compteur et contrôle foil -->
             <div class="flex items-center gap-3">
-              <div class="badge badge-lg badge-secondary">{{ foilQuantity }} ✨</div>
+              <div class="badge badge-lg badge-secondary">
+                {{ foilQuantity }} ✨
+              </div>
               <div class="join">
-                <button 
+                <button
                   class="join-item btn btn-sm btn-error"
                   @click.stop="updateQuantity(-1, true)"
                   :disabled="foilQuantity <= 0"
                 >
                   -
                 </button>
-                <button 
+                <button
                   class="join-item btn btn-sm btn-secondary"
                   @click.stop="updateQuantity(1, true)"
                 >
@@ -126,14 +163,21 @@ interface Props {
   card: Card
   quantity: number
   foilQuantity: number
+  enableAddToDeck: boolean
 }
 
 const props = defineProps<Props>()
 
 // Définition des émissions
 const emit = defineEmits<{
-  (e: 'update-quantity', cardId: string, quantity: number, isFoil: boolean): void;
-  (e: 'select-card', card: Card): void;
+  (
+    e: 'update-quantity',
+    cardId: string,
+    quantity: number,
+    isFoil: boolean
+  ): void
+  (e: 'select-card', card: Card): void
+  (e: 'add-to-deck', card: Card): void
 }>()
 
 // État pour la gestion des erreurs d'image et l'interactivité
@@ -143,119 +187,183 @@ const isHovered = ref(false)
 
 // Computed properties
 const isHeroCard = computed(() => {
-  return props.card?.mainType === 'Héros';
-});
+  return props.card?.mainType === 'Héros'
+})
 
 const getNiveauValue = computed(() => {
   // Vérifier le chemin pour éviter les erreurs undefined
-  return props.card?.stats?.niveau?.value ?? '-';
+  return props.card?.stats?.niveau?.value ?? '-'
 })
 
 const getNiveauElement = computed(() => {
-  return props.card?.stats?.niveau?.element ?? null;
+  return props.card?.stats?.niveau?.element ?? null
 })
 
 // Fonction pour obtenir la classe du badge d'élément
 function getBadgeClass(element: string): string {
   switch (element.toLowerCase()) {
     case 'feu':
-      return 'badge-error';
+      return 'badge-error'
     case 'eau':
-      return 'badge-primary';
+      return 'badge-primary'
     case 'air':
-      return 'badge-info';
+      return 'badge-info'
     case 'terre':
-      return 'badge-success';
+      return 'badge-success'
     default:
-      return 'badge-neutral';
+      return 'badge-neutral'
   }
 }
 
 // Chemin de l'image - gère différents types de cartes
 const cardImagePath = computed(() => {
   if (hasImageError.value || !props.card?.id) {
-    return '/images/cards/placeholder.png';
+    console.debug(
+      `🖼️ Card ${props.card?.name || 'unknown'}: Utilisation de l'image de fallback (erreur: ${hasImageError.value}, id: ${props.card?.id || 'none'})`
+    )
+    return '/images/card-back.png'
   }
 
+  // Si la carte a une imageUrl, l'utiliser directement
+  if (props.card.imageUrl) {
+    console.debug(
+      `🖼️ Card ${props.card.name}: Utilisation de l'imageUrl: ${props.card.imageUrl}`
+    )
+    return props.card.imageUrl
+  }
+
+  // Sinon, construire le chemin à partir de l'ID
   // Si c'est un héros, utiliser recto ou verso selon l'état
   if (isHeroCard.value) {
-    return `/images/cards/${props.card.id}_${showVerso.value ? 'verso' : 'recto'}.png`;
+    const path = `/images/cards/${props.card.id}_${showVerso.value ? 'verso' : 'recto'}.png`
+    console.debug(
+      `🖼️ Card ${props.card.name}: Construction du chemin pour HÉROS: ${path}`
+    )
+    return path
   }
-  
-  return `/images/cards/${props.card.id}.png`;
+
+  const path = `/images/cards/${props.card.id}.png`
+  console.debug(
+    `🖼️ Card ${props.card.name}: Construction du chemin standard: ${path}`
+  )
+  return path
 })
 
 // Gérer les erreurs de chargement d'image
 function handleImageError() {
-  console.warn(`❌ Erreur de chargement d'image pour ${props.card?.name} (ID: ${props.card?.id})`);
-  
-  // Tenter de charger une version alternative de l'image
-  const img = new Image();
+  console.warn(
+    `❌ Erreur de chargement d'image pour ${props.card?.name} (ID: ${props.card?.id})`
+  )
+
+  // Si la carte a une URL d'image mais qu'elle ne charge pas, passer directement au fallback
+  if (props.card.imageUrl) {
+    console.warn(`⚠️ L'imageUrl ${props.card.imageUrl} n'a pas pu être chargée`)
+    hasImageError.value = true
+    return
+  }
+
+  // Tenter de charger une version alternative de l'image (pour les chemins basés sur l'ID)
+  const img = new Image()
   if (isHeroCard.value) {
     // Si c'est une image de héros, essayer l'autre face
-    img.src = `/images/cards/${props.card.id}_${showVerso.value ? 'recto' : 'verso'}.png`;
-    
+    const alternatePath = `/images/cards/${props.card.id}_${showVerso.value ? 'recto' : 'verso'}.png`
+    console.debug(
+      `🔄 Tentative de chargement de la face alternative: ${alternatePath}`
+    )
+    img.src = alternatePath
+
     // Si l'autre face charge correctement, basculer automatiquement
     img.onload = () => {
-      showVerso.value = !showVerso.value;
-      hasImageError.value = false;
-    };
-    
+      console.debug(
+        `✅ Face alternative chargée avec succès pour ${props.card.name}`
+      )
+      showVerso.value = !showVerso.value
+      hasImageError.value = false
+    }
+
     img.onerror = () => {
       // Si l'autre face ne peut pas être chargée non plus, utiliser le placeholder
-      hasImageError.value = true;
-    };
+      console.warn(`❌ Aucune face n'a pu être chargée pour ${props.card.name}`)
+      hasImageError.value = true
+    }
   } else {
     // Pour les cartes normales, simplement marquer l'erreur
-    hasImageError.value = true;
+    console.warn(`❌ Aucune alternative disponible pour ${props.card.name}`)
+    hasImageError.value = true
   }
 }
 
 // Mettre à jour la quantité
 function updateQuantity(change: number, isFoil: boolean) {
-  if (!props.card?.id) return;
-  emit('update-quantity', props.card.id, change, isFoil);
+  if (!props.card?.id) return
+  emit('update-quantity', props.card.id, change, isFoil)
 }
 
 // Sélectionner une carte (pour afficher le modal)
 function emitCardSelect() {
   if (!props.card) {
-    console.error(`❌ Tentative d'émission select-card avec une carte null`);
-    return;
+    console.error(`❌ Tentative d'émission select-card avec une carte null`)
+    return
   }
-  console.log('🔍 CardItem: émission de select-card pour', props.card.name, props.card.id);
-  emit('select-card', props.card);
+  console.log(
+    '🔍 CardItem: émission de select-card pour',
+    props.card.name,
+    props.card.id
+  )
+  emit('select-card', props.card)
 }
 
 // Basculer entre recto et verso pour les cartes héros
 function toggleCardSide(event: Event) {
-  event.stopPropagation(); // Empêcher la propagation au parent (qui ouvrirait le modal)
-  
+  event.stopPropagation() // Empêcher la propagation au parent (qui ouvrirait le modal)
+
   if (isHeroCard.value) {
     // Réinitialiser l'état d'erreur
-    hasImageError.value = false;
-    
+    hasImageError.value = false
+
     // Inverser l'état recto/verso
-    showVerso.value = !showVerso.value;
+    showVerso.value = !showVerso.value
   }
 }
 
 // Événements d'entrée/sortie de souris
 onMounted(() => {
-  const container = document.querySelector('.card-container');
+  const container = document.querySelector('.card-container')
   if (container) {
-    container.addEventListener('mouseenter', () => { isHovered.value = true; });
-    container.addEventListener('mouseleave', () => { isHovered.value = false; });
+    container.addEventListener('mouseenter', () => {
+      isHovered.value = true
+    })
+    container.addEventListener('mouseleave', () => {
+      isHovered.value = false
+    })
   }
-});
+})
 
 onUnmounted(() => {
-  const container = document.querySelector('.card-container');
+  const container = document.querySelector('.card-container')
   if (container) {
-    container.removeEventListener('mouseenter', () => { isHovered.value = true; });
-    container.removeEventListener('mouseleave', () => { isHovered.value = false; });
+    container.removeEventListener('mouseenter', () => {
+      isHovered.value = true
+    })
+    container.removeEventListener('mouseleave', () => {
+      isHovered.value = false
+    })
   }
-});
+})
+
+// Événements d'ajout au deck
+function emitAddToDeck() {
+  if (!props.card) {
+    console.error(`❌ Tentative d'émission add-to-deck avec une carte null`)
+    return
+  }
+  console.log(
+    '🔍 CardItem: émission de add-to-deck pour',
+    props.card.name,
+    props.card.id
+  )
+  emit('add-to-deck', props.card)
+}
 </script>
 
 <style scoped>
@@ -325,7 +433,7 @@ onUnmounted(() => {
 }
 
 .hero-card::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border: 2px solid gold;
@@ -347,4 +455,4 @@ onUnmounted(() => {
   height: 100%;
   width: 100%;
 }
-</style> 
+</style>

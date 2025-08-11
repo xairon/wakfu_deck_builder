@@ -2,11 +2,11 @@
   <div class="container mx-auto px-4">
     <div class="flex flex-col gap-4">
       <!-- En-tête -->
-      <CardsHeader 
+      <CardsHeader
         @export-collection="exportCollection"
         @import-collection="importCollection"
       />
-      
+
       <!-- Filtres -->
       <CardsFilters
         v-model:searchQuery="searchQuery"
@@ -25,13 +25,10 @@
         :elements="elements"
         :availableKeywords="availableKeywords"
       />
-      
+
       <!-- Grille de cartes -->
-      <CardsGrid
-        :filteredCards="filteredCards"
-        @select-card="selectCard"
-      />
-      
+      <CardsGrid :filteredCards="filteredCards" @select-card="selectCard" />
+
       <!-- Modal de détail de carte -->
       <CardDetailModal
         ref="cardDetailModal"
@@ -81,15 +78,15 @@ const extensions = computed(() => cardStore.extensions)
 
 const mainTypes = computed(() => {
   const types = new Set<string>()
-  cardStore.cards.forEach(card => types.add(card.mainType))
+  cardStore.cards.forEach((card) => types.add(card.mainType))
   return Array.from(types).sort()
 })
 
 const subTypes = computed(() => {
   const types = new Set<string>()
-  cardStore.cards.forEach(card => {
+  cardStore.cards.forEach((card) => {
     if (card.subTypes) {
-      card.subTypes.forEach(type => types.add(type))
+      card.subTypes.forEach((type) => types.add(type))
     }
   })
   return Array.from(types).sort()
@@ -97,13 +94,13 @@ const subTypes = computed(() => {
 
 const rarities = computed(() => {
   const types = new Set<string>()
-  cardStore.cards.forEach(card => types.add(card.rarity))
+  cardStore.cards.forEach((card) => types.add(card.rarity))
   return Array.from(types).sort()
 })
 
 const elements = computed(() => {
   const elementSet = new Set<string>()
-  cardStore.cards.forEach(card => {
+  cardStore.cards.forEach((card) => {
     if (card.stats?.niveau?.element) elementSet.add(card.stats.niveau.element)
     if (card.stats?.force?.element) elementSet.add(card.stats.force.element)
   })
@@ -112,9 +109,9 @@ const elements = computed(() => {
 
 const availableKeywords = computed(() => {
   const keywords = new Set<string>()
-  cardStore.cards.forEach(card => {
+  cardStore.cards.forEach((card) => {
     if (card.keywords) {
-      card.keywords.forEach(kw => keywords.add(kw.name))
+      card.keywords.forEach((kw) => keywords.add(kw.name))
     }
   })
   return Array.from(keywords).sort()
@@ -127,57 +124,57 @@ const filteredCards = computed(() => {
   // Filtre par recherche
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(card => 
-      card.name.toLowerCase().includes(query) ||
-      card.subTypes.some(type => type.toLowerCase().includes(query))
+    filtered = filtered.filter(
+      (card) =>
+        card.name.toLowerCase().includes(query) ||
+        card.subTypes.some((type) => type.toLowerCase().includes(query))
     )
   }
 
   // Filtre par extension
   if (selectedExtension.value) {
-    filtered = filtered.filter(card => 
-      card.extension.name === selectedExtension.value
+    filtered = filtered.filter(
+      (card) => card.extension.name === selectedExtension.value
     )
   }
 
   // Filtre par type principal
   if (selectedMainType.value) {
-    filtered = filtered.filter(card => 
-      card.mainType === selectedMainType.value
+    filtered = filtered.filter(
+      (card) => card.mainType === selectedMainType.value
     )
   }
 
   // Filtre par sous-type
   if (selectedSubType.value) {
-    filtered = filtered.filter(card => 
+    filtered = filtered.filter((card) =>
       card.subTypes.includes(selectedSubType.value)
     )
   }
 
   // Filtre par rareté
   if (selectedRarity.value) {
-    filtered = filtered.filter(card => 
-      card.rarity === selectedRarity.value
-    )
+    filtered = filtered.filter((card) => card.rarity === selectedRarity.value)
   }
 
   // Filtre par élément
   if (selectedElement.value) {
-    filtered = filtered.filter(card => 
-      card.stats?.niveau?.element === selectedElement.value ||
-      card.stats?.force?.element === selectedElement.value
+    filtered = filtered.filter(
+      (card) =>
+        card.stats?.niveau?.element === selectedElement.value ||
+        card.stats?.force?.element === selectedElement.value
     )
   }
 
   // Filtre par niveau
   if (minLevel.value !== null) {
-    filtered = filtered.filter(card => {
+    filtered = filtered.filter((card) => {
       const niveau = card.stats?.niveau?.value
       return niveau !== undefined ? niveau >= minLevel.value! : false
     })
   }
   if (maxLevel.value !== null) {
-    filtered = filtered.filter(card => {
+    filtered = filtered.filter((card) => {
       const niveau = card.stats?.niveau?.value
       return niveau !== undefined ? niveau <= maxLevel.value! : false
     })
@@ -185,10 +182,10 @@ const filteredCards = computed(() => {
 
   // Filtre par mots-clés
   if (selectedKeywords.value.length > 0) {
-    filtered = filtered.filter(card => {
+    filtered = filtered.filter((card) => {
       if (!card.keywords) return false
-      return selectedKeywords.value.every(keyword => 
-        card.keywords!.some(kw => kw.name === keyword)
+      return selectedKeywords.value.every((keyword) =>
+        card.keywords!.some((kw) => kw.name === keyword)
       )
     })
   }
@@ -197,31 +194,35 @@ const filteredCards = computed(() => {
   return filtered.sort((a, b) => {
     // Extensions prioritaires
     const extensionOrder = {
-      'Incarnam': 0,
-      'Astrub': 1,
-      'Amakna': 2,
+      Incarnam: 0,
+      Astrub: 1,
+      Amakna: 2,
       'Bonta-Brakmar': 3,
-      'Pandala': 4,
-      'Otomaï': 5,
+      Pandala: 4,
+      Otomaï: 5,
       'DOFUS Collection': 6,
-      'Chaos d\'Ogrest': 7,
+      "Chaos d'Ogrest": 7,
       'Ankama Convention 5': 8,
       'Île des Wabbits': 9,
-      'Draft': 10
+      Draft: 10,
     }
 
     // Comparer d'abord par extension
     const extA = extensionOrder[a.extension.name] ?? 999
     const extB = extensionOrder[b.extension.name] ?? 999
-    
+
     if (extA !== extB) {
       return extA - extB
     }
 
     // Extraire le numéro avant le '/' pour le tri
-    const numA = a.extension.number?.match(/^(\d+)\//) ? parseInt(a.extension.number.match(/^(\d+)\//)[1]) : 0
-    const numB = b.extension.number?.match(/^(\d+)\//) ? parseInt(b.extension.number.match(/^(\d+)\//)[1]) : 0
-    
+    const numA = a.extension.number?.match(/^(\d+)\//)
+      ? parseInt(a.extension.number.match(/^(\d+)\//)[1])
+      : 0
+    const numB = b.extension.number?.match(/^(\d+)\//)
+      ? parseInt(b.extension.number.match(/^(\d+)\//)[1])
+      : 0
+
     return numA - numB
   })
 })
@@ -263,7 +264,7 @@ function exportCollection() {
     URL.revokeObjectURL(url)
     toast.success('Collection exportée avec succès')
   } catch (error) {
-    toast.error('Erreur lors de l\'export de la collection')
+    toast.error("Erreur lors de l'export de la collection")
   }
 }
 
@@ -281,7 +282,7 @@ function importCollection() {
       await cardStore.importCollection(data)
       toast.success('Collection importée avec succès')
     } catch (error) {
-      toast.error('Erreur lors de l\'import de la collection')
+      toast.error("Erreur lors de l'import de la collection")
     }
   }
   input.click()
@@ -308,4 +309,4 @@ onMounted(async () => {
     toast.error('Erreur lors du chargement des cartes')
   }
 })
-</script> 
+</script>

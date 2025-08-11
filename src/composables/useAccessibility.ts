@@ -30,7 +30,7 @@ export function useAccessibility() {
       announcer.value.setAttribute('aria-live', politeness)
       // Reset pour forcer l'annonce
       announcer.value.textContent = ''
-      
+
       setTimeout(() => {
         if (announcer.value) {
           announcer.value.textContent = message
@@ -96,9 +96,11 @@ export function useAccessibility() {
     const focusableElements = containerRef.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
-    
+
     const firstElement = focusableElements[0] as HTMLElement
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement
 
     function handleTabKey(event: KeyboardEvent) {
       if (event.key !== 'Tab') return
@@ -123,7 +125,7 @@ export function useAccessibility() {
       },
       deactivate: () => {
         containerRef.removeEventListener('keydown', handleTabKey)
-      }
+      },
     }
   }
 
@@ -136,8 +138,10 @@ export function useAccessibility() {
         event.ctrlKey ? 'Ctrl' : '',
         event.altKey ? 'Alt' : '',
         event.shiftKey ? 'Shift' : '',
-        event.key
-      ].filter(Boolean).join('+')
+        event.key,
+      ]
+        .filter(Boolean)
+        .join('+')
 
       if (shortcuts[key]) {
         event.preventDefault()
@@ -158,6 +162,6 @@ export function useAccessibility() {
     announce,
     useKeyboardNavigation,
     useFocusTrap,
-    useKeyboardShortcuts
+    useKeyboardShortcuts,
   }
-} 
+}

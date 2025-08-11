@@ -1,15 +1,15 @@
 <script setup lang="ts">
 const props = defineProps<{
-  modelValue: string | null;
-  extensions: string[];
-}>();
+  modelValue: string | null
+  extensions: string[]
+}>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string | null): void;
-}>();
+  (e: 'update:modelValue', value: string | null): void
+}>()
 
 function selectExtension(extension: string | null) {
-  emit('update:modelValue', extension);
+  emit('update:modelValue', extension)
 }
 </script>
 
@@ -32,4 +32,4 @@ function selectExtension(extension: string | null) {
       {{ extension }}
     </button>
   </div>
-</template> 
+</template>

@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 
 const THEME_KEY = 'wakfu-theme'
 const themes = ['light', 'dark'] as const
-type Theme = typeof themes[number]
+type Theme = (typeof themes)[number]
 
 const currentTheme = useStorage<Theme>(THEME_KEY, 'light')
 
@@ -27,6 +27,6 @@ export function useTheme() {
     setTheme,
     toggleTheme,
     initTheme,
-    themes
+    themes,
   }
-} 
+}

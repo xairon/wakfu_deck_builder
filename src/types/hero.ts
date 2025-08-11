@@ -37,4 +37,4 @@ export interface HeroCard extends Card {
   class: string
   verso: HeroSide
   recto: HeroSide
-} 
+}

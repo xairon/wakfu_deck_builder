@@ -16,15 +16,15 @@ describe('Flux de gestion de la collection', () => {
       {
         path: '/collection',
         name: 'collection',
-        component: Collection
+        component: Collection,
       },
       {
         path: '/cards/:id',
         name: 'card-details',
         component: CardDetail,
-        props: true
-      }
-    ]
+        props: true,
+      },
+    ],
   })
 
   // Mock d'une carte
@@ -50,7 +50,7 @@ describe('Flux de gestion de la collection', () => {
     experience: null,
     panoplie_bonus: null,
     recipe: null,
-    url: ''
+    url: '',
   })
 
   beforeEach(() => {
@@ -59,7 +59,9 @@ describe('Flux de gestion de la collection', () => {
 
     // Initialiser le store avec des cartes de test
     const cardStore = useCardStore()
-    cardStore.cards = Array(20).fill(null).map((_, i) => createMockCard(`${i}`))
+    cardStore.cards = Array(20)
+      .fill(null)
+      .map((_, i) => createMockCard(`${i}`))
     cardStore.collection.cards = []
   })
 
@@ -70,9 +72,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       expect(wrapper.find('.collection').exists()).toBe(true)
@@ -91,9 +93,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       expect(wrapper.find('.error-message').exists()).toBe(true)
@@ -102,15 +104,15 @@ describe('Flux de gestion de la collection', () => {
   })
 
   describe('Ajout de cartes', () => {
-    it('devrait permettre d\'ajouter une carte à la collection', async () => {
+    it("devrait permettre d'ajouter une carte à la collection", async () => {
       const wrapper = mount(Collection, {
         global: {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -122,15 +124,15 @@ describe('Flux de gestion de la collection', () => {
       expect(useToast().success).toHaveBeenCalled()
     })
 
-    it('devrait permettre d\'ajouter plusieurs exemplaires', async () => {
+    it("devrait permettre d'ajouter plusieurs exemplaires", async () => {
       const wrapper = mount(Collection, {
         global: {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -146,9 +148,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -167,9 +169,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -186,9 +188,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -207,13 +209,13 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       await wrapper.find('input[type="text"]').setValue('Card 1')
-      
+
       const cardGrid = wrapper.findComponent(CardGrid)
       expect(cardGrid.props('cards')).toHaveLength(1)
     })
@@ -224,15 +226,17 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       await wrapper.findAll('select')[0].setValue('Sort')
-      
+
       const cardGrid = wrapper.findComponent(CardGrid)
-      expect(cardGrid.props('cards').every(card => card.type === 'Sort')).toBe(true)
+      expect(
+        cardGrid.props('cards').every((card) => card.type === 'Sort')
+      ).toBe(true)
     })
 
     it('devrait filtrer les cartes par extension', async () => {
@@ -241,15 +245,17 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       await wrapper.findAll('select')[1].setValue('Base')
-      
+
       const cardGrid = wrapper.findComponent(CardGrid)
-      expect(cardGrid.props('cards').every(card => card.extension === 'Base')).toBe(true)
+      expect(
+        cardGrid.props('cards').every((card) => card.extension === 'Base')
+      ).toBe(true)
     })
 
     it('devrait permettre de réinitialiser les filtres', async () => {
@@ -258,9 +264,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       await wrapper.find('input[type="text"]').setValue('test')
@@ -276,15 +282,15 @@ describe('Flux de gestion de la collection', () => {
   })
 
   describe('Détails des cartes', () => {
-    it('devrait afficher les détails d\'une carte au clic', async () => {
+    it("devrait afficher les détails d'une carte au clic", async () => {
       const wrapper = mount(Collection, {
         global: {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -294,15 +300,15 @@ describe('Flux de gestion de la collection', () => {
       expect(wrapper.findComponent(CardDetail).props('card')).toEqual(card)
     })
 
-    it('devrait permettre d\'ajouter une carte depuis les détails', async () => {
+    it("devrait permettre d'ajouter une carte depuis les détails", async () => {
       const wrapper = mount(Collection, {
         global: {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -322,9 +328,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -340,9 +346,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       // Ajouter quelques cartes
@@ -362,9 +368,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -377,9 +383,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const cardStore = useCardStore()
@@ -398,9 +404,9 @@ describe('Flux de gestion de la collection', () => {
           plugins: [router],
           stubs: {
             CardGrid: true,
-            CardDetail: true
-          }
-        }
+            CardDetail: true,
+          },
+        },
       })
 
       const card = createMockCard('test')
@@ -409,4 +415,4 @@ describe('Flux de gestion de la collection', () => {
       expect(useToast().error).toHaveBeenCalled()
     })
   })
-}) 
+})

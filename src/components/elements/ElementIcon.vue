@@ -1,11 +1,11 @@
 <template>
-  <div 
-    class="element-icon" 
+  <div
+    class="element-icon"
     :class="[size, getElementColor(element)]"
     :title="element"
   >
-    <img 
-      :src="getElementIcon(element)" 
+    <img
+      :src="getElementIcon(element)"
       :alt="element"
       class="w-full h-full object-contain"
     />
@@ -39,4 +39,4 @@ const { getElementIcon, getElementColor } = useElements()
 .element-icon.lg {
   @apply w-12 h-12;
 }
-</style> 
+</style>

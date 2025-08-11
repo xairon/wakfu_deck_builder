@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CollectionView from '@/views/CollectionView.vue'
-import { useSupabaseStore } from '@/stores/supabaseStore'
+import DeckBuilderView from '@/views/DeckBuilderView.vue'
+import DecksView from '@/views/DecksView.vue'
+import DeckDetailView from '@/views/DeckDetailView.vue'
 
-// Import des nouvelles vues d'authentification
-import AuthView from '@/views/AuthView.vue' 
-import ProfileView from '@/views/ProfileView.vue'
+// Mode local: pas d'auth ni profil
 
-// Variable pour suivre si l'initialisation de la session est terminée
-let isSessionInitialized = false
+// Mode local: rien à initialiser côté session
+let isSessionInitialized = true
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,37 +17,44 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { guest: true }
+      meta: { guest: true },
     },
     {
       path: '/collection',
       name: 'collection',
       component: CollectionView,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: false },
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView,
-      meta: { requiresAuth: true }
+      path: '/decks',
+      name: 'decks',
+      component: DecksView,
+      meta: { requiresAuth: false },
     },
     {
-      path: '/login',
-      name: 'login',
-      component: AuthView,
-      meta: { guest: true }
+      path: '/deck/:id',
+      name: 'deckDetail',
+      component: DeckDetailView,
+      meta: { requiresAuth: false },
     },
     {
-      path: '/register',
-      name: 'register',
-      component: AuthView,
-      meta: { guest: true }
+      path: '/deck-builder',
+      name: 'newDeck',
+      component: DeckBuilderView,
+      meta: { requiresAuth: false },
     },
+    {
+      path: '/deck-builder/:id',
+      name: 'editDeck',
+      component: DeckBuilderView,
+      meta: { requiresAuth: true },
+    },
+    // Auth routes retirées
     // Fallback pour les routes non trouvées
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/'
-    }
+      redirect: '/',
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
@@ -58,7 +65,7 @@ const router = createRouter({
       })
     }
     return { top: 0, behavior: 'smooth' }
-  }
+  },
 })
 
 // Optimisation de la navigation
@@ -79,33 +86,23 @@ router.beforeEach(async (to, from, next) => {
   // }
 
   // Vérification de l'authentification
-  const supabaseStore = useSupabaseStore()
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const isGuestRoute = to.matched.some(record => record.meta.guest)
-  
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+  const isGuestRoute = to.matched.some((record) => record.meta.guest)
+
   // Si la session n'est pas encore initialisée, attendre qu'elle le soit
-  if (!isSessionInitialized) {
-    try {
-      // Vérifier si nous avons déjà une session active
-      const { user } = await supabaseStore.initializeSession()
-      isSessionInitialized = true
-      console.log('Session initialisée dans le routeur', { user: user?.email || 'Aucun utilisateur connecté' })
-    } catch (error) {
-      console.error('Erreur lors de l\'initialisation de la session dans le routeur', error)
-      isSessionInitialized = true // Marquer comme initialisé même en cas d'erreur pour éviter les boucles
-    }
-  }
-  
+  // Mode local: pas de session
+  isSessionInitialized = true
+
   // Si la route requiert l'authentification et l'utilisateur n'est pas connecté
-  if (requiresAuth && !supabaseStore.isAuthenticated) {
+  if (requiresAuth && false) {
     // Route protégée, redirection vers la page d'accueil
     next({ name: 'home', query: { redirect: to.fullPath } })
-  } 
+  }
   // Si l'utilisateur est déjà connecté et essaie d'accéder à une page réservée aux invités (login/register)
-  else if (isGuestRoute && supabaseStore.isAuthenticated) {
+  else if (isGuestRoute && false) {
     // L'utilisateur est déjà connecté, redirection vers la collection
     next({ name: 'collection' })
-  } 
+  }
   // Sinon, permettre l'accès normalement
   else {
     isNavigating = true
@@ -117,4 +114,4 @@ router.afterEach(() => {
   isNavigating = false
 })
 
-export default router 
+export default router

@@ -9,7 +9,7 @@ import autoprefixer from 'autoprefixer'
 function checkImageDirectories() {
   const imageDir = path.resolve(__dirname, 'public/images/cards')
   if (!fs.existsSync(imageDir)) {
-    console.error('❌ Le répertoire des images n\'existe pas:', imageDir)
+    console.error("❌ Le répertoire des images n'existe pas:", imageDir)
     fs.mkdirSync(imageDir, { recursive: true })
     console.log('✅ Répertoire des images créé:', imageDir)
   } else {
@@ -28,20 +28,20 @@ export default defineConfig({
     vue({
       script: {
         defineModel: true,
-        propsDestructure: true
-      }
-    })
+        propsDestructure: true,
+      },
+    }),
   ],
   base: '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
       '~': path.resolve(__dirname, './'),
-      'test': path.resolve(__dirname, './tests'),
+      test: path.resolve(__dirname, './tests'),
       '@images': path.resolve(__dirname, './data/images'),
-      '@data': path.resolve(__dirname, './data')
+      '@data': path.resolve(__dirname, './data'),
     },
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
   },
   test: {
     globals: true,
@@ -49,15 +49,15 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'test': path.resolve(__dirname, './tests')
-    }
+      test: path.resolve(__dirname, './tests'),
+    },
   },
   server: {
     port: 3000,
     fs: {
       strict: false,
-      allow: ['..']
-    }
+      allow: ['..'],
+    },
   },
   build: {
     outDir: 'dist',
@@ -67,8 +67,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['vue', 'vue-router', 'pinia'],
-          'ui': ['@headlessui/vue', 'daisyui'],
+          vendor: ['vue', 'vue-router', 'pinia'],
+          ui: ['@headlessui/vue', 'daisyui'],
         },
         assetFileNames: (assetInfo) => {
           if (assetInfo.name?.endsWith('.png')) {
@@ -77,23 +77,20 @@ export default defineConfig({
           return 'assets/[name]-[hash][extname]'
         },
         chunkFileNames: 'js/[name]-[hash].js',
-        entryFileNames: 'js/[name]-[hash].js'
-      }
+        entryFileNames: 'js/[name]-[hash].js',
+      },
     },
     target: 'esnext',
     minify: 'esbuild',
-    sourcemap: true
+    sourcemap: true,
   },
   optimizeDeps: {
-    include: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'pouchdb-browser']
+    include: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'pouchdb-browser'],
   },
   css: {
     devSourcemap: true,
     postcss: {
-      plugins: [
-        tailwindcss,
-        autoprefixer
-      ]
-    }
-  }
-}) 
+      plugins: [tailwindcss, autoprefixer],
+    },
+  },
+})

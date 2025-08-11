@@ -8,29 +8,85 @@ vi.mock('@/composables/useToast', () => ({
     success: vi.fn(),
     error: vi.fn(),
     warning: vi.fn(),
-    info: vi.fn()
-  })
+    info: vi.fn(),
+  }),
 }))
 
 describe('DeckComparison', () => {
   const mockDeck1 = {
     name: 'Deck 1',
-    hero: { image_id: 'hero1', name: 'Hero 1', type: 'Héros', stats: { ap: 3, hp: 20, mp: 3 } },
-    havreSac: { image_id: 'sac1', name: 'Sac 1', type: 'Havre-sac', effects: ['Effect 1'] },
+    hero: {
+      image_id: 'hero1',
+      name: 'Hero 1',
+      type: 'Héros',
+      stats: { ap: 3, hp: 20, mp: 3 },
+    },
+    havreSac: {
+      image_id: 'sac1',
+      name: 'Sac 1',
+      type: 'Havre-sac',
+      effects: ['Effect 1'],
+    },
     cards: [
-      { card: { image_id: '1', name: 'Card 1', type: 'Allié', stats: { ap: 1, hp: 10 }, element: 'Feu' }, quantity: 3 },
-      { card: { image_id: '2', name: 'Card 2', type: 'Sort', stats: { ap: 2 }, element: 'Eau' }, quantity: 3 }
-    ]
+      {
+        card: {
+          image_id: '1',
+          name: 'Card 1',
+          type: 'Allié',
+          stats: { ap: 1, hp: 10 },
+          element: 'Feu',
+        },
+        quantity: 3,
+      },
+      {
+        card: {
+          image_id: '2',
+          name: 'Card 2',
+          type: 'Sort',
+          stats: { ap: 2 },
+          element: 'Eau',
+        },
+        quantity: 3,
+      },
+    ],
   }
 
   const mockDeck2 = {
     name: 'Deck 2',
-    hero: { image_id: 'hero2', name: 'Hero 2', type: 'Héros', stats: { ap: 2, hp: 25, mp: 2 } },
-    havreSac: { image_id: 'sac2', name: 'Sac 2', type: 'Havre-sac', effects: ['Effect 2'] },
+    hero: {
+      image_id: 'hero2',
+      name: 'Hero 2',
+      type: 'Héros',
+      stats: { ap: 2, hp: 25, mp: 2 },
+    },
+    havreSac: {
+      image_id: 'sac2',
+      name: 'Sac 2',
+      type: 'Havre-sac',
+      effects: ['Effect 2'],
+    },
     cards: [
-      { card: { image_id: '2', name: 'Card 2', type: 'Sort', stats: { ap: 2 }, element: 'Eau' }, quantity: 3 },
-      { card: { image_id: '3', name: 'Card 3', type: 'Équipement', stats: { ap: 3 }, element: 'Terre' }, quantity: 3 }
-    ]
+      {
+        card: {
+          image_id: '2',
+          name: 'Card 2',
+          type: 'Sort',
+          stats: { ap: 2 },
+          element: 'Eau',
+        },
+        quantity: 3,
+      },
+      {
+        card: {
+          image_id: '3',
+          name: 'Card 3',
+          type: 'Équipement',
+          stats: { ap: 3 },
+          element: 'Terre',
+        },
+        quantity: 3,
+      },
+    ],
   }
 
   let wrapper: ReturnType<typeof mount>
@@ -39,8 +95,8 @@ describe('DeckComparison', () => {
     wrapper = mount(DeckComparison, {
       props: {
         deck1: mockDeck1,
-        deck2: mockDeck2
-      }
+        deck2: mockDeck2,
+      },
     })
   })
 
@@ -90,9 +146,9 @@ describe('DeckComparison', () => {
   describe('Métriques avancées', () => {
     it('devrait calculer correctement les diversités', () => {
       const metrics = wrapper.vm.deckMetrics.value
-      expect(metrics.deck1.cardDiversity).toBe(2/6)
-      expect(metrics.deck1.elementDiversity).toBe(2/4)
-      expect(metrics.deck1.typeDiversity).toBe(2/5)
+      expect(metrics.deck1.cardDiversity).toBe(2 / 6)
+      expect(metrics.deck1.elementDiversity).toBe(2 / 4)
+      expect(metrics.deck1.typeDiversity).toBe(2 / 5)
     })
 
     it('devrait analyser correctement les synergies', () => {
@@ -172,13 +228,13 @@ describe('DeckComparison', () => {
     it('devrait gérer les decks sans cartes', () => {
       const emptyDeck = {
         name: 'Empty',
-        cards: []
+        cards: [],
       }
       wrapper = mount(DeckComparison, {
         props: {
           deck1: emptyDeck,
-          deck2: emptyDeck
-        }
+          deck2: emptyDeck,
+        },
       })
       const metrics = wrapper.vm.deckMetrics.value
       expect(metrics.deck1.totalCards).toBe(0)
@@ -188,13 +244,13 @@ describe('DeckComparison', () => {
     it('devrait gérer les cartes sans statistiques', () => {
       const incompleteCard = {
         name: 'Incomplete',
-        cards: [{ card: { image_id: '1', name: 'Card 1' }, quantity: 1 }]
+        cards: [{ card: { image_id: '1', name: 'Card 1' }, quantity: 1 }],
       }
       wrapper = mount(DeckComparison, {
         props: {
           deck1: incompleteCard,
-          deck2: incompleteCard
-        }
+          deck2: incompleteCard,
+        },
       })
       const metrics = wrapper.vm.deckMetrics.value
       expect(metrics.deck1.averageAP).toBe(0)
@@ -206,22 +262,24 @@ describe('DeckComparison', () => {
     it('devrait gérer efficacement de grands decks', () => {
       const largeDeck = {
         name: 'Large Deck',
-        cards: Array(50).fill(null).map((_, i) => ({
-          card: {
-            image_id: String(i),
-            name: `Card ${i}`,
-            type: 'Allié',
-            stats: { ap: 1 }
-          },
-          quantity: 3
-        }))
+        cards: Array(50)
+          .fill(null)
+          .map((_, i) => ({
+            card: {
+              image_id: String(i),
+              name: `Card ${i}`,
+              type: 'Allié',
+              stats: { ap: 1 },
+            },
+            quantity: 3,
+          })),
       }
       const start = performance.now()
       wrapper = mount(DeckComparison, {
         props: {
           deck1: largeDeck,
-          deck2: largeDeck
-        }
+          deck2: largeDeck,
+        },
       })
       const metrics = wrapper.vm.deckMetrics.value
       const comparison = wrapper.vm.deckComparison.value
@@ -229,4 +287,4 @@ describe('DeckComparison', () => {
       expect(end - start).toBeLessThan(1000) // moins d'une seconde
     })
   })
-}) 
+})

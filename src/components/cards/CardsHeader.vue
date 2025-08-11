@@ -17,7 +17,7 @@
       </button>
     </div>
   </div>
-  
+
   <div class="stats shadow mt-4">
     <div class="stat">
       <div class="stat-title">Collection</div>
@@ -33,49 +33,49 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useCardStore } from '@/stores/cardStore';
-import { useToast } from '@/composables/useToast';
+import { computed } from 'vue'
+import { useCardStore } from '@/stores/cardStore'
+import { useToast } from '@/composables/useToast'
 
-const cardStore = useCardStore();
-const toast = useToast();
+const cardStore = useCardStore()
+const toast = useToast()
 
-const totalCollection = computed(() => cardStore.totalCollection);
-const collectionProgress = computed(() => cardStore.collectionProgress);
+const totalCollection = computed(() => cardStore.totalCollection)
+const collectionProgress = computed(() => cardStore.collectionProgress)
 
 function exportCollection() {
   try {
-    const data = JSON.stringify(cardStore.collection, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'wakfu-collection.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Collection exportée avec succès');
+    const data = JSON.stringify(cardStore.collection, null, 2)
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'wakfu-collection.json'
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success('Collection exportée avec succès')
   } catch (error) {
-    toast.error('Erreur lors de l\'export de la collection');
+    toast.error("Erreur lors de l'export de la collection")
   }
 }
 
 function importCollection() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'application/json';
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'application/json'
   input.onchange = async (e) => {
     try {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
 
-      const text = await file.text();
-      const data = JSON.parse(text);
-      await cardStore.importCollection(data);
-      toast.success('Collection importée avec succès');
+      const text = await file.text()
+      const data = JSON.parse(text)
+      await cardStore.importCollection(data)
+      toast.success('Collection importée avec succès')
     } catch (error) {
-      toast.error('Erreur lors de l\'import de la collection');
+      toast.error("Erreur lors de l'import de la collection")
     }
-  };
-  input.click();
+  }
+  input.click()
 }
-</script> 
+</script>

@@ -6,25 +6,36 @@
 /**
  * Types de rareté possibles
  */
-export type Rarity = 'Commune' | 'Peu Commune' | 'Rare' | 'Mythique' | 'Légendaire';
+export type Rarity =
+  | 'Commune'
+  | 'Peu Commune'
+  | 'Rare'
+  | 'Mythique'
+  | 'Légendaire'
 
 /**
  * Types de cartes possibles
  */
-export type CardType = 'Allié' | 'Havre-sac' | 'Héros' | 'Équipement' | 'Sort' | 'Zone';
+export type CardType =
+  | 'Allié'
+  | 'Havre-sac'
+  | 'Héros'
+  | 'Équipement'
+  | 'Sort'
+  | 'Zone'
 
 /**
  * Classes de cartes possibles
  */
-export type CardClass = 
-  | 'Monstre' 
-  | 'Bandit' 
-  | 'Hibou' 
-  | 'Marchand' 
-  | 'Vampyre' 
-  | 'Crâ' 
-  | 'Xélor' 
-  | 'Guide' 
+export type CardClass =
+  | 'Monstre'
+  | 'Bandit'
+  | 'Hibou'
+  | 'Marchand'
+  | 'Vampyre'
+  | 'Crâ'
+  | 'Xélor'
+  | 'Guide'
   | 'Ecaflip'
   | 'Iop'
   | 'Sacrieur'
@@ -34,12 +45,12 @@ export type CardClass =
   | 'Sram'
   | 'Sadida'
   | 'Pandawa'
-  | null;
+  | null
 
 /**
  * Éléments possibles
  */
-export type Element = 'Air' | 'Eau' | 'Feu' | 'Terre' | null;
+export type Element = 'Air' | 'Eau' | 'Feu' | 'Terre' | null
 
 /**
  * Statistiques d'une carte
@@ -47,11 +58,11 @@ export type Element = 'Air' | 'Eau' | 'Feu' | 'Terre' | null;
  */
 export interface Stats {
   /** Points d'action (PA) requis pour jouer la carte */
-  ap?: number;
+  ap?: number
   /** Points de vie de la carte */
-  hp?: number;
+  hp?: number
   /** Points de mouvement de la carte */
-  mp?: number;
+  mp?: number
 }
 
 /**
@@ -79,9 +90,9 @@ export interface Card {
  */
 export interface DeckEntry {
   /** La carte */
-  card: Card;
+  card: Card
   /** Nombre d'exemplaires dans le deck (1-3) */
-  quantity: number;
+  quantity: number
 }
 
 /**
@@ -102,11 +113,11 @@ export interface Deck {
  */
 export interface DeckCard {
   /** La carte */
-  card: Card;
+  card: Card
   /** Quantité de la carte dans le deck (1-3) */
-  quantity: number;
+  quantity: number
   /** Indique si la carte est dans la réserve */
-  isReserve?: boolean;
+  isReserve?: boolean
 }
 
 /**
@@ -114,11 +125,11 @@ export interface DeckCard {
  */
 export interface Collection {
   /** Identifiant unique de la collection */
-  id: string;
+  id: string
   /** Liste des cartes avec leur quantité */
-  cards: DeckCard[];
+  cards: DeckCard[]
   /** Date de dernière mise à jour de la collection */
-  updatedAt?: Date;
+  updatedAt?: Date
 }
 
 /**
@@ -127,11 +138,11 @@ export interface Collection {
  */
 export interface Synergy {
   /** Type de synergie (Type, Élément, Coût) */
-  type: string;
+  type: string
   /** Force de la synergie (0-1) */
-  strength: number;
+  strength: number
   /** Description de la synergie */
-  description: string;
+  description: string
 }
 
 /**
@@ -140,44 +151,44 @@ export interface Synergy {
  */
 export interface DeckMetrics {
   /** Nombre total de cartes */
-  totalCards: number;
+  totalCards: number
   /** Nombre de cartes uniques */
-  uniqueCards: number;
+  uniqueCards: number
   /** Coût moyen en PA */
-  averageAP: number;
+  averageAP: number
   /** Points de vie moyens */
-  averageHP: number;
+  averageHP: number
   /** Points de mouvement moyens */
-  averageMP: number;
+  averageMP: number
   /** Distribution des types de cartes */
-  typeDistribution: Record<string, number>;
+  typeDistribution: Record<string, number>
   /** Distribution des éléments */
-  elementDistribution: Record<string, number>;
+  elementDistribution: Record<string, number>
   /** Courbe de coût en PA */
-  apCurve: Record<number, number>;
+  apCurve: Record<number, number>
   /** Ratio de diversité des cartes */
-  cardDiversity: number;
+  cardDiversity: number
   /** Ratio de diversité des éléments */
-  elementDiversity: number;
+  elementDiversity: number
   /** Ratio de diversité des types */
-  typeDiversity: number;
+  typeDiversity: number
   /** Synergies détectées */
-  synergies: Synergy[];
+  synergies: Synergy[]
   /** Potentiel de combos */
   comboPotential: Array<{
-    combo: string;
-    probability: number;
-  }>;
+    combo: string
+    probability: number
+  }>
   /** Efficacité PA/Stats */
-  apEfficiency: number;
+  apEfficiency: number
   /** Équilibre des ressources */
-  resourceBalance: number;
+  resourceBalance: number
   /** Fluidité de la courbe */
-  curveSmoothness: number;
+  curveSmoothness: number
   /** Potentiel early game */
-  earlyGamePotential: number;
+  earlyGamePotential: number
   /** Potentiel late game */
-  lateGamePotential: number;
+  lateGamePotential: number
 }
 
 /**
@@ -187,40 +198,40 @@ export interface DeckMetrics {
 export interface DeckComparisonResult {
   /** Différences relatives entre les decks */
   differences: {
-    totalCards: number;
-    averageAP: number;
-    averageHP: number;
-    averageMP: number;
-    cardDiversity: number;
-    elementDiversity: number;
-    typeDiversity: number;
-  };
+    totalCards: number
+    averageAP: number
+    averageHP: number
+    averageMP: number
+    cardDiversity: number
+    elementDiversity: number
+    typeDiversity: number
+  }
   /** Forces identifiées pour chaque deck */
   strengths: {
-    deck1: string[];
-    deck2: string[];
-  };
+    deck1: string[]
+    deck2: string[]
+  }
   /** Suggestions d'amélioration */
   suggestions: {
-    deck1: string[];
-    deck2: string[];
-  };
+    deck1: string[]
+    deck2: string[]
+  }
   /** Analyse de compatibilité */
   compatibility: {
-    score: number;
-    reasons: string[];
-  };
+    score: number
+    reasons: string[]
+  }
   /** Style de jeu dominant */
   playstyle: {
     deck1: {
-      style: string;
-      description: string;
-    };
+      style: string
+      description: string
+    }
     deck2: {
-      style: string;
-      description: string;
-    };
-  };
+      style: string
+      description: string
+    }
+  }
 }
 
 export interface DeckStats {
@@ -228,4 +239,4 @@ export interface DeckStats {
   uniqueCards: number
   averageCost: number
   powerDistribution: Record<number, number>
-} 
+}

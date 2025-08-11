@@ -1,31 +1,19 @@
-/**
- * Grille de cartes avec filtres et contrôles de collection
- * Permet d'afficher, filtrer et gérer une collection de cartes
- * @component
- */
+/** * Grille de cartes avec filtres et contrôles de collection * Permet
+d'afficher, filtrer et gérer une collection de cartes * @component */
 <template>
   <div class="card-grid space-y-6">
     <!-- Filtres -->
-    <CardFilters
-      v-model="filters"
-      @update:modelValue="handleFiltersChange"
-    />
+    <CardFilters v-model="filters" @update:modelValue="handleFiltersChange" />
 
     <!-- Stats -->
-    <CardCollectionStats
-      :cards="props.cards"
-      :filtered-cards="filteredCards"
-    />
+    <CardCollectionStats :cards="props.cards" :filtered-cards="filteredCards" />
 
     <!-- Grille de cartes -->
     <div v-if="loading" class="flex justify-center items-center py-8">
       <div class="loading loading-spinner loading-lg"></div>
     </div>
 
-    <div
-      v-else-if="props.cards.length === 0"
-      class="text-center py-8"
-    >
+    <div v-else-if="props.cards.length === 0" class="text-center py-8">
       <h3 class="text-xl font-bold mb-2">Aucune carte trouvée</h3>
       <p class="text-base-content/60">
         Essayez de modifier vos filtres de recherche
@@ -43,10 +31,7 @@
           :key="card.id"
           @click="handleCardClick(card)"
         >
-          <CardComponent
-            :card="card"
-            class="h-full cursor-pointer"
-          />
+          <CardComponent :card="card" class="h-full cursor-pointer" />
         </div>
       </div>
     </div>
@@ -96,12 +81,12 @@ const filters = ref<Filters>({
   search: '',
   type: '',
   extension: '',
-  showOnlyCollection: false
+  showOnlyCollection: false,
 })
 
 const { list, containerProps, wrapperProps } = useVirtualList(props.cards, {
   itemHeight: 320, // Hauteur approximative d'une carte avec ses contrôles
-  overscan: 10 // Nombre d'éléments à pré-rendre
+  overscan: 10, // Nombre d'éléments à pré-rendre
 })
 
 /**
@@ -113,22 +98,23 @@ const filteredCards = computed(() => {
 
   if (filters.value.search) {
     const search = filters.value.search.toLowerCase()
-    result = result.filter(card => 
-      card.name.toLowerCase().includes(search) ||
-      card.mainType.toLowerCase().includes(search)
+    result = result.filter(
+      (card) =>
+        card.name.toLowerCase().includes(search) ||
+        card.mainType.toLowerCase().includes(search)
     )
   }
 
   if (filters.value.type) {
-    result = result.filter(card => card.mainType === filters.value.type)
+    result = result.filter((card) => card.mainType === filters.value.type)
   }
 
   if (filters.value.extension) {
-    result = result.filter(card => card.extension === filters.value.extension)
+    result = result.filter((card) => card.extension === filters.value.extension)
   }
 
   if (filters.value.showOnlyCollection) {
-    result = result.filter(card => cardStore.collection.has(card.image_id))
+    result = result.filter((card) => cardStore.collection.has(card.image_id))
   }
 
   return result
@@ -144,7 +130,7 @@ function handleCardClick(card: Card) {
   } else {
     router.push({
       name: 'card-details',
-      params: { id: card.image_id }
+      params: { id: card.image_id },
     })
   }
 }
@@ -175,4 +161,4 @@ function handleFiltersChange(newFilters: Filters) {
 .grid {
   @apply p-4;
 }
-</style> 
+</style>

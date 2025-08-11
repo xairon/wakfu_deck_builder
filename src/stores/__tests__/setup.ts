@@ -7,4 +7,4 @@ beforeEach(() => {
 
 afterEach(() => {
   setActivePinia(null)
-}) 
+})

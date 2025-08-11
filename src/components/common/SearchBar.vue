@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const props = defineProps<{
-  modelValue: string;
-}>();
+  modelValue: string
+}>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
-}>();
+  (e: 'update:modelValue', value: string): void
+}>()
 
-const searchInput = ref(props.modelValue);
+const searchInput = ref(props.modelValue)
 
 function updateSearch(event: Event) {
-  const value = (event.target as HTMLInputElement).value;
-  searchInput.value = value;
-  emit('update:modelValue', value);
+  const value = (event.target as HTMLInputElement).value
+  searchInput.value = value
+  emit('update:modelValue', value)
 }
 </script>
 
@@ -33,4 +33,4 @@ function updateSearch(event: Event) {
       </button>
     </div>
   </div>
-</template> 
+</template>

@@ -21,15 +21,15 @@ describe('Navigation des cartes', () => {
         {
           path: '/cards',
           name: 'cards',
-          component: CardGrid
+          component: CardGrid,
         },
         {
           path: '/cards/:id',
           name: 'card-details',
           component: CardDetailsView,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     })
 
     // Configuration de Pinia
@@ -60,7 +60,7 @@ describe('Navigation des cartes', () => {
         experience: null,
         panoplie_bonus: null,
         recipe: null,
-        url: ''
+        url: '',
       },
       {
         image_id: 'test-2',
@@ -84,8 +84,8 @@ describe('Navigation des cartes', () => {
         experience: null,
         panoplie_bonus: null,
         recipe: null,
-        url: ''
-      }
+        url: '',
+      },
     ]
   })
 
@@ -95,12 +95,12 @@ describe('Navigation des cartes', () => {
         global: {
           plugins: [router],
           stubs: {
-            CardComponent: true
-          }
+            CardComponent: true,
+          },
         },
         props: {
-          cards: cardStore.cards
-        }
+          cards: cardStore.cards,
+        },
       })
 
       // Simuler le clic sur une carte
@@ -119,9 +119,9 @@ describe('Navigation des cartes', () => {
         global: {
           plugins: [router],
           stubs: {
-            CardComponent: true
-          }
-        }
+            CardComponent: true,
+          },
+        },
       })
 
       // Vérifier que les détails sont chargés
@@ -137,13 +137,13 @@ describe('Navigation des cartes', () => {
         global: {
           plugins: [router],
           stubs: {
-            CardComponent: true
-          }
+            CardComponent: true,
+          },
         },
         props: {
           cards: cardStore.cards,
-          selectionMode: true
-        }
+          selectionMode: true,
+        },
       })
 
       // Simuler le clic sur une carte
@@ -153,18 +153,18 @@ describe('Navigation des cartes', () => {
       expect(router.currentRoute.value.name).not.toBe('card-details')
     })
 
-    it('devrait émettre l\'événement de sélection', async () => {
+    it("devrait émettre l'événement de sélection", async () => {
       const wrapper = mount(CardGrid, {
         global: {
           plugins: [router],
           stubs: {
-            CardComponent: true
-          }
+            CardComponent: true,
+          },
         },
         props: {
           cards: cardStore.cards,
-          selectionMode: true
-        }
+          selectionMode: true,
+        },
       })
 
       // Simuler le clic sur une carte
@@ -177,27 +177,27 @@ describe('Navigation des cartes', () => {
   })
 
   describe('Gestion des erreurs', () => {
-    it('devrait afficher un message d\'erreur pour une carte inexistante', async () => {
+    it("devrait afficher un message d'erreur pour une carte inexistante", async () => {
       // Naviguer vers une carte inexistante
       await router.push('/cards/invalid-id')
 
       const wrapper = mount(CardDetailsView, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       // Vérifier le message d'erreur
       expect(wrapper.text()).toContain('Carte non trouvée')
     })
 
-    it('devrait rediriger vers la liste des cartes depuis le message d\'erreur', async () => {
+    it("devrait rediriger vers la liste des cartes depuis le message d'erreur", async () => {
       await router.push('/cards/invalid-id')
 
       const wrapper = mount(CardDetailsView, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       // Cliquer sur le bouton de redirection
@@ -207,4 +207,4 @@ describe('Navigation des cartes', () => {
       expect(router.currentRoute.value.name).toBe('cards')
     })
   })
-}) 
+})

@@ -15,7 +15,7 @@ const EXTENSION_FILES = [
   'ile-des-wabbits',
   'incarnam',
   'otomai',
-  'pandala'
+  'pandala',
 ]
 
 interface CacheData {
@@ -56,7 +56,7 @@ async function saveToCache(cards: Card[]) {
   try {
     const cacheData: CacheData = {
       timestamp: Date.now(),
-      cards
+      cards,
     }
     localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData))
     console.log('💾 Cartes sauvegardées dans le cache')
@@ -66,20 +66,23 @@ async function saveToCache(cards: Card[]) {
 }
 
 function normalizeCardType(type: string): string {
-  switch (type.trim()) {
+  const t = (type || '').trim()
+  switch (t) {
     case 'Havre Sac':
-      return 'Havre-sac'
+    case 'Havre-sac':
+    case 'Havre-Sac':
+      return 'Havre-sac' // unifier en 'Havre-sac' (minuscule sur sac) car c'est ce que montrent les données
     case 'héros':
     case 'Heros':
       return 'Héros'
     default:
-      return type
+      return t
   }
 }
 
 function extractElement(card: Card): string | null {
   const elements = ['Air', 'Eau', 'Feu', 'Terre']
-  
+
   // Vérifier dans les effets pour les ressources élémentaires
   for (const effect of card.effects || []) {
     for (const element of elements) {
@@ -88,7 +91,7 @@ function extractElement(card: Card): string | null {
       }
     }
   }
-  
+
   // Vérifier dans les mots-clés pour les éléments purs (sans "Résistance")
   for (const keyword of card.keywords || []) {
     for (const element of elements) {
@@ -97,7 +100,7 @@ function extractElement(card: Card): string | null {
       }
     }
   }
-  
+
   return null
 }
 
@@ -108,10 +111,10 @@ async function loadCardsFromFile(filePath: string): Promise<Card[]> {
       throw new Error(`Erreur HTTP: ${response.status}`)
     }
     const cards: Card[] = await response.json()
-    return cards.map(card => ({
+    return cards.map((card) => ({
       ...card,
       mainType: normalizeCardType(card.mainType),
-      element: extractElement(card)
+      element: extractElement(card),
     }))
   } catch (error) {
     console.error(`❌ Erreur lors du chargement de ${filePath}:`, error)
@@ -126,7 +129,7 @@ async function loadFile(file: string, retryCount = 0): Promise<Card[]> {
   } catch (error) {
     if (retryCount < MAX_RETRIES) {
       console.log(`🔄 Nouvelle tentative dans ${RETRY_DELAY}ms...`)
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY))
       return loadFile(file, retryCount + 1)
     }
     throw error
@@ -134,8 +137,8 @@ async function loadFile(file: string, retryCount = 0): Promise<Card[]> {
 }
 
 function fixSpecialCharacters(str: string): string {
-  if (!str) return str;
-  
+  if (!str) return str
+
   // Remplacer les caractères spéciaux mal encodés
   return str
     .replace(/Alli\?\?/g, 'Allié')
@@ -147,172 +150,228 @@ function fixSpecialCharacters(str: string): string {
     .replace(/\?\?l\?\?mentaire/g, 'élémentaire')
     .replace(/d\?\?g\?\?ts/g, 'dégâts')
     .replace(/\?\?nergie/g, 'énergie')
-    .replace(/\?\?/g, 'é'); // Dernier recours pour les 'é' non reconnus
+    .replace(/\?\?/g, 'é') // Dernier recours pour les 'é' non reconnus
 }
 
 async function loadExtensionCards(extension: string): Promise<Card[]> {
   try {
-    console.log(`🔄 Tentative de chargement des cartes pour l'extension "${extension}"...`);
-    
-    const response = await fetch(`/data/${extension}.json`);
+    console.log(
+      `🔄 Tentative de chargement des cartes pour l'extension "${extension}"...`
+    )
+
+    const response = await fetch(`/data/${extension}.json`)
     if (!response.ok) {
-      console.error(`❌ Échec HTTP ${response.status} lors du chargement de l'extension ${extension}`);
-      throw new Error(`Échec du chargement des cartes pour l'extension ${extension}: ${response.status} ${response.statusText}`);
+      console.error(
+        `❌ Échec HTTP ${response.status} lors du chargement de l'extension ${extension}`
+      )
+      throw new Error(
+        `Échec du chargement des cartes pour l'extension ${extension}: ${response.status} ${response.statusText}`
+      )
     }
-    
-    let cards;
+
+    let cards
     try {
       // On convertit d'abord en texte pour détecter les problèmes d'encodage
-      const text = await response.text();
-      
+      const text = await response.text()
+
       // Si le texte ne contient aucune donnée valide
       if (!text || text.trim() === '' || text.trim() === '[]') {
-        console.warn(`⚠️ Fichier JSON vide pour l'extension ${extension}`);
-        return [];
+        console.warn(`⚠️ Fichier JSON vide pour l'extension ${extension}`)
+        return []
       }
-      
+
       try {
-        cards = JSON.parse(text);
-        console.log(`✅ Fichier JSON chargé pour l'extension ${extension}, contient ${Array.isArray(cards) ? cards.length : 'non-array'} éléments`);
+        cards = JSON.parse(text)
+        console.log(
+          `✅ Fichier JSON chargé pour l'extension ${extension}, contient ${Array.isArray(cards) ? cards.length : 'non-array'} éléments`
+        )
       } catch (parseError) {
-        console.error(`❌ Erreur de parsing JSON pour l'extension ${extension}:`, parseError);
-        console.log('Premiers caractères du JSON:', text.substring(0, 100));
-        throw parseError;
+        console.error(
+          `❌ Erreur de parsing JSON pour l'extension ${extension}:`,
+          parseError
+        )
+        console.log('Premiers caractères du JSON:', text.substring(0, 100))
+        throw parseError
       }
     } catch (jsonError) {
-      console.error(`❌ Erreur lors du traitement du JSON pour l'extension ${extension}:`, jsonError);
-      throw new Error(`Erreur de parsing JSON pour l'extension ${extension}: ${jsonError}`);
+      console.error(
+        `❌ Erreur lors du traitement du JSON pour l'extension ${extension}:`,
+        jsonError
+      )
+      throw new Error(
+        `Erreur de parsing JSON pour l'extension ${extension}: ${jsonError}`
+      )
     }
-    
+
     if (!Array.isArray(cards)) {
-      console.error(`❌ Format de données invalide pour l'extension ${extension}, attendu un tableau, reçu:`, typeof cards);
-      return [];
+      console.error(
+        `❌ Format de données invalide pour l'extension ${extension}, attendu un tableau, reçu:`,
+        typeof cards
+      )
+      return []
     }
-    
+
     if (cards.length === 0) {
-      console.warn(`⚠️ L'extension ${extension} ne contient aucune carte`);
-      return [];
+      console.warn(`⚠️ L'extension ${extension} ne contient aucune carte`)
+      return []
     }
-    
+
     // Validate and normalize each card
     const validCards = cards
       .filter((card: any) => {
         if (!card || typeof card !== 'object') {
-          console.warn(`⚠️ Carte ignorée dans ${extension}: non-objet ou null`);
-          return false;
+          console.warn(`⚠️ Carte ignorée dans ${extension}: non-objet ou null`)
+          return false
         }
         // Vérification minimale
         if (!card.id || !card.name) {
-          console.warn(`⚠️ Carte ignorée dans ${extension}: id ou nom manquant`, card);
-          return false;
+          console.warn(
+            `⚠️ Carte ignorée dans ${extension}: id ou nom manquant`,
+            card
+          )
+          return false
         }
-        return true;
+        return true
       })
       .map((card: any) => {
         // Normaliser la carte
-        const normalizedCard = { ...card };
-        
+        const normalizedCard = { ...card }
+
         // Corriger les caractères spéciaux dans des champs clés
         if (normalizedCard.name) {
-          normalizedCard.name = fixSpecialCharacters(normalizedCard.name);
+          normalizedCard.name = fixSpecialCharacters(normalizedCard.name)
         }
-        
+
         if (normalizedCard.mainType) {
-          normalizedCard.mainType = fixSpecialCharacters(normalizedCard.mainType);
+          normalizedCard.mainType = fixSpecialCharacters(
+            normalizedCard.mainType
+          )
           // Normaliser aussi le type principal
-          normalizedCard.mainType = normalizeCardType(normalizedCard.mainType);
+          normalizedCard.mainType = normalizeCardType(normalizedCard.mainType)
         }
-        
+
         if (Array.isArray(normalizedCard.subTypes)) {
-          normalizedCard.subTypes = normalizedCard.subTypes.map(fixSpecialCharacters);
+          normalizedCard.subTypes =
+            normalizedCard.subTypes.map(fixSpecialCharacters)
         }
-        
+
         // Ensure required properties exist
         if (!normalizedCard.id) {
-          normalizedCard.id = `unknown-${Math.random().toString(36).substring(2, 10)}`;
+          normalizedCard.id = `unknown-${Math.random().toString(36).substring(2, 10)}`
         }
-        
+
         if (!normalizedCard.name) {
-          normalizedCard.name = 'Carte sans nom';
+          normalizedCard.name = 'Carte sans nom'
         }
-        
+
         if (!normalizedCard.mainType) {
-          normalizedCard.mainType = 'Type inconnu';
+          normalizedCard.mainType = 'Type inconnu'
         }
-        
+
         if (!Array.isArray(normalizedCard.subTypes)) {
-          normalizedCard.subTypes = [];
+          normalizedCard.subTypes = []
         }
-        
+
         if (!normalizedCard.rarity) {
-          normalizedCard.rarity = 'Commune';
+          normalizedCard.rarity = 'Commune'
         }
-        
+
         // Ensure extension property is valid
-        if (!normalizedCard.extension || typeof normalizedCard.extension !== 'object') {
+        if (
+          !normalizedCard.extension ||
+          typeof normalizedCard.extension !== 'object'
+        ) {
           normalizedCard.extension = {
-            name: extension.charAt(0).toUpperCase() + extension.slice(1).replace(/-/g, ' '),
-            id: extension
-          };
+            name:
+              extension.charAt(0).toUpperCase() +
+              extension.slice(1).replace(/-/g, ' '),
+            id: extension,
+          }
         } else if (!normalizedCard.extension.name) {
-          normalizedCard.extension.name = extension.charAt(0).toUpperCase() + extension.slice(1).replace(/-/g, ' ');
+          normalizedCard.extension.name =
+            extension.charAt(0).toUpperCase() +
+            extension.slice(1).replace(/-/g, ' ')
         }
-        
-        return normalizedCard;
-      });
-    
-    console.log(`✅ Extension ${extension}: ${validCards.length}/${cards.length} cartes valides chargées`);
-    return validCards;
+
+        return normalizedCard
+      })
+
+    console.log(
+      `✅ Extension ${extension}: ${validCards.length}/${cards.length} cartes valides chargées`
+    )
+    return validCards
   } catch (error) {
-    console.error(`❌ Erreur lors du chargement des cartes pour l'extension ${extension}:`, error);
-    return [];
+    console.error(
+      `❌ Erreur lors du chargement des cartes pour l'extension ${extension}:`,
+      error
+    )
+    return []
   }
 }
 
 export async function loadAllCards(): Promise<Card[]> {
   try {
-    console.log('🚀 DEBUG cardLoader - Chargement de toutes les cartes...');
-    
+    console.log('🚀 DEBUG cardLoader - Chargement de toutes les cartes...')
+
     // Vérifier si les cartes sont en cache
-    const cachedCards = await loadFromCache();
+    const cachedCards = await loadFromCache()
     if (cachedCards) {
-      console.log(`📦 DEBUG cardLoader - ${cachedCards.length} cartes chargées depuis le cache`);
+      console.log(
+        `📦 DEBUG cardLoader - ${cachedCards.length} cartes chargées depuis le cache`
+      )
       if (cachedCards.length > 0) {
-        console.log('📄 DEBUG cardLoader - Exemple de carte en cache:', JSON.stringify(cachedCards[0], null, 2));
+        console.log(
+          '📄 DEBUG cardLoader - Exemple de carte en cache:',
+          JSON.stringify(cachedCards[0], null, 2)
+        )
       }
-      return cachedCards;
+      return cachedCards
     }
-    
+
     // Charger les cartes de chaque extension
-    const allCards: Card[] = [];
-    
+    const allCards: Card[] = []
+
     for (const extension of EXTENSION_FILES) {
-      const cards = await loadExtensionCards(extension);
-      allCards.push(...cards);
+      const cards = await loadExtensionCards(extension)
+      allCards.push(...cards)
     }
-    
-    console.log(`📊 DEBUG cardLoader - ${allCards.length} cartes chargées au total`);
-    
+
+    console.log(
+      `📊 DEBUG cardLoader - ${allCards.length} cartes chargées au total`
+    )
+
     if (allCards.length > 0) {
-      console.log('📄 DEBUG cardLoader - Exemple de carte chargée:', JSON.stringify(allCards[0], null, 2));
+      console.log(
+        '📄 DEBUG cardLoader - Exemple de carte chargée:',
+        JSON.stringify(allCards[0], null, 2)
+      )
     }
-    
+
     // Mettre en cache pour les prochains chargements
-    saveToCache(allCards);
-    
-    return allCards;
+    saveToCache(allCards)
+
+    return allCards
   } catch (error) {
-    console.error('❌ DEBUG cardLoader - Erreur lors du chargement des cartes:', error);
-    throw error;
+    console.error(
+      '❌ DEBUG cardLoader - Erreur lors du chargement des cartes:',
+      error
+    )
+    throw error
   }
 }
 
-export async function loadCardById(extension: string, cardId: string): Promise<Card | null> {
+export async function loadCardById(
+  extension: string,
+  cardId: string
+): Promise<Card | null> {
   try {
     const cards = await loadExtensionCards(extension)
-    return cards.find(card => card.id === cardId) || null
+    return cards.find((card) => card.id === cardId) || null
   } catch (error) {
-    console.error(`Error loading card ${cardId} from extension ${extension}:`, error)
+    console.error(
+      `Error loading card ${cardId} from extension ${extension}:`,
+      error
+    )
     return null
   }
 }
@@ -320,63 +379,70 @@ export async function loadCardById(extension: string, cardId: string): Promise<C
 // Fonction utilitaire pour tester le chargement d'un seul fichier JSON
 export async function testJsonLoading(extension: string): Promise<any> {
   try {
-    console.log(`🧪 Test de chargement pour le fichier ${extension}.json...`);
-    
-    const filePath = `/data/${extension}.json`;
-    console.log(`📄 Chemin du fichier: ${filePath}`);
-    
-    const response = await fetch(filePath);
-    console.log(`📡 Statut de la réponse: ${response.status} ${response.statusText}`);
-    
+    console.log(`🧪 Test de chargement pour le fichier ${extension}.json...`)
+
+    const filePath = `/data/${extension}.json`
+    console.log(`📄 Chemin du fichier: ${filePath}`)
+
+    const response = await fetch(filePath)
+    console.log(
+      `📡 Statut de la réponse: ${response.status} ${response.statusText}`
+    )
+
     if (!response.ok) {
-      console.error(`❌ Échec HTTP ${response.status} lors du chargement du fichier ${extension}`);
+      console.error(
+        `❌ Échec HTTP ${response.status} lors du chargement du fichier ${extension}`
+      )
       return {
         success: false,
         status: response.status,
-        statusText: response.statusText
-      };
+        statusText: response.statusText,
+      }
     }
-    
-    const text = await response.text();
-    console.log(`📝 Taille du texte: ${text.length} caractères`);
-    console.log(`📄 Premiers caractères: "${text.substring(0, 50)}..."`);
-    
+
+    const text = await response.text()
+    console.log(`📝 Taille du texte: ${text.length} caractères`)
+    console.log(`📄 Premiers caractères: "${text.substring(0, 50)}..."`)
+
     try {
-      const data = JSON.parse(text);
-      
+      const data = JSON.parse(text)
+
       if (Array.isArray(data)) {
-        console.log(`✅ Fichier JSON valide avec ${data.length} éléments`);
-        
+        console.log(`✅ Fichier JSON valide avec ${data.length} éléments`)
+
         if (data.length > 0) {
-          console.log(`📊 Premier élément:`, data[0]);
+          console.log(`📊 Premier élément:`, data[0])
         }
-        
+
         return {
           success: true,
           items: data.length,
-          sample: data.slice(0, 3)
-        };
+          sample: data.slice(0, 3),
+        }
       } else {
-        console.warn(`⚠️ Le fichier JSON ne contient pas un tableau:`, typeof data);
+        console.warn(
+          `⚠️ Le fichier JSON ne contient pas un tableau:`,
+          typeof data
+        )
         return {
           success: false,
           type: typeof data,
-          data
-        };
+          data,
+        }
       }
     } catch (parseError) {
-      console.error(`❌ Erreur lors du parsing JSON:`, parseError);
+      console.error(`❌ Erreur lors du parsing JSON:`, parseError)
       return {
         success: false,
         error: parseError.message,
-        textSample: text.substring(0, 100)
-      };
+        textSample: text.substring(0, 100),
+      }
     }
   } catch (error) {
-    console.error(`❌ Erreur lors du test de chargement:`, error);
+    console.error(`❌ Erreur lors du test de chargement:`, error)
     return {
       success: false,
-      error: error.message
-    };
+      error: error.message,
+    }
   }
-} 
+}

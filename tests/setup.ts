@@ -8,12 +8,12 @@ config.global.mocks = {
   $route: {
     params: {},
     query: {},
-    path: '/'
+    path: '/',
   },
   $router: {
     push: vi.fn(),
-    replace: vi.fn()
-  }
+    replace: vi.fn(),
+  },
 }
 
 // Mock de ResizeObserver
@@ -34,26 +34,26 @@ class IntersectionObserverMock {
 beforeEach(() => {
   // Reset des mocks
   vi.clearAllMocks()
-  
+
   // Configuration de Pinia
   setActivePinia(createPinia())
-  
+
   // Mock des APIs du navigateur
   global.ResizeObserver = ResizeObserverMock
   global.IntersectionObserver = IntersectionObserverMock
-  
+
   // Mock de localStorage
   const localStorageMock = {
     getItem: vi.fn(),
     setItem: vi.fn(),
     removeItem: vi.fn(),
-    clear: vi.fn()
+    clear: vi.fn(),
   }
   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-  
+
   // Mock de fetch
   global.fetch = vi.fn()
-  
+
   // Mock de Image
   global.Image = class {
     onload: () => void = () => {}
@@ -66,4 +66,4 @@ beforeEach(() => {
 afterEach(() => {
   vi.clearAllTimers()
   document.body.innerHTML = ''
-}) 
+})

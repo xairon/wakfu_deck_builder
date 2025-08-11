@@ -3,36 +3,30 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
-import { useSupabaseStore } from './stores/supabaseStore'
 import { useCardStore } from './stores/cardStore'
+import { loadAllCards } from './services/cardLoader'
 
 const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-// Initialiser la session avant de monter l'application
-const supabaseStore = useSupabaseStore()
+async function initializeApp() {
+  const cardStore = useCardStore()
 
-// Attendre l'initialisation de la session avant de monter l'application
-supabaseStore.initializeSession()
-  .then(({ user }) => {
-    console.log('Session initialisée', { user: user?.email || 'Aucun utilisateur connecté' })
-    
-    // Monter l'application une fois la session initialisée
+  try {
+    // Initialiser (cartes + collection locale)
+    await cardStore.initialize()
+
+    // Monter l'application
     app.mount('#app')
-    
-    // Initialiser le cardStore après le montage
-    const cardStore = useCardStore()
+
+    // Mettre en place la sauvegarde automatique locale
     cardStore.setupAutoSync()
-  })
-  .catch(error => {
-    console.error('Erreur lors de l\'initialisation de la session', error)
-    
-    // Monter l'application même en cas d'erreur
-    app.mount('#app')
-    
-    // Initialiser le cardStore après le montage
-    const cardStore = useCardStore()
-    cardStore.setupAutoSync()
-  }) 
+  } catch (error) {
+    console.error("Erreur critique lors de l'initialisation de l'application:", error)
+    // Optionnel: afficher un message d'erreur à l'utilisateur
+  }
+}
+
+initializeApp()

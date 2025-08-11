@@ -1,8 +1,5 @@
-/**
- * Composant d'affichage d'une carte
- * Gère l'affichage, le chargement et les interactions avec une carte
- * @component
- */
+/** * Composant d'affichage d'une carte * Gère l'affichage, le chargement et les
+interactions avec une carte * @component */
 <template>
   <div
     ref="cardRef"
@@ -10,13 +7,13 @@
     :class="{
       'opacity-50': !props.owned,
       'hover:opacity-100 hover:scale-105 cursor-pointer': props.interactive,
-      [`card-${props.size || 'md'}`]: true
+      [`card-${props.size || 'md'}`]: true,
     }"
     @click="handleClick"
   >
     <figure class="relative pt-4 px-4">
-      <img 
-        :src="imageUrl" 
+      <img
+        :src="imageUrl"
         :alt="card.name"
         class="rounded-lg w-full h-auto object-contain transition-all duration-500"
         :class="{ 'group-hover:opacity-0': isHero }"
@@ -25,14 +22,14 @@
       />
 
       <!-- Badges de quantité -->
-      <div 
-        v-if="props.quantity > 0" 
+      <div
+        v-if="props.quantity > 0"
         class="absolute top-2 right-2 badge badge-primary"
       >
         x{{ props.quantity }}
       </div>
-      <div 
-        v-if="props.foilQuantity > 0" 
+      <div
+        v-if="props.foilQuantity > 0"
         class="absolute top-8 right-2 badge badge-secondary"
       >
         ✨ x{{ props.foilQuantity }}
@@ -50,9 +47,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Card, CardElement } from '@/types/cards'
-import { ELEMENT_EMOJIS } from '@/constants'
+import { ELEMENT_EMOJIS } from '@/config/constants'
 import { RARITY_COLORS, TYPE_COLORS } from '@/config/theme'
-import { useCollectionStore } from '@/stores/collection'
+import { useCardStore } from '@/stores/cardStore'
 
 // Props du composant
 const props = defineProps<{
@@ -73,15 +70,12 @@ const emit = defineEmits<{
   (e: 'imageError'): void
 }>()
 
-const store = useCollectionStore()
+const cardStore = useCardStore()
 
 const cardInCollection = computed(() => {
-  const normalId = props.card.id
-  const foilId = `${props.card.id}_foil`
-  return {
-    normal: store.cards[normalId]?.quantity || 0,
-    foil: store.cards[foilId]?.quantity || 0
-  }
+  const normal = cardStore.getCardQuantity(props.card.id) || 0
+  const foil = cardStore.getFoilCardQuantity(props.card.id) || 0
+  return { normal, foil }
 })
 
 // État
@@ -96,26 +90,37 @@ const imageUrl = computed(() => {
     // Construire le chemin de l'image
     const cardId = props.card.id
     if (props.card.mainType === 'Héros') {
-      return `/images/cards/${cardId}_recto.png`
+      return `/images/cards/${cardId}_recto.webp`
     }
-    return `/images/cards/${cardId}.png`
+    return `/images/cards/${cardId}.webp`
   } catch (error) {
-    console.error('❌ Erreur lors de la construction de l\'URL:', error)
-    return '/images/cards/default.png'
+    console.error("❌ Erreur lors de la construction de l'URL:", error)
+    return '/images/cards/default.webp'
   }
+})
+
+// Obtenir l'élément de la carte
+const cardElement = computed(() => {
+  return (
+    props.card.stats?.niveau?.element ||
+    props.card.stats?.force?.element ||
+    'Neutre'
+  )
 })
 
 const cardClasses = computed(() => ({
   'hover:scale-105': !isLoading.value && !hasError.value && props.interactive,
   'cursor-pointer': props.interactive,
   'opacity-50': !props.owned,
-  'flip': isFlipped.value,
-  [`card-${props.size || 'md'}`]: true
+  flip: isFlipped.value,
+  [`card-${props.size || 'md'}`]: true,
 }))
 
 const cardStyle = computed(() => ({
-  transform: isHero.value ? `rotateY(${isFlipped.value ? '180deg' : '0deg'})` : 'none',
-  transition: 'transform 0.6s'
+  transform: isHero.value
+    ? `rotateY(${isFlipped.value ? '180deg' : '0deg'})`
+    : 'none',
+  transition: 'transform 0.6s',
 }))
 
 const typeClass = computed(() => {
@@ -171,7 +176,7 @@ function handleImageLoad() {
 }
 
 function handleImageError() {
-  console.error('❌ Erreur de chargement de l\'image:', props.card.name)
+  console.error("❌ Erreur de chargement de l'image:", props.card.name)
   if (retryCount.value < MAX_RETRIES) {
     retryCount.value++
     // Réessayer après un délai
@@ -190,7 +195,7 @@ function handleImageError() {
 
 function handleMouseMove(event: MouseEvent) {
   if (!isHero.value) return
-  
+
   const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
   const x = event.clientX - rect.left
   isFlipped.value = x > rect.width / 2
@@ -207,10 +212,11 @@ function getElementEmoji(element: CardElement): string {
 
 async function updateQuantity(isFoil: boolean, increment: boolean) {
   try {
+    // Ici nous manipulons la collection via le cardStore pour rester cohérent
     if (increment) {
-      await store.addCard(props.card.id, 1, isFoil)
+      await cardStore.addToCollection(props.card, 1, isFoil)
     } else {
-      await store.removeCard(props.card.id, 1, isFoil)
+      await cardStore.removeFromCollection(props.card, 1, isFoil)
     }
   } catch (error) {
     console.error('Erreur lors de la mise à jour de la quantité:', error)
@@ -221,7 +227,9 @@ async function updateQuantity(isFoil: boolean, increment: boolean) {
 <style scoped>
 .card-container {
   perspective: 1000px;
-  transition: transform 0.3s ease-in-out, z-index 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    z-index 0.3s ease-in-out;
 }
 
 .card {
@@ -257,4 +265,4 @@ async function updateQuantity(isFoil: boolean, increment: boolean) {
 .card-lg {
   @apply w-64;
 }
-</style> 
+</style>
