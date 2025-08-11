@@ -27,26 +27,26 @@
 
           <!-- Filtres de recherche pour la collection -->
           <div class="flex flex-col gap-4">
-            <CollectionFilters
-              v-model:search-query="searchQuery"
-              v-model:selected-extension="selectedExtension"
-              v-model:hide-not-owned="hideNotOwned"
-              v-model:selected-sort-field="selectedSortField"
-              v-model:is-descending="isDescending"
-              v-model:selected-main-type="selectedMainType"
-              v-model:selected-sub-type="selectedSubType"
-              v-model:selected-rarity="selectedRarity"
-              v-model:selected-element="selectedElement"
-              v-model:min-level="minLevel"
-              v-model:max-level="maxLevel"
+          <CollectionFilters
+            v-model:search-query="searchQuery"
+            v-model:selected-extension="selectedExtension"
+            v-model:hide-not-owned="hideNotOwned"
+            v-model:selected-sort-field="selectedSortField"
+            v-model:is-descending="isDescending"
+            v-model:selected-main-type="selectedMainType"
+            v-model:selected-sub-type="selectedSubType"
+            v-model:selected-rarity="selectedRarity"
+            v-model:selected-element="selectedElement"
+            v-model:min-level="minLevel"
+            v-model:max-level="maxLevel"
               v-model:min-cost="minCost"
               v-model:max-cost="maxCost"
-              :extensions="extensions"
-              :main-types="mainTypes"
-              :sub-types="subTypes"
-              :rarities="rarities"
-              :elements="elements"
-            />
+            :extensions="extensions"
+            :main-types="mainTypes"
+            :sub-types="subTypes"
+            :rarities="rarities"
+            :elements="elements"
+          />
             
             <!-- Bouton de réinitialisation des filtres -->
             <div class="flex justify-end">
@@ -768,7 +768,7 @@
       </div>
       <form method="dialog" class="modal-backdrop">
         <button>close</button>
-      </form>
+          </form>
     </dialog>
 
 

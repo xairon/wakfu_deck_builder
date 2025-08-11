@@ -1,6 +1,6 @@
-# Wakfu Deck Builder - Mode Local
+# Wakfu Deck Builder
 
-Une application de deck builder pour le jeu de cartes Wakfu TCG, fonctionnant entièrement en local sans authentification.
+Application locale (web et desktop) de construction de decks et gestion de collection pour Wakfu TCG. Fonctionne 100% en local (pas d'auth, pas de backend distant).
 
 ## 🚀 Fonctionnalités
 
@@ -21,7 +21,7 @@ Une application de deck builder pour le jeu de cartes Wakfu TCG, fonctionnant en
 - **Vite** pour le build et le développement
 - **Vitest** pour les tests
 
-## 📦 Installation
+## 📦 Installation rapide
 
 1. **Cloner le projet**
    ```bash
@@ -34,22 +34,27 @@ Une application de deck builder pour le jeu de cartes Wakfu TCG, fonctionnant en
    npm install
    ```
 
-3. **Lancer en mode développement**
+3. **Lancer en mode développement (Web)**
    ```bash
    npm run dev
+   # Ouvre sur http://localhost:3000
    ```
 
-4. **Accéder à l'application**
-   Ouvrez votre navigateur sur `http://localhost:5173`
+4. **Lancer la version Desktop (Tauri)**
+   ```bash
+   npm run tauri:dev
+   ```
 
-## 🏗 Scripts Disponibles
+## 🏗 Scripts
 
 - `npm run dev` - Lance le serveur de développement
 - `npm run build` - Build pour la production
-- `npm run preview` - Prévisualise le build de production
+- `npm run serve` - Prévisualise le build de production
 - `npm run test:unit` - Lance les tests unitaires
 - `npm run lint` - Vérifie le code avec ESLint
 - `npm run type-check` - Vérifie les types TypeScript
+- `npm run tauri:dev` - Lance l'appli Desktop en dev
+- `npm run tauri:build` - Construit l'exécutable (.exe / .msi)
 
 ## 📁 Structure du Projet
 
@@ -74,14 +79,14 @@ src/
 └── router/              # Configuration du routeur
 ```
 
-## 💾 Stockage des Données
+## 💾 Données & Persistance
 
 L'application utilise **localStorage** pour sauvegarder :
 - Votre collection de cartes
 - Vos decks créés
 - Les paramètres de l'application
 
-### Export/Import
+### Export/Import (collection, decks, paramètres)
 
 Vous pouvez exporter et importer vos données :
 
@@ -95,7 +100,7 @@ const exportedData = localStorageService.export()
 localStorageService.import(exportedData)
 ```
 
-## 🎮 Utilisation
+## 🎮 Utilisation rapide
 
 ### Collection
 1. Naviguez vers la page "Collection"
@@ -103,12 +108,22 @@ localStorageService.import(exportedData)
 3. Cliquez sur une carte pour l'ajouter à votre collection
 4. Ajustez les quantités normale et foil
 
-### Construction de Deck
+### Deck Builder
 1. Allez dans "Deck Builder"
 2. Sélectionnez un héros et des cartes havre-sac
 3. Ajoutez des cartes depuis votre collection
 4. Respectez les règles du jeu (15-40 cartes, max 3 copies, etc.)
-5. Sauvegardez votre deck
+5. Sauvegardez votre deck (stocké en local)
+
+### Import de deck (format)
+Dans la page `Decks`, bouton `Importer`.
+Format attendu (exemple) dans le placeholder du champ. Tolérant à la casse/accents/espaces.
+
+Règles de validation lors de l'import:
+- Max 48 cartes (hors Héros/Havre-sac)
+- Max 3 exemplaires par carte
+- 1 Héros, 1 Havre-sac
+- Erreurs et avertissements détaillés affichés
 
 ## 🔧 Configuration
 
@@ -116,8 +131,13 @@ localStorageService.import(exportedData)
 L'application supporte plusieurs thèmes DaisyUI. Vous pouvez changer le thème dans les paramètres.
 
 ### Cartes
-Les données des cartes sont chargées automatiquement depuis le dossier `data/`. 
-Pour ajouter de nouvelles cartes, placez les fichiers JSON dans la structure appropriée.
+Les données de cartes sont intégrées au projet et chargées automatiquement. Les images sont optimisées au build.
+
+### Desktop (.exe)
+Les exécutables signés localement peuvent être détectés par certains antivirus. Solutions:
+- Exclure le dossier `src-tauri/target` dans Windows Defender
+- Construire depuis vos sources locales
+- Pour distribution publique, signature de code recommandée
 
 ## 🧪 Tests
 
@@ -151,13 +171,12 @@ Pour améliorer les performances :
 2. Redémarrez l'application
 3. Vérifiez la taille de votre collection
 
-## 📝 TODO
+## 📦 Releases (binaries)
 
-- [ ] Ajout de nouvelles extensions de cartes
-- [ ] Mode tournoi
-- [ ] Statistiques de deck
-- [ ] Import/export en formats standards
-- [ ] Mode hors ligne complet
+Des exécutables Windows sont générés via Tauri:
+- `.exe` (NSIS) et `.msi` (Wix) dans `src-tauri/target/release/bundle/`
+
+Si vous publiez sur GitHub, uploadez ces fichiers dans l'onglet Releases pour un téléchargement simple.
 
 ## 🤝 Contribution
 
