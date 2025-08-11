@@ -1,5 +1,30 @@
 <template>
   <div class="min-h-screen bg-base-100 text-base-content">
+    <!-- Debug overlay pour diagnostiquer les problèmes de production -->
+    <div v-if="showDebugOverlay" class="fixed top-0 left-0 z-50 bg-black bg-opacity-80 text-white p-4 max-w-md">
+      <h3 class="font-bold mb-2">Debug Info</h3>
+      <div class="text-xs space-y-1">
+        <div>Cards loaded: {{ cardStore.cards.length }}</div>
+        <div>Initialized: {{ cardStore.isInitialized }}</div>
+        <div>Initializing: {{ cardStore.isInitializing }}</div>
+        <div>Error: {{ cardStore.error || 'None' }}</div>
+        <div>Route: {{ $route.path }}</div>
+        <div>Env: {{ envMode }}</div>
+        <div>Loading: {{ isLoading }}</div>
+        <div>Attempt: {{ loadingAttempt }}</div>
+      </div>
+      <button @click="showDebugOverlay = false" class="mt-2 px-2 py-1 bg-red-600 text-white text-xs">Fermer</button>
+    </div>
+    
+    <!-- Toggle debug button -->
+    <button 
+      @click="showDebugOverlay = !showDebugOverlay" 
+      class="fixed bottom-4 right-4 z-40 bg-gray-600 text-white p-2 rounded opacity-50 hover:opacity-100"
+      title="Debug"
+    >
+      🐛
+    </button>
+
     <!-- Écran de chargement -->
     <div
       v-if="isLoading"
@@ -118,6 +143,8 @@ const router = useRouter()
 const loadingAttempt = ref(1)
 const isLoading = computed(() => cardStore.loading)
 const error = computed(() => cardStore.error)
+const showDebugOverlay = ref(false)
+const envMode = import.meta.env.MODE
 
 // Mode local: états simplifiés
 const isSyncing = computed(() => cardStore.isSyncing)

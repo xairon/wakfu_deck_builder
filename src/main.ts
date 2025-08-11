@@ -4,7 +4,7 @@ import App from './App.vue'
 import router from './router'
 import './assets/main.css'
 import { useCardStore } from './stores/cardStore'
-import { loadAllCards } from './services/cardLoader'
+// import { loadAllCards } from './services/cardLoader'
 
 const app = createApp(App)
 const pinia = createPinia()

@@ -158,8 +158,34 @@ async function loadExtensionCards(extension: string): Promise<Card[]> {
     console.log(
       `🔄 Tentative de chargement des cartes pour l'extension "${extension}"...`
     )
+    // Essayer plusieurs chemins pour compatibilité Web/Tauri
+    const candidates = [
+      `/data/${extension}.json`,
+      `data/${extension}.json`,
+      `./data/${extension}.json`,
+    ]
 
-    const response = await fetch(`/data/${extension}.json`)
+    let response: Response | null = null
+    for (const url of candidates) {
+      try {
+        response = await fetch(url)
+        if (response.ok) {
+          break
+        }
+      } catch (_) {
+        // essayer l'URL suivante
+      }
+    }
+
+    if (!response || !response.ok) {
+      console.error(
+        `❌ Échec HTTP lors du chargement de l'extension ${extension} avec chemins:`,
+        candidates
+      )
+      throw new Error(
+        `Échec du chargement des cartes pour l'extension ${extension}`
+      )
+    }
     if (!response.ok) {
       console.error(
         `❌ Échec HTTP ${response.status} lors du chargement de l'extension ${extension}`

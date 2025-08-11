@@ -15,7 +15,7 @@ export const useCardStore = defineStore('cards', () => {
   // État
   const cards = ref<Card[]>([])
   const collection = ref<Record<string, { normal: number; foil: number }>>({})
-  const loading = ref(false)
+  const loading = ref(true)
   const error = ref<string | null>(null)
   const isInitializing = ref(false)
   const isInitialized = ref(false)
@@ -226,7 +226,9 @@ export const useCardStore = defineStore('cards', () => {
   // Actions
   async function initialize() {
     try {
+      loading.value = true
       isInitializing.value = true
+      error.value = null
       console.log('🚀 Initialisation du cardStore...')
 
       // Vérifier si les données sont déjà chargées
@@ -292,9 +294,12 @@ export const useCardStore = defineStore('cards', () => {
 
       // Marquer comme initialisé
       isInitialized.value = true
+      loading.value = false
       console.log('✅ CardStore initialisé avec succès')
     } catch (error) {
       console.error("❌ Erreur lors de l'initialisation du cardStore:", error)
+      error.value = `Erreur d'initialisation: ${error.message}`
+      loading.value = false
       throw error
     } finally {
       isInitializing.value = false
@@ -576,6 +581,7 @@ export const useCardStore = defineStore('cards', () => {
     // État
     cards,
     collection,
+    loading,
     isInitializing,
     isInitialized,
     error,
