@@ -19,10 +19,14 @@
     "parse-cards": "tsx scripts/parseCardsV2.ts",
     "analyze-types": "tsx scripts/analyzeTypes.ts",
     "migrate-images": "tsx scripts/migrateImages.ts",
-    "download-images": "tsx scripts/downloadMissingImages.ts"
+    "download-images": "tsx scripts/downloadMissingImages.ts",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
+    "@tauri-apps/cli": "^2.7.1",
     "@types/express": "^5.0.0",
     "@types/multer": "^1.4.12",
     "@types/sharp": "^0.31.1",
