@@ -10,8 +10,9 @@ import DeckDetailView from '@/views/DeckDetailView.vue'
 // Mode local: rien à initialiser côté session
 let isSessionInitialized = true
 
+const base = typeof import.meta.env.BASE_URL === 'string' ? import.meta.env.BASE_URL : '/'
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(base),
   routes: [
     {
       path: '/',
