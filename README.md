@@ -178,6 +178,17 @@ Des exécutables Windows sont générés via Tauri:
 
 Si vous publiez sur GitHub, uploadez ces fichiers dans l'onglet Releases pour un téléchargement simple.
 
+### Publication automatique
+Un workflow GitHub Actions publie automatiquement une release avec les binaires lors d'un tag `v*`.
+
+1. Mettez à jour la version si besoin.
+2. Créez un tag et poussez-le:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+3. La release sera créée avec les artefacts (.exe/.msi).
+
 ## 🤝 Contribution
 
 1. Fork le projet
