@@ -3,23 +3,33 @@
     <!-- Recherche et extension -->
     <div class="flex flex-wrap gap-4 items-center">
       <div class="form-control flex-1">
-        <input 
-          type="text" 
+        <input
+          type="text"
           :value="searchQuery"
-          @input="$emit('update:searchQuery', ($event.target as HTMLInputElement).value)"
-          placeholder="Rechercher une carte..." 
+          @input="
+            $emit(
+              'update:searchQuery',
+              ($event.target as HTMLInputElement).value
+            )
+          "
+          placeholder="Rechercher une carte..."
           class="input input-bordered w-full"
         />
       </div>
-      <select 
+      <select
         :value="selectedExtension"
-        @change="$emit('update:selectedExtension', ($event.target as HTMLSelectElement).value)"
+        @change="
+          $emit(
+            'update:selectedExtension',
+            ($event.target as HTMLSelectElement).value
+          )
+        "
         class="select select-bordered"
       >
         <option value="">Toutes les extensions</option>
-        <option 
-          v-for="extension in extensions" 
-          :key="extension" 
+        <option
+          v-for="extension in extensions"
+          :key="extension"
           :value="extension"
         >
           {{ extension }}
@@ -30,65 +40,69 @@
     <!-- Filtres avancés -->
     <div class="flex flex-wrap gap-4">
       <!-- Type principal -->
-      <select 
+      <select
         :value="selectedMainType"
-        @change="$emit('update:selectedMainType', ($event.target as HTMLSelectElement).value)"
+        @change="
+          $emit(
+            'update:selectedMainType',
+            ($event.target as HTMLSelectElement).value
+          )
+        "
         class="select select-bordered"
       >
         <option value="">Tous les types</option>
-        <option 
-          v-for="type in mainTypes" 
-          :key="type" 
-          :value="type"
-        >
+        <option v-for="type in mainTypes" :key="type" :value="type">
           {{ type }}
         </option>
       </select>
 
       <!-- Sous-type -->
-      <select 
+      <select
         :value="selectedSubType"
-        @change="$emit('update:selectedSubType', ($event.target as HTMLSelectElement).value)"
+        @change="
+          $emit(
+            'update:selectedSubType',
+            ($event.target as HTMLSelectElement).value
+          )
+        "
         class="select select-bordered"
       >
         <option value="">Tous les sous-types</option>
-        <option 
-          v-for="type in subTypes" 
-          :key="type" 
-          :value="type"
-        >
+        <option v-for="type in subTypes" :key="type" :value="type">
           {{ type }}
         </option>
       </select>
 
       <!-- Rareté -->
-      <select 
+      <select
         :value="selectedRarity"
-        @change="$emit('update:selectedRarity', ($event.target as HTMLSelectElement).value)"
+        @change="
+          $emit(
+            'update:selectedRarity',
+            ($event.target as HTMLSelectElement).value
+          )
+        "
         class="select select-bordered"
       >
         <option value="">Toutes les raretés</option>
-        <option 
-          v-for="rarity in rarities" 
-          :key="rarity" 
-          :value="rarity"
-        >
+        <option v-for="rarity in rarities" :key="rarity" :value="rarity">
           {{ rarity }}
         </option>
       </select>
 
       <!-- Élément -->
-      <select 
+      <select
         :value="selectedElement"
-        @change="$emit('update:selectedElement', ($event.target as HTMLSelectElement).value)"
+        @change="
+          $emit(
+            'update:selectedElement',
+            ($event.target as HTMLSelectElement).value
+          )
+        "
         class="select select-bordered"
       >
         <option value="">Tous les éléments</option>
-        <option 
-          v-for="element in elements" 
-          :key="element" 
-          :value="element"
-        >
+        <option v-for="element in elements" :key="element" :value="element">
           {{ element }}
         </option>
       </select>
@@ -96,20 +110,34 @@
       <!-- Niveau -->
       <div class="flex items-center gap-2">
         <span class="text-sm">Niveau :</span>
-        <input 
-          type="number" 
+        <input
+          type="number"
           :value="minLevel"
-          @input="$emit('update:minLevel', ($event.target as HTMLInputElement).value ? parseInt(($event.target as HTMLInputElement).value) : null)"
-          placeholder="Min" 
+          @input="
+            $emit(
+              'update:minLevel',
+              ($event.target as HTMLInputElement).value
+                ? parseInt(($event.target as HTMLInputElement).value)
+                : null
+            )
+          "
+          placeholder="Min"
           class="input input-bordered w-20"
           min="0"
         />
         <span>-</span>
-        <input 
-          type="number" 
+        <input
+          type="number"
           :value="maxLevel"
-          @input="$emit('update:maxLevel', ($event.target as HTMLInputElement).value ? parseInt(($event.target as HTMLInputElement).value) : null)"
-          placeholder="Max" 
+          @input="
+            $emit(
+              'update:maxLevel',
+              ($event.target as HTMLInputElement).value
+                ? parseInt(($event.target as HTMLInputElement).value)
+                : null
+            )
+          "
+          placeholder="Max"
           class="input input-bordered w-20"
           min="0"
         />
@@ -118,8 +146,8 @@
 
     <!-- Mots-clés -->
     <div class="flex flex-wrap gap-2">
-      <div 
-        v-for="keyword in availableKeywords" 
+      <div
+        v-for="keyword in availableKeywords"
         :key="keyword"
         class="badge badge-outline cursor-pointer"
         :class="{ 'badge-primary': selectedKeywords.includes(keyword) }"
@@ -148,7 +176,7 @@ defineProps<{
   rarities: string[]
   elements: string[]
   availableKeywords: string[]
-}>();
+}>()
 
 const emit = defineEmits<{
   (e: 'update:searchQuery', value: string): void
@@ -160,18 +188,18 @@ const emit = defineEmits<{
   (e: 'update:minLevel', value: number | null): void
   (e: 'update:maxLevel', value: number | null): void
   (e: 'update:selectedKeywords', value: string[]): void
-}>();
+}>()
 
 function toggleKeyword(keyword: string) {
-  const newSelectedKeywords = [...props.selectedKeywords];
-  const index = newSelectedKeywords.indexOf(keyword);
-  
+  const newSelectedKeywords = [...props.selectedKeywords]
+  const index = newSelectedKeywords.indexOf(keyword)
+
   if (index === -1) {
-    newSelectedKeywords.push(keyword);
+    newSelectedKeywords.push(keyword)
   } else {
-    newSelectedKeywords.splice(index, 1);
+    newSelectedKeywords.splice(index, 1)
   }
-  
-  emit('update:selectedKeywords', newSelectedKeywords);
+
+  emit('update:selectedKeywords', newSelectedKeywords)
 }
-</script> 
+</script>

@@ -1,120 +1,178 @@
-# Wakfu Deck Builder
+# Wakfu Deck Builder - Mode Local
 
-Application web pour créer et gérer des decks de cartes Wakfu TCG.
+Une application de deck builder pour le jeu de cartes Wakfu TCG, fonctionnant entièrement en local sans authentification.
 
 ## 🚀 Fonctionnalités
 
-- 📚 Gestion de collection de cartes (normales et foil)
-- 🎴 Construction de decks
-- 📊 Statistiques et analyses
-- 🔍 Recherche avancée
-- 📱 Interface responsive
+- **📚 Collection de cartes** : Gérez votre collection de cartes Wakfu
+- **🃏 Construction de decks** : Créez et modifiez vos decks
+- **🔍 Recherche avancée** : Filtrez les cartes par nom, extension, élément, etc.
+- **💾 Stockage local** : Toutes vos données sont sauvegardées localement
+- **📱 Interface responsive** : Fonctionne sur desktop et mobile
+- **🎨 Interface moderne** : Design avec Tailwind CSS et DaisyUI
 
-## 🛠️ Technologies
+## 🛠 Technologies Utilisées
 
-- Vue.js 3 avec Composition API
-- TypeScript
-- Vite
-- Pinia
-- Vue Router
-- TailwindCSS
-- DaisyUI
+- **Vue 3** avec Composition API
+- **TypeScript** pour la sécurité des types
+- **Pinia** pour la gestion d'état
+- **Vue Router** pour la navigation
+- **Tailwind CSS** + **DaisyUI** pour l'interface
+- **Vite** pour le build et le développement
+- **Vitest** pour les tests
 
-## 📁 Structure du projet
+## 📦 Installation
+
+1. **Cloner le projet**
+   ```bash
+   git clone <repository-url>
+   cd wakfu_deck_builder
+   ```
+
+2. **Installer les dépendances**
+   ```bash
+   npm install
+   ```
+
+3. **Lancer en mode développement**
+   ```bash
+   npm run dev
+   ```
+
+4. **Accéder à l'application**
+   Ouvrez votre navigateur sur `http://localhost:5173`
+
+## 🏗 Scripts Disponibles
+
+- `npm run dev` - Lance le serveur de développement
+- `npm run build` - Build pour la production
+- `npm run preview` - Prévisualise le build de production
+- `npm run test:unit` - Lance les tests unitaires
+- `npm run lint` - Vérifie le code avec ESLint
+- `npm run type-check` - Vérifie les types TypeScript
+
+## 📁 Structure du Projet
 
 ```
 src/
-  ├── assets/         # Images, fonts, etc.
-  ├── components/     # Composants Vue réutilisables
-  │   ├── card/      # Composants liés aux cartes
-  │   ├── deck/      # Composants liés aux decks
-  │   └── common/    # Composants communs
-  ├── config/        # Configuration de l'application
-  ├── composables/   # Hooks Vue réutilisables
-  ├── router/        # Configuration des routes
-  ├── services/      # Services métier
-  ├── stores/        # Stores Pinia
-  ├── types/         # Types TypeScript
-  ├── utils/         # Utilitaires
-  ├── validators/    # Validateurs
-  └── views/         # Pages de l'application
+├── components/           # Composants Vue réutilisables
+│   ├── card/            # Composants liés aux cartes
+│   ├── collection/      # Composants de la collection
+│   ├── common/          # Composants communs
+│   ├── deck/            # Composants des decks
+│   └── elements/        # Composants d'éléments
+├── composables/         # Hooks Vue personnalisés
+├── services/            # Services de données
+│   ├── cardLoader.ts    # Chargement des cartes
+│   └── localStorage.ts  # Stockage local
+├── stores/              # Stores Pinia
+│   ├── cardStore.ts     # Gestion des cartes et collection
+│   └── deckStore.ts     # Gestion des decks
+├── types/               # Définitions TypeScript
+├── utils/               # Utilitaires
+├── views/               # Pages de l'application
+└── router/              # Configuration du routeur
 ```
 
-## 🔧 Installation
+## 💾 Stockage des Données
 
-1. Cloner le dépôt :
-```bash
-git clone https://github.com/votre-username/wakfu-deck-builder.git
-cd wakfu-deck-builder
+L'application utilise **localStorage** pour sauvegarder :
+- Votre collection de cartes
+- Vos decks créés
+- Les paramètres de l'application
+
+### Export/Import
+
+Vous pouvez exporter et importer vos données :
+
+```typescript
+import { localStorageService } from '@/services/localStorage'
+
+// Exporter vos données
+const exportedData = localStorageService.export()
+
+// Importer des données
+localStorageService.import(exportedData)
 ```
 
-2. Installer les dépendances :
-```bash
-npm install
-```
+## 🎮 Utilisation
 
-3. Copier le fichier d'environnement :
-```bash
-cp .env.example .env
-```
+### Collection
+1. Naviguez vers la page "Collection"
+2. Parcourez et filtrez les cartes disponibles
+3. Cliquez sur une carte pour l'ajouter à votre collection
+4. Ajustez les quantités normale et foil
 
-4. Démarrer le serveur de développement :
-```bash
-npm run dev
-```
+### Construction de Deck
+1. Allez dans "Deck Builder"
+2. Sélectionnez un héros et des cartes havre-sac
+3. Ajoutez des cartes depuis votre collection
+4. Respectez les règles du jeu (15-40 cartes, max 3 copies, etc.)
+5. Sauvegardez votre deck
 
-## 📝 Conventions de code
+## 🔧 Configuration
 
-### Nommage
+### Thème
+L'application supporte plusieurs thèmes DaisyUI. Vous pouvez changer le thème dans les paramètres.
 
-- **Composants** : PascalCase (ex: `CardComponent.vue`)
-- **Fichiers** : kebab-case (ex: `card-types.ts`)
-- **Types** : PascalCase (ex: `CardType`)
-- **Variables/fonctions** : camelCase (ex: `getCardById`)
-
-### Structure des composants
-
-- Un composant par fichier
-- Utilisation de `<script setup>` avec TypeScript
-- Props typées avec interfaces/types
-- Styles scoped avec Tailwind
-
-### Imports
-
-1. Imports Vue/externes
-2. Types
-3. Composants
-4. Stores/services
-5. Utils/constants
+### Cartes
+Les données des cartes sont chargées automatiquement depuis le dossier `data/`. 
+Pour ajouter de nouvelles cartes, placez les fichiers JSON dans la structure appropriée.
 
 ## 🧪 Tests
 
+### Lancer les tests
 ```bash
-# Lancer les tests unitaires
-npm run test
-
-# Lancer les tests avec couverture
-npm run test:coverage
+npm run test:unit
 ```
 
-## 📦 Build
-
+### Coverage
 ```bash
-# Build pour la production
-npm run build
-
-# Preview du build
-npm run preview
+npm run coverage
 ```
+
+Les tests couvrent :
+- Validation des decks
+- Gestion d'erreurs
+- Stores Pinia
+- Utilitaires
+
+## 🐛 Dépannage
+
+### Données perdues
+Si vos données sont perdues, vérifiez :
+1. Que localStorage n'est pas désactivé
+2. Qu'il reste de l'espace de stockage disponible
+3. Que vous n'êtes pas en mode navigation privée
+
+### Performance
+Pour améliorer les performances :
+1. Videz le cache du navigateur
+2. Redémarrez l'application
+3. Vérifiez la taille de votre collection
+
+## 📝 TODO
+
+- [ ] Ajout de nouvelles extensions de cartes
+- [ ] Mode tournoi
+- [ ] Statistiques de deck
+- [ ] Import/export en formats standards
+- [ ] Mode hors ligne complet
 
 ## 🤝 Contribution
 
 1. Fork le projet
-2. Créer une branche (`git checkout -b feature/amazing-feature`)
-3. Commit les changements (`git commit -m 'feat: add amazing feature'`)
-4. Push la branche (`git push origin feature/amazing-feature`)
-5. Ouvrir une Pull Request
+2. Créez une branche feature (`git checkout -b feature/AmazingFeature`)
+3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrez une Pull Request
 
-## 📄 License
+## 📄 Licence
 
-MIT License - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## 🙏 Remerciements
+
+- Équipe Ankama pour le jeu Wakfu TCG
+- Communauté Vue.js
+- Contributeurs DaisyUI et Tailwind CSS

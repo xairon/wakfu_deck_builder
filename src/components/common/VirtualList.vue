@@ -1,17 +1,13 @@
 <template>
-  <div 
-    ref="container"
-    class="virtual-list-container"
-    @scroll="handleScroll"
-  >
+  <div ref="container" class="virtual-list-container" @scroll="handleScroll">
     <!-- Container spacer pour définir la hauteur totale -->
-    <div 
+    <div
       class="virtual-list-spacer"
       :style="{ height: `${totalHeight}px` }"
     ></div>
-    
+
     <!-- Grid container actuel -->
-    <div 
+    <div
       class="virtual-list-grid"
       :style="{
         display: 'grid',
@@ -20,13 +16,10 @@
         position: 'absolute',
         top: `${startOffset}px`,
         left: 0,
-        right: 0
+        right: 0,
       }"
     >
-      <div 
-        v-for="item in visibleItems"
-        :key="getItemKey(item)"
-      >
+      <div v-for="item in visibleItems" :key="getItemKey(item)">
         <slot :item="item" />
       </div>
     </div>
@@ -50,7 +43,7 @@ interface Props<T> {
 
 const props = withDefaults(defineProps<Props<any>>(), {
   buffer: 5,
-  keyField: 'id'
+  keyField: 'id',
 })
 
 const container = ref<HTMLElement | null>(null)
@@ -69,8 +62,10 @@ const itemMinWidth = computed(() => {
 watch([containerWidth, itemMinWidth], () => {
   if (containerWidth.value && itemMinWidth.value) {
     // Calcul du nombre d'éléments qui peuvent tenir dans une ligne
-    const possibleItemsPerRow = Math.floor(containerWidth.value / itemMinWidth.value)
-    
+    const possibleItemsPerRow = Math.floor(
+      containerWidth.value / itemMinWidth.value
+    )
+
     // Limiter aux bornes définies dans les props
     itemsPerRow.value = Math.max(
       Math.min(possibleItemsPerRow, props.maxItemsPerRow),
@@ -80,49 +75,65 @@ watch([containerWidth, itemMinWidth], () => {
 })
 
 // Calcul du nombre total de lignes
-const totalRows = computed(() => Math.ceil(props.items.length / itemsPerRow.value))
+const totalRows = computed(() =>
+  Math.ceil(props.items.length / itemsPerRow.value)
+)
 
 // Calcul de la hauteur totale de la liste
 const totalHeight = computed(() => totalRows.value * props.itemHeight)
 
 // Calcul des lignes visibles
 const visibleRowIndices = computed(() => {
-  if (!container.value) return { start: 0, end: Math.min(20, totalRows.value - 1) }
-  
+  if (!container.value)
+    return { start: 0, end: Math.min(20, totalRows.value - 1) }
+
   const startRow = Math.floor(scrollTop.value / props.itemHeight) - props.buffer
-  const endRow = Math.ceil((scrollTop.value + containerHeight.value) / props.itemHeight) + props.buffer
-  
+  const endRow =
+    Math.ceil((scrollTop.value + containerHeight.value) / props.itemHeight) +
+    props.buffer
+
   return {
     start: Math.max(0, startRow),
-    end: Math.min(totalRows.value - 1, endRow)
+    end: Math.min(totalRows.value - 1, endRow),
   }
 })
 
 // Offset de départ pour positionner les éléments visibles
-const startOffset = computed(() => visibleRowIndices.value.start * props.itemHeight)
+const startOffset = computed(
+  () => visibleRowIndices.value.start * props.itemHeight
+)
 
 // Calcul des éléments visibles
 const visibleItems = computed(() => {
   const { start, end } = visibleRowIndices.value
-  console.log(`🔍 DEBUG VirtualList - Lignes visibles: ${start} à ${end} sur ${totalRows.value} lignes`);
-  console.log(`🔍 DEBUG VirtualList - Total éléments: ${props.items.length}, par ligne: ${itemsPerRow.value}`);
-  
+  console.log(
+    `🔍 DEBUG VirtualList - Lignes visibles: ${start} à ${end} sur ${totalRows.value} lignes`
+  )
+  console.log(
+    `🔍 DEBUG VirtualList - Total éléments: ${props.items.length}, par ligne: ${itemsPerRow.value}`
+  )
+
   const items = []
-  
+
   for (let rowIndex = start; rowIndex <= end; rowIndex++) {
     const startItemIndex = rowIndex * itemsPerRow.value
-    const endItemIndex = Math.min(startItemIndex + itemsPerRow.value, props.items.length)
-    
+    const endItemIndex = Math.min(
+      startItemIndex + itemsPerRow.value,
+      props.items.length
+    )
+
     for (let i = startItemIndex; i < endItemIndex; i++) {
       items.push(props.items[i])
     }
   }
-  
-  console.log(`🔍 DEBUG VirtualList - Items visibles: ${items.length}`);
+
+  console.log(`🔍 DEBUG VirtualList - Items visibles: ${items.length}`)
   if (items.length === 0 && props.items.length > 0) {
-    console.warn('⚠️ DEBUG VirtualList - Aucun élément visible malgré des éléments disponibles!');
+    console.warn(
+      '⚠️ DEBUG VirtualList - Aucun élément visible malgré des éléments disponibles!'
+    )
   }
-  
+
   return items
 })
 
@@ -147,7 +158,7 @@ onMounted(async () => {
     containerHeight.value = container.value.clientHeight
     containerWidth.value = container.value.clientWidth
   }
-  
+
   // Observer les changements de taille du conteneur
   useResizeObserver(container, (entries) => {
     const entry = entries[0]
@@ -156,7 +167,7 @@ onMounted(async () => {
       containerWidth.value = entry.contentRect.width
     }
   })
-  
+
   // Initialiser le défilement
   await nextTick()
   handleScroll()
@@ -168,7 +179,7 @@ defineExpose({
     if (!container.value) return
     const rowIndex = Math.floor(index / itemsPerRow.value)
     container.value.scrollTop = rowIndex * props.itemHeight
-  }
+  },
 })
 </script>
 
@@ -192,4 +203,4 @@ defineExpose({
 .virtual-list-grid {
   width: 100%;
 }
-</style> 
+</style>

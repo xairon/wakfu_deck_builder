@@ -8,8 +8,8 @@ import type { Card, Deck } from '@/types/card'
 
 vi.mock('@/utils/performance', () => ({
   usePerformanceMonitoring: () => ({
-    startPerf: vi.fn(() => vi.fn())
-  })
+    startPerf: vi.fn(() => vi.fn()),
+  }),
 }))
 
 vi.mock('@/composables/useToast', () => ({
@@ -17,8 +17,8 @@ vi.mock('@/composables/useToast', () => ({
     success: vi.fn(),
     error: vi.fn(),
     warning: vi.fn(),
-    info: vi.fn()
-  })
+    info: vi.fn(),
+  }),
 }))
 
 describe('DeckDrawSimulator', () => {
@@ -45,19 +45,21 @@ describe('DeckDrawSimulator', () => {
     experience: null,
     panoplie_bonus: null,
     recipe: null,
-    url: ''
+    url: '',
   })
 
   // Mock d'un deck
   const mockDeck: Deck = {
     id: 'test-deck',
     name: 'Test Deck',
-    cards: Array(15).fill(null).map((_, i) => ({
-      card: createMockCard(`card-${i}`),
-      quantity: 1
-    })),
+    cards: Array(15)
+      .fill(null)
+      .map((_, i) => ({
+        card: createMockCard(`card-${i}`),
+        quantity: 1,
+      })),
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   }
 
   beforeEach(() => {
@@ -69,8 +71,8 @@ describe('DeckDrawSimulator', () => {
     it('devrait rendre correctement le composant', () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       expect(wrapper.find('.deck-draw-simulator').exists()).toBe(true)
@@ -80,8 +82,8 @@ describe('DeckDrawSimulator', () => {
     it('devrait afficher les statistiques initiales', () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       expect(wrapper.find('.stats').exists()).toBe(true)
@@ -94,25 +96,25 @@ describe('DeckDrawSimulator', () => {
     it('devrait tirer 6 cartes au démarrage', async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
+
       const drawnCards = wrapper.findAll('.drawn-card')
       expect(drawnCards).toHaveLength(6)
     })
 
-    it('devrait émettre l\'événement draw', async () => {
+    it("devrait émettre l'événement draw", async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
+
       expect(wrapper.emitted('draw')).toBeTruthy()
       expect(wrapper.emitted('draw')![0][0]).toHaveLength(6)
     })
@@ -120,12 +122,12 @@ describe('DeckDrawSimulator', () => {
     it('devrait mettre à jour les statistiques après un tirage', async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
+
       expect(wrapper.text()).toContain('9') // 15 - 6 cartes tirées
     })
   })
@@ -134,28 +136,28 @@ describe('DeckDrawSimulator', () => {
     it('devrait permettre de remplacer des cartes', async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
       await wrapper.find('.drawn-card').trigger('click')
       await wrapper.find('.mulligan-button').trigger('click')
-      
+
       expect(wrapper.emitted('mulligan')).toBeTruthy()
     })
 
-    it('devrait émettre l\'événement mulligan avec les cartes remplacées', async () => {
+    it("devrait émettre l'événement mulligan avec les cartes remplacées", async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
       await wrapper.find('.drawn-card').trigger('click')
       await wrapper.find('.mulligan-button').trigger('click')
-      
+
       const mulliganEvent = wrapper.emitted('mulligan')![0]
       expect(mulliganEvent[0]).toHaveLength(1) // Une carte remplacée
       expect(mulliganEvent[1]).toHaveLength(1) // Une nouvelle carte
@@ -166,12 +168,12 @@ describe('DeckDrawSimulator', () => {
     it('devrait calculer la courbe de PA', async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
+
       expect(wrapper.find('.pa-curve').exists()).toBe(true)
       expect(wrapper.vm.handStats.averagePA).toBeDefined()
     })
@@ -179,12 +181,12 @@ describe('DeckDrawSimulator', () => {
     it('devrait calculer la distribution des types', async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
+
       expect(wrapper.find('.type-distribution').exists()).toBe(true)
       expect(wrapper.vm.handStats.typeDistribution).toBeDefined()
     })
@@ -196,14 +198,14 @@ describe('DeckDrawSimulator', () => {
             ...mockDeck,
             cards: [
               { card: { ...createMockCard('1'), element: 'Feu' }, quantity: 3 },
-              { card: { ...createMockCard('2'), element: 'Feu' }, quantity: 3 }
-            ]
-          }
-        }
+              { card: { ...createMockCard('2'), element: 'Feu' }, quantity: 3 },
+            ],
+          },
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
+
       expect(wrapper.find('.synergies').exists()).toBe(true)
       expect(wrapper.text()).toContain('Synergie')
     })
@@ -213,25 +215,29 @@ describe('DeckDrawSimulator', () => {
     it('devrait mesurer le temps de tirage', async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
-      expect(usePerformanceMonitoring().startPerf).toHaveBeenCalledWith('Tirage de cartes')
+
+      expect(usePerformanceMonitoring().startPerf).toHaveBeenCalledWith(
+        'Tirage de cartes'
+      )
     })
 
-    it('devrait mesurer le temps d\'analyse', async () => {
+    it("devrait mesurer le temps d'analyse", async () => {
       const wrapper = mount(DeckDrawSimulator, {
         props: {
-          deck: mockDeck
-        }
+          deck: mockDeck,
+        },
       })
 
       await wrapper.find('.draw-button').trigger('click')
-      
-      expect(usePerformanceMonitoring().startPerf).toHaveBeenCalledWith('Analyse de la main')
+
+      expect(usePerformanceMonitoring().startPerf).toHaveBeenCalledWith(
+        'Analyse de la main'
+      )
     })
   })
 
@@ -241,9 +247,9 @@ describe('DeckDrawSimulator', () => {
         props: {
           deck: {
             ...mockDeck,
-            cards: []
-          }
-        }
+            cards: [],
+          },
+        },
       })
 
       expect(wrapper.find('.error-message').exists()).toBe(true)
@@ -255,13 +261,13 @@ describe('DeckDrawSimulator', () => {
         props: {
           deck: {
             ...mockDeck,
-            cards: [{ card: createMockCard('1'), quantity: 1 }] // Trop peu de cartes
-          }
-        }
+            cards: [{ card: createMockCard('1'), quantity: 1 }], // Trop peu de cartes
+          },
+        },
       })
 
       expect(wrapper.find('.error-message').exists()).toBe(true)
       expect(wrapper.text()).toContain('Deck invalide')
     })
   })
-}) 
+})

@@ -1,5 +1,5 @@
 <template>
-  <button 
+  <button
     class="btn btn-ghost btn-circle"
     @click="toggleTheme"
     :title="isDark ? 'Passer en mode clair' : 'Passer en mode sombre'"
@@ -15,4 +15,4 @@
 import { useTheme } from '../composables/useTheme'
 
 const { isDark, toggleTheme } = useTheme()
-</script> 
+</script>

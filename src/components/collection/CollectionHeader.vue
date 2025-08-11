@@ -20,31 +20,79 @@
       <div class="stat">
         <div class="stat-title">Progression</div>
         <div class="stat-value">{{ collectionProgress }}%</div>
-        <progress class="progress progress-primary w-full mt-1" :value="collectionProgress" max="100"></progress>
+        <progress
+          class="progress progress-primary w-full mt-1"
+          :value="collectionProgress"
+          max="100"
+        ></progress>
       </div>
       <div v-if="isAuthenticated" class="stat bg-base-300">
         <div class="stat-title">Synchronisation</div>
         <div class="stat-value flex items-center gap-2">
           <template v-if="lastSync">
             <span class="text-sm font-normal">{{ formatLastSync }}</span>
-            <div class="tooltip tooltip-bottom" data-tip="Collection synchronisée">
-              <svg v-if="!isSyncing" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <div
+              class="tooltip tooltip-bottom"
+              data-tip="Collection synchronisée"
+            >
+              <svg
+                v-if="!isSyncing"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-success"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
-              <div v-else class="loading loading-spinner loading-md text-primary"></div>
+              <div
+                v-else
+                class="loading loading-spinner loading-md text-primary"
+              ></div>
             </div>
           </template>
           <template v-else>
             <span class="text-sm font-normal">Non synchronisée</span>
-            <div class="tooltip tooltip-bottom" data-tip="Collection non synchronisée">
-              <div v-if="isSyncing" class="loading loading-spinner loading-md text-primary"></div>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div
+              class="tooltip tooltip-bottom"
+              data-tip="Collection non synchronisée"
+            >
+              <div
+                v-if="isSyncing"
+                class="loading loading-spinner loading-md text-primary"
+              ></div>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-warning"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </template>
         </div>
-        <div class="stat-desc">{{ isSyncing ? 'Synchronisation en cours...' : (isAuthenticated ? 'Sauvegardée en ligne' : 'Sauvegardée localement') }}</div>
+        <div class="stat-desc">
+          {{
+            isSyncing
+              ? 'Synchronisation en cours...'
+              : isAuthenticated
+                ? 'Sauvegardée en ligne'
+                : 'Sauvegardée localement'
+          }}
+        </div>
       </div>
     </div>
   </div>
@@ -69,4 +117,4 @@ const isAuthenticated = computed(() => cardStore.isAuthenticated)
 const isSyncing = computed(() => cardStore.isSyncing)
 const lastSync = computed(() => cardStore.lastSync)
 const formatLastSync = computed(() => cardStore.formatLastSync)
-</script> 
+</script>

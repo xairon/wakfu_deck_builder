@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center gap-1">
     <span>{{ value }}</span>
-    <ElementIcon 
+    <ElementIcon
       v-if="element && element !== ELEMENTS.NEUTRE"
       :element="element"
       size="sm"
@@ -17,4 +17,4 @@ defineProps<{
   value: number | string
   element?: Element
 }>()
-</script> 
+</script>

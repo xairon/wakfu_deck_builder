@@ -8,7 +8,10 @@ const COLLECTION_SAVE_PATH = '/api/collection/save'
 const toast = useToast()
 
 // Fonction pour charger depuis le serveur
-async function loadFromServer(): Promise<Record<string, CollectionCard> | null> {
+async function loadFromServer(): Promise<Record<
+  string,
+  CollectionCard
+> | null> {
   try {
     const response = await fetch(COLLECTION_FILE_PATH)
     if (!response.ok) {
@@ -29,29 +32,31 @@ async function loadFromServer(): Promise<Record<string, CollectionCard> | null> 
 }
 
 // Fonction pour sauvegarder sur le serveur
-async function saveToServer(collection: Record<string, CollectionCard>): Promise<boolean> {
+async function saveToServer(
+  collection: Record<string, CollectionCard>
+): Promise<boolean> {
   try {
     const data = JSON.stringify(collection, null, 2)
-    
+
     // Créer un FormData pour l'upload
     const formData = new FormData()
     formData.append('file', new Blob([data], { type: 'application/json' }))
-    
+
     // Envoyer au serveur
     const response = await fetch(COLLECTION_SAVE_PATH, {
       method: 'POST',
-      body: formData
+      body: formData,
     })
-    
+
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`)
     }
-    
+
     const result = await response.json()
     if (!result.success) {
       throw new Error('Le serveur a retourné une erreur')
     }
-    
+
     console.log('✅ Collection sauvegardée sur le serveur')
     return true
   } catch (error) {
@@ -64,7 +69,7 @@ async function saveToServer(collection: Record<string, CollectionCard>): Promise
 export function createAutoSync() {
   const lastSyncDate = ref<Date | null>(null)
   const isInitialized = ref(false)
-  
+
   async function syncToFile(cards: Record<string, CollectionCard>) {
     try {
       // Sauvegarder sur le serveur
@@ -72,37 +77,40 @@ export function createAutoSync() {
       if (!success) {
         throw new Error('Erreur lors de la sauvegarde sur le serveur')
       }
-      
+
       lastSyncDate.value = new Date()
     } catch (error) {
       console.error('❌ Erreur lors de la synchronisation:', error)
       toast.error('Erreur lors de la synchronisation')
     }
   }
-  
+
   async function initAutoSync() {
     try {
       // Charger depuis le serveur
       const data = await loadFromServer()
-      
+
       // Si pas de données, utiliser un objet vide
       if (!data) {
         return {}
       }
-      
+
       isInitialized.value = true
       return data
     } catch (error) {
-      console.error('❌ Erreur lors de l\'initialisation de la synchronisation:', error)
-      toast.error('Erreur lors de l\'initialisation de la synchronisation')
+      console.error(
+        "❌ Erreur lors de l'initialisation de la synchronisation:",
+        error
+      )
+      toast.error("Erreur lors de l'initialisation de la synchronisation")
       return {}
     }
   }
-  
+
   return {
     initAutoSync,
     syncToFile,
     lastSyncDate: computed(() => lastSyncDate.value),
-    isInitialized: computed(() => isInitialized.value)
+    isInitialized: computed(() => isInitialized.value),
   }
-} 
+}

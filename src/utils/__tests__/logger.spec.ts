@@ -5,7 +5,7 @@ describe('Logger', () => {
   beforeEach(() => {
     // Réinitialiser les logs avant chaque test
     logger.clearLogs()
-    
+
     // Mock des méthodes console
     vi.spyOn(console, 'debug').mockImplementation(() => {})
     vi.spyOn(console, 'info').mockImplementation(() => {})
@@ -26,7 +26,7 @@ describe('Logger', () => {
       expect(logs[0].category).toBe('deck')
     })
 
-    it('devrait logger un message d\'info', () => {
+    it("devrait logger un message d'info", () => {
       logger.info('draw', 'Test info')
       const logs = logger.getLogs({ level: 'info' })
       expect(logs).toHaveLength(1)
@@ -78,7 +78,7 @@ describe('Logger', () => {
   describe('Performance', () => {
     it('devrait mesurer la performance', async () => {
       const endPerf = logger.startPerf('test-perf')
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 100))
       endPerf()
 
       const perfLogs = logger.getLogs({ category: 'perf' })
@@ -101,14 +101,14 @@ describe('Logger', () => {
     it('devrait vider les logs', () => {
       logger.debug('test', 'Test log')
       expect(logger.getLogs()).toHaveLength(1)
-      
+
       logger.clearLogs()
       expect(logger.getLogs()).toHaveLength(0)
     })
   })
 
   describe('Analyse des erreurs', () => {
-    it('devrait calculer le taux d\'erreur', () => {
+    it("devrait calculer le taux d'erreur", () => {
       // 2 erreurs sur 10 logs = 20% de taux d'erreur
       for (let i = 0; i < 8; i++) {
         logger.info('test', `Log ${i}`)
@@ -130,7 +130,7 @@ describe('Logger', () => {
     it('devrait exporter les logs au format JSON', () => {
       logger.info('test', 'Test log')
       const exported = logger.exportLogs()
-      
+
       expect(exported).toBeTypeOf('string')
       const parsed = JSON.parse(exported)
       expect(parsed).toBeInstanceOf(Array)
@@ -142,7 +142,7 @@ describe('Logger', () => {
     it('devrait inclure les données additionnelles', () => {
       const data = { key: 'value' }
       logger.info('test', 'Test with data', data)
-      
+
       const logs = logger.getLogs()
       expect(logs[0].data).toEqual(data)
     })
@@ -150,7 +150,7 @@ describe('Logger', () => {
     it('devrait formater correctement les erreurs', () => {
       const error = new Error('Test error')
       logger.error('test', 'Error occurred', error)
-      
+
       const logs = logger.getLogs()
       expect(logs[0].error?.message).toBe('Test error')
       expect(logs[0].error?.stack).toBeDefined()
@@ -164,14 +164,14 @@ describe('Logger', () => {
         'draw',
         'stats',
         'perf',
-        'ui'
+        'ui',
       ]
 
-      categories.forEach(category => {
+      categories.forEach((category) => {
         logger.info(category, `Test ${category}`)
       })
 
-      categories.forEach(category => {
+      categories.forEach((category) => {
         const logs = logger.getLogs({ category })
         expect(logs).toHaveLength(1)
       })
@@ -183,10 +183,10 @@ describe('Logger', () => {
       const before = Date.now()
       logger.info('test', 'Test timestamp')
       const after = Date.now()
-      
+
       const logs = logger.getLogs()
       expect(logs[0].timestamp).toBeGreaterThanOrEqual(before)
       expect(logs[0].timestamp).toBeLessThanOrEqual(after)
     })
   })
-}) 
+})

@@ -81,14 +81,14 @@ class Logger {
     const level = entry.level.toUpperCase().padEnd(5)
     const category = entry.category.padEnd(8)
     let message = `[${date}] ${level} [${category}] ${entry.message}`
-    
+
     if (entry.data) {
       message += '\nData: ' + JSON.stringify(entry.data, null, 2)
     }
     if (entry.error) {
       message += '\nError: ' + entry.error.stack
     }
-    
+
     return message
   }
 
@@ -135,7 +135,7 @@ class Logger {
       level: 'debug',
       category,
       message,
-      data
+      data,
     })
   }
 
@@ -151,7 +151,7 @@ class Logger {
       level: 'info',
       category,
       message,
-      data
+      data,
     })
   }
 
@@ -167,7 +167,7 @@ class Logger {
       level: 'warn',
       category,
       message,
-      data
+      data,
     })
   }
 
@@ -185,7 +185,7 @@ class Logger {
       category,
       message,
       error,
-      data
+      data,
     })
   }
 
@@ -198,7 +198,9 @@ class Logger {
     const start = performance.now()
     return () => {
       const duration = performance.now() - start
-      this.debug('perf', `Performance '${label}'`, { duration: `${duration.toFixed(2)}ms` })
+      this.debug('perf', `Performance '${label}'`, {
+        duration: `${duration.toFixed(2)}ms`,
+      })
     }
   }
 
@@ -219,7 +221,7 @@ class Logger {
       endTime?: number
     } = {}
   ): LogEntry[] {
-    return this.logs.filter(log => {
+    return this.logs.filter((log) => {
       if (options.level && log.level !== options.level) return false
       if (options.category && log.category !== options.category) return false
       if (options.startTime && log.timestamp < options.startTime) return false
@@ -235,12 +237,12 @@ class Logger {
    */
   getErrorRate(timeWindow: number = 60000): number {
     const now = Date.now()
-    const recentLogs = this.logs.filter(log => 
-      log.timestamp > now - timeWindow
+    const recentLogs = this.logs.filter(
+      (log) => log.timestamp > now - timeWindow
     )
     if (recentLogs.length === 0) return 0
 
-    const errors = recentLogs.filter(log => log.level === 'error')
+    const errors = recentLogs.filter((log) => log.level === 'error')
     return errors.length / recentLogs.length
   }
 
@@ -276,7 +278,9 @@ export function logPerformance() {
     const originalMethod = descriptor.value
 
     descriptor.value = function (...args: any[]) {
-      const endPerf = logger.startPerf(`${target.constructor.name}.${propertyKey}`)
+      const endPerf = logger.startPerf(
+        `${target.constructor.name}.${propertyKey}`
+      )
       try {
         const result = originalMethod.apply(this, args)
         if (result instanceof Promise) {
@@ -310,18 +314,26 @@ export function logError() {
       try {
         const result = originalMethod.apply(this, args)
         if (result instanceof Promise) {
-          return result.catch(error => {
-            logger.error('deck', `Error in ${target.constructor.name}.${propertyKey}`, error)
+          return result.catch((error) => {
+            logger.error(
+              'deck',
+              `Error in ${target.constructor.name}.${propertyKey}`,
+              error
+            )
             throw error
           })
         }
         return result
       } catch (error) {
-        logger.error('deck', `Error in ${target.constructor.name}.${propertyKey}`, error as Error)
+        logger.error(
+          'deck',
+          `Error in ${target.constructor.name}.${propertyKey}`,
+          error as Error
+        )
         throw error
       }
     }
 
     return descriptor
   }
-} 
+}

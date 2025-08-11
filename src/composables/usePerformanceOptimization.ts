@@ -15,7 +15,7 @@ export function usePerformanceOptimization() {
   function cacheData<T>(key: string, data: T): void {
     cache.set(key, {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     })
   }
 
@@ -36,23 +36,20 @@ export function usePerformanceOptimization() {
     items: T[],
     options = {
       itemHeight: 100,
-      overscan: 5
+      overscan: 5,
     }
   ) {
     const containerRef = ref<HTMLElement>()
-    const { list, containerProps, wrapperProps } = useVirtualList(
-      items,
-      {
-        itemHeight: options.itemHeight,
-        overscan: options.overscan
-      }
-    )
+    const { list, containerProps, wrapperProps } = useVirtualList(items, {
+      itemHeight: options.itemHeight,
+      overscan: options.overscan,
+    })
 
     return {
       containerRef,
       virtualList: list,
       containerProps,
-      wrapperProps
+      wrapperProps,
     }
   }
 
@@ -70,11 +67,14 @@ export function usePerformanceOptimization() {
   }
 
   // Optimisation des images
-  function getOptimizedImageUrl(url: string, options: {
-    width?: number
-    height?: number
-    format?: 'webp' | 'jpeg' | 'png'
-  } = {}): string {
+  function getOptimizedImageUrl(
+    url: string,
+    options: {
+      width?: number
+      height?: number
+      format?: 'webp' | 'jpeg' | 'png'
+    } = {}
+  ): string {
     const { width, height, format = 'webp' } = options
     const params = new URLSearchParams()
 
@@ -110,6 +110,6 @@ export function usePerformanceOptimization() {
     useVirtualizedList,
     debounce,
     getOptimizedImageUrl,
-    preloadImage
+    preloadImage,
   }
-} 
+}

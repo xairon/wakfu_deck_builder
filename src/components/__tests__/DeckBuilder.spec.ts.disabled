@@ -13,9 +13,9 @@ vi.mock('@/stores/deckStore', () => ({
     updateDeck: vi.fn(),
     validateDeck: vi.fn(() => ({
       isValid: true,
-      errors: []
-    }))
-  }))
+      errors: [],
+    })),
+  })),
 }))
 
 vi.mock('@/composables/useToast', () => ({
@@ -23,14 +23,14 @@ vi.mock('@/composables/useToast', () => ({
     success: vi.fn(),
     error: vi.fn(),
     warning: vi.fn(),
-    info: vi.fn()
-  })
+    info: vi.fn(),
+  }),
 }))
 
 vi.mock('@/utils/performance', () => ({
   usePerformanceMonitoring: () => ({
-    startPerf: vi.fn(() => vi.fn())
-  })
+    startPerf: vi.fn(() => vi.fn()),
+  }),
 }))
 
 describe('DeckBuilder', () => {
@@ -57,7 +57,7 @@ describe('DeckBuilder', () => {
     experience: null,
     panoplie_bonus: null,
     recipe: null,
-    url: ''
+    url: '',
   })
 
   // Mock d'un deck
@@ -66,7 +66,7 @@ describe('DeckBuilder', () => {
     name: 'Test Deck',
     cards: [],
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   }
 
   beforeEach(() => {
@@ -78,8 +78,8 @@ describe('DeckBuilder', () => {
     it('devrait rendre correctement le composant en mode création', () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       expect(wrapper.find('.deck-builder').exists()).toBe(true)
@@ -91,11 +91,13 @@ describe('DeckBuilder', () => {
       const wrapper = mount(DeckBuilder, {
         props: {
           mode: 'edit',
-          initialDeck: mockDeck
-        }
+          initialDeck: mockDeck,
+        },
       })
 
-      expect(wrapper.find('input[type="text"]').element.value).toBe(mockDeck.name)
+      expect(wrapper.find('input[type="text"]').element.value).toBe(
+        mockDeck.name
+      )
     })
   })
 
@@ -103,8 +105,8 @@ describe('DeckBuilder', () => {
     it('devrait créer un nouveau deck', async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       await wrapper.find('input[type="text"]').setValue('Nouveau Deck')
@@ -112,7 +114,7 @@ describe('DeckBuilder', () => {
 
       expect(useDeckStore().createDeck).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: 'Nouveau Deck'
+          name: 'Nouveau Deck',
         })
       )
     })
@@ -120,12 +122,12 @@ describe('DeckBuilder', () => {
     it('devrait valider le nom du deck', async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       await wrapper.find('form').trigger('submit')
-      
+
       expect(wrapper.find('.error-message').exists()).toBe(true)
       expect(wrapper.text()).toContain('nom est requis')
     })
@@ -136,8 +138,8 @@ describe('DeckBuilder', () => {
       const wrapper = mount(DeckBuilder, {
         props: {
           mode: 'edit',
-          initialDeck: mockDeck
-        }
+          initialDeck: mockDeck,
+        },
       })
 
       await wrapper.find('input[type="text"]').setValue('Deck Modifié')
@@ -146,7 +148,7 @@ describe('DeckBuilder', () => {
       expect(useDeckStore().updateDeck).toHaveBeenCalledWith(
         expect.objectContaining({
           id: mockDeck.id,
-          name: 'Deck Modifié'
+          name: 'Deck Modifié',
         })
       )
     })
@@ -157,13 +159,13 @@ describe('DeckBuilder', () => {
           mode: 'edit',
           initialDeck: {
             ...mockDeck,
-            cards: Array(31).fill({ card: createMockCard('1'), quantity: 1 }) // Trop de cartes
-          }
-        }
+            cards: Array(31).fill({ card: createMockCard('1'), quantity: 1 }), // Trop de cartes
+          },
+        },
       })
 
       await wrapper.find('form').trigger('submit')
-      
+
       expect(wrapper.find('.error-message').exists()).toBe(true)
       expect(wrapper.text()).toContain('maximum')
     })
@@ -173,8 +175,8 @@ describe('DeckBuilder', () => {
     it('devrait ajouter une carte au deck', async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       const card = createMockCard('1')
@@ -190,9 +192,9 @@ describe('DeckBuilder', () => {
           mode: 'edit',
           initialDeck: {
             ...mockDeck,
-            cards: [{ card: createMockCard('1'), quantity: 1 }]
-          }
-        }
+            cards: [{ card: createMockCard('1'), quantity: 1 }],
+          },
+        },
       })
 
       await wrapper.vm.removeCard(createMockCard('1'))
@@ -200,11 +202,11 @@ describe('DeckBuilder', () => {
       expect(wrapper.vm.currentDeck.cards).toHaveLength(0)
     })
 
-    it('devrait limiter le nombre de copies d\'une carte', async () => {
+    it("devrait limiter le nombre de copies d'une carte", async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       const card = createMockCard('1')
@@ -220,12 +222,12 @@ describe('DeckBuilder', () => {
     it('devrait valider le nombre minimum de cartes', async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       await wrapper.find('form').trigger('submit')
-      
+
       expect(wrapper.find('.error-message').exists()).toBe(true)
       expect(wrapper.text()).toContain('minimum')
     })
@@ -233,20 +235,20 @@ describe('DeckBuilder', () => {
     it('devrait valider les types de cartes requis', async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       // Ajouter uniquement des équipements
       for (let i = 0; i < 15; i++) {
         await wrapper.vm.addCard({
           ...createMockCard(`${i}`),
-          type: 'Équipement'
+          type: 'Équipement',
         })
       }
 
       await wrapper.find('form').trigger('submit')
-      
+
       expect(wrapper.find('.error-message').exists()).toBe(true)
       expect(wrapper.text()).toContain('type')
     })
@@ -256,12 +258,12 @@ describe('DeckBuilder', () => {
     it('devrait mesurer le temps de validation', async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       await wrapper.find('form').trigger('submit')
-      
+
       expect(usePerformanceMonitoring().startPerf).toHaveBeenCalledWith(
         'Validation du deck'
       )
@@ -270,12 +272,12 @@ describe('DeckBuilder', () => {
     it('devrait mesurer le temps de sauvegarde', async () => {
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       await wrapper.find('form').trigger('submit')
-      
+
       expect(usePerformanceMonitoring().startPerf).toHaveBeenCalledWith(
         'Sauvegarde du deck'
       )
@@ -290,8 +292,8 @@ describe('DeckBuilder', () => {
 
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       await wrapper.find('input[type="text"]').setValue('Nouveau Deck')
@@ -304,13 +306,13 @@ describe('DeckBuilder', () => {
     it('devrait gérer les erreurs de validation', async () => {
       vi.mocked(useDeckStore().validateDeck).mockReturnValueOnce({
         isValid: false,
-        errors: ['Erreur de validation']
+        errors: ['Erreur de validation'],
       })
 
       const wrapper = mount(DeckBuilder, {
         props: {
-          mode: 'create'
-        }
+          mode: 'create',
+        },
       })
 
       await wrapper.find('form').trigger('submit')
@@ -319,4 +321,4 @@ describe('DeckBuilder', () => {
       expect(wrapper.text()).toContain('Erreur de validation')
     })
   })
-}) 
+})

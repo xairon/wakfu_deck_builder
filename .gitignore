@@ -17,6 +17,8 @@ src/**/*.js.map
 *.njsproj
 *.sln
 *.sw?
+.cursor/
+.cursorrules
 
 # Logs
 logs
@@ -45,6 +47,18 @@ debug/
 # Dependencies
 .yarn
 .pnp.* 
+.venv/
 
 # Data files
 data/ 
+
+# Analysis files
+analyse/
+analysis/
+
+# Public directory
+public/ 
+public/images/
+
+# Scripts
+scripts/ 

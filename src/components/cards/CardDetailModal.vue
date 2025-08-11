@@ -1,23 +1,19 @@
 <template>
-  <dialog 
-    ref="cardModal" 
-    class="modal"
-    :class="{ 'modal-open': card }"
-  >
+  <dialog ref="cardModal" class="modal" :class="{ 'modal-open': card }">
     <div class="modal-box max-w-3xl">
       <div v-if="card" class="space-y-4">
         <!-- En-tête -->
         <div class="flex justify-between items-center">
           <h3 class="text-2xl font-bold">{{ card.name }}</h3>
           <div v-if="isHero" class="join">
-            <button 
+            <button
               class="join-item btn"
               :class="{ 'btn-active': !showVerso }"
               @click="showVerso = false"
             >
               Recto
             </button>
-            <button 
+            <button
               class="join-item btn"
               :class="{ 'btn-active': showVerso }"
               @click="showVerso = true"
@@ -46,9 +42,9 @@
             <!-- Type et sous-types -->
             <div class="flex flex-wrap gap-2">
               <div class="badge badge-lg">{{ card.mainType }}</div>
-              <div 
-                v-for="subType in card.subTypes" 
-                :key="subType" 
+              <div
+                v-for="subType in card.subTypes"
+                :key="subType"
                 class="badge badge-outline"
               >
                 {{ subType }}
@@ -56,17 +52,23 @@
             </div>
 
             <!-- Stats -->
-            <div v-if="displayedStats" class="stats stats-vertical shadow w-full">
+            <div
+              v-if="displayedStats"
+              class="stats stats-vertical shadow w-full"
+            >
               <div v-if="displayedStats.niveau" class="stat">
                 <div class="stat-title">Niveau</div>
                 <div class="stat-value flex items-center gap-2">
                   {{ displayedStats.niveau.value }}
-                  <span 
+                  <span
                     v-if="displayedStats.niveau.element !== 'neutre'"
                     :class="getElementClass(displayedStats.niveau.element)"
                     class="text-2xl"
                   >
-                    <ElementIcon :element="displayedStats.niveau.element" size="sm" />
+                    <ElementIcon
+                      :element="displayedStats.niveau.element"
+                      size="sm"
+                    />
                   </span>
                 </div>
               </div>
@@ -74,12 +76,15 @@
                 <div class="stat-title">Force</div>
                 <div class="stat-value flex items-center gap-2">
                   {{ displayedStats.force.value }}
-                  <span 
+                  <span
                     v-if="displayedStats.force.element !== 'neutre'"
                     :class="getElementClass(displayedStats.force.element)"
                     class="text-2xl"
                   >
-                    <ElementIcon :element="displayedStats.force.element" size="sm" />
+                    <ElementIcon
+                      :element="displayedStats.force.element"
+                      size="sm"
+                    />
                   </span>
                 </div>
               </div>
@@ -98,21 +103,23 @@
             </div>
 
             <!-- Mots-clés -->
-            <div v-if="displayedKeywords?.length" class="divider">Mots-clés</div>
+            <div v-if="displayedKeywords?.length" class="divider">
+              Mots-clés
+            </div>
             <div v-if="displayedKeywords?.length" class="flex flex-wrap gap-2">
-              <div 
-                v-for="keyword in displayedKeywords" 
+              <div
+                v-for="keyword in displayedKeywords"
                 :key="keyword.name"
                 class="badge badge-lg badge-outline tooltip tooltip-top"
                 :data-tip="keyword.description"
               >
                 <span class="font-medium">{{ keyword.name }}</span>
-                <span 
+                <span
                   v-if="keyword.elements?.length"
                   class="ml-2 flex items-center gap-1"
                 >
-                  <span 
-                    v-for="element in keyword.elements" 
+                  <span
+                    v-for="element in keyword.elements"
                     :key="element"
                     :class="getElementClass(element)"
                     class="text-lg"
@@ -126,20 +133,20 @@
             <!-- Effets -->
             <div class="divider">Effets</div>
             <div class="space-y-4">
-              <div 
-                v-for="(effect, index) in displayedEffects" 
+              <div
+                v-for="(effect, index) in displayedEffects"
                 :key="index"
                 class="card bg-base-200"
               >
                 <div class="card-body p-4">
                   <p class="text-sm">{{ effect.description }}</p>
                   <div class="flex flex-wrap gap-2 mt-2">
-                    <div 
-                      v-if="effect.elements?.length" 
+                    <div
+                      v-if="effect.elements?.length"
                       class="flex items-center gap-1"
                     >
-                      <span 
-                        v-for="element in effect.elements" 
+                      <span
+                        v-for="element in effect.elements"
                         :key="element"
                         :class="getElementClass(element)"
                         class="text-lg"
@@ -147,16 +154,10 @@
                         <ElementIcon :element="element" size="sm" />
                       </span>
                     </div>
-                    <div 
-                      v-if="effect.isOncePerTurn" 
-                      class="badge badge-sm"
-                    >
+                    <div v-if="effect.isOncePerTurn" class="badge badge-sm">
                       Une fois par tour
                     </div>
-                    <div 
-                      v-if="effect.requiresIncline" 
-                      class="badge badge-sm"
-                    >
+                    <div v-if="effect.requiresIncline" class="badge badge-sm">
                       Nécessite d'incliner
                     </div>
                   </div>
@@ -180,11 +181,14 @@
                 </div>
 
                 <!-- Artistes -->
-                <div v-if="card.artists?.length" class="flex items-center gap-2">
+                <div
+                  v-if="card.artists?.length"
+                  class="flex items-center gap-2"
+                >
                   <span class="text-base-content/60">Artiste(s) :</span>
                   <div class="flex flex-wrap gap-1">
-                    <span 
-                      v-for="artist in card.artists" 
+                    <span
+                      v-for="artist in card.artists"
                       :key="artist"
                       class="badge badge-ghost"
                     >
@@ -195,9 +199,14 @@
 
                 <!-- Flavor -->
                 <div v-if="card.flavor" class="mt-4">
-                  <blockquote class="italic text-base-content/70 border-l-4 border-primary/20 pl-4">
+                  <blockquote
+                    class="italic text-base-content/70 border-l-4 border-primary/20 pl-4"
+                  >
                     "{{ card.flavor.text }}"
-                    <footer v-if="card.flavor.attribution" class="text-right mt-1">
+                    <footer
+                      v-if="card.flavor.attribution"
+                      class="text-right mt-1"
+                    >
                       - {{ card.flavor.attribution }}
                     </footer>
                   </blockquote>
@@ -209,17 +218,16 @@
             <div class="divider">Collection</div>
             <div class="flex items-center gap-4 bg-base-200 p-4 rounded-box">
               <div class="flex-1">
-                <p class="text-sm text-base-content/70">Quantité dans la collection</p>
+                <p class="text-sm text-base-content/70">
+                  Quantité dans la collection
+                </p>
                 <p class="text-3xl font-bold">{{ quantity }}</p>
               </div>
               <div class="join">
-                <button 
-                  class="join-item btn"
-                  @click="$emit('remove', card)"
-                >
+                <button class="join-item btn" @click="$emit('remove', card)">
                   -
                 </button>
-                <button 
+                <button
                   class="join-item btn btn-primary"
                   @click="$emit('add', card)"
                 >
@@ -241,96 +249,108 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineExpose, defineProps, defineEmits, watch } from 'vue';
-import type { Card, HeroCard } from '@/types/cards';
-import OptimizedImage from '@/components/common/OptimizedImage.vue';
-import ElementIcon from '@/components/elements/ElementIcon.vue';
-import { useCardStore } from '@/stores/cardStore';
+import {
+  ref,
+  computed,
+  defineExpose,
+  defineProps,
+  defineEmits,
+  watch,
+} from 'vue'
+import type { Card, HeroCard } from '@/types/cards'
+import OptimizedImage from '@/components/common/OptimizedImage.vue'
+import ElementIcon from '@/components/elements/ElementIcon.vue'
+import { useCardStore } from '@/stores/cardStore'
 
 const props = defineProps<{
-  card: Card | null;
-  quantity: number;
-}>();
+  card: Card | null
+  quantity: number
+}>()
 
 const emit = defineEmits<{
-  (e: 'add', card: Card): void;
-  (e: 'remove', card: Card): void;
-  (e: 'close'): void;
-}>();
+  (e: 'add', card: Card): void
+  (e: 'remove', card: Card): void
+  (e: 'close'): void
+}>()
 
-const cardModal = ref<HTMLDialogElement | null>(null);
-const showVerso = ref(false);
-const cardStore = useCardStore();
+const cardModal = ref<HTMLDialogElement | null>(null)
+const showVerso = ref(false)
+const cardStore = useCardStore()
 
-const isHero = computed(() => props.card?.mainType === 'Héros');
+const isHero = computed(() => props.card?.mainType === 'Héros')
 
 const cardImagePath = computed(() => {
-  if (!props.card) return '';
+  if (!props.card) return ''
   if (isHero.value) {
-    return showVerso.value ? `${props.card.id}_verso.png` : `${props.card.id}_recto.png`;
+    return showVerso.value
+      ? `${props.card.id}_verso.png`
+      : `${props.card.id}_recto.png`
   }
-  return `${props.card.id}.png`;
-});
+  return `${props.card.id}.png`
+})
 
 const displayedStats = computed(() => {
-  if (!props.card) return null;
+  if (!props.card) return null
   if (isHero.value) {
-    const heroCard = props.card as HeroCard;
-    return showVerso.value ? heroCard.verso?.stats : heroCard.recto.stats;
+    const heroCard = props.card as HeroCard
+    return showVerso.value ? heroCard.verso?.stats : heroCard.recto.stats
   }
-  return props.card.stats;
-});
+  return props.card.stats
+})
 
 const displayedEffects = computed(() => {
-  if (!props.card) return [];
+  if (!props.card) return []
   if (isHero.value) {
-    const heroCard = props.card as HeroCard;
-    return showVerso.value ? heroCard.verso?.effects : heroCard.recto.effects;
+    const heroCard = props.card as HeroCard
+    return showVerso.value ? heroCard.verso?.effects : heroCard.recto.effects
   }
-  return props.card.effects;
-});
+  return props.card.effects
+})
 
 const displayedKeywords = computed(() => {
-  if (!props.card) return [];
+  if (!props.card) return []
   if (isHero.value) {
-    const heroCard = props.card as HeroCard;
-    return showVerso.value ? heroCard.verso?.keywords : heroCard.recto.keywords;
+    const heroCard = props.card as HeroCard
+    return showVerso.value ? heroCard.verso?.keywords : heroCard.recto.keywords
   }
-  return props.card.keywords;
-});
+  return props.card.keywords
+})
 
 function getElementClass(element: string): string {
   switch (element.toLowerCase()) {
     case 'feu':
-      return 'text-error';
+      return 'text-error'
     case 'eau':
-      return 'text-primary';
+      return 'text-primary'
     case 'air':
-      return 'text-info';
+      return 'text-info'
     case 'terre':
-      return 'text-success';
+      return 'text-success'
     default:
-      return 'text-base-content';
+      return 'text-base-content'
   }
 }
 
 function open() {
-  cardModal.value?.showModal();
+  cardModal.value?.showModal()
 }
 
 function close() {
-  cardModal.value?.close();
-  showVerso.value = false;
+  cardModal.value?.close()
+  showVerso.value = false
 }
 
 // Reset verso state when card changes
-watch(() => props.card, () => {
-  showVerso.value = false;
-});
+watch(
+  () => props.card,
+  () => {
+    showVerso.value = false
+  }
+)
 
 // Expose methods to parent component
 defineExpose({
   open,
-  close
-});
-</script> 
+  close,
+})
+</script>

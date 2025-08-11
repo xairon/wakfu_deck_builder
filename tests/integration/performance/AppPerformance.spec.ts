@@ -14,9 +14,9 @@ describe('Tests de Performance', () => {
     routes: [
       {
         path: '/',
-        component: App
-      }
-    ]
+        component: App,
+      },
+    ],
   })
 
   // Seuils de performance (en ms)
@@ -24,7 +24,7 @@ describe('Tests de Performance', () => {
     INITIAL_LOAD: 1000,
     ROUTE_CHANGE: 300,
     LIST_RENDER: 100,
-    SEARCH_FILTER: 50
+    SEARCH_FILTER: 50,
   }
 
   // Mock des cartes de test
@@ -33,7 +33,7 @@ describe('Tests de Performance', () => {
       image_id: `card${i}`,
       name: `Test Card ${i}`,
       type: i % 2 === 0 ? 'Allié' : 'Sort',
-      stats: { ap: i % 5 + 1, hp: i % 10 + 5 },
+      stats: { ap: (i % 5) + 1, hp: (i % 10) + 5 },
       element: ['Feu', 'Eau', 'Terre', 'Air'][i % 4],
       effects: [],
       keywords: [],
@@ -51,7 +51,7 @@ describe('Tests de Performance', () => {
       experience: null,
       panoplie_bonus: null,
       recipe: null,
-      url: ''
+      url: '',
     }))
   }
 
@@ -64,13 +64,13 @@ describe('Tests de Performance', () => {
   })
 
   describe('Chargement initial', () => {
-    it('devrait charger l\'application en moins de 1s', async () => {
+    it("devrait charger l'application en moins de 1s", async () => {
       const startTime = performance.now()
 
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       const loadTime = performance.now() - startTime
@@ -92,13 +92,13 @@ describe('Tests de Performance', () => {
     it('devrait charger les images de manière optimisée', async () => {
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       // Vérifier que les images sont chargées avec lazy loading
       const images = wrapper.findAll('img')
-      images.forEach(img => {
+      images.forEach((img) => {
         expect(img.attributes('loading')).toBe('lazy')
       })
 
@@ -117,8 +117,8 @@ describe('Tests de Performance', () => {
       const startTime = performance.now()
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
       await router.push('/collection')
       const renderTime = performance.now() - startTime
@@ -133,8 +133,8 @@ describe('Tests de Performance', () => {
 
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
       await router.push('/collection')
 
@@ -150,8 +150,8 @@ describe('Tests de Performance', () => {
 
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       // Premier rendu
@@ -163,7 +163,9 @@ describe('Tests de Performance', () => {
       await router.push('/collection')
       const secondRenderTime = performance.now()
 
-      expect(secondRenderTime - firstRenderTime).toBeLessThan(PERFORMANCE_THRESHOLDS.ROUTE_CHANGE)
+      expect(secondRenderTime - firstRenderTime).toBeLessThan(
+        PERFORMANCE_THRESHOLDS.ROUTE_CHANGE
+      )
     })
   })
 
@@ -175,8 +177,8 @@ describe('Tests de Performance', () => {
 
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
       await router.push('/collection')
 
@@ -188,25 +190,25 @@ describe('Tests de Performance', () => {
       expect(filterTime).toBeLessThan(PERFORMANCE_THRESHOLDS.SEARCH_FILTER)
     })
 
-    it('devrait utiliser l\'index de recherche pour les filtres complexes', async () => {
+    it("devrait utiliser l'index de recherche pour les filtres complexes", async () => {
       const store = useCardStore()
       const mockCards = generateMockCards(1000)
       vi.mocked(store).cards = mockCards
 
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
       await router.push('/collection')
 
       const startTime = performance.now()
-      
+
       // Appliquer plusieurs filtres
       await wrapper.find('select.type-select').setValue('Allié')
       await wrapper.find('select.element-select').setValue('Feu')
       await wrapper.find('input[type="text"]').setValue('Card')
-      
+
       const filterTime = performance.now() - startTime
       expect(filterTime).toBeLessThan(PERFORMANCE_THRESHOLDS.SEARCH_FILTER * 3)
     })
@@ -218,8 +220,8 @@ describe('Tests de Performance', () => {
 
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
       await router.push('/collection')
 
@@ -233,7 +235,9 @@ describe('Tests de Performance', () => {
       await searchInput.setValue('Card 1')
       const secondSearchTime = performance.now()
 
-      expect(secondSearchTime - firstSearchTime).toBeLessThan(PERFORMANCE_THRESHOLDS.SEARCH_FILTER)
+      expect(secondSearchTime - firstSearchTime).toBeLessThan(
+        PERFORMANCE_THRESHOLDS.SEARCH_FILTER
+      )
     })
   })
 
@@ -241,12 +245,12 @@ describe('Tests de Performance', () => {
     it('devrait avoir un bon score LCP', async () => {
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       // Simuler le calcul du LCP
-      const lcp = await new Promise<number>(resolve => {
+      const lcp = await new Promise<number>((resolve) => {
         new PerformanceObserver((entries) => {
           const entry = entries.getEntries()[0]
           resolve(entry.startTime)
@@ -259,8 +263,8 @@ describe('Tests de Performance', () => {
     it('devrait avoir un bon score FID', async () => {
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       // Simuler une interaction utilisateur
@@ -275,12 +279,12 @@ describe('Tests de Performance', () => {
     it('devrait avoir un bon score CLS', async () => {
       const wrapper = mount(App, {
         global: {
-          plugins: [router]
-        }
+          plugins: [router],
+        },
       })
 
       // Simuler le calcul du CLS
-      const cls = await new Promise<number>(resolve => {
+      const cls = await new Promise<number>((resolve) => {
         let cumulativeLayoutShift = 0
         new PerformanceObserver((entries) => {
           for (const entry of entries.getEntries()) {
@@ -295,4 +299,4 @@ describe('Tests de Performance', () => {
       expect(cls).toBeLessThan(0.1) // Seuil recommandé par Google
     })
   })
-}) 
+})

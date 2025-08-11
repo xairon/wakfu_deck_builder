@@ -19,14 +19,14 @@ export default defineConfig({
         '**/*.d.ts',
         'tests/**',
         '**/*.config.ts',
-        'src/types/**'
-      ]
-    }
+        'src/types/**',
+      ],
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'tests': path.resolve(__dirname, './tests')
-    }
-  }
-}) 
+      tests: path.resolve(__dirname, './tests'),
+    },
+  },
+})

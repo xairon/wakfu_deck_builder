@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="card-preview relative group"
     :class="[sizeClass, { 'cursor-pointer': interactive }]"
     @click="handleClick"
@@ -11,16 +11,16 @@
       class="rounded-lg object-cover w-full h-full"
       :class="{ 'group-hover:opacity-90 transition-opacity': interactive }"
       loading="lazy"
-    >
+    />
 
     <!-- Overlay d'informations -->
-    <div 
+    <div
       v-if="showOverlay"
       class="absolute inset-0 bg-base-300/80 opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col"
     >
       <h4 class="font-bold text-sm">{{ card.name }}</h4>
       <p class="text-xs opacity-70">{{ card.mainType }}</p>
-      
+
       <div class="mt-auto">
         <!-- Stats -->
         <div v-if="hasStats" class="flex gap-2 text-xs">
@@ -37,8 +37,8 @@
 
         <!-- Éléments -->
         <div v-if="hasElements" class="flex gap-1 mt-1">
-          <div 
-            v-for="element in elements" 
+          <div
+            v-for="element in elements"
             :key="element"
             class="w-4 h-4 rounded-full"
             :class="getElementColor(element)"
@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Card } from '@/types/cards'
-import { ELEMENT_COLORS, type Element } from '@/constants'
+import { ELEMENT_COLORS, type Element } from '@/config/constants'
 
 const props = defineProps<{
   card: Card
@@ -83,8 +83,8 @@ const imageUrl = computed(() => {
 })
 
 // Stats
-const hasStats = computed(() => 
-  'stats' in props.card && props.card.stats !== undefined
+const hasStats = computed(
+  () => 'stats' in props.card && props.card.stats !== undefined
 )
 
 const stats = computed(() => {
@@ -93,13 +93,30 @@ const stats = computed(() => {
 })
 
 // Éléments
-const hasElements = computed(() => 
-  'elements' in props.card && Array.isArray(props.card.elements)
-)
+const hasElements = computed(() => {
+  if (!props.card.stats) return false
+  return !!props.card.stats.niveau?.element || !!props.card.stats.force?.element
+})
 
 const elements = computed(() => {
   if (!hasElements.value) return []
-  return props.card.elements
+
+  const elements = []
+
+  // Ajouter l'élément de niveau s'il existe
+  if (props.card.stats?.niveau?.element) {
+    elements.push(props.card.stats.niveau.element)
+  }
+
+  // Ajouter l'élément de force s'il existe et s'il est différent
+  if (
+    props.card.stats?.force?.element &&
+    props.card.stats.force.element !== props.card.stats?.niveau?.element
+  ) {
+    elements.push(props.card.stats.force.element)
+  }
+
+  return elements
 })
 
 // Gestion des clics
@@ -121,4 +138,4 @@ function getElementColor(element: string): string {
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-</style> 
+</style>
