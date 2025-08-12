@@ -203,6 +203,6 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## 🙏 Remerciements
 
-- Équipe Ankama pour le jeu Wakfu TCG
-- Communauté Vue.js
-- Contributeurs DaisyUI et Tailwind CSS
+- Ankama pour le jeu Wakfu TCG
+- L'équipe de https://www.wtcg-return.fr/ pour leurs assets
+- La communautée WAkfu TCG Return sur Discord pour leur soutien
