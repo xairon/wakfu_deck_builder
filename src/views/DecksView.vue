@@ -128,6 +128,30 @@
                 >
                   <i class="fas fa-edit mr-1"></i> Modifier
                 </router-link>
+                
+                <!-- Bouton d'import pour les decks officiels -->
+                <button
+                  v-if="deck.isOfficial && !isDeckCardsImported(deck.id)"
+                  @click="importDeckCards(deck.id)"
+                  class="btn btn-sm btn-secondary"
+                  :disabled="importingDecks.has(deck.id)"
+                  title="Importer les cartes de ce deck dans votre collection"
+                >
+                  <span v-if="!importingDecks.has(deck.id)" class="flex items-center">
+                    <i class="fas fa-download mr-1"></i> Importer
+                  </span>
+                  <span v-else class="loading loading-spinner loading-sm"></span>
+                </button>
+                
+                <!-- Badge "Importé" pour les decks officiels avec cartes -->
+                <span
+                  v-else-if="deck.isOfficial && isDeckCardsImported(deck.id)"
+                  class="badge badge-success badge-sm"
+                  title="Cartes déjà importées"
+                >
+                  <i class="fas fa-check mr-1"></i> Importé
+                </span>
+                
                 <button
                   @click="confirmDeleteDeck(deck.id, deck.name)"
                   class="btn btn-sm btn-error"
@@ -252,6 +276,7 @@ import { useDeckStore } from '@/stores/deckStore'
 import { useToast } from '@/composables/useToast'
 import { useRouter } from 'vue-router'
 import { useCardStore } from '@/stores/cardStore'
+import { importDeckCardsToCollection, isDeckCardsImported as checkDeckCardsImported } from '@/services/starterService'
 
 // Stores et services
 const deckStore = useDeckStore()
@@ -280,6 +305,9 @@ const importSummary = ref<{
 } | null>(null)
 const exportedDeckText = ref('')
 const currentExportDeckId = ref('')
+
+// État pour l'import de cartes par deck
+const importingDecks = ref(new Set<string>())
 
 // Récupération des decks
 const decks = computed(() => deckStore.decks)
@@ -448,7 +476,27 @@ function isDeckValid(deck: any): boolean {
 }
 
 function getCardsCount(deck: any): number {
-  return deck.cards.reduce((acc: number, card: any) => acc + card.quantity, 0)
+  if (!deck.cards) {
+    return 0
+  }
+  
+  // Tous les decks utilisent maintenant le format DeckCard[] (array)
+  if (Array.isArray(deck.cards)) {
+    return deck.cards.reduce((acc: number, deckCard: any) => acc + deckCard.quantity, 0)
+  }
+  
+  // Si c'est un objet vide, retourner 0 sans warning (cas normal pour les nouveaux decks)
+  if (typeof deck.cards === 'object' && Object.keys(deck.cards).length === 0) {
+    return 0
+  }
+  
+  console.warn(`🚨 Format de cartes non reconnu pour deck "${deck.name}":`, {
+    type: typeof deck.cards,
+    isArray: Array.isArray(deck.cards),
+    keys: Object.keys(deck.cards),
+    cards: deck.cards
+  })
+  return 0
 }
 
 function getDeckClassElement(deck: any): string {
@@ -589,6 +637,50 @@ function confirmImportDeck() {
       title: "Erreur d'importation",
       duration: 8000,
     })
+  }
+}
+
+// === FONCTIONS POUR L'IMPORT DE CARTES PAR DECK ===
+
+/**
+ * Vérifie si les cartes d'un deck sont déjà importées
+ */
+function isDeckCardsImported(deckId: string): boolean {
+  return checkDeckCardsImported(deckId)
+}
+
+/**
+ * Importe les cartes d'un deck officiel dans la collection
+ */
+async function importDeckCards(deckId: string) {
+  importingDecks.value.add(deckId)
+  
+  try {
+    toast.info('🚀 Import des cartes en cours...')
+    
+    const result = await importDeckCardsToCollection(deckId)
+    
+    if (result.errors.length === 0) {
+      toast.success(
+        `✅ Import terminé ! ${result.cardsAdded} cartes ajoutées pour le deck "${result.deckName}".`,
+        { duration: 5000 }
+      )
+    } else {
+      toast.warning(
+        `⚠️ Import terminé avec ${result.errors.length} erreurs. ${result.cardsAdded} cartes ajoutées pour "${result.deckName}".`,
+        { duration: 7000 }
+      )
+      console.log('Erreurs d\'import:', result.errors)
+    }
+    
+    // Forcer la re-évaluation des computed
+    filterDecks()
+    
+  } catch (err) {
+    console.error('❌ Erreur lors de l\'import des cartes:', err)
+    toast.error(`❌ Erreur lors de l'import des cartes: ${err}`)
+  } finally {
+    importingDecks.value.delete(deckId)
   }
 }
 </script>

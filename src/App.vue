@@ -153,6 +153,18 @@ async function initializeApp() {
   try {
     await cardStore.initialize()
     console.log('Base de données des cartes initialisée avec succès')
+    
+    // Initialiser les decks officiels dans la liste
+    try {
+      const { initializeOfficialDecksList } = await import('@/services/starterService')
+      const result = await initializeOfficialDecksList()
+      if (result.decksAdded > 0) {
+        console.log(`✅ ${result.decksAdded} decks officiels ajoutés à la liste`)
+      }
+    } catch (error) {
+      console.warn('⚠️ Erreur lors de l\'initialisation des decks officiels:', error)
+    }
+    
     loadingAttempt.value = 1
   } catch (error) {
     console.error(
