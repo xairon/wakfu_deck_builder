@@ -4,7 +4,6 @@ import CollectionView from '@/views/CollectionView.vue'
 import DeckBuilderView from '@/views/DeckBuilderView.vue'
 import DecksView from '@/views/DecksView.vue'
 import DeckDetailView from '@/views/DeckDetailView.vue'
-import WelcomeSetup from '@/components/welcome/WelcomeSetup.vue'
 
 // Mode local: pas d'auth ni profil
 
@@ -14,12 +13,7 @@ let isSessionInitialized = true
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/welcome',
-      name: 'welcome',
-      component: WelcomeSetup,
-      meta: { guest: true },
-    },
+
     {
       path: '/',
       name: 'home',
@@ -85,20 +79,7 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // Vérification de l'initialisation pour les nouveaux utilisateurs
-  const { isFirstTimeUser, isInitializationCompleted } = await import('@/services/starterService')
-  
-  // Si c'est un nouveau utilisateur et qu'il n'est pas déjà sur la page de bienvenue
-  if (isFirstTimeUser() && !isInitializationCompleted() && to.name !== 'welcome') {
-    next({ name: 'welcome' })
-    return
-  }
-  
-  // Si l'utilisateur a déjà été initialisé et essaie d'accéder à la page de bienvenue
-  if ((!isFirstTimeUser() || isInitializationCompleted()) && to.name === 'welcome') {
-    next({ name: 'home' })
-    return
-  }
+  // Plus de vérification de première utilisation - accès direct à l'app
 
   // Vérification de l'authentification
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
