@@ -1,0 +1,54 @@
+[
+  {
+    "id": "dofus-des-glaces-ankama-convention",
+    "name": "Dofus des Glaces",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Dofus",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Ankama Convention",
+      "number": "",
+      "shortUrl": "https://www.wtcg-return.fr/cartes/ankama-convention-5/dofus-des-glaces"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Ne jouez le Dofus des Glaces que si c'est votre seule carte en main.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand le Dofus des Glaces apparaît, gagnez 2 XP.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Tant que vous contrôlez le Dofus des Glaces, les Alliés ou Héros attaquants ou bloqueurs ne se redressent pas lors de la prochaine phase de redressement de leur contrôleur.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "À conserver au frais et à consommer dans les 48h.\nDofus des Glaces : offrez",
+      "attribution": "le frappé !"
+    },
+    "equipmentType": "Dofus",
+    "requirements": {
+      "level": 0,
+      "elements": []
+    }
+  }
+]

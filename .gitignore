@@ -49,16 +49,16 @@ debug/
 .pnp.* 
 .venv/
 
-# Data files
-data/ 
+# Data files (keep essential data)
+# data/ 
 
 # Analysis files
 analyse/
 analysis/
 
-# Public directory
-public/ 
-public/images/
+# Public directory (keep essential assets)
+# public/ 
+# public/images/
 
-# Scripts
-scripts/ 
+# Scripts (keep essential scripts)
+# scripts/ 
