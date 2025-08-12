@@ -14,11 +14,32 @@
             progression. Connectez-vous pour sauvegarder votre collection en
             ligne et y accéder depuis n'importe quel appareil.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <router-link to="/collection" class="btn btn-primary">
-              Ouvrir la collection
-            </router-link>
-          </div>
+                <!-- Message explicatif pour l'import -->
+      <div class="bg-info/10 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
+        <div class="flex items-center gap-2 mb-3">
+          <i class="fas fa-info-circle text-info"></i>
+          <h3 class="font-semibold text-lg">💡 Comment commencer ?</h3>
+        </div>
+        <p class="text-base-content/80 mb-4">
+          Votre collection est vide ! Pour commencer à jouer, rendez-vous dans la 
+          <strong>liste des decks</strong> où vous trouverez les decks officiels pré-configurés.
+        </p>
+        <p class="text-sm text-base-content/60">
+          🎯 <strong>Astuce :</strong> Chaque deck officiel a un bouton <span class="badge badge-secondary badge-sm">Importer</span> 
+          pour ajouter ses cartes à votre collection !
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <router-link to="/collection" class="btn btn-primary">
+          <i class="fas fa-cards-blank mr-2"></i>
+          Ouvrir la collection
+        </router-link>
+        <router-link to="/decks" class="btn btn-secondary">
+          <i class="fas fa-layer-group mr-2"></i>
+          Voir les decks
+        </router-link>
+      </div>
         </div>
       </div>
     </div>
