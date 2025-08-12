@@ -11,16 +11,6 @@ Application locale (web et desktop) de construction de decks et gestion de colle
 - **📱 Interface responsive** : Fonctionne sur desktop et mobile
 - **🎨 Interface moderne** : Design avec Tailwind CSS et DaisyUI
 
-## 🛠 Technologies Utilisées
-
-- **Vue 3** avec Composition API
-- **TypeScript** pour la sécurité des types
-- **Pinia** pour la gestion d'état
-- **Vue Router** pour la navigation
-- **Tailwind CSS** + **DaisyUI** pour l'interface
-- **Vite** pour le build et le développement
-- **Vitest** pour les tests
-
 ## 📦 Installation rapide
 
 1. **Cloner le projet**
@@ -44,40 +34,6 @@ Application locale (web et desktop) de construction de decks et gestion de colle
    ```bash
    npm run tauri:dev
    ```
-
-## 🏗 Scripts
-
-- `npm run dev` - Lance le serveur de développement
-- `npm run build` - Build pour la production
-- `npm run serve` - Prévisualise le build de production
-- `npm run test:unit` - Lance les tests unitaires
-- `npm run lint` - Vérifie le code avec ESLint
-- `npm run type-check` - Vérifie les types TypeScript
-- `npm run tauri:dev` - Lance l'appli Desktop en dev
-- `npm run tauri:build` - Construit l'exécutable (.exe / .msi)
-
-## 📁 Structure du Projet
-
-```
-src/
-├── components/           # Composants Vue réutilisables
-│   ├── card/            # Composants liés aux cartes
-│   ├── collection/      # Composants de la collection
-│   ├── common/          # Composants communs
-│   ├── deck/            # Composants des decks
-│   └── elements/        # Composants d'éléments
-├── composables/         # Hooks Vue personnalisés
-├── services/            # Services de données
-│   ├── cardLoader.ts    # Chargement des cartes
-│   └── localStorage.ts  # Stockage local
-├── stores/              # Stores Pinia
-│   ├── cardStore.ts     # Gestion des cartes et collection
-│   └── deckStore.ts     # Gestion des decks
-├── types/               # Définitions TypeScript
-├── utils/               # Utilitaires
-├── views/               # Pages de l'application
-└── router/              # Configuration du routeur
-```
 
 ## 💾 Données & Persistance
 
@@ -139,38 +95,6 @@ Les exécutables signés localement peuvent être détectés par certains antivi
 - Construire depuis vos sources locales
 - Pour distribution publique, signature de code recommandée
 
-## 🧪 Tests
-
-### Lancer les tests
-```bash
-npm run test:unit
-```
-
-### Coverage
-```bash
-npm run coverage
-```
-
-Les tests couvrent :
-- Validation des decks
-- Gestion d'erreurs
-- Stores Pinia
-- Utilitaires
-
-## 🐛 Dépannage
-
-### Données perdues
-Si vos données sont perdues, vérifiez :
-1. Que localStorage n'est pas désactivé
-2. Qu'il reste de l'espace de stockage disponible
-3. Que vous n'êtes pas en mode navigation privée
-
-### Performance
-Pour améliorer les performances :
-1. Videz le cache du navigateur
-2. Redémarrez l'application
-3. Vérifiez la taille de votre collection
-
 ## 📦 Releases (binaries)
 
 Des exécutables Windows sont générés via Tauri:
@@ -197,9 +121,6 @@ Un workflow GitHub Actions publie automatiquement une release avec les binaires 
 4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrez une Pull Request
 
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## 🙏 Remerciements
 
