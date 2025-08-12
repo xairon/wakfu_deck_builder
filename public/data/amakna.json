@@ -1,0 +1,7356 @@
+[
+  {
+    "id": "abraknyde-sombre-amakna",
+    "name": "Abraknyde Sombre",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Abraknyde"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "19/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-19"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "terre"
+      },
+      "force": {
+        "value": 4,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "L'Abraknyde Sombre inflige 2 Dommages  à l'Allié ou Héros de votre choix dans le Monde ou dans son Havre Sac.",
+        "elements": [
+          "terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Le tronc flétri, les branches dégarnies, l'Abraknyde Sombre a des raisons de se ronger le bout des feuilles…"
+    },
+    "race": "Monstre",
+    "tribe": "Abraknyde"
+  },
+  {
+    "id": "absorption-amakna",
+    "name": "Absorption",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Sacrieur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "115/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-115"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "L'Absorption inflige 2 Dommages  à l'Allié ou Héros de votre choix. Votre Héros regagne un nombre de PV égal au nombre de Dommages infligés de cette façon.",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Crowley"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il absorbe et protège deux fois plus qu'un sort ordinaire. Vos ennemis n'ont plus qu'à prendre la fuite."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "acceleration-amakna",
+    "name": "Accélération",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Enutrof"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "105/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-105"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le joueur de votre choix gagne 1 PM jusqu'à la fin de son prochain tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Nénent"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Je vais vite, je m'entraaaîîîînne, à n'pas perdre une secoooooonnnde ! — Glaurie, ménestrelle dynamique."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "aiguille-chercheuse-amakna",
+    "name": "Aiguille Chercheuse",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Xélor"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "121/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-121"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez l'Aiguille Chercheuse en jeu comme un « Monstre — Aiguille Chercheuse » de Force 1 .",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "L'Aiguille Chercheuse inflige 1 Dommage  au Héros du joueur de votre choix qui vient de perdre un ou plusieurs PA.",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Gray Shuko"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Aiguille Chercheuse est le sort favori des provocateurs, de ceux qui aiment piquer là où ça fait mal…"
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "alibert-amakna",
+    "name": "Alibert",
+    "mainType": "Allié",
+    "subTypes": [
+      "Enutrof"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "74/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-74"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "eau"
+      },
+      "force": {
+        "value": 3,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Tant qu'Alibert est dans le Monde, vos PA sont augmentés de 1.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "La Blanquette spéciale Alibert, elle est bonne à se taper le biiiip par terre ! — Yugo."
+    },
+    "race": "Enutrof"
+  },
+  {
+    "id": "alliance-de-silimelle-amakna",
+    "name": "Alliance de Silimelle",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Bijou",
+      "Anneau"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "155/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-155"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Gagnez 1 XP. Ne jouez ce pouvoir qu'à la fin d'un combat pendant lequel un adversaire a infligé un ou plusieurs Dommages à votre Héros.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bijoutier 3",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Sandrine Vanneste (Alhera)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Voici six belles Silimelles. S'y mêlent six similis semelles. Sont",
+      "attribution": "elles aussi belles ? — Exercice de diction."
+    },
+    "equipmentType": "Bijou",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "allister-roi-d-amakna-amakna",
+    "name": "Allister, Roi d'Amakna",
+    "mainType": "Allié",
+    "subTypes": [
+      "Roi",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "40/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-40"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 7,
+        "element": "air"
+      },
+      "force": {
+        "value": 4,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Défense",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Tant qu'Allister, Roi d'Amakna est dans le Monde, tous les Dommages sur le point d'être infligés à votre Héros sont réduits à 0.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 3,
+    "artists": [
+      "Farhad Chams"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Le bon Roi Allister a mis sa panop' à l'envers ! — Chanson populaire."
+    },
+    "race": "Roi",
+    "tribe": "Unique"
+  },
+  {
+    "id": "amakna-le-village-amakna",
+    "name": "Amakna, le Village",
+    "mainType": "Zone",
+    "subTypes": [
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "133/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-133"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le coût de chaque Action, Sort ou pouvoir joué par un adversaire pendant un combat où vous êtes défenseur est augmenté de .",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Moiii j'aime scier ! Tutululututuluuu… Moi j'aime scier",
+      "attribution": "er ! — Le peuple du Village."
+    }
+  },
+  {
+    "id": "amukwak-de-glace-amakna",
+    "name": "Amukwak de Glace",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Bijou",
+      "Amulette",
+      "Kwak de Glace"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "153/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-153"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand le Porteur de l'Amukwak de Glace est détruit, vous pouvez piocher jusqu'à deux cartes.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bijoutier 1",
+        "elements": [
+          "eau"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Étrangement, lorsque c'est Katsou Mee qui la porte, cette amulette ne laisse personne de glace…"
+    },
+    "equipmentType": "Bijou",
+    "requirements": {
+      "level": 1,
+      "elements": []
+    }
+  },
+  {
+    "id": "anneau-fioutioure-amakna",
+    "name": "Anneau Fioutioure",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Bijou",
+      "Anneau"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "156/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-156"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Regardez les trois premières cartes de votre Pioche. Recyclez les cartes de votre choix et remettez les autres sur le dessus de votre Pioche dans l'ordre de votre choix.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Vous pouvez choisir de recycler les trois cartes. Dans ce cas, vous ne remettez pas de carte au dessus de votre Pioche.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bijoutier 2",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [
+      "Vous pouvez choisir de recycler les trois cartes. Dans ce cas, vous ne remettez pas de carte au dessus de votre Pioche."
+    ],
+    "flavor": {
+      "text": "La fin dou monde est proche, soit ! Mais cé n'est pas oune raison pour porter dou toc !",
+      "attribution": "Plako Raibann."
+    },
+    "equipmentType": "Bijou",
+    "requirements": {
+      "level": 2,
+      "elements": []
+    }
+  },
+  {
+    "id": "apioucalypse-amakna",
+    "name": "Apioucalypse",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "93/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-93"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Tous les Alliés Piou gagnent +2 en Force et  jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "À la fin du tour, détruisez tous les Alliés Piou dans le Monde et dans les Havres Sacs.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Aimé Jalon"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "J'adore l'odeur du guano au petit matin… L'odeur de la victoire. — Ekraz Lenoub."
+    }
+  },
+  {
+    "id": "appel-de-la-garde-amakna",
+    "name": "Appel de la Garde",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "86/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-86"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Révélez les trois premières cartes de votre Pioche. Mettez tous les Alliés Chevalier révélés de cette façon dans votre main, puis recyclez les autres cartes.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Cette carte possède un numéro incorrect, elle est imprimée #88 mais est en réalité la carte #86 de l'extension.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Nicolas Mitric",
+      "Sébastien Lamirand"
+    ],
+    "notes": [
+      "Cette carte possède un numéro incorrect, elle est imprimée #88 mais est en réalité la carte #86 de l'extension."
+    ],
+    "flavor": {
+      "text": "Sonnez la Laaarve ! Aux armes, miliciens ! Formez vos bataillons !",
+      "attribution": "Sergent Gracia, chef de la milice d'Amakna."
+    }
+  },
+  {
+    "id": "arbre-amakna",
+    "name": "Arbre",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Sadida"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "118/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-118"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 3,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez l'Arbre en jeu dans le Monde comme un « Monstre — Arbre » de Force 3  qui ne peut ni attaquer, ni bloquer.",
+        "elements": [
+          "terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Chaque fois qu'un adversaire doit effectuer un choix pour une Action, un Sort ou un pouvoir, il doit choisir l'Arbre si possible.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Karine Le Logeais (Kness)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Me couper l'arbre sous l'pied ?! Faut pas pousser ! — Berkzoy, Sadida qui n'aime pas qu'on lui casse les graines."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "arc-du-roi-des-borins-amakna",
+    "name": "Arc du Roi des Borins",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Arc"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "149/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-149"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "L'Arc du Roi des Borins inflige 1 Dommages  à l'Allié ou Héros de votre choix.",
+        "elements": [
+          "terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Quand un joueur adverse déclare une attaque, vous pouvez redresser l'Arc du Roi des Borins.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Forgeron 3",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Le Roi des Borins est le seul archer équipé pour tirer deux coups en même temps. Avouez que ça vous en bouche un coin !"
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "atelier-de-forgemagie-amakna",
+    "name": "Atelier de Forgemagie",
+    "mainType": "Salle",
+    "subTypes": [
+      "Atelier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "134/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-134"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Recyclez un Équipement de votre Défausse : Le Porteur de l'Équipement de votre choix gagne +1 en Force et  dans l'élément de l'Équipement recyclé jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bricoleur 3",
+        "elements": [
+          "neutre"
+        ]
+      }
+    ],
+    "artists": [
+      "Paul Mayafon"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Atelier de Forgemagie Magie, et vos idées ont du géniiiiiiie !!"
+    }
+  },
+  {
+    "id": "baton-des-rois-amakna",
+    "name": "Bâton des Rois",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Bâton"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "150/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-150"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "pv": 2
+    },
+    "effects": [
+      {
+        "description": "Vos Alliés ou Héros attaquants ou bloqueurs gagnent +1 en Force jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "N'utilisez ce pouvoir que si le Porteur du Bâton des Rois est attaquant ou bloqueur.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Forgeron 3",
+        "elements": [
+          "feu"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Guillaume Coudriau (Inooni)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Touloulou ! Promotion au rayon bâtons ! Venez découvrir la réplique quasi exacte du Bâton du Wa ! Offre à saisir !"
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "elements": []
+    }
+  },
+  {
+    "id": "berlanette-chichi-amakna",
+    "name": "Berlanette Chichi",
+    "mainType": "Allié",
+    "subTypes": [
+      "Enutrof"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "67/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-67"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "eau"
+      },
+      "force": {
+        "value": 2,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Berlanette Chichi apparaît, vous pouvez révéler la carte du dessous de votre Pioche. S'il s'agit d'un Allié ou d'un Équipement, prenez-la en main. Sinon, mettez-la dans votre Défausse.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Didier Chrispeels (Crisse)",
+      "Roberto Pena"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Son sac est rempli de jolies pièces jaunes, soigneusement amassées par son ami Vadid Mouillet."
+    },
+    "race": "Enutrof"
+  },
+  {
+    "id": "bigou-drif-amakna",
+    "name": "Bigou Drif",
+    "mainType": "Allié",
+    "subTypes": [
+      "Iop"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "32/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-32"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "air"
+      },
+      "force": {
+        "value": 3,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Placez Bigou Drif en bloqueur devant l'Allié ou Héros attaquant de votre choix.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Carlo Toselli"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Quand Bigou Drif est de mauvais poil, ça frise le ridicule…"
+    },
+    "race": "Iop"
+  },
+  {
+    "id": "black-tiwabbit-amakna",
+    "name": "Black Tiwabbit",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Wabbit"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "65/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-65"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "eau"
+      },
+      "force": {
+        "value": 1,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Agilité",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Dites « WABEHAMEHA ! » : Le Black Tiwabbit inflige 1 Dommage  à l'Allié ou Héros de votre choix, puis détruisez-le.",
+        "elements": [
+          "eau"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Karine Le Logeais (Kness)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "L'amouw wend fou, il n'y a que la guewwe qui Wambo — Black Tiwabbit."
+    },
+    "race": "Monstre",
+    "tribe": "Wabbit"
+  },
+  {
+    "id": "blessdags-amakna",
+    "name": "Blessdags",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Dagues"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "146/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-146"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "La Force du Porteur des Blessdags est doublée jusqu'à la fin du tour. Détruisez les Blessdags à la fin du tour.",
+        "elements": [
+          "air"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Forgeron 3",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "À tous les Iops qui voudraient en faire usage : attention, ces dagues blessent…"
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "bony-parc-ur-amakna",
+    "name": "Bony Parcœur",
+    "mainType": "Allié",
+    "subTypes": [
+      "Sram"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "10/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-10"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "terre"
+      },
+      "force": {
+        "value": 2,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Tacle",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Tant qu'elle est dressée, Bony Parcœur ne peut pas être choisie par un joueur adverse.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Souillon (Maliki)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Après avoir braqué la banque d'Astrub avec Klaïd Barreau, Bony ne pouvait que finir derrière les barreaux !"
+    },
+    "race": "Sram"
+  },
+  {
+    "id": "botte-secrete-amakna",
+    "name": "Botte Secrète",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "81/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-81"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "L'Allié ou Héros de votre choix sur le point d'infliger ou de subir un ou plusieurs Dommages gagne +1 en Force jusqu'à la fin du tour. S'il s'agit d'un Chevalier, il gagne +2 en Force à la place.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Alexandre Papet"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Dans la vie, quand je comprends pas quelque chose, j'utilise ma Botte Secrète. — Perse Oval, aventurier futé."
+    }
+  },
+  {
+    "id": "bottes-du-craqueleur-amakna",
+    "name": "Bottes du Craqueleur",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Armure",
+      "Bottes",
+      "Craqueleur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "144/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-144"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "pv": 1
+    },
+    "effects": [
+      {
+        "description": "Le Porteur des Bottes du Craqueleur gagne .",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Trait Arme remplacé par Armure.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Armurier 1",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [
+      "Trait Arme remplacé par Armure."
+    ],
+    "flavor": {
+      "text": "Aieu ! J'ai un caillou dans ma chaussure ! — Maskara, Sadidette sensible des plantes des pieds."
+    },
+    "equipmentType": "Armure",
+    "requirements": {
+      "elements": []
+    }
+  },
+  {
+    "id": "boufton-noir-amakna",
+    "name": "Boufton Noir",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Bouftou"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "6/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-6"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "terre"
+      },
+      "force": {
+        "value": 1,
+        "element": "terre"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "artists": [
+      "Floriane Grivillers (Foya)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Zyva Boufton ! File",
+      "attribution": "moi ta laine ou j'te transforme en quetteblan !"
+    },
+    "race": "Monstre",
+    "tribe": "Bouftou"
+  },
+  {
+    "id": "bwork-archer-amakna",
+    "name": "Bwork Archer",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Bwork"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "46/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-46"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "feu"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Bwork Archer inflige 1 Dommage  à l'Allié de votre choix qui vient de subir des Dommages.",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Nicolas Mitric",
+      "Sébastien Lamirand"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "C'est en chantant « Bwork ! Bwork ! Bwork ! » que Sabrinarc devint la cible d'un groupe de Bworks Archers en rut."
+    },
+    "race": "Monstre",
+    "tribe": "Bwork"
+  },
+  {
+    "id": "bworky-amakna",
+    "name": "Bworky",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Familier",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "159/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-159"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Au début de votre tour, recyclez une carte  ou  de votre Défausse ou détruisez le Bworky.",
+        "elements": [
+          "terre",
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Au début de votre tour, vous pouvez vous défausser d'une carte de votre main. Si vous le faites, piochez une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "François Houssin (Franho)",
+      "Fabrice Nzinzi (Ntamak)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il a longtemps vécu dans un bocal. D'ailleurs, quand on le regarde, on se demande lequel des deux on a gardé."
+    },
+    "equipmentType": "Familier",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "calben-amakna",
+    "name": "Calben",
+    "mainType": "Allié",
+    "subTypes": [
+      "Enutrof"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "48/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-48"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "feu"
+      },
+      "force": {
+        "value": 2,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Détruisez Calben : Détruisez l'Équipement de votre choix porté par un Allié ou Héros qui bloque ou est bloqué par Calben.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Calben est l'un des membres fondateurs du Real Boitard avec Poscho, Ruel, Tolot et Afka."
+    },
+    "race": "Enutrof"
+  },
+  {
+    "id": "cavalier-porkass-amakna",
+    "name": "Cavalier Porkass",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Porkass"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "11/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-11"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "terre"
+      },
+      "force": {
+        "value": 2,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Cavalier Porkass ne peut pas être bloqué par des Alliés ou Héros de Force strictement inférieure à la sienne.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Grooouuiiik, grouiiiik, huummppfff, groooouuiikk, humpf, grrrr, groouuiiikkk ! — Célèbre maxime Porkass."
+    },
+    "race": "Monstre",
+    "tribe": "Porkass"
+  },
+  {
+    "id": "cawotte-amakna",
+    "name": "Cawotte",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Élémentaire"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "123/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-123"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez la Cawotte en jeu dans le Monde comme une Zone.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Détruisez la Cawotte : Le Héros de votre choix regagne 3 PV.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "François Houssin (Franho)",
+      "Sandrine Vanneste (Alhera)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Klawa Owgane m'a dit un jouw qu'elle adowait les gwosses Cawottes. — Le Wa Wabbit."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "cervelle-de-iop-amakna",
+    "name": "Cervelle de Iop !",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "82/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-82"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Détruisez l'Allié de Niveau 1 de votre choix. Piochez une carte",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Thebe",
+      "Pouillie"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Organe chimérique qui a longtemps fait l'objet de recherches approfondies. — Définition donnée par Dikô la Rousse."
+    }
+  },
+  {
+    "id": "chafer-lancier-amakna",
+    "name": "Chafer Lancier",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Chafer",
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "53/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-53"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "feu"
+      },
+      "force": {
+        "value": 3,
+        "element": "feu"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Utilisé dans le sport populaire du Lancer de Chafer, on le connaît aussi sous le nom de Chafer Lancier Lancé."
+    },
+    "race": "Monstre",
+    "tribe": "Chafer"
+  },
+  {
+    "id": "chateau-d-amakna-amakna",
+    "name": "Château d'Amakna",
+    "mainType": "Zone",
+    "subTypes": [
+      "Château",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "128/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-128"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Cherchez un Allié Chevalier, Roi ou Princesse de Niveau X dans votre Pioche et mettez-le en jeu, puis mélangez votre Pioche.",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Bertrand Hottin"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Oh mon châteaaauuu, tu es le plus beau des châteaux, et tu me guides vers les flooots ! — Allister lors du déluge."
+    }
+  },
+  {
+    "id": "chateau-des-wabbits-amakna",
+    "name": "Château des Wabbits",
+    "mainType": "Zone",
+    "subTypes": [
+      "Château",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "131/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-131"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Chaque fois qu'un Allié Wabbit apparait dans le Monde, vous pouvez piocher une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Aymeric Kevin (Aymrc)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Clé du Matin Pewlant, Clé du Midi Wayonnant et Clé du Soiw Woulant vous ouvriront les portes du Château des Wabbits."
+    }
+  },
+  {
+    "id": "chevalier-feuille-amakna",
+    "name": "Chevalier Feuille",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "16/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-16"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "terre"
+      },
+      "force": {
+        "value": 3,
+        "element": "terre"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "air"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Jonn"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ce Chevalier fait un tabac ! On peut dire que ça roule pour lui !"
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "chevalier-flamme-amakna",
+    "name": "Chevalier Flamme",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "54/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-54"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "feu"
+      },
+      "force": {
+        "value": 3,
+        "element": "feu"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "eau"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Jonn"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Un jour, le père de Flamme s'est fait des cendres… Il ne s'en est jamais remis."
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "chevalier-goutte-amakna",
+    "name": "Chevalier Goutte",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "73/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-73"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "eau"
+      },
+      "force": {
+        "value": 3,
+        "element": "eau"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "feu"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Xavier Houssin (Xa)",
+      "Etienne Corbaux (Blacklilipute)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "L'arme préférée du Chevalier Goutte ? La Hache Deux Os, naturellement."
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "chevalier-nogard-amakna",
+    "name": "Chevalier Nogard",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "26/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-26"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "air"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Sébastien Piquet"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Dans le jeu online DOFUS, le Chevalier Nogard garde le pont menant à la bijouterie d'Azra Lazarus."
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "chevalier-nuage-amakna",
+    "name": "Chevalier Nuage",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "34/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-34"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "air"
+      },
+      "force": {
+        "value": 3,
+        "element": "air"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "terre"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "feu"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Xavier Houssin (Xa)",
+      "Etienne Corbaux (Blacklilipute)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "J'ai la tête dans le cumulus moi ce matin ! — Chevalier Nuage."
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "chevalier-tenebres-amakna",
+    "name": "Chevalier Ténèbres",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "3/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-3"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Défense",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Les Dommages infligés par le Chevalier Ténèbres ne peuvent pas être réduits.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "air"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "eau"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "terre"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "feu"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "neutre"
+        ]
+      },
+      {
+        "name": "Le",
+        "description": "Chevalier Ténèbres a une Résistance d'un point dans chaque élément."
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
+    "notes": [
+      "Le Chevalier Ténèbres a une Résistance d'un point dans chaque élément."
+    ],
+    "flavor": {
+      "text": "Dans le jeu online DOFUS, l'Arme Tourmenteur permet de se transformer en Chevalier Ténèbres.Exemple : s'il doit subir en même temps 1 Dommage , 1 Dommage  et 2 Dommages , le Chevalier Ténèbres ne subira qu'un seul Dommage ."
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "cimetiere-d-amakna-amakna",
+    "name": "Cimetière d'Amakna",
+    "mainType": "Zone",
+    "subTypes": [
+      "Cimetière"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "129/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-129"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Au début de votre tour, recyclez une carte  ou détruisez le Cimetière d'Amakna.",
+        "elements": [
+          "terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Choisissez un Allié de Niveau 1 dans votre Défausse et mettez-le jeu. Votre Héros perd 1 PV.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ultime date pour la tournée Zissizite. Les places dans la fosse commune vont être chères !"
+    }
+  },
+  {
+    "id": "coffre-anime-amakna",
+    "name": "Coffre Animé",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Enutrof"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "106/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-106"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 1,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez le Coffre Animé en jeu dans le Monde comme un « Monstre — Coffre » de Force 1 .",
+        "elements": [
+          "eau"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Piochez une carte. Ne jouez ce pouvoir que lorsque vous êtes sur le point de piocher une ou plusieurs cartes grâce à une Action ou un Sort.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Aurélie Neyret"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "J'adore quand mes ennemies ont du coffre… — Toyo Dzink Enutrof vicieux."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "coiffe-du-prespic-amakna",
+    "name": "Coiffe du Prespic",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Armure",
+      "Chapeau",
+      "Prespic"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "141/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-141"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand la Coiffe du Prespic apparaît, vous pouvez l'incliner. Si vous le faites, cherchez un Parchemin dans votre Pioche et prenez-le en main, puis mélangez votre Pioche.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Armurier 3",
+        "elements": [
+          "feu"
+        ]
+      }
+    ],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Michael Olivier (Mikl)"
+    ],
+    "notes": [
+      "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\""
+    ],
+    "flavor": {
+      "text": "Cette coiffe est réversible pour garantir le confort des Osamodas."
+    },
+    "equipmentType": "Armure",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "corbeau-amakna",
+    "name": "Corbeau",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Osamodas"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "112/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-112"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Corbeau inflige 1 Dommage  et 1 Dommage  à l'Allié ou Héros de votre choix. Ces Dommages ne peuvent pas être réduits.",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Karine Le Logeais (Kness)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Crrroâââ ! Shhh… ShtaAAAakk !! … Aïïïe",
+      "attribution": "euh !! — Démonstration du lancer de Corbeau par un novice Osamodas."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "crabe-amakna",
+    "name": "Crabe",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Crustacé"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "63/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-63"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "eau"
+      },
+      "force": {
+        "value": 1,
+        "element": "eau"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Son teint hâlé fait fureur auprès de la gent féminine. C'est pourquoi on dit qu'il est  « chaud de la pince »."
+    },
+    "race": "Monstre",
+    "tribe": "Crustacé"
+  },
+  {
+    "id": "crail-amakna",
+    "name": "Crail",
+    "mainType": "Allié",
+    "subTypes": [
+      "Féca"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "55/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-55"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "feu"
+      },
+      "force": {
+        "value": 3,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Crail apparaît, vous pouvez chercher un Dofus dans votre Pioche, le révéler et le prendre en main. Si vous le faites, mélangez votre Pioche.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand Crail est détruit, vous pouvez le bannir à la place. Si vous le faites, mettez en jeu gratuitement un Dofus de votre main sans déclencher son effet d'apparition.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Deruyck Vincent (Ancestral Z)",
+      "Joachim Leclercq (Mojojojo)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Au moment où son Dofus lui échappa, plutôt que de se lamenter, le grand",
+      "attribution": "père d'Arty rit."
+    },
+    "race": "Féca"
+  },
+  {
+    "id": "crapaud-royal-amakna",
+    "name": "Crapaud Royal",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Amphibion",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "80/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-80"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "eau"
+      },
+      "force": {
+        "value": 5,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Agilité",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Déclenchez l'effet d'apparition d'un de vos Monstres de Niveau inférieur ou égal à 3 de votre choix.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Le pouvoir du Crapaud Royal peut être utilisé sur un de vos Monstres n'ayant aucun pouvoir d'apparition ou un pouvoir d'apparition qui serait inactif (sur un Black Wabbit dans votre Havre Sac, par exemple). Dans ce cas, rien ne se passe ensuite.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 2,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [
+      "Le pouvoir du Crapaud Royal peut être utilisé sur un de vos Monstres n'ayant aucun pouvoir d'apparition ou un pouvoir d'apparition qui serait inactif (sur un Black Wabbit dans votre Havre Sac, par exemple). Dans ce cas, rien ne se passe ensuite."
+    ],
+    "flavor": {
+      "text": "Alors, si j'ai bien compris, si je l'embrasse je me transforme en roi, c'est ça ? — Koltard, Iop à la masse."
+    },
+    "race": "Monstre",
+    "tribe": "Amphibion"
+  },
+  {
+    "id": "craquamulette-amakna",
+    "name": "Craquamulette",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Bijou",
+      "Amulette",
+      "Craqueleur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "154/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-154"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Porteur de la Craquamulette gagne  .",
+        "elements": [
+          "terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bijoutier 1",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "C'est en écrasant par hasard cette amulette avec son pied que Kriboule l'Erodé s'écria : « Craaac amulette ! »"
+    },
+    "equipmentType": "Bijou",
+    "requirements": {
+      "level": 2,
+      "elements": []
+    }
+  },
+  {
+    "id": "craqueboule-amakna",
+    "name": "Craqueboule",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Craqueleur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "8/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-8"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "terre"
+      },
+      "force": {
+        "value": 1,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez la carte du dessus de la Pioche du joueur de votre choix dans sa Défausse.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Séverine Duboscq"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Le Craqueboule a un joujou extra. Les dames Enutrof en tombent à genoux en criant : « Craqueboule hue ! »"
+    },
+    "race": "Monstre",
+    "tribe": "Craqueleur"
+  },
+  {
+    "id": "craqueleur-des-plaines-amakna",
+    "name": "Craqueleur des Plaines",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Craqueleur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "38/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-38"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "air"
+      },
+      "force": {
+        "value": 4,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Géant",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand le Craqueleur des Plaines apparaît, le joueur de votre choix perd 2 PA jusqu'à la fin du tour. Ce joueur peut incliner jusqu'à deux Alliés qu'il contrôle dans le Monde pour réduire cette perte de 1 PA par Allié incliné.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Savez",
+      "attribution": "vous que les fortifications de Bonta sont faites en fesse de Craqueleur ? Ça pète non ?!"
+    },
+    "race": "Monstre",
+    "tribe": "Craqueleur"
+  },
+  {
+    "id": "crochet-du-gauche-d-ogrest-amakna",
+    "name": "Crochet du Gauche d'Ogrest",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "96/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-96"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 6,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Détruisez jusqu'à trois cartes de votre choix parmi les Alliés, les Zones et les Équipements contrôlés par le joueur de votre choix. Vous ne pouvez pas détruire plus d'une carte du même type.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Fabrice Nzinzi (Ntamak)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ogrest n'a jamais été très adroit pour le point de crocher. Son point fort, c'est plutôt le crochet du gauche."
+    }
+  },
+  {
+    "id": "crocodaille-amakna",
+    "name": "Crocodaille",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Crocodaille"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "76/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-76"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "eau"
+      },
+      "force": {
+        "value": 4,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand le Crocodaille apparaît, vous pouvez détruire la Zone de votre choix.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Carlos Pardo (Made)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Pour jouer les dandies, rien de tel qu'une paire de bottes en écailles de Crocodaille !"
+    },
+    "race": "Monstre",
+    "tribe": "Crocodaille"
+  },
+  {
+    "id": "croum-amakna",
+    "name": "Croum",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Familier",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "158/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-158"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Au début de votre tour, perdez 1 PA jusqu'à la fin du tour ou détruisez le Croum.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Porteur du Croum gagne  .",
+        "elements": [
+          "air",
+          "eau",
+          "terre",
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "François Houssin (Franho)",
+      "Fabrice Nzinzi (Ntamak)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Sous son corps de chrome, le Croum est une vraie crème qui lutte contre le crime."
+    },
+    "equipmentType": "Familier",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "cruel-amakna",
+    "name": "Cruel",
+    "mainType": "Action",
+    "subTypes": [
+      "Challenge"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "126/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-126"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "À la fin de la phase d'action, si aucun adversaire ne contrôle d'Allié ou Héros dans ce combat, vous gagnez 2 XP.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Souillon (Maliki)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Cruel est un Challenge dans le jeu online DOFUS rapportant de l'XP et un bonus au drop en combat."
+    },
+    "spellSchool": "Challenge"
+  },
+  {
+    "id": "cruelle-pelle-truelle-amakna",
+    "name": "Cruelle Pelle Truelle",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Pelle"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "148/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-148"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "pm": 1
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Forgeron 3",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Oooh Cruelle Pelle Truelle ! C'est officiel, tu es la plus fidèle des demoiselles ! — Enutrof esseulé qui fait du zèle."
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "elements": []
+    }
+  },
+  {
+    "id": "demon-x-amakna",
+    "name": "Démon X",
+    "mainType": "Allié",
+    "subTypes": [
+      "Démon",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "60/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-60"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 6,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Géant",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand le Démon X apparaît, détruisez jusqu'à trois de vos Alliés. Tant que le Démon X est en jeu, sa Force est égale à la Force cumulée des Alliés détruits de cette façon.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Si vous choisissez de ne détruire aucun de vos Alliés lors de l'apparition du Démon X, sa Force est alors égale à 0 et le Démon X est immédiatement détruit.\nSi le Démon X est dans votre défausse, et qu'une carte cherche à savoir quelle est sa Force (comme une Blanquette Spéciale Alibert, par exemple), alors sa Force est 0.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "2",
+        "elements": [
+          "feu"
+        ]
+      }
+    ],
+    "experience": 2,
+    "artists": [
+      "Ulrick Wery"
+    ],
+    "notes": [
+      "Si vous choisissez de ne détruire aucun de vos Alliés lors de l'apparition du Démon X, sa Force est alors égale à 0 et le Démon X est immédiatement détruit. Si le Démon X est dans votre défausse, et qu'une carte cherche à savoir quelle est sa Force (comme une Blanquette Spéciale Alibert, par exemple), alors sa Force est 0."
+    ],
+    "flavor": {
+      "text": "Autrefois, il s'appelait Morko'Ru'Krem. Dix contre un que personne ne s'en souvient…"
+    },
+    "race": "Démon",
+    "tribe": "Unique"
+  },
+  {
+    "id": "demone-iv-amakna",
+    "name": "Démone IV",
+    "mainType": "Allié",
+    "subTypes": [
+      "Démon",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "79/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-79"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "eau"
+      },
+      "force": {
+        "value": 5,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Géant",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand la Démone IV apparaît, vous pouvez choisir un ou plusieurs Équipements contrôlés par un autre joueur dans le Monde ou dans son Havre Sac et les déplacer de leur Porteur actuel vers un autre Porteur contrôlé par le même joueur. Tous les nouveaux Porteurs doivent être légaux.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Vous pouvez choisir des Équipements provenant de plusieurs porteurs différents, et les déplacer vers autant d'Alliés différents que possible ; tous les choix sont faits simultanément. Cela ne vous permet pas de déplacer des Équipements de manière illégale, comme déplacer une Coiffe du Bouftou sur un Monstre, ou déplacer une Amulette sur un Allié en portant déjà une, par exemple.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "\"Tous les nouveaux Porteurs doivent être légaux.\" a été reprécisé dans l'effet afin de coller précisément à l'effet attendu.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "2",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "experience": 2,
+    "artists": [
+      "Ulrick Wery"
+    ],
+    "notes": [
+      "Vous pouvez choisir des Équipements provenant de plusieurs porteurs différents, et les déplacer vers autant d'Alliés différents que possible ; tous les choix sont faits simultanément. Cela ne vous permet pas de déplacer des Équipements de manière illégale, comme déplacer une Coiffe du Bouftou sur un Monstre, ou déplacer une Amulette sur un Allié en portant déjà une, par exemple.",
+      "\"Tous les nouveaux Porteurs doivent être légaux.\" a été reprécisé dans l'effet afin de coller précisément à l'effet attendu."
+    ],
+    "flavor": {
+      "text": "Cette démone très coquette est toujours tirée à quatre épingles…"
+    },
+    "race": "Démon",
+    "tribe": "Unique"
+  },
+  {
+    "id": "dofus-ebene-amakna",
+    "name": "Dofus Ébène",
+    "mainType": "Dofus",
+    "subTypes": [
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "161/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-161"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Ne jouez le Dofus Ébène que si votre Défausse contient un Niveau cumulé d'Alliés supérieur ou égal à 15.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand le Dofus Ébène apparaît, vous pouvez détruire l'Allié de votre choix dans le Monde ou dans un Havre Sac. Gagnez 2 XP.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "François Houssin (Franho)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ne pas absorber. Il ne s'agit pas d'un Dofus en chocolat ! — Précaution d'emploi destinée aux Iops."
+    },
+    "requirements": {
+      "level": 0,
+      "elements": []
+    }
+  },
+  {
+    "id": "dofus-ivoire-amakna",
+    "name": "Dofus Ivoire",
+    "mainType": "Dofus",
+    "subTypes": [
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "162/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-162"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Ne jouez le Dofus Ivoire que si vous contrôlez un Niveau cumulé d'Alliés supérieur ou égal à 15 dans le Monde.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand le Dofus Ivoire apparaît, gagnez 2 XP.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le porteur du Dofus Ivoire peut utiliser ses pouvoirs depuis son Havre Sac comme s'il était dans le Monde.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "François Houssin (Franho)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Vendre mon Dofus Ivoire ?! Peuh ! J'aimerais bien vous y voir ! — Job Sidiène, Enutrof ruiné."
+    },
+    "requirements": {
+      "level": 0,
+      "elements": []
+    }
+  },
+  {
+    "id": "dofus-kaliptus-amakna",
+    "name": "Dofus Kaliptus",
+    "mainType": "Dofus",
+    "subTypes": [
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "160/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-160"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Ne jouez le Dofus Kaliptus que si vous contrôliez le Skeunk dans le Monde au début de votre tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand le Dofus Kaliptus apparaît, vous pouvez vous défaussez de toutes les cartes de votre main. Si vous le faites, piochez ensuite un nombre de cartes égale à vos PA. Gagnez 2 XP.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Romain Pergod (Sephy)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Dans le jeu online DOFUS, le Dofus Kaliptus s'obtient à la fin du Repère Skeunk et donne un bonus en Prospection."
+    },
+    "requirements": {
+      "level": 0,
+      "elements": []
+    }
+  },
+  {
+    "id": "donjon-des-craqueleurs-amakna",
+    "name": "Donjon des Craqueleurs",
+    "mainType": "Zone",
+    "subTypes": [
+      "Donjon"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "132/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-132"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Craqueleurs.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Tous les Dommages sur le point d'être infligés à vos Craqueleurs sont réduits de 1.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Souillon (Maliki)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Quand on s'attaque à ses Craqueboules, le Craqueleur a tendance à en faire toute une montagne…"
+    }
+  },
+  {
+    "id": "duc-rex-amakna",
+    "name": "Duc Rex",
+    "mainType": "Allié",
+    "subTypes": [
+      "Féca"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "14/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-14"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "terre"
+      },
+      "force": {
+        "value": 3,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Duc Rex apparaît, nommez un élément. Tant que Duc Rex est en jeu, il gagne  dans cet élément.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Abel Gongora Albaladejo"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il ne sort jamais sans protection. Ceux qui s'y sont frottés ont vite compris qu'ils avaient affaire à un dur…"
+    },
+    "race": "Féca"
+  },
+  {
+    "id": "ejipe-amakna",
+    "name": "Ejipe",
+    "mainType": "Allié",
+    "subTypes": [
+      "Sram"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "18/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-18"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "terre"
+      },
+      "force": {
+        "value": 4,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Inclinez l'Allié ou Héros de votre choix qui bloque ou est bloqué par Ejipe.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Deruyck Vincent (Ancestral Z)",
+      "Joachim Leclercq (Mojojojo)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ha non. L'Ejipe je ne connais pas. Par contre je suis allé au Porugal ! — Kris Tofcolon."
+    },
+    "race": "Sram"
+  },
+  {
+    "id": "emissaire-du-roi-amakna",
+    "name": "Émissaire du Roi",
+    "mainType": "Action",
+    "subTypes": [
+      "Quête"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "124/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-124"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Cherchez un Allié Chevalier de Niveau inférieur ou égal à 3 dans votre Pioche et mettez-le en jeu, puis mélangez votre Pioche. Il apparaît incliné.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Ne jouez cette carte que lorsqu'un Allié Unique est sur le point d'apparaître.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Joris, aussi discret qu'efficace, est l'émissaire du roi de Bonta."
+    },
+    "spellSchool": "Quête"
+  },
+  {
+    "id": "emma-tenl-amakna",
+    "name": "Emma Tenl",
+    "mainType": "Allié",
+    "subTypes": [
+      "Sacrieur",
+      "Forgemage"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "28/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-28"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "air"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Non ! Je ne fais pas de baguette fromagère !! Je ne suis ni boulangère, ni crémière ! — Ella Tenl, Forgemage."
+    },
+    "race": "Sacrieur",
+    "tribe": "Forgemage"
+  },
+  {
+    "id": "empathie-de-rosal-amakna",
+    "name": "Empathie de Rosal",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "91/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-91"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand un adversaire est sur le point de chercher une ou plusieurs cartes dans sa Pioche, cherchez également une carte dans votre Pioche et prenez-la en main, puis mélangez votre Pioche.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Si votre adversaire doit chercher plusieurs cartes dans sa Pioche, vous ne pourrez chercher qu'une seule carte dans votre Pioche.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Cédric Plaisant (Aisk)"
+    ],
+    "notes": [
+      "Si votre adversaire doit chercher plusieurs cartes dans sa Pioche, vous ne pourrez chercher qu'une seule carte dans votre Pioche."
+    ],
+    "flavor": {
+      "text": "Rosal ne cesse de se vanter de son don d'empathie. À tel point que Pouchecot le surnomme « le coq empathe »."
+    }
+  },
+  {
+    "id": "epee-du-petit-chevalier-amakna",
+    "name": "Épée du Petit Chevalier",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Épée"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "145/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-145"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "pv": 1
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Forgeron 1",
+        "elements": [
+          "neutre"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Sandrine Vanneste (Alhera)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ce n'est pas la taille qui compte ! C'est ta façon de s'en servir ! — Rik Hicky, Iop sans complexes."
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "elements": []
+    }
+  },
+  {
+    "id": "epee-volante-amakna",
+    "name": "Épée Volante",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Sacrieur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "116/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-116"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez l'Épée Volante en jeu comme un « Monstre — Épée » de Force 1 .",
+        "elements": [
+          "air"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "L'Épée Volante inflige 1 Dommages  à un de vos Alliés ou Héros de votre choix. Cet Allié ou Héros gagne +1 en Force jusqu'à la fin du tour.",
+        "elements": [
+          "air"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Nicolab"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Je suis un Shushu, espèce de Iop inculte. Et non une vulgaire Épée animée ! — Rubilax."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "epouvantail-amakna",
+    "name": "Épouvantail",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Épouvantail"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "1/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-1"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "L'Épouvantail ne peut ni attaquer, ni bloquer.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "L'Épouvantail ne peut pas être détruit.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "L'Épouvantail n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés à l'Épouvantail , et s'il perd ses pouvoirs avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Trait \"Monstre\" ajouté.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Farhad Chams"
+    ],
+    "notes": [
+      "L'Épouvantail n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés à l'Épouvantail , et s'il perd ses pouvoirs avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
+      "Trait \"Monstre\" ajouté."
+    ],
+    "flavor": {
+      "text": "Une fois que vous lui aurez broyé les graines, le champs sera libre !"
+    },
+    "race": "Monstre",
+    "tribe": "Épouvantail"
+  },
+  {
+    "id": "epouvante-amakna",
+    "name": "Épouvante",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Pandawa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "113/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-113"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'au début de votre prochain tour, les Dommages que devrait infliger l'Allié ou Héros de votre choix sont réduits de 2.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Carlos Pardo (Made)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Qui veut une mine épouvantable ménage sa gueule de bois. — Proverbe Pandawa."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "fallanster-amakna",
+    "name": "Fallanster",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier",
+      "Féca"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "58/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-58"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "feu"
+      },
+      "force": {
+        "value": 4,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Fallanster attaque, il inflige un nombre de Dommages  égal au nombre d'autres Chevaliers attaquants à l'Allié ou Héros de votre choix.",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Aimé Jalon"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Chef du conseil d'une cité de Mercenaires, Fallanster est un homme à la poigne de fer !"
+    },
+    "race": "Chevalier",
+    "tribe": "Féca"
+  },
+  {
+    "id": "fass-larage-amakna",
+    "name": "Fass Larage",
+    "mainType": "Allié",
+    "subTypes": [
+      "Xélor"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "72/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-72"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "eau"
+      },
+      "force": {
+        "value": 3,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Détruisez Fass Larage : Annulez les effets de l'Action ou du Sort de Niveau X qui vient d'être joué.",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Benoit Laigle (Ben Pirate)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "J'ai pas l'teeeeemmmmmmps, mon aiguiiiiiiiilllle, file aaaaiiiilllleeeeuuuurrs !! — Fass Larage, Xélor pressé."
+    },
+    "race": "Xélor"
+  },
+  {
+    "id": "fauvea-amakna",
+    "name": "Fauvéa",
+    "mainType": "Allié",
+    "subTypes": [
+      "Osamodas",
+      "Forgemage"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "47/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-47"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "feu"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Didier Chrispeels (Crisse)",
+      "Roberto Pena"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "C'est parce qu'elle est presbyte que Fauvéa a réussi à écraser les membres de l'Ordre de l'Œil Putride !"
+    },
+    "race": "Osamodas",
+    "tribe": "Forgemage"
+  },
+  {
+    "id": "faux-de-farle-ingalsse-amakna",
+    "name": "Faux de Farle Ingalsse",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Faux"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "151/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-151"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "pv": 1
+    },
+    "effects": [
+      {
+        "description": "Bannissez le jeton de votre choix et tous les autres jetons portant le même nom.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Forgeron 1",
+        "elements": [
+          "neutre"
+        ]
+      }
+    ],
+    "artists": [
+      "François Houssin (Franho)",
+      "Sandrine Vanneste (Alhera)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il faut le dire : cette faux n'a vraiment aucun défaut. Pas vrai ?"
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "elements": []
+    }
+  },
+  {
+    "id": "fleche-d-immobilisation-amakna",
+    "name": "Flèche d'Immobilisation",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Crâ"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "100/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-100"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Inclinez l'Allié de Force inférieur ou égale à 3 de votre choix. Le contrôleur de cet Allié perd 1 PM jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Véronique Meignaud"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Lors de sa sortie, ce sort créé par un dénommé Thasèr, provoqua de hautes tensions."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "fleche-harcelante-amakna",
+    "name": "Flèche Harcelante",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Crâ"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "99/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-99"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "La Flèche Harcelante inflige 2 Dommages  à l'Allié ou Héros de votre choix qui vient de subir un ou plusieurs Dommages.",
+        "elements": [
+          "air"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Gate"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Arrêtez de me suivre ou j'appelle la milice ! — Nara, forgeron paranoïaque."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "froid-de-frigost-amakna",
+    "name": "Froid de Frigost",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "95/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-95"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "En commençant par vous, chaque joueur peut défausser jusqu'à trois cartes de sa main pour incliner le même nombre d'Alliés ou Héros de son choix dans le Monde.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Jusqu'au début de votre prochain tour, aucun des Alliés ou Héros inclinés de cette façon ne peut se redresser.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Vous annoncez vos choix en premier, puis votre adversaire. Une fois que celui-ci a annoncé ses choix, vous ne pouvez pas faire de nouveau choix, on résout l'effet de la carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [
+      "Vous annoncez vos choix en premier, puis votre adversaire. Une fois que celui-ci a annoncé ses choix, vous ne pouvez pas faire de nouveau choix, on résout l'effet de la carte."
+    ],
+    "flavor": {
+      "text": "Le comte à Harebourg à la sale manie de toujours laisser sa porte ouverte…"
+    }
+  },
+  {
+    "id": "garde-kerubim-amakna",
+    "name": "Garde Kérubim",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "64/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-64"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "eau"
+      },
+      "force": {
+        "value": 1,
+        "element": "eau"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Sébastien Lamirand",
+      "Eric Herenguel"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Être milicien Kerubim, c'est comme être nounou dans un jardin d'enfants Bworks ! — Grobid le Vétéran Kerubim."
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "garde-montay-amakna",
+    "name": "Garde Montay",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "45/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-45"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "feu"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "feu"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Thon."
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Est",
+      "attribution": "ce vrai ce que l'on dit de vous ? Êtes"
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "general-kra-kleure-amakna",
+    "name": "Général Krâ Kleure",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier",
+      "Crâ"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "39/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-39"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "air"
+      },
+      "force": {
+        "value": 4,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand le Général Krâ Kleure attaque, le joueur défenseur se défausse d'un nombre de cartes de son choix égal au nombre d'autres Chevaliers attaquants.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ce général ne vit que pour sa carrière ! — Larosh Foku, ennemi juré du Général Krâ Kleure."
+    },
+    "race": "Chevalier",
+    "tribe": "Crâ"
+  },
+  {
+    "id": "glyphe-de-silence-amakna",
+    "name": "Glyphe de Silence",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Féca"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "107/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-107"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'au début de votre prochain tour, aucun joueur ne peut jouer d'Action ou de Sort.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Pop"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Kanniboul Lakterr affirme qu'il n'y a pas mieux que ce Glyphe pour réduire les Bouftons au silence."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "griffe-invocatrice-amakna",
+    "name": "Griffe Invocatrice",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Ecaflip"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "102/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-102"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 2,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez la Griffe Invocatrice en jeu dans le Monde comme un « Monstre — Chaton » de Force 2 .",
+        "elements": [
+          "air"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand la Griffe Invocatrice est sur le point d'infliger des dommages, jouez à Chi-Fu-Mi. Si vous gagnez, doublez ces Dommages. Sinon réduisez-les à 0.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Aurélie Neyret"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Atchaaaa ! Qu'est",
+      "attribution": "ce que ça sent le fauve ici ! — Sheeba, Ecaflip allergique aux poils de Chacha."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "guide-de-bravoure-amakna",
+    "name": "Guide de Bravoure",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Iop"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "110/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-110"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'à la fin du tour, chaque fois qu'un ou plusieurs de vos Alliés ou Héros attaquants reçoivent un bonus de Force pendant la phase d'action, vous pouvez piocher une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Cette carte est bannie en tournoi officiel au format Construit et Bloc depuis le 05 Mars 2011.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Nicolab"
+    ],
+    "notes": [
+      "Cette carte est bannie en tournoi officiel au format Construit et Bloc depuis le 05 Mars 2011."
+    ],
+    "flavor": {
+      "text": "Pa besoin 2 guide ! G la bravitude dans le san ! — Key Vine, Iop qui aurait bien besoin d'un guide d'orthographe."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "intrigues-a-la-cour-amakna",
+    "name": "Intrigues à la Cour",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "85/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-85"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Défaussez les quatre premières cartes de votre Pioche, puis piochez une carte pour chaque Action ou Sort défaussé de cette façon.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Comment ça il y a un Trig à la cour ? Et puis c'est quoi un Trig d'abord ? — Iop Labooum."
+    }
+  },
+  {
+    "id": "kabrok-amakna",
+    "name": "Kabrok",
+    "mainType": "Allié",
+    "subTypes": [
+      "Osamodas"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "15/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-15"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "terre"
+      },
+      "force": {
+        "value": 3,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Kabrok apparaît, le Monstre de votre choix gagne +1 en Force et  jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Mais, Mimi… enfin… tu sais bien que… je… Mimi… — Kabrok, exemple flagrant de soumission masculine."
+    },
+    "race": "Osamodas"
+  },
+  {
+    "id": "kanojedo-amakna",
+    "name": "Kanojedo",
+    "mainType": "Zone",
+    "subTypes": [
+      "Dojo"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "127/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-127"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Inclinez une de vos Armes. Son Porteur inflige un nombre de Dommages  égal au bonus de Force de cette Arme à l'Allié ou Héros de votre choix.",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Fabien Rodriguez"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ben quoi ? J'ai amené mon canot et mon jet d'eau, moi… Fallait pas ?? — Etour Drif, Iop de premier choix."
+    }
+  },
+  {
+    "id": "karla-blondie-amakna",
+    "name": "Karla Blondie",
+    "mainType": "Allié",
+    "subTypes": [
+      "Ecaflip"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "75/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-75"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "eau"
+      },
+      "force": {
+        "value": 4,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, gagnez 1 XP.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "N'utilisez ce pouvoir que lorsque Karla Blondie vient d'infliger un ou plusieurs Dommages.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Karla Blondie se fiche royalement de la taille des hommes. Elle n'en veut qu'à leur pouvoir…"
+    },
+    "race": "Ecaflip"
+  },
+  {
+    "id": "klozette-wateur-amakna",
+    "name": "Klozette Wateur",
+    "mainType": "Allié",
+    "subTypes": [
+      "Xélor",
+      "Forgemage"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "66/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-66"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "eau"
+      },
+      "force": {
+        "value": 1,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Benoit Laigle (Ben Pirate)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Dans le jeu online DOFUS, les joueurs peuvent apprendre la Forgemagie auprès de Hel Munster."
+    },
+    "race": "Xélor",
+    "tribe": "Forgemage"
+  },
+  {
+    "id": "kralamoure-amakna",
+    "name": "Kralamoure",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Kralamoure"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "70/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-70"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "eau"
+      },
+      "force": {
+        "value": 3,
+        "element": "eau"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il t'accule à coups de tentacules, et même quand tu es ridicule, jamais il ne recule."
+    },
+    "race": "Monstre",
+    "tribe": "Kralamoure"
+  },
+  {
+    "id": "kwoan-amakna",
+    "name": "Kwoan",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Chafer"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "44/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-44"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "feu"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "neutre"
+        ]
+      }
+    ],
+    "artists": [
+      "Laurence Guermond"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Non chéri, pas ce soir. J'ai mal au Kwoan. — Une femme peu inventive…"
+    },
+    "race": "Monstre",
+    "tribe": "Chafer"
+  },
+  {
+    "id": "l-equarisseur-amakna",
+    "name": "L'Équarisseur",
+    "mainType": "Allié",
+    "subTypes": [
+      "Bandit"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "51/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-51"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "feu"
+      },
+      "force": {
+        "value": 3,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Détruisez un de vos Monstres : Jusqu'à la fin du tour, L'Équarisseur gagne un bonus de Force égal à la Force du Monstre détruit.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Souillon (Maliki)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Pour lui, vous n'êtes qu'une pièce de gibier prête à être charcutée ! Alors, un conseil : numérotez vos abattis !"
+    },
+    "race": "Bandit"
+  },
+  {
+    "id": "la-blanquette-speciale-alibert-amakna",
+    "name": "La Blanquette Spéciale Alibert",
+    "mainType": "Action",
+    "subTypes": [
+      "Parchemin"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "89/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-89"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Recyclez jusqu'à trois Monstres de votre Défausse : Le Héros de votre choix regagne un nombre de PV égal à la Force cumulée des Monstres recyclés.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Une Mesure de Sel et une de Poivre, une Cuisse de Bouftou et une Briochette, et c'est prêt !"
+    },
+    "spellSchool": "Parchemin"
+  },
+  {
+    "id": "la-guilde-d-allister-amakna",
+    "name": "La Guilde d'Allister",
+    "mainType": "Action",
+    "subTypes": [
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "98/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-98"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Choisissez jusqu'à trois Chevaliers dans votre Défausse et mettez-les en jeu inclinés dans le Monde.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Bertrand Hottin"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Après avoir guidé son troupeau de Bouftous, Allister guilda son peuple…"
+    },
+    "spellSchool": "Unique"
+  },
+  {
+    "id": "la-quete-des-6-dofus-amakna",
+    "name": "La Quête des 6 Dofus",
+    "mainType": "Action",
+    "subTypes": [
+      "Quête"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "125/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-125"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Vous gagnez la partie.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Ne jouez cette carte que si vous contrôlez six Dofus différents.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Les Dofus sont : Cawotte, Dofawa, Ebène, Emeraude, Glace, Ivoire, Kaliptus, Ocre, Pourpre, Turquoise, Vulbis.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
+    "notes": [
+      "Les Dofus sont : Cawotte, Dofawa, Ebène, Emeraude, Glace, Ivoire, Kaliptus, Ocre, Pourpre, Turquoise, Vulbis."
+    ],
+    "flavor": {
+      "text": "Et ces Dofus prendront votre victoire pour écrin…"
+    },
+    "spellSchool": "Quête"
+  },
+  {
+    "id": "laeti-allume-amakna",
+    "name": "Laeti Allumé",
+    "mainType": "Allié",
+    "subTypes": [
+      "Eniripsa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "43/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-43"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "feu"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ha que c'est le plus beau des sentiments, l'armure ! — Djony Allumé."
+    },
+    "race": "Eniripsa"
+  },
+  {
+    "id": "le-baiser-des-miss-moches-amakna",
+    "name": "Le Baiser des Miss Moches",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "83/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-83"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Envoyez un baiser imaginaire à un autre joueur et choisissez un de ses Alliés. Tant que cet Allié est en jeu, ou jusqu'à ce qu'une Princesse apparaisse, il perd sa Classe et sa Famille et devient un « Monstre — Crapaud » de Force 1.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il paraît que l'amour rend aveugle. Vous feriez mieux de déjà fermer les yeux."
+    }
+  },
+  {
+    "id": "lethaline-sigsibul-amakna",
+    "name": "Lethaline Sigsibul",
+    "mainType": "Allié",
+    "subTypes": [
+      "Osamodas"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "56/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-56"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "feu"
+      },
+      "force": {
+        "value": 4,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Tous les Dommages sur le point d'être infligés à Lethaline Sigsibul par un Monstre sont réduits de 1.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jérôme Bretzner"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Si vous croisez la route de cette espionne de Minuit, c'est certainement que votre dernière heure a sonné !"
+    },
+    "race": "Osamodas"
+  },
+  {
+    "id": "lien-spiritueux-amakna",
+    "name": "Lien Spiritueux",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Pandawa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "114/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-114"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 3,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Les Dommages que devrait infliger le Lien Spiritueux sont réduits à 0.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Carlos Pardo (Made)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Rien de tel qu'un vieux pillier de comptoir pour offrir une tournée générale de baffes !"
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "lyade-bomon-amakna",
+    "name": "Lyade Bomon",
+    "mainType": "Allié",
+    "subTypes": [
+      "Iop"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "5/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-5"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "terre"
+      },
+      "force": {
+        "value": 1,
+        "element": "terre"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "artists": [
+      "Didier Chrispeels (Crisse)",
+      "Roberto Pena"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Cette espionne, experte en travestissement, a plus d'un tour dans son sac… et plus d'un atout dans sa bourse !"
+    },
+    "race": "Iop"
+  },
+  {
+    "id": "magictateur-krokker-amakna",
+    "name": "Magictateur Krokker",
+    "mainType": "Allié",
+    "subTypes": [
+      "Enutrof"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "2/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-2"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Tant que le Magictateur Krokker est en jeu, aucun Équipement ne peut être incliné pour produire une Ressource.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Cela n'empêche pas votre adversaire de pouvoir incliner ses Équipements pour tout effet autre que produire une Ressource.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le pouvoir du Magictateur Krokker ne choisit pas et n'inflige pas de Dommages, il n'est donc pas affecté par les Règles de Portée. Les Équipements adverses dans leur Havre Sac ne pourront donc pas non plus produire de ressource.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jérôme Bretzner"
+    ],
+    "notes": [
+      "Cela n'empêche pas votre adversaire de pouvoir incliner ses Équipements pour tout effet autre que produire une Ressource.",
+      "Le pouvoir du Magictateur Krokker ne choisit pas et n'inflige pas de Dommages, il n'est donc pas affecté par les Règles de Portée. Les Équipements adverses dans leur Havre Sac ne pourront donc pas non plus produire de ressource."
+    ],
+    "flavor": {
+      "text": "Circulaire dans les gencives ! Ça gicle, on esquive !"
+    },
+    "race": "Enutrof"
+  },
+  {
+    "id": "mama-bwork-amakna",
+    "name": "Mama Bwork",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Bwork"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "52/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-52"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "feu"
+      },
+      "force": {
+        "value": 3,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Inclinez un autre de vos Alliés Bwork : La Mama Bwork gagne +1 en Force jusqu'à la fin de tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Quand on voit la sale trogne qu'ont ses enfants, on comprend qu'elle soit aussi furieuse. Et inversement…"
+    },
+    "race": "Monstre",
+    "tribe": "Bwork"
+  },
+  {
+    "id": "mariage-amakna",
+    "name": "Mariage",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "88/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-88"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Inclinez un de vos Alliés : Cherchez un Allié portant le même nom que l'Allié incliné dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Rémi Juillet (REMS)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "L'union fait la force ? L'union fait la farce oui !",
+      "attribution": "Cordokou, Iop lucide."
+    }
+  },
+  {
+    "id": "marzwel-le-gobelin-amakna",
+    "name": "Marzwel le Gobelin",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Gobelin",
+      "Bandit"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "57/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-57"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "feu"
+      },
+      "force": {
+        "value": 3,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Marzwel le Gobelin apparaît, prenez le contrôle de l'Équipement adverse de votre choix et déplacez-le sur Marzwel le Gobelin. Il peut porter cet Équipement.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Quand Marzwel le Gobelin quitte le jeu, l'Équipement qu'il portait retourne dans la main de son propriétaire.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il tape sur des bambous et c'est numéro uuuuunn ! Sa tribu dit qu'il est fou bien plus que musiciiiieeenn !"
+    },
+    "race": "Monstre",
+    "tribe": "Gobelin"
+  },
+  {
+    "id": "masse-du-corailleur-amakna",
+    "name": "Masse du Corailleur",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Marteau"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "147/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-147"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand la Masse du Corailleur apparaît, détruisez l'Équipement de votre choix.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "S'il n'y a pas d'autre Équipement en jeu au moment où la Masse du Corailleur apparaît, vous devez détruire celle-ci.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Forgeron 2",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [
+      "S'il n'y a pas d'autre Équipement en jeu au moment où la Masse du Corailleur apparaît, vous devez détruire celle-ci."
+    ],
+    "flavor": {
+      "text": "Le fracas des crânes qu'elle écrase évoque l'écho musical du vacarme des vagues."
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "level": 2,
+      "elements": []
+    }
+  },
+  {
+    "id": "megabottes-amakna",
+    "name": "Mégabottes",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Armure",
+      "Bottes",
+      "Mégamane"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "143/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-143"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "pv": 1
+    },
+    "effects": [
+      {
+        "description": "Quand les Mégabottes apparaissent, vous pouvez piocher une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Trait Arme remplacé par Armure.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Armurier 2",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "artists": [
+      "Sandrine Vanneste (Alhera)"
+    ],
+    "notes": [
+      "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",
+      "Trait Arme remplacé par Armure."
+    ],
+    "flavor": {
+      "text": "Dans le jeu online DOFUS, les Mégabottes apportent un bonus en Chance, Dommages et Coups Critiques."
+    },
+    "equipmentType": "Armure",
+    "requirements": {
+      "elements": []
+    }
+  },
+  {
+    "id": "megacoiffe-amakna",
+    "name": "Mégacoiffe",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Armure",
+      "Chapeau",
+      "Mégamane"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "140/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-140"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Porteur de la Mégacoiffe gagne  .",
+        "elements": [
+          "eau"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Armurier 1",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "artists": [
+      "Sandrine Vanneste (Alhera)"
+    ],
+    "notes": [
+      "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites."
+    ],
+    "flavor": {
+      "text": "Cette Mégacoiffe a été spécialement conçue pour les aventuriers qui ont la grosse tête. Quant à la Mégature…"
+    },
+    "equipmentType": "Armure",
+    "requirements": {
+      "level": 1,
+      "elements": []
+    }
+  },
+  {
+    "id": "miranda-amakna",
+    "name": "Miranda",
+    "mainType": "Allié",
+    "subTypes": [
+      "Ecaflip"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "27/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-27"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "air"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Réaction.  : Rejouez le Chi-Fu-Mi que vous venez de perdre.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Le Chi-Fu-Mi perdu est ignoré, on ne prend donc pas en compte son résultat en cas de perte.\nSi vous contrôlez plusieurs Miranda, vous pouvez utiliser leur pouvoir si vous perdez de nouveau le Chi-Fu-Mi rejoué.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [
+      "Le Chi-Fu-Mi perdu est ignoré, on ne prend donc pas en compte son résultat en cas de perte. Si vous contrôlez plusieurs Miranda, vous pouvez utiliser leur pouvoir si vous perdez de nouveau le Chi-Fu-Mi rejoué."
+    ],
+    "flavor": {
+      "text": "KaAAAAaabBBBbrrRRRrroOOOOOOOOoKkk !!! — Petit mot doux de Miranda à son époux."
+    },
+    "race": "Ecaflip"
+  },
+  {
+    "id": "missiz-frizz-amakna",
+    "name": "Missiz Frizz",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier",
+      "Xélor"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "77/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-77"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "eau"
+      },
+      "force": {
+        "value": 4,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Missiz Frizz attaque, regardez un nombre de cartes du dessus de votre Pioche égal au nombre d'autres Chevaliers attaquants. Prenez l'une de ces cartes en main et recyclez les autres.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Si vous attaquez avec Missiz Frizz et un autre Chevalier, vous regardez 1 seule carte, la mettez dans votre main, et ne recyclez pas de carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Mélanie Christin (Méli)"
+    ],
+    "notes": [
+      "Si vous attaquez avec Missiz Frizz et un autre Chevalier, vous regardez 1 seule carte, la mettez dans votre main, et ne recyclez pas de carte."
+    ],
+    "flavor": {
+      "text": "Quelle que soit la température, Missiz Frizz sait garder son sang",
+      "attribution": "froid. Et glacer celui de ses adversaires…"
+    },
+    "race": "Chevalier",
+    "tribe": "Xélor"
+  },
+  {
+    "id": "momification-amakna",
+    "name": "Momification",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Xélor"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "122/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-122"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Ne jouez la Momification que pendant votre tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Si vous bénéficiez d'un bonus de PM et que vous jouez Momification, vos PM sont réduits à 0. Si vous jouez Momification puis jouez une carte qui vous donne un bonus de PM, vous avez alors autant de PM que votre bonus.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Gate"
+    ],
+    "notes": [
+      "Si vous bénéficiez d'un bonus de PM et que vous jouez Momification, vos PM sont réduits à 0. Si vous jouez Momification puis jouez une carte qui vous donne un bonus de PM, vous avez alors autant de PM que votre bonus."
+    ],
+    "flavor": {
+      "text": "Dans le jeu online DOFUS, ce sort de Niveau 70 augmentera vos Résistances et vos Dommages."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "monstre-pain-amakna",
+    "name": "Monstre Pain",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Pain"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "4/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-4"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 4,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Géant",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Au début du tour de chaque joueur, si le Monstre Pain est dans le Monde, ce joueur peut payer  pour détruire le Monstre Pain.",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ne le laissez pas vous rouler dans la farine ! Pas de pitié pour les croissants !"
+    },
+    "race": "Monstre",
+    "tribe": "Pain"
+  },
+  {
+    "id": "montee-des-eaux-amakna",
+    "name": "Montée des Eaux",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "92/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-92"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Toutes les Zones sont détruites.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Qui dort dans son tonneau, craint la montée des eaux ! — Proverbe Pandawa."
+    }
+  },
+  {
+    "id": "mot-d-amitie-amakna",
+    "name": "Mot d'Amitié",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Eniripsa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "104/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-104"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Mettez le Mot d'Amitié en jeu dans le Monde comme un « Monstre — Lapin » de Force 1 .",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Chaque fois que votre Héros regagne un ou plusieurs PV, ce gain est augmenté de 1.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Ce pouvoir ne fonctionne que si votre Héros regagne effectivement au moins 1 PV. Si votre Héros doit se soigner d'1 PV et que votre adversaire joue Sinistrose de Raval en , vous ne perdez qu'1 PV. Si votre Héros devrait regagner 1 ou plusieurs PV alors qu'il est déjà à son maximum de PV, il ne regagne rien et le Mot d'Amitié ne s'applique pas.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Karine Le Logeais (Kness)"
+    ],
+    "notes": [
+      "Ce pouvoir ne fonctionne que si votre Héros regagne effectivement au moins 1 PV. Si votre Héros doit se soigner d'1 PV et que votre adversaire joue Sinistrose de Raval en Réaction, vous ne perdez qu'1 PV. Si votre Héros devrait regagner 1 ou plusieurs PV alors qu'il est déjà à son maximum de PV, il ne regagne rien et le Mot d'Amitié ne s'applique pas."
+    ],
+    "flavor": {
+      "text": "Sachez",
+      "attribution": "le, chez les Eniripsas, poser un lapin est une vraie preuve d'amitié !"
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "mot-de-jouvence-amakna",
+    "name": "Mot de Jouvence",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Eniripsa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "103/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-103"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'au début de votre prochain tour, le joueur de votre choix possède le nombre de PA et de PM inscrit sur son Héros et ne peut ni gagnez, ni perdre de PA ou de PM. Piochez une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Pop"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Avec Mot de Jouvence, mon Eni est débarrassé de ses envoûtements. Sa peau est repulpée, comme plus jeune."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "musha-l-oni-amakna",
+    "name": "Musha l'Oni",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Oni"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "71/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-71"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "eau"
+      },
+      "force": {
+        "value": 3,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Reprenez Musha l'Oni dans votre main. Il inflige 2 Dommages  à l'Allié ou Héros de votre choix.",
+        "elements": [
+          "eau"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jérôme Brulin"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ne prenez pas tout ce qui sort de sa bouche pour argent comptant. Musha ment comme un arracheur de dents…"
+    },
+    "race": "Monstre",
+    "tribe": "Oni"
+  },
+  {
+    "id": "naima-apprentie-eniripsa-amakna",
+    "name": "Naïma, Apprentie Eniripsa",
+    "mainType": "Allié",
+    "subTypes": [
+      "Eniripsa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "49/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-49"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "feu"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand votre Héros vient de regagner 1 ou plusieurs PV, Naïma, Apprentie Eniripsa inflige le même nombre de Dommages  à l'Allié ou Héros de votre choix.",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Grégory Charlet"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Mieux vaut détruire que guérir… Ou l'inverse ?"
+    },
+    "race": "Eniripsa"
+  },
+  {
+    "id": "necrom-l-ancien-amakna",
+    "name": "Nécrom L'Ancien",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier",
+      "Sadida"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "20/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-20"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "terre"
+      },
+      "force": {
+        "value": 4,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand Nécrom L'Ancien attaque, inclinez un nombre d'Alliés ou Héros adverses de votre choix inférieur ou égal au nombre d'autres Chevaliers attaquants.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Probablement le seul et unique chef de guerre qui se vante de jouer encore à la poupée…"
+    },
+    "race": "Chevalier",
+    "tribe": "Sadida"
+  },
+  {
+    "id": "nosferathon-amakna",
+    "name": "Nosférathon",
+    "mainType": "Allié",
+    "subTypes": [
+      "Vampyre"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "13/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-13"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "terre"
+      },
+      "force": {
+        "value": 3,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Chaque fois qu'un Allié apparaît dans le Monde depuis votre Défausse, Nosférathon gagne +1 en Force et  jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Souillon (Maliki)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Bon sang de bon sang ! J'avais dit sans ail ! — Nosférathon, Vampyre soucieux de son haleine."
+    },
+    "race": "Vampyre"
+  },
+  {
+    "id": "papris-roi-des-flaqueux-amakna",
+    "name": "Papris, Roi des Flaqueux",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Flaqueux",
+      "Roi",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "78/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-78"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 6,
+        "element": "eau"
+      },
+      "force": {
+        "value": 6,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Agilité",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Tant que Papris, Roi des Flaqueux est dans le Monde, chaque fois qu'un de vos Monstres est détruit, vous pouvez le mettre sur le dessus de votre Pioche au lieu de le mettre dans votre Défausse.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Trait \"Monstre\" ajouté.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le pouvoir de Papris, Roi des Flaqueux se déclenche au moment où un Monstre est mis dans votre Défausse suite à sa destruction. Papris, Roi des Flaqueux ne peut donc pas s'impacter lui même car il n'est plus dans le Monde à ce moment.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "2",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "experience": 2,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [
+      "Trait \"Monstre\" ajouté.",
+      "Le pouvoir de Papris, Roi des Flaqueux se déclenche au moment où un Monstre est mis dans votre Défausse suite à sa destruction. Papris, Roi des Flaqueux ne peut donc pas s'impacter lui même car il n'est plus dans le Monde à ce moment."
+    ],
+    "flavor": {
+      "text": "Papris était très ami avec le mystérieux Pavu. Et puis un jour, ils se sont perdus de vue."
+    },
+    "race": "Monstre",
+    "tribe": "Flaqueux"
+  },
+  {
+    "id": "parchemin-de-sagesse-amakna",
+    "name": "Parchemin de Sagesse",
+    "mainType": "Action",
+    "subTypes": [
+      "Parchemin"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "87/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-87"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Bannissez jusqu'à trois cartes Uniques de votre Défausse : Gagnez le même nombre d'XP.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Anaïs Chevillard"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "B",
+      "attribution": "boire ou choi"
+    },
+    "spellSchool": "Parchemin"
+  },
+  {
+    "id": "patty-ceriz-amakna",
+    "name": "Patty Ceriz",
+    "mainType": "Allié",
+    "subTypes": [
+      "Crâ"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "24/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-24"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "air"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Patty a beau être une battante, elle a toujours préféré battre les œufs plutôt que les adversaires…"
+    },
+    "race": "Crâ"
+  },
+  {
+    "id": "petit-corbac-amakna",
+    "name": "Petit Corbac",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Corbac"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "30/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-30"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "air"
+      },
+      "force": {
+        "value": 2,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand le Petit Corbac apparaît, tous les joueurs perdent 1 PA jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Le regard perçant, l'œil vif, le plumage soyeux, les griffes acérées… Ce Petit Corbac là n'a rien de tout cela."
+    },
+    "race": "Monstre",
+    "tribe": "Corbac"
+  },
+  {
+    "id": "peur-amakna",
+    "name": "Peur",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Sram"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "119/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-119"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Redressez l'Allié ou Héros adverse de votre choix puis inclinez-le. La Peur lui inflige 1 Dommage .",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Véronique Meignaud"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il y a différentes manières de provoquer la peur. La vue d'une Enutrofette nue en fait partie."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "piege-repulsif-amakna",
+    "name": "Piège Répulsif",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Sram"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "120/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-120"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "L'Allié de votre choix qui vient de s'incliner retourne sur le dessus de la Pioche de son propriétaire.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Gray Shuko"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Parce qu'il n'est pas toujours évident d'avoir une Miss Moche sous la main, Sram a créé le Piège Répulsif."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "piqure-motivante-amakna",
+    "name": "Piqûre Motivante",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Osamodas"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "111/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-111"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Monstre de votre choix gagne  jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Grelin"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Une piqûre chaque zzzour et vous aurez la santé pour touzzzours ! Promis, zzzuré ! — Un Moskito anonyme."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "potion-de-crapaud-mufle-amakna",
+    "name": "Potion de Crapaud Mufle",
+    "mainType": "Action",
+    "subTypes": [
+      "Potion"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "84/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-84"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Défaussez la première carte de votre Pioche : S'il s'agit d'un Allié, l'Allié de votre choix perd sa Classe et sa Famille, devient un  « Monstre — Crapaud » et gagne un bonus de Force égal à la Force de l'Allié défaussé jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Une cuillère à soupe matin, midi et soir. — Posologie destinée aux Miss",
+      "attribution": "Moches."
+    },
+    "spellSchool": "Potion"
+  },
+  {
+    "id": "princesse-eenca-amakna",
+    "name": "Princesse Eenca",
+    "mainType": "Allié",
+    "subTypes": [
+      "Princesse"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "31/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-31"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "air"
+      },
+      "force": {
+        "value": 2,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Réduisez à 0 le nombre de PA que le joueur de votre choix est sur le point de perdre.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Si un joueur a perdu des PA durant le tour et que vous utilisez le pouvoir de Princesse Eenca pour annuler une nouvelle perte de PA, les PA précédemment perdus ne sont pas regagnés pour autant.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [
+      "Si un joueur a perdu des PA durant le tour et que vous utilisez le pouvoir de Princesse Eenca pour annuler une nouvelle perte de PA, les PA précédemment perdus ne sont pas regagnés pour autant."
+    ],
+    "flavor": {
+      "text": "Croûte que croûte j'aurai ta peau ! — Alek Zemah."
+    },
+    "race": "Princesse"
+  },
+  {
+    "id": "princesse-erpel-amakna",
+    "name": "Princesse Erpel",
+    "mainType": "Allié",
+    "subTypes": [
+      "Princesse"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "69/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-69"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "eau"
+      },
+      "force": {
+        "value": 2,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Annulez les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué et qui fait piocher une ou plusieurs cartes à un joueur.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Tire la bandelette, et la Miss Moche cherra. — Mère",
+      "attribution": "grand Mulou."
+    },
+    "race": "Princesse"
+  },
+  {
+    "id": "princesse-lela-amakna",
+    "name": "Princesse Lela",
+    "mainType": "Allié",
+    "subTypes": [
+      "Princesse"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "12/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-12"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "terre"
+      },
+      "force": {
+        "value": 2,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Annulez le bonus de Force que vient de gagner un Allié ou Héros. Cet Allié ou Héros subit le même nombre de Dommages .",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Autant les toiles rouges énervent les Taures, autant les toiles noires énervent Lela."
+    },
+    "race": "Princesse"
+  },
+  {
+    "id": "princesse-ydalipe-amakna",
+    "name": "Princesse Ydalipe",
+    "mainType": "Allié",
+    "subTypes": [
+      "Princesse"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "50/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-50"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "feu"
+      },
+      "force": {
+        "value": 2,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Annulez les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué et qui réduit les Dommages infligés par un de vos Alliés ou Héros.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ze vous préviens, ze zuis de mauvais poil ! — Ydalipe, Princesse parfois un peu rasoir."
+    },
+    "race": "Princesse"
+  },
+  {
+    "id": "provocation-amakna",
+    "name": "Provocation",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Iop"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "109/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-109"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Choisissez un Allié. À la fin de votre prochain tour, si cet Allié n'a pas attaqué ou bloqué, détruisez-le.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Yann Tisseron"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Whesh ! T'as un problème ?! Tu m'cherches, là ? Tu veux t'battre ?! Hein ! Hein ! — Kay Rah, Iop vénère."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "pym-amakna",
+    "name": "Pym",
+    "mainType": "Allié",
+    "subTypes": [
+      "Sacrieur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "36/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-36"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "air"
+      },
+      "force": {
+        "value": 3,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Agilité",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Tacle",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Redirigez vers Pym tous les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Le pouvoir de Pym redirige tous les Dommages d'un seul paquet de Dommages. Si plusieurs paquets de Dommages sont sur le point d'être infligés, comme par exemple lors de la résolution des Dommages sur la cible, vous choisissez quel paquet est redirigé vers Pym.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Matthieu Marcq (Ottami)"
+    ],
+    "notes": [
+      "Le pouvoir de Pym redirige tous les Dommages d'un seul paquet de Dommages. Si plusieurs paquets de Dommages sont sur le point d'être infligés, comme par exemple lors de la résolution des Dommages sur la cible, vous choisissez quel paquet est redirigé vers Pym."
+    ],
+    "flavor": {
+      "text": "Élève dissipé qui déconcentre ses camarades. Peut mieux faire. — Bulletin scolaire de Pym."
+    },
+    "race": "Sacrieur"
+  },
+  {
+    "id": "renvoi-de-sort-amakna",
+    "name": "Renvoi de Sort",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Féca"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "108/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-108"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Sort de votre choix qui choisit un seul Allié ou Héros choisit un autre Allié ou Héros de votre choix à la place.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Grelin"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Soit X lançant Retour de Bâton sur Y protégé par Renvoie de Sort. Quelle sera l'issue du combat ? — Problème Féca."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "rocco-fidelio-amakna",
+    "name": "Rocco Fidelio",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "7/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-7"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "terre"
+      },
+      "force": {
+        "value": 1,
+        "element": "terre"
+      }
+    },
+    "effects": [],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Boris Villanyi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Voilà un maton qui manie habilement le bâton ! Il est si bien équipé que bien peu parviennent à s'échapper !"
+    },
+    "race": "Chevalier"
+  },
+  {
+    "id": "ronces-apaisantes-amakna",
+    "name": "Ronces Apaisantes",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Sadida"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "117/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-117"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le joueur de votre choix perd 1 PM jusqu'à la fin de son prochain tour. Son Héros regagne 3 PV.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Crowley"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "En tisane, en soupe ou en fouet, les ronces ont des vertus qui séduiront toutes les classes !"
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "rose-demoniaque-amakna",
+    "name": "Rose Démoniaque",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Fleur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "35/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-35"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "air"
+      },
+      "force": {
+        "value": 2,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand la Rose Démoniaque inflige un ou plusieurs Dommages à un Allié de Force inférieure ou égale à 3 pendant la résolution d'un duel, détruisez cet Allié à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Elle pique et en plus elle sent mauvais ? Alors ça, c'est le bouquet ! — Karol, botaniste en herbe."
+    },
+    "race": "Monstre",
+    "tribe": "Fleur"
+  },
+  {
+    "id": "rykke-errel-amakna",
+    "name": "Rykke Errel",
+    "mainType": "Allié",
+    "subTypes": [
+      "Chevalier",
+      "Iop",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "23/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-23"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "terre"
+      },
+      "force": {
+        "value": 5,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Rykke Errel inflige X Dommages  répartis librement entre les Alliés ou Héros bloqueurs de votre choix.",
+        "elements": [
+          "terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "N'utilisez ce pouvoir que si Rykke Errel est attaquant.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 2,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Avant, Rykke Errel était serveur. Maintenant, il travaille à la carte."
+    },
+    "race": "Chevalier",
+    "tribe": "Iop"
+  },
+  {
+    "id": "salle-du-trone-d-allister-amakna",
+    "name": "Salle du Trône d'Allister",
+    "mainType": "Salle",
+    "subTypes": [
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "139/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-139"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "La Salle du Trône d'Allister ne peut pas être fabriquée.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Bannissez un de vos Alliés non Monstre dans le Monde : Gagnez un nombre d'XP égal à la valeur d'XP de cet Allié.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Aymeric Kevin (Aymrc)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Lorsque son trône est de faïence, n'espérez point avoir audience — Proverbe amaknéen."
+    }
+  },
+  {
+    "id": "sanglier-des-plaines-amakna",
+    "name": "Sanglier des Plaines",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Sanglier"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "37/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-37"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "air"
+      },
+      "force": {
+        "value": 4,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Au début de la phase d'action, le Sanglier des Plaines inflige 1 Dommage  à l'Allié ou Héros de votre choix qu'il bloque ou qui le bloque.",
+        "elements": [
+          "air"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Toutes les Glaies vous le diront, ce Sanglier est un gros cochon ! Et ça n'est pas pour leur déplaire…"
+    },
+    "race": "Monstre",
+    "tribe": "Sanglier"
+  },
+  {
+    "id": "scarature-blanche-amakna",
+    "name": "Scarature Blanche",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Armure",
+      "Ceinture",
+      "Scarafeuille Blanc"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "142/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-142"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'à la fin du tour, le Porteur de la Scarature Blanche gagne  ou .",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Armurier 2",
+        "elements": [
+          "air"
+        ]
+      },
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "La ceinture des débutants en Skaraté."
+    },
+    "equipmentType": "Armure",
+    "requirements": {
+      "level": 2,
+      "elements": []
+    }
+  },
+  {
+    "id": "science-dimensionnelle-d-otomai-amakna",
+    "name": "Science Dimensionnelle d'Otomaï",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "97/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-97"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Reprenez en main une de vos cartes Allié, Zone, Salle, Équipement ou Dofus : Mettez en jeu gratuitement de votre main une autre carte du même type et de Niveau inférieur ou égal sans déclencher son effet d'apparition.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Fabrice Nzinzi (Ntamak)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Il n'y a que les portails d'Otomaï qui n'ont pas de failles ! — Otomaï."
+    }
+  },
+  {
+    "id": "severum-amakna",
+    "name": "Severum",
+    "mainType": "Action",
+    "subTypes": [
+      "Potion"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "94/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-94"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "L'Allié de votre choix sur le point d'être détruit reste en jeu à la place. Jusqu'à la fin du tour, cet Allié ne peut pas être détruit.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Certains racontent qu'on peut créer un Severum de vérité avec cette sève. Malheureusement, il s'agit d'un mensonge !"
+    },
+    "spellSchool": "Potion"
+  },
+  {
+    "id": "shak-shaka-roi-des-robomates-amakna",
+    "name": "Shak Shaka, Roi des Robomates",
+    "mainType": "Allié",
+    "subTypes": [
+      "Roi",
+      "Xélor",
+      "Ecaflip",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "59/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-59"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 6,
+        "element": "feu"
+      },
+      "force": {
+        "value": 4,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Bricoleur",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, piochez une carte et gagnez 1 XP. Sinon, piochez une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "N'utilisez ce pouvoir que lorsque vous venez de fabriquer un Équipement.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Pour",
+        "description": "fabriquer un Équipement, vous devez le jouer depuis votre main en payant sa Recette. Le pouvoir de Shak Shaka, Roi des Robomates ne fonctionne pas si vous jouez un Équipement en payant son coût en Ressources ou si vous le faites entrer en jeu d'une autre manière."
+      }
+    ],
+    "experience": 2,
+    "artists": [
+      "Mig",
+      "Toshy"
+    ],
+    "notes": [
+      "Pour fabriquer un Équipement, vous devez le jouer depuis votre main en payant sa Recette. Le pouvoir de Shak Shaka, Roi des Robomates ne fonctionne pas si vous jouez un Équipement en payant son coût en Ressources ou si vous le faites entrer en jeu d'une autre manière."
+    ],
+    "flavor": {
+      "text": "Ici, c'est moi qui tire les ficelles ! Misérables pantins ! — Shak Shaka, Roi des Robomates."
+    },
+    "race": "Roi",
+    "tribe": "Xélor"
+  },
+  {
+    "id": "sheran-sharm-roi-sadida-amakna",
+    "name": "Sheran Sharm, Roi Sadida",
+    "mainType": "Allié",
+    "subTypes": [
+      "Roi",
+      "Sadida",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "21/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-21"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 6,
+        "element": "terre"
+      },
+      "force": {
+        "value": 7,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Géant",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Tant que Sheran Sharm, Roi Sadida est dans le Monde, aucun Allié ou Héros adverse ne peut effectuer de mouvement vers son Havre Sac.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Cela concerne aussi bien les mouvements proposés par les joueurs que ceux provoqués par l'effet d'une Action, d'un Sort ou d'un pouvoir, y compris ceux que vous contrôlez.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 3,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [
+      "Cela concerne aussi bien les mouvements proposés par les joueurs que ceux provoqués par l'effet d'une Action, d'un Sort ou d'un pouvoir, y compris ceux que vous contrôlez."
+    ],
+    "flavor": {
+      "text": "Ne cherchez plus ! La plus jolie des poupées, c'est moi qui l'ai ! — Sheram Sharm à propose d'Amalia."
+    },
+    "race": "Roi",
+    "tribe": "Sadida"
+  },
+  {
+    "id": "sinistrose-de-raval-amakna",
+    "name": "Sinistrose de Raval",
+    "mainType": "Action",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "90/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-90"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Héros de votre choix sur le point de regagner un ou plusieurs PV en perd le même nombre à la place.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Cédric Plaisant (Aisk)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Pff… * Soupir * … Rhaahhh… Snif… — Raval, dans l'un de ses bons jours."
+    }
+  },
+  {
+    "id": "skeunk-amakna",
+    "name": "Skeunk",
+    "mainType": "Allié",
+    "subTypes": [
+      "Eniripsa",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "61/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-61"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 7,
+        "element": "feu"
+      },
+      "force": {
+        "value": 4,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand le Skeunk apparaît, choisissez jusqu'à quatre autres de vos Alliés. Tant qu'au moins un de ces Alliés et en jeu, le Skeunk ne peut pas être détruit.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Bannissez un de ces Alliés : Bannissez l'Allié de votre choix de Niveau inférieur ou égal au Niveau de l'Allié banni.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Mot \"autres\" manquant sur la carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Skeunk n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés au Skeunk, et si les Alliés choisis durant son pouvoir d'apparition quittent le jeu avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 2,
+    "artists": [
+      "Mickael Lepretre"
+    ],
+    "notes": [
+      "Mot \"autres\" manquant sur la carte.",
+      "Le Skeunk n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés au Skeunk, et si les Alliés choisis durant son pouvoir d'apparition quittent le jeu avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit."
+    ],
+    "flavor": {
+      "text": "Revieeens, je t'aiiime",
+      "attribution": "euh ! — Skeunk, barde à l'eau de Rose Démoniaque."
+    },
+    "race": "Eniripsa",
+    "tribe": "Unique"
+  },
+  {
+    "id": "smarmot-amakna",
+    "name": "Smarmot",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Smare"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "25/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-25"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "air"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Agilité",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Détruisez le Smarmot : Piochez une carte, puis défaussez-vous d'une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Kosal Sok"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Comment appelle",
+      "attribution": "t"
+    },
+    "race": "Monstre",
+    "tribe": "Smare"
+  },
+  {
+    "id": "snouffle-amakna",
+    "name": "Snouffle",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Snouffle"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "68/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-68"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "eau"
+      },
+      "force": {
+        "value": 2,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Bannissez l'Équipement de votre choix dans la Défausse d'un adversaire, puis piochez une carte.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Lorsqu'il vit la fortune de Ruel pour la première fois, il eut aussitôt le Snouffle coupé !"
+    },
+    "race": "Monstre",
+    "tribe": "Snouffle"
+  },
+  {
+    "id": "sterylin-amakna",
+    "name": "Sterylin",
+    "mainType": "Allié",
+    "subTypes": [
+      "Pandawa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "62/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-62"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "eau"
+      },
+      "force": {
+        "value": 1,
+        "element": "eau"
+      }
+    },
+    "effects": [],
+    "keywords": [],
+    "artists": [
+      "Didier Chrispeels (Crisse)",
+      "Roberto Pena"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Cette ménestrelle olé olé, descendante d'Allister, devint célèbre avec sa chanson « Une caresse sur mon Chacha »."
+    },
+    "race": "Pandawa"
+  },
+  {
+    "id": "stiveun-cigalle-amakna",
+    "name": "Stiveun Cigalle",
+    "mainType": "Allié",
+    "subTypes": [
+      "Pandawa"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "17/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-17"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "terre"
+      },
+      "force": {
+        "value": 3,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Tacle",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Stiveun Cigalle peut bloquer même s'il est incliné.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Quand Stiveun Cigalle a trop bu, il a des fourmis dans les pattes."
+    },
+    "race": "Pandawa"
+  },
+  {
+    "id": "temple-eniripsa-amakna",
+    "name": "Temple Eniripsa",
+    "mainType": "Salle",
+    "subTypes": [
+      "Temple"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "138/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-138"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Héros de votre choix regagne 2 PV.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bricoleur 3",
+        "elements": [
+          "feu"
+        ]
+      }
+    ],
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Oh, n'ayons pas peur des maux ! Aux grands mots, les grands remèdes ! — Elya Wood, gardienne du Temple."
+    }
+  },
+  {
+    "id": "temple-pandawa-amakna",
+    "name": "Temple Pandawa",
+    "mainType": "Salle",
+    "subTypes": [
+      "Temple"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "137/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-137"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Nommez un élément et choisissez un Allié ou Héros dans le Monde. Jusqu'à la fin du tour, tous les Dommages de l'élément nommé sur le point d'être infligés à cet Allié ou Héros sont augmentés de 1.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bricoleur 3",
+        "elements": [
+          "eau"
+        ]
+      }
+    ],
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "P",
+      "attribution": "p"
+    }
+  },
+  {
+    "id": "temple-sacrieur-amakna",
+    "name": "Temple Sacrieur",
+    "mainType": "Salle",
+    "subTypes": [
+      "Temple"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "135/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-135"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Échangez la position d'un de vos Alliés ou Héros attaquants ou bloqueurs avec celle d'un autre de vos Alliés ou Héros de Force inférieure ou égale.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Lorsque vous échangez un Allié ou Héros attaquant ou bloqueur avec un autre Allié ou Héros hors du combat, alors ce dernier rentre en combat à sa place, tandis que ce premier revient dans le Monde en conservant son statut (incliné ou redressé).",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bricoleur 3",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [
+      "Lorsque vous échangez un Allié ou Héros attaquant ou bloqueur avec un autre Allié ou Héros hors du combat, alors ce dernier rentre en combat à sa place, tandis que ce premier revient dans le Monde en conservant son statut (incliné ou redressé)."
+    ],
+    "flavor": {
+      "text": "Sacrieur m'a ôté le foie et un ptit doooiiigt, j'ai dans le cœur ce pieu qui guide mes paaas ! — Hymne Sacrieur."
+    }
+  },
+  {
+    "id": "temple-sadida-amakna",
+    "name": "Temple Sadida",
+    "mainType": "Salle",
+    "subTypes": [
+      "Temple"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "136/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-136"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Détruisez un de vos Monstres : Le Héros de votre choix regagne un nombre de PV égal à la Force du Monstre détruit.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Recette",
+        "description": ": Bricoleur 3",
+        "elements": [
+          "terre"
+        ]
+      }
+    ],
+    "artists": [
+      "Vincent Joubert"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Ça te dit de venir boire un dernier ptit verre dans mon temple, poupée ? — Berkzoy, Sadida bourreau des cœurs."
+    }
+  },
+  {
+    "id": "terril-hachterr-amakna",
+    "name": "Terril Hachterr",
+    "mainType": "Allié",
+    "subTypes": [
+      "Sadida",
+      "Forgemage"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "9/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-9"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "terre"
+      },
+      "force": {
+        "value": 1,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Hop ! Voilà, m'sieur Grizzou, votre pelle est enfin terre",
+      "attribution": "minée ! — Terril Hachterr, Forgemage."
+    },
+    "race": "Sadida",
+    "tribe": "Forgemage"
+  },
+  {
+    "id": "tetes-a-clic-et-a-clac-amakna",
+    "name": "Têtes à Clic et à Clac",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Objet",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "157/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-157"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Les Têtes à Clic et à Clac ne peuvent pas être fabriquées.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Bannissez les Têtes à Clic et à Clac : Bannissez le Démon de votre choix.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Seul Fallanster connaît aujourd'hui la cachette de ces entraves ayant servi à emprisonner Uk'Not'Allag."
+    },
+    "equipmentType": "Objet",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "tofu-malefique-amakna",
+    "name": "Tofu Maléfique",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Tofu",
+      "Vampyre"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "29/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-29"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "air"
+      },
+      "force": {
+        "value": 2,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Quand un autre de vos Tofus est détruit, vous pouvez mettre en jeu le Tofu Maléfique depuis votre Défausse. Il apparaît incliné.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le pouvoir du Tofu Maléfique ne se déclenche que lors de la destruction d'un Tofu autre que lui même.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Aude Serriere"
+    ],
+    "notes": [
+      "Le pouvoir du Tofu Maléfique ne se déclenche que lors de la destruction d'un Tofu autre que lui même."
+    ],
+    "flavor": {
+      "text": "Il est laid, il est méchant, il est petit, il fait peur, il sent mauvais, il… euh, on continue ou ça suffit ?"
+    },
+    "race": "Monstre",
+    "tribe": "Tofu"
+  },
+  {
+    "id": "tour-des-miss-moches-amakna",
+    "name": "Tour des Miss Moches",
+    "mainType": "Zone",
+    "subTypes": [],
+    "extension": {
+      "name": "Amakna",
+      "number": "130/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-130"
+    },
+    "rarity": "Peu Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Au début de votre tour, recyclez une carte  ou détruisez la Tour des Miss Moches.",
+        "elements": [
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Inclinez une de vos Princesses : Redressez un de vos Chevaliers de votre choix. Il gagne +1 en Force jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Dites",
+      "attribution": "vous que ce n'est pas pire que la Tour des Miss Roussosses."
+    }
+  },
+  {
+    "id": "tourmenteur-amakna",
+    "name": "Tourmenteur",
+    "mainType": "Équipement",
+    "subTypes": [
+      "Arme",
+      "Tourmenteur"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "152/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-152"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Tourmenteur ne peut être fabriqué.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Porteur du Tourmenteur perd sa Classe et sa Famille et devient un Chevalier.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Porteur du Tourmenteur gagne tous les pouvoirs  de l'Allié de votre choix jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Le  Tourmenteur ne permet de copier que les pouvoirs incluant le symbole «  ». Il ne copie pas les pouvoirs ne contenant pas un coût demandant d'incliner un Allié ou les pouvoirs d'apparition.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Si le Porteur du Tourmenteur avait des pouvoirs , il les conserve et peut toujours les utiliser. Si un Allié possède plusieurs pouvoirs , son contrôleur doit choisir lequel il décide d'utiliser au moment où il incline celui-ci.",
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
+    "notes": [
+      "Le Tourmenteur ne permet de copier que les pouvoirs incluant le symbole « ». Il ne copie pas les pouvoirs ne contenant pas un coût demandant d'incliner un Allié ou les pouvoirs d'apparition.",
+      "Si le Porteur du Tourmenteur avait des pouvoirs , il les conserve et peut toujours les utiliser. Si un Allié possède plusieurs pouvoirs , son contrôleur doit choisir lequel il décide d'utiliser au moment où il incline celui-ci."
+    ],
+    "flavor": {
+      "text": "Une arme qui change l'apparence de son propriétaire ? C'est Ameur la Laide qui en aurait bien besoin !"
+    },
+    "equipmentType": "Arme",
+    "requirements": {
+      "level": 3,
+      "elements": []
+    }
+  },
+  {
+    "id": "tournesol-affame-amakna",
+    "name": "Tournesol Affamé",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Fleur",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "22/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-22"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "terre"
+      },
+      "force": {
+        "value": 4,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Tournesol Affamé inflige 1 Dommage  à l'Allié ou Héros de votre choix. Son contrôleur perd 1 PM jusqu'à la fin du tour.",
+        "elements": [
+          "terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      },
+      {
+        "description": "Un Héros ne peut pas avoir moins de 0 PM. Si le pouvoir du Tournesol Affamé devait diminuer les PM d'un Héros à moins de 0, on considère que ses PM restent à 0.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 2,
+    "artists": [
+      "Romain Pergod (Sephy)"
+    ],
+    "notes": [
+      "Un Héros ne peut pas avoir moins de 0 PM. Si le pouvoir du Tournesol Affamé devait diminuer les PM d'un Héros à moins de 0, on considère que ses PM restent à 0."
+    ],
+    "flavor": {
+      "text": "Évitez de provoquer le Tournesol Affamé, car il n'hésitera pas à vous refaire le portrait ! — Vince Van Gode."
+    },
+    "race": "Monstre",
+    "tribe": "Fleur"
+  },
+  {
+    "id": "trefle-amakna",
+    "name": "Trèfle",
+    "mainType": "Action",
+    "subTypes": [
+      "Sort",
+      "Ecaflip"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "101/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-101"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Jusqu'à la fin du tour, le prochain Chi-Fu-Mi que vous jouez est automatiquement gagné.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Si deux joueurs adverses jouent Trèfle, alors on considère qu'ils ont tous les deux gagné le prochain Chi-Fu-Mi qu'ils jouent ensemble.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Nénent"
+    ],
+    "notes": [
+      "Si deux joueurs adverses jouent Trèfle, alors on considère qu'ils ont tous les deux gagné le prochain Chi-Fu-Mi qu'ils jouent ensemble."
+    ],
+    "flavor": {
+      "text": "Lorsqu'il est à fleur de peau, Meow Moew devient un as de Trèfle."
+    },
+    "spellSchool": "Sort"
+  },
+  {
+    "id": "tynril-amakna",
+    "name": "Tynril",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Tynril",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "42/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-42"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 6,
+        "element": "air"
+      },
+      "force": {
+        "value": 5,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Chaque fois que le Tynril subit un ou plusieurs Dommages, il perd toutes ses  actuelles, puis gagne  dans l'élément des Dommages qu'il a subis jusqu'à la fin du tour.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "le joueur adverse joue une Flèche Chercheuse sur votre Tynril au début de son tour. Ce dernier va subir 1 Dommage , puis gagner . Ensuite le joueur adverse attaque votre Tynril avec une Gelée Fraise. Le Tynril va subir des Dommages de la part de la Gelée Fraise et simultanément perdre sa , puis gagner  jusqu'à la fin du tour, ou jusqu'à ce qu'il subisse de nouveau des Dommages.",
+        "elements": [
+          "air",
+          "feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Trait \"Monstre\" ajouté.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "experience": 2,
+    "artists": [
+      "Nicolas Detrain (Tiko)"
+    ],
+    "notes": [
+      "Exemple : le joueur adverse joue une Flèche Chercheuse sur votre Tynril au début de son tour. Ce dernier va subir 1 Dommage , puis gagner Résistance 2 . Ensuite le joueur adverse attaque votre Tynril avec une Gelée Fraise. Le Tynril va subir des Dommages de la part de la Gelée Fraise et simultanément perdre sa Résistance 2 , puis gagner Résistance 2 jusqu'à la fin du tour, ou jusqu'à ce qu'il subisse de nouveau des Dommages.",
+      "Trait \"Monstre\" ajouté."
+    ],
+    "flavor": {
+      "text": "Le Tynril est un animal généreux : s'il se dédouble, c'est pour que chacun puisse avoir droit à sa raclée !"
+    },
+    "race": "Monstre",
+    "tribe": "Tynril"
+  },
+  {
+    "id": "uk-not-allag-amakna",
+    "name": "Uk'Not'Allag",
+    "mainType": "Allié",
+    "subTypes": [
+      "Démon",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "41/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-41"
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 8,
+        "element": "air"
+      },
+      "force": {
+        "value": 8,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Géant",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Au début de votre tour, si Uk'Not'Allag est dans le Monde, vous pouvez chercher un Allié Démon dans votre Pioche et le prendre en main. Si vous le faites, mélangez votre Pioche.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Vous pouvez utiliser ce pouvoir même si vous n'avez plus d'Allié Démon dans votre Pioche. Si c'est le cas, vous devez mélanger votre Pioche après voir cherché.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Résistance",
+        "description": "1",
+        "elements": [
+          "air"
+        ]
+      }
+    ],
+    "experience": 3,
+    "artists": [
+      "Jonoo Takeshi"
+    ],
+    "notes": [
+      "Vous pouvez utiliser ce pouvoir même si vous n'avez plus d'Allié Démon dans votre Pioche. Si c'est le cas, vous devez mélanger votre Pioche après voir cherché."
+    ],
+    "flavor": {
+      "text": "Après son évasion de la prison d'Astrub en 636, Uk'Not'Allag a trouvé refuge dans la Tour de Gisgoul."
+    },
+    "race": "Démon",
+    "tribe": "Unique"
+  },
+  {
+    "id": "valsa-sordida-amakna",
+    "name": "Valsa Sordida",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Champignon"
+    ],
+    "extension": {
+      "name": "Amakna",
+      "number": "33/162",
+      "shortUrl": "https://l.wtcg-return.fr/c/amakna-33"
+    },
+    "rarity": "Commune",
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "air"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "Détruisez la Zone de Niveau X de votre choix.",
+        "elements": [
+          "neutre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Kim Ettinoff (Tcho)"
+    ],
+    "notes": [],
+    "flavor": {
+      "text": "Lui et Evangelyne auraient pu faire de si beaux enfants… Non ?"
+    },
+    "race": "Monstre",
+    "tribe": "Champignon"
+  }
+]

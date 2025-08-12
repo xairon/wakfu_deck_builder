@@ -1,0 +1,2717 @@
+[
+  {
+    "card": {
+      "id": "aeron-zeklox",
+      "name": "Aeron Zeklox",
+      "mainType": "Héros",
+      "subTypes": [
+        "Xélor"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "12/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-12-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 14,
+        "niveau": {
+          "value": 1,
+          "element": "eau"
+        },
+        "force": {
+          "value": 1,
+          "element": "eau"
+        }
+      },
+      "effects": [
+        {
+          "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1."
+      ],
+      "class": "Xélor",
+      "level": {
+        "value": 1,
+        "element": "eau"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 14,
+          "niveau": {
+            "value": 1,
+            "element": "eau"
+          },
+          "force": {
+            "value": 1,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/aeron-zeklox-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 2,
+            "element": "eau"
+          },
+          "force": {
+            "value": 2,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/aeron-zeklox-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-12-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-12-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "ayma-ragie",
+      "name": "Ayma Ragie",
+      "mainType": "Héros",
+      "subTypes": [
+        "Sacrieur"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "9/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-9-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 20,
+        "niveau": {
+          "value": 1,
+          "element": "air"
+        },
+        "force": {
+          "value": 1,
+          "element": "air"
+        }
+      },
+      "effects": [
+        {
+          "description": "Chaque fois qu'il perd 1 ou plusieurs PV, Ayma Ragie gagne +1 en Force jusqu'à la fin du tour.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Ce pouvoir se déclenche à chaque fois qu'une source fait perdre des PV à votre Héros, peu importe le contrôleur de la source. Au Niveau 1, Ayma Ragie ne gagne le bonus de Force qu'une seule fois par Dommages, peu importe leur quantité.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Ce pouvoir se déclenche à chaque fois qu'une source fait perdre des PV à votre Héros, peu importe le contrôleur de la source. Au Niveau 1, Ayma Ragie ne gagne le bonus de Force qu'une seule fois par Dommages, peu importe leur quantité."
+      ],
+      "class": "Sacrieur",
+      "level": {
+        "value": 1,
+        "element": "air"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 1,
+            "element": "air"
+          },
+          "force": {
+            "value": 1,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois qu'il perd 1 ou plusieurs PV, Ayma Ragie gagne +1 en Force jusqu'à la fin du tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Ce pouvoir se déclenche à chaque fois qu'une source fait perdre des PV à votre Héros, peu importe le contrôleur de la source. Au Niveau 1, Ayma Ragie ne gagne le bonus de Force qu'une seule fois par Dommages, peu importe leur quantité.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/ayma-ragie-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 26,
+          "niveau": {
+            "value": 2,
+            "element": "air"
+          },
+          "force": {
+            "value": 1,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois qu'il perd 1 ou plusieurs PV, Ayma Ragie gagne +1 en Force jusqu'à la fin du tour pour chaque PV perdu.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Ce pouvoir se déclenche à chaque fois qu'une source fait perdre des PV à votre Héros, peu importe le contrôleur de la source. Au Niveau 1, Ayma Ragie ne gagne le bonus de Force qu'une seule fois par Dommages, peu importe leur quantité.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/ayma-ragie-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-9-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-9-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "bruss-ouilis",
+      "name": "Bruss Ouilis",
+      "mainType": "Héros",
+      "subTypes": [
+        "Iop"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "6/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-6-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "terre"
+        },
+        "force": {
+          "value": 3,
+          "element": "terre"
+        }
+      },
+      "effects": [
+        {
+          "description": "Quand Bruss Ouilis attaque, il gagne +1 en Force et +1 PM jusqu'à la fin du combat.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale."
+      ],
+      "class": "Iop",
+      "level": {
+        "value": 1,
+        "element": "terre"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "terre"
+          },
+          "force": {
+            "value": 3,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": "Quand Bruss Ouilis attaque, il gagne +1 en Force et +1 PM jusqu'à la fin du combat.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/bruss-ouilis-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "terre"
+          },
+          "force": {
+            "value": 4,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": "Quand Bruss Ouilis attaque, il gagne +1 en Force, +1 PM et Géant jusqu'à la fin du combat.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/bruss-ouilis-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-6-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-6-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "hynd-yanajone",
+      "name": "Hynd Yanajone",
+      "mainType": "Héros",
+      "subTypes": [
+        "Enutrof"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "4/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-4-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "eau"
+        },
+        "force": {
+          "value": 2,
+          "element": "eau"
+        }
+      },
+      "effects": [
+        {
+          "description": "Piochez une carte",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [],
+      "class": "Enutrof",
+      "level": {
+        "value": 1,
+        "element": "eau"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "eau"
+          },
+          "force": {
+            "value": 2,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Piochez une carte",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/hynd-yanajone-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "eau"
+          },
+          "force": {
+            "value": 2,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Piochez deux cartes",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/hynd-yanajone-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-4-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-4-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "karey-dass",
+      "name": "Karey Dass",
+      "mainType": "Héros",
+      "subTypes": [
+        "Ecaflip"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "2/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-2-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "air"
+        },
+        "force": {
+          "value": 2,
+          "element": "air"
+        }
+      },
+      "effects": [
+        {
+          "description": "Chaque fois que vous gagnez un Chi-Fu-Mi, Karey Dass gagne +1 en Force et +1 PM jusqu'à la fin du tour.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Le Chi-Fu-Mi de début de partie ne confère aucun bonus à Karey Dass car celui-ci n'est pas joué pendant le tour d'un des deux joueurs mais au début de la partie.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Le Chi-Fu-Mi de début de partie ne confère aucun bonus à Karey Dass car celui-ci n'est pas joué pendant le tour d'un des deux joueurs mais au début de la partie."
+      ],
+      "class": "Ecaflip",
+      "level": {
+        "value": 1,
+        "element": "air"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "air"
+          },
+          "force": {
+            "value": 2,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois que vous gagnez un Chi-Fu-Mi, Karey Dass gagne +1 en Force et +1 PM jusqu'à la fin du tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Le Chi-Fu-Mi de début de partie ne confère aucun bonus à Karey Dass car celui-ci n'est pas joué pendant le tour d'un des deux joueurs mais au début de la partie.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/karey-dass-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "air"
+          },
+          "force": {
+            "value": 3,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois que vous gagnez un Chi-Fu-Mi, Karey Dass gagne +2 en Force et +2 PM jusqu'à la fin du tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Le Chi-Fu-Mi de début de partie ne confère aucun bonus à Karey Dass car celui-ci n'est pas joué pendant le tour d'un des deux joueurs mais au début de la partie.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/karey-dass-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-2-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-2-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "klore-ofil",
+      "name": "Klore Ofil",
+      "mainType": "Héros",
+      "subTypes": [
+        "Sadida"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "10/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-10-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "terre"
+        },
+        "force": {
+          "value": 2,
+          "element": "terre"
+        }
+      },
+      "effects": [
+        {
+          "description": "Le joueur qui vient de déclarer une attaque perd 1 PM jusqu'à la fin du tour.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Ce pouvoir doit être utilisé quand le joueur adverse déclare son attaque, avant la déclaration de la cible de l'attaque. On ne peut pas attendre de voir quels Alliés ou Héros seront envoyés au combat avant d'utiliser le pouvoir de Klore Ofil.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Ce pouvoir doit être utilisé quand le joueur adverse déclare son attaque, avant la déclaration de la cible de l'attaque. On ne peut pas attendre de voir quels Alliés ou Héros seront envoyés au combat avant d'utiliser le pouvoir de Klore Ofil."
+      ],
+      "class": "Sadida",
+      "level": {
+        "value": 1,
+        "element": "terre"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "terre"
+          },
+          "force": {
+            "value": 2,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": "Réaction.  : Le joueur qui vient de déclarer une attaque perd 1 PM jusqu'à la fin du tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Ce pouvoir doit être utilisé quand le joueur adverse déclare son attaque, avant la déclaration de la cible de l'attaque. On ne peut pas attendre de voir quels Alliés ou Héros seront envoyés au combat avant d'utiliser le pouvoir de Klore Ofil.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/klore-ofil-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "terre"
+          },
+          "force": {
+            "value": 2,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": "Le joueur qui vient de déclarer une attaque perd 1 PM jusqu'à la fin du tour. Vous gagnez 1 PM jusqu'à la fin du tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Ce pouvoir doit être utilisé quand le joueur adverse déclare son attaque, avant la déclaration de la cible de l'attaque. On ne peut pas attendre de voir quels Alliés ou Héros seront envoyés au combat avant d'utiliser le pouvoir de Klore Ofil.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/klore-ofil-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-10-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-10-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "kouff-ourbe",
+      "name": "Kouff Ourbe",
+      "mainType": "Héros",
+      "subTypes": [
+        "Sram"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "11/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-11-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "terre"
+        },
+        "force": {
+          "value": 2,
+          "element": "terre"
+        }
+      },
+      "effects": [
+        {
+          "description": "Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, il subit 1 Dommage .",
+          "elements": [
+            "neutre",
+            "terre"
+          ],
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Les Alliés et les Héros qui s'inclinent reçoivent le Dommage même si Kouff Ourbe est dans son Havre Sac, car ce n'est pas Kouff Ourbe qui est la source de ce Dommage. Les Règles de Portée ne s'appliquent donc pas ici.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
+        "Les Alliés et les Héros qui s'inclinent reçoivent le Dommage même si Kouff Ourbe est dans son Havre Sac, car ce n'est pas Kouff Ourbe qui est la source de ce Dommage. Les Règles de Portée ne s'appliquent donc pas ici."
+      ],
+      "class": "Sram",
+      "level": {
+        "value": 1,
+        "element": "terre"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "terre"
+          },
+          "force": {
+            "value": 2,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, il subit 1 Dommage .",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Les Alliés et les Héros qui s'inclinent reçoivent le Dommage même si Kouff Ourbe est dans son Havre Sac, car ce n'est pas Kouff Ourbe qui est la source de ce Dommage. Les Règles de Portée ne s'appliquent donc pas ici.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/kouff-ourbe-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "terre"
+          },
+          "force": {
+            "value": 3,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Neutre Neutre : Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, il subit 2 Dommages Terre.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/kouff-ourbe-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-11-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-11-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "opee-tissoin",
+      "name": "Opée Tissoin",
+      "mainType": "Héros",
+      "subTypes": [
+        "Eniripsa"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "3/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-3-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 14,
+        "niveau": {
+          "value": 1,
+          "element": "feu"
+        },
+        "force": {
+          "value": 1,
+          "element": "feu"
+        }
+      },
+      "effects": [
+        {
+          "description": "Au début de votre tour, Opée Tissoin regagne 1 PV.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Réduisez de 2 les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1."
+      ],
+      "class": "Eniripsa",
+      "level": {
+        "value": 1,
+        "element": "feu"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 14,
+          "niveau": {
+            "value": 1,
+            "element": "feu"
+          },
+          "force": {
+            "value": 1,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": "Au début de votre tour, Opée Tissoin regagne 1 PV.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Réaction.  : Réduisez de 2 les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/opee-tissoin-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 2,
+            "element": "feu"
+          },
+          "force": {
+            "value": 1,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": "Au début de votre tour, Opée Tissoin regagne 1 PV.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Réaction.  :  Réduisez à 0 les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/opee-tissoin-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-3-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-3-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "poum-ondacie",
+      "name": "Poum Ondacié",
+      "mainType": "Héros",
+      "subTypes": [
+        "Féca"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "5/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-5-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "feu"
+        },
+        "force": {
+          "value": 1,
+          "element": "feu"
+        }
+      },
+      "effects": [
+        {
+          "description": "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 1.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [],
+      "class": "Féca",
+      "level": {
+        "value": 1,
+        "element": "feu"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "feu"
+          },
+          "force": {
+            "value": 1,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 1.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/poum-ondacie-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "feu"
+          },
+          "force": {
+            "value": 2,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 2.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/poum-ondacie-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-5-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-5-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "shimay-rouch",
+      "name": "Shimay Rouch",
+      "mainType": "Héros",
+      "subTypes": [
+        "Pandawa"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "8/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-8-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "eau"
+        },
+        "force": {
+          "value": 2,
+          "element": "eau"
+        }
+      },
+      "effects": [
+        {
+          "description": "Tant que Shimay Rouch reste incliné, il gagne +1 en Force et les Dommages sur le point de lui être infligés sont réduits de 1.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Ce pouvoir ne s'appliquera pas si votre Héros a été incliné pour une autre raison (pour payer un coût, par exemple).",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Ce pouvoir ne s'appliquera pas si votre Héros a été incliné pour une autre raison (pour payer un coût, par exemple)."
+      ],
+      "class": "Pandawa",
+      "level": {
+        "value": 1,
+        "element": "eau"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "eau"
+          },
+          "force": {
+            "value": 2,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Tant que Shimay Rouch reste incliné, il gagne +1 en Force et les Dommages sur le point de lui être infligés sont réduits de 1.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Ce pouvoir ne s'appliquera pas si votre Héros a été incliné pour une autre raison (pour payer un coût, par exemple).",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/shimay-rouch-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "eau"
+          },
+          "force": {
+            "value": 3,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ":  Tant que Shimay Rouch reste incliné, il gagne +2 en Force et les Dommages sur le point de lui être infligés sont réduits de 2",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Cette carte a reçu un errata officiel : il gagne +2 en Force ET réduit les dommages de 2.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/shimay-rouch-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-8-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-8-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "tirlangue-portey",
+      "name": "Tirlangue Portey",
+      "mainType": "Héros",
+      "subTypes": [
+        "Crâ"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "1/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-1-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "air"
+        },
+        "force": {
+          "value": 1,
+          "element": "air"
+        }
+      },
+      "effects": [
+        {
+          "description": "Tirlangue Portey inflige 2 Dommages  à l'Allié ou Héros de votre choix.",
+          "elements": [
+            "air"
+          ],
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [],
+      "class": "Crâ",
+      "level": {
+        "value": 1,
+        "element": "air"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "air"
+          },
+          "force": {
+            "value": 1,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Tirlangue Portey inflige 2 Dommages  à l'Allié ou Héros de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/tirlangue-portey-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "air"
+          },
+          "force": {
+            "value": 2,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Tirlangue Portey inflige 3 Dommages Air, Terre, Feu, Eau ou Neutre à l'Allié ou Héros de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": ": Vous ne pouvez choisir qu'un seul type de Dommages à la fois : Air, Terre, Feu, Eau ou Neutre. Vous n'êtes pas obligé de choisir le même type de Dommages d'une fois sur l'autre.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/tirlangue-portey-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-1-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-1-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "trantmy-londami",
+      "name": "Trantmy Londami",
+      "mainType": "Héros",
+      "subTypes": [
+        "Osamodas"
+      ],
+      "extension": {
+        "name": "Incarnam",
+        "number": "7/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/incarnam-7-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "feu"
+        },
+        "force": {
+          "value": 2,
+          "element": "feu"
+        }
+      },
+      "effects": [
+        {
+          "description": "Mettez en jeu un Monstre de NIveau 1 ou 2 gratuitement de votre main.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Un Monstre Invoqué n'est pas considéré comme ayant été joué. Le Monstre n'est choisi qu'à la résolution du pouvoir de Trantmy Londami, par conséquent l'adversaire ne peut pas attendre de savoir quel Monstre est invoqué pour jouer une éventuelle Réaction. On peut utiliser ce pouvoir sans carte Monstre en Main, dans ce cas le pouvoir ne fait rien.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Xavier Houssin (Xa)"
+      ],
+      "notes": [
+        "Un Monstre Invoqué n'est pas considéré comme ayant été joué. Le Monstre n'est choisi qu'à la résolution du pouvoir de Trantmy Londami, par conséquent l'adversaire ne peut pas attendre de savoir quel Monstre est invoqué pour jouer une éventuelle Réaction. On peut utiliser ce pouvoir sans carte Monstre en Main, dans ce cas le pouvoir ne fait rien."
+      ],
+      "class": "Osamodas",
+      "level": {
+        "value": 1,
+        "element": "feu"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "feu"
+          },
+          "force": {
+            "value": 2,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Mettez en jeu un Monstre de NIveau 1 ou 2 gratuitement de votre main.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Un Monstre Invoqué n'est pas considéré comme ayant été joué. Le Monstre n'est choisi qu'à la résolution du pouvoir de Trantmy Londami, par conséquent l'adversaire ne peut pas attendre de savoir quel Monstre est invoqué pour jouer une éventuelle Réaction. On peut utiliser ce pouvoir sans carte Monstre en Main, dans ce cas le pouvoir ne fait rien.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/trantmy-londami-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "feu"
+          },
+          "force": {
+            "value": 2,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Mettez en jeu un Monstre de NIveau inférieur ou égal à 3 gratuitement de votre main.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/incarnam/trantmy-londami-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-7-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/incarnam/incarnam-7-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "babeth-safoueth",
+      "name": "Babeth Safoueth",
+      "mainType": "Héros",
+      "subTypes": [
+        "Osamodas"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "7/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-7-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "eau"
+        },
+        "force": {
+          "value": 1,
+          "element": "eau"
+        }
+      },
+      "effects": [
+        {
+          "description": "Révélez les quatre premières cartes de votre Pioche. Si un Monstre de Niveau inférieur ou égal à 3 est révélé de cette façon, vous pouvez le prendre en main.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Les cartes révélées par le pouvoir de Babeth Safoueth sont ensuite remises sur le dessus de la pioche dans l'ordre de votre choix. Vous n'avez pas à révéler cet ordre à votre adversaire.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Si plusieurs Monstres de Niveau inférieur ou égal à 3 sont ainsi révélés, vous choisissez celui que vous prenez en main. Le pouvoir de Babeth Safoueth ne vous permet pas de prendre tous ces Monstres en main.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [
+        "Les cartes révélées par le pouvoir de Babeth Safoueth sont ensuite remises sur le dessus de la pioche dans l'ordre de votre choix. Vous n'avez pas à révéler cet ordre à votre adversaire.",
+        "Si plusieurs Monstres de Niveau inférieur ou égal à 3 sont ainsi révélés, vous choisissez celui que vous prenez en main. Le pouvoir de Babeth Safoueth ne vous permet pas de prendre tous ces Monstres en main."
+      ],
+      "class": "Osamodas",
+      "level": {
+        "value": 1,
+        "element": "eau"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "eau"
+          },
+          "force": {
+            "value": 1,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Révélez les quatre premières cartes de votre Pioche. Si un Monstre de Niveau inférieur ou égal à 3 est révélé de cette façon, vous pouvez le prendre en main.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Les cartes révélées par le pouvoir de Babeth Safoueth sont ensuite remises sur le dessus de la pioche dans l'ordre de votre choix. Vous n'avez pas à révéler cet ordre à votre adversaire.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Si plusieurs Monstres de Niveau inférieur ou égal à 3 sont ainsi révélés, vous choisissez celui que vous prenez en main. Le pouvoir de Babeth Safoueth ne vous permet pas de prendre tous ces Monstres en main.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/babeth-safoueth-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "eau"
+          },
+          "force": {
+            "value": 2,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Cherchez un Monstre dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche. N'utilisez ce pouvoir qu'une seule fois par tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Votre Pioche étant une zone privée, vous pouvez décider de ne trouver aucun Monstre même si votre Pioche en contient.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/babeth-safoueth-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-7-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-7-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "bom-d-utygr",
+      "name": "Bôm d'Utygr",
+      "mainType": "Héros",
+      "subTypes": [
+        "Eniripsa"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "3/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-3-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "eau"
+        },
+        "force": {
+          "value": 1,
+          "element": "eau"
+        }
+      },
+      "effects": [
+        {
+          "description": "Au début de votre tour, vous pouvez mettre en jeu l'Allié de Niveau 1 de votre choix depuis votre Défausse.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [],
+      "class": "Eniripsa",
+      "level": {
+        "value": 1,
+        "element": "eau"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "eau"
+          },
+          "force": {
+            "value": 1,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": "Au début de votre tour, vous pouvez mettre en jeu l'Allié de Niveau 1 de votre choix depuis votre Défausse.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bom-dutygr-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "eau"
+          },
+          "force": {
+            "value": 1,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": "Au début de votre tour, vous pouvez mettre en jeu l'Allié de Niveau inférieur ou égal à 3 de votre choix depuis votre Défausse.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bom-dutygr-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-3-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-3-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "coa-gullay",
+      "name": "Coa Gullay",
+      "mainType": "Héros",
+      "subTypes": [
+        "Sacrieur"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "9/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-9-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 20,
+        "niveau": {
+          "value": 1,
+          "element": "terre"
+        },
+        "force": {
+          "value": 2,
+          "element": "terre"
+        }
+      },
+      "effects": [
+        {
+          "description": "Changez la position de l'Allié ou Héros bloqueur de votre choix.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Le changement de position doit être légal. Si vous attaquez avec Coa Gullay et un Tofu, par exemple, et que votre adversaire bloque Coa Gullay avec son Corailleur, vous ne pouvez pas changer la position du Corailleur en le plaçant devant le Tofu, car le Corailleur ne possède pas Agilité et n'est donc pas un bloqueur légal pour le Tofu.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [
+        "Le changement de position doit être légal. Si vous attaquez avec Coa Gullay et un Tofu, par exemple, et que votre adversaire bloque Coa Gullay avec son Corailleur, vous ne pouvez pas changer la position du Corailleur en le plaçant devant le Tofu, car le Corailleur ne possède pas Agilité et n'est donc pas un bloqueur légal pour le Tofu."
+      ],
+      "class": "Sacrieur",
+      "level": {
+        "value": 1,
+        "element": "terre"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 1,
+            "element": "terre"
+          },
+          "force": {
+            "value": 2,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Changez la position de l'Allié ou Héros bloqueur de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Le changement de position doit être légal. Si vous attaquez avec Coa Gullay et un Tofu, par exemple, et que votre adversaire bloque Coa Gullay avec son Corailleur, vous ne pouvez pas changer la position du Corailleur en le plaçant devant le Tofu, car le Corailleur ne possède pas Agilité et n'est donc pas un bloqueur légal pour le Tofu.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/coa-gullay-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 26,
+          "niveau": {
+            "value": 2,
+            "element": "terre"
+          },
+          "force": {
+            "value": 3,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Changez la position de n'importe quel nombre d'Alliés ou Héros bloqueurs de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Vous pouvez décider que tous les Alliés ou Héros actuellement bloqueurs dans ce combat deviennent bloqueur du même Allié ou Héros attaquant. Tous les changements de position doivent être légaux.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/coa-gullay-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-9-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-9-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "dani-osheun",
+      "name": "Dani Osheun",
+      "mainType": "Héros",
+      "subTypes": [
+        "Ecaflip"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "2/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-2-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "terre"
+        },
+        "force": {
+          "value": 2,
+          "element": "terre"
+        }
+      },
+      "effects": [
+        {
+          "description": "Chaque fois que vous gagnez un Chi-Fu-Mi, Dani Osheun inflige 1 Dommage  à l'Allié ou Héros de votre choix.",
+          "elements": [
+            "terre"
+          ],
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [],
+      "class": "Ecaflip",
+      "level": {
+        "value": 1,
+        "element": "terre"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "terre"
+          },
+          "force": {
+            "value": 2,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois que vous gagnez un Chi-Fu-Mi, Dani Osheun inflige 1 Dommage  à l'Allié ou Héros de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/dani-osheun-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "terre"
+          },
+          "force": {
+            "value": 3,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois que vous gagnez un Chi-Fu-Mi, Dani Osheun inflige 2 Dommages Terre à l'Allié ou Héros de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/dani-osheun-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-2-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-2-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "flix-flax",
+      "name": "Flix Flax",
+      "mainType": "Héros",
+      "subTypes": [
+        "Xélor"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "12/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-12-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "air"
+        },
+        "force": {
+          "value": 1,
+          "element": "air"
+        }
+      },
+      "effects": [
+        {
+          "description": "Jouez une Action depuis votre Défausse comme si elle était dans votre main, puis bannissez-la.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Le pouvoir de Flix Flax rentre d'abord en File d'Attente, après avoir choisit l'Action à jouer et incliné Flix Flax. L'Action ne sera effectivement jouée que lors de la résolution de l'effet. À ce moment là, il faudra payer le coût de l'Action choisit, qui rentre alors à son tour dans la File d'Attente.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Vous ne pouvez pas jouer de  par le biais du pouvoir de Flix Flax au Niveau 1, car celui-ci n'est pas lui-même une Réaction.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Si vous utilisez le pouvoir de Flix Flax sur un Sort d'invocation comme Arbre ou Épée Volante, l'invocation apparaît et est immédiatement bannie par le pouvoir de Flix Flax. Si l'Action que vous rejouez est annulée, elle est tout de même bannie par le pouvoir de Flix Flax.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [
+        "Le pouvoir de Flix Flax rentre d'abord en File d'Attente, après avoir choisit l'Action à jouer et incliné Flix Flax. L'Action ne sera effectivement jouée que lors de la résolution de l'effet. À ce moment là, il faudra payer le coût de l'Action choisit, qui rentre alors à son tour dans la File d'Attente.",
+        "Vous ne pouvez pas jouer de Réaction par le biais du pouvoir de Flix Flax au Niveau 1, car celui-ci n'est pas lui-même une Réaction.",
+        "Si vous utilisez le pouvoir de Flix Flax sur un Sort d'invocation comme Arbre ou Épée Volante, l'invocation apparaît et est immédiatement bannie par le pouvoir de Flix Flax. Si l'Action que vous rejouez est annulée, elle est tout de même bannie par le pouvoir de Flix Flax."
+      ],
+      "class": "Xélor",
+      "level": {
+        "value": 1,
+        "element": "air"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "air"
+          },
+          "force": {
+            "value": 1,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Jouez une Action depuis votre Défausse comme si elle était dans votre main, puis bannissez-la.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Le pouvoir de Flix Flax rentre d'abord en File d'Attente, après avoir choisit l'Action à jouer et incliné Flix Flax. L'Action ne sera effectivement jouée que lors de la résolution de l'effet. À ce moment là, il faudra payer le coût de l'Action choisit, qui rentre alors à son tour dans la File d'Attente.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Vous ne pouvez pas jouer de Réaction par le biais du pouvoir de Flix Flax au Niveau 1, car celui-ci n'est pas lui-même une Réaction.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Si vous utilisez le pouvoir de Flix Flax sur un Sort d'invocation comme Arbre ou Épée Volante, l'invocation apparaît et est immédiatement bannie par le pouvoir de Flix Flax. Si l'Action que vous rejouez est annulée, elle est tout de même bannie par le pouvoir de Flix Flax.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/flix-flax-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "air"
+          },
+          "force": {
+            "value": 2,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Vous pouvez jouer les Actions depuis votre Défausse comme si elles étaient dans votre main. Chaque fois que vous jouez une Action de cette façon, bannissez-la.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Au Niveau 2, le pouvoir de Flix Flax est continu, il ne rentre donc pas en File d'Attente. Il est dès lors possible de jouer des Réactions depuis la défausse. Il suffit de préciser l'Action jouée et de payer son coût, puis de la bannir.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/flix-flax-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-12-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-12-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "hilary-swinte",
+      "name": "Hilary Swinte",
+      "mainType": "Héros",
+      "subTypes": [
+        "Iop"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "6/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-6-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "air"
+        },
+        "force": {
+          "value": 3,
+          "element": "air"
+        }
+      },
+      "effects": [
+        {
+          "description": "Si Hilary Swinte est attaquante, elle inflige autant de Dommages  qu'il y a d'attaquants dans ce combat à l'Allié ou Héros bloqueur de votre choix.",
+          "elements": [
+            "air"
+          ],
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [],
+      "class": "Iop",
+      "level": {
+        "value": 1,
+        "element": "air"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "air"
+          },
+          "force": {
+            "value": 3,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Si Hilary Swinte est attaquante, elle inflige autant de Dommages  qu'il y a d'attaquants dans ce combat à l'Allié ou Héros bloqueur de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/hilary-swinte-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "air"
+          },
+          "force": {
+            "value": 4,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Si Hilary Swinte est attaquante, elle inflige autant de Dommages Air qu'il y a d'attaquants dans ce combat répartis entre les Alliés ou Héros bloqueur de votre choix.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/hilary-swinte-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-6-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-6-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "jin-kobi-loba",
+      "name": "Jin Kobi Loba",
+      "mainType": "Héros",
+      "subTypes": [
+        "Sadida"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "10/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-10-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "feu"
+        },
+        "force": {
+          "value": 1,
+          "element": "feu"
+        }
+      },
+      "effects": [
+        {
+          "description": "Chaque fois qu'un de vos Monstres de Niveau 1 ou 2 apparaît, il ne peut pas être détruit par un adversaire jusqu'au début de votre prochain tour.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Les Monstres ne sont pas détruits s'ils reçoivent des Dommages supérieurs ou égaux à leur Force ou par des effets mentionnant spécifiquement une destruction, comme Noob! En revanche, les Dommages sont tout de même infligés aux Monstres, et un pouvoir qui se déclenche lorsqu'un Allié subit des Dommages se déclenchera même si le pouvoir de Jin Kobi Loba est actif.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [
+        "Les Monstres ne sont pas détruits s'ils reçoivent des Dommages supérieurs ou égaux à leur Force ou par des effets mentionnant spécifiquement une destruction, comme Noob! En revanche, les Dommages sont tout de même infligés aux Monstres, et un pouvoir qui se déclenche lorsqu'un Allié subit des Dommages se déclenchera même si le pouvoir de Jin Kobi Loba est actif."
+      ],
+      "class": "Sadida",
+      "level": {
+        "value": 1,
+        "element": "feu"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "feu"
+          },
+          "force": {
+            "value": 1,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois qu'un de vos Monstres de Niveau 1 ou 2 apparaît, il ne peut pas être détruit par un adversaire jusqu'au début de votre prochain tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Les Monstres ne sont pas détruits s'ils reçoivent des Dommages supérieurs ou égaux à leur Force ou par des effets mentionnant spécifiquement une destruction, comme Noob! En revanche, les Dommages sont tout de même infligés aux Monstres, et un pouvoir qui se déclenche lorsqu'un Allié subit des Dommages se déclenchera même si le pouvoir de Jin Kobi Loba est actif.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/jin-kobi-loba-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "feu"
+          },
+          "force": {
+            "value": 2,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": "Chaque fois qu'un de vos Monstres apparaît, il ne peut pas être détruit par un adversaire jusqu'au début de votre prochain tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/jin-kobi-loba-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-10-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-10-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "justine-broudi",
+      "name": "Justine Broudi",
+      "mainType": "Héros",
+      "subTypes": [
+        "Féca"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "5/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-5-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "eau"
+        },
+        "force": {
+          "value": 2,
+          "element": "eau"
+        }
+      },
+      "effects": [
+        {
+          "description": "L'Action ou le pouvoir adverse qui choisit un de vos Alliés ou Héros choisit un autre de vos Alliés ou Héros de votre choix à la place.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Le nouveau choix que vous effectuez doit respecter les contraintes restreignant les choix réalisables avec l'Action ou le pouvoir qui est joué. Le Sort Iop Pression inflige par exemple 1 Dommage  à un Allié attaquant ou bloqueur. Vous ne pouvez pas modifier ce choix avec Justine Broudi en choisissant un Allié ou Héros non attaquant ou non bloqueur. De même, vous ne pouvez pas modifier le choix d'une Action ou un pouvoir adverse en choisissant un de vos Alliés ou Héros dans votre Havre Sac, sauf si l'Action ou le pouvoir peut explicitement choisir un de vos Allié ou Héros dans votre Havre Sac (Flèche d'Immolation ou Abraknyde Sombre, par exemple), car la source de l'Action ou du pouvoir ne change pas et que les Règles de Portée l'interdisent",
+          "elements": [
+            "terre"
+          ],
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [
+        "Le nouveau choix que vous effectuez doit respecter les contraintes restreignant les choix réalisables avec l'Action ou le pouvoir qui est joué. Le Sort Iop Pression inflige par exemple 1 Dommage à un Allié attaquant ou bloqueur. Vous ne pouvez pas modifier ce choix avec Justine Broudi en choisissant un Allié ou Héros non attaquant ou non bloqueur. De même, vous ne pouvez pas modifier le choix d'une Action ou un pouvoir adverse en choisissant un de vos Alliés ou Héros dans votre Havre Sac, sauf si l'Action ou le pouvoir peut explicitement choisir un de vos Allié ou Héros dans votre Havre Sac (Flèche d'Immolation ou Abraknyde Sombre, par exemple), car la source de l'Action ou du pouvoir ne change pas et que les Règles de Portée l'interdisent"
+      ],
+      "class": "Féca",
+      "level": {
+        "value": 1,
+        "element": "eau"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "eau"
+          },
+          "force": {
+            "value": 2,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": "Réaction.  :  L'Action ou le pouvoir adverse qui choisit un de vos Alliés ou Héros choisit un autre de vos Alliés ou Héros de votre choix à la place.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Le nouveau choix que vous effectuez doit respecter les contraintes restreignant les choix réalisables avec l'Action ou le pouvoir qui est joué. Le Sort Iop Pression inflige par exemple 1 Dommage  à un Allié attaquant ou bloqueur. Vous ne pouvez pas modifier ce choix avec Justine Broudi en choisissant un Allié ou Héros non attaquant ou non bloqueur. De même, vous ne pouvez pas modifier le choix d'une Action ou un pouvoir adverse en choisissant un de vos Alliés ou Héros dans votre Havre Sac, sauf si l'Action ou le pouvoir peut explicitement choisir un de vos Allié ou Héros dans votre Havre Sac (Flèche d'Immolation ou Abraknyde Sombre, par exemple), car la source de l'Action ou du pouvoir ne change pas et que les Règles de Portée l'interdisent",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/justine-broudi-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "eau"
+          },
+          "force": {
+            "value": 2,
+            "element": "eau"
+          }
+        },
+        "effects": [
+          {
+            "description": "Réaction.  :  L'Action ou le pouvoir adverse qui choisit un de vos Alliés ou Héros choisit un autre Allié ou Héros de votre choix à la place.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/justine-broudi-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-5-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-5-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "luc-ylook",
+      "name": "Luc Ylook",
+      "mainType": "Héros",
+      "subTypes": [
+        "Crâ"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "1/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-1-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "feu"
+        },
+        "force": {
+          "value": 1,
+          "element": "feu"
+        }
+      },
+      "effects": [
+        {
+          "description": "Luc Ylook inflige 2 Dommages  répartis comme vous le souhaitez entre n'importe quel nombre d'Alliés ou Héros attaquants ou bloqueurs.",
+          "elements": [
+            "feu"
+          ],
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Le pouvoir ne demande aucun choix, vous pouvez donc infliger ces dommages à des alliés comme le Serpentin ou Azraoul qui ne peuvent pas être choisit en temps normal.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "En raison des Règles de Portée, Luc Ylook ne peut infliger des Dommages aux Alliés ou Héros attaquants ou bloqueurs adverses que s'il est dans le Monde.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Vous ne pouvez pas répartir 0 Dommage sur un Allié ou un Héros attaquant ou bloqueur. Au Niveau 1, Luc Ylook peut donc infliger au choix 2 Dommages à un seul Allié ou Héros, ou 1 Dommage à deux Alliés ou Héros.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [
+        "Le pouvoir ne demande aucun choix, vous pouvez donc infliger ces dommages à des alliés comme le Serpentin ou Azraoul qui ne peuvent pas être choisit en temps normal.",
+        "En raison des Règles de Portée, Luc Ylook ne peut infliger des Dommages aux Alliés ou Héros attaquants ou bloqueurs adverses que s'il est dans le Monde.",
+        "Vous ne pouvez pas répartir 0 Dommage sur un Allié ou un Héros attaquant ou bloqueur. Au Niveau 1, Luc Ylook peut donc infliger au choix 2 Dommages à un seul Allié ou Héros, ou 1 Dommage à deux Alliés ou Héros."
+      ],
+      "class": "Crâ",
+      "level": {
+        "value": 1,
+        "element": "feu"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "feu"
+          },
+          "force": {
+            "value": 1,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Luc Ylook inflige 2 Dommages  répartis comme vous le souhaitez entre n'importe quel nombre d'Alliés ou Héros attaquants ou bloqueurs.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Le pouvoir ne demande aucun choix, vous pouvez donc infliger ces dommages à des alliés comme le Serpentin ou Azraoul qui ne peuvent pas être choisit en temps normal.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "En raison des Règles de Portée, Luc Ylook ne peut infliger des Dommages aux Alliés ou Héros attaquants ou bloqueurs adverses que s'il est dans le Monde.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Vous ne pouvez pas répartir 0 Dommage sur un Allié ou un Héros attaquant ou bloqueur. Au Niveau 1, Luc Ylook peut donc infliger au choix 2 Dommages à un seul Allié ou Héros, ou 1 Dommage à deux Alliés ou Héros.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/luc-ylook-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "feu"
+          },
+          "force": {
+            "value": 2,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Luc Ylook inflige 3 Dommages Feu répartis comme vous le souhaitez entre n'importe quel nombre d'Alliés ou Héros attaquants ou bloqueurs.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Le pouvoir ne demande aucun choix, vous pouvez donc infliger ces dommages à des alliés comme le Serpentin ou Azraoul qui ne peuvent pas être choisit en temps normal.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/luc-ylook-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-1-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-1-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "mawy-blodie",
+      "name": "Mawy Blodie",
+      "mainType": "Héros",
+      "subTypes": [
+        "Pandawa"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "8/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-8-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "terre"
+        },
+        "force": {
+          "value": 2,
+          "element": "terre"
+        }
+      },
+      "effects": [
+        {
+          "description": "Si Mawy Blodie est attaquante, placez l'Allié de votre choix que vous contrôlez dans le Monde en attaquant dans ce combat.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        },
+        {
+          "description": "Il n'est pas possible de placer un Allié qui ne peut pas attaquer comme attaquant dans un combat. En revanche, on peut placer un Allié incliné, ou même un Allié est apparu pendant ce tour.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        },
+        {
+          "description": "Il est possible d'utiliser le pouvoir de Mawy Blodie pour placer un 4ème attaquant alors que vous ne possédez que 3 PM. Une fois l'attaque déclarée légale, il n'y a en effet plus de vérification de la limite de PM.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [
+        "Il n'est pas possible de placer un Allié qui ne peut pas attaquer comme attaquant dans un combat. En revanche, on peut placer un Allié incliné, ou même un Allié est apparu pendant ce tour.",
+        "Il est possible d'utiliser le pouvoir de Mawy Blodie pour placer un 4ème attaquant alors que vous ne possédez que 3 PM. Une fois l'attaque déclarée légale, il n'y a en effet plus de vérification de la limite de PM."
+      ],
+      "class": "Pandawa",
+      "level": {
+        "value": 1,
+        "element": "terre"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "terre"
+          },
+          "force": {
+            "value": 2,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Si Mawy Blodie est attaquante, placez l'Allié de votre choix que vous contrôlez dans le Monde en attaquant dans ce combat.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Il n'est pas possible de placer un Allié qui ne peut pas attaquer comme attaquant dans un combat. En revanche, on peut placer un Allié incliné, ou même un Allié est apparu pendant ce tour.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          },
+          {
+            "description": "Il est possible d'utiliser le pouvoir de Mawy Blodie pour placer un 4ème attaquant alors que vous ne possédez que 3 PM. Une fois l'attaque déclarée légale, il n'y a en effet plus de vérification de la limite de PM.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/mawy-blodie-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "terre"
+          },
+          "force": {
+            "value": 3,
+            "element": "terre"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Si Mawy Blodie est attaquante, bloqueuse ou cible, placez l'Allié de votre choix que vous contrôlez dans le Monde en attaquant ou bloqueur dans ce combat.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          },
+          {
+            "description": "Si vous utilisez son pouvoir pour placer un bloqueur, celui-ci devra respecter les règles de blocage. Vous ne pouvez donc pas placer un allié sans agilité devant un attaquant agile.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/mawy-blodie-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-8-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-8-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "oscar-nak",
+      "name": "Oscar Nak",
+      "mainType": "Héros",
+      "subTypes": [
+        "Sram"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "11/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-11-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 18,
+        "niveau": {
+          "value": 1,
+          "element": "air"
+        },
+        "force": {
+          "value": 2,
+          "element": "air"
+        }
+      },
+      "effects": [
+        {
+          "description": "Tant qu'il est le seul attaquant, Oscar Nak ne peut pas être bloqué.",
+          "isOncePerTurn": false,
+          "requiresIncline": false
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [],
+      "class": "Sram",
+      "level": {
+        "value": 1,
+        "element": "air"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 18,
+          "niveau": {
+            "value": 1,
+            "element": "air"
+          },
+          "force": {
+            "value": 2,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": "Tant qu'il est le seul attaquant, Oscar Nak ne peut pas être bloqué.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/oscar-nak-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 22,
+          "niveau": {
+            "value": 2,
+            "element": "air"
+          },
+          "force": {
+            "value": 3,
+            "element": "air"
+          }
+        },
+        "effects": [
+          {
+            "description": "Tant qu'il est attaquant, Oscar Nak ne peut pas être bloqué.",
+            "isOncePerTurn": false,
+            "requiresIncline": false
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/oscar-nak-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-11-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-11-2.png"
+    ]
+  },
+  {
+    "card": {
+      "id": "thapa-sambal",
+      "name": "Thapa Sambal",
+      "mainType": "Héros",
+      "subTypes": [
+        "Enutrof"
+      ],
+      "extension": {
+        "name": "Bonta & Brâkmar",
+        "number": "4/320",
+        "shortUrl": "https://l.wtcg-return.fr/c/bonta-brakmar-4-1"
+      },
+      "rarity": "Commune",
+      "stats": {
+        "pa": 6,
+        "pm": 3,
+        "pv": 16,
+        "niveau": {
+          "value": 1,
+          "element": "feu"
+        },
+        "force": {
+          "value": 2,
+          "element": "feu"
+        }
+      },
+      "effects": [
+        {
+          "description": "Mettez en jeu un Équipement de Niveau 1 ou 2 gratuitement de votre main.",
+          "isOncePerTurn": false,
+          "requiresIncline": true
+        }
+      ],
+      "keywords": [],
+      "artists": [
+        "Kim Ettinoff (Tcho)"
+      ],
+      "notes": [],
+      "class": "Enutrof",
+      "level": {
+        "value": 1,
+        "element": "feu"
+      },
+      "recto": {
+        "stats": {
+          "pa": 6,
+          "pm": 3,
+          "pv": 16,
+          "niveau": {
+            "value": 1,
+            "element": "feu"
+          },
+          "force": {
+            "value": 2,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": ": Mettez en jeu un Équipement de Niveau 1 ou 2 gratuitement de votre main.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/thapa-sambal-1.png"
+      },
+      "verso": {
+        "stats": {
+          "pa": 7,
+          "pm": 3,
+          "pv": 20,
+          "niveau": {
+            "value": 2,
+            "element": "feu"
+          },
+          "force": {
+            "value": 2,
+            "element": "feu"
+          }
+        },
+        "effects": [
+          {
+            "description": ":  Mettez en jeu un Équipement de Niveau inférieur ou égal à 4 gratuitement de votre main.",
+            "isOncePerTurn": false,
+            "requiresIncline": true
+          }
+        ],
+        "keywords": [],
+        "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/thapa-sambal-2.png"
+      }
+    },
+    "urls": [
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-4-1.png",
+      "https://www.wtcg-return.fr/media/cache/page_card/bonta-brakmar/bonta-brakmar-4-2.png"
+    ]
+  }
+]

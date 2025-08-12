@@ -1,0 +1,166 @@
+[
+  {
+    "id": "aero-draft",
+    "name": "Aero",
+    "mainType": "Allié Élémentaire",
+    "subTypes": [],
+    "extension": {
+      "name": "Draft",
+      "number": "2/4",
+      "shortUrl": "https://l.wtcg-return.fr/c/draft-2"
+    },
+    "rarity": "Commune",
+    "elements": [],
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "air"
+      },
+      "force": {
+        "value": 1,
+        "element": "air"
+      }
+    },
+    "effects": [
+      {
+        "description": "L’Aero ne peut ni attaquer, ni bloquer.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "L’Aero ne peut pas porter d’Équipement.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "elementalAffinity": {}
+  },
+  {
+    "id": "akwa-draft",
+    "name": "Akwa",
+    "mainType": "Allié Élémentaire",
+    "subTypes": [],
+    "extension": {
+      "name": "Draft",
+      "number": "4/4",
+      "shortUrl": "https://l.wtcg-return.fr/c/draft-4"
+    },
+    "rarity": "Commune",
+    "elements": [],
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "eau"
+      },
+      "force": {
+        "value": 1,
+        "element": "eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "L’Akwa ne peut ni attaquer, ni bloquer.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "L’Akwa ne peut pas porter d’Équipement.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "elementalAffinity": {}
+  },
+  {
+    "id": "pyro-draft",
+    "name": "Pyro",
+    "mainType": "Allié Élémentaire",
+    "subTypes": [],
+    "extension": {
+      "name": "Draft",
+      "number": "3/4",
+      "shortUrl": "https://l.wtcg-return.fr/c/draft-3"
+    },
+    "rarity": "Commune",
+    "elements": [],
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "feu"
+      },
+      "force": {
+        "value": 1,
+        "element": "feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Pyro ne peut ni attaquer, ni bloquer.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Pyro ne peut pas porter d’Équipement.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "elementalAffinity": {}
+  },
+  {
+    "id": "terra-draft",
+    "name": "Terra",
+    "mainType": "Allié Élémentaire",
+    "subTypes": [],
+    "extension": {
+      "name": "Draft",
+      "number": "1/4",
+      "shortUrl": "https://l.wtcg-return.fr/c/draft-1"
+    },
+    "rarity": "Commune",
+    "elements": [],
+    "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "terre"
+      },
+      "force": {
+        "value": 1,
+        "element": "terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Le Terra ne peut ni attaquer, ni bloquer.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      },
+      {
+        "description": "Le Terra ne peut pas porter d’Équipement.",
+        "isOncePerTurn": false,
+        "requiresIncline": false
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Ankama"
+    ],
+    "notes": [],
+    "elementalAffinity": {}
+  }
+]
