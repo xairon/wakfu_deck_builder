@@ -70,8 +70,12 @@
           </router-link>
         </div>
 
-        <!-- Indicateur de sauvegarde locale -->
+        <!-- Bouton de thème et indicateur de sauvegarde -->
         <div class="ml-4 flex items-center space-x-2">
+          <!-- Bouton de basculement du thème -->
+          <ThemeToggle />
+          
+          <!-- Indicateur de sauvegarde locale -->
           <div class="badge badge-success badge-sm">
             <span v-if="isSyncing" class="loading loading-spinner loading-xs mr-1"></span>
             <span v-else>💾</span>
@@ -103,7 +107,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
-import ToastContainer from './components/common/ToastContainer.vue'
+import ToastContainer from './components/ui/ToastContainer.vue'
+import ThemeToggle from './components/common/ThemeToggle.vue'
 import { useTheme } from './composables/useTheme'
 import { useCardStore } from './stores/cardStore'
 import { useToast } from './composables/useToast'
