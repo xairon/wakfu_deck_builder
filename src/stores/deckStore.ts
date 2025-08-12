@@ -133,7 +133,59 @@ export const useDeckStore = defineStore('deck', () => {
 
         // Validation basique pour s'assurer que le format est correct
         if (Array.isArray(parsedDecks)) {
-          decks.value = parsedDecks
+          console.log(`📦 Chargement de ${parsedDecks.length} decks depuis localStorage:`)
+          parsedDecks.forEach((deck, index) => {
+            console.log(`  ${index + 1}. "${deck.name}" (cards: ${typeof deck.cards}, isOfficial: ${deck.isOfficial})`)
+          })
+          
+          // Migration automatique du format des cartes
+          const migratedDecks = parsedDecks.map((deck: any) => {
+            // Si cards est un objet Record<string, number>, le convertir en DeckCard[]
+            if (deck.cards && typeof deck.cards === 'object' && !Array.isArray(deck.cards)) {
+              console.log(`🔄 Migration du deck "${deck.name}" vers le nouveau format`)
+              
+              // Convertir l'objet en array
+              const migratedCards: any[] = []
+              for (const [cardId, quantity] of Object.entries(deck.cards)) {
+                if (typeof quantity === 'number' && quantity > 0) {
+                  // Chercher la carte dans le store
+                  const card = cardStore.cards.find(c => c.id === cardId)
+                  if (card) {
+                    migratedCards.push({
+                      card: card,
+                      quantity: quantity
+                    })
+                  }
+                }
+              }
+              
+              return {
+                ...deck,
+                cards: migratedCards,
+                reserve: deck.reserve || []
+              }
+            }
+            
+            // Si c'est déjà un array ou si cards n'existe pas, garder tel quel
+            return {
+              ...deck,
+              cards: deck.cards || [],
+              reserve: deck.reserve || []
+            }
+          })
+          
+          decks.value = migratedDecks
+          
+          console.log(`✅ Migration terminée: ${migratedDecks.length} decks chargés`)
+          migratedDecks.forEach((deck, index) => {
+            console.log(`  ${index + 1}. "${deck.name}" (cards: ${Array.isArray(deck.cards)} ? array[${deck.cards.length}] : objet)`)
+          })
+          
+          // Sauvegarder automatiquement le format migré
+          if (migratedDecks.some((deck: any) => deck.cards.length > 0)) {
+            console.log('💾 Sauvegarde automatique après migration')
+            saveDecks()
+          }
         } else {
           throw new Error('Format de données invalide')
         }

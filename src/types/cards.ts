@@ -296,11 +296,14 @@ export interface DeckCard {
 export interface Deck {
   id: string
   name: string
-  hero: HeroCard | null
-  havreSac: HavenBagCard | null
-  cards: DeckCard[]
+  description?: string
+  hero: Card | null
+  havreSac: Card | null
+  cards: Record<string, number> // cardId -> quantity
   reserve?: DeckCard[]
-  extension?: ExtensionInfo
+  extension?: string
   createdAt: string
   updatedAt: string
+  isOfficial?: boolean // Marque les decks officiels
+  _officialData?: any // Données du deck officiel pour l'import
 }

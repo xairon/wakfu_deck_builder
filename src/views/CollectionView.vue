@@ -39,6 +39,8 @@
         v-model:selected-element="selectedElement"
         v-model:min-level="minLevel"
         v-model:max-level="maxLevel"
+        v-model:min-cost="minCost"
+        v-model:max-cost="maxCost"
         :extensions="extensions"
         :main-types="mainTypes"
         :sub-types="subTypes"
@@ -469,6 +471,8 @@ const selectedRarity = ref('')
 const selectedElement = ref('')
 const minLevel = ref<number | null>(null)
 const maxLevel = ref<number | null>(null)
+const minCost = ref<number | null>(null)
+const maxCost = ref<number | null>(null)
 const selectedKeywords = ref<string[]>([])
 const showVerso = ref(false)
 const selectedCard = ref<Card | null>(null)
@@ -620,6 +624,8 @@ const memoizedFilter = useMemoize(
     element: string,
     minLvl: number | null,
     maxLvl: number | null,
+    minCst: number | null,
+    maxCst: number | null,
     hideNotOwned: boolean
   ): Card[] => {
     let filtered = [...cards]
@@ -669,6 +675,20 @@ const memoizedFilter = useMemoize(
       filtered = filtered.filter((card) => {
         const niveau = card.stats?.niveau?.value
         return niveau !== undefined ? niveau <= maxLvl : false
+      })
+    }
+
+    if (minCst !== null) {
+      filtered = filtered.filter((card) => {
+        const cost = card.stats?.cost
+        return cost !== undefined ? cost >= minCst : false
+      })
+    }
+
+    if (maxCst !== null) {
+      filtered = filtered.filter((card) => {
+        const cost = card.stats?.cost
+        return cost !== undefined ? cost <= maxCst : false
       })
     }
 
@@ -805,6 +825,8 @@ const filteredCollection = computed(() => {
     selectedElement.value,
     minLevel.value,
     maxLevel.value,
+    minCost.value,
+    maxCost.value,
     hideNotOwned.value
   )
 
