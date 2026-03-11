@@ -15,7 +15,7 @@ EXTENSIONS = {
     "dofus_collection": "/cartes/dofus-collection/liste"
 }
 
-API_KEY = 'REDACTED'
+API_KEY = os.getenv("FIRECRAWL_API_KEY")
 
 def scrape_card(url: str, app: FirecrawlApp) -> Dict[str, Any]:
     """Scrape une carte individuelle en utilisant Firecrawl"""
