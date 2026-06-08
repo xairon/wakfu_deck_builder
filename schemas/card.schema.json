@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://wakfu-deck-builder/schemas/card.schema.json",
+  "title": "Carte Wakfu TCG",
+  "description": "Format canonique d'une carte. Une base d'extension est un tableau de cet objet (public/data/<extension>.json).",
+  "type": "object",
+  "required": ["id", "name", "mainType", "rarity", "extension"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Identifiant stable (slug). Convention: <nom-slug>-<extension>.",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "mainType": {
+      "type": "string",
+      "enum": [
+        "Action",
+        "Allié",
+        "Allié Élémentaire",
+        "Dofus",
+        "Équipement",
+        "Havre-Sac",
+        "Héros",
+        "Protecteur",
+        "Salle",
+        "Zone"
+      ]
+    },
+    "subTypes": { "type": "array", "items": { "type": "string" } },
+    "extension": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "id": { "type": "string" },
+        "number": {
+          "type": "string",
+          "description": "Numéro de collection, ex. \"231/320\"."
+        },
+        "shortUrl": { "type": "string", "format": "uri" }
+      }
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "Commune",
+        "Peu Commune",
+        "Rare",
+        "Mythique",
+        "Légendaire",
+        "Krosmaster"
+      ]
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "niveau": { "$ref": "#/$defs/elementalStat" },
+        "force": { "$ref": "#/$defs/elementalStat" },
+        "pa": { "type": "integer", "minimum": 0 },
+        "pm": { "type": "integer", "minimum": 0 },
+        "pv": { "type": "integer", "minimum": 0 },
+        "cost": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["description"],
+        "additionalProperties": true,
+        "properties": {
+          "description": { "type": "string" },
+          "elements": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/element" }
+          },
+          "isOncePerTurn": { "type": "boolean" },
+          "requiresIncline": { "type": "boolean" }
+        }
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "additionalProperties": true,
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "artists": { "type": "array", "items": { "type": "string" } },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "flavor": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "text": { "type": "string" },
+        "attribution": { "type": "string" }
+      }
+    },
+    "experience": { "type": "integer" },
+    "imageUrl": { "type": "string" },
+    "url": { "type": "string" },
+
+    "illustration": {
+      "type": "string",
+      "description": "Chemin de l'illustration nette recadrée (généré par extract-illustrations). Ex. /images/illustrations/<id>.webp."
+    },
+    "errata": {
+      "type": "array",
+      "description": "Erratas/corrections officiels appliqués à cette carte (voir errata.schema.json).",
+      "items": { "$ref": "errata.schema.json#/$defs/errataEntry" }
+    }
+  },
+  "$defs": {
+    "element": {
+      "type": "string",
+      "enum": ["air", "eau", "feu", "terre", "neutre"]
+    },
+    "elementalStat": {
+      "type": "object",
+      "required": ["value", "element"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "integer" },
+        "element": { "$ref": "#/$defs/element" }
+      }
+    }
+  }
+}

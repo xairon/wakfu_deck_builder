@@ -1,113 +1,153 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import CollectionView from '@/views/CollectionView.vue'
-import DeckBuilderView from '@/views/DeckBuilderView.vue'
-import DecksView from '@/views/DecksView.vue'
-import DeckDetailView from '@/views/DeckDetailView.vue'
+import { createRouter, createWebHistory } from "vue-router";
 
-// Mode local: pas d'auth ni profil
+const HomeView = () => import("../views/HomeView.vue");
+const CollectionView = () => import("@/views/CollectionView.vue");
+const DeckBuilderView = () => import("@/views/DeckBuilderView.vue");
+const DecksView = () => import("@/views/DecksView.vue");
+const DeckDetailView = () => import("@/views/DeckDetailView.vue");
+const SharedDeckView = () => import("@/views/SharedDeckView.vue");
 
-// Mode local: rien à initialiser côté session
-let isSessionInitialized = true
+let isSessionInitialized = false;
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
     {
-      path: '/',
-      name: 'home',
+      path: "/",
+      name: "home",
       component: HomeView,
       meta: { guest: true },
     },
     {
-      path: '/collection',
-      name: 'collection',
+      path: "/auth",
+      name: "auth",
+      component: () => import("@/views/AuthView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/collection",
+      name: "collection",
       component: CollectionView,
-      meta: { requiresAuth: false },
+      // Public : parcours du catalogue de cartes. Le suivi de collection
+      // (quantités possédées) ne s'active que pour un utilisateur connecté.
+      meta: { guest: true },
     },
     {
-      path: '/decks',
-      name: 'decks',
+      path: "/decks",
+      name: "decks",
       component: DecksView,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: true },
     },
     {
-      path: '/deck/:id',
-      name: 'deckDetail',
+      path: "/decks/official",
+      name: "officialDecks",
+      component: () => import("@/views/OfficialDecksView.vue"),
+      // Public : vitrine de decks starter (donne envie de s'inscrire).
+      meta: { guest: true },
+    },
+    {
+      path: "/decks/community",
+      name: "communityDecks",
+      component: () => import("@/views/CommunityDecksView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/regles",
+      name: "rules",
+      component: () => import("@/views/RulesView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/play",
+      name: "play",
+      component: () => import("@/views/GameView.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/deck/share",
+      name: "sharedDeck",
+      component: SharedDeckView,
+      meta: { guest: true },
+    },
+    {
+      path: "/deck/:id",
+      name: "deckDetail",
       component: DeckDetailView,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: true },
     },
     {
-      path: '/deck-builder',
-      name: 'newDeck',
-      component: DeckBuilderView,
-      meta: { requiresAuth: false },
-    },
-    {
-      path: '/deck-builder/:id',
-      name: 'editDeck',
+      path: "/deck-builder",
+      name: "newDeck",
       component: DeckBuilderView,
       meta: { requiresAuth: true },
     },
-    // Auth routes retirées
-    // Fallback pour les routes non trouvées
     {
-      path: '/:pathMatch(.*)*',
-      redirect: '/',
+      path: "/deck-builder/:id",
+      name: "editDeck",
+      component: DeckBuilderView,
+      meta: { requiresAuth: true },
+    },
+    // Fallback pour les routes non trouvees
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: "/",
     },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return new Promise((resolve) => {
         setTimeout(() => {
-          resolve(savedPosition)
-        }, 200) // Délai correspondant à la durée de la transition
-      })
+          resolve(savedPosition);
+        }, 200);
+      });
     }
-    return { top: 0, behavior: 'smooth' }
+    return { top: 0, behavior: "smooth" };
   },
-})
+});
 
 // Optimisation de la navigation
-let isNavigating = false
+let isNavigating = false;
 
 router.beforeEach(async (to, from, next) => {
-  // Éviter les doubles navigations
+  // Eviter les doubles navigations
   if (isNavigating && to.path === from.path) {
-    next(false)
-    return
+    next(false);
+    return;
   }
 
-  // Plus de vérification de première utilisation - accès direct à l'app
-
-  // Vérification de l'authentification
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-  const isGuestRoute = to.matched.some((record) => record.meta.guest)
-
-  // Si la session n'est pas encore initialisée, attendre qu'elle le soit
-  // Mode local: pas de session
-  isSessionInitialized = true
-
-  // Si la route requiert l'authentification et l'utilisateur n'est pas connecté
-  if (requiresAuth && false) {
-    // Route protégée, redirection vers la page d'accueil
-    next({ name: 'home', query: { redirect: to.fullPath } })
+  // Initialiser l'auth une seule fois (restauration de session). Idempotent.
+  if (!isSessionInitialized) {
+    try {
+      const { useAuthStore } = await import("@/stores/authStore");
+      await useAuthStore().initialize();
+    } catch {
+      // L'échec d'init ne bloque pas la navigation ; les gardes ci-dessous gèrent.
+    }
+    isSessionInitialized = true;
   }
-  // Si l'utilisateur est déjà connecté et essaie d'accéder à une page réservée aux invités (login/register)
-  else if (isGuestRoute && false) {
-    // L'utilisateur est déjà connecté, redirection vers la collection
-    next({ name: 'collection' })
+
+  const { useAuthStore } = await import("@/stores/authStore");
+  const authStore = useAuthStore();
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+  // Route protégée + non connecté → vers la page de connexion (avec redirect).
+  if (requiresAuth && !authStore.isAuthenticated) {
+    next({ name: "auth", query: { redirect: to.fullPath } });
+    return;
   }
-  // Sinon, permettre l'accès normalement
-  else {
-    isNavigating = true
-    next()
+
+  // Déjà connecté et on ouvre /auth → vers la collection.
+  if (to.name === "auth" && authStore.isAuthenticated) {
+    next({ name: "collection" });
+    return;
   }
-})
+
+  isNavigating = true;
+  next();
+});
 
 router.afterEach(() => {
-  isNavigating = false
-})
+  isNavigating = false;
+});
 
-export default router
+export default router;

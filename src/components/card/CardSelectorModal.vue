@@ -103,6 +103,7 @@
                     :alt="cardData.card.name"
                     class="w-full h-full object-contain"
                     loading="lazy"
+                    :thumbnail="true"
                     @error="handleImageError"
                   />
                 </div>
@@ -172,53 +173,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useCardStore } from '@/stores/cardStore'
-import { useToast } from '@/composables/useToast'
-import type { Card } from '@/types/card'
-import OptimizedImage from '@/components/common/OptimizedImage.vue'
+import { ref, computed, watch } from "vue";
+import { useCardStore } from "@/stores/cardStore";
+import { useToast } from "@/composables/useToast";
+import type { Card } from "@/types/cards";
+import OptimizedImage from "@/components/common/OptimizedImage.vue";
 
 const props = defineProps<{
-  isOpen: boolean
-  collectionOnly?: boolean
-  deckCards?: Array<{ card: Card; quantity: number; isReserve?: boolean }>
-}>()
+  isOpen: boolean;
+  collectionOnly?: boolean;
+  deckCards?: Array<{ card: Card; quantity: number; isReserve?: boolean }>;
+}>();
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'select', card: Card): void
-}>()
+  (e: "close"): void;
+  (e: "select", card: Card): void;
+}>();
 
-const cardStore = useCardStore()
-const toast = useToast()
+const cardStore = useCardStore();
+const toast = useToast();
 
 // État local
-const searchQuery = ref('')
-const selectedExtension = ref('')
-const selectedType = ref('')
-const selectedElement = ref('')
-const onlyCollection = ref(props.collectionOnly ?? false)
+const searchQuery = ref("");
+const selectedExtension = ref("");
+const selectedType = ref("");
+const selectedElement = ref("");
+const onlyCollection = ref(props.collectionOnly ?? false);
 
 // Computed
-const extensions = computed(() => cardStore.getExtensions)
-const mainTypes = computed(() => cardStore.getMainTypes)
-const elements = computed(() => cardStore.getElements)
+const extensions = computed(() => cardStore.getExtensions);
+const mainTypes = computed(() => cardStore.getMainTypes);
+const elements = computed(() => cardStore.getElements);
 
 const allCards = computed(() => {
   const allCardsWithQuantity = cardStore.getAllCards.map((card) => ({
     card,
     quantity: cardStore.getCardQuantity(card.id) ?? 0,
-  }))
-  return allCardsWithQuantity
-})
+  }));
+  return allCardsWithQuantity;
+});
 
 const filteredCards = computed(() => {
   return allCards.value.filter((cardData) => {
-    const card = cardData.card
+    const card = cardData.card;
 
     // Filtre de collection
     if (onlyCollection.value && cardData.quantity === 0) {
-      return false
+      return false;
     }
 
     // Filtres textuels
@@ -227,68 +228,68 @@ const filteredCards = computed(() => {
       !card.name.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
       !card.effect?.toLowerCase().includes(searchQuery.value.toLowerCase())
     ) {
-      return false
+      return false;
     }
 
     // Filtre par extension
     if (selectedExtension.value && card.extension !== selectedExtension.value) {
-      return false
+      return false;
     }
 
     // Filtre par type
     if (selectedType.value && card.mainType !== selectedType.value) {
-      return false
+      return false;
     }
 
     // Filtre par élément - vérifier les stats pour l'élément
     if (selectedElement.value) {
       const cardElement =
-        card.stats?.niveau?.element || card.stats?.force?.element || 'Neutre'
+        card.stats?.niveau?.element || card.stats?.force?.element || "Neutre";
       if (cardElement !== selectedElement.value) {
-        return false
+        return false;
       }
     }
 
-    return true
-  })
-})
+    return true;
+  });
+});
 
 // Méthodes
 function getCardImageUrl(card: Card): string {
-  const basePath = '/images/cards'
-  const filename = card.id
-  return `${basePath}/${filename}.png`
+  const basePath = "/images/cards";
+  const filename = card.id;
+  return `${basePath}/${filename}.png`;
 }
 
 function handleImageError(event: Event) {
-  const target = event.target as HTMLImageElement
-  target.src = '/images/card-back.png'
-  console.error(`Erreur de chargement d'image: ${target.alt}`)
+  const target = event.target as HTMLImageElement;
+  target.src = "/images/card-back.png";
+  console.error(`Erreur de chargement d'image: ${target.alt}`);
 }
 
 function closeModal() {
-  emit('close')
+  emit("close");
 }
 
 function selectCard(card: Card) {
   // Vérifier si la carte est dans la collection si le mode collection est activé
   if (onlyCollection.value && cardStore.getCardQuantity(card.id) === 0) {
-    toast.error("Cette carte n'est pas dans votre collection")
-    return
+    toast.error("Cette carte n'est pas dans votre collection");
+    return;
   }
 
-  emit('select', card)
+  emit("select", card);
 }
 
 function getCardInDeck(cardId: string) {
-  if (!props.deckCards) return null
-  return props.deckCards.find((c) => c.card.id === cardId)
+  if (!props.deckCards) return null;
+  return props.deckCards.find((c) => c.card.id === cardId);
 }
 
 function getCardDeckCount(cardId: string) {
-  if (!props.deckCards) return 0
-  const cardInDeck = props.deckCards.find((c) => c.card.id === cardId)
-  return cardInDeck ? cardInDeck.quantity : 0
+  if (!props.deckCards) return 0;
+  const cardInDeck = props.deckCards.find((c) => c.card.id === cardId);
+  return cardInDeck ? cardInDeck.quantity : 0;
 }
 
 // Surveiller les changements de props
@@ -296,10 +297,10 @@ watch(
   () => props.collectionOnly,
   (newValue) => {
     if (newValue !== undefined) {
-      onlyCollection.value = newValue
+      onlyCollection.value = newValue;
     }
-  }
-)
+  },
+);
 </script>
 
 <style scoped>

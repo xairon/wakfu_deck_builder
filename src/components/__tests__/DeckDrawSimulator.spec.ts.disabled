@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import DeckDrawSimulator from '../deck/DeckDrawSimulator.vue'
 import { usePerformanceMonitoring } from '@/utils/performance'
 import { useToast } from '@/composables/useToast'
-import type { Card, Deck } from '@/types/card'
+import type { Card, Deck } from '@/types/cards'
 
 vi.mock('@/utils/performance', () => ({
   usePerformanceMonitoring: () => ({

@@ -140,77 +140,77 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import type { Card } from '@/types/card'
-import { useCardStore } from '@/stores/cardStore'
-import { useToast } from '@/composables/useToast'
-import CardComponent from '@/components/card/CardComponent.vue'
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import type { Card } from "@/types/cards";
+import { useCardStore } from "@/stores/cardStore";
+import { useToast } from "@/composables/useToast";
+import CardComponent from "@/components/card/CardComponent.vue";
 
-const route = useRoute()
-const router = useRouter()
-const cardStore = useCardStore()
-const toast = useToast()
+const route = useRoute();
+const router = useRouter();
+const cardStore = useCardStore();
+const toast = useToast();
 
-const card = ref<Card | null>(null)
-const loading = ref(true)
+const card = ref<Card | null>(null);
+const loading = ref(true);
 
 // Propriétés calculées
 const canAddToDeck = computed(() => {
   return (
-    card.value?.mainType !== 'Héros' && card.value?.mainType !== 'Havre-Sac'
-  )
-})
+    card.value?.mainType !== "Héros" && card.value?.mainType !== "Havre-Sac"
+  );
+});
 
 // Méthodes
 async function loadCard() {
   try {
-    const cardId = route.params.id as string
-    const loadedCard = await cardStore.getCardById(cardId)
+    const cardId = route.params.id as string;
+    const loadedCard = await cardStore.getCardById(cardId);
 
     if (!loadedCard) {
-      throw new Error('Card not found')
+      throw new Error("Card not found");
     }
 
-    card.value = loadedCard
+    card.value = loadedCard;
   } catch (error) {
-    console.error('Error loading card:', error)
-    toast.error('Erreur lors du chargement de la carte')
+    console.error("Error loading card:", error);
+    toast.error("Erreur lors du chargement de la carte");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 async function addToCollection() {
-  if (!card.value) return
+  if (!card.value) return;
 
   try {
-    await cardStore.addToCollection(card.value, 1)
-    toast.success('Carte ajoutée à la collection')
+    await cardStore.addToCollection(card.value, 1);
+    toast.success("Carte ajoutée à la collection");
   } catch (error) {
-    console.error('Error adding to collection:', error)
-    toast.error("Erreur lors de l'ajout à la collection")
+    console.error("Error adding to collection:", error);
+    toast.error("Erreur lors de l'ajout à la collection");
   }
 }
 
 async function addToDeck() {
-  if (!card.value) return
+  if (!card.value) return;
 
   // TODO: Implémenter la logique d'ajout au deck
-  toast.info('Fonctionnalité en cours de développement')
+  toast.info("Fonctionnalité en cours de développement");
 }
 
 // Fonction pour déterminer l'élément de la carte
 function getCardElement(): string | null {
-  if (!card.value || !card.value.stats) return null
+  if (!card.value || !card.value.stats) return null;
 
   return (
     card.value.stats.niveau?.element || card.value.stats.force?.element || null
-  )
+  );
 }
 
 // Cycle de vie
 onMounted(() => {
-  loadCard()
-})
+  loadCard();
+});
 </script>

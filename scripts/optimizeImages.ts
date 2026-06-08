@@ -1,273 +1,222 @@
 /**
- * Script pour optimiser les images des cartes
- * Utilisé par le système MCP pour permettre à Claude d'optimiser les performances
+ * Image optimization pipeline for Wakfu Deck Builder
+ *
+ * Generates WebP and thumbnail versions of all PNG card images.
+ * - WebP: same dimensions, quality 80 -> public/images/cards/webp/[name].webp
+ * - Thumbnail: width 200px, quality 70 -> public/images/cards/thumbs/[name].webp
+ *
+ * Skips files whose output already exists and is newer than the source.
+ * Uses p-limit for concurrency control (max 4 parallel conversions).
+ *
+ * Usage: npm run optimize-images:webp
  */
 
-import fs from 'fs'
-import path from 'path'
-import * as glob from 'glob'
-import sharp from 'sharp'
-import pLimit from 'p-limit'
+import fs from "fs";
+import path from "path";
+import sharp from "sharp";
+import pLimit from "p-limit";
 
+// ---------------------------------------------------------------------------
 // Configuration
-const IMAGES_DIR = path.join(process.cwd(), 'public', 'images', 'cards')
-const REPORT_PATH = path.join(
-  process.cwd(),
-  'debug',
-  'image_optimization_report.json'
-)
-const MAX_CONCURRENT = 5 // Nombre maximum de traitements d'image simultanés
+// ---------------------------------------------------------------------------
 
-// Options d'optimisation
-const WEBP_OPTIONS = {
-  quality: 80,
-  effort: 4, // 0-6, 6 étant le plus élevé (plus lent mais meilleure compression)
-}
+const IMAGES_DIR = path.join(process.cwd(), "public", "images", "cards");
+const WEBP_DIR = path.join(IMAGES_DIR, "webp");
+const THUMBS_DIR = path.join(IMAGES_DIR, "thumbs");
 
-const JPEG_OPTIONS = {
-  quality: 85,
-  progressive: true,
-}
+const WEBP_QUALITY = 80;
+const THUMB_QUALITY = 70;
+const THUMB_WIDTH = 200;
+const MAX_CONCURRENT = 4;
 
-const PNG_OPTIONS = {
-  compressionLevel: 8, // 0-9, 9 étant le plus élevé
-  progressive: true,
-}
-
-// Fonction pour optimiser les images
-async function optimizeImages() {
-  try {
-    console.log('🔍 Analyse des images à optimiser...')
-
-    if (!fs.existsSync(IMAGES_DIR)) {
-      console.error(`❌ Le dossier d'images n'existe pas: ${IMAGES_DIR}`)
-      return
-    }
-
-    const imageFiles = glob.sync(path.join(IMAGES_DIR, '**/*.{jpg,jpeg,png}')) // Ne plus traiter les gifs ici directement pour l'optimisation png/jpeg
-    const gifFiles = glob.sync(path.join(IMAGES_DIR, '**/*.gif'))
-
-    if (imageFiles.length === 0 && gifFiles.length === 0) {
-      console.log('❓ Aucune image trouvée.')
-      return
-    }
-
-    console.log(
-      `🖼️ ${imageFiles.length} images (jpg, png) et ${gifFiles.length} GIFs trouvés à optimiser.`
-    )
-
-    const limit = pLimit(MAX_CONCURRENT)
-
-    const report = {
-      totalImages: imageFiles.length + gifFiles.length,
-      processedImages: 0,
-      originalSize: 0,
-      optimizedSize: 0, // Pour la version optimisée du format original
-      webpSize: 0, // Pour la version WebP
-      failedOperations: [] as {
-        file: string
-        operation: string
-        error: string
-      }[],
-      successfulImages: [] as any[],
-    }
-
-    // Traiter JPG/PNG
-    const tasks = imageFiles.map((imagePath) => {
-      return limit(async () => {
-        const relativePath = path.relative(IMAGES_DIR, imagePath);
-        const fileNameWithoutExt = path.basename(imagePath, path.extname(imagePath));
-        const outputDir = path.dirname(imagePath);
-        const webpPath = path.join(outputDir, `${fileNameWithoutExt}.webp`);
-        
-        let originalSize = 0;
-        try {
-          originalSize = fs.statSync(imagePath).size;
-          report.originalSize += originalSize;
-
-          const ext = path.extname(imagePath).toLowerCase();
-          let optimizedFileBuffer: Buffer | null = null;
-          
-          if (ext === '.jpg' || ext === '.jpeg') {
-            optimizedFileBuffer = await sharp(imagePath).jpeg(JPEG_OPTIONS).toBuffer();
-          } else if (ext === '.png') {
-            optimizedFileBuffer = await sharp(imagePath).png(PNG_OPTIONS).toBuffer();
-          }
-
-          let currentOptimizedSize = originalSize;
-          if (optimizedFileBuffer) {
-            fs.writeFileSync(imagePath, optimizedFileBuffer); // Écrase l'original avec la version optimisée
-            currentOptimizedSize = optimizedFileBuffer.length;
-          }
-          report.optimizedSize += currentOptimizedSize;
-
-          // Générer la version WebP
-          const webpBuffer = await sharp(imagePath).webp(WEBP_OPTIONS).toBuffer();
-          fs.writeFileSync(webpPath, webpBuffer);
-          report.webpSize += webpBuffer.length;
-          
-          report.successfulImages.push({
-            file: relativePath,
-            originalSize,
-            optimizedSize: currentOptimizedSize,
-            webpSize: webpBuffer.length,
-            savingsPercent: Math.round((1 - currentOptimizedSize / originalSize) * 100),
-            webpSavingsPercent: Math.round((1 - webpBuffer.length / originalSize) * 100)
-          });
-
-        } catch (error: any) {
-          console.error(`❌ Erreur lors du traitement de ${imagePath}:`, error);
-          report.failedOperations.push({ file: relativePath, operation: 'optimize/convert', error: error.message });
-        } finally {
-          report.processedImages++;
-          if (report.processedImages % 10 === 0 || report.processedImages === report.totalImages) {
-            const progress = Math.round((report.processedImages / report.totalImages) * 100);
-            console.log(`⏳ Progression: ${progress}% (${report.processedImages}/${report.totalImages})`);
-          }
-        }
-      });
-    });
-    })
-
-    // Traiter GIFs (conversion en WebP animé)
-    const gifTasks = gifFiles.map((gifPath) => {
-      return limit(async () => {
-        const relativePath = path.relative(IMAGES_DIR, gifPath)
-        const fileNameWithoutExt = path.basename(gifPath, path.extname(gifPath))
-        const outputDir = path.dirname(gifPath)
-        const webpPath = path.join(outputDir, `${fileNameWithoutExt}.webp`)
-
-        let originalSize = 0
-        try {
-          originalSize = fs.statSync(gifPath).size
-          report.originalSize += originalSize
-          report.optimizedSize += originalSize // Pour les GIFs, l'original est considéré "optimisé" car on ne le modifie pas
-
-          // Convertir GIF en WebP animé
-          const webpBuffer = await sharp(gifPath, { animated: true })
-            .webp(WEBP_OPTIONS)
-            .toBuffer()
-          fs.writeFileSync(webpPath, webpBuffer)
-          report.webpSize += webpBuffer.length
-
-          report.successfulImages.push({
-            file: relativePath,
-            originalSize,
-            optimizedSize: originalSize, // Pas d'optimisation sur place du GIF
-            webpSize: webpBuffer.length,
-            savingsPercent: 0,
-            webpSavingsPercent: Math.round(
-              (1 - webpBuffer.length / originalSize) * 100
-            ),
-          })
-        } catch (error: any) {
-          console.error(
-            `❌ Erreur lors de la conversion de GIF ${gifPath} en WebP:`,
-            error
-          )
-          report.failedOperations.push({
-            file: relativePath,
-            operation: 'gif_to_webp',
-            error: error.message,
-          })
-        } finally {
-          report.processedImages++
-          if (
-            report.processedImages % 10 === 0 ||
-            report.processedImages === report.totalImages
-          ) {
-            const progress = Math.round(
-              (report.processedImages / report.totalImages) * 100
-            )
-            console.log(
-              `⏳ Progression: ${progress}% (${report.processedImages}/${report.totalImages})`
-            )
-          }
-        }
-      })
-    })
-
-    await Promise.all([...tasks, ...gifTasks])
-
-    const totalOriginalSize = report.originalSize
-    const totalOptimizedSize = report.optimizedSize
-    const totalWebpSize = report.webpSize
-
-    const overallSavingsPercent =
-      totalOriginalSize > 0
-        ? Math.round((1 - totalOptimizedSize / totalOriginalSize) * 100)
-        : 0
-    const overallWebpSavingsPercent =
-      totalOriginalSize > 0
-        ? Math.round((1 - totalWebpSize / totalOriginalSize) * 100)
-        : 0
-
-    console.log("\n📊 Rapport d'optimisation:")
-    console.log(
-      `  - Images traitées: ${report.processedImages}/${report.totalImages}`
-    )
-    console.log(
-      `  - Taille originale totale: ${formatBytes(totalOriginalSize)}`
-    )
-    console.log(
-      `  - Taille optimisée (format original) totale: ${formatBytes(totalOptimizedSize)} (${overallSavingsPercent}% d'économie)`
-    )
-    console.log(
-      `  - Taille WebP totale: ${formatBytes(totalWebpSize)} (${overallWebpSavingsPercent}% d'économie par rapport à l'original)`
-    )
-
-    if (report.failedOperations.length > 0) {
-      console.log(`  - Opérations échouées: ${report.failedOperations.length}`)
-    }
-
-    const debugDir = path.dirname(REPORT_PATH)
-    if (!fs.existsSync(debugDir)) {
-      fs.mkdirSync(debugDir, { recursive: true })
-    }
-
-    fs.writeFileSync(
-      REPORT_PATH,
-      JSON.stringify(
-        {
-          summary: {
-            totalImages: report.totalImages,
-            processedImages: report.processedImages,
-            failedOperations: report.failedOperations.length,
-            originalSize: totalOriginalSize,
-            optimizedSize: totalOptimizedSize,
-            webpSize: totalWebpSize,
-            savingsPercent: overallSavingsPercent,
-            webpSavingsPercent: overallWebpSavingsPercent,
-          },
-          failedOperations: report.failedOperations,
-          successfulImages: report.successfulImages
-            .sort(
-              (a, b) =>
-                b.originalSize - b.webpSize - (a.originalSize - a.webpSize)
-            )
-            .slice(0, 20),
-        },
-        null,
-        2
-      ),
-      'utf-8'
-    )
-
-    console.log(
-      `\n✅ Optimisation terminée. Rapport enregistré dans: ${REPORT_PATH}`
-    )
-  } catch (error) {
-    console.error("❌ Erreur globale lors de l'optimisation des images:", error)
-  }
-}
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function formatBytes(bytes: number, decimals = 2): string {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
-optimizeImages()
+/**
+ * Returns true if `outputPath` exists and is newer than `sourcePath`.
+ */
+function isUpToDate(sourcePath: string, outputPath: string): boolean {
+  if (!fs.existsSync(outputPath)) return false;
+  const sourceStat = fs.statSync(sourcePath);
+  const outputStat = fs.statSync(outputPath);
+  return outputStat.mtimeMs >= sourceStat.mtimeMs;
+}
+
+/**
+ * Collect all .png files directly inside IMAGES_DIR (non-recursive, skips
+ * the webp/ and thumbs/ subdirectories).
+ */
+function collectPngFiles(): string[] {
+  const entries = fs.readdirSync(IMAGES_DIR, { withFileTypes: true });
+  return entries
+    .filter((e) => e.isFile() && e.name.toLowerCase().endsWith(".png"))
+    .map((e) => path.join(IMAGES_DIR, e.name));
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+interface ProcessingResult {
+  file: string;
+  skippedWebp: boolean;
+  skippedThumb: boolean;
+  originalSize: number;
+  webpSize: number;
+  thumbSize: number;
+}
+
+async function optimizeImages(): Promise<void> {
+  console.log("Image optimization pipeline");
+  console.log("===========================\n");
+
+  // Ensure source directory exists
+  if (!fs.existsSync(IMAGES_DIR)) {
+    console.error(`Source directory does not exist: ${IMAGES_DIR}`);
+    process.exit(1);
+  }
+
+  // Create output directories
+  fs.mkdirSync(WEBP_DIR, { recursive: true });
+  fs.mkdirSync(THUMBS_DIR, { recursive: true });
+
+  const pngFiles = collectPngFiles();
+
+  if (pngFiles.length === 0) {
+    console.log("No PNG files found in", IMAGES_DIR);
+    return;
+  }
+
+  console.log(`Found ${pngFiles.length} PNG files to process.`);
+  console.log(`  WebP output  : ${WEBP_DIR}`);
+  console.log(`  Thumbs output: ${THUMBS_DIR}`);
+  console.log(`  Concurrency  : ${MAX_CONCURRENT}\n`);
+
+  const limit = pLimit(MAX_CONCURRENT);
+
+  let processed = 0;
+  let totalOriginalSize = 0;
+  let totalWebpSize = 0;
+  let totalThumbSize = 0;
+  let skippedCount = 0;
+  const errors: { file: string; error: string }[] = [];
+
+  const tasks = pngFiles.map((sourcePath) =>
+    limit(async (): Promise<void> => {
+      const baseName = path.basename(sourcePath, ".png");
+      const webpPath = path.join(WEBP_DIR, `${baseName}.webp`);
+      const thumbPath = path.join(THUMBS_DIR, `${baseName}.webp`);
+
+      try {
+        const originalSize = fs.statSync(sourcePath).size;
+        totalOriginalSize += originalSize;
+
+        const skipWebp = isUpToDate(sourcePath, webpPath);
+        const skipThumb = isUpToDate(sourcePath, thumbPath);
+
+        if (skipWebp && skipThumb) {
+          // Both outputs are up to date -- still count their sizes for the report
+          totalWebpSize += fs.statSync(webpPath).size;
+          totalThumbSize += fs.statSync(thumbPath).size;
+          skippedCount++;
+        } else {
+          // Generate WebP (full size)
+          if (!skipWebp) {
+            const webpBuffer = await sharp(sourcePath)
+              .webp({ quality: WEBP_QUALITY })
+              .toBuffer();
+            fs.writeFileSync(webpPath, webpBuffer);
+            totalWebpSize += webpBuffer.length;
+          } else {
+            totalWebpSize += fs.statSync(webpPath).size;
+          }
+
+          // Generate thumbnail (200px wide, WebP)
+          if (!skipThumb) {
+            const thumbBuffer = await sharp(sourcePath)
+              .resize({ width: THUMB_WIDTH })
+              .webp({ quality: THUMB_QUALITY })
+              .toBuffer();
+            fs.writeFileSync(thumbPath, thumbBuffer);
+            totalThumbSize += thumbBuffer.length;
+          } else {
+            totalThumbSize += fs.statSync(thumbPath).size;
+          }
+        }
+      } catch (err: any) {
+        errors.push({ file: baseName, error: err.message });
+      } finally {
+        processed++;
+        if (
+          processed % 50 === 0 ||
+          processed === pngFiles.length ||
+          processed === 1
+        ) {
+          const pct = Math.round((processed / pngFiles.length) * 100);
+          process.stdout.write(
+            `\r  Progress: ${processed}/${pngFiles.length} (${pct}%)`,
+          );
+        }
+      }
+    }),
+  );
+
+  await Promise.all(tasks);
+
+  // Final report
+  console.log("\n");
+  console.log("Results");
+  console.log("-------");
+  console.log(`  Total PNG files   : ${pngFiles.length}`);
+  console.log(`  Skipped (up-to-date): ${skippedCount}`);
+  console.log(`  Errors            : ${errors.length}`);
+  console.log("");
+  console.log(`  Original PNG total : ${formatBytes(totalOriginalSize)}`);
+  console.log(`  WebP total         : ${formatBytes(totalWebpSize)}`);
+  console.log(`  Thumbnails total   : ${formatBytes(totalThumbSize)}`);
+
+  const webpSaved = totalOriginalSize - totalWebpSize;
+  const webpPct =
+    totalOriginalSize > 0
+      ? Math.round((webpSaved / totalOriginalSize) * 100)
+      : 0;
+  const thumbSaved = totalOriginalSize - totalThumbSize;
+  const thumbPct =
+    totalOriginalSize > 0
+      ? Math.round((thumbSaved / totalOriginalSize) * 100)
+      : 0;
+  const totalSaved = webpSaved + thumbSaved;
+
+  console.log("");
+  console.log(
+    `  WebP savings       : ${formatBytes(webpSaved)} (${webpPct}% reduction)`,
+  );
+  console.log(
+    `  Thumb savings      : ${formatBytes(thumbSaved)} (${thumbPct}% reduction vs original)`,
+  );
+  console.log(`  Combined savings   : ${formatBytes(totalSaved)}`);
+
+  if (errors.length > 0) {
+    console.log("\nErrors:");
+    for (const { file, error } of errors) {
+      console.log(`  - ${file}: ${error}`);
+    }
+  }
+
+  console.log("\nDone.");
+}
+
+optimizeImages().catch((err) => {
+  console.error("Fatal error:", err);
+  process.exit(1);
+});

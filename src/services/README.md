@@ -1,6 +1,7 @@
 # Documentation des Services
 
 ## Table des matières
+
 - [CardLoader](#cardloader)
 - [DeckService](#deckservice)
 - [StorageService](#storageservice)
@@ -11,6 +12,7 @@
 Service responsable du chargement des cartes depuis les fichiers JSON.
 
 ### Interface
+
 ```typescript
 interface CardLoader {
   /** Charge toutes les cartes */
@@ -25,16 +27,18 @@ interface CardLoader {
 ```
 
 ### Configuration
+
 ```typescript
 const cardFiles = [
-  '/cartes/incarnam_cards.json',
-  '/cartes/astrub_cards.json',
-  '/cartes/amakna_cards.json',
+  "/cartes/incarnam_cards.json",
+  "/cartes/astrub_cards.json",
+  "/cartes/amakna_cards.json",
   // ...
 ];
 ```
 
 ### Gestion des erreurs
+
 ```typescript
 try {
   const cards = await loadAllCards();
@@ -52,6 +56,7 @@ try {
 Service pour la gestion des decks.
 
 ### Interface
+
 ```typescript
 interface DeckService {
   /** Crée un nouveau deck */
@@ -70,6 +75,7 @@ interface DeckService {
 ```
 
 ### Validation
+
 ```typescript
 interface ValidationResult {
   isValid: boolean;
@@ -80,17 +86,18 @@ interface ValidationResult {
 // Exemple de validation
 const result = validateDeck(deck);
 if (!result.isValid) {
-  console.error('Erreurs de validation:', result.errors);
+  console.error("Erreurs de validation:", result.errors);
 }
 ```
 
 ### Export/Import
+
 ```typescript
 // Export au format JSON
-const jsonData = exportDeck(deck, 'json');
+const jsonData = exportDeck(deck, "json");
 
 // Export au format texte
-const textData = exportDeck(deck, 'text');
+const textData = exportDeck(deck, "text");
 
 // Import depuis JSON
 const deck = await importDeck(jsonData);
@@ -101,6 +108,7 @@ const deck = await importDeck(jsonData);
 Service pour la gestion du stockage local.
 
 ### Interface
+
 ```typescript
 interface StorageService {
   /** Sauvegarde des données */
@@ -117,17 +125,18 @@ interface StorageService {
 ```
 
 ### Exemple d'utilisation
+
 ```typescript
 const storage = new StorageService();
 
 // Sauvegarder des préférences
-await storage.save('preferences', {
-  theme: 'dark',
-  language: 'fr'
+await storage.save("preferences", {
+  theme: "dark",
+  language: "fr",
 });
 
 // Charger des préférences
-const prefs = await storage.load('preferences');
+const prefs = await storage.load("preferences");
 ```
 
 ## AnalyticsService
@@ -135,6 +144,7 @@ const prefs = await storage.load('preferences');
 Service pour l'analyse des decks et des statistiques.
 
 ### Interface
+
 ```typescript
 interface AnalyticsService {
   /** Analyse un deck */
@@ -149,6 +159,7 @@ interface AnalyticsService {
 ```
 
 ### Métriques
+
 ```typescript
 interface DeckAnalysis {
   basicStats: {
@@ -167,6 +178,7 @@ interface DeckAnalysis {
 ```
 
 ### Exemple d'utilisation
+
 ```typescript
 const analytics = new AnalyticsService();
 
@@ -180,26 +192,33 @@ const comparison = analytics.compareDecks(deck1, deck2);
 ## Bonnes Pratiques
 
 ### Performance
+
 - Mise en cache des résultats coûteux
 - Chargement asynchrone des ressources
 - Optimisation des calculs
 - Batch operations
 
 ### Sécurité
+
 - Validation des entrées
 - Sanitization des données
 - Gestion des erreurs
 - Rate limiting
 
 ### Maintenance
+
 - Logging des opérations
 - Tests unitaires
 - Documentation
 - Versioning
 
 ### Architecture
+
 - Séparation des responsabilités
 - Injection de dépendances
 - Interface claire
 - Gestion des erreurs
-``` 
+
+```
+
+```

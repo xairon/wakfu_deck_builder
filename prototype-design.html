@@ -1,0 +1,2048 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wakfu TCG - Design Prototypes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Bangers&family=Noto+Sans+JP:wght@400;700;900&family=Dela+Gothic+One&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================
+   PROTOTYPE SELECTOR
+   ============================================ */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #000;
+        color: #fff;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        overflow-x: hidden;
+      }
+
+      .prototype-selector {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .prototype-selector h1 {
+        font-family: "Outfit", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        white-space: nowrap;
+      }
+
+      .proto-tabs {
+        display: flex;
+        gap: 8px;
+      }
+
+      .proto-tab {
+        padding: 8px 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: transparent;
+        color: #94a3b8;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+
+      .proto-tab:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #e2e8f0;
+      }
+      .proto-tab.active-1 {
+        background: rgba(0, 212, 255, 0.15);
+        border-color: #00d4ff;
+        color: #00d4ff;
+      }
+      .proto-tab.active-2 {
+        background: rgba(255, 0, 255, 0.15);
+        border-color: #ff00ff;
+        color: #ff00ff;
+      }
+      .proto-tab.active-3 {
+        background: rgba(255, 107, 53, 0.15);
+        border-color: #ff6b35;
+        color: #ff6b35;
+      }
+
+      .prototype-container {
+        margin-top: 60px;
+      }
+
+      .prototype {
+        display: none;
+      }
+      .prototype.active {
+        display: block;
+      }
+
+      /* ============================================
+   APPROACH 1: PORTAIL DE GUILDE
+   ============================================ */
+      .guild {
+        --bg-deep: #06080f;
+        --bg-surface: #0c1220;
+        --bg-elevated: #131b2e;
+        --accent-cyan: #00d4ff;
+        --accent-gold: #ffd700;
+        --accent-violet: #a855f7;
+        --accent-orange: #f97316;
+        --accent-emerald: #10b981;
+        --accent-rose: #f43f5e;
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --text-muted: #475569;
+      }
+
+      .guild {
+        background: var(--bg-deep);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      /* Sidebar */
+      .guild-sidebar {
+        width: 72px;
+        background: var(--bg-elevated);
+        border-right: 1px solid rgba(148, 163, 184, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 8px;
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+      }
+
+      .guild-logo {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-cyan),
+          var(--accent-violet)
+        );
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Outfit", sans-serif;
+        font-weight: 900;
+        font-size: 18px;
+        color: #fff;
+        margin-bottom: 20px;
+        box-shadow: 0 0 30px rgba(0, 212, 255, 0.25);
+        animation: guild-logo-pulse 3s ease-in-out infinite;
+      }
+
+      @keyframes guild-logo-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+        }
+      }
+
+      .guild-nav-item {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        font-size: 20px;
+      }
+
+      .guild-nav-item:hover {
+        background: rgba(0, 212, 255, 0.08);
+        color: var(--accent-cyan);
+        transform: scale(1.08);
+      }
+
+      .guild-nav-item.active {
+        background: rgba(0, 212, 255, 0.12);
+        color: var(--accent-cyan);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+      }
+
+      .guild-nav-item.active::before {
+        content: "";
+        position: absolute;
+        left: -12px;
+        width: 4px;
+        height: 24px;
+        background: var(--accent-cyan);
+        border-radius: 0 4px 4px 0;
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
+      }
+
+      .guild-nav-item .tooltip {
+        position: absolute;
+        left: 60px;
+        background: var(--bg-elevated);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: var(--text-primary);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.2s ease;
+        transform: translateX(-8px);
+      }
+
+      .guild-nav-item:hover .tooltip {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      /* Main Content */
+      .guild-main {
+        margin-left: 72px;
+        flex: 1;
+        padding: 32px;
+        overflow-y: auto;
+      }
+
+      .guild-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+      }
+
+      .guild-page-title {
+        font-family: "Outfit", sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .guild-page-title .accent {
+        color: var(--accent-cyan);
+      }
+
+      .guild-stats-bar {
+        display: flex;
+        gap: 24px;
+      }
+
+      .guild-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .guild-stat-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--accent-cyan);
+      }
+
+      .guild-stat-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* Search bar */
+      .guild-search {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .guild-search-input {
+        flex: 1;
+        background: var(--bg-surface);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        border-radius: 12px;
+        padding: 12px 16px 12px 44px;
+        color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .guild-search-input:focus {
+        border-color: rgba(0, 212, 255, 0.4);
+        box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+      }
+
+      .guild-search-wrapper {
+        flex: 1;
+        position: relative;
+      }
+
+      .guild-search-wrapper::before {
+        content: "\1F50D";
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        z-index: 1;
+        opacity: 0.4;
+      }
+
+      .guild-filter-btn {
+        background: var(--bg-surface);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        border-radius: 12px;
+        padding: 12px 20px;
+        color: var(--text-secondary);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .guild-filter-btn:hover {
+        border-color: rgba(0, 212, 255, 0.3);
+        color: var(--accent-cyan);
+      }
+
+      /* Filter pills */
+      .guild-filters {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .guild-pill {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        background: transparent;
+      }
+
+      .guild-pill:hover {
+        border-color: rgba(0, 212, 255, 0.3);
+        color: var(--text-primary);
+      }
+      .guild-pill.active {
+        background: rgba(0, 212, 255, 0.12);
+        border-color: var(--accent-cyan);
+        color: var(--accent-cyan);
+      }
+
+      /* Card Grid */
+      .guild-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+      }
+
+      .guild-card {
+        position: relative;
+        border-radius: 14px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        aspect-ratio: 7/10;
+        background: var(--bg-surface);
+        border: 1px solid rgba(148, 163, 184, 0.08);
+        animation: guild-card-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+      }
+
+      .guild-card:nth-child(1) {
+        animation-delay: 0ms;
+      }
+      .guild-card:nth-child(2) {
+        animation-delay: 60ms;
+      }
+      .guild-card:nth-child(3) {
+        animation-delay: 120ms;
+      }
+      .guild-card:nth-child(4) {
+        animation-delay: 180ms;
+      }
+      .guild-card:nth-child(5) {
+        animation-delay: 240ms;
+      }
+      .guild-card:nth-child(6) {
+        animation-delay: 300ms;
+      }
+      .guild-card:nth-child(7) {
+        animation-delay: 360ms;
+      }
+      .guild-card:nth-child(8) {
+        animation-delay: 420ms;
+      }
+
+      @keyframes guild-card-in {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .guild-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 30px rgba(0, 212, 255, 0.1);
+        border-color: rgba(0, 212, 255, 0.2);
+      }
+
+      .guild-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: linear-gradient(135deg, #1a1f35, #0f1525);
+      }
+
+      .guild-card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 40px 12px 12px;
+        background: linear-gradient(transparent, rgba(6, 8, 15, 0.95));
+      }
+
+      .guild-card-name {
+        font-family: "Outfit", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+
+      .guild-card-type {
+        font-size: 10px;
+        color: var(--accent-cyan);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .guild-card-qty {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 212, 255, 0.2);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent-cyan);
+      }
+
+      /* Rarity borders */
+      .guild-card.rare {
+        border-color: rgba(0, 160, 255, 0.3);
+      }
+      .guild-card.rare:hover {
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 30px rgba(0, 160, 255, 0.2);
+      }
+
+      .guild-card.mythic {
+        border: 2px solid transparent;
+        background-image:
+          linear-gradient(var(--bg-surface), var(--bg-surface)),
+          conic-gradient(
+            from 0deg,
+            var(--accent-violet),
+            var(--accent-cyan),
+            var(--accent-violet)
+          );
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
+        animation:
+          guild-card-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards,
+          guild-mythic-rotate 4s linear infinite;
+      }
+
+      @keyframes guild-mythic-rotate {
+        to {
+          filter: hue-rotate(360deg);
+        }
+      }
+
+      .guild-card.legendary {
+        border: 2px solid transparent;
+        background-image:
+          linear-gradient(var(--bg-surface), var(--bg-surface)),
+          conic-gradient(from 0deg, #ffd700, #ff8c00, #ffd700, #ffed4a, #ffd700);
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
+      }
+
+      .guild-card.legendary::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 14px;
+        background: conic-gradient(
+          from 0deg,
+          transparent,
+          rgba(255, 215, 0, 0.15),
+          transparent,
+          rgba(255, 215, 0, 0.15),
+          transparent
+        );
+        animation: guild-legendary-glow 3s linear infinite;
+        pointer-events: none;
+      }
+
+      @keyframes guild-legendary-glow {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* User profile area in sidebar bottom */
+      .guild-sidebar-bottom {
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid rgba(148, 163, 184, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .guild-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-violet),
+          var(--accent-cyan)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .guild-sync-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-emerald);
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      }
+
+      /* ============================================
+   APPROACH 2: NEON ARCADE
+   ============================================ */
+      .neon {
+        --bg-black: #0a0a0a;
+        --bg-panel: #111111;
+        --neon-cyan: #00ffff;
+        --neon-magenta: #ff00ff;
+        --neon-yellow: #ffff00;
+        --neon-green: #00ff88;
+        --text-bright: #f0f0f0;
+        --text-dim: #666;
+      }
+
+      .neon {
+        background: var(--bg-black);
+        min-height: 100vh;
+      }
+
+      /* Scanline overlay */
+      .neon::before {
+        content: "";
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 255, 0.015) 2px,
+          rgba(0, 255, 255, 0.015) 4px
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Top nav */
+      .neon-nav {
+        display: flex;
+        align-items: center;
+        padding: 16px 32px;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+        position: relative;
+      }
+
+      .neon-nav::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--neon-cyan),
+          var(--neon-magenta),
+          transparent
+        );
+        opacity: 0.5;
+      }
+
+      .neon-logo {
+        font-family: "Outfit", sans-serif;
+        font-weight: 900;
+        font-size: 24px;
+        color: var(--neon-cyan);
+        text-shadow:
+          0 0 20px rgba(0, 255, 255, 0.5),
+          0 0 40px rgba(0, 255, 255, 0.2);
+        margin-right: 48px;
+        letter-spacing: -0.5px;
+      }
+
+      .neon-nav-links {
+        display: flex;
+        gap: 4px;
+      }
+
+      .neon-nav-link {
+        padding: 8px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 4px;
+      }
+
+      .neon-nav-link:hover {
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+      }
+
+      .neon-nav-link.active {
+        color: var(--neon-cyan);
+        border-color: var(--neon-cyan);
+        box-shadow:
+          0 0 10px rgba(0, 255, 255, 0.15),
+          inset 0 0 10px rgba(0, 255, 255, 0.05);
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      }
+
+      .neon-main {
+        padding: 32px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .neon-page-title {
+        font-family: "Outfit", sans-serif;
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--text-bright);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+      }
+
+      .neon-page-title span {
+        color: var(--neon-magenta);
+        text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+      }
+
+      .neon-subtitle {
+        font-size: 13px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 32px;
+      }
+
+      /* Neon search */
+      .neon-search {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .neon-search-input {
+        flex: 1;
+        background: var(--bg-panel);
+        border: 1px solid rgba(0, 255, 255, 0.15);
+        padding: 14px 20px;
+        color: var(--text-bright);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        outline: none;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+      }
+
+      .neon-search-input:focus {
+        border-color: var(--neon-cyan);
+        box-shadow:
+          0 0 15px rgba(0, 255, 255, 0.15),
+          inset 0 0 15px rgba(0, 255, 255, 0.05);
+      }
+
+      .neon-search-input::placeholder {
+        color: #444;
+      }
+
+      .neon-btn {
+        background: transparent;
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        padding: 14px 24px;
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+      }
+
+      .neon-btn:hover {
+        background: rgba(0, 255, 255, 0.1);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      }
+
+      .neon-btn.magenta {
+        border-color: var(--neon-magenta);
+        color: var(--neon-magenta);
+      }
+
+      .neon-btn.magenta:hover {
+        background: rgba(255, 0, 255, 0.1);
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+      }
+
+      /* Neon filters */
+      .neon-filters {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 28px;
+      }
+
+      .neon-filter-chip {
+        padding: 6px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: transparent;
+        color: var(--text-dim);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+      }
+
+      .neon-filter-chip:hover {
+        border-color: rgba(0, 255, 255, 0.3);
+        color: var(--neon-cyan);
+      }
+      .neon-filter-chip.active {
+        border-color: var(--neon-magenta);
+        color: var(--neon-magenta);
+        box-shadow: 0 0 10px rgba(255, 0, 255, 0.1);
+      }
+
+      /* Neon card grid */
+      .neon-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+        gap: 16px;
+      }
+
+      .neon-card {
+        position: relative;
+        aspect-ratio: 7/10;
+        background: var(--bg-panel);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+        animation: neon-card-in 0.5s ease backwards;
+      }
+
+      .neon-card:nth-child(1) {
+        animation-delay: 0ms;
+      }
+      .neon-card:nth-child(2) {
+        animation-delay: 50ms;
+      }
+      .neon-card:nth-child(3) {
+        animation-delay: 100ms;
+      }
+      .neon-card:nth-child(4) {
+        animation-delay: 150ms;
+      }
+      .neon-card:nth-child(5) {
+        animation-delay: 200ms;
+      }
+      .neon-card:nth-child(6) {
+        animation-delay: 250ms;
+      }
+      .neon-card:nth-child(7) {
+        animation-delay: 300ms;
+      }
+      .neon-card:nth-child(8) {
+        animation-delay: 350ms;
+      }
+
+      @keyframes neon-card-in {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+          filter: blur(4px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+          filter: blur(0);
+        }
+      }
+
+      .neon-card:hover {
+        border-color: var(--neon-cyan);
+        box-shadow:
+          0 0 30px rgba(0, 255, 255, 0.15),
+          inset 0 0 30px rgba(0, 255, 255, 0.03);
+        transform: scale(1.04);
+      }
+
+      .neon-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+      }
+
+      .neon-card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 30px 10px 10px;
+        background: linear-gradient(transparent, rgba(10, 10, 10, 0.97));
+      }
+
+      .neon-card-name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-bright);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .neon-card-rarity {
+        font-size: 9px;
+        color: var(--neon-magenta);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+      }
+
+      .neon-card-qty {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+      }
+
+      .neon-card.rare-neon {
+        border-color: rgba(0, 255, 255, 0.2);
+      }
+      .neon-card.mythic-neon {
+        border-image: linear-gradient(
+            180deg,
+            var(--neon-magenta),
+            var(--neon-cyan)
+          )
+          1;
+      }
+      .neon-card.legendary-neon {
+        border-image: linear-gradient(
+            180deg,
+            var(--neon-yellow),
+            var(--neon-magenta)
+          )
+          1;
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.1);
+      }
+
+      /* Glitch effect on title */
+      .neon-glitch {
+        position: relative;
+      }
+
+      .neon-glitch::before,
+      .neon-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+      }
+
+      .neon-glitch:hover::before {
+        animation: neon-glitch-1 0.3s ease;
+        color: var(--neon-cyan);
+        opacity: 0.7;
+      }
+
+      .neon-glitch:hover::after {
+        animation: neon-glitch-2 0.3s ease;
+        color: var(--neon-magenta);
+        opacity: 0.7;
+      }
+
+      @keyframes neon-glitch-1 {
+        0% {
+          clip-path: inset(20% 0 60% 0);
+          transform: translateX(-3px);
+        }
+        50% {
+          clip-path: inset(50% 0 20% 0);
+          transform: translateX(3px);
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes neon-glitch-2 {
+        0% {
+          clip-path: inset(60% 0 10% 0);
+          transform: translateX(3px);
+        }
+        50% {
+          clip-path: inset(10% 0 60% 0);
+          transform: translateX(-3px);
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: translateX(0);
+        }
+      }
+
+      /* ============================================
+   APPROACH 3: MANGA CEL-SHADED
+   ============================================ */
+      .manga {
+        --bg-dark: #12122a;
+        --bg-panel: #1a1a3e;
+        --bg-card: #20204a;
+        --wakfu-blue: #2196f3;
+        --wakfu-orange: #ff6b35;
+        --wakfu-green: #4caf50;
+        --wakfu-red: #e53935;
+        --wakfu-yellow: #ffd600;
+        --text-white: #f5f5f5;
+        --text-gray: #8888aa;
+      }
+
+      .manga {
+        background: var(--bg-dark);
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Speed lines background */
+      .manga-speedlines {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.03;
+        background: repeating-conic-gradient(
+          from 0deg at 50% 120%,
+          transparent 0deg,
+          #fff 0.2deg,
+          transparent 0.4deg
+        );
+      }
+
+      /* Top nav - tab style */
+      .manga-nav {
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        background: var(--bg-panel);
+        border-bottom: 3px solid var(--wakfu-blue);
+        position: relative;
+      }
+
+      .manga-logo {
+        font-family: "Dela Gothic One", cursive;
+        font-size: 22px;
+        color: var(--wakfu-orange);
+        padding: 16px 24px 16px 0;
+        margin-right: 8px;
+        text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+        transform: skewX(-3deg);
+      }
+
+      .manga-nav-tabs {
+        display: flex;
+        height: 100%;
+      }
+
+      .manga-tab {
+        padding: 16px 24px;
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        position: relative;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -3px;
+      }
+
+      .manga-tab:hover {
+        color: var(--text-white);
+        background: rgba(33, 150, 243, 0.08);
+      }
+
+      .manga-tab.active {
+        color: var(--wakfu-blue);
+        border-bottom-color: var(--wakfu-orange);
+        background: rgba(33, 150, 243, 0.05);
+      }
+
+      .manga-tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--wakfu-orange);
+      }
+
+      .manga-main {
+        padding: 28px 32px;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* Manga title with impact style */
+      .manga-page-title {
+        font-family: "Dela Gothic One", cursive;
+        font-size: 32px;
+        color: var(--text-white);
+        margin-bottom: 6px;
+        transform: skewX(-2deg);
+        display: inline-block;
+        position: relative;
+      }
+
+      .manga-page-title::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--wakfu-orange);
+        transform: skewX(5deg);
+      }
+
+      .manga-page-title .highlight {
+        color: var(--wakfu-blue);
+        text-shadow: 2px 2px 0px rgba(33, 150, 243, 0.3);
+      }
+
+      .manga-subtitle {
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: 13px;
+        color: var(--text-gray);
+        margin-bottom: 28px;
+        margin-top: 12px;
+      }
+
+      /* Manga search */
+      .manga-search {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .manga-search-input {
+        flex: 1;
+        background: var(--bg-card);
+        border: 2px solid rgba(33, 150, 243, 0.2);
+        border-radius: 8px;
+        padding: 12px 16px;
+        color: var(--text-white);
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.25s ease;
+      }
+
+      .manga-search-input:focus {
+        border-color: var(--wakfu-blue);
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+      }
+
+      .manga-btn {
+        background: var(--wakfu-blue);
+        border: 2px solid var(--wakfu-blue);
+        color: #fff;
+        padding: 12px 24px;
+        font-family: "Noto Sans JP", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-transform: uppercase;
+        transform: skewX(-2deg);
+      }
+
+      .manga-btn:hover {
+        background: #1976d2;
+        transform: skewX(-2deg) scale(1.04);
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      .manga-btn.orange {
+        background: var(--wakfu-orange);
+        border-color: var(--wakfu-orange);
+      }
+
+      /* Manga filters */
+      .manga-filters {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .manga-chip {
+        padding: 6px 16px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        background: transparent;
+        color: var(--text-gray);
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .manga-chip:hover {
+        border-color: var(--wakfu-blue);
+        color: var(--wakfu-blue);
+      }
+      .manga-chip.active {
+        background: var(--wakfu-blue);
+        border-color: var(--wakfu-blue);
+        color: #fff;
+        box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        transform: skewX(-2deg);
+      }
+
+      /* Manga card grid */
+      .manga-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+        gap: 16px;
+      }
+
+      .manga-card {
+        position: relative;
+        aspect-ratio: 7/10;
+        background: var(--bg-card);
+        border: 3px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: manga-card-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)
+          backwards;
+      }
+
+      .manga-card:nth-child(1) {
+        animation-delay: 0ms;
+      }
+      .manga-card:nth-child(2) {
+        animation-delay: 70ms;
+      }
+      .manga-card:nth-child(3) {
+        animation-delay: 140ms;
+      }
+      .manga-card:nth-child(4) {
+        animation-delay: 210ms;
+      }
+      .manga-card:nth-child(5) {
+        animation-delay: 280ms;
+      }
+      .manga-card:nth-child(6) {
+        animation-delay: 350ms;
+      }
+      .manga-card:nth-child(7) {
+        animation-delay: 420ms;
+      }
+      .manga-card:nth-child(8) {
+        animation-delay: 490ms;
+      }
+
+      @keyframes manga-card-in {
+        from {
+          opacity: 0;
+          transform: translateY(30px) rotate(-3deg) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) rotate(0) scale(1);
+        }
+      }
+
+      .manga-card:hover {
+        transform: translateY(-10px) rotate(1deg);
+        border-color: var(--wakfu-blue);
+        box-shadow:
+          6px 6px 0 rgba(33, 150, 243, 0.25),
+          0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .manga-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: linear-gradient(135deg, #1f1f4a, #151530);
+      }
+
+      .manga-card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 30px 10px 10px;
+        background: linear-gradient(transparent, rgba(18, 18, 42, 0.97));
+      }
+
+      .manga-card-name {
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: 12px;
+        font-weight: 900;
+        color: #fff;
+      }
+
+      .manga-card-type-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 9px;
+        font-weight: 700;
+        color: #fff;
+        margin-top: 4px;
+        text-transform: uppercase;
+        transform: skewX(-3deg);
+      }
+
+      .manga-card-type-badge.ally {
+        background: var(--wakfu-blue);
+      }
+      .manga-card-type-badge.action {
+        background: var(--wakfu-orange);
+      }
+      .manga-card-type-badge.hero {
+        background: var(--wakfu-red);
+      }
+
+      .manga-card-qty {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--wakfu-orange);
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: 11px;
+        font-weight: 900;
+        color: #fff;
+        box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+        transform: skewX(-3deg);
+      }
+
+      .manga-card.rare-manga {
+        border-color: rgba(33, 150, 243, 0.3);
+      }
+      .manga-card.mythic-manga {
+        border-color: rgba(156, 39, 176, 0.4);
+        border-width: 3px;
+      }
+      .manga-card.legendary-manga {
+        border-color: var(--wakfu-yellow);
+        box-shadow: 3px 3px 0 rgba(255, 214, 0, 0.2);
+      }
+
+      /* Impact burst on legendary */
+      .manga-card.legendary-manga::before {
+        content: "\2605";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 20px;
+        color: var(--wakfu-yellow);
+        text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+        animation: manga-star-bounce 1s ease-in-out infinite;
+        z-index: 5;
+      }
+
+      @keyframes manga-star-bounce {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+        50% {
+          transform: scale(1.2) rotate(10deg);
+        }
+      }
+
+      /* ============================================
+   SHARED CARD PLACEHOLDERS
+   ============================================ */
+      .placeholder-card {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .placeholder-card .icon {
+        font-size: 40px;
+        margin-bottom: 8px;
+        opacity: 0.6;
+      }
+
+      /* Make it respond to container */
+      .placeholder-card .card-label {
+        font-size: 10px;
+        text-align: center;
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Prototype Selector -->
+    <div class="prototype-selector">
+      <h1>Prototypes</h1>
+      <div class="proto-tabs">
+        <button class="proto-tab active-1" onclick="showPrototype(1)" id="tab1">
+          1. Portail de Guilde
+        </button>
+        <button class="proto-tab" onclick="showPrototype(2)" id="tab2">
+          2. Neon Arcade
+        </button>
+        <button class="proto-tab" onclick="showPrototype(3)" id="tab3">
+          3. Manga Cel-Shaded
+        </button>
+      </div>
+    </div>
+
+    <div class="prototype-container">
+      <!-- ==========================================
+     PROTOTYPE 1: PORTAIL DE GUILDE
+     ========================================== -->
+      <div class="prototype guild active" id="proto1">
+        <!-- Sidebar -->
+        <nav class="guild-sidebar">
+          <div class="guild-logo">W</div>
+
+          <div class="guild-nav-item active">
+            <span>📚</span>
+            <div class="tooltip">Collection</div>
+          </div>
+          <div class="guild-nav-item">
+            <span>🃏</span>
+            <div class="tooltip">Mes Decks</div>
+          </div>
+          <div class="guild-nav-item">
+            <span>⚔️</span>
+            <div class="tooltip">Deck Builder</div>
+          </div>
+          <div class="guild-nav-item">
+            <span>🏆</span>
+            <div class="tooltip">Decks Officiels</div>
+          </div>
+
+          <div class="guild-sidebar-bottom">
+            <div class="guild-nav-item">
+              <span>⚙️</span>
+              <div class="tooltip">Paramètres</div>
+            </div>
+            <div class="guild-avatar">N</div>
+            <div class="guild-sync-dot"></div>
+          </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="guild-main">
+          <div class="guild-header">
+            <h1 class="guild-page-title">
+              Ma <span class="accent">Collection</span>
+            </h1>
+            <div class="guild-stats-bar">
+              <div class="guild-stat">
+                <div class="guild-stat-value">847</div>
+                <div class="guild-stat-label">Cartes</div>
+              </div>
+              <div class="guild-stat">
+                <div class="guild-stat-value">31%</div>
+                <div class="guild-stat-label">Complétée</div>
+              </div>
+              <div class="guild-stat">
+                <div class="guild-stat-value">12</div>
+                <div class="guild-stat-label">Decks</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search -->
+          <div class="guild-search">
+            <div class="guild-search-wrapper">
+              <input
+                class="guild-search-input"
+                placeholder="Rechercher une carte..."
+              />
+            </div>
+            <button class="guild-filter-btn">⚡ Filtres</button>
+            <button class="guild-filter-btn">↕️ Trier</button>
+          </div>
+
+          <!-- Filter pills -->
+          <div class="guild-filters">
+            <button class="guild-pill active">Toutes</button>
+            <button class="guild-pill">Allié</button>
+            <button class="guild-pill">Action</button>
+            <button class="guild-pill">Équipement</button>
+            <button class="guild-pill">Héros</button>
+            <button class="guild-pill">Havre-Sac</button>
+            <button class="guild-pill">🔥 Feu</button>
+            <button class="guild-pill">💧 Eau</button>
+            <button class="guild-pill">🌪️ Air</button>
+            <button class="guild-pill">🪨 Terre</button>
+          </div>
+
+          <!-- Card Grid -->
+          <div class="guild-card-grid">
+            <div class="guild-card">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">⚔️</div>
+                <div class="card-label">Allié</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Guerrier Iop</div>
+                <div class="guild-card-type">Allié &bull; Feu</div>
+              </div>
+              <div class="guild-card-qty">x3</div>
+            </div>
+            <div class="guild-card rare">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">🌊</div>
+                <div class="card-label">Action</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Vague Déferlante</div>
+                <div class="guild-card-type">Action &bull; Eau</div>
+              </div>
+              <div class="guild-card-qty">x2</div>
+            </div>
+            <div class="guild-card mythic">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">✨</div>
+                <div class="card-label">Mythique</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Yugo, Eliatrope</div>
+                <div class="guild-card-type">Héros &bull; Air</div>
+              </div>
+              <div class="guild-card-qty">x1</div>
+            </div>
+            <div class="guild-card">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">🛡️</div>
+                <div class="card-label">Équipement</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Bouclier du Sadida</div>
+                <div class="guild-card-type">Équipement</div>
+              </div>
+              <div class="guild-card-qty">x1</div>
+            </div>
+            <div class="guild-card legendary">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">👑</div>
+                <div class="card-label">Légendaire</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Ogrest, le Chaos</div>
+                <div class="guild-card-type">Héros &bull; Neutre</div>
+              </div>
+              <div class="guild-card-qty">x1</div>
+            </div>
+            <div class="guild-card">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">🌿</div>
+                <div class="card-label">Allié</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Gardien Eniripsa</div>
+                <div class="guild-card-type">Allié &bull; Terre</div>
+              </div>
+              <div class="guild-card-qty">x2</div>
+            </div>
+            <div class="guild-card rare">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">💨</div>
+                <div class="card-label">Action</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Tempête Céleste</div>
+                <div class="guild-card-type">Action &bull; Air</div>
+              </div>
+              <div class="guild-card-qty">x3</div>
+            </div>
+            <div class="guild-card">
+              <div class="guild-card-img placeholder-card">
+                <div class="icon">🏠</div>
+                <div class="card-label">Havre-Sac</div>
+              </div>
+              <div class="guild-card-overlay">
+                <div class="guild-card-name">Havre-Sac d'Amakna</div>
+                <div class="guild-card-type">Havre-Sac</div>
+              </div>
+              <div class="guild-card-qty">x1</div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- ==========================================
+     PROTOTYPE 2: NEON ARCADE
+     ========================================== -->
+      <div class="prototype neon" id="proto2">
+        <nav class="neon-nav">
+          <div class="neon-logo">
+            WAKFU<span style="color: var(--neon-magenta)">_</span>TCG
+          </div>
+          <div class="neon-nav-links">
+            <div class="neon-nav-link active">Collection</div>
+            <div class="neon-nav-link">Decks</div>
+            <div class="neon-nav-link">Builder</div>
+            <div class="neon-nav-link">Officiels</div>
+          </div>
+          <div
+            style="
+              margin-left: auto;
+              display: flex;
+              gap: 12px;
+              align-items: center;
+            "
+          >
+            <span
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                font-size: 11px;
+                color: var(--neon-green);
+              "
+              >&#9679; SYNC</span
+            >
+            <span style="font-size: 11px; color: var(--text-dim)">|</span>
+            <span style="font-size: 13px; cursor: pointer">&#9881;</span>
+          </div>
+        </nav>
+
+        <main class="neon-main">
+          <h1 class="neon-page-title neon-glitch" data-text="COLLECTION">
+            COLL<span>ECTION</span>
+          </h1>
+          <p class="neon-subtitle">
+            847 cartes &bull; 31% complete &bull; 2,800+ database
+          </p>
+
+          <div class="neon-search">
+            <input
+              class="neon-search-input"
+              placeholder="[SEARCH] Enter card name..."
+            />
+            <button class="neon-btn">Filtres</button>
+            <button class="neon-btn magenta">Trier</button>
+          </div>
+
+          <div class="neon-filters">
+            <button class="neon-filter-chip active">All</button>
+            <button class="neon-filter-chip">Ally</button>
+            <button class="neon-filter-chip">Action</button>
+            <button class="neon-filter-chip">Equip</button>
+            <button class="neon-filter-chip">Hero</button>
+            <button class="neon-filter-chip">Haven</button>
+            <button class="neon-filter-chip" style="color: var(--neon-yellow)">
+              &#9733; Legendary
+            </button>
+          </div>
+
+          <div class="neon-card-grid">
+            <div class="neon-card">
+              <div
+                class="neon-card-img placeholder-card"
+                style="color: var(--neon-cyan)"
+              >
+                <div class="icon">&#9876;</div>
+                <div class="card-label">Ally</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Guerrier Iop</div>
+                <div class="neon-card-rarity">Common</div>
+              </div>
+              <div class="neon-card-qty">x3</div>
+            </div>
+            <div class="neon-card rare-neon">
+              <div
+                class="neon-card-img placeholder-card"
+                style="color: var(--neon-cyan)"
+              >
+                <div class="icon">&#127754;</div>
+                <div class="card-label">Action</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Vague Deferlante</div>
+                <div class="neon-card-rarity" style="color: var(--neon-cyan)">
+                  Rare
+                </div>
+              </div>
+              <div class="neon-card-qty">x2</div>
+            </div>
+            <div class="neon-card mythic-neon">
+              <div
+                class="neon-card-img placeholder-card"
+                style="color: var(--neon-magenta)"
+              >
+                <div class="icon">&#10024;</div>
+                <div class="card-label">Mythic</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Yugo, Eliatrope</div>
+                <div
+                  class="neon-card-rarity"
+                  style="color: var(--neon-magenta)"
+                >
+                  Mythic
+                </div>
+              </div>
+              <div
+                class="neon-card-qty"
+                style="
+                  color: var(--neon-magenta);
+                  text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
+                "
+              >
+                x1
+              </div>
+            </div>
+            <div class="neon-card">
+              <div class="neon-card-img placeholder-card" style="color: #888">
+                <div class="icon">&#128737;</div>
+                <div class="card-label">Equipment</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Bouclier Sadida</div>
+                <div class="neon-card-rarity">Common</div>
+              </div>
+              <div class="neon-card-qty">x1</div>
+            </div>
+            <div class="neon-card legendary-neon">
+              <div
+                class="neon-card-img placeholder-card"
+                style="color: var(--neon-yellow)"
+              >
+                <div class="icon">&#128081;</div>
+                <div class="card-label">Legendary</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Ogrest, le Chaos</div>
+                <div class="neon-card-rarity" style="color: var(--neon-yellow)">
+                  Legendary
+                </div>
+              </div>
+              <div
+                class="neon-card-qty"
+                style="
+                  color: var(--neon-yellow);
+                  text-shadow: 0 0 8px rgba(255, 255, 0, 0.5);
+                "
+              >
+                x1
+              </div>
+            </div>
+            <div class="neon-card">
+              <div
+                class="neon-card-img placeholder-card"
+                style="color: var(--neon-green)"
+              >
+                <div class="icon">&#127807;</div>
+                <div class="card-label">Ally</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Gardien Eniripsa</div>
+                <div class="neon-card-rarity">Common</div>
+              </div>
+              <div class="neon-card-qty">x2</div>
+            </div>
+            <div class="neon-card rare-neon">
+              <div
+                class="neon-card-img placeholder-card"
+                style="color: var(--neon-cyan)"
+              >
+                <div class="icon">&#127744;</div>
+                <div class="card-label">Action</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Tempete Celeste</div>
+                <div class="neon-card-rarity" style="color: var(--neon-cyan)">
+                  Rare
+                </div>
+              </div>
+              <div class="neon-card-qty">x3</div>
+            </div>
+            <div class="neon-card">
+              <div class="neon-card-img placeholder-card" style="color: #888">
+                <div class="icon">&#127968;</div>
+                <div class="card-label">Haven-Bag</div>
+              </div>
+              <div class="neon-card-overlay">
+                <div class="neon-card-name">Havre-Sac Amakna</div>
+                <div class="neon-card-rarity">Common</div>
+              </div>
+              <div class="neon-card-qty">x1</div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- ==========================================
+     PROTOTYPE 3: MANGA CEL-SHADED
+     ========================================== -->
+      <div class="prototype manga" id="proto3">
+        <div class="manga-speedlines"></div>
+
+        <nav class="manga-nav">
+          <div class="manga-logo">WAKFU!</div>
+          <div class="manga-nav-tabs">
+            <div class="manga-tab active">Collection</div>
+            <div class="manga-tab">Mes Decks</div>
+            <div class="manga-tab">Builder</div>
+            <div class="manga-tab">Officiels</div>
+          </div>
+          <div
+            style="
+              margin-left: auto;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              padding: 0 8px;
+            "
+          >
+            <span
+              style="
+                font-family: &quot;Noto Sans JP&quot;, sans-serif;
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--wakfu-green);
+              "
+              >&#9679; Sync</span
+            >
+            <span
+              style="font-size: 18px; cursor: pointer; color: var(--text-gray)"
+              >&#9881;</span
+            >
+          </div>
+        </nav>
+
+        <main class="manga-main">
+          <h1 class="manga-page-title">
+            Ma <span class="highlight">Collection</span>
+          </h1>
+          <p class="manga-subtitle">
+            847 cartes collectionnees &bull; 31% du catalogue &bull; 12 decks
+            crees
+          </p>
+
+          <div class="manga-search">
+            <input
+              class="manga-search-input"
+              placeholder="Rechercher une carte..."
+            />
+            <button class="manga-btn">Filtres</button>
+            <button class="manga-btn orange">Trier</button>
+          </div>
+
+          <div class="manga-filters">
+            <button class="manga-chip active">Toutes</button>
+            <button class="manga-chip">Allie</button>
+            <button class="manga-chip">Action</button>
+            <button class="manga-chip">Equipement</button>
+            <button class="manga-chip">Heros</button>
+            <button class="manga-chip">Havre-Sac</button>
+            <button
+              class="manga-chip"
+              style="border-color: var(--wakfu-red); color: var(--wakfu-red)"
+            >
+              Feu
+            </button>
+            <button
+              class="manga-chip"
+              style="border-color: var(--wakfu-blue); color: var(--wakfu-blue)"
+            >
+              Eau
+            </button>
+          </div>
+
+          <div class="manga-card-grid">
+            <div class="manga-card">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: var(--wakfu-blue)"
+              >
+                <div class="icon">&#9876;</div>
+                <div class="card-label">Allie</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Guerrier Iop</div>
+                <span class="manga-card-type-badge ally">Allie</span>
+              </div>
+              <div class="manga-card-qty">x3</div>
+            </div>
+            <div class="manga-card rare-manga">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: var(--wakfu-blue)"
+              >
+                <div class="icon">&#127754;</div>
+                <div class="card-label">Action</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Vague Deferlante</div>
+                <span class="manga-card-type-badge action">Action</span>
+              </div>
+              <div class="manga-card-qty">x2</div>
+            </div>
+            <div class="manga-card mythic-manga">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: #9c27b0"
+              >
+                <div class="icon">&#10024;</div>
+                <div class="card-label">Mythique</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Yugo, Eliatrope</div>
+                <span class="manga-card-type-badge hero">Heros</span>
+              </div>
+              <div class="manga-card-qty">x1</div>
+            </div>
+            <div class="manga-card">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: var(--text-gray)"
+              >
+                <div class="icon">&#128737;</div>
+                <div class="card-label">Equip</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Bouclier Sadida</div>
+                <span
+                  class="manga-card-type-badge"
+                  style="background: var(--wakfu-green)"
+                  >Equip</span
+                >
+              </div>
+              <div class="manga-card-qty">x1</div>
+            </div>
+            <div class="manga-card legendary-manga">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: var(--wakfu-yellow)"
+              >
+                <div class="icon">&#128081;</div>
+                <div class="card-label">Legendaire</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Ogrest, le Chaos</div>
+                <span class="manga-card-type-badge hero">Heros</span>
+              </div>
+              <div class="manga-card-qty">x1</div>
+            </div>
+            <div class="manga-card">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: var(--wakfu-green)"
+              >
+                <div class="icon">&#127807;</div>
+                <div class="card-label">Allie</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Gardien Eniripsa</div>
+                <span class="manga-card-type-badge ally">Allie</span>
+              </div>
+              <div class="manga-card-qty">x2</div>
+            </div>
+            <div class="manga-card rare-manga">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: var(--wakfu-blue)"
+              >
+                <div class="icon">&#127744;</div>
+                <div class="card-label">Action</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Tempete Celeste</div>
+                <span class="manga-card-type-badge action">Action</span>
+              </div>
+              <div class="manga-card-qty">x3</div>
+            </div>
+            <div class="manga-card">
+              <div
+                class="manga-card-img placeholder-card"
+                style="color: var(--text-gray)"
+              >
+                <div class="icon">&#127968;</div>
+                <div class="card-label">Havre-Sac</div>
+              </div>
+              <div class="manga-card-overlay">
+                <div class="manga-card-name">Havre-Sac Amakna</div>
+                <span class="manga-card-type-badge" style="background: #666"
+                  >H-Sac</span
+                >
+              </div>
+              <div class="manga-card-qty">x1</div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      function showPrototype(n) {
+        document
+          .querySelectorAll(".prototype")
+          .forEach((p) => p.classList.remove("active"));
+        document.querySelectorAll(".proto-tab").forEach((t) => {
+          t.className = "proto-tab";
+        });
+        document.getElementById("proto" + n).classList.add("active");
+        document.getElementById("tab" + n).classList.add("active-" + n);
+
+        // Re-trigger animations
+        const cards = document.querySelectorAll(
+          "#proto" + n + ' [class*="-card"]:not([class*="-card-"])',
+        );
+        cards.forEach((card) => {
+          card.style.animation = "none";
+          card.offsetHeight; // force reflow
+          card.style.animation = "";
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -17,7 +17,11 @@
     { "id": "piou_vert", "name": "Piou Vert", "quantity": 1 },
     { "id": "boufton_blanc", "name": "Boufton Blanc", "quantity": 3 },
     { "id": "bouftou", "name": "Bouftou", "quantity": 3 },
-    { "id": "chef_de_guerre_bouftou", "name": "Chef de Guerre Bouftou", "quantity": 2 },
+    {
+      "id": "chef_de_guerre_bouftou",
+      "name": "Chef de Guerre Bouftou",
+      "quantity": 2
+    },
     { "id": "bouftou_royal", "name": "Bouftou Royal", "quantity": 1 },
     { "id": "larve_verte", "name": "Larve Verte", "quantity": 2 },
     { "id": "craqueleur", "name": "Craqueleur", "quantity": 1 },
@@ -31,7 +35,11 @@
     { "id": "parchemin_de_force", "name": "Parchemin de Force", "quantity": 1 },
     { "id": "coup_critique", "name": "Coup Critique", "quantity": 2 },
     { "id": "exclusion", "name": "Exclusion", "quantity": 1 },
-    { "id": "strategie_de_groupe", "name": "Stratégie de Groupe", "quantity": 1 },
+    {
+      "id": "strategie_de_groupe",
+      "name": "Stratégie de Groupe",
+      "quantity": 1
+    },
     { "id": "boon_attitude", "name": "Boon Attitude", "quantity": 1 },
     { "id": "agression", "name": "Agression", "quantity": 2 },
     { "id": "repos", "name": "Repos", "quantity": 1 },
@@ -54,4 +62,4 @@
     "archetype": "Bouftou",
     "style": "Aggro"
   }
-} 
+}

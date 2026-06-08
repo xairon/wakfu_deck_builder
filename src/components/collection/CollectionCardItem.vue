@@ -1,152 +1,174 @@
 <template>
   <div
-    class="card-container relative hover:z-10"
+    class="card-container group relative"
+    role="button"
+    tabindex="0"
+    :aria-label="`${card.name} - ${card.mainType}${quantity > 0 || foilQuantity > 0 ? ', possédée: ' + (quantity + foilQuantity) : ', non possédée'}`"
     @click="emitCardSelect"
+    @keydown.enter="emitCardSelect"
+    @keydown.space.prevent="emitCardSelect"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
-    <!-- DEV: Indicateur de débogage visible uniquement pour les administrateurs -->
-    <div
-      v-if="false"
-      class="absolute top-0 left-0 bg-black/70 text-white text-xs p-1 z-50"
-    >
-      Q: {{ quantity }} / F: {{ foilQuantity }}
-    </div>
-
-    <!-- Conteneur principal centré sur l'image -->
-    <div
-      class="card-frame relative rounded-lg overflow-hidden shadow-lg transition-all duration-300 transform hover:shadow-xl cursor-pointer"
+    <!-- Carte : l'illustration a son propre cadre imprimé, pas de sur-cadre -->
+    <figure
+      class="plate-frame relative cursor-pointer"
       :class="{
-        'grayscale opacity-80 hover:grayscale-0 hover:opacity-100':
-          quantity === 0 && foilQuantity === 0,
-        'hero-card': isHeroCard,
+        'grayscale opacity-60 hover:grayscale-0 hover:opacity-100':
+          !isOwned && dimUnowned,
       }"
     >
-      <!-- Image (élément principal) -->
-      <div
-        class="image-container relative aspect-[7/10] flex items-center justify-center overflow-hidden bg-base-300"
-      >
+      <!-- Illustration -->
+      <div class="relative" :class="{ sheen: foilQuantity > 0 }">
         <img
           :src="cardImagePath"
-          :alt="card?.name || 'Carte Wakfu'"
-          class="w-full h-full object-contain transition-all duration-300"
+          :alt="`Carte ${card?.name || 'Wakfu'} - ${card?.mainType || 'Type inconnu'}`"
+          class="aspect-[7/10] w-full object-cover"
           loading="lazy"
           @error="handleImageError"
         />
 
-        <!-- Overlay de nom (en bas) - disparaît au survol -->
-        <div
-          class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white transition-opacity duration-300 card-overlay"
+        <!-- Étiquette brillante : tag mono 'F×N' -->
+        <span
+          v-if="foilQuantity > 0"
+          class="absolute right-1 top-1 bg-base-100/90 px-1 py-0.5 font-mono text-[10px] font-bold uppercase text-base-content"
+          style="letter-spacing: 0.06em"
         >
-          <h3 class="font-bold text-center truncate">
-            {{ card?.name || 'Carte sans nom' }}
-          </h3>
-        </div>
-      </div>
+          F×{{ foilQuantity }}
+        </span>
 
-      <!-- Compteurs (en bas à droite) - style amélioré -->
-      <div class="absolute right-2 bottom-12 flex flex-col gap-1 z-10">
-        <!-- Normal -->
-        <div
-          class="badge badge-md bg-base-100 text-base-content shadow-md"
-          :class="quantity > 0 ? 'badge-primary' : 'badge-ghost opacity-60'"
-        >
-          {{ quantity > 0 ? quantity : '0' }}
-        </div>
-        <!-- Foil -->
-        <div
-          class="badge badge-md bg-base-100 text-base-content shadow-md"
+        <!-- Pastille de possession / playset (permanente, lisible au tactile) -->
+        <span
+          v-if="authStore.isAuthenticated && isOwned"
+          class="absolute left-1 top-1 z-10 border px-1 py-0.5 font-mono text-[10px] font-bold tabular"
           :class="
-            foilQuantity > 0 ? 'badge-secondary' : 'badge-ghost opacity-60'
+            playsetComplete
+              ? 'border-success bg-success text-success-content'
+              : 'border-base-content bg-base-100/90 text-base-content'
           "
+          :title="`Possédées : ${ownedTotal} / ${playsetTarget}`"
         >
-          {{ foilQuantity > 0 ? foilQuantity : '0' }} ✨
-        </div>
-      </div>
+          {{ ownedTotal }}/{{ playsetTarget }}
+        </span>
 
-      <!-- Bouton d'ajout au deck (uniquement en mode constructeur de deck) -->
-      <button
-        v-if="enableAddToDeck && isHovered"
-        @click.stop="emitAddToDeck"
-        class="add-to-deck-button absolute top-3 left-3 btn btn-circle btn-sm btn-success bg-success/80 hover:bg-success z-20"
-        :title="'Ajouter au deck'"
-      >
-        <span>+</span>
-      </button>
+        <!-- Bouton d'ajout au deck (mode constructeur) -->
+        <button
+          v-if="enableAddToDeck && isHovered"
+          @click.stop="emitAddToDeck"
+          class="absolute left-1 top-1 z-20 grid h-7 w-7 place-items-center border border-base-content bg-base-100 text-base-content transition-colors hover:bg-primary hover:text-primary-content"
+          :aria-label="`Ajouter ${card.name} au deck`"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
 
-      <!-- Bouton de retournement pour les cartes héros (reste visible au survol) -->
-      <button
-        v-if="isHeroCard && isHovered"
-        @click.stop="toggleCardSide"
-        class="flip-button absolute top-3 right-3 btn btn-circle btn-sm btn-primary bg-primary/80 hover:bg-primary z-20"
-      >
-        <span v-if="showVerso">↺</span>
-        <span v-else>↻</span>
-      </button>
+        <!-- Bouton de retournement pour les cartes héros -->
+        <button
+          v-if="isHeroCard && isHovered"
+          @click.stop="toggleCardSide"
+          class="absolute right-1 top-1 z-20 grid h-7 w-7 place-items-center border border-base-content bg-base-100 text-base-content transition-colors hover:bg-primary hover:text-primary-content"
+          :aria-label="showVerso ? 'Afficher le recto' : 'Afficher le verso'"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 9a8 8 0 0113.5-3.5L20 8M20 15a8 8 0 01-13.5 3.5L4 16"
+            />
+            <path stroke-linecap="round" d="M20 4v4h-4M4 20v-4h4" />
+          </svg>
+        </button>
 
-      <!-- Indicateur recto/verso en mode hover -->
-      <div
-        v-if="isHeroCard && isHovered"
-        class="absolute top-3 left-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs z-20 card-side-indicator"
-      >
-        {{ showVerso ? 'Verso' : 'Recto' }}
-      </div>
+        <!-- Indicateur recto/verso (héros) -->
+        <span
+          v-if="isHeroCard && isHovered"
+          class="absolute bottom-1 left-1 z-20 bg-base-100/90 px-1 py-0.5 font-mono text-[10px] uppercase text-base-content"
+          style="letter-spacing: 0.06em"
+        >
+          {{ showVerso ? "Verso" : "Recto" }}
+        </span>
 
-      <!-- Boutons d'action (visibles en mode hover) -->
-      <div
-        v-if="isHovered"
-        class="action-controls absolute inset-0 flex flex-col items-center justify-center z-20"
-        @click.stop
-      >
+        <!-- Contrôles de possession (visibles uniquement si authentifié) -->
         <div
-          class="action-panel bg-base-300/80 backdrop-blur-sm p-3 rounded-lg shadow-lg"
+          v-if="authStore.isAuthenticated && isHovered"
+          class="ownership-controls absolute inset-x-0 bottom-0 z-20 border-t border-base-content bg-base-100/95 p-2"
+          @click.stop
         >
-          <div class="flex flex-col gap-4">
-            <!-- Compteur et contrôle normaux -->
-            <div class="flex items-center gap-3">
-              <div class="badge badge-lg badge-primary">{{ quantity }}</div>
-              <div class="join">
-                <button
-                  class="join-item btn btn-sm btn-error"
-                  @click.stop="updateQuantity(-1, false)"
-                  :disabled="quantity <= 0"
-                >
-                  -
-                </button>
-                <button
-                  class="join-item btn btn-sm btn-primary"
-                  @click.stop="updateQuantity(1, false)"
-                >
-                  +
-                </button>
-              </div>
+          <!-- Normal -->
+          <div class="flex items-center justify-between gap-2">
+            <span class="eyebrow text-base-content/60">Normal</span>
+            <div class="flex items-center gap-1.5">
+              <button
+                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
+                @click.stop="updateQuantity(-1, false)"
+                :disabled="quantity <= 0"
+                :aria-label="`Retirer un exemplaire de ${card.name}`"
+              >
+                −
+              </button>
+              <span
+                class="w-5 text-center font-mono text-sm tabular text-base-content"
+                >{{ quantity }}</span
+              >
+              <button
+                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
+                @click.stop="updateQuantity(1, false)"
+                :aria-label="`Ajouter un exemplaire de ${card.name}`"
+              >
+                +
+              </button>
             </div>
+          </div>
 
-            <!-- Compteur et contrôle foil -->
-            <div class="flex items-center gap-3">
-              <div class="badge badge-lg badge-secondary">
-                {{ foilQuantity }} ✨
-              </div>
-              <div class="join">
-                <button
-                  class="join-item btn btn-sm btn-error"
-                  @click.stop="updateQuantity(-1, true)"
-                  :disabled="foilQuantity <= 0"
-                >
-                  -
-                </button>
-                <button
-                  class="join-item btn btn-sm btn-secondary"
-                  @click.stop="updateQuantity(1, true)"
-                >
-                  +
-                </button>
-              </div>
+          <!-- Foil -->
+          <div class="mt-1.5 flex items-center justify-between gap-2">
+            <span class="eyebrow text-primary">Foil</span>
+            <div class="flex items-center gap-1.5">
+              <button
+                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
+                @click.stop="updateQuantity(-1, true)"
+                :disabled="foilQuantity <= 0"
+                :aria-label="`Retirer un exemplaire brillant de ${card.name}`"
+              >
+                −
+              </button>
+              <span
+                class="w-5 text-center font-mono text-sm tabular text-base-content"
+                >{{ foilQuantity }}</span
+              >
+              <button
+                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
+                @click.stop="updateQuantity(1, true)"
+                :aria-label="`Ajouter un exemplaire brillant de ${card.name}`"
+              >
+                +
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <!-- Cartouche mono sous la planche -->
+      <figcaption class="plate-caption">
+        {{ card?.name || "Carte sans nom"
+        }}<template v-if="isOwned"> ×{{ quantity + foilQuantity }}</template>
+      </figcaption>
+    </figure>
   </div>
 </template>
 
@@ -155,214 +177,164 @@
  * Composant pour afficher une carte individuelle dans la collection
  * Mise en avant de l'illustration avec informations minimalistes
  */
-import { computed, ref, onMounted, onUnmounted } from 'vue'
-import type { Card } from '@/types/cards'
+import { computed, ref, onMounted, onUnmounted } from "vue";
+import type { Card } from "@/types/cards";
+import { useAuthStore } from "@/stores/authStore";
 
 // Définition des props
 interface Props {
-  card: Card
-  quantity: number
-  foilQuantity: number
-  enableAddToDeck: boolean
+  card: Card;
+  quantity: number;
+  foilQuantity: number;
+  enableAddToDeck: boolean;
+  /** Griser les cartes non possédées (option, désactivé par défaut). */
+  dimUnowned?: boolean;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
+
+const authStore = useAuthStore();
+
+const isOwned = computed(() => props.quantity > 0 || props.foilQuantity > 0);
+
+// Playset : objectif 3 exemplaires (1 si la carte est Unique).
+const playsetTarget = computed(() =>
+  props.card.keywords?.some((k) => k.name === "Unique") ? 1 : 3,
+);
+const ownedTotal = computed(() => props.quantity + props.foilQuantity);
+const playsetComplete = computed(() => ownedTotal.value >= playsetTarget.value);
 
 // Définition des émissions
 const emit = defineEmits<{
   (
-    e: 'update-quantity',
+    e: "update-quantity",
     cardId: string,
     quantity: number,
-    isFoil: boolean
-  ): void
-  (e: 'select-card', card: Card): void
-  (e: 'add-to-deck', card: Card): void
-}>()
+    isFoil: boolean,
+  ): void;
+  (e: "select-card", card: Card): void;
+  (e: "add-to-deck", card: Card): void;
+}>();
 
 // État pour la gestion des erreurs d'image et l'interactivité
-const hasImageError = ref(false)
-const showVerso = ref(false)
-const isHovered = ref(false)
+const hasImageError = ref(false);
+const showVerso = ref(false);
+const isHovered = ref(false);
 
 // Computed properties
 const isHeroCard = computed(() => {
-  return props.card?.mainType === 'Héros'
-})
-
-const getNiveauValue = computed(() => {
-  // Vérifier le chemin pour éviter les erreurs undefined
-  return props.card?.stats?.niveau?.value ?? '-'
-})
-
-const getNiveauElement = computed(() => {
-  return props.card?.stats?.niveau?.element ?? null
-})
-
-// Fonction pour obtenir la classe du badge d'élément
-function getBadgeClass(element: string): string {
-  switch (element.toLowerCase()) {
-    case 'feu':
-      return 'badge-error'
-    case 'eau':
-      return 'badge-primary'
-    case 'air':
-      return 'badge-info'
-    case 'terre':
-      return 'badge-success'
-    default:
-      return 'badge-neutral'
-  }
-}
+  return props.card?.mainType === "Héros";
+});
 
 // Chemin de l'image - gère différents types de cartes
 const cardImagePath = computed(() => {
   if (hasImageError.value || !props.card?.id) {
-    console.debug(
-      `🖼️ Card ${props.card?.name || 'unknown'}: Utilisation de l'image de fallback (erreur: ${hasImageError.value}, id: ${props.card?.id || 'none'})`
-    )
-    return '/images/card-back.png'
+    return "/images/card-back.png";
   }
 
   // Si la carte a une imageUrl, l'utiliser directement
   if (props.card.imageUrl) {
-    console.debug(
-      `🖼️ Card ${props.card.name}: Utilisation de l'imageUrl: ${props.card.imageUrl}`
-    )
-    return props.card.imageUrl
+    return props.card.imageUrl;
   }
 
   // Sinon, construire le chemin à partir de l'ID
   // Si c'est un héros, utiliser recto ou verso selon l'état
   if (isHeroCard.value) {
-    const path = `/images/cards/${props.card.id}_${showVerso.value ? 'verso' : 'recto'}.png`
-    console.debug(
-      `🖼️ Card ${props.card.name}: Construction du chemin pour HÉROS: ${path}`
-    )
-    return path
+    return `/images/cards/${props.card.id}_${showVerso.value ? "verso" : "recto"}.png`;
   }
 
-  const path = `/images/cards/${props.card.id}.png`
-  console.debug(
-    `🖼️ Card ${props.card.name}: Construction du chemin standard: ${path}`
-  )
-  return path
-})
+  return `/images/cards/${props.card.id}.png`;
+});
 
 // Gérer les erreurs de chargement d'image
 function handleImageError() {
-  console.warn(
-    `❌ Erreur de chargement d'image pour ${props.card?.name} (ID: ${props.card?.id})`
-  )
-
   // Si la carte a une URL d'image mais qu'elle ne charge pas, passer directement au fallback
   if (props.card.imageUrl) {
-    console.warn(`⚠️ L'imageUrl ${props.card.imageUrl} n'a pas pu être chargée`)
-    hasImageError.value = true
-    return
+    hasImageError.value = true;
+    return;
   }
 
   // Tenter de charger une version alternative de l'image (pour les chemins basés sur l'ID)
-  const img = new Image()
+  const img = new Image();
   if (isHeroCard.value) {
     // Si c'est une image de héros, essayer l'autre face
-    const alternatePath = `/images/cards/${props.card.id}_${showVerso.value ? 'recto' : 'verso'}.png`
-    console.debug(
-      `🔄 Tentative de chargement de la face alternative: ${alternatePath}`
-    )
-    img.src = alternatePath
+    const alternatePath = `/images/cards/${props.card.id}_${showVerso.value ? "recto" : "verso"}.png`;
+    img.src = alternatePath;
 
     // Si l'autre face charge correctement, basculer automatiquement
     img.onload = () => {
-      console.debug(
-        `✅ Face alternative chargée avec succès pour ${props.card.name}`
-      )
-      showVerso.value = !showVerso.value
-      hasImageError.value = false
-    }
+      showVerso.value = !showVerso.value;
+      hasImageError.value = false;
+    };
 
     img.onerror = () => {
       // Si l'autre face ne peut pas être chargée non plus, utiliser le placeholder
-      console.warn(`❌ Aucune face n'a pu être chargée pour ${props.card.name}`)
-      hasImageError.value = true
-    }
+      hasImageError.value = true;
+    };
   } else {
     // Pour les cartes normales, simplement marquer l'erreur
-    console.warn(`❌ Aucune alternative disponible pour ${props.card.name}`)
-    hasImageError.value = true
+    hasImageError.value = true;
   }
 }
 
 // Mettre à jour la quantité
 function updateQuantity(change: number, isFoil: boolean) {
-  if (!props.card?.id) return
-  emit('update-quantity', props.card.id, change, isFoil)
+  if (!props.card?.id) return;
+  emit("update-quantity", props.card.id, change, isFoil);
 }
 
 // Sélectionner une carte (pour afficher le modal)
 function emitCardSelect() {
   if (!props.card) {
-    console.error(`❌ Tentative d'émission select-card avec une carte null`)
-    return
+    return;
   }
-  console.log(
-    '🔍 CardItem: émission de select-card pour',
-    props.card.name,
-    props.card.id
-  )
-  emit('select-card', props.card)
+  emit("select-card", props.card);
 }
 
 // Basculer entre recto et verso pour les cartes héros
 function toggleCardSide(event: Event) {
-  event.stopPropagation() // Empêcher la propagation au parent (qui ouvrirait le modal)
+  event.stopPropagation(); // Empêcher la propagation au parent (qui ouvrirait le modal)
 
   if (isHeroCard.value) {
     // Réinitialiser l'état d'erreur
-    hasImageError.value = false
+    hasImageError.value = false;
 
     // Inverser l'état recto/verso
-    showVerso.value = !showVerso.value
+    showVerso.value = !showVerso.value;
   }
 }
 
 // Événements d'entrée/sortie de souris
 onMounted(() => {
-  const container = document.querySelector('.card-container')
+  const container = document.querySelector(".card-container");
   if (container) {
-    container.addEventListener('mouseenter', () => {
-      isHovered.value = true
-    })
-    container.addEventListener('mouseleave', () => {
-      isHovered.value = false
-    })
+    container.addEventListener("mouseenter", () => {
+      isHovered.value = true;
+    });
+    container.addEventListener("mouseleave", () => {
+      isHovered.value = false;
+    });
   }
-})
+});
 
 onUnmounted(() => {
-  const container = document.querySelector('.card-container')
+  const container = document.querySelector(".card-container");
   if (container) {
-    container.removeEventListener('mouseenter', () => {
-      isHovered.value = true
-    })
-    container.removeEventListener('mouseleave', () => {
-      isHovered.value = false
-    })
+    container.removeEventListener("mouseenter", () => {
+      isHovered.value = true;
+    });
+    container.removeEventListener("mouseleave", () => {
+      isHovered.value = false;
+    });
   }
-})
+});
 
 // Événements d'ajout au deck
 function emitAddToDeck() {
   if (!props.card) {
-    console.error(`❌ Tentative d'émission add-to-deck avec une carte null`)
-    return
+    return;
   }
-  console.log(
-    '🔍 CardItem: émission de add-to-deck pour',
-    props.card.name,
-    props.card.id
-  )
-  emit('add-to-deck', props.card)
+  emit("add-to-deck", props.card);
 }
 </script>
 
@@ -370,88 +342,11 @@ function emitAddToDeck() {
 .card-container {
   height: 100%;
   width: 100%;
-  perspective: 1000px;
-  overflow: visible;
   display: flex;
   flex-direction: column;
 }
 
-.card-frame {
-  transition: all 0.35s ease;
-  height: 100%;
-  width: 100%;
-  transform-style: preserve-3d;
-  transform-origin: center center;
-  border-radius: 12px;
-  backface-visibility: hidden;
-  position: relative;
-  will-change: transform;
-}
-
-/* Ajustement du facteur d'échelle et de l'élévation pour éviter le débordement */
-.card-container:hover .card-frame {
-  transform: translateY(-3px) scale(1.15);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-  z-index: 20;
-}
-
-.card-container:hover .card-badge,
-.card-container:hover .card-overlay {
-  opacity: 0;
-}
-
-/* Style pour le panneau de contrôle qui apparaît au survol */
-.action-controls {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.card-container:hover .action-controls {
-  opacity: 1;
-}
-
-.action-panel {
-  transform: translateY(10px);
-  opacity: 0;
-  transition: all 0.3s ease 0.1s;
-  pointer-events: auto;
-}
-
-.card-container:hover .action-panel {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.flip-button {
-  transition: all 0.3s ease;
-  pointer-events: auto;
-}
-
-.card-side-indicator {
-  pointer-events: auto;
-}
-
-.hero-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 2px solid gold;
-  border-radius: 0.5rem;
-  opacity: 0.5;
-  z-index: 5;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.hero-card:hover::before {
-  opacity: 0.2;
-}
-
-/* Pour éviter que les cartes ne se chevauchent en mode grille */
-.card-wrapper {
-  padding: 5px;
-  overflow: visible;
+.plate-frame {
   height: 100%;
   width: 100%;
 }

@@ -5,7 +5,7 @@ import DeckBuilder from '../deck/DeckBuilder.vue'
 import { useDeckStore } from '@/stores/deckStore'
 import { useToast } from '@/composables/useToast'
 import { usePerformanceMonitoring } from '@/utils/performance'
-import type { Card, Deck } from '@/types/card'
+import type { Card, Deck } from '@/types/cards'
 
 vi.mock('@/stores/deckStore', () => ({
   useDeckStore: vi.fn(() => ({

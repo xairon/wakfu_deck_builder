@@ -1,0 +1,551 @@
+{
+  "$schema": "../../schemas/errata.schema.json",
+  "updatedAt": "2011-10-05",
+  "errata": {
+    "donjon-des-tofus-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du mot « Tous » : « Vos Alliés Tofus » devient « Tous vos Alliés Tofus gagnent +1 en Force et Agilité ».",
+        "before": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Tofus. Vos Alliés Tofus gagnent +1 en Force et Agilité.",
+        "after": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Tofus. Tous vos Alliés Tofus gagnent +1 en Force et Agilité."
+      }
+    ],
+    "treve-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du trait « Unique » à la ligne de type (la carte passe en Unique : 1 seul exemplaire par deck). Texte erraté : « Action – Sort – Féca – Unique ».",
+        "before": "Action – Sort – Féca",
+        "after": "Action – Sort – Féca – Unique"
+      }
+    ],
+    "arc-hidsad-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Le second Dommage devient élémentaire Air : « puis inflige 1 Dommage » devient « puis inflige 1 Dommage (air) à son Porteur ».",
+        "before": "L'Arc Hidsad inflige 1 Dommage (air) à l'Allié ou Héros de votre choix, puis inflige 1 Dommage à son Porteur.",
+        "after": "L'Arc Hidsad inflige 1 Dommage (air) à l'Allié ou Héros de votre choix, puis inflige 1 Dommage (air) à son Porteur."
+      }
+    ],
+    "incarnam-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "« Détruisez Incarnam » remplacé par « Bannissez Incarnam ». La carte est aussi Unique (Zone - Unique). Remarque officielle : une carte bannie est retirée définitivement de la partie.",
+        "before": "Détruisez Incarnam : Jusqu'au début de votre prochain tour, aucun joueur ne peut déclarer d'attaque.",
+        "after": "Bannissez Incarnam : Jusqu'au début de votre prochain tour, aucun joueur ne peut déclarer d'attaque."
+      }
+    ],
+    "kwakoiffe-de-glace-dofus-collection": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Chapeau – Kwak de Glace » devient « Armure – Chapeau – Kwak de Glace ».",
+        "before": "Chapeau – Kwak de Glace",
+        "after": "Armure – Chapeau – Kwak de Glace"
+      }
+    ],
+    "kwakoiffe-de-glace-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Chapeau – Kwak de Glace » devient « Armure – Chapeau – Kwak de Glace ».",
+        "before": "Chapeau – Kwak de Glace",
+        "after": "Armure – Chapeau – Kwak de Glace"
+      }
+    ],
+    "cape-du-mulou-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Cape – Mulou » devient « Armure – Cape – Mulou ».",
+        "before": "Cape – Mulou",
+        "after": "Armure – Cape – Mulou"
+      }
+    ],
+    "cape-du-prespic-dofus-collection": [
+      {
+        "date": "10/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Cape – Prespic » devient « Armure – Cape – Prespic ».",
+        "before": "Cape – Prespic",
+        "after": "Armure – Cape – Prespic"
+      }
+    ],
+    "cape-du-prespic-incarnam": [
+      {
+        "date": "10/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Cape – Prespic » devient « Armure – Cape – Prespic ».",
+        "before": "Cape – Prespic",
+        "after": "Armure – Cape – Prespic"
+      }
+    ],
+    "cape-du-vampyre-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Cape – Vampyre » devient « Armure – Cape – Vampyre ».",
+        "before": "Cape – Vampyre",
+        "after": "Armure – Cape – Vampyre"
+      }
+    ],
+    "string-du-mulou-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Ceinture – Mulou » devient « Armure – Ceinture – Mulou ». (Texte erraté : Armure – Ceinture – Mulou ; le Porteur gagne Résistance 1 (terre).)",
+        "before": "Ceinture – Mulou",
+        "after": "Armure – Ceinture – Mulou"
+      }
+    ],
+    "ceinture-akwadala-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Ceinture – Akwadala » devient « Armure – Ceinture – Akwadala ». Pouvoir erraté : (inc), Recyclez une carte (eau) de votre Défausse : Piochez une carte.",
+        "before": "Ceinture – Akwadala",
+        "after": "Armure – Ceinture – Akwadala"
+      }
+    ],
+    "kwakobottes-de-glace-dofus-collection": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Bottes – Kwak de Glace » devient « Armure – Bottes – Kwak de Glace ».",
+        "before": "Bottes – Kwak de Glace",
+        "after": "Armure – Bottes – Kwak de Glace"
+      }
+    ],
+    "kwakobottes-de-glace-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Bottes – Kwak de Glace » devient « Armure – Bottes – Kwak de Glace ».",
+        "before": "Bottes – Kwak de Glace",
+        "after": "Armure – Bottes – Kwak de Glace"
+      }
+    ],
+    "gelobottes-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Bottes – Gelax » devient « Armure – Bottes – Gelax ».",
+        "before": "Bottes – Gelax",
+        "after": "Armure – Bottes – Gelax"
+      }
+    ],
+    "abrabottes-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Ajout du sous-type « Armure » : « Bottes – Abraknyde » devient « Armure – Bottes – Abraknyde ».",
+        "before": "Bottes – Abraknyde",
+        "after": "Armure – Bottes – Abraknyde"
+      }
+    ],
+    "savoir-des-objets-incarnam": [
+      {
+        "date": "16/01/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "BANNISSEMENT (pas d'errata de texte) : à compter du 16 janvier 2010, Savoir des Objets est bannie des tournois officiels et ne peut figurer dans aucune liste de jeu ni de réserve."
+      }
+    ],
+    "amulette-akwadala-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (à lire/jouer ainsi) : Bijou - Amulette - Akwadala, +2PV, Recette Bijoutier (eau)(eau), « (inc), Défaussez une carte : Piochez une carte », Panoplie Akwadala (2) : +1 en Force, +3 PV.",
+        "after": "Bijou - Amulette - Akwadala ; +2PV ; Recette : Bijoutier (eau)(eau) ; (inc), Défaussez une carte : Piochez une carte. Panoplie Akwadala (2) : +1 en Force, +3 PV."
+      }
+    ],
+    "anneau-de-l-invocateur-incarnam": [
+      {
+        "date": "03/04/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Bijou - Anneau, -1PA +1PM, Recette Bijoutier (neutre)(neutre)(neutre).",
+        "after": "Bijou - Anneau ; -1PA +1PM ; Recette : Bijoutier (neutre)(neutre)(neutre)"
+      }
+    ],
+    "anneau-du-prespic-dofus-collection": [
+      {
+        "date": "10/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic lui inflige 1 Dommage (feu) » ; Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1.",
+        "after": "Bijou - Anneau - Prespic ; Recette : Bijoutier (feu)(feu) ; Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic lui inflige 1 Dommage (feu). Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1."
+      }
+    ],
+    "anneau-du-prespic-incarnam": [
+      {
+        "date": "10/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic lui inflige 1 Dommage (feu) » ; Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1.",
+        "after": "Bijou - Anneau - Prespic ; Recette : Bijoutier (feu)(feu) ; Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic lui inflige 1 Dommage (feu). Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1."
+      }
+    ],
+    "araknamu-astrub": [
+      {
+        "date": "04/04/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « (inc) : Jusqu'à la fin du tour, le Porteur de l'Araknamu peut utiliser ses pouvoirs dans le Havre Sac comme s'il était dans le Monde. »",
+        "after": "Bijou - Amulette - Abraknyde ; Recette : Bijoutier (terre)(terre)(terre) ; (inc) : Jusqu'à la fin du tour, le Porteur de l'Araknamu peut utiliser ses pouvoirs dans le Havre Sac comme s'il était dans le Monde. Panoplie Abraknyde (2) : +1 en Force, +3 PV, Résistance 1 (terre)"
+      }
+    ],
+    "arbre-de-vie-bonta-brakmar": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (carte Unique) : met en jeu une Zone (feu) ; le Héros ne peut pas être choisi par une Action/pouvoir adverse ; Réaction (inc), Bannissez l'Arbre de Vie : Réduisez à 0 les Dommages sur le point d'être infligés à votre Héros.",
+        "after": "Action - Sort - Sadida - Unique ; Héros : Sadida ; Mettez l'Arbre de Vie en jeu comme une Zone (feu). Tant que l'Arbre de Vie est en jeu, votre Héros ne peut pas être choisi par une Action ou un pouvoir adverse. Réaction. (inc), Bannissez l'Arbre de Vie : Réduisez à 0 les Dommages sur le point d'être infligés à votre Héros."
+      }
+    ],
+    "attaque-naturelle-astrub": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « inflige 2 Dommages (feu) à l'Allié ou Héros attaquant ou bloqueur de votre choix. Vous pouvez jouer immédiatement une autre Attaque Naturelle de votre main. »",
+        "after": "Action - Sort - Féca ; L'Attaque Naturelle inflige 2 Dommages (feu) à l'Allié ou Héros attaquant ou bloqueur de votre choix. Vous pouvez jouer immédiatement une autre Attaque Naturelle de votre main."
+      }
+    ],
+    "bouclier-feudala-pandala": [
+      {
+        "date": "18/02/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Porteur gagne Résistance 1 (feu) ; Réaction : payer (feu)(feu) pour mettre en jeu le Bouclier sur l'Allié/Héros sur le point de subir des Dommages ; Panoplie Feudala (2) : +1 en Force, Résistance 1 (terre).",
+        "after": "Bouclier - Feudala ; Force +1 ; Recette : Bricoleur (feu)(feu) ; Le Porteur du Bouclier Feudala gagne Résistance 1 (feu). Réaction. Quand un de vos Alliés ou Héros est sur le point de subir un ou plusieurs Dommages, vous pouvez payer (feu)(feu) pour mettre en jeu le Bouclier Feudala sur cet Allié ou Héros. Panoplie Feudala (2) : +1 en Force, Résistance 1 (terre)."
+      }
+    ],
+    "bouftou-royal-dofus-collection": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Unique, Géant) : « Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde. (inc) : Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche. »",
+        "after": "Allié - Monstre - Bouftou - Unique ; Force 4, 2XP ; Géant ; Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde. (inc) : Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche."
+      }
+    ],
+    "bouftou-royal-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Unique, Géant) : « Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde. (inc) : Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche. »",
+        "after": "Allié - Monstre - Bouftou - Unique ; Force 4, 2XP ; Géant ; Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde. (inc) : Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche."
+      }
+    ],
+    "ceinture-du-prespic-dofus-collection": [
+      {
+        "date": "10/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Armure - Ceinture - Prespic, +2PV, Recette Armurier (feu), Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1.",
+        "after": "Armure - Ceinture - Prespic ; +2PV ; Recette : Armurier (feu) ; Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1."
+      }
+    ],
+    "ceinture-du-prespic-incarnam": [
+      {
+        "date": "10/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Armure - Ceinture - Prespic, +2PV, Recette Armurier (feu), Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1.",
+        "after": "Armure - Ceinture - Prespic ; +2PV ; Recette : Armurier (feu) ; Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1."
+      }
+    ],
+    "chacha-noir-dofus-collection": [
+      {
+        "date": "11/01/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Familier - Unique) : Force +2 ; « Au début de votre tour, recyclez une carte (feu) de votre Défausse ou détruisez le Chacha Noir. »",
+        "after": "Familier - Unique ; Force +2 ; Au début de votre tour, recyclez une carte (feu) de votre Défausse ou détruisez le Chacha Noir."
+      }
+    ],
+    "chacha-noir-incarnam": [
+      {
+        "date": "11/01/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Familier - Unique) : Force +2 ; « Au début de votre tour, recyclez une carte (feu) de votre Défausse ou détruisez le Chacha Noir. »",
+        "after": "Familier - Unique ; Force +2 ; Au début de votre tour, recyclez une carte (feu) de votre Défausse ou détruisez le Chacha Noir."
+      }
+    ],
+    "chevaucheur-gobelin-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Allié - Monstre - Gobelin, Force 1 / 1XP, mot-clé Agressivité.",
+        "after": "Allié - Monstre - Gobelin ; Force 1, 1XP ; Agressivité"
+      }
+    ],
+    "coiffe-du-prespic-amakna": [
+      {
+        "date": "10/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Quand la Coiffe du Prespic apparait, vous pouvez l'incliner. Si vous le faites, cherchez un Parchemin dans votre Pioche et prenez-le en main, puis mélangez votre Pioche. »",
+        "after": "Armure - Chapeau - Prespic ; Recette : Armurier (feu)(feu)(feu) ; Quand la Coiffe du Prespic apparait, vous pouvez l'incliner. Si vous le faites, cherchez un Parchemin dans votre Pioche et prenez-le en main, puis mélangez votre Pioche. Panoplie Prespic (3) : Vos gains d'XP sont augmentés de 1."
+      }
+    ],
+    "demena-astrub": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Champion - Unique) : « Réaction. (inc) : Quand un de vos Alliés ou Héros est désigné comme la cible d'une attaque, Demena devient la cible de l'attaque à la place. N'utilisez ce pouvoir que si Demena est dans le Monde. »",
+        "after": "Allié - Sacrieur - Champion - Unique ; Force 4, 2XP ; Réaction. (inc) : Quand un de vos Alliés ou Héros est désigné comme la cible d'une attaque, Demena devient la cible de l'attaque à la place. N'utilisez ce pouvoir que si Demena est dans le Monde."
+      }
+    ],
+    "dofus-pourpre-astrub": [
+      {
+        "date": "25/10/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Dofus - Unique) : condition de jeu (contrôler le Minotoror dans le Monde au début de votre tour) ; à l'apparition gagnez 2 XP ; les Dommages infligés par vos Alliés/Héros sont augmentés de 1.",
+        "after": "Dofus - Unique ; Ne jouez le Dofus Pourpre que si vous contrôliez le Minotoror dans le Monde au début de votre tour. Quand le Dofus Pourpre apparaît, gagnez 2 XP. Les Dommages sur le point d'être infligés par vos Alliés ou Héros sont augmentés de 1."
+      }
+    ],
+    "dofus-pourpre-dofus-collection": [
+      {
+        "date": "25/10/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Dofus - Unique) : condition de jeu (contrôler le Minotoror dans le Monde au début de votre tour) ; à l'apparition gagnez 2 XP ; les Dommages infligés par vos Alliés/Héros sont augmentés de 1.",
+        "after": "Dofus - Unique ; Ne jouez le Dofus Pourpre que si vous contrôliez le Minotoror dans le Monde au début de votre tour. Quand le Dofus Pourpre apparaît, gagnez 2 XP. Les Dommages sur le point d'être infligés par vos Alliés ou Héros sont augmentés de 1."
+      }
+    ],
+    "dragodinde-indigo-et-orchidee-pandala": [
+      {
+        "date": "18/02/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Capture (neutre)(eau) ; Porteur gagne +1 en Force et Tacle ; tant que Capturée, à chaque Action jouée le Porteur gagne Résistance 1 dans l'élément de votre choix jusqu'à la fin du tour.",
+        "after": "Allié - Monstre - Dragodinde - Monture ; Force 3, 1XP ; Capture : (neutre)(eau) ; Le Porteur de la Dragodinde Indigo et Orchidée gagne +1 en Force et Tacle. Tant que la Dragodinde Indigo et Orchidée est Capturée, chaque fois que vous jouez une Action, son Porteur gagne Résistance 1 dans l'élément de votre choix jusqu'à la fin du tour."
+      }
+    ],
+    "dragoune-rose-dofus-collection": [
+      {
+        "date": "25/10/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Familier - Unique) : « Vos gains d'XP sont augmentés de 1. »",
+        "after": "Familier - Unique ; Vos gains d'XP sont augmentés de 1."
+      }
+    ],
+    "dragoune-rose-incarnam": [
+      {
+        "date": "25/10/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Familier - Unique) : « Vos gains d'XP sont augmentés de 1. »",
+        "after": "Familier - Unique ; Vos gains d'XP sont augmentés de 1."
+      }
+    ],
+    "demone-iv-amakna": [
+      {
+        "date": "18/02/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Démon - Unique, Géant, Résistance 2 (eau)) : à l'apparition, déplacer un ou plusieurs Équipements d'un autre joueur vers un autre Porteur contrôlé par ce même joueur ; tous les nouveaux Porteurs doivent être légaux.",
+        "after": "Allié - Démon - Unique ; Force 5, 2XP ; Géant - Résistance 2 (eau) ; Quand la Démone IV apparaît, vous pouvez choisir un ou plusieurs Equipements contrôlés par un autre joueur dans le Monde ou dans son Havre Sac et les déplacer de leur Porteur actuel vers un autre Porteur contrôlé par le même joueur. Tous les nouveaux Porteurs doivent être légaux."
+      }
+    ],
+    "epouvantail-amakna": [
+      {
+        "date": "18/06/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Force 1 / 0XP ; « L'Epouvantail ne peut ni attaquer, ni bloquer. L'Epouvantail ne peut pas être détruit. »",
+        "after": "Allié - Monstre - Epouvantail ; Force 1, 0XP ; L'Epouvantail ne peut ni attaquer, ni bloquer. L'Epouvantail ne peut pas être détruit."
+      }
+    ],
+    "epouvantail-dofus-collection": [
+      {
+        "date": "18/06/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Force 1 / 0XP ; « L'Epouvantail ne peut ni attaquer, ni bloquer. L'Epouvantail ne peut pas être détruit. »",
+        "after": "Allié - Monstre - Epouvantail ; Force 1, 0XP ; L'Epouvantail ne peut ni attaquer, ni bloquer. L'Epouvantail ne peut pas être détruit."
+      }
+    ],
+    "gambit-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Choisissez jusqu'à deux Alliés ou Héros différents... jouez à Chi-Fu-Mi. Si vous gagnez, +2 en Force jusqu'à la fin du tour ; sinon, +1 en Force à la place. »",
+        "after": "Action - Sort - Ecaflip ; Choisissez jusqu'à deux Alliés ou Héros différents de votre choix et jouez à Chi-Fu-Mi. Si vous gagnez, ils gagnent +2 en Force jusqu'à la fin du tour. Sinon, ils gagnent +1 en Force jusqu'à la fin du tour à la place."
+      }
+    ],
+    "gelamu-incarnam": [
+      {
+        "date": "03/04/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Le Porteur de la Gelamu peut attaquer le tour où il apparaît. (neutre)(neutre)(neutre) : Déplacez la Gelamu du Porteur vers un autre Porteur de votre choix. » Panoplie Gelax (3) : à chaque Allié détruit, piochez une carte.",
+        "after": "Bijou - Amulette - Gelax ; Recette : Bijoutier (feu)(feu) ; Le Porteur de la Gelamu peut attaquer le tour où il apparaît. (neutre)(neutre)(neutre) : Déplacez la Gelamu du Porteur vers un autre Porteur de votre choix. Panoplie Gelax (3) : Chaque fois qu'un Allié est détruit, piochez une carte."
+      }
+    ],
+    "gelano-incarnam": [
+      {
+        "date": "03/04/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Bijou - Anneau - Gelax, +1PA, Recette Bijoutier (feu)(feu)(feu), Panoplie Gelax (3) : Chaque fois qu'un Allié est détruit, piochez une carte. (corrige l'élément de recyclage Eau/Neutre de la version Foil).",
+        "after": "Bijou - Anneau - Gelax ; +1PA ; Recette : Bijoutier (feu)(feu)(feu) ; Panoplie Gelax (3) : Chaque fois qu'un Allié est détruit, piochez une carte."
+      }
+    ],
+    "gro-n-land-bonta-brakmar": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « (inc), Recyclez X Alliés de votre Défausse : Mettez en jeu un Equipement ou une Salle de Niveau X gratuitement de votre main. » (mot-clé Forgeron).",
+        "after": "Allié - Souffleur de Verre ; Force 4, 1XP ; Forgeron ; (inc), Recyclez X Alliés de votre Défausse : Mettez en jeu un Equipement ou une Salle de Niveau X gratuitement de votre main."
+      }
+    ],
+    "guy-yomtella-dofus-collection": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : le premier pouvoir inflige « 1 Dommage (air) » (au lieu de « 1 Blessure ») à l'Allié de votre choix ; « (air)(air) : Redressez Guy Yomtella. »",
+        "after": "Allié - Crâ ; Force 1, 1XP ; (inc), (air) : Guy Yomtella inflige 1 Dommage (air) à l'Allié de votre choix. (air)(air) : Redressez Guy Yomtella."
+      }
+    ],
+    "guy-yomtella-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : le premier pouvoir inflige « 1 Dommage (air) » (au lieu de « 1 Blessure ») à l'Allié de votre choix ; « (air)(air) : Redressez Guy Yomtella. »",
+        "after": "Allié - Crâ ; Force 1, 1XP ; (inc), (air) : Guy Yomtella inflige 1 Dommage (air) à l'Allié de votre choix. (air)(air) : Redressez Guy Yomtella."
+      }
+    ],
+    "kamasu-tar-jr-pandala": [
+      {
+        "date": "18/02/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « (inc), Détruisez un de vos équipements : Cherchez un autre Equipement de Niveau strictement inférieur de votre Défausse et mettez-le en jeu. »",
+        "after": "Allié - Monstre - Phorreur ; Force 1, 1XP ; (inc), Détruisez un de vos équipements : Cherchez un autre Equipement de Niveau strictement inférieur de votre Défausse et mettez-le en jeu."
+      }
+    ],
+    "kanigrou-dofus-collection": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Réaction. Quand le Kanigrou est sur le point de recevoir un ou plusieurs Dommages, vous pouvez jouer à Chi-Fu-Mi. Si vous gagnez, réduisez à 0 ces Dommages. Sinon, détruisez le Kanigrou. »",
+        "after": "Allié - Monstre - Kanigrou ; Force 4, 1XP ; Réaction. Quand le Kanigrou est sur le point de recevoir un ou plusieurs Dommages, vous pouvez jouer à Chi-Fu-Mi. Si vous gagnez, réduisez à 0 ces Dommages. Sinon, détruisez le Kanigrou."
+      }
+    ],
+    "kanigrou-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Réaction. Quand le Kanigrou est sur le point de recevoir un ou plusieurs Dommages, vous pouvez jouer à Chi-Fu-Mi. Si vous gagnez, réduisez à 0 ces Dommages. Sinon, détruisez le Kanigrou. »",
+        "after": "Allié - Monstre - Kanigrou ; Force 4, 1XP ; Réaction. Quand le Kanigrou est sur le point de recevoir un ou plusieurs Dommages, vous pouvez jouer à Chi-Fu-Mi. Si vous gagnez, réduisez à 0 ces Dommages. Sinon, détruisez le Kanigrou."
+      }
+    ],
+    "la-broche-celeste-incarnam": [
+      {
+        "date": "03/04/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : Bijou - Amulette, Force -2 / +1PA, Recette Bijoutier (neutre)(neutre)(neutre).",
+        "after": "Bijou - Amulette ; Force -2, +1PA ; Recette : Bijoutier (neutre)(neutre)(neutre)"
+      }
+    ],
+    "odorat-incarnam": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Jouez à Chi-Fu-Mi. Si vous gagnez, votre Héros gagne +2 en Force et +2 PM jusqu'au début de votre prochain tour ; sinon, +1 en Force et +1 PM à la place. »",
+        "after": "Action - Sort - Ecaflip ; Jouez à Chi-Fu-Mi. Si vous gagnez, votre Héros gagne +2 en Force et +2 PM jusqu'au début de votre prochain tour. Sinon, il gagne +1 en Force et +1 PM jusqu'au début de votre prochain tour à la place."
+      }
+    ],
+    "olaf-requiem-bonta-brakmar": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « (inc), Recyclez jusqu'à trois Alliés de votre Défausse : Olaf Requiem inflige le même nombre de Dommages (air) à l'Allié de votre choix. Chaque fois qu'un Allié est banni depuis le Monde, vous pouvez redresser Olaf Requiem. »",
+        "after": "Allié - Vampyre ; Force 4, 1XP ; (inc), Recyclez jusqu'à trois Alliés de votre Défausse : Olaf Requiem inflige le même nombre de Dommages (air) à l'Allié de votre choix. Chaque fois qu'un Allié est banni depuis le Monde, vous pouvez redressez Olaf Requiem."
+      }
+    ],
+    "papris-roi-des-flaqueux-amakna": [
+      {
+        "date": "18/06/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Roi - Unique, Agilité, Résistance 2 (eau)) : « ...chaque fois qu'un de vos Monstres est détruit, vous pouvez le mettre sur le dessus de votre Pioche au lieu de le mettre dans la Défausse. »",
+        "after": "Allié - Monstre - Flaqueux - Roi - Unique ; Force 6, 2XP ; Agilité - Résistance 2 (eau) ; Tant que Papris, Roi des Flaqueux est dans le Monde, chaque fois qu'un de vos Monstres est détruit, vous pouvez le mettre sur le dessus de votre Pioche au lieu de le mettre dans la Défausse."
+      }
+    ],
+    "rat-blanc-bonta-brakmar": [
+      {
+        "date": "02/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Rat - Unique, Agilité, Résistance 1 (air)) : « ...inflige un ou plusieurs Dommages, votre Héros regagne 2 PV. (inc) : Vos Alliés et Héros attaquants gagnent Résistance 1 dans l'élément de votre choix jusqu'à la fin du tour. »",
+        "after": "Allié - Monstre - Rat - Unique ; Force 5, 2XP ; Agilité - Résistance 1 (air) ; Chaque fois que le Rat Blanc inflige un ou plusieurs Dommages, votre Héros regagne 2 PV. (inc) : Vos Alliés et Héros attaquants gagnent Résistance 1 dans l'élément de votre choix jusqu'à la fin du tour."
+      }
+    ],
+    "rat-noir-bonta-brakmar": [
+      {
+        "date": "02/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Rat - Unique, Tacle, Résistance 1 (terre)) : « ...inflige des Dommages à un Héros ou Allié, le Héros de votre choix dans le Monde ou dans son Havre Sac perd 2 PV. (inc) : Vos Alliés et Héros attaquants gagnent Tacle jusqu'à la fin du tour. »",
+        "after": "Allié - Monstre - Rat - Unique ; Force 5, 2XP ; Tacle - Résistance 1 (terre) ; Chaque fois que le Rat Noir inflige un ou plusieurs Dommages à un Héros ou Allié, le Héros de votre choix dans le Monde ou dans son Havre Sac perd 2 PV. (inc) : Vos Alliés et Héros attaquants gagnent Tacle jusqu'à la fin du tour."
+      }
+    ],
+    "shimay-rouch-incarnam": [
+      {
+        "date": "13/10/2009",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Héros Pandawa, Force 3, 7PA/3PM/22PV) : « (inc) : Tant que Shimay Rouch reste incliné, il gagne +2 en Force et les Dommages sur le point de lui être infligés sont réduits de 2. »",
+        "after": "Héros - Pandawa ; Force 3, 7PA 3PM 22PV ; (inc) : Tant que Shimay Rouch reste incliné, il gagne +2 en Force et les Dommages sur le point de lui être infligés sont réduits de 2."
+      }
+    ],
+    "skeunk-amakna": [
+      {
+        "date": "01/06/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Eniripsa - Unique) : à l'apparition, choisir jusqu'à 4 autres Alliés ; tant qu'au moins un est en jeu, Skeunk ne peut être détruit ; « (inc), Bannissez un de ces Alliés : Bannissez l'Allié de votre choix de Niveau inférieur ou égal au Niveau de l'Allié banni. »",
+        "after": "Allié - Eniripsa - Unique ; Force 4, 2XP ; Quand le Skeunk apparaît, choisissez jusqu'à quatre autres de vos Alliés. Tant qu'au moins un de ces Alliés est en jeu, le Skeunk ne peut pas être détruit. (inc), Bannissez un de ces Alliés : Bannissez l'Allié de votre choix de Niveau inférieur ou égal au Niveau de l'Allié banni."
+      }
+    ],
+    "tofu-malefique-amakna": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Réaction. Quand un autre de vos Tofus est détruit, vous pouvez mettre en jeu le Tofu Maléfique depuis votre Défausse. Il apparaît incliné. »",
+        "after": "Allié - Monstre - Tofu - Vampyre ; Force 2, 1XP ; Réaction. Quand un autre de vos Tofus est détruit, vous pouvez mettre en jeu le Tofu Maléfique depuis votre Défausse. Il apparaît incliné."
+      }
+    ],
+    "tofu-malefique-dofus-collection": [
+      {
+        "date": "01/12/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Réaction. Quand un autre de vos Tofus est détruit, vous pouvez mettre en jeu le Tofu Maléfique depuis votre Défausse. Il apparaît incliné. »",
+        "after": "Allié - Monstre - Tofu - Vampyre ; Force 2, 1XP ; Réaction. Quand un autre de vos Tofus est détruit, vous pouvez mettre en jeu le Tofu Maléfique depuis votre Défausse. Il apparaît incliné."
+      }
+    ],
+    "tynril-amakna": [
+      {
+        "date": "18/06/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Tynril - Unique, Force 5/2XP) : « ...subit des Dommages, il perd toutes ses Résistances actuelles, puis gagne Résistance 2 dans l'élément des Dommages qu'il a subis jusqu'à la fin du tour. »",
+        "after": "Allié - Monstre - Tynril - Unique ; Force 5, 2XP ; Chaque fois que le Tynril subit un ou plusieurs Dommages, il perd toutes ses Résistances actuelles, puis gagne Résistance 2 dans l'élément des Dommages qu'il a subis jusqu'à la fin du tour."
+      }
+    ],
+    "village-feudala-pandala": [
+      {
+        "date": "25/02/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel (Zone - Territoire de Conquête) : peut être ciblé par une attaque, détruit s'il subit plus de 5 Dommages à la résolution du combat ; « ...au début du tour de chaque joueur, ce joueur détruit un Allié qu'il contrôle. »",
+        "after": "Zone - Territoire de Conquête ; Le Village Feudala peut être désigné comme la cible d'une attaque. S'il subit plus de 5 Dommages à la résolution du combat, détruisez-le. Tant que le Village Feudala est en jeu, au début du tour de chaque joueur, ce joueur détruit un Allié qu'il contrôle."
+      }
+    ],
+    "vol-sacre-bonta-brakmar": [
+      {
+        "date": "17/11/2010",
+        "source": "Forum officiel Wakfu",
+        "summary": "Texte erraté officiel : « Inclinez X de vos Alliés ou Héros Sram : Cherchez une carte Allié ou Equipement de Niveau inférieur ou égal à X dans la Pioche de l'adversaire de votre choix et mettez-la en jeu gratuitement sous votre contrôle, puis ce joueur mélange sa Pioche. »",
+        "after": "Action - Sort - Sram ; Inclinez X de vos Alliés ou Héros Sram : Cherchez une carte Allié ou Equipement de Niveau inférieur ou égal à X dans la Pioche de l'adversaire de votre choix et mettez-la en jeu gratuitement sous votre contrôle, puis ce joueur mélange sa Pioche."
+      }
+    ],
+    "aeron-zeklox-incarnam": [
+      {
+        "date": "05/10/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Erratum du 5 octobre 2011 : coût en PA au niveau 1 ramené à 6PA au lieu de 7PA.",
+        "before": "7PA au niveau 1",
+        "after": "6PA au niveau 1"
+      }
+    ],
+    "opee-tissoin-incarnam": [
+      {
+        "date": "05/10/2011",
+        "source": "Forum officiel Wakfu",
+        "summary": "Erratum du 5 octobre 2011 : coût en PA au niveau 1 ramené à 6PA au lieu de 7PA.",
+        "before": "7PA au niveau 1",
+        "after": "6PA au niveau 1"
+      }
+    ]
+  }
+}

@@ -13,14 +13,14 @@
 </template>
 
 <script setup lang="ts">
-import { useElements, type Element } from '@/services/elementService'
+import { useElements, type Element } from "@/services/elementService";
 
 const props = defineProps<{
-  element: Element
-  size?: 'sm' | 'md' | 'lg'
-}>()
+  element: Element;
+  size?: "sm" | "md" | "lg";
+}>();
 
-const { getElementIcon, getElementColor } = useElements()
+const { getElementIcon, getElementColor } = useElements();
 </script>
 
 <style scoped>

@@ -62,3 +62,9 @@ analysis/
 
 # Scripts (keep essential scripts)
 # scripts/ 
+# Session artifacts / scraping temp
+.claude/
+cookies.txt
+/errata*.html
+test-results/
+playwright-report/

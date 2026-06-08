@@ -30,30 +30,30 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-import type { Card } from '@/types/cards'
-import { useCardStore } from '@/stores/cardStore'
-import { useToast } from '@/composables/useToast'
-import CardDisplay from '@/components/card/CardDisplay.vue'
+import { defineProps, defineEmits } from "vue";
+import type { Card } from "@/types/cards";
+import { useCardStore } from "@/stores/cardStore";
+import { useToast } from "@/composables/useToast";
+import CardDisplay from "@/components/card/CardDisplay.vue";
 
 const props = defineProps<{
-  filteredCards: Card[]
-}>()
+  filteredCards: Card[];
+}>();
 
 const emit = defineEmits<{
-  (e: 'select-card', card: Card): void
-}>()
+  (e: "select-card", card: Card): void;
+}>();
 
-const cardStore = useCardStore()
-const toast = useToast()
+const cardStore = useCardStore();
+const toast = useToast();
 
 function getCardQuantity(cardId: string): number {
-  const found = cardStore.collection.find(({ card }) => card.id === cardId)
-  return found?.quantity || 0
+  const found = cardStore.collection.find(({ card }) => card.id === cardId);
+  return found?.quantity || 0;
 }
 
 function handleImageError(card: Card) {
-  console.error(`Erreur de chargement de l'image pour ${card.name}`)
-  toast.error(`Impossible de charger l'image de ${card.name}`)
+  console.error(`Erreur de chargement de l'image pour ${card.name}`);
+  toast.error(`Impossible de charger l'image de ${card.name}`);
 }
 </script>

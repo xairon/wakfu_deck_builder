@@ -1,265 +1,226 @@
 <template>
-  <div class="min-h-screen bg-base-100 text-base-content">
-    <!-- Écran de chargement -->
-    <div
-      v-if="isLoading"
-      class="fixed inset-0 flex items-center justify-center bg-base-100 bg-opacity-90 z-50"
+  <div class="min-h-screen text-base-content">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-primary focus:text-primary-content"
     >
-      <div class="text-center">
-        <div class="loading loading-spinner loading-lg"></div>
-        <p class="mt-4">Chargement des cartes...</p>
-        <p v-if="loadingAttempt > 1" class="text-sm text-base-content/60">
-          Tentative {{ loadingAttempt }}/3
+      Aller au contenu principal
+    </a>
+
+    <!-- Backend non configuré -->
+    <div
+      v-if="isBackendMissing"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-base-100 p-4"
+      role="alert"
+    >
+      <div class="max-w-md border border-base-content p-8">
+        <div class="mb-4 h-1 w-16 bg-primary"></div>
+        <p class="eyebrow mb-2 text-error">Configuration requise</p>
+        <h1 class="mb-4 font-display text-3xl">Backend absent</h1>
+        <p class="text-base-content/75">
+          Cette application nécessite un backend Supabase. Définissez
+          <code class="bg-base-300 px-1 font-mono text-sm"
+            >VITE_SUPABASE_URL</code
+          >
+          et
+          <code class="bg-base-300 px-1 font-mono text-sm"
+            >VITE_SUPABASE_ANON_KEY</code
+          >, puis rechargez la page. Voir <strong>DEPLOYMENT.md</strong>.
         </p>
       </div>
     </div>
 
-    <!-- Message d'erreur -->
+    <!-- Chargement -->
+    <div
+      v-if="!isBackendMissing && isLoading"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-base-100"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="text-center">
+        <h1 class="font-display text-4xl">L'Almanach des Douze</h1>
+        <p class="eyebrow mt-3">
+          Chargement<span v-if="loadingAttempt > 1">
+            — Tentative {{ loadingAttempt }}/3</span
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Erreur -->
     <div
       v-if="error"
-      class="fixed inset-0 flex items-center justify-center bg-base-100 bg-opacity-90 z-50"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-base-100 p-4"
+      role="alert"
     >
-      <div
-        class="max-w-md p-6 bg-error text-error-content rounded-box shadow-lg"
-      >
-        <h2 class="text-xl font-bold mb-4">Erreur de chargement</h2>
-        <p class="mb-4">{{ error }}</p>
-        <div class="flex justify-end gap-4">
-          <button class="btn btn-error" @click="resetAndReload">
+      <div class="max-w-md border border-base-content p-8">
+        <div class="mb-4 h-1 w-16 bg-error"></div>
+        <p class="eyebrow mb-2 text-error">Erreur de chargement</p>
+        <p class="mb-6 text-base-content/75">{{ error }}</p>
+        <div class="flex gap-3">
+          <button class="btn btn-ghost btn-sm" @click="resetAndReload">
             Réinitialiser
           </button>
-          <button class="btn btn-error-content" @click="retryLoading">
+          <button class="btn btn-neutral btn-sm" @click="retryLoading">
             Réessayer
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Navigation par onglets -->
-    <div v-show="!isLoading && !error" class="navbar bg-base-200 mb-4">
-      <div class="container mx-auto">
-        <div class="flex-1">
-          <router-link to="/" class="text-xl font-bold">Wakfu TCG</router-link>
-        </div>
-
-        <!-- Menu principal simplifié pour le mode local -->
-        <div class="tabs tabs-boxed bg-base-300">
-          <router-link
-            to="/"
-            class="tab"
-            :class="{ 'tab-active': $route.path === '/' }"
+    <!-- Masthead -->
+    <header
+      v-show="!isLoading && !error && !isBackendMissing"
+      class="sticky top-0 z-40 bg-base-100"
+    >
+      <div class="h-1 w-full bg-base-content"></div>
+      <div
+        class="container mx-auto flex flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3 sm:px-6"
+      >
+        <!-- Cartouche -->
+        <router-link to="/" class="flex flex-col leading-none">
+          <span
+            class="font-mono text-lg font-bold uppercase"
+            style="letter-spacing: 0.22em"
+            >Grimoire</span
           >
-            🏠 Accueil
-          </router-link>
-          <router-link
-            to="/collection"
-            class="tab"
-            :class="{ 'tab-active': $route.path === '/collection' }"
+          <span class="font-display text-[11px] italic text-base-content/55"
+            >L'Almanach des Douze</span
           >
-            📚 Collection
-          </router-link>
+        </router-link>
+
+        <!-- Navigation : liens texte, soulignement cinabre actif -->
+        <nav class="flex items-center gap-6" aria-label="Navigation principale">
           <router-link
-            to="/decks"
-            class="tab"
-            :class="{
-              'tab-active':
-                $route.path === '/decks' || $route.path.includes('/deck'),
-            }"
+            v-for="item in navItems"
+            :key="item.to"
+            :to="item.to"
+            class="border-b-2 pb-0.5 font-display text-[17px] transition-colors"
+            :class="
+              isActive(item)
+                ? 'border-primary text-base-content'
+                : 'border-transparent text-base-content/55 hover:text-base-content'
+            "
+            :aria-current="isActive(item) ? 'page' : undefined"
           >
-            🃏 Decks
+            {{ item.label }}
           </router-link>
-        </div>
+        </nav>
 
-        <!-- Bouton de thème et indicateur de sauvegarde -->
-        <div class="ml-4 flex items-center space-x-2">
-          <!-- Bouton de basculement du thème -->
-          <ThemeToggle />
-          
-          <!-- Indicateur de sauvegarde locale -->
-          <div class="badge badge-success badge-sm">
-            <span v-if="isSyncing" class="loading loading-spinner loading-xs mr-1"></span>
-            <span v-else>💾</span>
-            {{ isSyncing ? 'Sauvegarde...' : 'Mode Local' }}
-          </div>
-        </div>
-      </div>
-    </div>
+        <div class="flex-1"></div>
 
-    <!-- Main Content -->
-    <main v-show="!isLoading && !error" class="container mx-auto px-4 py-8">
-      <router-view v-slot="{ Component }">
-        <transition
-          name="page"
-          mode="out-in"
-          @before-leave="beforeLeave"
-          @enter="enter"
-          @after-enter="afterEnter"
+        <!-- Ledger : état de synchro -->
+        <div
+          class="hidden items-center gap-2 font-mono text-[10px] uppercase text-base-content/55 md:flex"
+          style="letter-spacing: 0.12em"
+          role="status"
+          aria-live="polite"
         >
-          <component :is="Component" />
-        </transition>
-      </router-view>
+          <span class="h-2 w-2" :class="syncSquareClass"></span>
+          {{ syncLabel }}
+        </div>
+
+        <ThemeToggle />
+        <UserMenu />
+      </div>
+      <div class="h-px w-full bg-base-content/80"></div>
+    </header>
+
+    <!-- Contenu -->
+    <main
+      id="main-content"
+      v-if="!isLoading && !error && !isBackendMissing"
+      class="container mx-auto px-4 py-8 sm:px-6 sm:py-10"
+    >
+      <router-view />
     </main>
 
-    <!-- Toast Notifications -->
     <ToastContainer />
+    <PWAInstallPrompt />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
-import ToastContainer from './components/ui/ToastContainer.vue'
-import ThemeToggle from './components/common/ThemeToggle.vue'
-import { useTheme } from './composables/useTheme'
-import { useCardStore } from './stores/cardStore'
-import { useToast } from './composables/useToast'
-// Auth/Supabase supprimés pour mode local
-import { useRouter } from 'vue-router'
+import { onMounted, ref, computed } from "vue";
+import { useRoute } from "vue-router";
+import ToastContainer from "./components/ui/ToastContainer.vue";
+import PWAInstallPrompt from "./components/ui/PWAInstallPrompt.vue";
+import ThemeToggle from "./components/common/ThemeToggle.vue";
+import UserMenu from "./components/auth/UserMenu.vue";
+import { useTheme } from "./composables/useTheme";
+import { useCardStore } from "./stores/cardStore";
+import { useAuthStore } from "./stores/authStore";
+import { useToast } from "./composables/useToast";
+import { isSupabaseConfigured } from "./services/supabase";
 
-const { initTheme } = useTheme()
-const cardStore = useCardStore()
-const toast = useToast()
-const router = useRouter()
+const { initTheme } = useTheme();
+const route = useRoute();
+const cardStore = useCardStore();
+const authStore = useAuthStore();
+const toast = useToast();
 
-const loadingAttempt = ref(1)
-const isLoading = computed(() => cardStore.loading)
-const error = computed(() => cardStore.error)
+const loadingAttempt = ref(1);
+const isLoading = computed(() => cardStore.loading);
+const error = computed(() => cardStore.error);
+const isSyncing = computed(() => cardStore.isSyncing);
+const isBackendMissing = computed(() => !isSupabaseConfigured());
 
-// Mode local: états simplifiés
-const isSyncing = computed(() => cardStore.isSyncing)
-const lastSync = computed(() => cardStore.lastSync)
+const syncLabel = computed(() => {
+  if (isSyncing.value) return "Sauvegarde…";
+  return authStore.isAuthenticated ? "Synchronisé" : "Hors-ligne";
+});
+const syncSquareClass = computed(() => {
+  if (isSyncing.value) return "bg-primary";
+  return authStore.isAuthenticated ? "bg-base-content" : "bg-base-content/30";
+});
 
-// Fonctions simplifiées pour le mode local
-
-// Gestion des transitions fluides
-function beforeLeave(el: Element) {
-  const { left, top } = el.getBoundingClientRect()
-  el.style.position = 'fixed'
-  el.style.left = left + 'px'
-  el.style.top = top + 'px'
-  el.style.width = getComputedStyle(el).width
-  el.style.height = getComputedStyle(el).height
+const navItems = [
+  { to: "/", label: "Accueil", match: ["/"] },
+  { to: "/collection", label: "Collection", match: ["/collection"] },
+  { to: "/decks", label: "Decks", match: ["/decks", "/deck"] },
+  { to: "/play", label: "Partie", match: ["/play"] },
+  { to: "/regles", label: "Règles", match: ["/regles"] },
+];
+function isActive(item: (typeof navItems)[number]): boolean {
+  if (item.to === "/") return route.path === "/";
+  return item.match.some((m) => route.path.startsWith(m));
 }
-
-function enter(el: Element) {
-  el.style.position = ''
-  el.style.left = ''
-  el.style.top = ''
-  el.style.width = ''
-  el.style.height = ''
-}
-
-function afterEnter(el: Element) {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-// Fonctions simplifiées pour le mode local - plus d'auth
 
 async function initializeApp() {
   try {
-    await cardStore.initialize()
-    console.log('Base de données des cartes initialisée avec succès')
-    
-    // Initialiser les decks officiels dans la liste
+    await cardStore.initialize();
     try {
-      const { initializeOfficialDecksList } = await import('@/services/starterService')
-      const result = await initializeOfficialDecksList()
-      if (result.decksAdded > 0) {
-        console.log(`✅ ${result.decksAdded} decks officiels ajoutés à la liste`)
-      }
-    } catch (error) {
-      console.warn('⚠️ Erreur lors de l\'initialisation des decks officiels:', error)
+      const { initializeOfficialDecksList } = await import(
+        "@/services/starterService"
+      );
+      await initializeOfficialDecksList();
+    } catch {
+      /* init officiels — échec silencieux */
     }
-    
-    loadingAttempt.value = 1
-  } catch (error) {
-    console.error(
-      "Erreur lors de l'initialisation de la base de données:",
-      error
-    )
-    loadingAttempt.value++
-
-    if (loadingAttempt.value <= 3) {
-      console.log(`Nouvelle tentative (${loadingAttempt.value}/3)...`)
-      setTimeout(initializeApp, 2000)
-    } else {
-      toast.error('Erreur lors du chargement des cartes')
-    }
+    loadingAttempt.value = 1;
+  } catch (err) {
+    console.error("Erreur d'initialisation:", err);
+    loadingAttempt.value++;
+    if (loadingAttempt.value <= 3) setTimeout(initializeApp, 2000);
+    else toast.error("Erreur lors du chargement des cartes");
   }
 }
 
 function resetAndReload() {
-  cardStore.reset()
-  loadingAttempt.value = 1
-  window.location.reload()
+  cardStore.reset();
+  loadingAttempt.value = 1;
+  window.location.reload();
 }
-
 function retryLoading() {
-  cardStore.reset()
-  loadingAttempt.value = 1
-  initializeApp()
+  cardStore.reset();
+  loadingAttempt.value = 1;
+  initializeApp();
 }
 
 onMounted(async () => {
-  initTheme()
-  await initializeApp()
-  
-  // Message d'accueil en mode local
-  if (cardStore.isInitialized) {
-    toast.success('Application Wakfu TCG prête en mode local!')
-  }
-})
+  initTheme();
+  if (isBackendMissing.value) return;
+  await authStore.initialize();
+  await initializeApp();
+});
 </script>
-
-<style>
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-}
-
-/* Optimisation des performances de transition */
-.page-move {
-  transition: transform 0.2s ease;
-}
-
-/* Éviter le FOUC (Flash of Unstyled Content) */
-.page-leave-active {
-  position: absolute;
-}
-
-/* Animations personnalisées */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* Scrollbar personnalisée */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-base-200;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-primary/50 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary;
-}
-</style>

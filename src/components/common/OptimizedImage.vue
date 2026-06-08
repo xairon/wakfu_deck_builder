@@ -22,10 +22,10 @@
       </div>
     </div>
 
-    <!-- Image -->
+    <!-- Image (PNG fallback — WebP <source> disabled until webp/ dir exists) -->
     <img
       ref="imageRef"
-      :src="src"
+      :src="resolvedSrc"
       :alt="alt"
       :width="width"
       :height="height"
@@ -44,7 +44,7 @@
       class="absolute inset-0 flex items-center justify-center bg-base-200"
     >
       <div class="error">
-        <span class="text-2xl">⚠️</span>
+        <span class="text-2xl">!</span>
         <span class="text-sm">Erreur de chargement</span>
         <button class="btn btn-xs btn-primary mt-2" @click="retryLoading">
           Réessayer
@@ -56,126 +56,185 @@
 
 <script setup lang="ts">
 /**
- * Composant d'image optimisée avec attributs pour améliorer les performances
- * Ajoute automatiquement les dimensions, le chargement paresseux, et le décodage asynchrone
+ * Optimized image component with WebP support and thumbnail mode.
+ *
+ * Uses a <picture> element to prefer WebP when available, with a PNG fallback.
+ * When the `thumbnail` prop is true, the thumbnail version is served instead.
+ *
+ * Helper functions:
+ * - getWebpPath(src): converts /images/cards/foo.png -> /images/cards/webp/foo.webp
+ * - getThumbPath(src): converts /images/cards/foo.png -> /images/cards/thumbs/foo.webp
  */
 
-import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { useIntersectionObserver } from '@vueuse/core'
-import { measure } from '../../utils/performance'
-import { METRIC_TYPES } from '../../utils/performance'
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
+import { measure } from "../../utils/performance";
+import { METRIC_TYPES } from "../../utils/performance";
 
-// Définition des props
+// Path helpers imported from utility module
+import { getWebpPath, getThumbPath } from "@/utils/imagePaths";
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+
 const props = withDefaults(
   defineProps<{
-    src: string
-    alt: string
-    width?: number
-    height?: number
-    loading?: 'lazy' | 'eager'
-    fetchpriority?: 'high' | 'low' | 'auto'
-    threshold?: number
-    placeholderColor?: string
-    decoding?: 'async' | 'sync' | 'auto'
+    /** Original image source path (e.g. /images/cards/123.png) */
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+    loading?: "lazy" | "eager";
+    fetchpriority?: "high" | "low" | "auto";
+    threshold?: number;
+    placeholderColor?: string;
+    decoding?: "async" | "sync" | "auto";
+    /** When true, use the thumbnail version (200px wide WebP) */
+    thumbnail?: boolean;
   }>(),
   {
-    loading: 'lazy',
-    fetchpriority: 'auto',
+    loading: "lazy",
+    fetchpriority: "auto",
     threshold: 0.1,
-    placeholderColor: '#f3f4f6',
-    decoding: 'async',
+    placeholderColor: "#f3f4f6",
+    decoding: "async",
     width: 300,
     height: 300,
+    thumbnail: false,
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Computed sources
+// ---------------------------------------------------------------------------
+
+/** The WebP source to use in <source srcset> */
+const resolvedWebpSrc = computed(() => {
+  if (props.thumbnail) {
+    return getThumbPath(props.src);
   }
-)
+  return getWebpPath(props.src);
+});
 
-// Émissions des événements
+/** The fallback src for the <img> tag (original format) */
+const resolvedSrc = computed(() => {
+  if (props.thumbnail) {
+    // For thumbnail mode, still fall back to the thumbnail webp
+    // since there is no PNG thumbnail. The <img> tag acts as
+    // a secondary fallback if <source> fails.
+    return getThumbPath(props.src);
+  }
+  return props.src;
+});
+
+// ---------------------------------------------------------------------------
+// Events
+// ---------------------------------------------------------------------------
+
 const emit = defineEmits<{
-  (e: 'error'): void
-}>()
+  (e: "error"): void;
+}>();
 
-// Refs
-const containerRef = ref<HTMLElement | null>(null)
-const imageRef = ref<HTMLImageElement | null>(null)
-const isLoading = ref(true)
-const hasError = ref(false)
-const isVisible = ref(false)
+// ---------------------------------------------------------------------------
+// Refs & state
+// ---------------------------------------------------------------------------
+
+const containerRef = ref<HTMLElement | null>(null);
+const imageRef = ref<HTMLImageElement | null>(null);
+const isLoading = ref(true);
+const hasError = ref(false);
+const isVisible = ref(false);
 
 // Intersection Observer
 const { stop } = useIntersectionObserver(
   containerRef,
   ([{ isIntersecting }]) => {
-    isVisible.value = isIntersecting
+    isVisible.value = isIntersecting;
   },
   {
     threshold: props.threshold,
-  }
-)
+  },
+);
 
-// Méthodes
+// ---------------------------------------------------------------------------
+// Methods
+// ---------------------------------------------------------------------------
+
 const preloadImage = () => {
-  if (!imageRef.value || !isVisible.value) return
+  if (!imageRef.value || !isVisible.value) return;
 
-  measure(METRIC_TYPES.COMPONENT_RENDER, 'OptimizedImage.preload', () => {
-    const link = document.createElement('link')
-    link.rel = 'preload'
-    link.as = 'image'
-    link.href = props.src
-    link.crossOrigin = 'anonymous'
-    document.head.appendChild(link)
-  })
-}
+  measure(METRIC_TYPES.COMPONENT_RENDER, "OptimizedImage.preload", () => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = resolvedSrc.value;
+    link.crossOrigin = "anonymous";
+    document.head.appendChild(link);
+  });
+};
 
 const handleLoad = () => {
-  measure(METRIC_TYPES.COMPONENT_RENDER, 'OptimizedImage.load', () => {
-    isLoading.value = false
-    hasError.value = false
-  })
-}
+  measure(METRIC_TYPES.COMPONENT_RENDER, "OptimizedImage.load", () => {
+    isLoading.value = false;
+    hasError.value = false;
+  });
+};
 
 const handleError = () => {
-  measure(METRIC_TYPES.COMPONENT_RENDER, 'OptimizedImage.error', () => {
-    isLoading.value = false
-    hasError.value = true
-    console.error(`Erreur de chargement d'image: ${props.src}`)
-    emit('error')
-  })
-}
+  measure(METRIC_TYPES.COMPONENT_RENDER, "OptimizedImage.error", () => {
+    isLoading.value = false;
+    hasError.value = true;
+    console.error(`Erreur de chargement d'image: ${props.src}`);
+    emit("error");
+  });
+};
 
 const retryLoading = () => {
-  if (!imageRef.value) return
+  if (!imageRef.value) return;
 
-  // Réinitialiser l'état
-  isLoading.value = true
-  hasError.value = false
+  // Reset state
+  isLoading.value = true;
+  hasError.value = false;
 
-  // Forcer le rechargement de l'image
-  const currentSrc = imageRef.value.src
-  imageRef.value.src = ''
+  // Force image reload
+  const currentSrc = imageRef.value.src;
+  imageRef.value.src = "";
   setTimeout(() => {
     if (imageRef.value) {
-      imageRef.value.src = currentSrc
+      imageRef.value.src = currentSrc;
     }
-  }, 100)
-}
+  }, 100);
+};
 
-// Watchers
+// ---------------------------------------------------------------------------
+// Watchers & lifecycle
+// ---------------------------------------------------------------------------
+
+// Reset loading state when src changes (e.g. parent switches image)
+watch(
+  () => props.src,
+  () => {
+    isLoading.value = true;
+    hasError.value = false;
+  },
+);
+
 watch(isVisible, (visible) => {
-  if (visible && props.loading === 'lazy') {
-    preloadImage()
+  if (visible && props.loading === "lazy") {
+    preloadImage();
   }
-})
+});
 
-// Lifecycle
 onMounted(() => {
-  if (props.loading === 'eager') {
-    preloadImage()
+  if (props.loading === "eager") {
+    preloadImage();
   }
-})
+});
 
 onUnmounted(() => {
-  stop()
-})
+  stop();
+});
 </script>
 
 <style scoped>

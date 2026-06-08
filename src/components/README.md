@@ -1,6 +1,7 @@
 # Documentation des composants
 
 ## Table des matières
+
 - [DeckBuilder](#deckbuilder)
 - [DeckDrawSimulator](#deckdrawsimulator)
 - [DeckComparison](#deckcomparison)
@@ -12,14 +13,16 @@
 Composant principal pour la création et l'édition de decks.
 
 ### Props
+
 ```typescript
 interface Props {
   initialDeck?: Deck;
-  mode?: 'create' | 'edit';
+  mode?: "create" | "edit";
 }
 ```
 
 ### Events
+
 ```typescript
 interface Emits {
   save: (deck: Deck) => void;
@@ -28,6 +31,7 @@ interface Emits {
 ```
 
 ### Fonctionnalités
+
 - Gestion des limites de cartes (48 + 12)
 - Interface drag & drop
 - Filtres de recherche
@@ -35,6 +39,7 @@ interface Emits {
 - Suggestions automatiques
 
 ### Exemple d'utilisation
+
 ```vue
 <template>
   <DeckBuilder
@@ -51,6 +56,7 @@ interface Emits {
 Simulateur de tirage de main avec analyse statistique.
 
 ### Props
+
 ```typescript
 interface Props {
   deck: Deck;
@@ -59,6 +65,7 @@ interface Props {
 ```
 
 ### Events
+
 ```typescript
 interface Emits {
   draw: (hand: Card[]) => void;
@@ -67,6 +74,7 @@ interface Emits {
 ```
 
 ### Fonctionnalités
+
 - Tirage de 6 cartes
 - Système de mulligan
 - Calcul des probabilités
@@ -74,6 +82,7 @@ interface Emits {
 - Analyse des mains
 
 ### Métriques calculées
+
 - Distribution des PA
 - Distribution des types
 - Distribution des éléments
@@ -81,6 +90,7 @@ interface Emits {
 - Probabilités de combos
 
 ### Exemple d'utilisation
+
 ```vue
 <template>
   <DeckDrawSimulator
@@ -96,6 +106,7 @@ interface Emits {
 Outil de comparaison avancée entre deux decks.
 
 ### Props
+
 ```typescript
 interface Props {
   deck1: Deck;
@@ -104,6 +115,7 @@ interface Props {
 ```
 
 ### Métriques comparées
+
 - Statistiques de base
   - Total de cartes
   - Cartes uniques
@@ -120,18 +132,17 @@ interface Props {
 - Compatibilité
 
 ### Fonctionnalités
+
 - Analyse comparative détaillée
 - Visualisation des différences
 - Suggestions d'amélioration
 - Export de rapport
 
 ### Exemple d'utilisation
+
 ```vue
 <template>
-  <DeckComparison
-    :deck1="myDeck1"
-    :deck2="myDeck2"
-  />
+  <DeckComparison :deck1="myDeck1" :deck2="myDeck2" />
 </template>
 ```
 
@@ -140,6 +151,7 @@ interface Props {
 Analyse détaillée d'un deck.
 
 ### Props
+
 ```typescript
 interface Props {
   deck: Deck;
@@ -148,6 +160,7 @@ interface Props {
 ```
 
 ### Métriques
+
 - Statistiques générales
   - Nombre total de cartes
   - Cartes uniques
@@ -166,12 +179,10 @@ interface Props {
   - Late game
 
 ### Exemple d'utilisation
+
 ```vue
 <template>
-  <DeckStats
-    :deck="currentDeck"
-    :show-details="true"
-  />
+  <DeckStats :deck="currentDeck" :show-details="true" />
 </template>
 ```
 
@@ -180,6 +191,7 @@ interface Props {
 Composant de rendu d'une carte.
 
 ### Props
+
 ```typescript
 interface Props {
   card: Card;
@@ -191,6 +203,7 @@ interface Props {
 ```
 
 ### Events
+
 ```typescript
 interface Emits {
   click: (card: Card) => void;
@@ -200,6 +213,7 @@ interface Emits {
 ```
 
 ### Fonctionnalités
+
 - Affichage des informations
 - Gestion de la sélection
 - Contrôle de la quantité
@@ -207,6 +221,7 @@ interface Emits {
 - Mode interactif
 
 ### Exemple d'utilisation
+
 ```vue
 <template>
   <CardComponent
@@ -225,25 +240,29 @@ interface Emits {
 ## Bonnes pratiques
 
 ### Performance
+
 - Utilisation de `v-show` plutôt que `v-if` pour les toggles fréquents
 - Computed properties pour les calculs coûteux
 - Debouncing des événements fréquents
 - Lazy loading des composants lourds
 
 ### Réutilisabilité
+
 - Props typées et validées
 - Events typés
 - Slots pour la personnalisation
 - Composants atomiques
 
 ### Maintenance
+
 - Documentation JSDoc
 - Tests unitaires
 - Logging des actions importantes
 - Gestion des erreurs
 
 ### Accessibilité
+
 - ARIA labels
 - Contrôles clavier
 - Messages d'erreur clairs
-- Support des lecteurs d'écran 
+- Support des lecteurs d'écran

@@ -2,55 +2,227 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Animations personnalisées */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Styles globaux */
-body {
-  @apply bg-base-200 min-h-screen;
-}
-
-.card-container {
-  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4;
-}
-
-/* Styles pour les cartes */
-.card-hover {
-  @apply transition-all duration-200 hover:shadow-xl hover:-translate-y-1;
-}
-
-/* Styles pour les boutons d'action */
-.action-button {
-  @apply btn btn-sm btn-circle;
-}
-
-/* Styles pour les badges */
-.badge-quantity {
-  @apply badge badge-lg absolute -top-2 -right-2 z-10;
-}
+/* ============================================================
+   GRIMOIRE — L'Almanach des Douze
+   Papier + encre + cinabre. Pas de verre, pas de halo, pas de
+   dégradé. Structure = filets. Nombres = monospace tabulaire.
+   ============================================================ */
 
 @layer base {
   html {
-    font-family: Inter var, system-ui, sans-serif;
+    font-family: "Hanken Grotesk", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-base-100 text-base-content min-h-screen;
+    font-size: 15.5px;
+    line-height: 1.55;
+  }
+
+  /* Noms & titres : Fraunces, poids léger, jamais en gras noir */
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 440;
+    font-optical-sizing: auto;
+    letter-spacing: -0.005em;
+  }
+
+  /* Tous les nombres en chiffres tabulaires */
+  .tabular,
+  .font-mono,
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: #f04e22;
+    color: #f4efe4;
+  }
+
+  /* Filets de défilement, sobres */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(26, 23, 20, 0.4) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(26, 23, 20, 0.35);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  [data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: rgba(232, 223, 204, 0.3);
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #f04e22;
+    background-clip: padding-box;
+  }
+
+  /* Focus : trait cinabre net, instantané */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid #f04e22;
+    outline-offset: 2px;
+    border-radius: 0;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  .sr-only:focus-visible {
+    position: absolute;
+    width: auto;
+    height: auto;
+    clip: auto;
+    clip-path: none;
+    overflow: visible;
+    white-space: nowrap;
   }
 }
 
 @layer components {
+  /* Libellé / eyebrow : mono capitales espacées */
+  .eyebrow {
+    @apply font-mono text-[11px] font-bold uppercase text-base-content/60;
+    letter-spacing: 0.18em;
+  }
+
+  /* Filets */
+  .rule {
+    @apply border-base-content/15;
+  }
+  .rule-strong {
+    @apply border-base-content;
+  }
+
+  /* Titre de section : « NN — TITRE ———————— » */
+  .section-rule {
+    @apply flex items-center gap-3;
+  }
+  .section-rule::after {
+    content: "";
+    @apply h-px flex-1 bg-base-content/20;
+  }
+
+  /* Conduite de points (table des matières / decklist) */
+  .leader {
+    @apply mx-2 flex-1 self-end border-b border-dotted border-base-content/30;
+  }
+
+  /* Support de carte : l'illustration a déjà SON cadre imprimé — on ne rajoute
+     PAS de sur-cadre. Juste un coin arrondi, une ombre douce et le survol. */
+  .plate-frame {
+    @apply relative;
+    border-radius: 3px;
+    transition:
+      transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.24s ease;
+    box-shadow: 0 1px 5px -2px rgba(20, 18, 14, 0.28);
+  }
+  .plate-frame > img,
+  .plate-frame > .plate-art {
+    @apply block w-full;
+    border-radius: 3px;
+  }
+  /* Au survol : la carte se soulève, grandit et projette une ombre — l'art
+     coloré ressort. (Désactivé en prefers-reduced-motion plus bas.) */
+  .group:hover .plate-frame,
+  .plate-frame:hover {
+    @apply relative z-20;
+    transform: translateY(-6px) scale(1.045);
+    box-shadow:
+      0 18px 34px -12px rgba(20, 18, 14, 0.45),
+      0 5px 12px -6px rgba(20, 18, 14, 0.3);
+  }
+  [data-theme="dark"] .plate-frame {
+    box-shadow: 0 1px 6px -2px rgba(0, 0, 0, 0.6);
+  }
+  [data-theme="dark"] .group:hover .plate-frame,
+  [data-theme="dark"] .plate-frame:hover {
+    box-shadow: 0 18px 36px -12px rgba(0, 0, 0, 0.75);
+  }
+
+  /* Brillance « foil » : un éclat diagonal qui balaie au survol */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 32%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 68%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.75s ease;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .group:hover .sheen::after,
+  .sheen:hover::after {
+    transform: translateX(130%);
+  }
+  .plate-caption {
+    @apply mt-1.5 truncate font-mono text-[11px] text-base-content/60;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Épine élémentaire : barre de 3px en bordure gauche (couleur en inline) */
+  .spine {
+    @apply relative pl-3;
+  }
+  .spine::before {
+    content: "";
+    @apply absolute left-0 top-0 h-full w-[3px];
+    background-color: var(--spine, #6b6356);
+  }
+
+  /* Sceau de validité (la seule courbe permise) */
+  .seal {
+    @apply grid h-12 w-12 place-items-center rounded-full bg-primary font-mono text-xs font-bold uppercase text-primary-content;
+    box-shadow: 0 1px 0 rgba(26, 23, 20, 0.25);
+    letter-spacing: 0.1em;
+  }
+
+  /* Boutons : blocs d'encre, libellés mono */
   .btn {
-    @apply font-semibold;
+    @apply font-mono text-xs font-bold uppercase;
+    letter-spacing: 0.06em;
+    box-shadow: none !important;
+  }
+
+  /* Champs : papier renfoncé, filet d'encre */
+  .input,
+  .select,
+  .textarea {
+    @apply bg-base-200 border-base-content/30;
+  }
+  .input:focus,
+  .select:focus,
+  .textarea:focus {
+    @apply border-base-content;
   }
 }
 
@@ -58,4 +230,40 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-} 
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .animate-fadeIn {
+    animation: inkSettle 0.2s ease both;
+  }
+  /* Contact-sheet de la collection */
+  .contact-sheet {
+    @apply grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8;
+  }
+}
+
+/* Entrée des modales (fiche carte agrandie, saisie rapide, export…) */
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.modal[open] .modal-box {
+  animation: modalPop 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

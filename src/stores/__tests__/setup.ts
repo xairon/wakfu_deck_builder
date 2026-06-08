@@ -1,10 +1,10 @@
-import { beforeEach, afterEach } from 'vitest'
-import { createPinia, setActivePinia } from 'pinia'
+import { beforeEach, afterEach } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
 
 beforeEach(() => {
-  setActivePinia(createPinia())
-})
+  setActivePinia(createPinia());
+});
 
 afterEach(() => {
-  setActivePinia(null)
-})
+  setActivePinia(null);
+});

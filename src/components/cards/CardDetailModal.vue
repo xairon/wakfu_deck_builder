@@ -256,101 +256,101 @@ import {
   defineProps,
   defineEmits,
   watch,
-} from 'vue'
-import type { Card, HeroCard } from '@/types/cards'
-import OptimizedImage from '@/components/common/OptimizedImage.vue'
-import ElementIcon from '@/components/elements/ElementIcon.vue'
-import { useCardStore } from '@/stores/cardStore'
+} from "vue";
+import type { Card, HeroCard } from "@/types/cards";
+import OptimizedImage from "@/components/common/OptimizedImage.vue";
+import ElementIcon from "@/components/elements/ElementIcon.vue";
+import { useCardStore } from "@/stores/cardStore";
 
 const props = defineProps<{
-  card: Card | null
-  quantity: number
-}>()
+  card: Card | null;
+  quantity: number;
+}>();
 
 const emit = defineEmits<{
-  (e: 'add', card: Card): void
-  (e: 'remove', card: Card): void
-  (e: 'close'): void
-}>()
+  (e: "add", card: Card): void;
+  (e: "remove", card: Card): void;
+  (e: "close"): void;
+}>();
 
-const cardModal = ref<HTMLDialogElement | null>(null)
-const showVerso = ref(false)
-const cardStore = useCardStore()
+const cardModal = ref<HTMLDialogElement | null>(null);
+const showVerso = ref(false);
+const cardStore = useCardStore();
 
-const isHero = computed(() => props.card?.mainType === 'Héros')
+const isHero = computed(() => props.card?.mainType === "Héros");
 
 const cardImagePath = computed(() => {
-  if (!props.card) return ''
+  if (!props.card) return "";
   if (isHero.value) {
     return showVerso.value
       ? `${props.card.id}_verso.png`
-      : `${props.card.id}_recto.png`
+      : `${props.card.id}_recto.png`;
   }
-  return `${props.card.id}.png`
-})
+  return `${props.card.id}.png`;
+});
 
 const displayedStats = computed(() => {
-  if (!props.card) return null
+  if (!props.card) return null;
   if (isHero.value) {
-    const heroCard = props.card as HeroCard
-    return showVerso.value ? heroCard.verso?.stats : heroCard.recto.stats
+    const heroCard = props.card as HeroCard;
+    return showVerso.value ? heroCard.verso?.stats : heroCard.recto.stats;
   }
-  return props.card.stats
-})
+  return props.card.stats;
+});
 
 const displayedEffects = computed(() => {
-  if (!props.card) return []
+  if (!props.card) return [];
   if (isHero.value) {
-    const heroCard = props.card as HeroCard
-    return showVerso.value ? heroCard.verso?.effects : heroCard.recto.effects
+    const heroCard = props.card as HeroCard;
+    return showVerso.value ? heroCard.verso?.effects : heroCard.recto.effects;
   }
-  return props.card.effects
-})
+  return props.card.effects;
+});
 
 const displayedKeywords = computed(() => {
-  if (!props.card) return []
+  if (!props.card) return [];
   if (isHero.value) {
-    const heroCard = props.card as HeroCard
-    return showVerso.value ? heroCard.verso?.keywords : heroCard.recto.keywords
+    const heroCard = props.card as HeroCard;
+    return showVerso.value ? heroCard.verso?.keywords : heroCard.recto.keywords;
   }
-  return props.card.keywords
-})
+  return props.card.keywords;
+});
 
 function getElementClass(element: string): string {
   switch (element.toLowerCase()) {
-    case 'feu':
-      return 'text-error'
-    case 'eau':
-      return 'text-primary'
-    case 'air':
-      return 'text-info'
-    case 'terre':
-      return 'text-success'
+    case "feu":
+      return "text-error";
+    case "eau":
+      return "text-primary";
+    case "air":
+      return "text-info";
+    case "terre":
+      return "text-success";
     default:
-      return 'text-base-content'
+      return "text-base-content";
   }
 }
 
 function open() {
-  cardModal.value?.showModal()
+  cardModal.value?.showModal();
 }
 
 function close() {
-  cardModal.value?.close()
-  showVerso.value = false
+  cardModal.value?.close();
+  showVerso.value = false;
 }
 
 // Reset verso state when card changes
 watch(
   () => props.card,
   () => {
-    showVerso.value = false
-  }
-)
+    showVerso.value = false;
+  },
+);
 
 // Expose methods to parent component
 defineExpose({
   open,
   close,
-})
+});
 </script>

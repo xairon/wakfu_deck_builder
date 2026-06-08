@@ -1,0 +1,593 @@
+<template>
+  <div class="official-decks-view space-y-12 sm:space-y-16">
+    <!-- ── EN-TÊTE ── -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="eyebrow text-primary">Decks starter</p>
+        <h1 class="mt-3 font-display text-4xl sm:text-5xl">Decks officiels</h1>
+        <p class="mt-3 max-w-md text-base-content/70">
+          Parcourez et importez les decks starter de Wakfu TCG.
+        </p>
+      </div>
+      <router-link to="/decks" class="btn btn-ghost gap-2 shrink-0">
+        <svg
+          viewBox="0 0 24 24"
+          class="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 18l-6-6 6-6"
+          />
+        </svg>
+        Mes decks
+      </router-link>
+    </div>
+
+    <!-- ── CHARGEMENT ── -->
+    <div v-if="isLoading" class="border-y border-base-content/15 py-16">
+      <p class="eyebrow text-center">Chargement des decks officiels…</p>
+    </div>
+
+    <!-- ── CONTENU PRINCIPAL ── -->
+    <div v-else class="space-y-12 sm:space-y-16">
+      <!-- Registre (tableau de bord) -->
+      <section class="border-y border-base-content/80 py-5">
+        <div class="grid grid-cols-3 gap-6">
+          <div>
+            <p class="eyebrow">Decks disponibles</p>
+            <p class="mt-1 font-mono text-3xl tabular">
+              {{ officialDecks.length }}
+            </p>
+          </div>
+          <div>
+            <p class="eyebrow">Extensions</p>
+            <p class="mt-1 font-mono text-3xl tabular">
+              {{ extensionGroups.length }}
+            </p>
+          </div>
+          <div>
+            <p class="eyebrow">Déjà importés</p>
+            <p class="mt-1 font-mono text-3xl tabular">{{ importedCount }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Groupes par extension -->
+      <section
+        v-for="group in extensionGroups"
+        :key="group.extension"
+        class="space-y-5"
+      >
+        <p class="section-rule eyebrow">
+          {{ formatExtensionName(group.extension) }} ·
+          {{ group.decks.length }} deck{{ group.decks.length > 1 ? "s" : "" }}
+        </p>
+
+        <!-- Grille de decks pour cette extension -->
+        <div class="grid grid-cols-1 gap-px bg-base-content/15 lg:grid-cols-2">
+          <article
+            v-for="deck in group.decks"
+            :key="deck.id"
+            class="bg-base-100 p-5"
+          >
+            <div class="flex gap-4">
+              <!-- Planche illustration du héros -->
+              <div class="w-24 shrink-0 sm:w-28">
+                <div
+                  class="plate-frame"
+                  :style="{ '--spine': getHeroColor(deck.hero) }"
+                >
+                  <img
+                    :src="getHeroImage(deck.hero)"
+                    :alt="deck.hero"
+                    class="aspect-[7/10] object-cover object-[50%_18%]"
+                    loading="lazy"
+                    @error="onImgError"
+                  />
+                </div>
+                <p class="plate-caption text-center">{{ deck.hero }}</p>
+              </div>
+
+              <!-- Bloc texte -->
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-3">
+                  <h3 class="font-display text-xl leading-tight">
+                    {{ deck.name }}
+                  </h3>
+                  <span
+                    v-if="isDeckImported(deck.id)"
+                    class="shrink-0 font-mono text-[10px] font-bold uppercase tracking-wider text-base-content/55"
+                  >
+                    Importé
+                  </span>
+                </div>
+
+                <p class="mt-1.5 text-sm text-base-content/70">
+                  {{ deck.description }}
+                </p>
+
+                <!-- Infos du deck -->
+                <dl class="mt-4 space-y-2 border-t border-base-content/15 pt-3">
+                  <div class="flex items-center gap-2 text-sm">
+                    <span
+                      class="inline-block h-2 w-2 shrink-0"
+                      :style="{ backgroundColor: getHeroColor(deck.hero) }"
+                    ></span>
+                    <dt class="font-medium text-base-content">Héros</dt>
+                    <dd class="text-base-content/75">{{ deck.hero }}</dd>
+                  </div>
+                  <div class="flex items-center gap-2 text-sm">
+                    <span
+                      class="inline-block h-2 w-2 shrink-0 bg-base-content/50"
+                    ></span>
+                    <dt class="font-medium text-base-content">Havre-Sac</dt>
+                    <dd class="text-base-content/75">{{ deck.havreSac }}</dd>
+                  </div>
+                  <div class="flex items-center gap-2 text-sm">
+                    <span
+                      class="inline-block h-2 w-2 shrink-0 bg-primary"
+                    ></span>
+                    <dt class="font-medium text-base-content">Cartes</dt>
+                    <dd class="font-mono tabular text-base-content/75">
+                      {{ getCardCount(deck) }}
+                    </dd>
+                  </div>
+                </dl>
+
+                <!-- Bande statistiques par type -->
+                <div
+                  class="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] uppercase tracking-wider text-base-content/60"
+                >
+                  <span
+                    v-for="(count, type) in getCardTypeBreakdown(deck)"
+                    :key="type"
+                  >
+                    {{ type }}
+                    <span class="tabular text-base-content">{{ count }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div
+              class="mt-4 flex flex-wrap gap-2 border-t border-base-content/15 pt-4"
+            >
+              <button
+                v-if="!isDeckImported(deck.id)"
+                class="btn btn-primary btn-sm gap-2"
+                :disabled="importingDeckIds.has(deck.id)"
+                @click="importOfficialDeck(deck)"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"
+                  />
+                </svg>
+                {{
+                  importingDeckIds.has(deck.id)
+                    ? "Import en cours…"
+                    : "Importer"
+                }}
+              </button>
+              <button
+                v-else
+                class="btn btn-outline btn-sm gap-2"
+                :disabled="importingDeckIds.has(deck.id)"
+                @click="importOfficialDeck(deck)"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M20 4v4h-4M4 20v-4h4"
+                  />
+                </svg>
+                {{
+                  importingDeckIds.has(deck.id)
+                    ? "Import en cours…"
+                    : "Réimporter"
+                }}
+              </button>
+
+              <button
+                class="btn btn-ghost btn-sm gap-2"
+                @click="toggleDeckDetails(deck.id)"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    :d="
+                      expandedDeckId === deck.id
+                        ? 'M18 15l-6-6-6 6'
+                        : 'M6 9l6 6 6-6'
+                    "
+                  />
+                </svg>
+                Détails
+              </button>
+            </div>
+
+            <!-- Détails expandables -->
+            <div
+              v-if="expandedDeckId === deck.id"
+              class="mt-4 border-t border-base-content/15 pt-4"
+            >
+              <p class="eyebrow mb-2">Liste des cartes</p>
+              <ul class="max-h-64 space-y-1 overflow-y-auto">
+                <li
+                  v-for="card in deck.cards"
+                  :key="card.name"
+                  class="flex items-baseline text-sm"
+                >
+                  <span class="text-base-content/80">{{ card.name }}</span>
+                  <span class="leader"></span>
+                  <span class="font-mono tabular text-base-content/70"
+                    >×{{ card.quantity }}</span
+                  >
+                </li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Message si aucun deck -->
+      <div
+        v-if="officialDecks.length === 0"
+        class="border border-base-content/15 p-12 text-center"
+      >
+        <h2 class="font-display text-2xl">Aucun deck officiel disponible</h2>
+        <p class="mt-2 text-base-content/70">
+          Les decks officiels n'ont pas pu être chargés.
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { OFFICIAL_DECKS, type OfficialDeck } from "@/data/officialDecks";
+import { useDeckStore } from "@/stores/deckStore";
+import { useCardStore } from "@/stores/cardStore";
+import { useToast } from "@/composables/useToast";
+import type { Card } from "@/types/cards";
+
+// Stores et services
+const deckStore = useDeckStore();
+const cardStore = useCardStore();
+const toast = useToast();
+
+// Etat local
+const isLoading = ref(true);
+const importingDeckIds = ref(new Set<string>());
+const expandedDeckId = ref<string | null>(null);
+const importedDeckOfficialIds = ref(new Set<string>());
+
+// Donnees
+const officialDecks = computed(() => OFFICIAL_DECKS);
+
+// Couleurs des éléments (encres du jeu)
+const ELEMENT_COLORS: Record<string, string> = {
+  air: "#5FB22A",
+  eau: "#1F9CEC",
+  feu: "#F04E22",
+  terre: "#F0A62B",
+  neutre: "#98A1AF",
+};
+
+// Groupes par extension
+interface ExtensionGroup {
+  extension: string;
+  decks: OfficialDeck[];
+}
+
+const extensionGroups = computed<ExtensionGroup[]>(() => {
+  const groups: Record<string, OfficialDeck[]> = {};
+
+  officialDecks.value.forEach((deck) => {
+    if (!groups[deck.extension]) {
+      groups[deck.extension] = [];
+    }
+    groups[deck.extension].push(deck);
+  });
+
+  // Ordre des extensions
+  const extensionOrder = ["incarnam", "bonta-brakmar"];
+
+  return Object.entries(groups)
+    .sort(([a], [b]) => {
+      const indexA = extensionOrder.indexOf(a);
+      const indexB = extensionOrder.indexOf(b);
+      if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    })
+    .map(([extension, decks]) => ({
+      extension,
+      decks,
+    }));
+});
+
+// Nombre de decks importes
+const importedCount = computed(() => {
+  return officialDecks.value.filter((deck) => isDeckImported(deck.id)).length;
+});
+
+// Initialisation
+onMounted(async () => {
+  try {
+    // S'assurer que les stores sont initialises
+    if (!cardStore.isInitialized) {
+      await cardStore.initialize();
+    }
+    deckStore.initialize();
+
+    // Determiner quels decks sont deja importes
+    refreshImportedStatus();
+  } catch (err) {
+    console.error("Erreur lors du chargement:", err);
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+/**
+ * Résout la carte héros d'un deck officiel par son nom.
+ */
+function findHeroCard(heroName: string): Card | undefined {
+  return cardStore.cards.find(
+    (c) =>
+      c.name === heroName || (c.mainType === "Héros" && c.name === heroName),
+  );
+}
+
+/**
+ * Résout l'URL d'illustration recto du héros d'un deck.
+ */
+function getHeroImage(heroName: string): string {
+  const card = findHeroCard(heroName);
+  if (!card) return "/images/card-back.png";
+  if (card.imageUrl) return card.imageUrl;
+  return `/images/cards/${card.id}_recto.png`;
+}
+
+/**
+ * Résout la couleur élémentaire du héros (épine de planche).
+ */
+function getHeroColor(heroName: string): string {
+  const card = findHeroCard(heroName);
+  const stats =
+    card && card.mainType === "Héros" ? card.recto?.stats : card?.stats;
+  const el = (stats?.niveau?.element || stats?.force?.element || "neutre")
+    .toString()
+    .toLowerCase();
+  return ELEMENT_COLORS[el] || ELEMENT_COLORS.neutre;
+}
+
+/**
+ * Fallback d'image (dos de carte).
+ */
+function onImgError(e: Event) {
+  (e.target as HTMLImageElement).src = "/images/card-back.png";
+}
+
+/**
+ * Rafraichit le statut d'import de tous les decks
+ */
+function refreshImportedStatus() {
+  const imported = new Set<string>();
+  officialDecks.value.forEach((officialDeck) => {
+    // Verifier si un deck avec ce nom existe deja dans les decks de l'utilisateur
+    const exists = deckStore.decks.some(
+      (d) =>
+        d.name === officialDeck.name ||
+        (d.isOfficial && d.id?.includes(officialDeck.id)),
+    );
+    if (exists) {
+      imported.add(officialDeck.id);
+    }
+  });
+  importedDeckOfficialIds.value = imported;
+}
+
+/**
+ * Verifie si un deck officiel est deja importe
+ */
+function isDeckImported(officialDeckId: string): boolean {
+  return importedDeckOfficialIds.value.has(officialDeckId);
+}
+
+/**
+ * Formate le nom d'une extension pour l'affichage
+ */
+function formatExtensionName(extension: string): string {
+  const names: Record<string, string> = {
+    incarnam: "Incarnam",
+    "bonta-brakmar": "Bonta & Brakmar",
+    "bonta-brakmar-2": "Bonta & Brakmar 2",
+    otomai: "Otomai",
+    "otomai-2": "Otomai 2",
+  };
+  return (
+    names[extension] || extension.charAt(0).toUpperCase() + extension.slice(1)
+  );
+}
+
+/**
+ * Calcule le nombre total de cartes dans un deck officiel
+ */
+function getCardCount(deck: OfficialDeck): number {
+  return deck.cards.reduce((acc, card) => acc + card.quantity, 0);
+}
+
+/**
+ * Calcule la repartition par type de carte
+ */
+function getCardTypeBreakdown(deck: OfficialDeck): Record<string, number> {
+  const breakdown: Record<string, number> = {};
+
+  deck.cards.forEach((card) => {
+    // Tenter de deviner le type de carte a partir du nom
+    const foundCard = deckStore.findCardByName(card.name);
+    const type = foundCard?.mainType || "Carte";
+    breakdown[type] = (breakdown[type] || 0) + card.quantity;
+  });
+
+  return breakdown;
+}
+
+/**
+ * Affiche/masque les details d'un deck
+ */
+function toggleDeckDetails(deckId: string) {
+  if (expandedDeckId.value === deckId) {
+    expandedDeckId.value = null;
+  } else {
+    expandedDeckId.value = deckId;
+  }
+}
+
+/**
+ * Importe un deck officiel dans les decks de l'utilisateur
+ */
+async function importOfficialDeck(officialDeck: OfficialDeck) {
+  if (importingDeckIds.value.has(officialDeck.id)) return;
+  importingDeckIds.value.add(officialDeck.id);
+
+  try {
+    toast.info(`Import du deck "${officialDeck.name}" en cours...`, {
+      duration: 2000,
+    });
+
+    // Trouver le heros par son nom
+    const heroCard = deckStore.findCardByName(officialDeck.hero);
+    const havreSacCard = deckStore.findCardByName(officialDeck.havreSac);
+
+    // Construire la liste des cartes du deck
+    const deckCards: { card: any; quantity: number }[] = [];
+    const errors: string[] = [];
+    let cardsFound = 0;
+
+    for (const cardEntry of officialDeck.cards) {
+      const card = deckStore.findCardByName(cardEntry.name);
+      if (card) {
+        deckCards.push({
+          card: card,
+          quantity: cardEntry.quantity,
+        });
+        cardsFound++;
+      } else {
+        errors.push(cardEntry.name);
+      }
+    }
+
+    // Creer le deck
+    const newDeckId = `official-${officialDeck.id}-${Date.now()}`;
+
+    const newDeck = {
+      id: newDeckId,
+      name: officialDeck.name,
+      description: officialDeck.description,
+      hero: heroCard || null,
+      havreSac: havreSacCard || null,
+      cards: deckCards,
+      reserve: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isOfficial: true,
+      extension: officialDeck.extension,
+      _officialData: {
+        name: officialDeck.name,
+        hero: officialDeck.hero,
+        havreSac: officialDeck.havreSac,
+        cards: officialDeck.cards.map((c) => ({
+          name: c.name,
+          quantity: c.quantity,
+          type: c.type,
+        })),
+      },
+    };
+
+    // Ajouter le deck au store
+    deckStore.decks.push(newDeck as any);
+    deckStore.saveDecks();
+
+    // Mettre a jour le statut d'import
+    importedDeckOfficialIds.value.add(officialDeck.id);
+
+    // Afficher le resultat
+    if (errors.length === 0) {
+      toast.success(
+        `Deck "${officialDeck.name}" importe avec succes ! ${cardsFound} cartes trouvees.`,
+        { title: "Import reussi", duration: 5000 },
+      );
+    } else {
+      toast.warning(
+        `Deck "${officialDeck.name}" importe avec ${errors.length} carte(s) manquante(s) : ${errors.slice(0, 5).join(", ")}${errors.length > 5 ? "..." : ""}`,
+        { title: "Import partiel", duration: 7000 },
+      );
+    }
+
+    if (!heroCard) {
+      toast.warning(
+        `Heros "${officialDeck.hero}" non trouve dans la base de cartes.`,
+        {
+          duration: 5000,
+        },
+      );
+    }
+    if (!havreSacCard) {
+      toast.warning(
+        `Havre-Sac "${officialDeck.havreSac}" non trouve dans la base de cartes.`,
+        {
+          duration: 5000,
+        },
+      );
+    }
+  } catch (err) {
+    console.error("Erreur lors de l'import:", err);
+    toast.error(
+      `Erreur lors de l'import du deck "${officialDeck.name}" : ${err}`,
+      {
+        title: "Erreur d'import",
+        duration: 7000,
+      },
+    );
+  } finally {
+    importingDeckIds.value.delete(officialDeck.id);
+  }
+}
+</script>

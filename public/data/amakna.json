@@ -3,10 +3,7 @@
     "id": "abraknyde-sombre-amakna",
     "name": "Abraknyde Sombre",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Abraknyde"
-    ],
+    "subTypes": ["Monstre", "Abraknyde"],
     "extension": {
       "name": "Amakna",
       "number": "19/162",
@@ -25,10 +22,8 @@
     },
     "effects": [
       {
-        "description": "L'Abraknyde Sombre inflige 2 Dommages  à l'Allié ou Héros de votre choix dans le Monde ou dans son Havre Sac.",
-        "elements": [
-          "terre"
-        ],
+        "description": "L'Abraknyde Sombre inflige 2 Dommages à l'Allié ou Héros de votre choix dans le Monde ou dans son Havre Sac.",
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -37,15 +32,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Le tronc flétri, les branches dégarnies, l'Abraknyde Sombre a des raisons de se ronger le bout des feuilles…"
@@ -57,10 +48,7 @@
     "id": "absorption-amakna",
     "name": "Absorption",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sacrieur"
-    ],
+    "subTypes": ["Sort", "Sacrieur"],
     "extension": {
       "name": "Amakna",
       "number": "115/162",
@@ -75,18 +63,14 @@
     },
     "effects": [
       {
-        "description": "L'Absorption inflige 2 Dommages  à l'Allié ou Héros de votre choix. Votre Héros regagne un nombre de PV égal au nombre de Dommages infligés de cette façon.",
-        "elements": [
-          "neutre"
-        ],
+        "description": "L'Absorption inflige 2 Dommages à l'Allié ou Héros de votre choix. Votre Héros regagne un nombre de PV égal au nombre de Dommages infligés de cette façon.",
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Crowley"
-    ],
+    "artists": ["Crowley"],
     "notes": [],
     "flavor": {
       "text": "Il absorbe et protège deux fois plus qu'un sort ordinaire. Vos ennemis n'ont plus qu'à prendre la fuite."
@@ -97,10 +81,7 @@
     "id": "acceleration-amakna",
     "name": "Accélération",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Enutrof"
-    ],
+    "subTypes": ["Sort", "Enutrof"],
     "extension": {
       "name": "Amakna",
       "number": "105/162",
@@ -121,9 +102,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Nénent"
-    ],
+    "artists": ["Nénent"],
     "notes": [],
     "flavor": {
       "text": "Je vais vite, je m'entraaaîîîînne, à n'pas perdre une secoooooonnnde ! — Glaurie, ménestrelle dynamique."
@@ -134,10 +113,7 @@
     "id": "aiguille-chercheuse-amakna",
     "name": "Aiguille Chercheuse",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Xélor"
-    ],
+    "subTypes": ["Sort", "Xélor"],
     "extension": {
       "name": "Amakna",
       "number": "121/162",
@@ -157,25 +133,19 @@
     "effects": [
       {
         "description": "Mettez l'Aiguille Chercheuse en jeu comme un « Monstre — Aiguille Chercheuse » de Force 1 .",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
-        "description": "L'Aiguille Chercheuse inflige 1 Dommage  au Héros du joueur de votre choix qui vient de perdre un ou plusieurs PA.",
-        "elements": [
-          "feu"
-        ],
+        "description": "L'Aiguille Chercheuse inflige 1 Dommage au Héros du joueur de votre choix qui vient de perdre un ou plusieurs PA.",
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Gray Shuko"
-    ],
+    "artists": ["Gray Shuko"],
     "notes": [],
     "flavor": {
       "text": "Aiguille Chercheuse est le sort favori des provocateurs, de ceux qui aiment piquer là où ça fait mal…"
@@ -186,9 +156,7 @@
     "id": "alibert-amakna",
     "name": "Alibert",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof"
-    ],
+    "subTypes": ["Enutrof"],
     "extension": {
       "name": "Amakna",
       "number": "74/162",
@@ -214,9 +182,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "La Blanquette spéciale Alibert, elle est bonne à se taper le biiiip par terre ! — Yugo."
@@ -227,10 +193,7 @@
     "id": "alliance-de-silimelle-amakna",
     "name": "Alliance de Silimelle",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau"
-    ],
+    "subTypes": ["Bijou", "Anneau"],
     "extension": {
       "name": "Amakna",
       "number": "155/162",
@@ -254,15 +217,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 3",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["François Houssin (Franho)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Voici six belles Silimelles. S'y mêlent six similis semelles. Sont",
@@ -278,10 +236,7 @@
     "id": "allister-roi-d-amakna-amakna",
     "name": "Allister, Roi d'Amakna",
     "mainType": "Allié",
-    "subTypes": [
-      "Roi",
-      "Unique"
-    ],
+    "subTypes": ["Roi", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "40/162",
@@ -312,9 +267,7 @@
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Farhad Chams"
-    ],
+    "artists": ["Farhad Chams"],
     "notes": [],
     "flavor": {
       "text": "Le bon Roi Allister a mis sa panop' à l'envers ! — Chanson populaire."
@@ -326,9 +279,7 @@
     "id": "amakna-le-village-amakna",
     "name": "Amakna, le Village",
     "mainType": "Zone",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Amakna",
       "number": "133/162",
@@ -344,17 +295,13 @@
     "effects": [
       {
         "description": "Le coût de chaque Action, Sort ou pouvoir joué par un adversaire pendant un combat où vous êtes défenseur est augmenté de .",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Moiii j'aime scier ! Tutululututuluuu… Moi j'aime scier",
@@ -365,11 +312,7 @@
     "id": "amukwak-de-glace-amakna",
     "name": "Amukwak de Glace",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Amulette",
-      "Kwak de Glace"
-    ],
+    "subTypes": ["Bijou", "Amulette", "Kwak de Glace"],
     "extension": {
       "name": "Amakna",
       "number": "153/162",
@@ -393,22 +336,15 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Étrangement, lorsque c'est Katsou Mee qui la porte, cette amulette ne laisse personne de glace…"
@@ -423,10 +359,7 @@
     "id": "anneau-fioutioure-amakna",
     "name": "Anneau Fioutioure",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau"
-    ],
+    "subTypes": ["Bijou", "Anneau"],
     "extension": {
       "name": "Amakna",
       "number": "156/162",
@@ -455,14 +388,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Vous pouvez choisir de recycler les trois cartes. Dans ce cas, vous ne remettez pas de carte au dessus de votre Pioche."
     ],
@@ -495,7 +424,7 @@
     },
     "effects": [
       {
-        "description": "Tous les Alliés Piou gagnent +2 en Force et  jusqu'à la fin du tour.",
+        "description": "Tous les Alliés Piou gagnent +2 en Force et jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -506,9 +435,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [],
     "flavor": {
       "text": "J'adore l'odeur du guano au petit matin… L'odeur de la victoire. — Ekraz Lenoub."
@@ -544,10 +471,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Nicolas Mitric",
-      "Sébastien Lamirand"
-    ],
+    "artists": ["Nicolas Mitric", "Sébastien Lamirand"],
     "notes": [
       "Cette carte possède un numéro incorrect, elle est imprimée #88 mais est en réalité la carte #86 de l'extension."
     ],
@@ -560,10 +484,7 @@
     "id": "arbre-amakna",
     "name": "Arbre",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sadida"
-    ],
+    "subTypes": ["Sort", "Sadida"],
     "extension": {
       "name": "Amakna",
       "number": "118/162",
@@ -582,10 +503,8 @@
     },
     "effects": [
       {
-        "description": "Mettez l'Arbre en jeu dans le Monde comme un « Monstre — Arbre » de Force 3  qui ne peut ni attaquer, ni bloquer.",
-        "elements": [
-          "terre"
-        ],
+        "description": "Mettez l'Arbre en jeu dans le Monde comme un « Monstre — Arbre » de Force 3 qui ne peut ni attaquer, ni bloquer.",
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -596,9 +515,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
     "flavor": {
       "text": "Me couper l'arbre sous l'pied ?! Faut pas pousser ! — Berkzoy, Sadida qui n'aime pas qu'on lui casse les graines."
@@ -609,10 +526,7 @@
     "id": "arc-du-roi-des-borins-amakna",
     "name": "Arc du Roi des Borins",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Arc"
-    ],
+    "subTypes": ["Arme", "Arc"],
     "extension": {
       "name": "Amakna",
       "number": "149/162",
@@ -627,10 +541,8 @@
     },
     "effects": [
       {
-        "description": "L'Arc du Roi des Borins inflige 1 Dommages  à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "terre"
-        ],
+        "description": "L'Arc du Roi des Borins inflige 1 Dommages à l'Allié ou Héros de votre choix.",
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -644,15 +556,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Le Roi des Borins est le seul archer équipé pour tirer deux coups en même temps. Avouez que ça vous en bouche un coin !"
@@ -667,9 +574,7 @@
     "id": "atelier-de-forgemagie-amakna",
     "name": "Atelier de Forgemagie",
     "mainType": "Salle",
-    "subTypes": [
-      "Atelier"
-    ],
+    "subTypes": ["Atelier"],
     "extension": {
       "name": "Amakna",
       "number": "134/162",
@@ -684,7 +589,7 @@
     },
     "effects": [
       {
-        "description": "Recyclez un Équipement de votre Défausse : Le Porteur de l'Équipement de votre choix gagne +1 en Force et  dans l'élément de l'Équipement recyclé jusqu'à la fin du tour.",
+        "description": "Recyclez un Équipement de votre Défausse : Le Porteur de l'Équipement de votre choix gagne +1 en Force et dans l'élément de l'Équipement recyclé jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -693,14 +598,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": [
-          "neutre"
-        ]
+        "elements": ["neutre"]
       }
     ],
-    "artists": [
-      "Paul Mayafon"
-    ],
+    "artists": ["Paul Mayafon"],
     "notes": [],
     "flavor": {
       "text": "Atelier de Forgemagie Magie, et vos idées ont du géniiiiiiie !!"
@@ -710,10 +611,7 @@
     "id": "baton-des-rois-amakna",
     "name": "Bâton des Rois",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Bâton"
-    ],
+    "subTypes": ["Arme", "Bâton"],
     "extension": {
       "name": "Amakna",
       "number": "150/162",
@@ -739,15 +637,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Guillaume Coudriau (Inooni)"
-    ],
+    "artists": ["François Houssin (Franho)", "Guillaume Coudriau (Inooni)"],
     "notes": [],
     "flavor": {
       "text": "Touloulou ! Promotion au rayon bâtons ! Venez découvrir la réplique quasi exacte du Bâton du Wa ! Offre à saisir !"
@@ -761,9 +654,7 @@
     "id": "berlanette-chichi-amakna",
     "name": "Berlanette Chichi",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof"
-    ],
+    "subTypes": ["Enutrof"],
     "extension": {
       "name": "Amakna",
       "number": "67/162",
@@ -789,10 +680,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Didier Chrispeels (Crisse)",
-      "Roberto Pena"
-    ],
+    "artists": ["Didier Chrispeels (Crisse)", "Roberto Pena"],
     "notes": [],
     "flavor": {
       "text": "Son sac est rempli de jolies pièces jaunes, soigneusement amassées par son ami Vadid Mouillet."
@@ -803,9 +691,7 @@
     "id": "bigou-drif-amakna",
     "name": "Bigou Drif",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop"
-    ],
+    "subTypes": ["Iop"],
     "extension": {
       "name": "Amakna",
       "number": "32/162",
@@ -831,9 +717,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Carlo Toselli"
-    ],
+    "artists": ["Carlo Toselli"],
     "notes": [],
     "flavor": {
       "text": "Quand Bigou Drif est de mauvais poil, ça frise le ridicule…"
@@ -844,10 +728,7 @@
     "id": "black-tiwabbit-amakna",
     "name": "Black Tiwabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Amakna",
       "number": "65/162",
@@ -871,19 +752,15 @@
         "requiresIncline": false
       },
       {
-        "description": "Dites « WABEHAMEHA ! » : Le Black Tiwabbit inflige 1 Dommage  à l'Allié ou Héros de votre choix, puis détruisez-le.",
-        "elements": [
-          "eau"
-        ],
+        "description": "Dites « WABEHAMEHA ! » : Le Black Tiwabbit inflige 1 Dommage à l'Allié ou Héros de votre choix, puis détruisez-le.",
+        "elements": ["eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
     "flavor": {
       "text": "L'amouw wend fou, il n'y a que la guewwe qui Wambo — Black Tiwabbit."
@@ -895,10 +772,7 @@
     "id": "blessdags-amakna",
     "name": "Blessdags",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Dagues"
-    ],
+    "subTypes": ["Arme", "Dagues"],
     "extension": {
       "name": "Amakna",
       "number": "146/162",
@@ -914,9 +788,7 @@
     "effects": [
       {
         "description": "La Force du Porteur des Blessdags est doublée jusqu'à la fin du tour. Détruisez les Blessdags à la fin du tour.",
-        "elements": [
-          "air"
-        ],
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -925,15 +797,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "À tous les Iops qui voudraient en faire usage : attention, ces dagues blessent…"
@@ -948,9 +815,7 @@
     "id": "bony-parc-ur-amakna",
     "name": "Bony Parcœur",
     "mainType": "Allié",
-    "subTypes": [
-      "Sram"
-    ],
+    "subTypes": ["Sram"],
     "extension": {
       "name": "Amakna",
       "number": "10/162",
@@ -981,9 +846,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [],
     "flavor": {
       "text": "Après avoir braqué la banque d'Astrub avec Klaïd Barreau, Bony ne pouvait que finir derrière les barreaux !"
@@ -1015,9 +878,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Alexandre Papet"
-    ],
+    "artists": ["Alexandre Papet"],
     "notes": [],
     "flavor": {
       "text": "Dans la vie, quand je comprends pas quelque chose, j'utilise ma Botte Secrète. — Perse Oval, aventurier futé."
@@ -1027,11 +888,7 @@
     "id": "bottes-du-craqueleur-amakna",
     "name": "Bottes du Craqueleur",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Craqueleur"
-    ],
+    "subTypes": ["Armure", "Bottes", "Craqueleur"],
     "extension": {
       "name": "Amakna",
       "number": "144/162",
@@ -1057,18 +914,11 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Jonathan Dhenry (Jonat)"
-    ],
-    "notes": [
-      "Trait Arme remplacé par Armure."
-    ],
+    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
+    "notes": ["Trait Arme remplacé par Armure."],
     "flavor": {
       "text": "Aieu ! J'ai un caillou dans ma chaussure ! — Maskara, Sadidette sensible des plantes des pieds."
     },
@@ -1081,10 +931,7 @@
     "id": "boufton-noir-amakna",
     "name": "Boufton Noir",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bouftou"
-    ],
+    "subTypes": ["Monstre", "Bouftou"],
     "extension": {
       "name": "Amakna",
       "number": "6/162",
@@ -1103,9 +950,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Floriane Grivillers (Foya)"
-    ],
+    "artists": ["Floriane Grivillers (Foya)"],
     "notes": [],
     "flavor": {
       "text": "Zyva Boufton ! File",
@@ -1118,10 +963,7 @@
     "id": "bwork-archer-amakna",
     "name": "Bwork Archer",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork"
-    ],
+    "subTypes": ["Monstre", "Bwork"],
     "extension": {
       "name": "Amakna",
       "number": "46/162",
@@ -1140,20 +982,15 @@
     },
     "effects": [
       {
-        "description": "Le Bwork Archer inflige 1 Dommage  à l'Allié de votre choix qui vient de subir des Dommages.",
-        "elements": [
-          "feu"
-        ],
+        "description": "Le Bwork Archer inflige 1 Dommage à l'Allié de votre choix qui vient de subir des Dommages.",
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Nicolas Mitric",
-      "Sébastien Lamirand"
-    ],
+    "artists": ["Nicolas Mitric", "Sébastien Lamirand"],
     "notes": [],
     "flavor": {
       "text": "C'est en chantant « Bwork ! Bwork ! Bwork ! » que Sabrinarc devint la cible d'un groupe de Bworks Archers en rut."
@@ -1165,10 +1002,7 @@
     "id": "bworky-amakna",
     "name": "Bworky",
     "mainType": "Équipement",
-    "subTypes": [
-      "Familier",
-      "Unique"
-    ],
+    "subTypes": ["Familier", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "159/162",
@@ -1183,11 +1017,8 @@
     },
     "effects": [
       {
-        "description": "Au début de votre tour, recyclez une carte  ou  de votre Défausse ou détruisez le Bworky.",
-        "elements": [
-          "terre",
-          "neutre"
-        ],
+        "description": "Au début de votre tour, recyclez une carte ou de votre Défausse ou détruisez le Bworky.",
+        "elements": ["terre", "neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1198,10 +1029,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["François Houssin (Franho)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Il a longtemps vécu dans un bocal. D'ailleurs, quand on le regarde, on se demande lequel des deux on a gardé."
@@ -1216,9 +1044,7 @@
     "id": "calben-amakna",
     "name": "Calben",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof"
-    ],
+    "subTypes": ["Enutrof"],
     "extension": {
       "name": "Amakna",
       "number": "48/162",
@@ -1244,9 +1070,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Calben est l'un des membres fondateurs du Real Boitard avec Poscho, Ruel, Tolot et Afka."
@@ -1257,10 +1081,7 @@
     "id": "cavalier-porkass-amakna",
     "name": "Cavalier Porkass",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Porkass"
-    ],
+    "subTypes": ["Monstre", "Porkass"],
     "extension": {
       "name": "Amakna",
       "number": "11/162",
@@ -1286,9 +1107,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Grooouuiiik, grouiiiik, huummppfff, groooouuiikk, humpf, grrrr, groouuiiikkk ! — Célèbre maxime Porkass."
@@ -1300,10 +1119,7 @@
     "id": "cawotte-amakna",
     "name": "Cawotte",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Élémentaire"
-    ],
+    "subTypes": ["Sort", "Élémentaire"],
     "extension": {
       "name": "Amakna",
       "number": "123/162",
@@ -1329,10 +1145,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["François Houssin (Franho)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Klawa Owgane m'a dit un jouw qu'elle adowait les gwosses Cawottes. — Le Wa Wabbit."
@@ -1364,10 +1177,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Thebe",
-      "Pouillie"
-    ],
+    "artists": ["Thebe", "Pouillie"],
     "notes": [],
     "flavor": {
       "text": "Organe chimérique qui a longtemps fait l'objet de recherches approfondies. — Définition donnée par Dikô la Rousse."
@@ -1377,11 +1187,7 @@
     "id": "chafer-lancier-amakna",
     "name": "Chafer Lancier",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Chafer",
-      "Chevalier"
-    ],
+    "subTypes": ["Monstre", "Chafer", "Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "53/162",
@@ -1401,9 +1207,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Utilisé dans le sport populaire du Lancer de Chafer, on le connaît aussi sous le nom de Chafer Lancier Lancé."
@@ -1415,10 +1219,7 @@
     "id": "chateau-d-amakna-amakna",
     "name": "Château d'Amakna",
     "mainType": "Zone",
-    "subTypes": [
-      "Château",
-      "Unique"
-    ],
+    "subTypes": ["Château", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "128/162",
@@ -1434,17 +1235,13 @@
     "effects": [
       {
         "description": "Cherchez un Allié Chevalier, Roi ou Princesse de Niveau X dans votre Pioche et mettez-le en jeu, puis mélangez votre Pioche.",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Bertrand Hottin"
-    ],
+    "artists": ["Bertrand Hottin"],
     "notes": [],
     "flavor": {
       "text": "Oh mon châteaaauuu, tu es le plus beau des châteaux, et tu me guides vers les flooots ! — Allister lors du déluge."
@@ -1454,10 +1251,7 @@
     "id": "chateau-des-wabbits-amakna",
     "name": "Château des Wabbits",
     "mainType": "Zone",
-    "subTypes": [
-      "Château",
-      "Unique"
-    ],
+    "subTypes": ["Château", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "131/162",
@@ -1478,9 +1272,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Clé du Matin Pewlant, Clé du Midi Wayonnant et Clé du Soiw Woulant vous ouvriront les portes du Château des Wabbits."
@@ -1490,9 +1282,7 @@
     "id": "chevalier-feuille-amakna",
     "name": "Chevalier Feuille",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "16/162",
@@ -1514,22 +1304,16 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Jonn"
-    ],
+    "artists": ["Jonn"],
     "notes": [],
     "flavor": {
       "text": "Ce Chevalier fait un tabac ! On peut dire que ça roule pour lui !"
@@ -1540,9 +1324,7 @@
     "id": "chevalier-flamme-amakna",
     "name": "Chevalier Flamme",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "54/162",
@@ -1564,22 +1346,16 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Jonn"
-    ],
+    "artists": ["Jonn"],
     "notes": [],
     "flavor": {
       "text": "Un jour, le père de Flamme s'est fait des cendres… Il ne s'en est jamais remis."
@@ -1590,9 +1366,7 @@
     "id": "chevalier-goutte-amakna",
     "name": "Chevalier Goutte",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "73/162",
@@ -1614,23 +1388,16 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)",
-      "Etienne Corbaux (Blacklilipute)"
-    ],
+    "artists": ["Xavier Houssin (Xa)", "Etienne Corbaux (Blacklilipute)"],
     "notes": [],
     "flavor": {
       "text": "L'arme préférée du Chevalier Goutte ? La Hache Deux Os, naturellement."
@@ -1641,9 +1408,7 @@
     "id": "chevalier-nogard-amakna",
     "name": "Chevalier Nogard",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "26/162",
@@ -1665,15 +1430,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Sébastien Piquet"
-    ],
+    "artists": ["Sébastien Piquet"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, le Chevalier Nogard garde le pont menant à la bijouterie d'Azra Lazarus."
@@ -1684,9 +1445,7 @@
     "id": "chevalier-nuage-amakna",
     "name": "Chevalier Nuage",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "34/162",
@@ -1708,23 +1467,16 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)",
-      "Etienne Corbaux (Blacklilipute)"
-    ],
+    "artists": ["Xavier Houssin (Xa)", "Etienne Corbaux (Blacklilipute)"],
     "notes": [],
     "flavor": {
       "text": "J'ai la tête dans le cumulus moi ce matin ! — Chevalier Nuage."
@@ -1735,9 +1487,7 @@
     "id": "chevalier-tenebres-amakna",
     "name": "Chevalier Ténèbres",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "3/162",
@@ -1770,37 +1520,27 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "neutre"
-        ]
+        "elements": ["neutre"]
       },
       {
         "name": "Le",
@@ -1808,9 +1548,7 @@
       }
     ],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [
       "Le Chevalier Ténèbres a une Résistance d'un point dans chaque élément."
     ],
@@ -1823,9 +1561,7 @@
     "id": "cimetiere-d-amakna-amakna",
     "name": "Cimetière d'Amakna",
     "mainType": "Zone",
-    "subTypes": [
-      "Cimetière"
-    ],
+    "subTypes": ["Cimetière"],
     "extension": {
       "name": "Amakna",
       "number": "129/162",
@@ -1840,10 +1576,8 @@
     },
     "effects": [
       {
-        "description": "Au début de votre tour, recyclez une carte  ou détruisez le Cimetière d'Amakna.",
-        "elements": [
-          "terre"
-        ],
+        "description": "Au début de votre tour, recyclez une carte ou détruisez le Cimetière d'Amakna.",
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1854,9 +1588,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Ultime date pour la tournée Zissizite. Les places dans la fosse commune vont être chères !"
@@ -1866,10 +1598,7 @@
     "id": "coffre-anime-amakna",
     "name": "Coffre Animé",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Enutrof"
-    ],
+    "subTypes": ["Sort", "Enutrof"],
     "extension": {
       "name": "Amakna",
       "number": "106/162",
@@ -1889,9 +1618,7 @@
     "effects": [
       {
         "description": "Mettez le Coffre Animé en jeu dans le Monde comme un « Monstre — Coffre » de Force 1 .",
-        "elements": [
-          "eau"
-        ],
+        "elements": ["eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1902,9 +1629,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aurélie Neyret"
-    ],
+    "artists": ["Aurélie Neyret"],
     "notes": [],
     "flavor": {
       "text": "J'adore quand mes ennemies ont du coffre… — Toyo Dzink Enutrof vicieux."
@@ -1915,11 +1640,7 @@
     "id": "coiffe-du-prespic-amakna",
     "name": "Coiffe du Prespic",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Prespic"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Prespic"],
     "extension": {
       "name": "Amakna",
       "number": "141/162",
@@ -1948,15 +1669,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 3",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Michael Olivier (Mikl)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
     "notes": [
       "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\""
     ],
@@ -1973,10 +1689,7 @@
     "id": "corbeau-amakna",
     "name": "Corbeau",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Osamodas"
-    ],
+    "subTypes": ["Sort", "Osamodas"],
     "extension": {
       "name": "Amakna",
       "number": "112/162",
@@ -1991,18 +1704,14 @@
     },
     "effects": [
       {
-        "description": "Le Corbeau inflige 1 Dommage  et 1 Dommage  à l'Allié ou Héros de votre choix. Ces Dommages ne peuvent pas être réduits.",
-        "elements": [
-          "feu"
-        ],
+        "description": "Le Corbeau inflige 1 Dommage et 1 Dommage à l'Allié ou Héros de votre choix. Ces Dommages ne peuvent pas être réduits.",
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
     "flavor": {
       "text": "Crrroâââ ! Shhh… ShtaAAAakk !! … Aïïïe",
@@ -2014,10 +1723,7 @@
     "id": "crabe-amakna",
     "name": "Crabe",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Crustacé"
-    ],
+    "subTypes": ["Monstre", "Crustacé"],
     "extension": {
       "name": "Amakna",
       "number": "63/162",
@@ -2036,9 +1742,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Son teint hâlé fait fureur auprès de la gent féminine. C'est pourquoi on dit qu'il est  « chaud de la pince »."
@@ -2050,9 +1754,7 @@
     "id": "crail-amakna",
     "name": "Crail",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca"
-    ],
+    "subTypes": ["Féca"],
     "extension": {
       "name": "Amakna",
       "number": "55/162",
@@ -2083,10 +1785,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Deruyck Vincent (Ancestral Z)",
-      "Joachim Leclercq (Mojojojo)"
-    ],
+    "artists": ["Deruyck Vincent (Ancestral Z)", "Joachim Leclercq (Mojojojo)"],
     "notes": [],
     "flavor": {
       "text": "Au moment où son Dofus lui échappa, plutôt que de se lamenter, le grand",
@@ -2098,11 +1797,7 @@
     "id": "crapaud-royal-amakna",
     "name": "Crapaud Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Amphibion",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Amphibion", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "80/162",
@@ -2138,9 +1833,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le pouvoir du Crapaud Royal peut être utilisé sur un de vos Monstres n'ayant aucun pouvoir d'apparition ou un pouvoir d'apparition qui serait inactif (sur un Black Wabbit dans votre Havre Sac, par exemple). Dans ce cas, rien ne se passe ensuite."
     ],
@@ -2154,11 +1847,7 @@
     "id": "craquamulette-amakna",
     "name": "Craquamulette",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Amulette",
-      "Craqueleur"
-    ],
+    "subTypes": ["Bijou", "Amulette", "Craqueleur"],
     "extension": {
       "name": "Amakna",
       "number": "154/162",
@@ -2173,10 +1862,8 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Craquamulette gagne  .",
-        "elements": [
-          "terre"
-        ],
+        "description": "Le Porteur de la Craquamulette gagne .",
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -2185,15 +1872,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "C'est en écrasant par hasard cette amulette avec son pied que Kriboule l'Erodé s'écria : « Craaac amulette ! »"
@@ -2208,10 +1890,7 @@
     "id": "craqueboule-amakna",
     "name": "Craqueboule",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Amakna",
       "number": "8/162",
@@ -2237,9 +1916,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Séverine Duboscq"
-    ],
+    "artists": ["Séverine Duboscq"],
     "notes": [],
     "flavor": {
       "text": "Le Craqueboule a un joujou extra. Les dames Enutrof en tombent à genoux en criant : « Craqueboule hue ! »"
@@ -2251,10 +1928,7 @@
     "id": "craqueleur-des-plaines-amakna",
     "name": "Craqueleur des Plaines",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Amakna",
       "number": "38/162",
@@ -2285,9 +1959,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Savez",
@@ -2321,9 +1993,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Ogrest n'a jamais été très adroit pour le point de crocher. Son point fort, c'est plutôt le crochet du gauche."
@@ -2333,10 +2003,7 @@
     "id": "crocodaille-amakna",
     "name": "Crocodaille",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Crocodaille"
-    ],
+    "subTypes": ["Monstre", "Crocodaille"],
     "extension": {
       "name": "Amakna",
       "number": "76/162",
@@ -2362,9 +2029,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Carlos Pardo (Made)"
-    ],
+    "artists": ["Carlos Pardo (Made)"],
     "notes": [],
     "flavor": {
       "text": "Pour jouer les dandies, rien de tel qu'une paire de bottes en écailles de Crocodaille !"
@@ -2376,10 +2041,7 @@
     "id": "croum-amakna",
     "name": "Croum",
     "mainType": "Équipement",
-    "subTypes": [
-      "Familier",
-      "Unique"
-    ],
+    "subTypes": ["Familier", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "158/162",
@@ -2399,22 +2061,14 @@
         "requiresIncline": false
       },
       {
-        "description": "Le Porteur du Croum gagne  .",
-        "elements": [
-          "air",
-          "eau",
-          "terre",
-          "feu"
-        ],
+        "description": "Le Porteur du Croum gagne .",
+        "elements": ["air", "eau", "terre", "feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["François Houssin (Franho)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Sous son corps de chrome, le Croum est une vraie crème qui lutte contre le crime."
@@ -2429,9 +2083,7 @@
     "id": "cruel-amakna",
     "name": "Cruel",
     "mainType": "Action",
-    "subTypes": [
-      "Challenge"
-    ],
+    "subTypes": ["Challenge"],
     "extension": {
       "name": "Amakna",
       "number": "126/162",
@@ -2452,9 +2104,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [],
     "flavor": {
       "text": "Cruel est un Challenge dans le jeu online DOFUS rapportant de l'XP et un bonus au drop en combat."
@@ -2465,10 +2115,7 @@
     "id": "cruelle-pelle-truelle-amakna",
     "name": "Cruelle Pelle Truelle",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Pelle"
-    ],
+    "subTypes": ["Arme", "Pelle"],
     "extension": {
       "name": "Amakna",
       "number": "148/162",
@@ -2483,15 +2130,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Oooh Cruelle Pelle Truelle ! C'est officiel, tu es la plus fidèle des demoiselles ! — Enutrof esseulé qui fait du zèle."
@@ -2505,10 +2147,7 @@
     "id": "demon-x-amakna",
     "name": "Démon X",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Unique"
-    ],
+    "subTypes": ["Démon", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "60/162",
@@ -2542,15 +2181,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Ulrick Wery"
-    ],
+    "artists": ["Ulrick Wery"],
     "notes": [
       "Si vous choisissez de ne détruire aucun de vos Alliés lors de l'apparition du Démon X, sa Force est alors égale à 0 et le Démon X est immédiatement détruit. Si le Démon X est dans votre défausse, et qu'une carte cherche à savoir quelle est sa Force (comme une Blanquette Spéciale Alibert, par exemple), alors sa Force est 0."
     ],
@@ -2564,10 +2199,7 @@
     "id": "demone-iv-amakna",
     "name": "Démone IV",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Unique"
-    ],
+    "subTypes": ["Démon", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "79/162",
@@ -2610,15 +2242,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Ulrick Wery"
-    ],
+    "artists": ["Ulrick Wery"],
     "notes": [
       "Vous pouvez choisir des Équipements provenant de plusieurs porteurs différents, et les déplacer vers autant d'Alliés différents que possible ; tous les choix sont faits simultanément. Cela ne vous permet pas de déplacer des Équipements de manière illégale, comme déplacer une Coiffe du Bouftou sur un Monstre, ou déplacer une Amulette sur un Allié en portant déjà une, par exemple.",
       "\"Tous les nouveaux Porteurs doivent être légaux.\" a été reprécisé dans l'effet afin de coller précisément à l'effet attendu."
@@ -2633,9 +2261,7 @@
     "id": "dofus-ebene-amakna",
     "name": "Dofus Ébène",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Amakna",
       "number": "161/162",
@@ -2661,10 +2287,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "François Houssin (Franho)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Ne pas absorber. Il ne s'agit pas d'un Dofus en chocolat ! — Précaution d'emploi destinée aux Iops."
@@ -2678,9 +2301,7 @@
     "id": "dofus-ivoire-amakna",
     "name": "Dofus Ivoire",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Amakna",
       "number": "162/162",
@@ -2711,10 +2332,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "François Houssin (Franho)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Vendre mon Dofus Ivoire ?! Peuh ! J'aimerais bien vous y voir ! — Job Sidiène, Enutrof ruiné."
@@ -2728,9 +2346,7 @@
     "id": "dofus-kaliptus-amakna",
     "name": "Dofus Kaliptus",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Amakna",
       "number": "160/162",
@@ -2756,9 +2372,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, le Dofus Kaliptus s'obtient à la fin du Repère Skeunk et donne un bonus en Prospection."
@@ -2772,9 +2386,7 @@
     "id": "donjon-des-craqueleurs-amakna",
     "name": "Donjon des Craqueleurs",
     "mainType": "Zone",
-    "subTypes": [
-      "Donjon"
-    ],
+    "subTypes": ["Donjon"],
     "extension": {
       "name": "Amakna",
       "number": "132/162",
@@ -2800,9 +2412,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [],
     "flavor": {
       "text": "Quand on s'attaque à ses Craqueboules, le Craqueleur a tendance à en faire toute une montagne…"
@@ -2812,9 +2422,7 @@
     "id": "duc-rex-amakna",
     "name": "Duc Rex",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca"
-    ],
+    "subTypes": ["Féca"],
     "extension": {
       "name": "Amakna",
       "number": "14/162",
@@ -2833,16 +2441,14 @@
     },
     "effects": [
       {
-        "description": "Quand Duc Rex apparaît, nommez un élément. Tant que Duc Rex est en jeu, il gagne  dans cet élément.",
+        "description": "Quand Duc Rex apparaît, nommez un élément. Tant que Duc Rex est en jeu, il gagne dans cet élément.",
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Abel Gongora Albaladejo"
-    ],
+    "artists": ["Abel Gongora Albaladejo"],
     "notes": [],
     "flavor": {
       "text": "Il ne sort jamais sans protection. Ceux qui s'y sont frottés ont vite compris qu'ils avaient affaire à un dur…"
@@ -2853,9 +2459,7 @@
     "id": "ejipe-amakna",
     "name": "Ejipe",
     "mainType": "Allié",
-    "subTypes": [
-      "Sram"
-    ],
+    "subTypes": ["Sram"],
     "extension": {
       "name": "Amakna",
       "number": "18/162",
@@ -2881,10 +2485,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Deruyck Vincent (Ancestral Z)",
-      "Joachim Leclercq (Mojojojo)"
-    ],
+    "artists": ["Deruyck Vincent (Ancestral Z)", "Joachim Leclercq (Mojojojo)"],
     "notes": [],
     "flavor": {
       "text": "Ha non. L'Ejipe je ne connais pas. Par contre je suis allé au Porugal ! — Kris Tofcolon."
@@ -2895,9 +2496,7 @@
     "id": "emissaire-du-roi-amakna",
     "name": "Émissaire du Roi",
     "mainType": "Action",
-    "subTypes": [
-      "Quête"
-    ],
+    "subTypes": ["Quête"],
     "extension": {
       "name": "Amakna",
       "number": "124/162",
@@ -2923,9 +2522,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Joris, aussi discret qu'efficace, est l'émissaire du roi de Bonta."
@@ -2936,10 +2533,7 @@
     "id": "emma-tenl-amakna",
     "name": "Emma Tenl",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur",
-      "Forgemage"
-    ],
+    "subTypes": ["Sacrieur", "Forgemage"],
     "extension": {
       "name": "Amakna",
       "number": "28/162",
@@ -2958,15 +2552,13 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Non ! Je ne fais pas de baguette fromagère !! Je ne suis ni boulangère, ni crémière ! — Ella Tenl, Forgemage."
@@ -3004,9 +2596,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Cédric Plaisant (Aisk)"
-    ],
+    "artists": ["Cédric Plaisant (Aisk)"],
     "notes": [
       "Si votre adversaire doit chercher plusieurs cartes dans sa Pioche, vous ne pourrez chercher qu'une seule carte dans votre Pioche."
     ],
@@ -3018,10 +2608,7 @@
     "id": "epee-du-petit-chevalier-amakna",
     "name": "Épée du Petit Chevalier",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Épée"
-    ],
+    "subTypes": ["Arme", "Épée"],
     "extension": {
       "name": "Amakna",
       "number": "145/162",
@@ -3036,15 +2623,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": [
-          "neutre"
-        ]
+        "elements": ["neutre"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["François Houssin (Franho)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Ce n'est pas la taille qui compte ! C'est ta façon de s'en servir ! — Rik Hicky, Iop sans complexes."
@@ -3058,10 +2640,7 @@
     "id": "epee-volante-amakna",
     "name": "Épée Volante",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sacrieur"
-    ],
+    "subTypes": ["Sort", "Sacrieur"],
     "extension": {
       "name": "Amakna",
       "number": "116/162",
@@ -3081,25 +2660,19 @@
     "effects": [
       {
         "description": "Mettez l'Épée Volante en jeu comme un « Monstre — Épée » de Force 1 .",
-        "elements": [
-          "air"
-        ],
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
-        "description": "L'Épée Volante inflige 1 Dommages  à un de vos Alliés ou Héros de votre choix. Cet Allié ou Héros gagne +1 en Force jusqu'à la fin du tour.",
-        "elements": [
-          "air"
-        ],
+        "description": "L'Épée Volante inflige 1 Dommages à un de vos Alliés ou Héros de votre choix. Cet Allié ou Héros gagne +1 en Force jusqu'à la fin du tour.",
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Nicolab"
-    ],
+    "artists": ["Nicolab"],
     "notes": [],
     "flavor": {
       "text": "Je suis un Shushu, espèce de Iop inculte. Et non une vulgaire Épée animée ! — Rubilax."
@@ -3110,10 +2683,7 @@
     "id": "epouvantail-amakna",
     "name": "Épouvantail",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Épouvantail"
-    ],
+    "subTypes": ["Monstre", "Épouvantail"],
     "extension": {
       "name": "Amakna",
       "number": "1/162",
@@ -3153,9 +2723,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Farhad Chams"
-    ],
+    "artists": ["Farhad Chams"],
     "notes": [
       "L'Épouvantail n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés à l'Épouvantail , et s'il perd ses pouvoirs avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
       "Trait \"Monstre\" ajouté."
@@ -3170,10 +2738,7 @@
     "id": "epouvante-amakna",
     "name": "Épouvante",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Pandawa"
-    ],
+    "subTypes": ["Sort", "Pandawa"],
     "extension": {
       "name": "Amakna",
       "number": "113/162",
@@ -3194,9 +2759,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Carlos Pardo (Made)"
-    ],
+    "artists": ["Carlos Pardo (Made)"],
     "notes": [],
     "flavor": {
       "text": "Qui veut une mine épouvantable ménage sa gueule de bois. — Proverbe Pandawa."
@@ -3207,10 +2770,7 @@
     "id": "fallanster-amakna",
     "name": "Fallanster",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Féca"
-    ],
+    "subTypes": ["Chevalier", "Féca"],
     "extension": {
       "name": "Amakna",
       "number": "58/162",
@@ -3229,19 +2789,15 @@
     },
     "effects": [
       {
-        "description": "Quand Fallanster attaque, il inflige un nombre de Dommages  égal au nombre d'autres Chevaliers attaquants à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "feu"
-        ],
+        "description": "Quand Fallanster attaque, il inflige un nombre de Dommages égal au nombre d'autres Chevaliers attaquants à l'Allié ou Héros de votre choix.",
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [],
     "flavor": {
       "text": "Chef du conseil d'une cité de Mercenaires, Fallanster est un homme à la poigne de fer !"
@@ -3253,9 +2809,7 @@
     "id": "fass-larage-amakna",
     "name": "Fass Larage",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor"
-    ],
+    "subTypes": ["Xélor"],
     "extension": {
       "name": "Amakna",
       "number": "72/162",
@@ -3275,18 +2829,14 @@
     "effects": [
       {
         "description": "Détruisez Fass Larage : Annulez les effets de l'Action ou du Sort de Niveau X qui vient d'être joué.",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Benoit Laigle (Ben Pirate)"
-    ],
+    "artists": ["Benoit Laigle (Ben Pirate)"],
     "notes": [],
     "flavor": {
       "text": "J'ai pas l'teeeeemmmmmmps, mon aiguiiiiiiiilllle, file aaaaiiiilllleeeeuuuurrs !! — Fass Larage, Xélor pressé."
@@ -3297,10 +2847,7 @@
     "id": "fauvea-amakna",
     "name": "Fauvéa",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas",
-      "Forgemage"
-    ],
+    "subTypes": ["Osamodas", "Forgemage"],
     "extension": {
       "name": "Amakna",
       "number": "47/162",
@@ -3319,16 +2866,13 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Didier Chrispeels (Crisse)",
-      "Roberto Pena"
-    ],
+    "artists": ["Didier Chrispeels (Crisse)", "Roberto Pena"],
     "notes": [],
     "flavor": {
       "text": "C'est parce qu'elle est presbyte que Fauvéa a réussi à écraser les membres de l'Ordre de l'Œil Putride !"
@@ -3340,10 +2884,7 @@
     "id": "faux-de-farle-ingalsse-amakna",
     "name": "Faux de Farle Ingalsse",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Faux"
-    ],
+    "subTypes": ["Arme", "Faux"],
     "extension": {
       "name": "Amakna",
       "number": "151/162",
@@ -3364,15 +2905,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": [
-          "neutre"
-        ]
+        "elements": ["neutre"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["François Houssin (Franho)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Il faut le dire : cette faux n'a vraiment aucun défaut. Pas vrai ?"
@@ -3386,10 +2922,7 @@
     "id": "fleche-d-immobilisation-amakna",
     "name": "Flèche d'Immobilisation",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Crâ"
-    ],
+    "subTypes": ["Sort", "Crâ"],
     "extension": {
       "name": "Amakna",
       "number": "100/162",
@@ -3410,9 +2943,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Véronique Meignaud"
-    ],
+    "artists": ["Véronique Meignaud"],
     "notes": [],
     "flavor": {
       "text": "Lors de sa sortie, ce sort créé par un dénommé Thasèr, provoqua de hautes tensions."
@@ -3423,10 +2954,7 @@
     "id": "fleche-harcelante-amakna",
     "name": "Flèche Harcelante",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Crâ"
-    ],
+    "subTypes": ["Sort", "Crâ"],
     "extension": {
       "name": "Amakna",
       "number": "99/162",
@@ -3441,18 +2969,14 @@
     },
     "effects": [
       {
-        "description": "La Flèche Harcelante inflige 2 Dommages  à l'Allié ou Héros de votre choix qui vient de subir un ou plusieurs Dommages.",
-        "elements": [
-          "air"
-        ],
+        "description": "La Flèche Harcelante inflige 2 Dommages à l'Allié ou Héros de votre choix qui vient de subir un ou plusieurs Dommages.",
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Gate"
-    ],
+    "artists": ["Gate"],
     "notes": [],
     "flavor": {
       "text": "Arrêtez de me suivre ou j'appelle la milice ! — Nara, forgeron paranoïaque."
@@ -3494,9 +3018,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [
       "Vous annoncez vos choix en premier, puis votre adversaire. Une fois que celui-ci a annoncé ses choix, vous ne pouvez pas faire de nouveau choix, on résout l'effet de la carte."
     ],
@@ -3508,9 +3030,7 @@
     "id": "garde-kerubim-amakna",
     "name": "Garde Kérubim",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "64/162",
@@ -3532,16 +3052,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Sébastien Lamirand",
-      "Eric Herenguel"
-    ],
+    "artists": ["Sébastien Lamirand", "Eric Herenguel"],
     "notes": [],
     "flavor": {
       "text": "Être milicien Kerubim, c'est comme être nounou dans un jardin d'enfants Bworks ! — Grobid le Vétéran Kerubim."
@@ -3552,9 +3067,7 @@
     "id": "garde-montay-amakna",
     "name": "Garde Montay",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "45/162",
@@ -3576,15 +3089,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Thon."
-    ],
+    "artists": ["Thon."],
     "notes": [],
     "flavor": {
       "text": "Est",
@@ -3596,10 +3105,7 @@
     "id": "general-kra-kleure-amakna",
     "name": "Général Krâ Kleure",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Crâ"
-    ],
+    "subTypes": ["Chevalier", "Crâ"],
     "extension": {
       "name": "Amakna",
       "number": "39/162",
@@ -3625,9 +3131,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ce général ne vit que pour sa carrière ! — Larosh Foku, ennemi juré du Général Krâ Kleure."
@@ -3639,10 +3143,7 @@
     "id": "glyphe-de-silence-amakna",
     "name": "Glyphe de Silence",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Féca"
-    ],
+    "subTypes": ["Sort", "Féca"],
     "extension": {
       "name": "Amakna",
       "number": "107/162",
@@ -3663,9 +3164,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Pop"
-    ],
+    "artists": ["Pop"],
     "notes": [],
     "flavor": {
       "text": "Kanniboul Lakterr affirme qu'il n'y a pas mieux que ce Glyphe pour réduire les Bouftons au silence."
@@ -3676,10 +3175,7 @@
     "id": "griffe-invocatrice-amakna",
     "name": "Griffe Invocatrice",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Ecaflip"
-    ],
+    "subTypes": ["Sort", "Ecaflip"],
     "extension": {
       "name": "Amakna",
       "number": "102/162",
@@ -3699,9 +3195,7 @@
     "effects": [
       {
         "description": "Mettez la Griffe Invocatrice en jeu dans le Monde comme un « Monstre — Chaton » de Force 2 .",
-        "elements": [
-          "air"
-        ],
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -3712,9 +3206,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aurélie Neyret"
-    ],
+    "artists": ["Aurélie Neyret"],
     "notes": [],
     "flavor": {
       "text": "Atchaaaa ! Qu'est",
@@ -3726,10 +3218,7 @@
     "id": "guide-de-bravoure-amakna",
     "name": "Guide de Bravoure",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Iop"
-    ],
+    "subTypes": ["Sort", "Iop"],
     "extension": {
       "name": "Amakna",
       "number": "110/162",
@@ -3755,9 +3244,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Nicolab"
-    ],
+    "artists": ["Nicolab"],
     "notes": [
       "Cette carte est bannie en tournoi officiel au format Construit et Bloc depuis le 05 Mars 2011."
     ],
@@ -3791,9 +3278,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Comment ça il y a un Trig à la cour ? Et puis c'est quoi un Trig d'abord ? — Iop Labooum."
@@ -3803,9 +3288,7 @@
     "id": "kabrok-amakna",
     "name": "Kabrok",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas"
-    ],
+    "subTypes": ["Osamodas"],
     "extension": {
       "name": "Amakna",
       "number": "15/162",
@@ -3824,16 +3307,14 @@
     },
     "effects": [
       {
-        "description": "Quand Kabrok apparaît, le Monstre de votre choix gagne +1 en Force et  jusqu'à la fin du tour.",
+        "description": "Quand Kabrok apparaît, le Monstre de votre choix gagne +1 en Force et jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Mais, Mimi… enfin… tu sais bien que… je… Mimi… — Kabrok, exemple flagrant de soumission masculine."
@@ -3844,9 +3325,7 @@
     "id": "kanojedo-amakna",
     "name": "Kanojedo",
     "mainType": "Zone",
-    "subTypes": [
-      "Dojo"
-    ],
+    "subTypes": ["Dojo"],
     "extension": {
       "name": "Amakna",
       "number": "127/162",
@@ -3861,18 +3340,14 @@
     },
     "effects": [
       {
-        "description": "Inclinez une de vos Armes. Son Porteur inflige un nombre de Dommages  égal au bonus de Force de cette Arme à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "neutre"
-        ],
+        "description": "Inclinez une de vos Armes. Son Porteur inflige un nombre de Dommages égal au bonus de Force de cette Arme à l'Allié ou Héros de votre choix.",
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Fabien Rodriguez"
-    ],
+    "artists": ["Fabien Rodriguez"],
     "notes": [],
     "flavor": {
       "text": "Ben quoi ? J'ai amené mon canot et mon jet d'eau, moi… Fallait pas ?? — Etour Drif, Iop de premier choix."
@@ -3882,9 +3357,7 @@
     "id": "karla-blondie-amakna",
     "name": "Karla Blondie",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip"
-    ],
+    "subTypes": ["Ecaflip"],
     "extension": {
       "name": "Amakna",
       "number": "75/162",
@@ -3915,9 +3388,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Karla Blondie se fiche royalement de la taille des hommes. Elle n'en veut qu'à leur pouvoir…"
@@ -3928,10 +3399,7 @@
     "id": "klozette-wateur-amakna",
     "name": "Klozette Wateur",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor",
-      "Forgemage"
-    ],
+    "subTypes": ["Xélor", "Forgemage"],
     "extension": {
       "name": "Amakna",
       "number": "66/162",
@@ -3950,15 +3418,13 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Benoit Laigle (Ben Pirate)"
-    ],
+    "artists": ["Benoit Laigle (Ben Pirate)"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, les joueurs peuvent apprendre la Forgemagie auprès de Hel Munster."
@@ -3970,10 +3436,7 @@
     "id": "kralamoure-amakna",
     "name": "Kralamoure",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kralamoure"
-    ],
+    "subTypes": ["Monstre", "Kralamoure"],
     "extension": {
       "name": "Amakna",
       "number": "70/162",
@@ -3993,9 +3456,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Il t'accule à coups de tentacules, et même quand tu es ridicule, jamais il ne recule."
@@ -4007,10 +3468,7 @@
     "id": "kwoan-amakna",
     "name": "Kwoan",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Chafer"
-    ],
+    "subTypes": ["Monstre", "Chafer"],
     "extension": {
       "name": "Amakna",
       "number": "44/162",
@@ -4032,14 +3490,10 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "neutre"
-        ]
+        "elements": ["neutre"]
       }
     ],
-    "artists": [
-      "Laurence Guermond"
-    ],
+    "artists": ["Laurence Guermond"],
     "notes": [],
     "flavor": {
       "text": "Non chéri, pas ce soir. J'ai mal au Kwoan. — Une femme peu inventive…"
@@ -4051,9 +3505,7 @@
     "id": "l-equarisseur-amakna",
     "name": "L'Équarisseur",
     "mainType": "Allié",
-    "subTypes": [
-      "Bandit"
-    ],
+    "subTypes": ["Bandit"],
     "extension": {
       "name": "Amakna",
       "number": "51/162",
@@ -4079,9 +3531,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [],
     "flavor": {
       "text": "Pour lui, vous n'êtes qu'une pièce de gibier prête à être charcutée ! Alors, un conseil : numérotez vos abattis !"
@@ -4092,9 +3542,7 @@
     "id": "la-blanquette-speciale-alibert-amakna",
     "name": "La Blanquette Spéciale Alibert",
     "mainType": "Action",
-    "subTypes": [
-      "Parchemin"
-    ],
+    "subTypes": ["Parchemin"],
     "extension": {
       "name": "Amakna",
       "number": "89/162",
@@ -4115,9 +3563,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Une Mesure de Sel et une de Poivre, une Cuisse de Bouftou et une Briochette, et c'est prêt !"
@@ -4128,9 +3574,7 @@
     "id": "la-guilde-d-allister-amakna",
     "name": "La Guilde d'Allister",
     "mainType": "Action",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Amakna",
       "number": "98/162",
@@ -4151,9 +3595,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Bertrand Hottin"
-    ],
+    "artists": ["Bertrand Hottin"],
     "notes": [],
     "flavor": {
       "text": "Après avoir guidé son troupeau de Bouftous, Allister guilda son peuple…"
@@ -4164,9 +3606,7 @@
     "id": "la-quete-des-6-dofus-amakna",
     "name": "La Quête des 6 Dofus",
     "mainType": "Action",
-    "subTypes": [
-      "Quête"
-    ],
+    "subTypes": ["Quête"],
     "extension": {
       "name": "Amakna",
       "number": "125/162",
@@ -4197,9 +3637,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [
       "Les Dofus sont : Cawotte, Dofawa, Ebène, Emeraude, Glace, Ivoire, Kaliptus, Ocre, Pourpre, Turquoise, Vulbis."
     ],
@@ -4212,9 +3650,7 @@
     "id": "laeti-allume-amakna",
     "name": "Laeti Allumé",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa"
-    ],
+    "subTypes": ["Eniripsa"],
     "extension": {
       "name": "Amakna",
       "number": "43/162",
@@ -4233,9 +3669,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Ha que c'est le plus beau des sentiments, l'armure ! — Djony Allumé."
@@ -4267,9 +3701,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Il paraît que l'amour rend aveugle. Vous feriez mieux de déjà fermer les yeux."
@@ -4279,9 +3711,7 @@
     "id": "lethaline-sigsibul-amakna",
     "name": "Lethaline Sigsibul",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas"
-    ],
+    "subTypes": ["Osamodas"],
     "extension": {
       "name": "Amakna",
       "number": "56/162",
@@ -4307,9 +3737,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Si vous croisez la route de cette espionne de Minuit, c'est certainement que votre dernière heure a sonné !"
@@ -4320,10 +3748,7 @@
     "id": "lien-spiritueux-amakna",
     "name": "Lien Spiritueux",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Pandawa"
-    ],
+    "subTypes": ["Sort", "Pandawa"],
     "extension": {
       "name": "Amakna",
       "number": "114/162",
@@ -4348,9 +3773,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Carlos Pardo (Made)"
-    ],
+    "artists": ["Carlos Pardo (Made)"],
     "notes": [],
     "flavor": {
       "text": "Rien de tel qu'un vieux pillier de comptoir pour offrir une tournée générale de baffes !"
@@ -4361,9 +3784,7 @@
     "id": "lyade-bomon-amakna",
     "name": "Lyade Bomon",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop"
-    ],
+    "subTypes": ["Iop"],
     "extension": {
       "name": "Amakna",
       "number": "5/162",
@@ -4382,10 +3803,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Didier Chrispeels (Crisse)",
-      "Roberto Pena"
-    ],
+    "artists": ["Didier Chrispeels (Crisse)", "Roberto Pena"],
     "notes": [],
     "flavor": {
       "text": "Cette espionne, experte en travestissement, a plus d'un tour dans son sac… et plus d'un atout dans sa bourse !"
@@ -4396,9 +3814,7 @@
     "id": "magictateur-krokker-amakna",
     "name": "Magictateur Krokker",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof"
-    ],
+    "subTypes": ["Enutrof"],
     "extension": {
       "name": "Amakna",
       "number": "2/162",
@@ -4434,9 +3850,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [
       "Cela n'empêche pas votre adversaire de pouvoir incliner ses Équipements pour tout effet autre que produire une Ressource.",
       "Le pouvoir du Magictateur Krokker ne choisit pas et n'inflige pas de Dommages, il n'est donc pas affecté par les Règles de Portée. Les Équipements adverses dans leur Havre Sac ne pourront donc pas non plus produire de ressource."
@@ -4450,10 +3864,7 @@
     "id": "mama-bwork-amakna",
     "name": "Mama Bwork",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork"
-    ],
+    "subTypes": ["Monstre", "Bwork"],
     "extension": {
       "name": "Amakna",
       "number": "52/162",
@@ -4479,9 +3890,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Quand on voit la sale trogne qu'ont ses enfants, on comprend qu'elle soit aussi furieuse. Et inversement…"
@@ -4514,9 +3923,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Rémi Juillet (REMS)"
-    ],
+    "artists": ["Rémi Juillet (REMS)"],
     "notes": [],
     "flavor": {
       "text": "L'union fait la force ? L'union fait la farce oui !",
@@ -4527,11 +3934,7 @@
     "id": "marzwel-le-gobelin-amakna",
     "name": "Marzwel le Gobelin",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Gobelin",
-      "Bandit"
-    ],
+    "subTypes": ["Monstre", "Gobelin", "Bandit"],
     "extension": {
       "name": "Amakna",
       "number": "57/162",
@@ -4562,9 +3965,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Il tape sur des bambous et c'est numéro uuuuunn ! Sa tribu dit qu'il est fou bien plus que musiciiiieeenn !"
@@ -4576,10 +3977,7 @@
     "id": "masse-du-corailleur-amakna",
     "name": "Masse du Corailleur",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Marteau"
-    ],
+    "subTypes": ["Arme", "Marteau"],
     "extension": {
       "name": "Amakna",
       "number": "147/162",
@@ -4608,14 +4006,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "S'il n'y a pas d'autre Équipement en jeu au moment où la Masse du Corailleur apparaît, vous devez détruire celle-ci."
     ],
@@ -4632,11 +4026,7 @@
     "id": "megabottes-amakna",
     "name": "Mégabottes",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Mégamane"
-    ],
+    "subTypes": ["Armure", "Bottes", "Mégamane"],
     "extension": {
       "name": "Amakna",
       "number": "143/162",
@@ -4667,14 +4057,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["Sandrine Vanneste (Alhera)"],
     "notes": [
       "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",
       "Trait Arme remplacé par Armure."
@@ -4691,11 +4077,7 @@
     "id": "megacoiffe-amakna",
     "name": "Mégacoiffe",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Mégamane"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Mégamane"],
     "extension": {
       "name": "Amakna",
       "number": "140/162",
@@ -4710,10 +4092,8 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Mégacoiffe gagne  .",
-        "elements": [
-          "eau"
-        ],
+        "description": "Le Porteur de la Mégacoiffe gagne .",
+        "elements": ["eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4727,14 +4107,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["Sandrine Vanneste (Alhera)"],
     "notes": [
       "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites."
     ],
@@ -4751,9 +4127,7 @@
     "id": "miranda-amakna",
     "name": "Miranda",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip"
-    ],
+    "subTypes": ["Ecaflip"],
     "extension": {
       "name": "Amakna",
       "number": "27/162",
@@ -4772,7 +4146,7 @@
     },
     "effects": [
       {
-        "description": "Réaction.  : Rejouez le Chi-Fu-Mi que vous venez de perdre.",
+        "description": "Réaction. : Rejouez le Chi-Fu-Mi que vous venez de perdre.",
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -4784,9 +4158,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le Chi-Fu-Mi perdu est ignoré, on ne prend donc pas en compte son résultat en cas de perte. Si vous contrôlez plusieurs Miranda, vous pouvez utiliser leur pouvoir si vous perdez de nouveau le Chi-Fu-Mi rejoué."
     ],
@@ -4799,10 +4171,7 @@
     "id": "missiz-frizz-amakna",
     "name": "Missiz Frizz",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Xélor"
-    ],
+    "subTypes": ["Chevalier", "Xélor"],
     "extension": {
       "name": "Amakna",
       "number": "77/162",
@@ -4833,9 +4202,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Mélanie Christin (Méli)"
-    ],
+    "artists": ["Mélanie Christin (Méli)"],
     "notes": [
       "Si vous attaquez avec Missiz Frizz et un autre Chevalier, vous regardez 1 seule carte, la mettez dans votre main, et ne recyclez pas de carte."
     ],
@@ -4850,10 +4217,7 @@
     "id": "momification-amakna",
     "name": "Momification",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Xélor"
-    ],
+    "subTypes": ["Sort", "Xélor"],
     "extension": {
       "name": "Amakna",
       "number": "122/162",
@@ -4879,9 +4243,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Gate"
-    ],
+    "artists": ["Gate"],
     "notes": [
       "Si vous bénéficiez d'un bonus de PM et que vous jouez Momification, vos PM sont réduits à 0. Si vous jouez Momification puis jouez une carte qui vous donne un bonus de PM, vous avez alors autant de PM que votre bonus."
     ],
@@ -4894,10 +4256,7 @@
     "id": "monstre-pain-amakna",
     "name": "Monstre Pain",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Pain"
-    ],
+    "subTypes": ["Monstre", "Pain"],
     "extension": {
       "name": "Amakna",
       "number": "4/162",
@@ -4921,19 +4280,15 @@
         "requiresIncline": false
       },
       {
-        "description": "Au début du tour de chaque joueur, si le Monstre Pain est dans le Monde, ce joueur peut payer  pour détruire le Monstre Pain.",
-        "elements": [
-          "neutre"
-        ],
+        "description": "Au début du tour de chaque joueur, si le Monstre Pain est dans le Monde, ce joueur peut payer pour détruire le Monstre Pain.",
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ne le laissez pas vous rouler dans la farine ! Pas de pitié pour les croissants !"
@@ -4966,9 +4321,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Qui dort dans son tonneau, craint la montée des eaux ! — Proverbe Pandawa."
@@ -4978,10 +4331,7 @@
     "id": "mot-d-amitie-amakna",
     "name": "Mot d'Amitié",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Eniripsa"
-    ],
+    "subTypes": ["Sort", "Eniripsa"],
     "extension": {
       "name": "Amakna",
       "number": "104/162",
@@ -5001,9 +4351,7 @@
     "effects": [
       {
         "description": "Mettez le Mot d'Amitié en jeu dans le Monde comme un « Monstre — Lapin » de Force 1 .",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -5019,9 +4367,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [
       "Ce pouvoir ne fonctionne que si votre Héros regagne effectivement au moins 1 PV. Si votre Héros doit se soigner d'1 PV et que votre adversaire joue Sinistrose de Raval en Réaction, vous ne perdez qu'1 PV. Si votre Héros devrait regagner 1 ou plusieurs PV alors qu'il est déjà à son maximum de PV, il ne regagne rien et le Mot d'Amitié ne s'applique pas."
     ],
@@ -5035,10 +4381,7 @@
     "id": "mot-de-jouvence-amakna",
     "name": "Mot de Jouvence",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Eniripsa"
-    ],
+    "subTypes": ["Sort", "Eniripsa"],
     "extension": {
       "name": "Amakna",
       "number": "103/162",
@@ -5059,9 +4402,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Pop"
-    ],
+    "artists": ["Pop"],
     "notes": [],
     "flavor": {
       "text": "Avec Mot de Jouvence, mon Eni est débarrassé de ses envoûtements. Sa peau est repulpée, comme plus jeune."
@@ -5072,10 +4413,7 @@
     "id": "musha-l-oni-amakna",
     "name": "Musha l'Oni",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Oni"
-    ],
+    "subTypes": ["Monstre", "Oni"],
     "extension": {
       "name": "Amakna",
       "number": "71/162",
@@ -5094,19 +4432,15 @@
     },
     "effects": [
       {
-        "description": "Reprenez Musha l'Oni dans votre main. Il inflige 2 Dommages  à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "eau"
-        ],
+        "description": "Reprenez Musha l'Oni dans votre main. Il inflige 2 Dommages à l'Allié ou Héros de votre choix.",
+        "elements": ["eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jérôme Brulin"
-    ],
+    "artists": ["Jérôme Brulin"],
     "notes": [],
     "flavor": {
       "text": "Ne prenez pas tout ce qui sort de sa bouche pour argent comptant. Musha ment comme un arracheur de dents…"
@@ -5118,9 +4452,7 @@
     "id": "naima-apprentie-eniripsa-amakna",
     "name": "Naïma, Apprentie Eniripsa",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa"
-    ],
+    "subTypes": ["Eniripsa"],
     "extension": {
       "name": "Amakna",
       "number": "49/162",
@@ -5139,19 +4471,15 @@
     },
     "effects": [
       {
-        "description": "Quand votre Héros vient de regagner 1 ou plusieurs PV, Naïma, Apprentie Eniripsa inflige le même nombre de Dommages  à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "feu"
-        ],
+        "description": "Quand votre Héros vient de regagner 1 ou plusieurs PV, Naïma, Apprentie Eniripsa inflige le même nombre de Dommages à l'Allié ou Héros de votre choix.",
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Grégory Charlet"
-    ],
+    "artists": ["Grégory Charlet"],
     "notes": [],
     "flavor": {
       "text": "Mieux vaut détruire que guérir… Ou l'inverse ?"
@@ -5162,10 +4490,7 @@
     "id": "necrom-l-ancien-amakna",
     "name": "Nécrom L'Ancien",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Sadida"
-    ],
+    "subTypes": ["Chevalier", "Sadida"],
     "extension": {
       "name": "Amakna",
       "number": "20/162",
@@ -5191,9 +4516,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Probablement le seul et unique chef de guerre qui se vante de jouer encore à la poupée…"
@@ -5205,9 +4528,7 @@
     "id": "nosferathon-amakna",
     "name": "Nosférathon",
     "mainType": "Allié",
-    "subTypes": [
-      "Vampyre"
-    ],
+    "subTypes": ["Vampyre"],
     "extension": {
       "name": "Amakna",
       "number": "13/162",
@@ -5226,16 +4547,14 @@
     },
     "effects": [
       {
-        "description": "Chaque fois qu'un Allié apparaît dans le Monde depuis votre Défausse, Nosférathon gagne +1 en Force et  jusqu'à la fin du tour.",
+        "description": "Chaque fois qu'un Allié apparaît dans le Monde depuis votre Défausse, Nosférathon gagne +1 en Force et jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [],
     "flavor": {
       "text": "Bon sang de bon sang ! J'avais dit sans ail ! — Nosférathon, Vampyre soucieux de son haleine."
@@ -5246,12 +4565,7 @@
     "id": "papris-roi-des-flaqueux-amakna",
     "name": "Papris, Roi des Flaqueux",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flaqueux",
-      "Roi",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Flaqueux", "Roi", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "78/162",
@@ -5294,15 +4608,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Trait \"Monstre\" ajouté.",
       "Le pouvoir de Papris, Roi des Flaqueux se déclenche au moment où un Monstre est mis dans votre Défausse suite à sa destruction. Papris, Roi des Flaqueux ne peut donc pas s'impacter lui même car il n'est plus dans le Monde à ce moment."
@@ -5317,9 +4627,7 @@
     "id": "parchemin-de-sagesse-amakna",
     "name": "Parchemin de Sagesse",
     "mainType": "Action",
-    "subTypes": [
-      "Parchemin"
-    ],
+    "subTypes": ["Parchemin"],
     "extension": {
       "name": "Amakna",
       "number": "87/162",
@@ -5340,9 +4648,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Anaïs Chevillard"
-    ],
+    "artists": ["Anaïs Chevillard"],
     "notes": [],
     "flavor": {
       "text": "B",
@@ -5354,9 +4660,7 @@
     "id": "patty-ceriz-amakna",
     "name": "Patty Ceriz",
     "mainType": "Allié",
-    "subTypes": [
-      "Crâ"
-    ],
+    "subTypes": ["Crâ"],
     "extension": {
       "name": "Amakna",
       "number": "24/162",
@@ -5375,9 +4679,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Patty a beau être une battante, elle a toujours préféré battre les œufs plutôt que les adversaires…"
@@ -5388,10 +4690,7 @@
     "id": "petit-corbac-amakna",
     "name": "Petit Corbac",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Corbac"
-    ],
+    "subTypes": ["Monstre", "Corbac"],
     "extension": {
       "name": "Amakna",
       "number": "30/162",
@@ -5417,9 +4716,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Le regard perçant, l'œil vif, le plumage soyeux, les griffes acérées… Ce Petit Corbac là n'a rien de tout cela."
@@ -5431,10 +4728,7 @@
     "id": "peur-amakna",
     "name": "Peur",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sram"
-    ],
+    "subTypes": ["Sort", "Sram"],
     "extension": {
       "name": "Amakna",
       "number": "119/162",
@@ -5450,17 +4744,13 @@
     "effects": [
       {
         "description": "Redressez l'Allié ou Héros adverse de votre choix puis inclinez-le. La Peur lui inflige 1 Dommage .",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Véronique Meignaud"
-    ],
+    "artists": ["Véronique Meignaud"],
     "notes": [],
     "flavor": {
       "text": "Il y a différentes manières de provoquer la peur. La vue d'une Enutrofette nue en fait partie."
@@ -5471,10 +4761,7 @@
     "id": "piege-repulsif-amakna",
     "name": "Piège Répulsif",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sram"
-    ],
+    "subTypes": ["Sort", "Sram"],
     "extension": {
       "name": "Amakna",
       "number": "120/162",
@@ -5495,9 +4782,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Gray Shuko"
-    ],
+    "artists": ["Gray Shuko"],
     "notes": [],
     "flavor": {
       "text": "Parce qu'il n'est pas toujours évident d'avoir une Miss Moche sous la main, Sram a créé le Piège Répulsif."
@@ -5508,10 +4793,7 @@
     "id": "piqure-motivante-amakna",
     "name": "Piqûre Motivante",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Osamodas"
-    ],
+    "subTypes": ["Sort", "Osamodas"],
     "extension": {
       "name": "Amakna",
       "number": "111/162",
@@ -5526,15 +4808,13 @@
     },
     "effects": [
       {
-        "description": "Le Monstre de votre choix gagne  jusqu'à la fin du tour.",
+        "description": "Le Monstre de votre choix gagne jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Grelin"
-    ],
+    "artists": ["Grelin"],
     "notes": [],
     "flavor": {
       "text": "Une piqûre chaque zzzour et vous aurez la santé pour touzzzours ! Promis, zzzuré ! — Un Moskito anonyme."
@@ -5545,9 +4825,7 @@
     "id": "potion-de-crapaud-mufle-amakna",
     "name": "Potion de Crapaud Mufle",
     "mainType": "Action",
-    "subTypes": [
-      "Potion"
-    ],
+    "subTypes": ["Potion"],
     "extension": {
       "name": "Amakna",
       "number": "84/162",
@@ -5562,15 +4840,13 @@
     },
     "effects": [
       {
-        "description": "Défaussez la première carte de votre Pioche : S'il s'agit d'un Allié, l'Allié de votre choix perd sa Classe et sa Famille, devient un  « Monstre — Crapaud » et gagne un bonus de Force égal à la Force de l'Allié défaussé jusqu'à la fin du tour.",
+        "description": "Défaussez la première carte de votre Pioche : S'il s'agit d'un Allié, l'Allié de votre choix perd sa Classe et sa Famille, devient un « Monstre — Crapaud » et gagne un bonus de Force égal à la Force de l'Allié défaussé jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Une cuillère à soupe matin, midi et soir. — Posologie destinée aux Miss",
@@ -5582,9 +4858,7 @@
     "id": "princesse-eenca-amakna",
     "name": "Princesse Eenca",
     "mainType": "Allié",
-    "subTypes": [
-      "Princesse"
-    ],
+    "subTypes": ["Princesse"],
     "extension": {
       "name": "Amakna",
       "number": "31/162",
@@ -5615,9 +4889,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Si un joueur a perdu des PA durant le tour et que vous utilisez le pouvoir de Princesse Eenca pour annuler une nouvelle perte de PA, les PA précédemment perdus ne sont pas regagnés pour autant."
     ],
@@ -5630,9 +4902,7 @@
     "id": "princesse-erpel-amakna",
     "name": "Princesse Erpel",
     "mainType": "Allié",
-    "subTypes": [
-      "Princesse"
-    ],
+    "subTypes": ["Princesse"],
     "extension": {
       "name": "Amakna",
       "number": "69/162",
@@ -5658,9 +4928,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Tire la bandelette, et la Miss Moche cherra. — Mère",
@@ -5672,9 +4940,7 @@
     "id": "princesse-lela-amakna",
     "name": "Princesse Lela",
     "mainType": "Allié",
-    "subTypes": [
-      "Princesse"
-    ],
+    "subTypes": ["Princesse"],
     "extension": {
       "name": "Amakna",
       "number": "12/162",
@@ -5694,18 +4960,14 @@
     "effects": [
       {
         "description": "Annulez le bonus de Force que vient de gagner un Allié ou Héros. Cet Allié ou Héros subit le même nombre de Dommages .",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Autant les toiles rouges énervent les Taures, autant les toiles noires énervent Lela."
@@ -5716,9 +4978,7 @@
     "id": "princesse-ydalipe-amakna",
     "name": "Princesse Ydalipe",
     "mainType": "Allié",
-    "subTypes": [
-      "Princesse"
-    ],
+    "subTypes": ["Princesse"],
     "extension": {
       "name": "Amakna",
       "number": "50/162",
@@ -5744,9 +5004,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ze vous préviens, ze zuis de mauvais poil ! — Ydalipe, Princesse parfois un peu rasoir."
@@ -5757,10 +5015,7 @@
     "id": "provocation-amakna",
     "name": "Provocation",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Iop"
-    ],
+    "subTypes": ["Sort", "Iop"],
     "extension": {
       "name": "Amakna",
       "number": "109/162",
@@ -5781,9 +5036,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Yann Tisseron"
-    ],
+    "artists": ["Yann Tisseron"],
     "notes": [],
     "flavor": {
       "text": "Whesh ! T'as un problème ?! Tu m'cherches, là ? Tu veux t'battre ?! Hein ! Hein ! — Kay Rah, Iop vénère."
@@ -5794,9 +5047,7 @@
     "id": "pym-amakna",
     "name": "Pym",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur"
-    ],
+    "subTypes": ["Sacrieur"],
     "extension": {
       "name": "Amakna",
       "number": "36/162",
@@ -5837,9 +5088,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Matthieu Marcq (Ottami)"
-    ],
+    "artists": ["Matthieu Marcq (Ottami)"],
     "notes": [
       "Le pouvoir de Pym redirige tous les Dommages d'un seul paquet de Dommages. Si plusieurs paquets de Dommages sont sur le point d'être infligés, comme par exemple lors de la résolution des Dommages sur la cible, vous choisissez quel paquet est redirigé vers Pym."
     ],
@@ -5852,10 +5101,7 @@
     "id": "renvoi-de-sort-amakna",
     "name": "Renvoi de Sort",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Féca"
-    ],
+    "subTypes": ["Sort", "Féca"],
     "extension": {
       "name": "Amakna",
       "number": "108/162",
@@ -5876,9 +5122,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Grelin"
-    ],
+    "artists": ["Grelin"],
     "notes": [],
     "flavor": {
       "text": "Soit X lançant Retour de Bâton sur Y protégé par Renvoie de Sort. Quelle sera l'issue du combat ? — Problème Féca."
@@ -5889,9 +5133,7 @@
     "id": "rocco-fidelio-amakna",
     "name": "Rocco Fidelio",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Amakna",
       "number": "7/162",
@@ -5913,15 +5155,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Boris Villanyi"
-    ],
+    "artists": ["Boris Villanyi"],
     "notes": [],
     "flavor": {
       "text": "Voilà un maton qui manie habilement le bâton ! Il est si bien équipé que bien peu parviennent à s'échapper !"
@@ -5932,10 +5170,7 @@
     "id": "ronces-apaisantes-amakna",
     "name": "Ronces Apaisantes",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sadida"
-    ],
+    "subTypes": ["Sort", "Sadida"],
     "extension": {
       "name": "Amakna",
       "number": "117/162",
@@ -5956,9 +5191,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Crowley"
-    ],
+    "artists": ["Crowley"],
     "notes": [],
     "flavor": {
       "text": "En tisane, en soupe ou en fouet, les ronces ont des vertus qui séduiront toutes les classes !"
@@ -5969,10 +5202,7 @@
     "id": "rose-demoniaque-amakna",
     "name": "Rose Démoniaque",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fleur"
-    ],
+    "subTypes": ["Monstre", "Fleur"],
     "extension": {
       "name": "Amakna",
       "number": "35/162",
@@ -5998,9 +5228,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Elle pique et en plus elle sent mauvais ? Alors ça, c'est le bouquet ! — Karol, botaniste en herbe."
@@ -6012,11 +5240,7 @@
     "id": "rykke-errel-amakna",
     "name": "Rykke Errel",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Iop",
-      "Unique"
-    ],
+    "subTypes": ["Chevalier", "Iop", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "23/162",
@@ -6035,10 +5259,8 @@
     },
     "effects": [
       {
-        "description": "Rykke Errel inflige X Dommages  répartis librement entre les Alliés ou Héros bloqueurs de votre choix.",
-        "elements": [
-          "terre"
-        ],
+        "description": "Rykke Errel inflige X Dommages répartis librement entre les Alliés ou Héros bloqueurs de votre choix.",
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -6050,9 +5272,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Avant, Rykke Errel était serveur. Maintenant, il travaille à la carte."
@@ -6064,9 +5284,7 @@
     "id": "salle-du-trone-d-allister-amakna",
     "name": "Salle du Trône d'Allister",
     "mainType": "Salle",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Amakna",
       "number": "139/162",
@@ -6092,9 +5310,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Lorsque son trône est de faïence, n'espérez point avoir audience — Proverbe amaknéen."
@@ -6104,10 +5320,7 @@
     "id": "sanglier-des-plaines-amakna",
     "name": "Sanglier des Plaines",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Sanglier"
-    ],
+    "subTypes": ["Monstre", "Sanglier"],
     "extension": {
       "name": "Amakna",
       "number": "37/162",
@@ -6126,19 +5339,15 @@
     },
     "effects": [
       {
-        "description": "Au début de la phase d'action, le Sanglier des Plaines inflige 1 Dommage  à l'Allié ou Héros de votre choix qu'il bloque ou qui le bloque.",
-        "elements": [
-          "air"
-        ],
+        "description": "Au début de la phase d'action, le Sanglier des Plaines inflige 1 Dommage à l'Allié ou Héros de votre choix qu'il bloque ou qui le bloque.",
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Toutes les Glaies vous le diront, ce Sanglier est un gros cochon ! Et ça n'est pas pour leur déplaire…"
@@ -6150,11 +5359,7 @@
     "id": "scarature-blanche-amakna",
     "name": "Scarature Blanche",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Ceinture",
-      "Scarafeuille Blanc"
-    ],
+    "subTypes": ["Armure", "Ceinture", "Scarafeuille Blanc"],
     "extension": {
       "name": "Amakna",
       "number": "142/162",
@@ -6169,7 +5374,7 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, le Porteur de la Scarature Blanche gagne  ou .",
+        "description": "Jusqu'à la fin du tour, le Porteur de la Scarature Blanche gagne ou .",
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -6178,22 +5383,15 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "La ceinture des débutants en Skaraté."
@@ -6229,9 +5427,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Il n'y a que les portails d'Otomaï qui n'ont pas de failles ! — Otomaï."
@@ -6241,9 +5437,7 @@
     "id": "severum-amakna",
     "name": "Severum",
     "mainType": "Action",
-    "subTypes": [
-      "Potion"
-    ],
+    "subTypes": ["Potion"],
     "extension": {
       "name": "Amakna",
       "number": "94/162",
@@ -6264,9 +5458,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Certains racontent qu'on peut créer un Severum de vérité avec cette sève. Malheureusement, il s'agit d'un mensonge !"
@@ -6277,12 +5469,7 @@
     "id": "shak-shaka-roi-des-robomates-amakna",
     "name": "Shak Shaka, Roi des Robomates",
     "mainType": "Allié",
-    "subTypes": [
-      "Roi",
-      "Xélor",
-      "Ecaflip",
-      "Unique"
-    ],
+    "subTypes": ["Roi", "Xélor", "Ecaflip", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "59/162",
@@ -6323,10 +5510,7 @@
       }
     ],
     "experience": 2,
-    "artists": [
-      "Mig",
-      "Toshy"
-    ],
+    "artists": ["Mig", "Toshy"],
     "notes": [
       "Pour fabriquer un Équipement, vous devez le jouer depuis votre main en payant sa Recette. Le pouvoir de Shak Shaka, Roi des Robomates ne fonctionne pas si vous jouez un Équipement en payant son coût en Ressources ou si vous le faites entrer en jeu d'une autre manière."
     ],
@@ -6340,11 +5524,7 @@
     "id": "sheran-sharm-roi-sadida-amakna",
     "name": "Sheran Sharm, Roi Sadida",
     "mainType": "Allié",
-    "subTypes": [
-      "Roi",
-      "Sadida",
-      "Unique"
-    ],
+    "subTypes": ["Roi", "Sadida", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "21/162",
@@ -6380,9 +5560,7 @@
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Cela concerne aussi bien les mouvements proposés par les joueurs que ceux provoqués par l'effet d'une Action, d'un Sort ou d'un pouvoir, y compris ceux que vous contrôlez."
     ],
@@ -6417,9 +5595,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Cédric Plaisant (Aisk)"
-    ],
+    "artists": ["Cédric Plaisant (Aisk)"],
     "notes": [],
     "flavor": {
       "text": "Pff… * Soupir * … Rhaahhh… Snif… — Raval, dans l'un de ses bons jours."
@@ -6429,10 +5605,7 @@
     "id": "skeunk-amakna",
     "name": "Skeunk",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa",
-      "Unique"
-    ],
+    "subTypes": ["Eniripsa", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "61/162",
@@ -6473,9 +5646,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Mickael Lepretre"
-    ],
+    "artists": ["Mickael Lepretre"],
     "notes": [
       "Mot \"autres\" manquant sur la carte.",
       "Le Skeunk n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés au Skeunk, et si les Alliés choisis durant son pouvoir d'apparition quittent le jeu avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit."
@@ -6491,10 +5662,7 @@
     "id": "smarmot-amakna",
     "name": "Smarmot",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Smare"
-    ],
+    "subTypes": ["Monstre", "Smare"],
     "extension": {
       "name": "Amakna",
       "number": "25/162",
@@ -6524,9 +5692,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kosal Sok"
-    ],
+    "artists": ["Kosal Sok"],
     "notes": [],
     "flavor": {
       "text": "Comment appelle",
@@ -6539,10 +5705,7 @@
     "id": "snouffle-amakna",
     "name": "Snouffle",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Snouffle"
-    ],
+    "subTypes": ["Monstre", "Snouffle"],
     "extension": {
       "name": "Amakna",
       "number": "68/162",
@@ -6568,9 +5731,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Lorsqu'il vit la fortune de Ruel pour la première fois, il eut aussitôt le Snouffle coupé !"
@@ -6582,9 +5743,7 @@
     "id": "sterylin-amakna",
     "name": "Sterylin",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa"
-    ],
+    "subTypes": ["Pandawa"],
     "extension": {
       "name": "Amakna",
       "number": "62/162",
@@ -6603,10 +5762,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Didier Chrispeels (Crisse)",
-      "Roberto Pena"
-    ],
+    "artists": ["Didier Chrispeels (Crisse)", "Roberto Pena"],
     "notes": [],
     "flavor": {
       "text": "Cette ménestrelle olé olé, descendante d'Allister, devint célèbre avec sa chanson « Une caresse sur mon Chacha »."
@@ -6617,9 +5773,7 @@
     "id": "stiveun-cigalle-amakna",
     "name": "Stiveun Cigalle",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa"
-    ],
+    "subTypes": ["Pandawa"],
     "extension": {
       "name": "Amakna",
       "number": "17/162",
@@ -6650,9 +5804,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Quand Stiveun Cigalle a trop bu, il a des fourmis dans les pattes."
@@ -6663,9 +5815,7 @@
     "id": "temple-eniripsa-amakna",
     "name": "Temple Eniripsa",
     "mainType": "Salle",
-    "subTypes": [
-      "Temple"
-    ],
+    "subTypes": ["Temple"],
     "extension": {
       "name": "Amakna",
       "number": "138/162",
@@ -6689,14 +5839,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Oh, n'ayons pas peur des maux ! Aux grands mots, les grands remèdes ! — Elya Wood, gardienne du Temple."
@@ -6706,9 +5852,7 @@
     "id": "temple-pandawa-amakna",
     "name": "Temple Pandawa",
     "mainType": "Salle",
-    "subTypes": [
-      "Temple"
-    ],
+    "subTypes": ["Temple"],
     "extension": {
       "name": "Amakna",
       "number": "137/162",
@@ -6732,14 +5876,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "P",
@@ -6750,9 +5890,7 @@
     "id": "temple-sacrieur-amakna",
     "name": "Temple Sacrieur",
     "mainType": "Salle",
-    "subTypes": [
-      "Temple"
-    ],
+    "subTypes": ["Temple"],
     "extension": {
       "name": "Amakna",
       "number": "135/162",
@@ -6781,14 +5919,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [
       "Lorsque vous échangez un Allié ou Héros attaquant ou bloqueur avec un autre Allié ou Héros hors du combat, alors ce dernier rentre en combat à sa place, tandis que ce premier revient dans le Monde en conservant son statut (incliné ou redressé)."
     ],
@@ -6800,9 +5934,7 @@
     "id": "temple-sadida-amakna",
     "name": "Temple Sadida",
     "mainType": "Salle",
-    "subTypes": [
-      "Temple"
-    ],
+    "subTypes": ["Temple"],
     "extension": {
       "name": "Amakna",
       "number": "136/162",
@@ -6826,14 +5958,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Ça te dit de venir boire un dernier ptit verre dans mon temple, poupée ? — Berkzoy, Sadida bourreau des cœurs."
@@ -6843,10 +5971,7 @@
     "id": "terril-hachterr-amakna",
     "name": "Terril Hachterr",
     "mainType": "Allié",
-    "subTypes": [
-      "Sadida",
-      "Forgemage"
-    ],
+    "subTypes": ["Sadida", "Forgemage"],
     "extension": {
       "name": "Amakna",
       "number": "9/162",
@@ -6865,15 +5990,13 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner  à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Hop ! Voilà, m'sieur Grizzou, votre pelle est enfin terre",
@@ -6886,10 +6009,7 @@
     "id": "tetes-a-clic-et-a-clac-amakna",
     "name": "Têtes à Clic et à Clac",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Unique"
-    ],
+    "subTypes": ["Objet", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "157/162",
@@ -6915,9 +6035,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Seul Fallanster connaît aujourd'hui la cachette de ces entraves ayant servi à emprisonner Uk'Not'Allag."
@@ -6932,11 +6050,7 @@
     "id": "tofu-malefique-amakna",
     "name": "Tofu Maléfique",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tofu",
-      "Vampyre"
-    ],
+    "subTypes": ["Monstre", "Tofu", "Vampyre"],
     "extension": {
       "name": "Amakna",
       "number": "29/162",
@@ -6967,9 +6081,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aude Serriere"
-    ],
+    "artists": ["Aude Serriere"],
     "notes": [
       "Le pouvoir du Tofu Maléfique ne se déclenche que lors de la destruction d'un Tofu autre que lui même."
     ],
@@ -6998,10 +6110,8 @@
     },
     "effects": [
       {
-        "description": "Au début de votre tour, recyclez une carte  ou détruisez la Tour des Miss Moches.",
-        "elements": [
-          "feu"
-        ],
+        "description": "Au début de votre tour, recyclez une carte ou détruisez la Tour des Miss Moches.",
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -7012,9 +6122,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Dites",
@@ -7025,10 +6133,7 @@
     "id": "tourmenteur-amakna",
     "name": "Tourmenteur",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Tourmenteur"
-    ],
+    "subTypes": ["Arme", "Tourmenteur"],
     "extension": {
       "name": "Amakna",
       "number": "152/162",
@@ -7053,12 +6158,12 @@
         "requiresIncline": false
       },
       {
-        "description": "Le Porteur du Tourmenteur gagne tous les pouvoirs  de l'Allié de votre choix jusqu'à la fin du tour.",
+        "description": "Le Porteur du Tourmenteur gagne tous les pouvoirs de l'Allié de votre choix jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
-        "description": "Le  Tourmenteur ne permet de copier que les pouvoirs incluant le symbole «  ». Il ne copie pas les pouvoirs ne contenant pas un coût demandant d'incliner un Allié ou les pouvoirs d'apparition.",
+        "description": "Le Tourmenteur ne permet de copier que les pouvoirs incluant le symbole « ». Il ne copie pas les pouvoirs ne contenant pas un coût demandant d'incliner un Allié ou les pouvoirs d'apparition.",
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -7069,9 +6174,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le Tourmenteur ne permet de copier que les pouvoirs incluant le symbole « ». Il ne copie pas les pouvoirs ne contenant pas un coût demandant d'incliner un Allié ou les pouvoirs d'apparition.",
       "Si le Porteur du Tourmenteur avait des pouvoirs , il les conserve et peut toujours les utiliser. Si un Allié possède plusieurs pouvoirs , son contrôleur doit choisir lequel il décide d'utiliser au moment où il incline celui-ci."
@@ -7089,11 +6192,7 @@
     "id": "tournesol-affame-amakna",
     "name": "Tournesol Affamé",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fleur",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Fleur", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "22/162",
@@ -7112,10 +6211,8 @@
     },
     "effects": [
       {
-        "description": "Le Tournesol Affamé inflige 1 Dommage  à l'Allié ou Héros de votre choix. Son contrôleur perd 1 PM jusqu'à la fin du tour.",
-        "elements": [
-          "terre"
-        ],
+        "description": "Le Tournesol Affamé inflige 1 Dommage à l'Allié ou Héros de votre choix. Son contrôleur perd 1 PM jusqu'à la fin du tour.",
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -7127,9 +6224,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [
       "Un Héros ne peut pas avoir moins de 0 PM. Si le pouvoir du Tournesol Affamé devait diminuer les PM d'un Héros à moins de 0, on considère que ses PM restent à 0."
     ],
@@ -7143,10 +6238,7 @@
     "id": "trefle-amakna",
     "name": "Trèfle",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Ecaflip"
-    ],
+    "subTypes": ["Sort", "Ecaflip"],
     "extension": {
       "name": "Amakna",
       "number": "101/162",
@@ -7172,9 +6264,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Nénent"
-    ],
+    "artists": ["Nénent"],
     "notes": [
       "Si deux joueurs adverses jouent Trèfle, alors on considère qu'ils ont tous les deux gagné le prochain Chi-Fu-Mi qu'ils jouent ensemble."
     ],
@@ -7187,11 +6277,7 @@
     "id": "tynril-amakna",
     "name": "Tynril",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tynril",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Tynril", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "42/162",
@@ -7210,16 +6296,13 @@
     },
     "effects": [
       {
-        "description": "Chaque fois que le Tynril subit un ou plusieurs Dommages, il perd toutes ses  actuelles, puis gagne  dans l'élément des Dommages qu'il a subis jusqu'à la fin du tour.",
+        "description": "Chaque fois que le Tynril subit un ou plusieurs Dommages, il perd toutes ses actuelles, puis gagne dans l'élément des Dommages qu'il a subis jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
-        "description": "le joueur adverse joue une Flèche Chercheuse sur votre Tynril au début de son tour. Ce dernier va subir 1 Dommage , puis gagner . Ensuite le joueur adverse attaque votre Tynril avec une Gelée Fraise. Le Tynril va subir des Dommages de la part de la Gelée Fraise et simultanément perdre sa , puis gagner  jusqu'à la fin du tour, ou jusqu'à ce qu'il subisse de nouveau des Dommages.",
-        "elements": [
-          "air",
-          "feu"
-        ],
+        "description": "le joueur adverse joue une Flèche Chercheuse sur votre Tynril au début de son tour. Ce dernier va subir 1 Dommage , puis gagner . Ensuite le joueur adverse attaque votre Tynril avec une Gelée Fraise. Le Tynril va subir des Dommages de la part de la Gelée Fraise et simultanément perdre sa , puis gagner jusqu'à la fin du tour, ou jusqu'à ce qu'il subisse de nouveau des Dommages.",
+        "elements": ["air", "feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -7231,9 +6314,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Nicolas Detrain (Tiko)"
-    ],
+    "artists": ["Nicolas Detrain (Tiko)"],
     "notes": [
       "Exemple : le joueur adverse joue une Flèche Chercheuse sur votre Tynril au début de son tour. Ce dernier va subir 1 Dommage , puis gagner Résistance 2 . Ensuite le joueur adverse attaque votre Tynril avec une Gelée Fraise. Le Tynril va subir des Dommages de la part de la Gelée Fraise et simultanément perdre sa Résistance 2 , puis gagner Résistance 2 jusqu'à la fin du tour, ou jusqu'à ce qu'il subisse de nouveau des Dommages.",
       "Trait \"Monstre\" ajouté."
@@ -7248,10 +6329,7 @@
     "id": "uk-not-allag-amakna",
     "name": "Uk'Not'Allag",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Unique"
-    ],
+    "subTypes": ["Démon", "Unique"],
     "extension": {
       "name": "Amakna",
       "number": "41/162",
@@ -7289,15 +6367,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [
       "Vous pouvez utiliser ce pouvoir même si vous n'avez plus d'Allié Démon dans votre Pioche. Si c'est le cas, vous devez mélanger votre Pioche après voir cherché."
     ],
@@ -7311,10 +6385,7 @@
     "id": "valsa-sordida-amakna",
     "name": "Valsa Sordida",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Champignon"
-    ],
+    "subTypes": ["Monstre", "Champignon"],
     "extension": {
       "name": "Amakna",
       "number": "33/162",
@@ -7334,18 +6405,14 @@
     "effects": [
       {
         "description": "Détruisez la Zone de Niveau X de votre choix.",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Lui et Evangelyne auraient pu faire de si beaux enfants… Non ?"

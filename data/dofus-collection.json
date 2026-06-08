@@ -3,10 +3,7 @@
     "id": "abraknyde-sombre-dofus-collection",
     "name": "Abraknyde Sombre",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Abraknyde"
-    ],
+    "subTypes": ["Monstre", "Abraknyde"],
     "extension": {
       "name": "Dofus Collection",
       "number": "13/100",
@@ -26,9 +23,7 @@
     "effects": [
       {
         "description": "L'Abraknyde Sombre inflige 2 Dommages  à l'Allié ou Héros de votre choix dans le Monde ou dans son Havre Sac.",
-        "elements": [
-          "terre"
-        ],
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -37,15 +32,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Le tronc flétri, les branches dégarnies, l'Abraknyde Sombre a des raisons de se ronger le bout des feuilles…"
@@ -57,10 +48,7 @@
     "id": "abraknyde-dofus-collection",
     "name": "Abraknyde",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Abraknyde"
-    ],
+    "subTypes": ["Monstre", "Abraknyde"],
     "extension": {
       "name": "Dofus Collection",
       "number": "12/100",
@@ -80,9 +68,7 @@
     "effects": [
       {
         "description": "Mettez en jeu un jeton \"Monstre — Arakne\" de Force 1 . N'utilisez ce pouvoir qu'une seule fois par tour.",
-        "elements": [
-          "terre"
-        ],
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -94,9 +80,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Dominique Bertail"
-    ],
+    "artists": ["Dominique Bertail"],
     "notes": [
       "La restriction d'utilisation ne s'applique qu'à un seul Abraknyde donné. Si vous contrôlez deux exemplaires de l'Abraknyde, vous pouvez utiliser le pouvoir de chacun une fois."
     ],
@@ -126,9 +110,7 @@
     "effects": [
       {
         "description": "Inclinez l'un de vos Alliés ou Héros : il inflige sa Force en Dommages  à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -144,9 +126,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Xavier Banteignie"
-    ],
+    "artists": ["Xavier Banteignie"],
     "notes": [
       "L'effet de cette carte prend en compte tous les modificateurs qui s'appliquent à la Force de l'Allié ou Héros incliné. Si l'Allié ou Héros incliné quitte le jeu avant qu'Agression ne soit résolue, on prend alors comme référence la valeur de Force qu'il avait au moment où il a quitté le jeu.",
       "Les Règles de Portée impactent le fonctionnement d'Agression. Un Allié ou Héros dans son Havre Sac ne pouvant pas infliger de Dommages à un Allié ou Héros adverse dans le Monde, il est impossible d'incliner un Allié ou Héros dans son Havre Sac si un Allié ou Héros adverse dans le Monde a été choisi."
@@ -159,9 +139,7 @@
     "id": "amal-odoua-dofus-collection",
     "name": "Amal Odoua",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa"
-    ],
+    "subTypes": ["Eniripsa"],
     "extension": {
       "name": "Dofus Collection",
       "number": "66/100",
@@ -187,9 +165,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Maroin Eluasti"
-    ],
+    "artists": ["Maroin Eluasti"],
     "notes": [],
     "flavor": {
       "text": "Amal Odoua n'aurait jamais dû mettre sa main à couper qu'il était plus puissant que vous…"
@@ -200,9 +176,7 @@
     "id": "amar-casto-dofus-collection",
     "name": "Amar Casto",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca"
-    ],
+    "subTypes": ["Féca"],
     "extension": {
       "name": "Dofus Collection",
       "number": "68/100",
@@ -222,17 +196,13 @@
     "effects": [
       {
         "description": "Amar Casto gagne le  de votre choix jusqu'à la fin du tour.",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Amar Casto a tout pour lui. Brico, déco, jardin : ce bûcheron peut même transformer un Abraknyde en meuble !"
@@ -243,11 +213,7 @@
     "id": "amulette-du-tofu-dofus-collection",
     "name": "Amulette du Tofu",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Amulette",
-      "Tofu"
-    ],
+    "subTypes": ["Bijou", "Amulette", "Tofu"],
     "extension": {
       "name": "Dofus Collection",
       "number": "89/100",
@@ -262,15 +228,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Benoit Laigle (Ben Pirate)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Benoit Laigle (Ben Pirate)"],
     "notes": [],
     "flavor": {
       "text": "Oh, vous savez, on ne fait pas d'amulette sans casser des œufs ! — Shani Sings, bijoutière d'Astrub."
@@ -284,11 +245,7 @@
     "id": "anneau-de-bouze-le-clerc-dofus-collection",
     "name": "Anneau de Bouze le Clerc",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau",
-      "Bouftou"
-    ],
+    "subTypes": ["Bijou", "Anneau", "Bouftou"],
     "extension": {
       "name": "Dofus Collection",
       "number": "79/100",
@@ -303,15 +260,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "Dans WAKFU, le plus connu des descendants de Bouze le Clerc n'est autre que Bouze XII, le pape de Bonta."
@@ -325,11 +277,7 @@
     "id": "anneau-du-prespic-dofus-collection",
     "name": "Anneau du Prespic",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau",
-      "Prespic"
-    ],
+    "subTypes": ["Bijou", "Anneau", "Prespic"],
     "extension": {
       "name": "Dofus Collection",
       "number": "85/100",
@@ -345,9 +293,7 @@
     "effects": [
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic lui inflige 1 Dommage .",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -361,15 +307,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Michael Olivier (Mikl)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
     "notes": [
       "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\""
     ],
@@ -386,10 +327,7 @@
     "id": "arakne-dofus-collection",
     "name": "Arakne",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Arakne"
-    ],
+    "subTypes": ["Monstre", "Arakne"],
     "extension": {
       "name": "Dofus Collection",
       "number": "11/100",
@@ -408,9 +346,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [],
     "flavor": {
       "text": "N'essayez pas de lui filer entre les pattes ou elle vous donnera du fil à retordre !"
@@ -422,9 +358,7 @@
     "id": "berlanette-chichi-dofus-collection",
     "name": "Berlanette Chichi",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof"
-    ],
+    "subTypes": ["Enutrof"],
     "extension": {
       "name": "Dofus Collection",
       "number": "69/100",
@@ -450,10 +384,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Didier Chrispeels (Crisse)",
-      "Roberto Pena"
-    ],
+    "artists": ["Didier Chrispeels (Crisse)", "Roberto Pena"],
     "notes": [],
     "flavor": {
       "text": "Son sac est rempli de jolies pièces jaunes, soigneusement amassées par son ami Vadid Mouillet."
@@ -464,10 +395,7 @@
     "id": "black-tiwabbit-dofus-collection",
     "name": "Black Tiwabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Dofus Collection",
       "number": "43/100",
@@ -492,18 +420,14 @@
       },
       {
         "description": "Dites \"WABEHAMEHA !\" : Le Black Tiwabbit inflige 1 Dommage  à l'Allié ou Héros de votre choix, puis détruisez-le.",
-        "elements": [
-          "eau"
-        ],
+        "elements": ["eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
     "flavor": {
       "text": "L'amouw wend fou, il n'y a que la guewwe qui Wambo — Black Tiwabbit."
@@ -515,10 +439,7 @@
     "id": "black-wabbit-dofus-collection",
     "name": "Black Wabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Dofus Collection",
       "number": "44/100",
@@ -549,9 +470,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [],
     "flavor": {
       "text": "Si le Black Wabbit est aussi sombre, c'est qu'il se gave de Cawottes twop cuites !"
@@ -563,9 +482,7 @@
     "id": "bony-parc-ur-dofus-collection",
     "name": "Bony Parcœur",
     "mainType": "Allié",
-    "subTypes": [
-      "Sram"
-    ],
+    "subTypes": ["Sram"],
     "extension": {
       "name": "Dofus Collection",
       "number": "62/100",
@@ -596,9 +513,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [],
     "flavor": {
       "text": "Après avoir braqué la banque d'Astrub avec Klaïd Barreau, Bony ne pouvait que finir derrière les barreaux !"
@@ -609,10 +524,7 @@
     "id": "boo-dofus-collection",
     "name": "Boo",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flasque"
-    ],
+    "subTypes": ["Monstre", "Flasque"],
     "extension": {
       "name": "Dofus Collection",
       "number": "40/100",
@@ -631,9 +543,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Gao Lao"
-    ],
+    "artists": ["Gao Lao"],
     "notes": [],
     "flavor": {
       "text": "Il baraît que les vabeurs de la boue de Boo qui bout beuvent bousser n'imborte qui à bout."
@@ -645,11 +555,7 @@
     "id": "boufbottes-dofus-collection",
     "name": "Boufbottes",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Bouftou"
-    ],
+    "subTypes": ["Armure", "Bottes", "Bouftou"],
     "extension": {
       "name": "Dofus Collection",
       "number": "81/100",
@@ -664,9 +570,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "artists": [
@@ -687,10 +591,7 @@
     "id": "boufton-blanc-dofus-collection",
     "name": "Boufton Blanc",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bouftou"
-    ],
+    "subTypes": ["Monstre", "Bouftou"],
     "extension": {
       "name": "Dofus Collection",
       "number": "2/100",
@@ -709,9 +610,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Xavier Banteignie"
-    ],
+    "artists": ["Xavier Banteignie"],
     "notes": [],
     "flavor": {
       "text": "Il pleut, il pleut bergère, rentre tes Blancs Bouftons ! — Menge Paca, berger Féca."
@@ -723,11 +622,7 @@
     "id": "bouftou-royal-dofus-collection",
     "name": "Bouftou Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bouftou",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Bouftou", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "5/100",
@@ -773,9 +668,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Bruno Bessadi"
-    ],
+    "artists": ["Bruno Bessadi"],
     "notes": [
       "Le pouvoir du Bouftou Royal demande de chercher une carte \"Bouftou\" sans préciser son type. Ce pouvoir s'applique à tous les types de carte de la Famille Bouftou, c'est-à-dire contenant \"Bouftou\" dans la ligne de trait.",
       "L'effet devient \"Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.\""
@@ -790,10 +683,7 @@
     "id": "bouftou-dofus-collection",
     "name": "Bouftou",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bouftou"
-    ],
+    "subTypes": ["Monstre", "Bouftou"],
     "extension": {
       "name": "Dofus Collection",
       "number": "3/100",
@@ -812,9 +702,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Bruno Bessadi"
-    ],
+    "artists": ["Bruno Bessadi"],
     "notes": [],
     "flavor": {
       "text": "Le Bouftou meurt, l'odeur reste. — Pieh Dpool, célèbre tailleur Osamodas."
@@ -826,9 +714,7 @@
     "id": "bowissette-dofus-collection",
     "name": "Bowissette",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa"
-    ],
+    "subTypes": ["Pandawa"],
     "extension": {
       "name": "Dofus Collection",
       "number": "71/100",
@@ -854,9 +740,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Ce soir, chez Bowissette, événement, c'est soirée Bouftonik !"
@@ -867,10 +751,7 @@
     "id": "bwork-archer-dofus-collection",
     "name": "Bwork Archer",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork"
-    ],
+    "subTypes": ["Monstre", "Bwork"],
     "extension": {
       "name": "Dofus Collection",
       "number": "32/100",
@@ -890,19 +771,14 @@
     "effects": [
       {
         "description": "Le Bwork Archer inflige 1 Dommage  à l'Allié de votre choix qui vient de subir des Dommages.",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Nicolas Mitric",
-      "Sébastien Lamirand"
-    ],
+    "artists": ["Nicolas Mitric", "Sébastien Lamirand"],
     "notes": [],
     "flavor": {
       "text": "C'est en chantant « Bwork ! Bwork ! Bwork ! » que Sabrinarc devint la cible d'un groupe de Bworks Archers en rut."
@@ -914,10 +790,7 @@
     "id": "bwork-mage-dofus-collection",
     "name": "Bwork Mage",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork"
-    ],
+    "subTypes": ["Monstre", "Bwork"],
     "extension": {
       "name": "Dofus Collection",
       "number": "31/100",
@@ -937,18 +810,14 @@
     "effects": [
       {
         "description": "Défaussez une carte : Le Bwork Mage inflige 1 Dommage  à l'Allié ou Héros de votre choix. N'utilisez ce pouvoir qu'une seule fois par tour.",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Abracada… Bwork !"
@@ -960,11 +829,7 @@
     "id": "cape-du-prespic-dofus-collection",
     "name": "Cape du Prespic",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Cape",
-      "Prespic"
-    ],
+    "subTypes": ["Armure", "Cape", "Prespic"],
     "extension": {
       "name": "Dofus Collection",
       "number": "86/100",
@@ -980,9 +845,7 @@
     "effects": [
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de la Cape du Prespic, la Cape du Prespic lui inflige 1 Dommage .",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1001,15 +864,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Michael Olivier (Mikl)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
     "notes": [
       "Famille \"Armure\" manquant sur la carte.",
       "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\""
@@ -1027,11 +885,7 @@
     "id": "cape-du-tofu-dofus-collection",
     "name": "Cape du Tofu",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Cape",
-      "Tofu"
-    ],
+    "subTypes": ["Armure", "Cape", "Tofu"],
     "extension": {
       "name": "Dofus Collection",
       "number": "90/100",
@@ -1055,15 +909,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Benoit Laigle (Ben Pirate)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Benoit Laigle (Ben Pirate)"],
     "notes": [],
     "flavor": {
       "text": "Une cape à porter sans rien en",
@@ -1079,10 +928,7 @@
     "id": "cavalier-porkass-dofus-collection",
     "name": "Cavalier Porkass",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Porkass"
-    ],
+    "subTypes": ["Monstre", "Porkass"],
     "extension": {
       "name": "Dofus Collection",
       "number": "6/100",
@@ -1108,9 +954,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Grooouuiiik, grouiiiik, huummppfff, groooouuiikk, humpf, grrrr, groouuiiikkk ! — Célèbre maxime Porkass."
@@ -1122,11 +966,7 @@
     "id": "ceinture-du-prespic-dofus-collection",
     "name": "Ceinture du Prespic",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Ceinture",
-      "Prespic"
-    ],
+    "subTypes": ["Armure", "Ceinture", "Prespic"],
     "extension": {
       "name": "Dofus Collection",
       "number": "87/100",
@@ -1141,15 +981,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Michael Olivier (Mikl)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
     "notes": [
       "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\""
     ],
@@ -1165,10 +1000,7 @@
     "id": "chacha-noir-dofus-collection",
     "name": "Chacha Noir",
     "mainType": "Équipement",
-    "subTypes": [
-      "Familier",
-      "Unique"
-    ],
+    "subTypes": ["Familier", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "92/100",
@@ -1184,26 +1016,19 @@
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte  de votre Défausse ou détruisez le Chacha Noir.",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Le pouvoir du Chacha Noir devient : \"Au début de votre tour, recyclez une carte  de votre Défausse ou détruisez le Chacha Noir.\"",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["François Houssin (Franho)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [
       "Le pouvoir du Chacha Noir devient : \"Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Chacha Noir.\""
     ],
@@ -1220,10 +1045,7 @@
     "id": "chafer-archer-dofus-collection",
     "name": "Chafer Archer",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Chafer"
-    ],
+    "subTypes": ["Monstre", "Chafer"],
     "extension": {
       "name": "Dofus Collection",
       "number": "35/100",
@@ -1243,9 +1065,7 @@
     "effects": [
       {
         "description": "Quand le Chafer Archer apparaît, il peut infliger 2 Dommages  répartis comme vous le souhaitez entre n'importe quel nombre d'Alliés ou Héros de votre choix.",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1257,9 +1077,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [
       "Vous ne pouvez pas choisir d'infliger 0 dommages à un Allié ou Héros avec ce pouvoir. Chaque Allié ou Héros choisi doit se voir infliger au moins 1 Dommage."
     ],
@@ -1274,11 +1092,7 @@
     "id": "chafer-lancier-dofus-collection",
     "name": "Chafer Lancier",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Chafer",
-      "Chevalier"
-    ],
+    "subTypes": ["Monstre", "Chafer", "Chevalier"],
     "extension": {
       "name": "Dofus Collection",
       "number": "36/100",
@@ -1298,9 +1112,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Utilisé dans le sport populaire du Lancer de Chafer, on le connaît aussi sous le nom de Chafer Lancier Lancé."
@@ -1312,10 +1124,7 @@
     "id": "chafer-dofus-collection",
     "name": "Chafer",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Chafer"
-    ],
+    "subTypes": ["Monstre", "Chafer"],
     "extension": {
       "name": "Dofus Collection",
       "number": "34/100",
@@ -1340,9 +1149,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Gerald Parel"
-    ],
+    "artists": ["Gerald Parel"],
     "notes": [],
     "flavor": {
       "text": "Dans deux minutes c'est minuit, Eddy le Chafer viendra te chercher si tu n'es pas au lit ! — Comptine brakmarienne."
@@ -1354,10 +1161,7 @@
     "id": "chef-de-guerre-bouftou-dofus-collection",
     "name": "Chef de Guerre Bouftou",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bouftou"
-    ],
+    "subTypes": ["Monstre", "Bouftou"],
     "extension": {
       "name": "Dofus Collection",
       "number": "4/100",
@@ -1383,9 +1187,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Bruno Bessadi"
-    ],
+    "artists": ["Bruno Bessadi"],
     "notes": [],
     "flavor": {
       "text": "Son secret pour séduire les Boufettes ? Des cornes toujours impeccables !"
@@ -1397,11 +1199,7 @@
     "id": "chene-mou-dofus-collection",
     "name": "Chêne Mou",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Abraknyde",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Abraknyde", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "14/100",
@@ -1426,17 +1224,13 @@
       },
       {
         "description": "Tant que le Chêne Mou est dans le Monde, vos autres Monstres  ont +1 en Force.",
-        "elements": [
-          "terre"
-        ],
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Choisissez jusqu'à deux Alliés ou Héros attaquants ou bloqueurs. Le Chêne Mou leur inflige 2 Dommages .",
-        "elements": [
-          "terre"
-        ],
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -1450,15 +1244,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le bonus de +1 en Force s'applique également aux Monstres que vous contrôlez dans votre Havre Sac car la capacité du Chêne Mou n'est pas affectée par les Règles de Choix."
     ],
@@ -1472,9 +1262,7 @@
     "id": "chevalier-tenebres-dofus-collection",
     "name": "Chevalier Ténèbres",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Dofus Collection",
       "number": "72/100",
@@ -1507,37 +1295,27 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "neutre"
-        ]
+        "elements": ["neutre"]
       },
       {
         "name": "Le",
@@ -1545,9 +1323,7 @@
       }
     ],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [
       "Le Chevalier Ténèbres a une Résistance d'un point dans chaque élément."
     ],
@@ -1560,10 +1336,7 @@
     "id": "cochon-de-lait-dofus-collection",
     "name": "Cochon de Lait",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Cochon"
-    ],
+    "subTypes": ["Monstre", "Cochon"],
     "extension": {
       "name": "Dofus Collection",
       "number": "47/100",
@@ -1582,9 +1355,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Pasquéoz"
-    ],
+    "artists": ["Pasquéoz"],
     "notes": [],
     "flavor": {
       "text": "Nom d'un crottin de Bouftou, par où faut l'traire c'bestio ?! — Lee Aibig, paysan sénile."
@@ -1596,10 +1367,7 @@
     "id": "coffre-malveillant-dofus-collection",
     "name": "Coffre Malveillant",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Coffre"
-    ],
+    "subTypes": ["Monstre", "Coffre"],
     "extension": {
       "name": "Dofus Collection",
       "number": "42/100",
@@ -1624,9 +1392,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ne lui tournez pas le dos ! C'est bien connu : dès que ça tourne, il passe à l'action et c'est dans la boîte !"
@@ -1638,10 +1404,7 @@
     "id": "corailleur-dofus-collection",
     "name": "Corailleur",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "9/100",
@@ -1672,9 +1435,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Nicolas Detrain (Tiko)"
-    ],
+    "artists": ["Nicolas Detrain (Tiko)"],
     "notes": [],
     "flavor": {
       "text": "Ce voyeur parcourt la plage de corail pour mieux mater votre attirail. Envoyez",
@@ -1687,10 +1448,7 @@
     "id": "corbac-dofus-collection",
     "name": "Corbac",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Corbac"
-    ],
+    "subTypes": ["Monstre", "Corbac"],
     "extension": {
       "name": "Dofus Collection",
       "number": "25/100",
@@ -1716,9 +1474,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Virginie Augustin"
-    ],
+    "artists": ["Virginie Augustin"],
     "notes": [],
     "flavor": {
       "text": "Quand soudain, semblant crever le ciel, et venant de nulle part, surgit un Corbac noir… — Barbaratte."
@@ -1756,9 +1512,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Mélanie Christin (Méli)"
-    ],
+    "artists": ["Mélanie Christin (Méli)"],
     "notes": [
       "Une fois le Coup critique joué, le bonus de Force est fixé jusqu'à la fin du tour."
     ],
@@ -1770,10 +1524,7 @@
     "id": "craqueboule-dofus-collection",
     "name": "Craqueboule",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "8/100",
@@ -1799,9 +1550,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Séverine Duboscq"
-    ],
+    "artists": ["Séverine Duboscq"],
     "notes": [],
     "flavor": {
       "text": "Le Craqueboule a un joujou extra. Les dames Enutrof en tombent à genoux en criant : « Craqueboule hue ! »"
@@ -1813,10 +1562,7 @@
     "id": "craqueleur-des-plaines-dofus-collection",
     "name": "Craqueleur des Plaines",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "10/100",
@@ -1852,9 +1598,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Savez",
@@ -1867,10 +1611,7 @@
     "id": "craqueleur-dofus-collection",
     "name": "Craqueleur",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "7/100",
@@ -1892,15 +1633,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Virginie Augustin"
-    ],
+    "artists": ["Virginie Augustin"],
     "notes": [],
     "flavor": {
       "text": "Ne dites jamais à un Craqueleur que vous avez un caillou dans votre chaussure, vous risqueriez de le blesser…"
@@ -1912,11 +1649,7 @@
     "id": "crocabulia-dofus-collection",
     "name": "Crocabulia",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragoeuf",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Dragoeuf", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "38/100",
@@ -1941,9 +1674,7 @@
       },
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige des Dommages au Crocabulia, le Crocabulia lui inflige 3 Dommages .",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -1952,15 +1683,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Nicolas Mitric"
-    ],
+    "artists": ["Nicolas Mitric"],
     "notes": [],
     "flavor": {
       "text": "Il paraît que sa corne a d'étranges vertus. Mais personne n'a encore réussi à percer tous ses mystères…"
@@ -1972,10 +1699,7 @@
     "id": "crocodaille-dofus-collection",
     "name": "Crocodaille",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Crocodaille"
-    ],
+    "subTypes": ["Monstre", "Crocodaille"],
     "extension": {
       "name": "Dofus Collection",
       "number": "41/100",
@@ -2001,9 +1725,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Carlos Pardo (Made)"
-    ],
+    "artists": ["Carlos Pardo (Made)"],
     "notes": [],
     "flavor": {
       "text": "Pour jouer les dandies, rien de tel qu'une paire de bottes en écailles de Crocodaille !"
@@ -2015,10 +1737,7 @@
     "id": "crustorail-passaoh-dofus-collection",
     "name": "Crustorail Passaoh",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Crustacé"
-    ],
+    "subTypes": ["Monstre", "Crustacé"],
     "extension": {
       "name": "Dofus Collection",
       "number": "30/100",
@@ -2044,9 +1763,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Burari"
-    ],
+    "artists": ["Burari"],
     "notes": [],
     "flavor": {
       "text": "Souffle",
@@ -2059,10 +1776,7 @@
     "id": "dark-vlad-dofus-collection",
     "name": "Dark Vlad",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop",
-      "Unique"
-    ],
+    "subTypes": ["Iop", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "37/100",
@@ -2092,18 +1806,14 @@
       },
       {
         "description": "Le Dark Vlad inflige 2 Dommages  à tous les Alliés ou Héros attaquants ou Bloqueurs.",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Nathanaël Bronn"
-    ],
+    "artists": ["Nathanaël Bronn"],
     "notes": [],
     "flavor": {
       "text": "Dark Vlad le sanguinaire est aussi cruel que dérangé. Mieux vaut donc éviter d'aller le déranger davantage…"
@@ -2115,9 +1825,7 @@
     "id": "demi-finame-dofus-collection",
     "name": "Demi Finame",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas"
-    ],
+    "subTypes": ["Osamodas"],
     "extension": {
       "name": "Dofus Collection",
       "number": "67/100",
@@ -2142,9 +1850,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Demi Finame n'est pas du genre à faire les choses à moitié. Dans tous les cas, c'est elle qui mène la partie !"
@@ -2155,9 +1861,7 @@
     "id": "deyko-nexion-dofus-collection",
     "name": "Deyko Nexion",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor"
-    ],
+    "subTypes": ["Xélor"],
     "extension": {
       "name": "Dofus Collection",
       "number": "70/100",
@@ -2190,18 +1894,12 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Souillon (Maliki)"
-    ],
-    "notes": [
-      "Vous ne pouvez utiliser ce pouvoir que sur des Alliés en jeu."
-    ],
+    "artists": ["Souillon (Maliki)"],
+    "notes": ["Vous ne pouvez utiliser ce pouvoir que sur des Alliés en jeu."],
     "flavor": {
       "text": "Habituée des tavernes, Deyko Nexion fréquentait les serveurs de mousse, qui devaient ramer pour la séduire."
     },
@@ -2234,10 +1932,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "François Houssin (Franho)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Si vous pensiez avoir un véritable Dofus entre les mains, vous vous fourrez le doigt dans l'œuf !"
@@ -2250,9 +1945,7 @@
     "id": "dofus-ebene-dofus-collection",
     "name": "Dofus Ébène",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "99/100",
@@ -2278,10 +1971,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "François Houssin (Franho)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Ne pas absorber. Il ne s'agit pas d'un Dofus en chocolat ! — Précaution d'emploi destinée aux Iops."
@@ -2295,9 +1985,7 @@
     "id": "dofus-emeraude-dofus-collection",
     "name": "Dofus Émeraude",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "95/100",
@@ -2320,10 +2008,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "François Houssin (Franho)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Ce Dofus a la même couleur que la soupe de votre grand",
@@ -2337,9 +2022,7 @@
     "id": "dofus-ivoire-dofus-collection",
     "name": "Dofus Ivoire",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "100/100",
@@ -2370,10 +2053,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "François Houssin (Franho)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Vendre mon Dofus Ivoire ?! Peuh ! J'aimerais bien vous y voir ! — Job Sidiène, Enutrof ruiné."
@@ -2387,9 +2067,7 @@
     "id": "dofus-ocre-dofus-collection",
     "name": "Dofus Ocre",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "98/100",
@@ -2412,10 +2090,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "François Houssin (Franho)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Créé par Terrakourial, le Dragon de la Terre, ce Dofus concentre de grands pouvoirs à ne pas mettre entre toutes les mains… Ni entre tous les pieds d'ailleurs."
@@ -2428,9 +2103,7 @@
     "id": "dofus-pourpre-dofus-collection",
     "name": "Dofus Pourpre",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "97/100",
@@ -2466,10 +2139,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "L'effet devient \"Les Dommages sur le point d'être infligés par vos Alliés ou Héros sont augmentés de 1.\""
     ],
@@ -2486,9 +2156,7 @@
     "id": "dofus-turquoise-dofus-collection",
     "name": "Dofus Turquoise",
     "mainType": "Dofus",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "96/100",
@@ -2519,9 +2187,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "T'as de beaux œufs, tu sais ? — Jean Gadin au Dragon Cochon."
@@ -2535,11 +2201,7 @@
     "id": "dragon-cochon-dofus-collection",
     "name": "Dragon Cochon",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Cochon",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Cochon", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "48/100",
@@ -2564,9 +2226,7 @@
       },
       {
         "description": "Le prochain Allié ou Héros qui s'incline subit 4 Dommages .",
-        "elements": [
-          "eau"
-        ],
+        "elements": ["eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -2580,15 +2240,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Gilles Aris"
-    ],
+    "artists": ["Gilles Aris"],
     "notes": [
       "Ce pouvoir surveille les évenements d'inclinaison. Ce pouvoir est aveugle aux évenements d'inclinaison qui se produisent dans le Havre Sac adverse. Si l'évenement d'inclinaison déclenche le pouvoir mais que l'Allié a été détruit avant la résolution du pouvoir, le pouvoir du Dragon Cochon se résout mais est sans effet."
     ],
@@ -2602,10 +2258,7 @@
     "id": "dragoune-rose-dofus-collection",
     "name": "Dragoune Rose",
     "mainType": "Équipement",
-    "subTypes": [
-      "Familier",
-      "Unique"
-    ],
+    "subTypes": ["Familier", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "93/100",
@@ -2641,9 +2294,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les gains d'XP sont calculés en une seule fois à chaque résolution de phase ou d'action. Ainsi, à la fin d'un combat où plusieurs alliés adverses ont été détruits, ou à la suite d'un de vos sorts détruisant plusieurs alliés adverses, si la Dragoune Rose est en jeu, on calcule d'abord la somme d'XP gagnés avant d'y ajouter 1.",
       "Un gain d'XP de 0 n'est jamais pris en compte. Votre Héros ne gagne pas 1 XP à chaque fois qu'il devrait \"gagner\" 0 XP.",
@@ -2688,9 +2339,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Eric Herenguel"
-    ],
+    "artists": ["Eric Herenguel"],
     "notes": [
       "Échec critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement mais ne sont pas comme joués. Échec critique ne permet donc pas de les annuler."
     ],
@@ -2702,10 +2351,7 @@
     "id": "epouvantail-dofus-collection",
     "name": "Épouvantail",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Épouvantail"
-    ],
+    "subTypes": ["Monstre", "Épouvantail"],
     "extension": {
       "name": "Dofus Collection",
       "number": "1/100",
@@ -2745,9 +2391,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Farhad Chams"
-    ],
+    "artists": ["Farhad Chams"],
     "notes": [
       "L'Épouvantail n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés à l'Épouvantail, et s'il perd ses pouvoirs avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
       "Trait \"Monstre\" ajouté."
@@ -2762,10 +2406,7 @@
     "id": "gelee-bleue-dofus-collection",
     "name": "Gelée Bleue",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Gelée"
-    ],
+    "subTypes": ["Monstre", "Gelée"],
     "extension": {
       "name": "Dofus Collection",
       "number": "53/100",
@@ -2791,9 +2432,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aurore Demilly"
-    ],
+    "artists": ["Aurore Demilly"],
     "notes": [],
     "flavor": {
       "text": "Hum, délifieufe fette felée, mais pourquoi fe fens plus ma boufe ? — Dernières paroles de Brouce Boulgoure."
@@ -2805,10 +2444,7 @@
     "id": "gelee-citron-dofus-collection",
     "name": "Gelée Citron",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Gelée"
-    ],
+    "subTypes": ["Monstre", "Gelée"],
     "extension": {
       "name": "Dofus Collection",
       "number": "51/100",
@@ -2834,9 +2470,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aurore Demilly"
-    ],
+    "artists": ["Aurore Demilly"],
     "notes": [],
     "flavor": {
       "text": "C'est bien connu, les Gelées Royales sont des joueuses invertébrées ! — Koltard le Iop."
@@ -2848,10 +2482,7 @@
     "id": "gelee-fraise-dofus-collection",
     "name": "Gelée Fraise",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Gelée"
-    ],
+    "subTypes": ["Monstre", "Gelée"],
     "extension": {
       "name": "Dofus Collection",
       "number": "52/100",
@@ -2877,9 +2508,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aurore Demilly"
-    ],
+    "artists": ["Aurore Demilly"],
     "notes": [],
     "flavor": {
       "text": "Si en voyant cette Gelée flasque et rose vous pensez immédiatement à vos fesses, arrêtez d'en manger."
@@ -2891,10 +2520,7 @@
     "id": "gelee-menthe-dofus-collection",
     "name": "Gelée Menthe",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Gelée"
-    ],
+    "subTypes": ["Monstre", "Gelée"],
     "extension": {
       "name": "Dofus Collection",
       "number": "50/100",
@@ -2920,9 +2546,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aurore Demilly"
-    ],
+    "artists": ["Aurore Demilly"],
     "notes": [],
     "flavor": {
       "text": "Prenez une Gelée à la Menthe, j'insiste ! — Edrige Valling, à son fiancé Allen Dechakal."
@@ -2934,10 +2558,7 @@
     "id": "goultard-le-barbare-dofus-collection",
     "name": "Goultard le Barbare",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop",
-      "Unique"
-    ],
+    "subTypes": ["Iop", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "59/100",
@@ -2978,9 +2599,7 @@
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les pouvoirs de Goultard le Barbare sont des pouvoirs déclenchés et ne sont, comme tous les pouvoirs déclenchés, pas considérés comme joués par le joueur. Ces pouvoirs ne peuvent donc pas être annulés par la carte Échec Critique."
     ],
@@ -2994,9 +2613,7 @@
     "id": "grostruf-dofus-collection",
     "name": "Grostruf",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip"
-    ],
+    "subTypes": ["Ecaflip"],
     "extension": {
       "name": "Dofus Collection",
       "number": "65/100",
@@ -3021,9 +2638,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Tous ceux qui se sont retrouvés nez à nez avec Grostruff, heu… bah… ils ne voyaient plus grand chose !"
@@ -3034,9 +2649,7 @@
     "id": "guy-yomtella-dofus-collection",
     "name": "Guy Yomtella",
     "mainType": "Allié",
-    "subTypes": [
-      "Crâ"
-    ],
+    "subTypes": ["Crâ"],
     "extension": {
       "name": "Dofus Collection",
       "number": "63/100",
@@ -3056,17 +2669,13 @@
     "effects": [
       {
         "description": "Guy Yomtella inflige 1 Dommage  à l'Allié de votre choix.",
-        "elements": [
-          "air"
-        ],
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Redressez Guy Yomtella.",
-        "elements": [
-          "air"
-        ],
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -3078,9 +2687,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
       "Guy Yomtella inflige des Dommages et non des blessures (terme obsolète)."
     ],
@@ -3093,9 +2700,7 @@
     "id": "jice-aouaire-dofus-collection",
     "name": "Jicé Aouaire",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop"
-    ],
+    "subTypes": ["Iop"],
     "extension": {
       "name": "Dofus Collection",
       "number": "60/100",
@@ -3126,9 +2731,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Laurent Leleu"
-    ],
+    "artists": ["Laurent Leleu"],
     "notes": [
       "Jicé Aouaire ne peut pas être déclaré comme bloqueur par son contrôleur durant la Phase de Déclaration des Bloqueurs, ni être placé comme bloqueur durant la Phase d'Actions."
     ],
@@ -3141,10 +2744,7 @@
     "id": "kanigrou-dofus-collection",
     "name": "Kanigrou",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kanigrou"
-    ],
+    "subTypes": ["Monstre", "Kanigrou"],
     "extension": {
       "name": "Dofus Collection",
       "number": "24/100",
@@ -3185,9 +2785,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Gerald Parel"
-    ],
+    "artists": ["Gerald Parel"],
     "notes": [
       "Vous n'êtes pas obligé d'utiliser ce pouvoir. Vous ne pouvez utiliser ce pouvoir que si le Kanigrou est sur le point de recevoir des Dommages, et seulement sur le prochain paquet de Dommages que le Kanigrou devrait subir.",
       "Si le Kanigrou est détruit parce que vous avez décidez de jouer son pouvoir, votre adversaire ne gagne pas d'XP car vous êtes vous-même le contrôleur du pouvoir à l'origine de la destruction du Kanigrou.",
@@ -3203,11 +2801,7 @@
     "id": "kimbo-dofus-collection",
     "name": "Kimbo",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kimbo",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Kimbo", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "49/100",
@@ -3238,9 +2832,7 @@
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Avec lui, on ne sait jamais sur quel pied danser…"
@@ -3252,10 +2844,7 @@
     "id": "kralamoure-dofus-collection",
     "name": "Kralamoure",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kralamoure"
-    ],
+    "subTypes": ["Monstre", "Kralamoure"],
     "extension": {
       "name": "Dofus Collection",
       "number": "45/100",
@@ -3275,9 +2864,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Il t'accule à coups de tentacules, et même quand tu es ridicule, jamais il ne recule."
@@ -3289,11 +2876,7 @@
     "id": "kwaklame-de-glace-dofus-collection",
     "name": "Kwaklame de Glace",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Épée",
-      "Kwak de Glace"
-    ],
+    "subTypes": ["Arme", "Épée", "Kwak de Glace"],
     "extension": {
       "name": "Dofus Collection",
       "number": "84/100",
@@ -3308,22 +2891,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Monsieur Frise se coupa un jour la langue en suçant un bâtonnet glacé. Il décida alors de s'en faire une épée."
@@ -3337,11 +2913,7 @@
     "id": "kwakobottes-de-glace-dofus-collection",
     "name": "Kwakobottes de Glace",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Kwak de Glace"
-    ],
+    "subTypes": ["Armure", "Bottes", "Kwak de Glace"],
     "extension": {
       "name": "Dofus Collection",
       "number": "83/100",
@@ -3359,25 +2931,16 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
-    "notes": [
-      "Famille \"Armure\" manquant sur la carte."
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "notes": ["Famille \"Armure\" manquant sur la carte."],
     "flavor": {
       "text": "Grâce à ces bottes, vous ne sentirez plus la douleur ! Ni vos pieds, d'ailleurs…"
     },
@@ -3391,11 +2954,7 @@
     "id": "kwakoiffe-de-glace-dofus-collection",
     "name": "Kwakoiffe de Glace",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Kwak de Glace"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Kwak de Glace"],
     "extension": {
       "name": "Dofus Collection",
       "number": "82/100",
@@ -3413,25 +2972,16 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
-    "notes": [
-      "Famille \"Armure\" manquant sur la carte."
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "notes": ["Famille \"Armure\" manquant sur la carte."],
     "flavor": {
       "text": "Attention ! Il s'agit d'une coiffe et non d'une ceinture ! De nombreux Iops en ont d'ailleurs fait les frais."
     },
@@ -3445,11 +2995,7 @@
     "id": "maitre-corbac-dofus-collection",
     "name": "Maître Corbac",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Corbac",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Corbac", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "26/100",
@@ -3487,15 +3033,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Guillaume Renard (Run)"
-    ],
+    "artists": ["Guillaume Renard (Run)"],
     "notes": [
       "Le pouvoir du Maître Corbac est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Échec Critique."
     ],
@@ -3509,10 +3051,7 @@
     "id": "mama-bwork-dofus-collection",
     "name": "Mama Bwork",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork"
-    ],
+    "subTypes": ["Monstre", "Bwork"],
     "extension": {
       "name": "Dofus Collection",
       "number": "33/100",
@@ -3538,9 +3077,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Quand on voit la sale trogne qu'ont ses enfants, on comprend qu'elle soit aussi furieuse. Et inversement…"
@@ -3552,11 +3089,7 @@
     "id": "marteau-du-bouftou-dofus-collection",
     "name": "Marteau du Bouftou",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Marteau",
-      "Bouftou"
-    ],
+    "subTypes": ["Arme", "Marteau", "Bouftou"],
     "extension": {
       "name": "Dofus Collection",
       "number": "80/100",
@@ -3574,15 +3107,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "On dit que les Bouftous sont un peu marteaux. Mon marteau, lui, il est complètement Bouftou. — Deudoiné, forgeron."
@@ -3597,9 +3125,7 @@
     "id": "merelyne-manro-dofus-collection",
     "name": "Merelyne Manro",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur"
-    ],
+    "subTypes": ["Sacrieur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "64/100",
@@ -3624,19 +3150,14 @@
       },
       {
         "description": "Détruisez l'Équipement de Niveau X de votre choix.",
-        "elements": [
-          "neutre"
-        ],
+        "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Didier Chrispeels (Crisse)",
-      "Fred Besson"
-    ],
+    "artists": ["Didier Chrispeels (Crisse)", "Fred Besson"],
     "notes": [],
     "flavor": {
       "text": "Les hommes préfèrent les rousses. Et ce n'est pas Merelyne qui va s'en plaindre."
@@ -3647,11 +3168,7 @@
     "id": "minotoror-dofus-collection",
     "name": "Minotoror",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Minos",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Minos", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "15/100",
@@ -3684,15 +3201,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "feu"
-        ]
+        "elements": ["feu"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "L'immense bête est pourvue de la force de cent Iops et de l'haleine de cent Bouftous."
@@ -3704,11 +3217,7 @@
     "id": "moon-dofus-collection",
     "name": "Moon",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Moon",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Moon", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "27/100",
@@ -3733,9 +3242,7 @@
       },
       {
         "description": "Le Moon inflige 3 Dommages  à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "air"
-        ],
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -3744,15 +3251,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "eau"
-        ]
+        "elements": ["eau"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Nicolas Keramidas"
-    ],
+    "artists": ["Nicolas Keramidas"],
     "notes": [],
     "flavor": {
       "text": "On dit que toucher de la peau de singe porte bonheur. Pas sûr que ce soit le cas de celle du Moon…"
@@ -3764,10 +3267,7 @@
     "id": "moskito-dofus-collection",
     "name": "Moskito",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Moskito"
-    ],
+    "subTypes": ["Monstre", "Moskito"],
     "extension": {
       "name": "Dofus Collection",
       "number": "19/100",
@@ -3786,9 +3286,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Pierre Loyvet"
-    ],
+    "artists": ["Pierre Loyvet"],
     "notes": [],
     "flavor": {
       "text": "J'ai fait un carton ce soir ! Ils n'ont pas arrêté de m'applaudir ! — Jeune Moskito à sa mère."
@@ -3800,10 +3298,7 @@
     "id": "musha-l-oni-dofus-collection",
     "name": "Musha l'Oni",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Oni"
-    ],
+    "subTypes": ["Monstre", "Oni"],
     "extension": {
       "name": "Dofus Collection",
       "number": "54/100",
@@ -3823,18 +3318,14 @@
     "effects": [
       {
         "description": "Reprenez Musha l'Oni dans votre main. Il inflige 2 Dommages  à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "eau"
-        ],
+        "elements": ["eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jérôme Brulin"
-    ],
+    "artists": ["Jérôme Brulin"],
     "notes": [],
     "flavor": {
       "text": "Ne prenez pas tout ce qui sort de sa bouche pour argent comptant. Musha ment comme un arracheur de dents…"
@@ -3846,11 +3337,7 @@
     "id": "nomekop-le-crapoteur-dofus-collection",
     "name": "Nomekop le Crapoteur",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip",
-      "Bandit",
-      "Unique"
-    ],
+    "subTypes": ["Ecaflip", "Bandit", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "57/100",
@@ -3870,21 +3357,14 @@
     "effects": [
       {
         "description": "Nomekop le Crapoteur inflige successivement 1 Dommage , ,  et  à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "feu",
-          "terre",
-          "air",
-          "eau"
-        ],
+        "elements": ["feu", "terre", "air", "eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Nathanaël Bronn"
-    ],
+    "artists": ["Nathanaël Bronn"],
     "notes": [
       "Les Dommages sont infligés en une seule fois, mais en quatre paquets différents. Si l'Allié ou le Héros choisi possède une Résistance à un Élément, seul le Dommage provenant de cet Élément est impacté par la Résistance. Si un pouvoir qui augmente ou réduit tous les Dommages infligés est actif au moment où le pouvoir de Nomekop le Crapoteur est utilisé, chaque point de Dommage est impacté."
     ],
@@ -3919,9 +3399,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Florian Dupre"
-    ],
+    "artists": ["Florian Dupre"],
     "notes": [],
     "flavor": {
       "text": "Évitez de faire le malin alors que vous savez à peine aligner trois sorts ! Sinon, gare à la déculottée !"
@@ -3931,10 +3409,7 @@
     "id": "otomai-dofus-collection",
     "name": "Otomaï",
     "mainType": "Allié",
-    "subTypes": [
-      "Alchimiste",
-      "Unique"
-    ],
+    "subTypes": ["Alchimiste", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "39/100",
@@ -3975,9 +3450,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [
       "Le pouvoir d'Otomaï est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Échec Critique.",
       "Si vous choisissez de recyclez la Défausse de votre adversaire, c'est votre adversaire qui choisit l'ordre des cartes à recycler car c'est le propriétaire de la Défausse qui choisit cet ordre lorsque plusieurs cartes sont à recycler simultanément."
@@ -3992,10 +3465,7 @@
     "id": "ouassingue-dofus-collection",
     "name": "Ouassingue",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flasque"
-    ],
+    "subTypes": ["Monstre", "Flasque"],
     "extension": {
       "name": "Dofus Collection",
       "number": "46/100",
@@ -4021,9 +3491,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Valentine Pasche"
-    ],
+    "artists": ["Valentine Pasche"],
     "notes": [],
     "flavor": {
       "text": "Une chose est sûre, elle va vous faire mordre la poussière… Et vous en sortirez complètement lessivé !"
@@ -4035,11 +3503,7 @@
     "id": "pantoufles-du-tofu-dofus-collection",
     "name": "Pantoufles du Tofu",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Tofu"
-    ],
+    "subTypes": ["Armure", "Bottes", "Tofu"],
     "extension": {
       "name": "Dofus Collection",
       "number": "88/100",
@@ -4063,15 +3527,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Benoit Laigle (Ben Pirate)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Benoit Laigle (Ben Pirate)"],
     "notes": [],
     "flavor": {
       "text": "Qui aurait cru qu'un crâne de Tofu pouvait être aussi confortable ?"
@@ -4086,9 +3545,7 @@
     "id": "parchemin-blanc-dofus-collection",
     "name": "Parchemin Blanc",
     "mainType": "Action",
-    "subTypes": [
-      "Parchemin"
-    ],
+    "subTypes": ["Parchemin"],
     "extension": {
       "name": "Dofus Collection",
       "number": "73/100",
@@ -4109,9 +3566,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Avant d'avoir la crampe de l'écrivain, le poète Broidelair a souvent connu l'angoisse du Parchemin Blanc."
@@ -4122,10 +3577,7 @@
     "id": "pissenlit-diabolique-dofus-collection",
     "name": "Pissenlit Diabolique",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fleur"
-    ],
+    "subTypes": ["Monstre", "Fleur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "20/100",
@@ -4145,19 +3597,13 @@
     "effects": [
       {
         "description": "Le Pissenlit Diabolique peut être recyclé comme une carte  ou .",
-        "elements": [
-          "air",
-          "feu"
-        ],
+        "elements": ["air", "feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Karine Le Logeais (Kness)",
-      "Carlos Pardo (Made)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)", "Carlos Pardo (Made)"],
     "notes": [],
     "flavor": {
       "text": "Peuh ! Les Pissenlits Diaboliques, moi je les balaie d'un seul souffle ! — Dikô la Rousse, jardinière érudite."
@@ -4169,10 +3615,7 @@
     "id": "prespic-dofus-collection",
     "name": "Prespic",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Prespic"
-    ],
+    "subTypes": ["Monstre", "Prespic"],
     "extension": {
       "name": "Dofus Collection",
       "number": "28/100",
@@ -4198,9 +3641,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Gerald Parel"
-    ],
+    "artists": ["Gerald Parel"],
     "notes": [],
     "flavor": {
       "text": "Les enfants Osamodas adorent le serrer fort contre leur poitrine avant de s'endormir le soir."
@@ -4212,11 +3653,7 @@
     "id": "qil-bil-dofus-collection",
     "name": "Qil Bil",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork",
-      "Bandit"
-    ],
+    "subTypes": ["Monstre", "Bwork", "Bandit"],
     "extension": {
       "name": "Dofus Collection",
       "number": "56/100",
@@ -4241,9 +3678,7 @@
       },
       {
         "description": "Quand Qil Bil apparaît, il peut infliger 3 Dommages  à l'Allié ou Héros incliné de votre choix.",
-        "elements": [
-          "feu"
-        ],
+        "elements": ["feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -4252,16 +3687,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Nicolas Mitric",
-      "Sébastien Lamirand"
-    ],
+    "artists": ["Nicolas Mitric", "Sébastien Lamirand"],
     "notes": [],
     "flavor": {
       "text": "Qil Bil ? Ce n'est rien d'autre qu'un gros Tofu en Vinyle. — Goultard le Barbare."
@@ -4273,10 +3703,7 @@
     "id": "razielle-dofus-collection",
     "name": "Razielle",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Épée"
-    ],
+    "subTypes": ["Arme", "Épée"],
     "extension": {
       "name": "Dofus Collection",
       "number": "91/100",
@@ -4287,9 +3714,7 @@
     "effects": [
       {
         "description": "Le Porteur de la Razielle gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de  de cette façon, détruisez Razielle à la fin du tour.",
-        "elements": [
-          "terre"
-        ],
+        "elements": ["terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -4298,15 +3723,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, la Razielle est l'arme favorite de nombreux Iops et Ecaflips spécialisés en Force."
@@ -4320,11 +3740,7 @@
     "id": "rok-gnorok-dofus-collection",
     "name": "Rok Gnorok",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur",
-      "Bandit"
-    ],
+    "subTypes": ["Monstre", "Craqueleur", "Bandit"],
     "extension": {
       "name": "Dofus Collection",
       "number": "55/100",
@@ -4352,15 +3768,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "terre"
-        ]
+        "elements": ["terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "\"Cui",
@@ -4373,10 +3785,7 @@
     "id": "rose-demoniaque-dofus-collection",
     "name": "Rose Démoniaque",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fleur"
-    ],
+    "subTypes": ["Monstre", "Fleur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "22/100",
@@ -4402,9 +3811,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Elle pique et en plus elle sent mauvais ? Alors ça, c'est le bouquet ! — Karol, botaniste en herbe."
@@ -4416,10 +3823,7 @@
     "id": "sanglier-des-plaines-dofus-collection",
     "name": "Sanglier des Plaines",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Sanglier"
-    ],
+    "subTypes": ["Monstre", "Sanglier"],
     "extension": {
       "name": "Dofus Collection",
       "number": "23/100",
@@ -4439,18 +3843,14 @@
     "effects": [
       {
         "description": "Au début de la phase d'action, le Sanglier des Plaines inflige 1 Dommage  à l'Allié ou Héros de votre choix qu'il bloque ou qui le bloque.",
-        "elements": [
-          "air"
-        ],
+        "elements": ["air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Toutes les Glaies vous le diront, ce Sanglier est un gros cochon ! Et ça n'est pas pour leur déplaire…"
@@ -4462,10 +3862,7 @@
     "id": "serpentin-dofus-collection",
     "name": "Serpentin",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Reptile"
-    ],
+    "subTypes": ["Monstre", "Reptile"],
     "extension": {
       "name": "Dofus Collection",
       "number": "29/100",
@@ -4505,9 +3902,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Si le Serpentin est dressé et choisi par une Action, et si une réaction à cette Action le fait s'incliner, alors au moment de résoudre la première Action le Serpentin est incliné et est donc un choix invalide : l'Action est annulée.",
       "Le Serpentin ne peut pas être choisi pour l'application d'un pouvoir ou d'une action. Toutefois il peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix."
@@ -4522,9 +3917,7 @@
     "id": "shika-ingalsse-dofus-collection",
     "name": "Shika Ingalsse",
     "mainType": "Allié",
-    "subTypes": [
-      "Sadida"
-    ],
+    "subTypes": ["Sadida"],
     "extension": {
       "name": "Dofus Collection",
       "number": "61/100",
@@ -4555,9 +3948,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [
       "Le pouvoir de Shika Ingalsse concerne un effet en File d'Attente. Le pouvoir de Shika Ingalsse peut être utilisé à partir du Havre Sac pour annuler l'effet d'un Bonus de Force qui se trouve dans la File d'Attente."
     ],
@@ -4570,11 +3961,7 @@
     "id": "tofu-malefique-dofus-collection",
     "name": "Tofu Maléfique",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tofu",
-      "Vampyre"
-    ],
+    "subTypes": ["Monstre", "Tofu", "Vampyre"],
     "extension": {
       "name": "Dofus Collection",
       "number": "17/100",
@@ -4605,9 +3992,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aude Serriere"
-    ],
+    "artists": ["Aude Serriere"],
     "notes": [
       "Le pouvoir du Tofu Maléfique ne se déclenche que lors de la destruction d'un autre Tofu que lui même."
     ],
@@ -4621,11 +4006,7 @@
     "id": "tofu-royal-dofus-collection",
     "name": "Tofu Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tofu",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Tofu", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "18/100",
@@ -4668,15 +4049,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "air"
-        ]
+        "elements": ["air"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [
       "Le bonus de Force du Tofu Royal ne dure pas jusqu'à la fin du tour, mais tant qu'il est en jeu dans le Monde. Si un Tofu (un Allié de Force 1) dans le Monde en même temps que le Tofu Royal subit 1 Dommage, puis que le Tofu Royal quitte le jeu, le Tofu est détruit."
     ],
@@ -4690,10 +4067,7 @@
     "id": "tofu-dofus-collection",
     "name": "Tofu",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tofu"
-    ],
+    "subTypes": ["Monstre", "Tofu"],
     "extension": {
       "name": "Dofus Collection",
       "number": "16/100",
@@ -4712,9 +4086,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Vous le trouverez sûrement mignon. Surtout lorsqu'il sortira du four accompagné de Patates et de Cawottes."
@@ -4726,10 +4098,7 @@
     "id": "tournesol-sauvage-dofus-collection",
     "name": "Tournesol Sauvage",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fleur"
-    ],
+    "subTypes": ["Monstre", "Fleur"],
     "extension": {
       "name": "Dofus Collection",
       "number": "21/100",
@@ -4749,19 +4118,13 @@
     "effects": [
       {
         "description": "Le Tournesol Sauvage peut être recyclé comme une carte  ou .",
-        "elements": [
-          "air",
-          "terre"
-        ],
+        "elements": ["air", "terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Karine Le Logeais (Kness)",
-      "Carlos Pardo (Made)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)", "Carlos Pardo (Made)"],
     "notes": [],
     "flavor": {
       "text": "Depuis qu'un Tournesol a arraché l'oreille du peintre Vince Van Gode, il ne peut plus les voir en peinture !"
@@ -4773,10 +4136,7 @@
     "id": "vil-smisse-dofus-collection",
     "name": "Vil Smisse",
     "mainType": "Allié",
-    "subTypes": [
-      "Bandit",
-      "Unique"
-    ],
+    "subTypes": ["Bandit", "Unique"],
     "extension": {
       "name": "Dofus Collection",
       "number": "58/100",
@@ -4817,9 +4177,7 @@
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [
       "Une fois le joueur choisi, la Force de Vil Smisse est recalculée en permanence en fonction du nombre de cartes dans la main de ce joueur. Si le joueur choisi possède 6 cartes en main au début de votre tour, la Force de Vil Smisse est de 3. S'il défausse une carte par la suite, la Force de Vil Smisse passe immédiatement à 4."
     ],
@@ -4833,9 +4191,7 @@
     "id": "zaap-dofus-collection",
     "name": "Zaap",
     "mainType": "Zone",
-    "subTypes": [
-      "Zaap"
-    ],
+    "subTypes": ["Zaap"],
     "extension": {
       "name": "Dofus Collection",
       "number": "78/100",
@@ -4856,9 +4212,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Qui m'aime me *ZAAP*… — SebsokK le Sacrieur utilisant un Zaap."

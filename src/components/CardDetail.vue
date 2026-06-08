@@ -34,7 +34,7 @@
               v-if="card.subTypes && card.subTypes.length > 0"
               class="stat-desc"
             >
-              {{ card.subTypes.join(', ') }}
+              {{ card.subTypes.join(", ") }}
             </div>
           </div>
 
@@ -89,8 +89,6 @@
           <div class="text-sm whitespace-pre-line">{{ card.description }}</div>
         </div>
 
-
-
         <!-- Action d'ajout au deck -->
         <div v-if="enableAddToDeck" class="mt-4">
           <button
@@ -107,65 +105,65 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, computed } from 'vue'
-import { useCardStore } from '@/stores/cardStore'
-import type { Card } from '@/types/cards'
+import { defineProps, defineEmits, computed } from "vue";
+import { useCardStore } from "@/stores/cardStore";
+import type { Card } from "@/types/cards";
 
 interface Props {
-  card: Card
-  enableAddToDeck?: boolean
+  card: Card;
+  enableAddToDeck?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   enableAddToDeck: false,
-})
+});
 
 const emit = defineEmits<{
-  (e: 'add-to-deck', card: Card): void
-}>()
+  (e: "add-to-deck", card: Card): void;
+}>();
 
-const cardStore = useCardStore()
+const cardStore = useCardStore();
 
 // Quantité dans la collection
 const cardQuantity = computed(() => {
-  return cardStore.getCardQuantity(props.card.id) || { normal: 0, foil: 0 }
-})
+  return cardStore.getCardQuantity(props.card.id) || { normal: 0, foil: 0 };
+});
 
 // Image par défaut en cas d'erreur
 function getDefaultCardImage() {
-  return '/images/card-back.png'
+  return "/images/card-back.png";
 }
 
 // Gestion des erreurs d'image
 function handleImageError(event: Event) {
-  const target = event.target as HTMLImageElement
-  target.src = getDefaultCardImage()
+  const target = event.target as HTMLImageElement;
+  target.src = getDefaultCardImage();
 }
 
 // Classes pour les éléments
 function getElementClass(element: string) {
   const classes = {
-    Feu: 'bg-red-500',
-    Eau: 'bg-blue-500',
-    Terre: 'bg-amber-700',
-    Air: 'bg-emerald-500',
-    Neutre: 'bg-gray-500',
-  }
+    Feu: "bg-red-500",
+    Eau: "bg-blue-500",
+    Terre: "bg-amber-700",
+    Air: "bg-emerald-500",
+    Neutre: "bg-gray-500",
+  };
 
-  return classes[element] || classes['Neutre']
+  return classes[element] || classes["Neutre"];
 }
 
 // Classes pour les raretés
 function getRarityClass(rarity: string) {
   const classes = {
-    Commune: 'badge-secondary',
-    'Peu Commune': 'badge-primary',
-    Rare: 'badge-accent',
-    Mythique: 'badge-warning',
-    Légendaire: 'badge-error',
-  }
+    Commune: "badge-secondary",
+    "Peu Commune": "badge-primary",
+    Rare: "badge-accent",
+    Mythique: "badge-warning",
+    Légendaire: "badge-error",
+  };
 
-  return classes[rarity] || 'badge-secondary'
+  return classes[rarity] || "badge-secondary";
 }
 
 // Déterminer l'élément de la carte
@@ -173,13 +171,13 @@ function getCardElement(): string {
   return (
     props.card.stats?.niveau?.element ||
     props.card.stats?.force?.element ||
-    'Neutre'
-  )
+    "Neutre"
+  );
 }
 
 // Ajouter au deck
 function addToDeck() {
-  emit('add-to-deck', props.card)
+  emit("add-to-deck", props.card);
 }
 </script>
 

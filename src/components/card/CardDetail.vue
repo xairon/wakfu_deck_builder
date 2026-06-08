@@ -34,12 +34,15 @@
                 <div
                   class="relative aspect-[2/3] bg-base-200 rounded-lg overflow-hidden"
                 >
-                  <img
-                    :src="getImagePath"
-                    :alt="card.name"
-                    class="w-full h-full object-contain transform transition-transform duration-500 hover:scale-110"
-                    @error="handleImageError"
-                  />
+                  <picture>
+                    <source :srcset="webpImagePath" type="image/webp" />
+                    <img
+                      :src="getImagePath"
+                      :alt="card.name"
+                      class="w-full h-full object-contain transform transition-transform duration-500 hover:scale-110"
+                      @error="handleImageError"
+                    />
+                  </picture>
 
                   <!-- Overlay de rareté -->
                   <div
@@ -125,7 +128,7 @@
                   <div v-if="card.notes.length > 0" class="space-y-2">
                     <h4 class="font-semibold">Notes</h4>
                     <div class="p-2 bg-base-200 rounded text-sm">
-                      {{ card.notes.join(' ') }}
+                      {{ card.notes.join(" ") }}
                     </div>
                   </div>
 
@@ -202,156 +205,167 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 import {
   TransitionRoot,
   TransitionChild,
   Dialog,
   DialogPanel,
   DialogTitle,
-} from '@headlessui/vue'
-import type { Card, HeroCard } from '@/types/cards'
-import { useCardStore } from '@/stores/cardStore'
-import { useToast } from '@/composables/useToast'
-import { isHeroCard } from '@/types/cards'
+} from "@headlessui/vue";
+import type { Card, HeroCard } from "@/types/cards";
+import { useCardStore } from "@/stores/cardStore";
+import { useToast } from "@/composables/useToast";
+import { isHeroCard } from "@/types/cards";
+import { getWebpPath } from "@/utils/imagePaths";
 
 const props = defineProps<{
-  card: Card
-  isOpen: boolean
-  quantity: number
-}>()
+  card: Card;
+  isOpen: boolean;
+  quantity: number;
+}>();
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'update:quantity', value: number): void
-}>()
+  (e: "close"): void;
+  (e: "update:quantity", value: number): void;
+}>();
 
-const cardStore = useCardStore()
-const toast = useToast()
+const cardStore = useCardStore();
+const toast = useToast();
 
-const maxQuantity = 3
+const maxQuantity = 3;
 
 // Computed
 const getImagePath = computed(() => {
-  if (props.card.imageUrl?.startsWith('http')) {
-    return props.card.imageUrl
+  if (props.card.imageUrl?.startsWith("http")) {
+    return props.card.imageUrl;
   }
   // Extraire l'extension du shortUrl si l'extension n'est pas définie
-  let extensionName = props.card.extension?.name
+  let extensionName = props.card.extension?.name;
   if (!extensionName && props.card.url) {
-    const urlParts = props.card.url.split('/')
-    extensionName = urlParts[urlParts.length - 2] // Prend l'avant-dernier segment de l'URL
+    const urlParts = props.card.url.split("/");
+    extensionName = urlParts[urlParts.length - 2]; // Prend l'avant-dernier segment de l'URL
   }
   const extension =
-    extensionName?.toLowerCase().replace(/\s+/g, '-') || 'unknown'
-  return `/images/cards/${props.card.id}-${extension}.webp`
-})
+    extensionName?.toLowerCase().replace(/\s+/g, "-") || "unknown";
+  return `/images/cards/${props.card.id}-${extension}.webp`;
+});
+
+// Full-size WebP path for detail view
+const webpImagePath = computed(() => {
+  const imgPath = getImagePath.value;
+  if (imgPath.startsWith("http")) return imgPath;
+  return getWebpPath(imgPath);
+});
 
 const hasStats = computed(() => {
-  const stats = props.card.stats
-  return stats && (stats.health || stats.power || stats.movement)
-})
+  const stats = props.card.stats;
+  return stats && (stats.health || stats.power || stats.movement);
+});
 
 const typeClass = computed(() => {
   switch (props.card.mainType.toLowerCase()) {
-    case 'allié':
-      return 'badge-primary'
-    case 'action':
-      return 'badge-secondary'
-    case 'équipement':
-      return 'badge-accent'
+    case "allié":
+      return "badge-primary";
+    case "action":
+      return "badge-secondary";
+    case "équipement":
+      return "badge-accent";
     default:
-      return 'badge-neutral'
+      return "badge-neutral";
   }
-})
+});
 
 const rarityClass = computed(() => {
   switch (props.card.rarity.toLowerCase()) {
-    case 'légendaire':
-      return 'bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400'
-    case 'mythique':
-      return 'bg-gradient-to-r from-violet-400 via-purple-500 to-violet-400'
-    case 'rare':
-      return 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400'
+    case "légendaire":
+      return "bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400";
+    case "mythique":
+      return "bg-gradient-to-r from-violet-400 via-purple-500 to-violet-400";
+    case "rare":
+      return "bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400";
     default:
-      return 'bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400'
+      return "bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400";
   }
-})
+});
 
 const rarityBadgeClass = computed(() => {
   switch (props.card.rarity.toLowerCase()) {
-    case 'légendaire':
-      return 'badge-warning'
-    case 'mythique':
-      return 'badge-secondary'
-    case 'rare':
-      return 'badge-info'
+    case "légendaire":
+      return "badge-warning";
+    case "mythique":
+      return "badge-secondary";
+    case "rare":
+      return "badge-info";
     default:
-      return 'badge-neutral'
+      return "badge-neutral";
   }
-})
+});
 
-const isHero = computed(() => isHeroCard(props.card))
+const isHero = computed(() => isHeroCard(props.card));
 
 // Computed properties pour les informations de la carte
-const cardExtension = computed(() => props.card.extension?.name || 'N/A')
-const cardNumber = computed(() => props.card.id || 'N/A')
-const cardArtist = computed(() => props.card.artists?.[0] || 'N/A')
+const cardExtension = computed(() => props.card.extension?.name || "N/A");
+const cardNumber = computed(() => props.card.id || "N/A");
+const cardArtist = computed(() => props.card.artists?.[0] || "N/A");
 
 // Méthodes
 const onClose = () => {
-  emit('close')
-}
+  emit("close");
+};
 
 const updateQuantity = async (delta: number) => {
-  const newQuantity = Math.max(0, Math.min(maxQuantity, props.quantity + delta))
+  const newQuantity = Math.max(
+    0,
+    Math.min(maxQuantity, props.quantity + delta),
+  );
 
-  if (newQuantity === props.quantity) return
+  if (newQuantity === props.quantity) return;
 
   try {
     if (delta > 0) {
-      await cardStore.addToCollection(props.card, delta)
-      toast.success(`${props.card.name} ajoutée à la collection`)
+      await cardStore.addToCollection(props.card, delta);
+      toast.success(`${props.card.name} ajoutée à la collection`);
     } else {
-      await cardStore.removeFromCollection(props.card, Math.abs(delta))
-      toast.info(`${props.card.name} retirée de la collection`)
+      await cardStore.removeFromCollection(props.card, Math.abs(delta));
+      toast.info(`${props.card.name} retirée de la collection`);
     }
 
-    emit('update:quantity', newQuantity)
+    emit("update:quantity", newQuantity);
   } catch (error) {
-    toast.error('Erreur lors de la mise à jour de la collection')
+    toast.error("Erreur lors de la mise à jour de la collection");
   }
-}
+};
 
 const handleImageError = () => {
-  toast.error(`Erreur lors du chargement de l'image de ${props.card.name}`)
-}
+  toast.error(`Erreur lors du chargement de l'image de ${props.card.name}`);
+};
 
 function formatStats(stats: any) {
-  if (!stats) return []
+  if (!stats) return [];
   return Object.entries(stats)
     .filter(([_, value]) => value !== undefined)
     .map(([key, value]: [string, any]) => {
-      if (typeof value === 'object' && 'value' in value && 'element' in value) {
-        return `${key}: ${value.value} (${value.element})`
+      if (typeof value === "object" && "value" in value && "element" in value) {
+        return `${key}: ${value.value} (${value.element})`;
       }
-      return `${key}: ${value}`
-    })
+      return `${key}: ${value}`;
+    });
 }
 
 function formatKeywords(keywords: any[]) {
-  if (!keywords) return []
+  if (!keywords) return [];
   return keywords.map(
-    (k) => `${k.name}${k.description ? ': ' + k.description : ''}`
-  )
+    (k) => `${k.name}${k.description ? ": " + k.description : ""}`,
+  );
 }
 
 function getCardElement(): string | null {
-  if (!props.card || !props.card.stats) return null
+  if (!props.card || !props.card.stats) return null;
 
   return (
     props.card.stats.niveau?.element || props.card.stats.force?.element || null
-  )
+  );
 }
 </script>
 
@@ -377,7 +391,7 @@ function getCardElement(): string | null {
 
 /* Animation de brillance */
 .progress-bar::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;

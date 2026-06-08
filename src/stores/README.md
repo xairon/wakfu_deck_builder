@@ -1,6 +1,7 @@
 # Documentation des Stores
 
 ## Table des matières
+
 - [CardStore](#cardstore)
 - [DeckStore](#deckstore)
 - [UIStore](#uistore)
@@ -10,6 +11,7 @@
 Store principal pour la gestion des cartes et de la collection.
 
 ### État
+
 ```typescript
 interface State {
   /** Liste de toutes les cartes du jeu */
@@ -26,6 +28,7 @@ interface State {
 ```
 
 ### Actions
+
 ```typescript
 interface Actions {
   /** Initialise la base de données des cartes */
@@ -41,13 +44,18 @@ interface Actions {
   /** Ajoute une carte à un deck */
   addCardToDeck(deckId: string, card: Card, quantity: number): Promise<void>;
   /** Retire une carte d'un deck */
-  removeCardFromDeck(deckId: string, card: Card, quantity: number): Promise<void>;
+  removeCardFromDeck(
+    deckId: string,
+    card: Card,
+    quantity: number,
+  ): Promise<void>;
   /** Supprime un deck */
   deleteDeck(deckId: string): Promise<void>;
 }
 ```
 
 ### Getters
+
 ```typescript
 interface Getters {
   /** Nombre total de cartes */
@@ -66,8 +74,9 @@ interface Getters {
 ```
 
 ### Exemple d'utilisation
+
 ```typescript
-import { useCardStore } from '@/stores/cardStore';
+import { useCardStore } from "@/stores/cardStore";
 
 const cardStore = useCardStore();
 
@@ -78,7 +87,7 @@ await cardStore.initializeDatabase();
 await cardStore.addToCollection(card, 1);
 
 // Création d'un deck
-await cardStore.createDeck('Mon Deck');
+await cardStore.createDeck("Mon Deck");
 ```
 
 ## DeckStore
@@ -86,6 +95,7 @@ await cardStore.createDeck('Mon Deck');
 Store pour la gestion avancée des decks.
 
 ### État
+
 ```typescript
 interface State {
   /** Deck actif en édition */
@@ -98,6 +108,7 @@ interface State {
 ```
 
 ### Actions
+
 ```typescript
 interface Actions {
   /** Charge un deck */
@@ -109,26 +120,27 @@ interface Actions {
   /** Rétablit la dernière modification annulée */
   redo(): void;
   /** Exporte le deck */
-  exportDeck(format: 'json' | 'text'): string;
+  exportDeck(format: "json" | "text"): string;
   /** Importe un deck */
   importDeck(data: string): Promise<void>;
 }
 ```
 
 ### Exemple d'utilisation
+
 ```typescript
-import { useDeckStore } from '@/stores/deckStore';
+import { useDeckStore } from "@/stores/deckStore";
 
 const deckStore = useDeckStore();
 
 // Chargement d'un deck
-await deckStore.loadDeck('deck-123');
+await deckStore.loadDeck("deck-123");
 
 // Sauvegarde
 await deckStore.saveDeck();
 
 // Export
-const deckData = deckStore.exportDeck('json');
+const deckData = deckStore.exportDeck("json");
 ```
 
 ## UIStore
@@ -136,10 +148,11 @@ const deckData = deckStore.exportDeck('json');
 Store pour la gestion de l'interface utilisateur.
 
 ### État
+
 ```typescript
 interface State {
   /** Thème actif */
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   /** Préférences utilisateur */
   preferences: UserPreferences;
   /** État des modales */
@@ -150,10 +163,11 @@ interface State {
 ```
 
 ### Actions
+
 ```typescript
 interface Actions {
   /** Change le thème */
-  setTheme(theme: 'light' | 'dark'): void;
+  setTheme(theme: "light" | "dark"): void;
   /** Met à jour les préférences */
   updatePreferences(prefs: Partial<UserPreferences>): void;
   /** Affiche une modale */
@@ -166,43 +180,48 @@ interface Actions {
 ```
 
 ### Exemple d'utilisation
+
 ```typescript
-import { useUIStore } from '@/stores/uiStore';
+import { useUIStore } from "@/stores/uiStore";
 
 const uiStore = useUIStore();
 
 // Changement de thème
-uiStore.setTheme('dark');
+uiStore.setTheme("dark");
 
 // Affichage d'un toast
 uiStore.showToast({
-  type: 'success',
-  message: 'Deck sauvegardé'
+  type: "success",
+  message: "Deck sauvegardé",
 });
 ```
 
 ## Bonnes pratiques
 
 ### Performance
+
 - Utilisation de `shallowRef` pour les grands objets
 - Getters memoizés pour les calculs coûteux
 - Actions asynchrones optimisées
 - Batch updates pour les modifications multiples
 
 ### Persistance
+
 - Sauvegarde automatique des données importantes
 - Gestion du cache
 - Migration des données
 - Validation des données
 
 ### Réactivité
+
 - Computed properties pour les dérivations
 - Watchers pour les effets de bord
 - Actions pour les mutations complexes
 - Getters pour l'accès aux données
 
 ### Maintenance
+
 - Types stricts
 - Tests unitaires
 - Logging des actions
-- Documentation JSDoc 
+- Documentation JSDoc

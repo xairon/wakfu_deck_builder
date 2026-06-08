@@ -1,24 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/images/pwa-192x192.png" />
+    <link rel="apple-touch-icon" href="/images/pwa-192x192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wakfu Deck Builder</title>
+    <meta
+      name="description"
+      content="L'Almanach des Douze — gérez votre collection de cartes Wakfu TCG, construisez et validez vos decks, parcourez les decks officiels."
+    />
+    <meta name="theme-color" content="#F6F5F1" />
+    <title>L'Almanach des Douze · Wakfu TCG</title>
+
+    <!-- Fraunces (titres) · Hanken Grotesk (corps/UI moderne) · Space Mono (nombres) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,360..560;1,9..144,360..500&family=Hanken+Grotesk:wght@300..800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <script>
-      // Initialisation immédiate du thème pour éviter le FOUC (Flash of Unstyled Content)
-      (function() {
-        const savedTheme = localStorage.getItem('wakfu-theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+      (function () {
+        const savedTheme = localStorage.getItem("wakfu-theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
       })();
     </script>
     <style>
-      /* CSS de base pour éviter l'interface blanche avant le chargement */
       html {
-        background-color: #ffffff; /* Blanc par défaut (thème light) */
+        background-color: #f6f5f1; /* clair moderne */
       }
       html[data-theme="dark"] {
-        background-color: #1d232a; /* Sombre pour thème dark */
+        background-color: #131316; /* nuit moderne */
       }
       body {
         min-height: 100vh;
@@ -29,8 +42,8 @@
       }
     </style>
   </head>
-  <body class="bg-base-100">
+  <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
-</html> 
+</html>

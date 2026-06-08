@@ -11,6 +11,7 @@
         :width="180"
         :height="252"
         loading="lazy"
+        :thumbnail="true"
         @error="$emit('image-error', card)"
       />
       <div class="absolute top-2 right-2 badge badge-primary">
@@ -22,7 +23,7 @@
       <div class="flex items-center text-sm opacity-70">
         <span>{{ card.mainType }}</span>
         <span v-if="card.subTypes?.length" class="mx-1">•</span>
-        <span v-if="card.subTypes?.length">{{ card.subTypes.join(', ') }}</span>
+        <span v-if="card.subTypes?.length">{{ card.subTypes.join(", ") }}</span>
       </div>
 
       <!-- Statistiques de niveau et force -->
@@ -56,7 +57,7 @@
           class="badge badge-ghost"
           :class="{ 'badge-outline': quantity <= 0 }"
         >
-          {{ quantity > 0 ? `${quantity} en collection` : 'Non collectée' }}
+          {{ quantity > 0 ? `${quantity} en collection` : "Non collectée" }}
         </div>
       </div>
     </div>
@@ -64,33 +65,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Card } from '@/types/cards'
-import OptimizedImage from '@/components/common/OptimizedImage.vue'
-import ElementIcon from '@/components/elements/ElementIcon.vue'
+import { computed } from "vue";
+import type { Card } from "@/types/cards";
+import OptimizedImage from "@/components/common/OptimizedImage.vue";
+import ElementIcon from "@/components/elements/ElementIcon.vue";
 
 interface Props {
-  card: Card
-  showQuantity?: boolean
-  quantity?: number
+  card: Card;
+  showQuantity?: boolean;
+  quantity?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showQuantity: false,
   quantity: 0,
-})
+});
 
 const emit = defineEmits<{
-  (e: 'click'): void
-  (e: 'image-error', card: Card): void
-}>()
+  (e: "click"): void;
+  (e: "image-error", card: Card): void;
+}>();
 
 const cardImagePath = computed(() => {
-  if (props.card.mainType === 'Héros') {
-    return `${props.card.id}_recto.png`
+  if (props.card.mainType === "Héros") {
+    return `${props.card.id}_recto.png`;
   }
-  return `${props.card.id}.png`
-})
+  return `${props.card.id}.png`;
+});
 </script>
 
 <style scoped>

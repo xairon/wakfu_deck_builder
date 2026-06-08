@@ -12,15 +12,17 @@
   "app": {
     "windows": [
       {
-        "title": "wakfu-deck-builder",
-        "width": 800,
-        "height": 600,
+        "title": "Wakfu Deck Builder",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 640,
         "resizable": true,
         "fullscreen": false
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:"
     }
   },
   "bundle": {
@@ -35,7 +37,7 @@
     ],
     "windows": {
       "webviewInstallMode": {
-        "type": "skip"
+        "type": "downloadBootstrapper"
       }
     }
   }

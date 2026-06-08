@@ -42,14 +42,14 @@
 </template>
 
 <script setup lang="ts">
-import type { CollectionStats } from '@/types/collection'
+import type { CollectionStats } from "@/types/collection";
 
 const props = defineProps<{
-  stats: CollectionStats
-}>()
+  stats: CollectionStats;
+}>();
 
 function formatPercentage(value: number): string {
-  return (value * 100).toFixed(1)
+  return (value * 100).toFixed(1);
 }
 </script>
 

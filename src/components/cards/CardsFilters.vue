@@ -9,7 +9,7 @@
           @input="
             $emit(
               'update:searchQuery',
-              ($event.target as HTMLInputElement).value
+              ($event.target as HTMLInputElement).value,
             )
           "
           placeholder="Rechercher une carte..."
@@ -21,7 +21,7 @@
         @change="
           $emit(
             'update:selectedExtension',
-            ($event.target as HTMLSelectElement).value
+            ($event.target as HTMLSelectElement).value,
           )
         "
         class="select select-bordered"
@@ -45,7 +45,7 @@
         @change="
           $emit(
             'update:selectedMainType',
-            ($event.target as HTMLSelectElement).value
+            ($event.target as HTMLSelectElement).value,
           )
         "
         class="select select-bordered"
@@ -62,7 +62,7 @@
         @change="
           $emit(
             'update:selectedSubType',
-            ($event.target as HTMLSelectElement).value
+            ($event.target as HTMLSelectElement).value,
           )
         "
         class="select select-bordered"
@@ -79,7 +79,7 @@
         @change="
           $emit(
             'update:selectedRarity',
-            ($event.target as HTMLSelectElement).value
+            ($event.target as HTMLSelectElement).value,
           )
         "
         class="select select-bordered"
@@ -96,7 +96,7 @@
         @change="
           $emit(
             'update:selectedElement',
-            ($event.target as HTMLSelectElement).value
+            ($event.target as HTMLSelectElement).value,
           )
         "
         class="select select-bordered"
@@ -118,7 +118,7 @@
               'update:minLevel',
               ($event.target as HTMLInputElement).value
                 ? parseInt(($event.target as HTMLInputElement).value)
-                : null
+                : null,
             )
           "
           placeholder="Min"
@@ -134,7 +134,7 @@
               'update:maxLevel',
               ($event.target as HTMLInputElement).value
                 ? parseInt(($event.target as HTMLInputElement).value)
-                : null
+                : null,
             )
           "
           placeholder="Max"
@@ -161,45 +161,45 @@
 
 <script setup lang="ts">
 defineProps<{
-  searchQuery: string
-  selectedExtension: string
-  selectedMainType: string
-  selectedSubType: string
-  selectedRarity: string
-  selectedElement: string
-  minLevel: number | null
-  maxLevel: number | null
-  selectedKeywords: string[]
-  extensions: string[]
-  mainTypes: string[]
-  subTypes: string[]
-  rarities: string[]
-  elements: string[]
-  availableKeywords: string[]
-}>()
+  searchQuery: string;
+  selectedExtension: string;
+  selectedMainType: string;
+  selectedSubType: string;
+  selectedRarity: string;
+  selectedElement: string;
+  minLevel: number | null;
+  maxLevel: number | null;
+  selectedKeywords: string[];
+  extensions: string[];
+  mainTypes: string[];
+  subTypes: string[];
+  rarities: string[];
+  elements: string[];
+  availableKeywords: string[];
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:searchQuery', value: string): void
-  (e: 'update:selectedExtension', value: string): void
-  (e: 'update:selectedMainType', value: string): void
-  (e: 'update:selectedSubType', value: string): void
-  (e: 'update:selectedRarity', value: string): void
-  (e: 'update:selectedElement', value: string): void
-  (e: 'update:minLevel', value: number | null): void
-  (e: 'update:maxLevel', value: number | null): void
-  (e: 'update:selectedKeywords', value: string[]): void
-}>()
+  (e: "update:searchQuery", value: string): void;
+  (e: "update:selectedExtension", value: string): void;
+  (e: "update:selectedMainType", value: string): void;
+  (e: "update:selectedSubType", value: string): void;
+  (e: "update:selectedRarity", value: string): void;
+  (e: "update:selectedElement", value: string): void;
+  (e: "update:minLevel", value: number | null): void;
+  (e: "update:maxLevel", value: number | null): void;
+  (e: "update:selectedKeywords", value: string[]): void;
+}>();
 
 function toggleKeyword(keyword: string) {
-  const newSelectedKeywords = [...props.selectedKeywords]
-  const index = newSelectedKeywords.indexOf(keyword)
+  const newSelectedKeywords = [...props.selectedKeywords];
+  const index = newSelectedKeywords.indexOf(keyword);
 
   if (index === -1) {
-    newSelectedKeywords.push(keyword)
+    newSelectedKeywords.push(keyword);
   } else {
-    newSelectedKeywords.splice(index, 1)
+    newSelectedKeywords.splice(index, 1);
   }
 
-  emit('update:selectedKeywords', newSelectedKeywords)
+  emit("update:selectedKeywords", newSelectedKeywords);
 }
 </script>

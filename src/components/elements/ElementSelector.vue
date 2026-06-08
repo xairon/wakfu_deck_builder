@@ -18,29 +18,29 @@
 </template>
 
 <script setup lang="ts">
-import { useElements, type Element } from '@/services/elementService'
-import ElementIcon from './ElementIcon.vue'
+import { useElements, type Element } from "@/services/elementService";
+import ElementIcon from "./ElementIcon.vue";
 
 const props = defineProps<{
-  modelValue: Element[]
-}>()
+  modelValue: Element[];
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Element[]): void
-}>()
+  (e: "update:modelValue", value: Element[]): void;
+}>();
 
-const { elements, getElementColor } = useElements()
+const { elements, getElementColor } = useElements();
 
 function toggleElement(element: Element) {
-  const newValue = [...props.modelValue]
-  const index = newValue.indexOf(element)
+  const newValue = [...props.modelValue];
+  const index = newValue.indexOf(element);
 
   if (index === -1) {
-    newValue.push(element)
+    newValue.push(element);
   } else {
-    newValue.splice(index, 1)
+    newValue.splice(index, 1);
   }
 
-  emit('update:modelValue', newValue)
+  emit("update:modelValue", newValue);
 }
 </script>

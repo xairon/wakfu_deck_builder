@@ -30,6 +30,11 @@ d'afficher, filtrer et gérer une collection de cartes * @component */
           v-for="{ data: card } in list"
           :key="card.id"
           @click="handleCardClick(card)"
+          @keydown.enter="handleCardClick(card)"
+          @keydown.space.prevent="handleCardClick(card)"
+          tabindex="0"
+          role="button"
+          :aria-label="`Voir les détails de ${card.name}`"
         >
           <CardComponent :card="card" class="h-full cursor-pointer" />
         </div>
@@ -39,16 +44,16 @@ d'afficher, filtrer et gérer une collection de cartes * @component */
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { Card } from '@/types/collection'
-import CardComponent from './CardComponent.vue'
-import CardCollectionControls from './CardCollectionControls.vue'
-import CardFilters from './CardFilters.vue'
-import CardCollectionStats from './CardCollectionStats.vue'
-import { useCardStore } from '@/stores/cardStore'
-import { useRouter } from 'vue-router'
-import type { Filters } from './CardFilters.vue'
-import { useVirtualList } from '@vueuse/core'
+import { ref, computed } from "vue";
+import type { Card } from "@/types/cards";
+import CardComponent from "./CardComponent.vue";
+import CardCollectionControls from "./CardCollectionControls.vue";
+import CardFilters from "./CardFilters.vue";
+import CardCollectionStats from "./CardCollectionStats.vue";
+import { useCardStore } from "@/stores/cardStore";
+import { useRouter } from "vue-router";
+import type { Filters } from "./CardFilters.vue";
+import { useVirtualList } from "@vueuse/core";
 
 /**
  * Props du composant
@@ -58,10 +63,10 @@ import { useVirtualList } from '@vueuse/core'
  * @property {boolean} [loading] - Si true, affiche un indicateur de chargement
  */
 const props = defineProps<{
-  cards: Card[]
-  selectable?: boolean
-  loading?: boolean
-}>()
+  cards: Card[];
+  selectable?: boolean;
+  loading?: boolean;
+}>();
 
 /**
  * Events émis par le composant
@@ -69,56 +74,58 @@ const props = defineProps<{
  * @property {(card: Card) => void} select - Émis lors de la sélection d'une carte
  */
 const emit = defineEmits<{
-  (e: 'select', card: Card): void
-  (e: 'cardClick', card: Card): void
-}>()
+  (e: "select", card: Card): void;
+  (e: "cardClick", card: Card): void;
+}>();
 
-const cardStore = useCardStore()
-const router = useRouter()
+const cardStore = useCardStore();
+const router = useRouter();
 
 // État local
 const filters = ref<Filters>({
-  search: '',
-  type: '',
-  extension: '',
+  search: "",
+  type: "",
+  extension: "",
   showOnlyCollection: false,
-})
+});
 
 const { list, containerProps, wrapperProps } = useVirtualList(props.cards, {
   itemHeight: 320, // Hauteur approximative d'une carte avec ses contrôles
   overscan: 10, // Nombre d'éléments à pré-rendre
-})
+});
 
 /**
  * Liste des cartes filtrées selon les critères
  * @type {import('vue').ComputedRef<Card[]>}
  */
 const filteredCards = computed(() => {
-  let result = props.cards
+  let result = props.cards;
 
   if (filters.value.search) {
-    const search = filters.value.search.toLowerCase()
+    const search = filters.value.search.toLowerCase();
     result = result.filter(
       (card) =>
         card.name.toLowerCase().includes(search) ||
-        card.mainType.toLowerCase().includes(search)
-    )
+        card.mainType.toLowerCase().includes(search),
+    );
   }
 
   if (filters.value.type) {
-    result = result.filter((card) => card.mainType === filters.value.type)
+    result = result.filter((card) => card.mainType === filters.value.type);
   }
 
   if (filters.value.extension) {
-    result = result.filter((card) => card.extension === filters.value.extension)
+    result = result.filter(
+      (card) => card.extension === filters.value.extension,
+    );
   }
 
   if (filters.value.showOnlyCollection) {
-    result = result.filter((card) => cardStore.collection.has(card.image_id))
+    result = result.filter((card) => cardStore.collection.has(card.image_id));
   }
 
-  return result
-})
+  return result;
+});
 
 /**
  * Gère le clic sur une carte
@@ -126,12 +133,12 @@ const filteredCards = computed(() => {
  */
 function handleCardClick(card: Card) {
   if (props.selectable) {
-    emit('select', card)
+    emit("select", card);
   } else {
     router.push({
-      name: 'card-details',
+      name: "card-details",
       params: { id: card.image_id },
-    })
+    });
   }
 }
 
@@ -140,7 +147,7 @@ function handleCardClick(card: Card) {
  * @param {Filters} newFilters - Nouveaux filtres
  */
 function handleFiltersChange(newFilters: Filters) {
-  filters.value = newFilters
+  filters.value = newFilters;
 }
 </script>
 

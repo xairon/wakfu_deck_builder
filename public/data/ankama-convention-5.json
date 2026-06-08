@@ -3,10 +3,7 @@
     "id": "dofus-des-glaces-ankama-convention",
     "name": "Dofus des Glaces",
     "mainType": "Équipement",
-    "subTypes": [
-      "Dofus",
-      "Unique"
-    ],
+    "subTypes": ["Dofus", "Unique"],
     "extension": {
       "name": "Ankama Convention",
       "number": "",
@@ -37,9 +34,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "À conserver au frais et à consommer dans les 48h.\nDofus des Glaces : offrez",

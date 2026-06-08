@@ -5,7 +5,7 @@
       <div class="relative w-12 h-12 mr-3 flex-shrink-0">
         <img
           :src="card.imageUrl || getDefaultCardImage()"
-          :alt="card.name"
+          :alt="`Carte ${card.name} - ${card.mainType}`"
           class="w-full h-full object-cover rounded"
           @error="onImageError"
         />
@@ -42,20 +42,27 @@
               v-if="showQuantityControls && quantity > 1"
               class="btn btn-xs btn-circle btn-ghost"
               @click="emitDecrement"
+              :aria-label="`Réduire la quantité de ${card.name}`"
             >
               -
             </button>
-            <span class="mx-1 text-sm font-medium">{{ quantity }}x</span>
+            <span
+              class="mx-1 text-sm font-medium"
+              :aria-label="`${quantity} exemplaire(s)`"
+              >{{ quantity }}x</span
+            >
             <button
               v-if="showQuantityControls && quantity < 3"
               class="btn btn-xs btn-circle btn-ghost"
               @click="emitIncrement"
+              :aria-label="`Augmenter la quantité de ${card.name}`"
             >
               +
             </button>
             <button
               class="btn btn-xs btn-circle btn-ghost text-error ml-1"
               @click="emitRemove"
+              :aria-label="`Retirer ${card.name} du deck`"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,51 +87,48 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, computed, ref } from 'vue'
-import type { Card } from '@/types/cards'
+import { defineProps, defineEmits, computed, ref } from "vue";
+import type { Card } from "@/types/cards";
 
 // Interface des props
 interface Props {
-  card: Card
-  quantity: number
-  showQuantityControls?: boolean
+  card: Card;
+  quantity: number;
+  showQuantityControls?: boolean;
 }
 
 // Définir les props avec valeurs par défaut
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // Émission d'événements
 const emit = defineEmits<{
-  (e: 'remove', cardId: string): void
-  (e: 'increment', cardId: string): void
-  (e: 'decrement', cardId: string): void
-}>()
+  (e: "remove", cardId: string): void;
+  (e: "increment", cardId: string): void;
+  (e: "decrement", cardId: string): void;
+}>();
 
 // État pour le suivi des erreurs d'image
-const hasImageError = ref(false)
+const hasImageError = ref(false);
 
 // Gestion des erreurs d'image
 function onImageError() {
-  console.error(`Erreur de chargement d'image pour la carte: ${props.card.id}`)
-  hasImageError.value = true
+  console.error(`Erreur de chargement d'image pour la carte: ${props.card.id}`);
+  hasImageError.value = true;
 }
 
 // Déterminer si les contrôles de quantité doivent être affichés
 const showQuantityControls = computed(() => {
-  console.log('Card in DeckCardItem:', props.card)
-  console.log('Card imageUrl:', props.card.imageUrl)
-
   // Par défaut true sauf pour les cartes spéciales (Héros, Havre-sac)
   return (
     props.showQuantityControls !== false &&
-    props.card.mainType !== 'Héros' &&
-    props.card.mainType !== 'Havre-Sac'
-  )
-})
+    props.card.mainType !== "Héros" &&
+    props.card.mainType !== "Havre-Sac"
+  );
+});
 
 // Image par défaut
 function getDefaultCardImage() {
-  return '/images/card-back.png'
+  return "/images/card-back.png";
 }
 
 // Obtenir l'élément de la carte
@@ -133,47 +137,47 @@ function getCardElement() {
   return (
     props.card.stats?.niveau?.element ||
     props.card.stats?.force?.element ||
-    'Neutre'
-  )
+    "Neutre"
+  );
 }
 
 // Classes pour les éléments
 function getElementClass(element: string) {
   const classes = {
-    Feu: 'border-l-4 border-red-500',
-    Eau: 'border-l-4 border-blue-500',
-    Terre: 'border-l-4 border-amber-700',
-    Air: 'border-l-4 border-emerald-500',
-    Neutre: 'border-l-4 border-gray-500',
-  }
+    Feu: "border-l-4 border-red-500",
+    Eau: "border-l-4 border-blue-500",
+    Terre: "border-l-4 border-amber-700",
+    Air: "border-l-4 border-emerald-500",
+    Neutre: "border-l-4 border-gray-500",
+  };
 
-  return classes[element] || classes['Neutre']
+  return classes[element] || classes["Neutre"];
 }
 
 // Classes pour les raretés
 function getRarityClass(rarity: string) {
   const classes = {
-    Commune: 'badge-secondary',
-    'Peu Commune': 'badge-primary',
-    Rare: 'badge-accent',
-    Mythique: 'badge-warning',
-    Légendaire: 'badge-error',
-  }
+    Commune: "badge-secondary",
+    "Peu Commune": "badge-primary",
+    Rare: "badge-accent",
+    Mythique: "badge-warning",
+    Légendaire: "badge-error",
+  };
 
-  return classes[rarity] || 'badge-secondary'
+  return classes[rarity] || "badge-secondary";
 }
 
 // Méthodes pour émettre les événements
 function emitRemove() {
-  emit('remove', props.card.id)
+  emit("remove", props.card.id);
 }
 
 function emitIncrement() {
-  emit('increment', props.card.id)
+  emit("increment", props.card.id);
 }
 
 function emitDecrement() {
-  emit('decrement', props.card.id)
+  emit("decrement", props.card.id);
 }
 </script>
 

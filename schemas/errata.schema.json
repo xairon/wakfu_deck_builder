@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://wakfu-deck-builder/schemas/errata.schema.json",
+  "title": "Erratas de cartes",
+  "description": "Corrections officielles indexées par identifiant de carte (public/data/errata.json).",
+  "type": "object",
+  "required": ["errata"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "updatedAt": { "type": "string", "format": "date" },
+    "errata": {
+      "type": "object",
+      "description": "Clé = id de carte, valeur = liste d'erratas dans l'ordre chronologique.",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "$ref": "#/$defs/errataEntry" }
+      }
+    }
+  },
+  "$defs": {
+    "errataEntry": {
+      "type": "object",
+      "required": ["date", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "source": {
+          "type": "string",
+          "description": "Ex. \"Ankama\", \"WTCG Return\", \"FAQ officielle\"."
+        },
+        "summary": {
+          "type": "string",
+          "description": "Résumé court de la correction."
+        },
+        "before": {
+          "type": "string",
+          "description": "Texte avant correction (optionnel)."
+        },
+        "after": {
+          "type": "string",
+          "description": "Texte après correction (optionnel)."
+        },
+        "url": { "type": "string", "format": "uri" }
+      }
+    }
+  }
+}

@@ -4,14 +4,17 @@
     :class="[sizeClass, { 'cursor-pointer': interactive }]"
     @click="handleClick"
   >
-    <!-- Image de la carte -->
-    <img
-      :src="imageUrl"
-      :alt="card.name"
-      class="rounded-lg object-cover w-full h-full"
-      :class="{ 'group-hover:opacity-90 transition-opacity': interactive }"
-      loading="lazy"
-    />
+    <!-- Image de la carte (thumbnail for grid performance) -->
+    <picture>
+      <source :srcset="thumbUrl" type="image/webp" />
+      <img
+        :src="imageUrl"
+        :alt="card.name"
+        class="rounded-lg object-cover w-full h-full"
+        :class="{ 'group-hover:opacity-90 transition-opacity': interactive }"
+        loading="lazy"
+      />
+    </picture>
 
     <!-- Overlay d'informations -->
     <div
@@ -50,62 +53,70 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Card } from '@/types/cards'
-import { ELEMENT_COLORS, type Element } from '@/config/constants'
+import { computed } from "vue";
+import type { Card } from "@/types/cards";
+import { ELEMENT_COLORS, type Element } from "@/config/constants";
+import { getThumbPath } from "@/utils/imagePaths";
 
 const props = defineProps<{
-  card: Card
-  size?: 'sm' | 'md' | 'lg'
-  interactive?: boolean
-  showOverlay?: boolean
-}>()
+  card: Card;
+  size?: "sm" | "md" | "lg";
+  interactive?: boolean;
+  showOverlay?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'click', card: Card): void
-}>()
+  (e: "click", card: Card): void;
+}>();
 
 // Classes de taille
 const sizeClass = computed(() => {
   switch (props.size) {
-    case 'sm':
-      return 'w-12 h-16'
-    case 'lg':
-      return 'w-48 h-64'
+    case "sm":
+      return "w-12 h-16";
+    case "lg":
+      return "w-48 h-64";
     default:
-      return 'w-24 h-32'
+      return "w-24 h-32";
   }
-})
+});
 
 // URL de l'image
 const imageUrl = computed(() => {
-  return `/images/cards/${props.card.id}.webp`
-})
+  return `/images/cards/${props.card.id}.webp`;
+});
+
+// Thumbnail URL for grid views
+const thumbUrl = computed(() => {
+  return getThumbPath(imageUrl.value);
+});
 
 // Stats
 const hasStats = computed(
-  () => 'stats' in props.card && props.card.stats !== undefined
-)
+  () => "stats" in props.card && props.card.stats !== undefined,
+);
 
 const stats = computed(() => {
-  if (!hasStats.value) return {}
-  return props.card.stats
-})
+  if (!hasStats.value) return {};
+  return props.card.stats;
+});
 
 // Éléments
 const hasElements = computed(() => {
-  if (!props.card.stats) return false
-  return !!props.card.stats.niveau?.element || !!props.card.stats.force?.element
-})
+  if (!props.card.stats) return false;
+  return (
+    !!props.card.stats.niveau?.element || !!props.card.stats.force?.element
+  );
+});
 
 const elements = computed(() => {
-  if (!hasElements.value) return []
+  if (!hasElements.value) return [];
 
-  const elements = []
+  const elements = [];
 
   // Ajouter l'élément de niveau s'il existe
   if (props.card.stats?.niveau?.element) {
-    elements.push(props.card.stats.niveau.element)
+    elements.push(props.card.stats.niveau.element);
   }
 
   // Ajouter l'élément de force s'il existe et s'il est différent
@@ -113,22 +124,22 @@ const elements = computed(() => {
     props.card.stats?.force?.element &&
     props.card.stats.force.element !== props.card.stats?.niveau?.element
   ) {
-    elements.push(props.card.stats.force.element)
+    elements.push(props.card.stats.force.element);
   }
 
-  return elements
-})
+  return elements;
+});
 
 // Gestion des clics
 function handleClick() {
   if (props.interactive) {
-    emit('click', props.card)
+    emit("click", props.card);
   }
 }
 
 // Utilitaires
 function getElementColor(element: string): string {
-  return ELEMENT_COLORS[element as Element] || 'bg-primary'
+  return ELEMENT_COLORS[element as Element] || "bg-primary";
 }
 </script>
 

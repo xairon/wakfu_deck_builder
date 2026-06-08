@@ -48,9 +48,9 @@ d'ajouter/retirer des exemplaires normaux et foil d'une carte * @component */
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Card } from '@/types/cards'
-import { useCardStore } from '@/stores/cardStore'
+import { computed } from "vue";
+import type { Card } from "@/types/cards";
+import { useCardStore } from "@/stores/cardStore";
 
 /**
  * Props du composant
@@ -58,31 +58,31 @@ import { useCardStore } from '@/stores/cardStore'
  * @property {Card} card - La carte à gérer dans la collection
  */
 const props = defineProps<{
-  card: Card
-}>()
+  card: Card;
+}>();
 
-const cardStore = useCardStore()
+const cardStore = useCardStore();
 
 /**
  * Nombre d'exemplaires normaux de la carte dans la collection
  * @type {import('vue').ComputedRef<number>}
  */
-const normalQuantity = computed(() => cardStore.getCardQuantity(props.card.id))
+const normalQuantity = computed(() => cardStore.getCardQuantity(props.card.id));
 
 /**
  * Nombre d'exemplaires foil de la carte dans la collection
  * @type {import('vue').ComputedRef<number>}
  */
 const foilQuantity = computed(() =>
-  cardStore.getFoilCardQuantity(props.card.id)
-)
+  cardStore.getFoilCardQuantity(props.card.id),
+);
 
 /**
  * Incrémente la quantité d'exemplaires d'une carte
  * @param {boolean} isFoil - True si l'exemplaire est foil, false sinon
  */
 function increment(isFoil: boolean) {
-  cardStore.addToCollection(props.card, 1, isFoil)
+  cardStore.addToCollection(props.card, 1, isFoil);
 }
 
 /**
@@ -90,7 +90,7 @@ function increment(isFoil: boolean) {
  * @param {boolean} isFoil - True si l'exemplaire est foil, false sinon
  */
 function decrement(isFoil: boolean) {
-  cardStore.removeFromCollection(props.card, 1, isFoil)
+  cardStore.removeFromCollection(props.card, 1, isFoil);
 }
 </script>
 

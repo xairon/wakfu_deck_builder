@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://wakfu-deck-builder/schemas/deck-source.schema.json",
+  "title": "Decks de sources externes",
+  "description": "Bibliothèque de decks provenant de sources tierces (Dofus Mag, tournois, communauté). Fichier: public/data/community-decks.json.",
+  "type": "object",
+  "required": ["decks"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "updatedAt": { "type": "string", "format": "date" },
+    "decks": { "type": "array", "items": { "$ref": "#/$defs/sourcedDeck" } }
+  },
+  "$defs": {
+    "sourcedDeck": {
+      "type": "object",
+      "required": ["id", "name", "source", "cards"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "source": {
+          "type": "string",
+          "description": "Origine du deck.",
+          "enum": ["Dofus Mag", "Tournoi", "Communauté", "Créateur"]
+        },
+        "author": { "type": "string" },
+        "event": {
+          "type": "string",
+          "description": "Nom de l'évènement/tournoi ou du numéro de magazine."
+        },
+        "date": { "type": "string", "format": "date" },
+        "format": {
+          "type": "string",
+          "description": "Ex. \"Standard\", \"Limité\"."
+        },
+        "rank": { "type": "string", "description": "Ex. \"1er\", \"Top 8\"." },
+        "description": { "type": "string" },
+        "sourceUrl": { "type": "string", "format": "uri" },
+        "hero": { "type": "string", "description": "Nom du héros." },
+        "havreSac": { "type": "string", "description": "Nom du havre-sac." },
+        "cards": {
+          "type": "array",
+          "description": "Liste de cartes (résolues par nom via le catalogue, comme l'import texte).",
+          "items": {
+            "type": "object",
+            "required": ["name", "quantity"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "quantity": { "type": "integer", "minimum": 1, "maximum": 3 },
+              "type": {
+                "type": "string",
+                "description": "Indice de type pour lever l'ambiguïté."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -85,51 +85,51 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-import type { Card } from '@/types/cards'
+import { defineProps, defineEmits } from "vue";
+import type { Card } from "@/types/cards";
 
 // Interface des props
 interface Props {
-  hero: Card
+  hero: Card;
 }
 
 // Définir les props
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // Émission d'événements
 defineEmits<{
-  (e: 'remove'): void
-}>()
+  (e: "remove"): void;
+}>();
 
 // Image par défaut
 function getDefaultHeroImage() {
-  return '/images/hero-back.png'
+  return "/images/hero-back.png";
 }
 
 // Classes pour les éléments
 function getElementClass(element: string) {
   const classes = {
-    Feu: 'border-l-4 border-red-500',
-    Eau: 'border-l-4 border-blue-500',
-    Terre: 'border-l-4 border-amber-700',
-    Air: 'border-l-4 border-emerald-500',
-    Neutre: 'border-l-4 border-gray-500',
-  }
+    Feu: "border-l-4 border-red-500",
+    Eau: "border-l-4 border-blue-500",
+    Terre: "border-l-4 border-amber-700",
+    Air: "border-l-4 border-emerald-500",
+    Neutre: "border-l-4 border-gray-500",
+  };
 
-  return classes[element] || classes['Neutre']
+  return classes[element] || classes["Neutre"];
 }
 
 // Classes pour les raretés
 function getRarityClass(rarity: string) {
   const classes = {
-    Commune: 'badge-secondary',
-    'Peu Commune': 'badge-primary',
-    Rare: 'badge-accent',
-    Mythique: 'badge-warning',
-    Légendaire: 'badge-error',
-  }
+    Commune: "badge-secondary",
+    "Peu Commune": "badge-primary",
+    Rare: "badge-accent",
+    Mythique: "badge-warning",
+    Légendaire: "badge-error",
+  };
 
-  return classes[rarity] || 'badge-secondary'
+  return classes[rarity] || "badge-secondary";
 }
 </script>
 

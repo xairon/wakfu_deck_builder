@@ -10,11 +10,11 @@
 </template>
 
 <script setup lang="ts">
-import { ELEMENTS, type Element } from '@/services/elementService'
-import ElementIcon from './ElementIcon.vue'
+import { ELEMENTS, type Element } from "@/services/elementService";
+import ElementIcon from "./ElementIcon.vue";
 
 defineProps<{
-  value: number | string
-  element?: Element
-}>()
+  value: number | string;
+  element?: Element;
+}>();
 </script>

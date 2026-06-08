@@ -12,14 +12,17 @@ interactions avec une carte * @component */
     @click="handleClick"
   >
     <figure class="relative pt-4 px-4">
-      <img
-        :src="imageUrl"
-        :alt="card.name"
-        class="rounded-lg w-full h-auto object-contain transition-all duration-500"
-        :class="{ 'group-hover:opacity-0': isHero }"
-        loading="lazy"
-        @error="handleImageError"
-      />
+      <picture>
+        <source :srcset="thumbnailUrl" type="image/webp" />
+        <img
+          :src="imageUrl"
+          :alt="`Carte ${card.name} - ${card.mainType}`"
+          class="rounded-lg w-full h-auto object-contain transition-all duration-500"
+          :class="{ 'group-hover:opacity-0': isHero }"
+          loading="lazy"
+          @error="handleImageError"
+        />
+      </picture>
 
       <!-- Badges de quantité -->
       <div
@@ -45,181 +48,186 @@ interactions avec une carte * @component */
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { Card, CardElement } from '@/types/cards'
-import { ELEMENT_EMOJIS } from '@/config/constants'
-import { RARITY_COLORS, TYPE_COLORS } from '@/config/theme'
-import { useCardStore } from '@/stores/cardStore'
+import { ref, computed } from "vue";
+import type { Card, CardElement } from "@/types/cards";
+import { ELEMENT_EMOJIS } from "@/config/constants";
+import { RARITY_COLORS, TYPE_COLORS } from "@/config/theme";
+import { useCardStore } from "@/stores/cardStore";
+import { getWebpPath, getThumbPath } from "@/utils/imagePaths";
 
 // Props du composant
 const props = defineProps<{
-  card: Card
-  quantity?: number
-  showDetails?: boolean
-  loading?: 'eager' | 'lazy'
-  fetchpriority?: 'high' | 'low' | 'auto'
-  interactive?: boolean
-  owned?: boolean
-  size?: 'sm' | 'md' | 'lg'
-  foilQuantity?: number
-}>()
+  card: Card;
+  quantity?: number;
+  showDetails?: boolean;
+  loading?: "eager" | "lazy";
+  fetchpriority?: "high" | "low" | "auto";
+  interactive?: boolean;
+  owned?: boolean;
+  size?: "sm" | "md" | "lg";
+  foilQuantity?: number;
+}>();
 
 const emit = defineEmits<{
-  (e: 'click', card: Card): void
-  (e: 'imageLoad'): void
-  (e: 'imageError'): void
-}>()
+  (e: "click", card: Card): void;
+  (e: "imageLoad"): void;
+  (e: "imageError"): void;
+}>();
 
-const cardStore = useCardStore()
+const cardStore = useCardStore();
 
 const cardInCollection = computed(() => {
-  const normal = cardStore.getCardQuantity(props.card.id) || 0
-  const foil = cardStore.getFoilCardQuantity(props.card.id) || 0
-  return { normal, foil }
-})
+  const normal = cardStore.getCardQuantity(props.card.id) || 0;
+  const foil = cardStore.getFoilCardQuantity(props.card.id) || 0;
+  return { normal, foil };
+});
 
 // État
-const isLoading = ref(true)
-const hasError = ref(false)
-const retryCount = ref(0)
-const MAX_RETRIES = 3
+const isLoading = ref(true);
+const hasError = ref(false);
+const retryCount = ref(0);
+const MAX_RETRIES = 3;
 
 // Computed
 const imageUrl = computed(() => {
   try {
     // Construire le chemin de l'image
-    const cardId = props.card.id
-    if (props.card.mainType === 'Héros') {
-      return `/images/cards/${cardId}_recto.webp`
+    const cardId = props.card.id;
+    if (props.card.mainType === "Héros") {
+      return `/images/cards/${cardId}_recto.webp`;
     }
-    return `/images/cards/${cardId}.webp`
+    return `/images/cards/${cardId}.webp`;
   } catch (error) {
-    console.error("❌ Erreur lors de la construction de l'URL:", error)
-    return '/images/cards/default.webp'
+    console.error("❌ Erreur lors de la construction de l'URL:", error);
+    return "/images/cards/default.webp";
   }
-})
+});
+
+const thumbnailUrl = computed(() => {
+  return getThumbPath(imageUrl.value);
+});
 
 // Obtenir l'élément de la carte
 const cardElement = computed(() => {
   return (
     props.card.stats?.niveau?.element ||
     props.card.stats?.force?.element ||
-    'Neutre'
-  )
-})
+    "Neutre"
+  );
+});
 
 const cardClasses = computed(() => ({
-  'hover:scale-105': !isLoading.value && !hasError.value && props.interactive,
-  'cursor-pointer': props.interactive,
-  'opacity-50': !props.owned,
+  "hover:scale-105": !isLoading.value && !hasError.value && props.interactive,
+  "cursor-pointer": props.interactive,
+  "opacity-50": !props.owned,
   flip: isFlipped.value,
-  [`card-${props.size || 'md'}`]: true,
-}))
+  [`card-${props.size || "md"}`]: true,
+}));
 
 const cardStyle = computed(() => ({
   transform: isHero.value
-    ? `rotateY(${isFlipped.value ? '180deg' : '0deg'})`
-    : 'none',
-  transition: 'transform 0.6s',
-}))
+    ? `rotateY(${isFlipped.value ? "180deg" : "0deg"})`
+    : "none",
+  transition: "transform 0.6s",
+}));
 
 const typeClass = computed(() => {
-  const type = props.card.mainType || props.card.type
+  const type = props.card.mainType || props.card.type;
   switch (type?.toLowerCase()) {
-    case 'héros':
-      return 'badge-secondary'
-    case 'allié':
-      return 'badge-primary'
-    case 'action':
-      return 'badge-accent'
-    case 'équipement':
-      return 'badge-info'
+    case "héros":
+      return "badge-secondary";
+    case "allié":
+      return "badge-primary";
+    case "action":
+      return "badge-accent";
+    case "équipement":
+      return "badge-info";
     default:
-      return 'badge-neutral'
+      return "badge-neutral";
   }
-})
+});
 
 const rarityClass = computed(() => {
-  const rarity = props.card.rarity || props.card.rarete
+  const rarity = props.card.rarity || props.card.rarete;
   switch (rarity?.toLowerCase()) {
-    case 'légendaire':
-      return 'bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400'
-    case 'mythique':
-      return 'bg-gradient-to-r from-violet-400 via-purple-500 to-violet-400'
-    case 'rare':
-      return 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400'
+    case "légendaire":
+      return "bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400";
+    case "mythique":
+      return "bg-gradient-to-r from-violet-400 via-purple-500 to-violet-400";
+    case "rare":
+      return "bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400";
     default:
-      return 'bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400'
+      return "bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400";
   }
-})
+});
 
 const hasStats = computed(() => {
-  return props.card.stats !== undefined
-})
+  return props.card.stats !== undefined;
+});
 
 const isHero = computed(() => {
-  return props.card.mainType === 'Héros' || props.card.type === 'Héros'
-})
+  return props.card.mainType === "Héros" || props.card.type === "Héros";
+});
 
-const isFlipped = ref(false)
+const isFlipped = ref(false);
 
 // Méthodes
 function handleClick() {
   if (props.interactive) {
-    emit('click', props.card)
+    emit("click", props.card);
   }
 }
 
 function handleImageLoad() {
-  isLoading.value = false
-  emit('imageLoad')
+  isLoading.value = false;
+  emit("imageLoad");
 }
 
 function handleImageError() {
-  console.error("❌ Erreur de chargement de l'image:", props.card.name)
+  console.error("❌ Erreur de chargement de l'image:", props.card.name);
   if (retryCount.value < MAX_RETRIES) {
-    retryCount.value++
+    retryCount.value++;
     // Réessayer après un délai
     setTimeout(() => {
-      const img = cardRef.value?.querySelector('img')
+      const img = cardRef.value?.querySelector("img");
       if (img) {
-        img.src = `${imageUrl.value}?retry=${retryCount.value}`
+        img.src = `${imageUrl.value}?retry=${retryCount.value}`;
       }
-    }, 1000 * retryCount.value)
+    }, 1000 * retryCount.value);
   } else {
-    hasError.value = true
-    isLoading.value = false
-    emit('imageError')
+    hasError.value = true;
+    isLoading.value = false;
+    emit("imageError");
   }
 }
 
 function handleMouseMove(event: MouseEvent) {
-  if (!isHero.value) return
+  if (!isHero.value) return;
 
-  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-  const x = event.clientX - rect.left
-  isFlipped.value = x > rect.width / 2
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  isFlipped.value = x > rect.width / 2;
 }
 
 function handleMouseLeave() {
-  if (!isHero.value) return
-  isFlipped.value = false
+  if (!isHero.value) return;
+  isFlipped.value = false;
 }
 
 function getElementEmoji(element: CardElement): string {
-  return ELEMENT_EMOJIS[element] || '❓'
+  return ELEMENT_EMOJIS[element] || "❓";
 }
 
 async function updateQuantity(isFoil: boolean, increment: boolean) {
   try {
     // Ici nous manipulons la collection via le cardStore pour rester cohérent
     if (increment) {
-      await cardStore.addToCollection(props.card, 1, isFoil)
+      await cardStore.addToCollection(props.card, 1, isFoil);
     } else {
-      await cardStore.removeFromCollection(props.card, 1, isFoil)
+      await cardStore.removeFromCollection(props.card, 1, isFoil);
     }
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de la quantité:', error)
+    console.error("Erreur lors de la mise à jour de la quantité:", error);
   }
 }
 </script>

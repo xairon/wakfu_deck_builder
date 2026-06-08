@@ -8,13 +8,13 @@
  * Niveaux de log disponibles
  * @typedef {'debug' | 'info' | 'warn' | 'error'} LogLevel
  */
-type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+type LogLevel = "debug" | "info" | "warn" | "error";
 
 /**
  * Catégories de log pour organiser les messages
  * @typedef {'deck' | 'draw' | 'stats' | 'perf' | 'ui'} LogCategory
  */
-type LogCategory = 'deck' | 'draw' | 'stats' | 'perf' | 'ui'
+type LogCategory = "deck" | "draw" | "stats" | "perf" | "ui";
 
 /**
  * Structure d'une entrée de log
@@ -22,17 +22,17 @@ type LogCategory = 'deck' | 'draw' | 'stats' | 'perf' | 'ui'
  */
 interface LogEntry {
   /** Timestamp en millisecondes */
-  timestamp: number
+  timestamp: number;
   /** Niveau de log */
-  level: LogLevel
+  level: LogLevel;
   /** Catégorie du log */
-  category: LogCategory
+  category: LogCategory;
   /** Message principal */
-  message: string
+  message: string;
   /** Données additionnelles (optionnel) */
-  data?: any
+  data?: any;
   /** Erreur associée (optionnel) */
-  error?: Error
+  error?: Error;
 }
 
 /**
@@ -42,13 +42,13 @@ interface LogEntry {
  */
 class Logger {
   /** Instance unique du logger */
-  private static instance: Logger
+  private static instance: Logger;
   /** Stockage des logs en mémoire */
-  private logs: LogEntry[] = []
+  private logs: LogEntry[] = [];
   /** Nombre maximum de logs conservés */
-  private readonly MAX_LOGS = 1000
+  private readonly MAX_LOGS = 1000;
   /** Mode debug activé en développement */
-  private debugMode = import.meta.env.DEV
+  private debugMode = import.meta.env.DEV;
 
   /**
    * Constructeur privé pour le pattern Singleton
@@ -65,9 +65,9 @@ class Logger {
    */
   static getInstance(): Logger {
     if (!Logger.instance) {
-      Logger.instance = new Logger()
+      Logger.instance = new Logger();
     }
-    return Logger.instance
+    return Logger.instance;
   }
 
   /**
@@ -77,19 +77,19 @@ class Logger {
    * @returns {string} Message formaté
    */
   private formatMessage(entry: LogEntry): string {
-    const date = new Date(entry.timestamp).toISOString()
-    const level = entry.level.toUpperCase().padEnd(5)
-    const category = entry.category.padEnd(8)
-    let message = `[${date}] ${level} [${category}] ${entry.message}`
+    const date = new Date(entry.timestamp).toISOString();
+    const level = entry.level.toUpperCase().padEnd(5);
+    const category = entry.category.padEnd(8);
+    let message = `[${date}] ${level} [${category}] ${entry.message}`;
 
     if (entry.data) {
-      message += '\nData: ' + JSON.stringify(entry.data, null, 2)
+      message += "\nData: " + JSON.stringify(entry.data, null, 2);
     }
     if (entry.error) {
-      message += '\nError: ' + entry.error.stack
+      message += "\nError: " + entry.error.stack;
     }
 
-    return message
+    return message;
   }
 
   /**
@@ -98,27 +98,27 @@ class Logger {
    * @param {LogEntry} entry - Entrée à ajouter
    */
   private addEntry(entry: LogEntry) {
-    this.logs.push(entry)
+    this.logs.push(entry);
     if (this.logs.length > this.MAX_LOGS) {
-      this.logs.shift()
+      this.logs.shift();
     }
 
     // En mode développement, on affiche aussi dans la console
     if (this.debugMode) {
-      const formattedMessage = this.formatMessage(entry)
+      const formattedMessage = this.formatMessage(entry);
       switch (entry.level) {
-        case 'debug':
-          console.debug(formattedMessage)
-          break
-        case 'info':
-          console.info(formattedMessage)
-          break
-        case 'warn':
-          console.warn(formattedMessage)
-          break
-        case 'error':
-          console.error(formattedMessage)
-          break
+        case "debug":
+          console.debug(formattedMessage);
+          break;
+        case "info":
+          console.info(formattedMessage);
+          break;
+        case "warn":
+          console.warn(formattedMessage);
+          break;
+        case "error":
+          console.error(formattedMessage);
+          break;
       }
     }
   }
@@ -132,11 +132,11 @@ class Logger {
   debug(category: LogCategory, message: string, data?: any) {
     this.addEntry({
       timestamp: Date.now(),
-      level: 'debug',
+      level: "debug",
       category,
       message,
       data,
-    })
+    });
   }
 
   /**
@@ -148,11 +148,11 @@ class Logger {
   info(category: LogCategory, message: string, data?: any) {
     this.addEntry({
       timestamp: Date.now(),
-      level: 'info',
+      level: "info",
       category,
       message,
       data,
-    })
+    });
   }
 
   /**
@@ -164,11 +164,11 @@ class Logger {
   warn(category: LogCategory, message: string, data?: any) {
     this.addEntry({
       timestamp: Date.now(),
-      level: 'warn',
+      level: "warn",
       category,
       message,
       data,
-    })
+    });
   }
 
   /**
@@ -181,12 +181,12 @@ class Logger {
   error(category: LogCategory, message: string, error?: Error, data?: any) {
     this.addEntry({
       timestamp: Date.now(),
-      level: 'error',
+      level: "error",
       category,
       message,
       error,
       data,
-    })
+    });
   }
 
   /**
@@ -195,13 +195,13 @@ class Logger {
    * @returns {Function} Fonction à appeler pour terminer la mesure
    */
   startPerf(label: string) {
-    const start = performance.now()
+    const start = performance.now();
     return () => {
-      const duration = performance.now() - start
-      this.debug('perf', `Performance '${label}'`, {
+      const duration = performance.now() - start;
+      this.debug("perf", `Performance '${label}'`, {
         duration: `${duration.toFixed(2)}ms`,
-      })
-    }
+      });
+    };
   }
 
   /**
@@ -215,19 +215,19 @@ class Logger {
    */
   getLogs(
     options: {
-      level?: LogLevel
-      category?: LogCategory
-      startTime?: number
-      endTime?: number
-    } = {}
+      level?: LogLevel;
+      category?: LogCategory;
+      startTime?: number;
+      endTime?: number;
+    } = {},
   ): LogEntry[] {
     return this.logs.filter((log) => {
-      if (options.level && log.level !== options.level) return false
-      if (options.category && log.category !== options.category) return false
-      if (options.startTime && log.timestamp < options.startTime) return false
-      if (options.endTime && log.timestamp > options.endTime) return false
-      return true
-    })
+      if (options.level && log.level !== options.level) return false;
+      if (options.category && log.category !== options.category) return false;
+      if (options.startTime && log.timestamp < options.startTime) return false;
+      if (options.endTime && log.timestamp > options.endTime) return false;
+      return true;
+    });
   }
 
   /**
@@ -236,21 +236,21 @@ class Logger {
    * @returns {number} Taux d'erreur entre 0 et 1
    */
   getErrorRate(timeWindow: number = 60000): number {
-    const now = Date.now()
+    const now = Date.now();
     const recentLogs = this.logs.filter(
-      (log) => log.timestamp > now - timeWindow
-    )
-    if (recentLogs.length === 0) return 0
+      (log) => log.timestamp > now - timeWindow,
+    );
+    if (recentLogs.length === 0) return 0;
 
-    const errors = recentLogs.filter((log) => log.level === 'error')
-    return errors.length / recentLogs.length
+    const errors = recentLogs.filter((log) => log.level === "error");
+    return errors.length / recentLogs.length;
   }
 
   /**
    * Vide tous les logs
    */
   clearLogs() {
-    this.logs = []
+    this.logs = [];
   }
 
   /**
@@ -258,12 +258,12 @@ class Logger {
    * @returns {string} Logs au format JSON
    */
   exportLogs(): string {
-    return JSON.stringify(this.logs, null, 2)
+    return JSON.stringify(this.logs, null, 2);
   }
 }
 
 /** Instance unique du logger */
-export const logger = Logger.getInstance()
+export const logger = Logger.getInstance();
 
 /**
  * Décorateur pour logger les performances des méthodes
@@ -273,29 +273,29 @@ export function logPerformance() {
   return function (
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) {
-    const originalMethod = descriptor.value
+    const originalMethod = descriptor.value;
 
     descriptor.value = function (...args: any[]) {
       const endPerf = logger.startPerf(
-        `${target.constructor.name}.${propertyKey}`
-      )
+        `${target.constructor.name}.${propertyKey}`,
+      );
       try {
-        const result = originalMethod.apply(this, args)
+        const result = originalMethod.apply(this, args);
         if (result instanceof Promise) {
-          return result.finally(endPerf)
+          return result.finally(endPerf);
         }
-        endPerf()
-        return result
+        endPerf();
+        return result;
       } catch (error) {
-        endPerf()
-        throw error
+        endPerf();
+        throw error;
       }
-    }
+    };
 
-    return descriptor
-  }
+    return descriptor;
+  };
 }
 
 /**
@@ -306,34 +306,34 @@ export function logError() {
   return function (
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) {
-    const originalMethod = descriptor.value
+    const originalMethod = descriptor.value;
 
     descriptor.value = function (...args: any[]) {
       try {
-        const result = originalMethod.apply(this, args)
+        const result = originalMethod.apply(this, args);
         if (result instanceof Promise) {
           return result.catch((error) => {
             logger.error(
-              'deck',
+              "deck",
               `Error in ${target.constructor.name}.${propertyKey}`,
-              error
-            )
-            throw error
-          })
+              error,
+            );
+            throw error;
+          });
         }
-        return result
+        return result;
       } catch (error) {
         logger.error(
-          'deck',
+          "deck",
           `Error in ${target.constructor.name}.${propertyKey}`,
-          error as Error
-        )
-        throw error
+          error as Error,
+        );
+        throw error;
       }
-    }
+    };
 
-    return descriptor
-  }
+    return descriptor;
+  };
 }

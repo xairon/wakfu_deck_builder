@@ -15,12 +15,12 @@
 
 <script setup lang="ts">
 defineProps<{
-  title: string
-  message: string
-}>()
+  title: string;
+  message: string;
+}>();
 
 defineEmits<{
-  (e: 'confirm'): void
-  (e: 'cancel'): void
-}>()
+  (e: "confirm"): void;
+  (e: "cancel"): void;
+}>();
 </script>

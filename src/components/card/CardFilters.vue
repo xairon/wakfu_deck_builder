@@ -62,37 +62,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import type { CollectionFilters } from '@/types/collection'
-import { ELEMENTS, RARITIES } from '@/types/collection'
+import { ref, watch } from "vue";
+import type { CollectionFilters } from "@/types/collection";
+import { ELEMENTS } from "@/config/constants";
+import { RARITIES } from "@/config/cards";
 
 const props = defineProps<{
-  modelValue: CollectionFilters
-}>()
+  modelValue: CollectionFilters;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', filters: CollectionFilters): void
-}>()
+  (e: "update:modelValue", filters: CollectionFilters): void;
+}>();
 
 // Filtres locaux
-const localFilters = ref<CollectionFilters>({ ...props.modelValue })
+const localFilters = ref<CollectionFilters>({ ...props.modelValue });
 
 // Synchronisation bidirectionnelle
 watch(
   localFilters,
   (newFilters) => {
-    emit('update:modelValue', newFilters)
+    emit("update:modelValue", newFilters);
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 watch(
   () => props.modelValue,
   (newFilters) => {
-    localFilters.value = { ...newFilters }
+    localFilters.value = { ...newFilters };
   },
-  { deep: true }
-)
+  { deep: true },
+);
 </script>
 
 <style scoped>
