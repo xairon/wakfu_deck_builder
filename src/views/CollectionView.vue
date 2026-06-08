@@ -275,20 +275,12 @@
                     class="mt-1 flex items-center gap-1.5 font-mono text-2xl tabular"
                   >
                     {{ displayedStats.niveau.value }}
-                    <span
-                      v-if="
-                        displayedStats.niveau.element.toLowerCase() !==
-                        ELEMENTS.NEUTRE.toLowerCase()
-                      "
-                      :class="getElementClass(displayedStats.niveau.element)"
-                    >
-                      <ElementIcon
-                        :element="
-                          stringToElement(displayedStats.niveau.element)
-                        "
-                        size="sm"
-                      />
-                    </span>
+                    <img
+                      :src="`/images/elements/ressource-${displayedStats.niveau.element.toLowerCase()}.png`"
+                      :alt="displayedStats.niveau.element"
+                      :title="displayedStats.niveau.element"
+                      class="inline-block h-6 w-6"
+                    />
                   </p>
                 </div>
                 <div v-if="displayedStats.force">
@@ -297,18 +289,12 @@
                     class="mt-1 flex items-center gap-1.5 font-mono text-2xl tabular"
                   >
                     {{ displayedStats.force.value }}
-                    <span
-                      v-if="
-                        displayedStats.force.element.toLowerCase() !==
-                        ELEMENTS.NEUTRE.toLowerCase()
-                      "
-                      :class="getElementClass(displayedStats.force.element)"
-                    >
-                      <ElementIcon
-                        :element="stringToElement(displayedStats.force.element)"
-                        size="sm"
-                      />
-                    </span>
+                    <img
+                      :src="`/images/elements/ressource-${displayedStats.force.element.toLowerCase()}.png`"
+                      :alt="displayedStats.force.element"
+                      :title="displayedStats.force.element"
+                      class="inline-block h-6 w-6"
+                    />
                   </p>
                 </div>
                 <div v-if="displayedStats.pa">
