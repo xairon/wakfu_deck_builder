@@ -107,21 +107,22 @@
           </router-link>
         </nav>
 
-        <div class="flex-1"></div>
+        <!-- Contrôles à droite : groupés et poussés à droite (repli propre) -->
+        <div class="ml-auto flex items-center gap-3">
+          <!-- Ledger : état de synchro -->
+          <div
+            class="hidden items-center gap-2 font-mono text-[10px] uppercase text-base-content/55 md:flex"
+            style="letter-spacing: 0.12em"
+            role="status"
+            aria-live="polite"
+          >
+            <span class="h-2 w-2" :class="syncSquareClass"></span>
+            {{ syncLabel }}
+          </div>
 
-        <!-- Ledger : état de synchro -->
-        <div
-          class="hidden items-center gap-2 font-mono text-[10px] uppercase text-base-content/55 md:flex"
-          style="letter-spacing: 0.12em"
-          role="status"
-          aria-live="polite"
-        >
-          <span class="h-2 w-2" :class="syncSquareClass"></span>
-          {{ syncLabel }}
+          <ThemeToggle />
+          <UserMenu />
         </div>
-
-        <ThemeToggle />
-        <UserMenu />
       </div>
       <div class="h-px w-full bg-base-content/80"></div>
     </header>
@@ -149,6 +150,7 @@ import ThemeToggle from "./components/common/ThemeToggle.vue";
 import UserMenu from "./components/auth/UserMenu.vue";
 import { useTheme } from "./composables/useTheme";
 import { useCardStore } from "./stores/cardStore";
+import { useDeckStore } from "./stores/deckStore";
 import { useAuthStore } from "./stores/authStore";
 import { useToast } from "./composables/useToast";
 import { isSupabaseConfigured } from "./services/supabase";
@@ -156,6 +158,7 @@ import { isSupabaseConfigured } from "./services/supabase";
 const { initTheme } = useTheme();
 const route = useRoute();
 const cardStore = useCardStore();
+const deckStore = useDeckStore();
 const authStore = useAuthStore();
 const toast = useToast();
 
@@ -165,12 +168,21 @@ const error = computed(() => cardStore.error);
 const isSyncing = computed(() => cardStore.isSyncing);
 const isBackendMissing = computed(() => !isSupabaseConfigured());
 
+const syncState = computed(() =>
+  cardStore.syncState === "error" || deckStore.syncState === "error"
+    ? "error"
+    : "ok",
+);
 const syncLabel = computed(() => {
   if (isSyncing.value) return "Sauvegarde…";
+  if (authStore.isAuthenticated && syncState.value === "error")
+    return "Non synchronisé";
   return authStore.isAuthenticated ? "Synchronisé" : "Hors-ligne";
 });
 const syncSquareClass = computed(() => {
   if (isSyncing.value) return "bg-primary";
+  if (authStore.isAuthenticated && syncState.value === "error")
+    return "bg-error";
   return authStore.isAuthenticated ? "bg-base-content" : "bg-base-content/30";
 });
 

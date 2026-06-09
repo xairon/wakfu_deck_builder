@@ -191,15 +191,18 @@ function drawN(n: number): Card[] {
   return taken;
 }
 
+// Main de départ au Wakfu TCG : 6 cartes.
+const OPENING_HAND = 6;
+
 function drawHand() {
   if (!librarySize.value) return;
   drawPile.value = shuffle(library.value);
-  hand.value = drawN(7);
+  hand.value = drawN(OPENING_HAND);
   hasDrawn.value = true;
 }
 
 function mulligan() {
-  // Remélange l'intégralité de la bibliothèque puis repioche 7.
+  // Remélange l'intégralité de la bibliothèque puis repioche une main de départ.
   drawHand();
 }
 
@@ -235,11 +238,11 @@ function cardColor(card: Card): string {
 
 function cardImg(card: Card): string {
   if (card.imageUrl) return card.imageUrl;
-  if (card.mainType === "Héros") return `/images/cards/${card.id}_recto.png`;
-  return `/images/cards/${card.id}.png`;
+  if (card.mainType === "Héros") return `/images/cards/${card.id}_recto.webp`;
+  return `/images/cards/${card.id}.webp`;
 }
 
 function onImgError(e: Event) {
-  (e.target as HTMLImageElement).src = "/images/card-back.png";
+  (e.target as HTMLImageElement).src = "/images/card-back.webp";
 }
 </script>

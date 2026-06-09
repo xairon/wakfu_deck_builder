@@ -68,3 +68,9 @@ cookies.txt
 /errata*.html
 test-results/
 playwright-report/
+
+# Sauvegarde locale des PNG d'origine (filigranés, remplacés par les .webp)
+_originals_cards_png/
+
+# Fichiers d'entrée temporaires (images à intégrer)
+_incoming/

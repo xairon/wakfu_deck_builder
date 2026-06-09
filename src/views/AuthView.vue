@@ -251,6 +251,34 @@ function clearMessages() {
   successMessage.value = null;
 }
 
+/** Traduit les erreurs Supabase courantes en messages clairs en français. */
+function friendlyAuthError(err: unknown): string {
+  const raw = (
+    err instanceof Error ? err.message : String(err ?? "")
+  ).toLowerCase();
+  if (raw.includes("rate limit") || raw.includes("too many"))
+    return "Trop de tentatives pour le moment. Réessayez dans quelques minutes.";
+  if (
+    raw.includes("already registered") ||
+    raw.includes("already exists") ||
+    raw.includes("user already")
+  )
+    return "Un compte existe déjà avec cette adresse e-mail. Connectez-vous.";
+  if (raw.includes("invalid login") || raw.includes("invalid credentials"))
+    return "E-mail ou mot de passe incorrect.";
+  if (raw.includes("email not confirmed") || raw.includes("not confirmed"))
+    return "Compte non confirmé. Vérifiez votre e-mail (ou contactez l'administrateur).";
+  if (raw.includes("invalid email") || raw.includes("unable to validate email"))
+    return "Adresse e-mail invalide.";
+  if (raw.includes("password") && raw.includes("least"))
+    return "Le mot de passe doit contenir au moins 6 caractères.";
+  if (raw.includes("network") || raw.includes("fetch"))
+    return "Problème de connexion réseau. Vérifiez votre connexion et réessayez.";
+  return err instanceof Error && err.message
+    ? err.message
+    : "Une erreur est survenue.";
+}
+
 async function handleLogin() {
   clearMessages();
   isLoading.value = true;
@@ -260,8 +288,7 @@ async function handleLogin() {
     toast.success("Connexion réussie !");
     // La redirection est gérée par le watch isAuthenticated (source unique).
   } catch (err) {
-    errorMessage.value =
-      err instanceof Error ? err.message : "Erreur de connexion";
+    errorMessage.value = friendlyAuthError(err);
     toast.error("Échec de la connexion");
   } finally {
     isLoading.value = false;
@@ -300,8 +327,7 @@ async function handleRegister() {
       toast.success("Compte créé, vous êtes connecté !");
     }
   } catch (err) {
-    errorMessage.value =
-      err instanceof Error ? err.message : "Erreur lors de l'inscription";
+    errorMessage.value = friendlyAuthError(err);
     toast.error("Échec de l'inscription");
   } finally {
     isLoading.value = false;

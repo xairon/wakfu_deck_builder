@@ -139,12 +139,23 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function signOut() {
     error.value = null;
+    // Vide les écritures cloud en attente TANT QUE la session est valide, pour
+    // ne pas perdre une modification faite juste avant la déconnexion.
+    try {
+      const { useDeckStore } = await import("@/stores/deckStore");
+      await useDeckStore().flushCloudPush();
+    } catch {
+      /* best-effort */
+    }
     try {
       await getAuthProvider().signOut();
+    } catch (err) {
+      // Même si l'appel réseau échoue, on purge TOUJOURS l'état local : sinon
+      // la session/les données du compte resteraient affichées et en cache.
+      error.value = messageFrom(err, "Erreur de déconnexion");
+    } finally {
       setSession(null);
       await hydrateForUser(null);
-    } catch (err) {
-      error.value = messageFrom(err, "Erreur de déconnexion");
     }
   }
 

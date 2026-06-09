@@ -43,7 +43,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { matchesSearch } from "@/utils/text";
 import { useDebounceFn } from "@vueuse/core";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
@@ -69,6 +70,8 @@ const debouncedSearchQuery = ref("");
 const updateDebouncedSearch = useDebounceFn((query: string) => {
   debouncedSearchQuery.value = query;
 }, 200);
+// Brancher la recherche : sans ce watch, le debounce n'était jamais déclenché.
+watch(searchQuery, (q) => updateDebouncedSearch(q));
 const selectedExtension = ref("");
 const selectedMainType = ref("");
 const selectedSubType = ref("");
@@ -128,11 +131,11 @@ const filteredCards = computed(() => {
 
   // Filtre par recherche (debounced)
   if (debouncedSearchQuery.value) {
-    const query = debouncedSearchQuery.value.toLowerCase();
+    const query = debouncedSearchQuery.value;
     filtered = filtered.filter(
       (card) =>
-        card.name.toLowerCase().includes(query) ||
-        card.subTypes.some((type) => type.toLowerCase().includes(query)),
+        matchesSearch(card.name, query) ||
+        card.subTypes.some((type) => matchesSearch(type, query)),
     );
   }
 

@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { matchesSearch } from "@/utils/text";
 import { ref, shallowRef, computed } from "vue";
 import type { Card, HeroCard } from "@/types/cards";
 import { loadAllCards } from "@/services/cardLoader";
@@ -44,21 +45,9 @@ export const useCardStore = defineStore("cards", () => {
   // État de synchronisation
   const lastSync = useLocalStorage<string | null>("wakfu-last-sync", null);
   const isSyncing = ref(false);
-
-  // Variable pour le délai de synchronisation
-  let syncTimeout: number | null = null;
-
-  // Fonction debounce pour éviter de synchroniser trop souvent
-  function debounceSync() {
-    if (syncTimeout) {
-      clearTimeout(syncTimeout);
-    }
-    syncTimeout = window.setTimeout(async () => {
-      const result = await saveToLocalStorage();
-
-      // Silent failure for automatic sync
-    }, 2000); // Délai de 2 secondes
-  }
+  // État de la dernière synchro cloud (collection) : surfacé dans l'UI pour ne
+  // pas avaler silencieusement les échecs d'écriture.
+  const syncState = ref<"idle" | "syncing" | "synced" | "error">("idle");
 
   // Getters
   const totalCards = computed(() => cards.value.length);
@@ -244,6 +233,10 @@ export const useCardStore = defineStore("cards", () => {
   // Vide la collection en mémoire (à la déconnexion).
   function clearCollection() {
     collection.value = {};
+    // Horodatage de synchro propre au compte : on le réinitialise au logout
+    // pour ne pas afficher le « dernier sync » d'un autre utilisateur.
+    lastSync.value = null;
+    syncState.value = "idle";
   }
 
   /**
@@ -263,15 +256,36 @@ export const useCardStore = defineStore("cards", () => {
         "@/services/cloudSync"
       );
       const cloud = await loadCollectionFromCloud();
-      if (cloud && Object.keys(cloud).length > 0) {
+      // null = erreur réseau / indisponible : ne RIEN écraser côté cloud.
+      if (cloud === null) return;
+      if (Object.keys(cloud).length > 0) {
         collection.value = cloud;
         localStorageService.saveCollection(cloud);
       } else {
+        // Cloud confirmé vide : on l'initialise depuis le local.
         await saveCollectionToCloud(collection.value);
       }
     } catch {
       // best-effort : on reste sur les données locales
     }
+  }
+
+  /** Supprime une carte du cloud quand elle quitte la collection (non bloquant). */
+  function deleteCollectionEntryFromCloudIfNeeded(cardId: string) {
+    void (async () => {
+      try {
+        const { isSupabaseConfigured } = await import("@/services/supabase");
+        if (!isSupabaseConfigured()) return;
+        const { useAuthStore } = await import("@/stores/authStore");
+        if (!useAuthStore().isAuthenticated) return;
+        const { deleteCollectionEntryFromCloud } = await import(
+          "@/services/cloudSync"
+        );
+        await deleteCollectionEntryFromCloud(cardId);
+      } catch {
+        // silencieux : best-effort
+      }
+    })();
   }
 
   /** Pousse la collection vers le cloud (mode cloud connecté), sans bloquer. */
@@ -282,10 +296,17 @@ export const useCardStore = defineStore("cards", () => {
       try {
         const { isSupabaseConfigured } = await import("@/services/supabase");
         if (!isSupabaseConfigured()) return;
+        const { useAuthStore } = await import("@/stores/authStore");
+        if (!useAuthStore().isAuthenticated) return;
+        syncState.value = "syncing";
         const { saveCollectionToCloud } = await import("@/services/cloudSync");
-        await saveCollectionToCloud(data);
+        const ok = await saveCollectionToCloud(data);
+        // false = échec d'écriture (réseau/RLS) : on le signale au lieu de
+        // laisser croire que tout est sauvegardé.
+        syncState.value = ok ? "synced" : "error";
       } catch {
-        // silencieux : la sauvegarde locale reste la source de secours
+        syncState.value = "error";
+        // la sauvegarde locale reste la source de secours
       }
     })();
   }
@@ -354,6 +375,8 @@ export const useCardStore = defineStore("cards", () => {
       collection.value[card.id].foil === 0
     ) {
       delete collection.value[card.id];
+      // Propager la suppression au cloud (sinon la carte réapparaît au pull).
+      deleteCollectionEntryFromCloudIfNeeded(card.id);
     }
 
     // Force save to localStorage
@@ -375,10 +398,7 @@ export const useCardStore = defineStore("cards", () => {
       await initialize();
     }
 
-    const searchName = name.toLowerCase();
-    return cards.value.filter((card) =>
-      card.name.toLowerCase().includes(searchName),
-    );
+    return cards.value.filter((card) => matchesSearch(card.name, name));
   }
 
   function loadCards(newCards: Card[]) {
@@ -504,11 +524,6 @@ export const useCardStore = defineStore("cards", () => {
     }
   }
 
-  // Fonction pour synchroniser automatiquement la collection (no-op: saves happen in addToCollection/removeFromCollection)
-  function setupAutoSync() {
-    // Intentionally empty: collection saves are handled by addToCollection and removeFromCollection
-  }
-
   return {
     // État
     cards,
@@ -520,6 +535,7 @@ export const useCardStore = defineStore("cards", () => {
     reset,
     lastSync,
     isSyncing,
+    syncState,
 
     // Getters
     totalCards,
@@ -543,7 +559,6 @@ export const useCardStore = defineStore("cards", () => {
     importCollection,
     exportCollection,
     saveToLocalStorage,
-    setupAutoSync,
     isCardOwned,
     getTotalCardQuantity,
     // Exposés utilitaires

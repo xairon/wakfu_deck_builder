@@ -27,15 +27,26 @@ const elementIcons: Record<Element, string> = {
   ).href,
 };
 
+/** Normalise une casse d'élément quelconque (ex. "feu" → "Feu"). */
+function normalizeElement(element: string): Element {
+  if (!element) return ELEMENTS.NEUTRE;
+  const cap = element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
+  return (Object.values(ELEMENTS) as string[]).includes(cap)
+    ? (cap as Element)
+    : ELEMENTS.NEUTRE;
+}
+
 export function useElements() {
   const elements = computed(() => Object.values(ELEMENTS));
 
   function getElementIcon(element: Element): string {
-    return elementIcons[element];
+    // Tolérant à la casse : évite un <img src="undefined"> si une donnée
+    // non normalisée (minuscule) passe.
+    return elementIcons[normalizeElement(element)];
   }
 
   function getElementColor(element: Element): string {
-    switch (element) {
+    switch (normalizeElement(element)) {
       case ELEMENTS.EAU:
         return "text-blue-500";
       case ELEMENTS.FEU:

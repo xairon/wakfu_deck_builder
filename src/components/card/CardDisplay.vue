@@ -88,9 +88,9 @@ const emit = defineEmits<{
 
 const cardImagePath = computed(() => {
   if (props.card.mainType === "Héros") {
-    return `${props.card.id}_recto.png`;
+    return `${props.card.id}_recto.webp`;
   }
-  return `${props.card.id}.png`;
+  return `${props.card.id}.webp`;
 });
 </script>
 

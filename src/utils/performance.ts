@@ -59,6 +59,11 @@ class PerformanceMonitor {
    */
   addMetric(metric: Metric): void {
     this.metrics.push(metric);
+    // Buffer circulaire : on borne à 500 entrées pour éviter une croissance
+    // mémoire illimitée (alimenté à chaque chargement/erreur d'image).
+    if (this.metrics.length > 500) {
+      this.metrics.splice(0, this.metrics.length - 500);
+    }
     this.notifyObservers(metric);
 
     // Vérifier le seuil

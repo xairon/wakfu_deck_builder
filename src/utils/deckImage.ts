@@ -118,7 +118,7 @@ export async function exportDeckImage(deck: Deck): Promise<void> {
   if (deck.hero) {
     const heroImg =
       (await loadImage(getIllustrationPath(deck.hero.id))) ||
-      (await loadImage(`/images/cards/${deck.hero.id}_recto.png`));
+      (await loadImage(`/images/cards/${deck.hero.id}_recto.webp`));
     if (heroImg) {
       ctx.save();
       ctx.beginPath();

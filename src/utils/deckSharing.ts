@@ -10,8 +10,8 @@ export interface EncodedDeckPayload {
   h: string | null;
   /** ID du havre-sac */
   s: string | null;
-  /** Cartes: tableau de [cardId, quantity] */
-  c: [string, number][];
+  /** Cartes: tableau de [cardId, quantity] ou [cardId, quantity, 1] pour la réserve */
+  c: ([string, number] | [string, number, 0 | 1])[];
 }
 
 /**
@@ -21,7 +21,7 @@ export interface DecodedDeckData {
   name: string;
   heroId: string | null;
   havreSacId: string | null;
-  cards: { cardId: string; quantity: number }[];
+  cards: { cardId: string; quantity: number; isReserve?: boolean }[];
 }
 
 /**
@@ -33,7 +33,9 @@ export function encodeDeck(deck: Deck): string {
     n: deck.name,
     h: deck.hero?.id ?? null,
     s: deck.havreSac?.id ?? null,
-    c: deck.cards.map((dc) => [dc.card.id, dc.quantity]),
+    c: deck.cards.map((dc) =>
+      dc.isReserve ? [dc.card.id, dc.quantity, 1] : [dc.card.id, dc.quantity],
+    ),
   };
 
   const jsonStr = JSON.stringify(payload);
@@ -64,11 +66,16 @@ export function decodeDeck(encoded: string): DecodedDeckData | null {
         .filter(
           (entry) =>
             Array.isArray(entry) &&
-            entry.length === 2 &&
+            (entry.length === 2 ||
+              (entry.length === 3 && (entry[2] === 0 || entry[2] === 1))) &&
             typeof entry[0] === "string" &&
             typeof entry[1] === "number",
         )
-        .map(([cardId, quantity]) => ({ cardId, quantity })),
+        .map((entry) => ({
+          cardId: entry[0] as string,
+          quantity: entry[1] as number,
+          ...(entry[2] === 1 ? { isReserve: true } : {}),
+        })),
     };
   } catch {
     return null;

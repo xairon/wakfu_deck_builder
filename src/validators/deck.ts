@@ -1,5 +1,6 @@
 import type { Deck, Card } from "@/types/cards";
 import { ValidationError } from "@/utils/errors";
+import { isUniqueCard } from "@/utils/cardRules";
 
 export const DECK_RULES = {
   MIN_CARDS: 48,
@@ -46,9 +47,7 @@ export function getCardCopies(deck: Deck, card: Card): number {
  */
 export function canAddCard(deck: Deck, card: Card, isReserve = false): boolean {
   const currentCopies = getCardCopies(deck, card);
-  const maxCopies = card.keywords?.some((k) => k.name === "Unique")
-    ? 1
-    : DECK_RULES.MAX_COPIES;
+  const maxCopies = isUniqueCard(card) ? 1 : DECK_RULES.MAX_COPIES;
 
   if (currentCopies >= maxCopies) {
     return false;
@@ -109,23 +108,26 @@ function validateCardCount(deck: Deck, errors: string[]): boolean {
  * Valide le nombre de copies de chaque carte
  */
 function validateCardCopies(deck: Deck, errors: string[]): boolean {
+  let valid = true;
+  const seen = new Set<string>();
   for (const deckCard of deck.cards) {
+    if (seen.has(deckCard.card.id)) continue; // une carte = une violation max
+    seen.add(deckCard.card.id);
     const copies = getCardCopies(deck, deckCard.card);
-    const maxCopies = deckCard.card.keywords?.some((k) => k.name === "Unique")
-      ? 1
-      : DECK_RULES.MAX_COPIES;
+    const unique = isUniqueCard(deckCard.card);
+    const maxCopies = unique ? 1 : DECK_RULES.MAX_COPIES;
 
     if (copies > maxCopies) {
       errors.push(
-        deckCard.card.keywords?.some((k) => k.name === "Unique")
+        unique
           ? `${deckCard.card.name} est une carte unique et ne peut être présente qu'en un seul exemplaire`
           : `Le deck ne peut pas contenir plus de ${maxCopies} copies de ${deckCard.card.name}`,
       );
-      return false;
+      valid = false;
     }
   }
 
-  return true;
+  return valid;
 }
 
 /**
@@ -149,7 +151,7 @@ function validateReserve(deck: Deck, errors: string[]): boolean {
  */
 function validateCardCombinations(deck: Deck, errors: string[]): boolean {
   const hasRequiredTypes = DECK_RULES.REQUIRED_TYPES.some((type) =>
-    deck.cards.some((c) => c.card.mainType === type),
+    deck.cards.some((c) => !c.isReserve && c.card.mainType === type),
   );
 
   if (!hasRequiredTypes) {

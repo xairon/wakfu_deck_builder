@@ -174,6 +174,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import { matchesSearch } from "@/utils/text";
+import { getThumbPath } from "@/utils/imagePaths";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import type { Card } from "@/types/cards";
@@ -225,8 +227,8 @@ const filteredCards = computed(() => {
     // Filtres textuels
     if (
       searchQuery.value &&
-      !card.name.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
-      !card.effect?.toLowerCase().includes(searchQuery.value.toLowerCase())
+      !matchesSearch(card.name, searchQuery.value) &&
+      !(card.effect && matchesSearch(card.effect, searchQuery.value))
     ) {
       return false;
     }
@@ -256,15 +258,17 @@ const filteredCards = computed(() => {
 
 // Méthodes
 function getCardImageUrl(card: Card): string {
-  const basePath = "/images/cards";
-  const filename = card.id;
-  return `${basePath}/${filename}.png`;
+  return getThumbPath(`/images/cards/${card.id}.webp`); // vignette en grille
 }
 
 function handleImageError(event: Event) {
   const target = event.target as HTMLImageElement;
-  target.src = "/images/card-back.png";
-  console.error(`Erreur de chargement d'image: ${target.alt}`);
+  // Repli vignette → image pleine → dos de carte.
+  if (target.src.includes("/thumbs/")) {
+    target.src = target.src.replace("/thumbs/", "/");
+    return;
+  }
+  target.src = "/images/card-back.webp";
 }
 
 function closeModal() {

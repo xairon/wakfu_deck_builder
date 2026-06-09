@@ -41,7 +41,7 @@
       </select>
     </header>
 
-    <div class="grid gap-6 lg:grid-cols-[1fr_390px]">
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_370px]">
       <!-- ─────────── Vivier de cartes ─────────── -->
       <section class="min-w-0">
         <div class="mb-4 flex flex-wrap items-center gap-3">
@@ -159,7 +159,7 @@
 
       <!-- ─────────── Panneau du deck ─────────── -->
       <aside
-        class="lg:sticky lg:top-20 lg:self-start border border-base-content/15 bg-base-100"
+        class="border border-base-content/15 bg-base-100 xl:sticky xl:top-20 xl:self-start xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto"
       >
         <!-- Nom + validité -->
         <div class="p-4">
@@ -223,16 +223,9 @@
         </div>
         <div class="h-px w-full bg-base-content/15"></div>
 
-        <!-- Slots héros / havre-sac : puits papier, filet d'encre -->
-        <div class="grid grid-cols-2 gap-px bg-base-content/15">
-          <div
-            class="relative bg-base-100 p-3"
-            :class="
-              currentDeck?.hero
-                ? ''
-                : 'border border-dashed border-base-content/30'
-            "
-          >
+        <!-- Slots héros / havre-sac : puits papier, filet d'encre central -->
+        <div class="grid grid-cols-2 divide-x divide-base-content/15">
+          <div class="relative bg-base-100 p-3">
             <span class="eyebrow text-base-content/50">Héros</span>
             <div
               v-if="currentDeck?.hero"
@@ -266,14 +259,7 @@
             </p>
           </div>
 
-          <div
-            class="relative bg-base-100 p-3"
-            :class="
-              currentDeck?.havreSac
-                ? ''
-                : 'border border-dashed border-base-content/30'
-            "
-          >
+          <div class="relative bg-base-100 p-3">
             <span class="eyebrow text-base-content/50">Havre-Sac</span>
             <div
               v-if="currentDeck?.havreSac"
@@ -571,7 +557,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { useDebounceFn } from "@vueuse/core";
+import { getThumbPath } from "@/utils/imagePaths";
+import { matchesSearch } from "@/utils/text";
 import { useRoute, useRouter } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
@@ -589,6 +578,12 @@ const authStore = useAuthStore();
 const toast = useToast();
 
 const search = ref("");
+// Recherche débouncée : évite de re-filtrer ~2800 cartes à chaque frappe.
+const debouncedSearch = ref("");
+const updateDebouncedSearch = useDebounceFn((q: string) => {
+  debouncedSearch.value = q;
+}, 150);
+watch(search, (q) => updateDebouncedSearch(q));
 const typeFilter = ref("");
 const elementFilter = ref("");
 const rarityFilter = ref("");
@@ -625,14 +620,14 @@ const types = computed(() => {
 });
 
 const pool = computed(() => {
-  const q = search.value.trim().toLowerCase();
+  const q = debouncedSearch.value.trim();
   const el = elementFilter.value.toLowerCase();
   return cardStore.cards.filter((c) => {
     if (typeFilter.value && c.mainType !== typeFilter.value) return false;
     if (el && cardElementName(c) !== el) return false;
     if (rarityFilter.value && c.rarity !== rarityFilter.value) return false;
     if (ownedOnly.value && ownedQty(c.id) === 0) return false;
-    if (q && !c.name.toLowerCase().includes(q)) return false;
+    if (q && !matchesSearch(c.name, q)) return false;
     return true;
   });
 });
@@ -748,11 +743,20 @@ const typeBreakdown = computed(() => {
 
 function cardImg(card: Card): string {
   if (card.imageUrl) return card.imageUrl;
-  if (card.mainType === "Héros") return `/images/cards/${card.id}_recto.png`;
-  return `/images/cards/${card.id}.png`;
+  const full =
+    card.mainType === "Héros"
+      ? `/images/cards/${card.id}_recto.webp`
+      : `/images/cards/${card.id}.webp`;
+  return getThumbPath(full); // vignette en grille
 }
 function onImgError(e: Event) {
-  (e.target as HTMLImageElement).src = "/images/card-back.png";
+  const img = e.target as HTMLImageElement;
+  // Repli vignette → image pleine → dos de carte.
+  if (img.src.includes("/thumbs/")) {
+    img.src = img.src.replace("/thumbs/", "/");
+    return;
+  }
+  img.src = "/images/card-back.webp";
 }
 
 function ownedQty(id: string): number {

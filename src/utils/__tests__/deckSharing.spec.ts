@@ -180,6 +180,20 @@ describe("deckSharing", () => {
   });
 
   describe("Aller-retour (roundtrip)", () => {
+    it("devrait préserver la distinction réserve/principal", () => {
+      const deck = createMockDeck();
+      // Marque la première carte comme étant en réserve.
+      deck.cards[0].isReserve = true;
+      const reserveId = deck.cards[0].card.id;
+      const decoded = decodeDeck(encodeDeck(deck));
+
+      expect(decoded).not.toBeNull();
+      const reserveEntry = decoded!.cards.find((c) => c.cardId === reserveId);
+      const mainEntry = decoded!.cards.find((c) => c.cardId !== reserveId);
+      expect(reserveEntry?.isReserve).toBe(true);
+      expect(mainEntry?.isReserve).toBeUndefined();
+    });
+
     it("devrait préserver toutes les données après encodage/décodage", () => {
       const deck = createMockDeck();
       const encoded = encodeDeck(deck);

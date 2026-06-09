@@ -1,6 +1,9 @@
 import type { Card } from "@/types/cards";
 
-const CACHE_KEY = "wakfu-cards-cache";
+// Version du cache : à incrémenter quand la forme/normalisation des cartes
+// change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
+// pollués, éléments en minuscules).
+const CACHE_KEY = "wakfu-cards-cache-v2";
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -85,12 +88,59 @@ function capitalizeElement(element: string): string {
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
+// Mots-clés canoniques du Wakfu TCG. Les données scrappées contiennent des
+// fragments de phrases mal parsés ("Le", ",", ":", "**Résistance"…) qu'on
+// filtre pour ne pas les afficher comme mots-clés.
+const CANONICAL_KEYWORDS = new Set([
+  "Résistance",
+  "Recette",
+  "Fabriquer",
+  "Inclinaison",
+  "Portée",
+  "Critique",
+  "Parade",
+  "Riposte",
+  "Soin",
+  "Tacle",
+  "Esquive",
+  "Initiative",
+  "Invocation",
+  "Unique",
+  "Poison",
+  "Brûlure",
+  "Vol de vie",
+]);
+
+function normalizeKeywordName(name: unknown): string {
+  return String(name ?? "")
+    .replace(/^[^\p{L}]+/u, "") // retire les "*", ":", "," en tête
+    .trim();
+}
+
 function normalizeCardElements(card: any): void {
   if (card.stats?.niveau?.element) {
     card.stats.niveau.element = capitalizeElement(card.stats.niveau.element);
   }
   if (card.stats?.force?.element) {
     card.stats.force.element = capitalizeElement(card.stats.force.element);
+  }
+  // Normalise la casse des éléments dans les effets et mots-clés.
+  for (const eff of card.effects || []) {
+    if (eff && Array.isArray(eff.elements)) {
+      eff.elements = eff.elements.map(capitalizeElement);
+    }
+  }
+  // Filtre + normalise les mots-clés (noms canoniques uniquement).
+  if (Array.isArray(card.keywords)) {
+    card.keywords = card.keywords
+      .map((kw: any) => {
+        if (!kw) return null;
+        const name = normalizeKeywordName(kw.name);
+        if (Array.isArray(kw.elements))
+          kw.elements = kw.elements.map(capitalizeElement);
+        return { ...kw, name };
+      })
+      .filter((kw: any) => kw && CANONICAL_KEYWORDS.has(kw.name));
   }
 }
 

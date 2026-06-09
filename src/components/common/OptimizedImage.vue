@@ -161,19 +161,6 @@ const { stop } = useIntersectionObserver(
 // Methods
 // ---------------------------------------------------------------------------
 
-const preloadImage = () => {
-  if (!imageRef.value || !isVisible.value) return;
-
-  measure(METRIC_TYPES.COMPONENT_RENDER, "OptimizedImage.preload", () => {
-    const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "image";
-    link.href = resolvedSrc.value;
-    link.crossOrigin = "anonymous";
-    document.head.appendChild(link);
-  });
-};
-
 const handleLoad = () => {
   measure(METRIC_TYPES.COMPONENT_RENDER, "OptimizedImage.load", () => {
     isLoading.value = false;
@@ -220,17 +207,9 @@ watch(
   },
 );
 
-watch(isVisible, (visible) => {
-  if (visible && props.loading === "lazy") {
-    preloadImage();
-  }
-});
-
-onMounted(() => {
-  if (props.loading === "eager") {
-    preloadImage();
-  }
-});
+// Le préchargement manuel (<link rel=preload>) fuyait dans <head> et causait
+// un double téléchargement. L'<img> gère déjà loading="lazy"/decoding/
+// fetchpriority — aucun préchargement manuel nécessaire.
 
 onUnmounted(() => {
   stop();

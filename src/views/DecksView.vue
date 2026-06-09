@@ -357,7 +357,11 @@
     </template>
 
     <!-- Modal d'import -->
-    <dialog class="modal" :open="showImportModal">
+    <dialog
+      class="modal"
+      :open="showImportModal"
+      @keydown.escape="showImportModal = false"
+    >
       <div class="modal-box border border-base-content bg-base-100">
         <p class="eyebrow text-primary">Registre</p>
         <h3 class="mb-4 mt-1 font-display text-2xl">Importer un deck</h3>
@@ -431,7 +435,11 @@
     </dialog>
 
     <!-- Modal d'export -->
-    <dialog class="modal" :open="showExportModal">
+    <dialog
+      class="modal"
+      :open="showExportModal"
+      @keydown.escape="showExportModal = false"
+    >
       <div class="modal-box border border-base-content bg-base-100">
         <p class="eyebrow text-primary">Registre</p>
         <h3 class="mb-4 mt-1 font-display text-2xl">Exporter le deck</h3>
@@ -461,6 +469,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
+import { matchesSearch } from "@/utils/text";
 import { useDeckStore } from "@/stores/deckStore";
 import { useToast } from "@/composables/useToast";
 import { useRouter } from "vue-router";
@@ -535,11 +544,11 @@ function elementColor(deck: Deck): string {
   return elementColors[deckElementName(deck)] || elementColors.neutre;
 }
 function heroArt(deck: Deck): string {
-  if (!deck.hero) return "/images/card-back.png";
-  return deck.hero.imageUrl || `/images/cards/${deck.hero.id}_recto.png`;
+  if (!deck.hero) return "/images/card-back.webp";
+  return deck.hero.imageUrl || `/images/cards/${deck.hero.id}_recto.webp`;
 }
 function onHeroError(e: Event) {
-  (e.target as HTMLImageElement).src = "/images/card-back.png";
+  (e.target as HTMLImageElement).src = "/images/card-back.webp";
 }
 
 // ── Duplication ──
@@ -588,8 +597,8 @@ function analyzeImportText() {
 function filterDecks() {
   let filtered = [...decks.value];
   if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
-    filtered = filtered.filter((d) => d.name.toLowerCase().includes(q));
+    const q = searchQuery.value;
+    filtered = filtered.filter((d) => matchesSearch(d.name, q));
   }
   if (filterStatus.value === "valid")
     filtered = filtered.filter((d) => isDeckValid(d));

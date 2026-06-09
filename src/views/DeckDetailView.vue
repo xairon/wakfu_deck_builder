@@ -166,7 +166,7 @@
                     <img
                       :src="
                         deck.hero.imageUrl ||
-                        `/images/cards/${deck.hero.id}_recto.png`
+                        `/images/cards/${deck.hero.id}_recto.webp`
                       "
                       :alt="deck.hero.name"
                       class="aspect-[7/10] object-cover object-[50%_18%]"
@@ -201,7 +201,7 @@
                     <img
                       :src="
                         deck.havreSac.imageUrl ||
-                        `/images/cards/${deck.havreSac.id}.png`
+                        `/images/cards/${deck.havreSac.id}.webp`
                       "
                       :alt="deck.havreSac.name"
                       class="aspect-[7/10] object-cover object-[50%_18%]"
@@ -668,7 +668,7 @@ function getDeckClassElement(d: Deck): string {
 }
 
 function onImageError(e: Event) {
-  (e.target as HTMLImageElement).src = "/images/card-back.png";
+  (e.target as HTMLImageElement).src = "/images/card-back.webp";
 }
 
 function onDuplicate() {

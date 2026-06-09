@@ -76,6 +76,29 @@ export async function loadCollectionFromCloud(): Promise<Record<
   }
 }
 
+/**
+ * Supprime une carte de la collection cloud (quand sa quantité tombe à 0).
+ * Sans cela, l'upsert ne retire jamais la ligne et la carte « réapparaît »
+ * au prochain pull.
+ */
+export async function deleteCollectionEntryFromCloud(
+  cardId: string,
+): Promise<boolean> {
+  if (!supabase) return false;
+  const authStore = useAuthStore();
+  if (!authStore.isAuthenticated || !authStore.userId) return false;
+  try {
+    const { error } = await supabase
+      .from("collections")
+      .delete()
+      .eq("user_id", authStore.userId)
+      .eq("card_id", cardId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
 export async function saveDecksToCloud(decks: CloudDeck[]) {
   if (!supabase) return false;
   const authStore = useAuthStore();
@@ -142,9 +165,18 @@ export async function deleteDeckFromCloud(deckId: string): Promise<boolean> {
 /** Convertit un deck local vers le format stocké en base. */
 export function deckToCloud(deck: Deck, userId: string): CloudDeck {
   const cards: CloudDeck["cards"] = [];
+  // Le store range TOUTES les cartes dans deck.cards, la réserve étant marquée
+  // par isReserve:true. On propage donc ce drapeau (sinon la réserve est
+  // reversée dans le deck principal au prochain pull).
   for (const dc of deck.cards ?? []) {
-    cards.push({ cardId: dc.card.id, quantity: dc.quantity });
+    cards.push({
+      cardId: dc.card.id,
+      quantity: dc.quantity,
+      ...(dc.isReserve ? { isReserve: true } : {}),
+    });
   }
+  // Compat. ascendante : si un deck legacy possède encore un tableau reserve
+  // séparé, on l'ajoute aussi (marqué réserve).
   for (const dc of deck.reserve ?? []) {
     cards.push({ cardId: dc.card.id, quantity: dc.quantity, isReserve: true });
   }
@@ -170,14 +202,16 @@ export function cloudToDeck(
   cloud: CloudDeck,
   resolveCard: (id: string) => Card | undefined,
 ): Deck {
-  const main: DeckCard[] = [];
-  const reserve: DeckCard[] = [];
+  // Le store/UI lisent TOUT depuis deck.cards (réserve filtrée par isReserve).
+  // On reconstruit donc un unique tableau `cards` en conservant le drapeau,
+  // plutôt qu'un tableau `reserve` séparé que rien n'exploite.
+  const cards: DeckCard[] = [];
   for (const c of cloud.cards ?? []) {
     const card = resolveCard(c.cardId);
     if (!card) continue;
     const entry: DeckCard = { card, quantity: c.quantity };
-    if (c.isReserve) reserve.push(entry);
-    else main.push(entry);
+    if (c.isReserve) entry.isReserve = true;
+    cards.push(entry);
   }
   return {
     id: cloud.id,
@@ -186,8 +220,8 @@ export function cloudToDeck(
     havreSac: cloud.havre_sac_id
       ? (resolveCard(cloud.havre_sac_id) ?? null)
       : null,
-    cards: main,
-    reserve,
+    cards,
+    reserve: [],
     createdAt: cloud.created_at,
     updatedAt: cloud.updated_at,
   } as Deck;

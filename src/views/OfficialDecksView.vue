@@ -36,7 +36,7 @@
     <div v-else class="space-y-12 sm:space-y-16">
       <!-- Registre (tableau de bord) -->
       <section class="border-y border-base-content/80 py-5">
-        <div class="grid grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
           <div>
             <p class="eyebrow">Decks disponibles</p>
             <p class="mt-1 font-mono text-3xl tabular">
@@ -379,9 +379,9 @@ function findHeroCard(heroName: string): Card | undefined {
  */
 function getHeroImage(heroName: string): string {
   const card = findHeroCard(heroName);
-  if (!card) return "/images/card-back.png";
+  if (!card) return "/images/card-back.webp";
   if (card.imageUrl) return card.imageUrl;
-  return `/images/cards/${card.id}_recto.png`;
+  return `/images/cards/${card.id}_recto.webp`;
 }
 
 /**
@@ -401,7 +401,7 @@ function getHeroColor(heroName: string): string {
  * Fallback d'image (dos de carte).
  */
 function onImgError(e: Event) {
-  (e.target as HTMLImageElement).src = "/images/card-back.png";
+  (e.target as HTMLImageElement).src = "/images/card-back.webp";
 }
 
 /**

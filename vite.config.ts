@@ -68,8 +68,10 @@ export default defineConfig({
         // Runtime caching strategies
         runtimeCaching: [
           {
-            // Card images: CacheFirst with 30-day expiration, max 2000 entries
-            urlPattern: /\/images\/cards\/.+\.png$/i,
+            // Card images (WebP, retravaillées) : CacheFirst, hors précache.
+            // Mises en cache à la première consultation (offline) plutôt que
+            // toutes téléchargées à l'installation.
+            urlPattern: /\/images\/.+\.webp$/i,
             handler: "CacheFirst",
             options: {
               cacheName: "card-images-cache",

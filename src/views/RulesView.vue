@@ -157,6 +157,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { matchesSearch } from "@/utils/text";
 import { DECK_RULES } from "@/validators/deck";
 import { RULES_SECTIONS, RULES_INTRO } from "@/data/rules";
 import { GLOSSARY } from "@/data/glossary";
@@ -169,9 +170,7 @@ const filteredGlossary = computed(() => {
   const q = glossarySearch.value.trim().toLowerCase();
   if (!q) return GLOSSARY;
   return GLOSSARY.filter(
-    (g) =>
-      g.term.toLowerCase().includes(q) ||
-      g.definition.toLowerCase().includes(q),
+    (g) => matchesSearch(g.term, q) || matchesSearch(g.definition, q),
   );
 });
 

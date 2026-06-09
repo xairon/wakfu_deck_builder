@@ -78,10 +78,15 @@ describe("cloudSync — conversion Deck <-> CloudDeck", () => {
     expect(deck.id).toBe("d1");
     expect(deck.hero?.id).toBe("hero1");
     expect(deck.havreSac?.id).toBe("hs1");
-    expect(deck.cards).toHaveLength(1);
+    // Modèle réel : la réserve vit dans `cards` avec isReserve:true.
+    expect(deck.cards).toHaveLength(2);
     expect(deck.cards[0]).toEqual({ card: catalog.c1, quantity: 3 });
-    expect(deck.reserve).toHaveLength(1);
-    expect(deck.reserve[0]).toEqual({ card: catalog.r1, quantity: 2 });
+    expect(deck.cards[1]).toEqual({
+      card: catalog.r1,
+      quantity: 2,
+      isReserve: true,
+    });
+    expect(deck.reserve).toHaveLength(0);
   });
 
   it("cloudToDeck ignore les cartes introuvables dans le catalogue", () => {
@@ -127,7 +132,11 @@ describe("cloudSync — conversion Deck <-> CloudDeck", () => {
     const back = cloudToDeck(deckToCloud(deck, "u"), (id) => catalog[id]);
     expect(back.hero?.id).toBe("h");
     expect(back.havreSac?.id).toBe("s");
-    expect(back.cards).toEqual([{ card: catalog.a, quantity: 2 }]);
-    expect(back.reserve).toEqual([{ card: catalog.b, quantity: 1 }]);
+    // La réserve (b) revient dans `cards` avec isReserve:true (modèle réel).
+    expect(back.cards).toEqual([
+      { card: catalog.a, quantity: 2 },
+      { card: catalog.b, quantity: 1, isReserve: true },
+    ]);
+    expect(back.reserve).toEqual([]);
   });
 });

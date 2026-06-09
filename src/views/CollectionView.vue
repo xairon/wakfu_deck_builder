@@ -574,6 +574,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
+import { matchesSearch } from "@/utils/text";
 import { useCardStore } from "@/stores/cardStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
@@ -711,14 +712,14 @@ const displayedKeywords = computed(() => {
 });
 
 const getSelectedCardImage = computed(() => {
-  if (!selectedCard.value) return "/images/cards/placeholder.png";
+  if (!selectedCard.value) return "/images/card-back.webp";
 
   // Si on est en mode fallback après une erreur, forcer le mode opposé
   if (imageHasError.value && imageFallbackMode.value) {
     if (isSelectedCardHero.value) {
-      return `/images/cards/${selectedCard.value.id}_${imageFallbackMode.value}.png`;
+      return `/images/cards/${selectedCard.value.id}_${imageFallbackMode.value}.webp`;
     } else {
-      return "/images/cards/placeholder.png";
+      return "/images/card-back.webp";
     }
   }
 
@@ -727,10 +728,10 @@ const getSelectedCardImage = computed(() => {
 
   if (isSelectedCardHero.value) {
     imagePath = showVerso.value
-      ? `/images/cards/${selectedCard.value.id}_verso.png`
-      : `/images/cards/${selectedCard.value.id}_recto.png`;
+      ? `/images/cards/${selectedCard.value.id}_verso.webp`
+      : `/images/cards/${selectedCard.value.id}_recto.webp`;
   } else {
-    imagePath = `/images/cards/${selectedCard.value.id}.png`;
+    imagePath = `/images/cards/${selectedCard.value.id}.webp`;
   }
 
   return imagePath;
@@ -783,11 +784,10 @@ const memoizedFilter = useMemoize(
 
     // Application des filtres en série
     if (query) {
-      const lowQuery = query.toLowerCase();
       filtered = filtered.filter(
         (card) =>
-          card.name.toLowerCase().includes(lowQuery) ||
-          card.subTypes.some((type) => type.toLowerCase().includes(lowQuery)),
+          matchesSearch(card.name, query) ||
+          card.subTypes.some((type) => matchesSearch(type, query)),
       );
     }
 
@@ -958,6 +958,11 @@ const memoizedSort = useMemoize(
 
 // Filtrage des cartes avec optimisation
 const filteredCollection = computed(() => {
+  // Borne les caches de mémoïsation : chaque combinaison de recherche/filtres
+  // crée une entrée ; sans purge, la mémoire croît à chaque frappe.
+  if (memoizedFilter.cache.size > 50) memoizedFilter.clear();
+  if (memoizedSort.cache.size > 50) memoizedSort.clear();
+
   // 1. Filtrage avec mémoisation
   const filteredCards = memoizedFilter(
     cardStore.cards,
@@ -1109,10 +1114,8 @@ onMounted(async () => {
     // La synchronisation cloud est gérée par le authStore à la connexion.
   } catch (error) {
     console.error("❌ Erreur lors du chargement des cartes:", error);
-    toast.addToast({
-      type: "error",
-      message: "Erreur lors du chargement des cartes. Veuillez réessayer.",
-      timeout: 5000,
+    toast.error("Erreur lors du chargement des cartes. Veuillez réessayer.", {
+      duration: 5000,
     });
   }
 });

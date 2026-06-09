@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Card, Deck, DeckCard } from "@/types/cards";
 import { DECK_CONSTRAINTS } from "@/config/cards";
+import { isUniqueCard, maxCopiesForCard } from "@/utils/cardRules";
 import { useCardStore } from "./cardStore";
 import { namespacedKey } from "@/services/storageNamespace";
 
@@ -23,6 +24,8 @@ export const useDeckStore = defineStore("deck", () => {
   const decks = ref<Deck[]>([]);
   const currentDeckId = ref<string | null>(null);
   const loadingError = ref<string | null>(null);
+  // État de la dernière synchro cloud (decks), surfacé dans l'UI.
+  const syncState = ref<"idle" | "syncing" | "synced" | "error">("idle");
 
   // Stores externes
   const cardStore = useCardStore();
@@ -68,14 +71,21 @@ export const useDeckStore = defineStore("deck", () => {
     );
   });
 
-  const uniqueCardCount = computed(() => currentDeck.value?.cards.length || 0);
+  // Cartes du deck principal (hors réserve) — base des statistiques.
+  const mainCards = computed(
+    () => currentDeck.value?.cards.filter((c) => !c.isReserve) ?? [],
+  );
+
+  const uniqueCardCount = computed(
+    () => new Set(mainCards.value.map((c) => c.card.id)).size,
+  );
 
   const elementDistribution = computed(() => {
     if (!currentDeck.value) return {};
 
     const distribution: Record<string, number> = {};
 
-    currentDeck.value.cards.forEach((deckCard) => {
+    mainCards.value.forEach((deckCard) => {
       // Déterminer l'élément de la carte à partir de ses attributs
       const element =
         deckCard.card.stats?.niveau?.element ||
@@ -92,7 +102,7 @@ export const useDeckStore = defineStore("deck", () => {
 
     const distribution: Record<string, number> = {};
 
-    currentDeck.value.cards.forEach((deckCard) => {
+    mainCards.value.forEach((deckCard) => {
       const type = deckCard.card.mainType;
       distribution[type] = (distribution[type] || 0) + deckCard.quantity;
     });
@@ -105,7 +115,7 @@ export const useDeckStore = defineStore("deck", () => {
 
     const curve: Record<number, number> = {};
 
-    currentDeck.value.cards.forEach((deckCard) => {
+    mainCards.value.forEach((deckCard) => {
       const cost = deckCard.card.stats?.pa || 0;
       curve[cost] = (curve[cost] || 0) + deckCard.quantity;
     });
@@ -172,9 +182,11 @@ export const useDeckStore = defineStore("deck", () => {
 
           decks.value = migratedDecks;
 
-          // Sauvegarder automatiquement le format migré
+          // Sauvegarder le format migré en cache LOCAL uniquement : un push
+          // cloud ici (dépendant du catalogue, parfois pas encore chargé)
+          // risquerait d'écraser le cloud. pullCloudDecks gère l'autorité.
           if (migratedDecks.some((deck: any) => deck.cards.length > 0)) {
-            saveDecks();
+            saveDecks({ skipCloud: true });
           }
         } else {
           throw new Error("Format de données invalide");
@@ -214,6 +226,27 @@ export const useDeckStore = defineStore("deck", () => {
     }, 1500);
   }
 
+  /** Annule un push différé en attente (ex. au changement de compte). */
+  function cancelCloudPush() {
+    if (cloudPushTimeout) {
+      clearTimeout(cloudPushTimeout);
+      cloudPushTimeout = null;
+    }
+  }
+
+  /**
+   * Force immédiatement un push en attente (utilisé AVANT la déconnexion, tant
+   * que la session est encore valide), pour ne pas perdre la dernière
+   * modification si l'utilisateur se déconnecte pendant le debounce.
+   */
+  async function flushCloudPush() {
+    if (cloudPushTimeout) {
+      clearTimeout(cloudPushTimeout);
+      cloudPushTimeout = null;
+      await pushDecksToCloudNow();
+    }
+  }
+
   async function pushDecksToCloudNow() {
     try {
       const { isSupabaseConfigured } = await import("@/services/supabase");
@@ -221,13 +254,18 @@ export const useDeckStore = defineStore("deck", () => {
       const { useAuthStore } = await import("@/stores/authStore");
       const auth = useAuthStore();
       if (!auth.isAuthenticated || !auth.userId) return;
+      syncState.value = "syncing";
       const { saveDecksToCloud, deckToCloud } = await import(
         "@/services/cloudSync"
       );
       const userId = auth.userId;
-      await saveDecksToCloud(decks.value.map((d) => deckToCloud(d, userId)));
+      const ok = await saveDecksToCloud(
+        decks.value.map((d) => deckToCloud(d, userId)),
+      );
+      syncState.value = ok ? "synced" : "error";
     } catch {
-      // best-effort : le cache local reste la source de secours
+      syncState.value = "error";
+      // le cache local reste la source de secours
     }
   }
 
@@ -244,17 +282,23 @@ export const useDeckStore = defineStore("deck", () => {
       const auth = useAuthStore();
       if (!auth.isAuthenticated || !auth.userId) return;
 
+      // Garde : sans catalogue chargé, cloudToDeck ne résoudrait aucune carte
+      // et on écraserait les decks par des coquilles vides. On attend.
+      if (cardStore.cards.length === 0) return;
+
       const { loadDecksFromCloud, cloudToDeck, saveDecksToCloud, deckToCloud } =
         await import("@/services/cloudSync");
       const cloud = await loadDecksFromCloud();
+      // null = erreur réseau / indisponible : ne RIEN écraser.
+      if (cloud === null) return;
       const resolve = (cardId: string) =>
         cardStore.cards.find((c) => c.id === cardId);
 
-      if (cloud && cloud.length > 0) {
+      if (cloud.length > 0) {
         decks.value = cloud.map((cd) => cloudToDeck(cd, resolve));
         saveDecks({ skipCloud: true });
       } else if (decks.value.length > 0) {
-        // Cloud vide : on l'initialise depuis le cache local de cet appareil.
+        // Cloud confirmé vide : on l'initialise depuis le cache local.
         const userId = auth.userId;
         await saveDecksToCloud(decks.value.map((d) => deckToCloud(d, userId)));
       }
@@ -265,6 +309,9 @@ export const useDeckStore = defineStore("deck", () => {
 
   /** Vide les decks en mémoire (à la déconnexion). */
   function clearAll() {
+    // Annule un push différé du compte précédent avant de vider l'état,
+    // pour éviter qu'il n'écrive dans l'espace du nouveau compte.
+    cancelCloudPush();
     decks.value = [];
     currentDeckId.value = null;
   }
@@ -393,10 +440,10 @@ export const useDeckStore = defineStore("deck", () => {
     if (card.imageUrl) return card.imageUrl;
 
     if (card.mainType === "Héros") {
-      return `/images/cards/${card.id}_recto.png`;
+      return `/images/cards/${card.id}_recto.webp`;
     }
 
-    return `/images/cards/${card.id}.png`;
+    return `/images/cards/${card.id}.webp`;
   }
 
   /**
@@ -462,8 +509,7 @@ export const useDeckStore = defineStore("deck", () => {
 
     // Règle TCG : 1 exemplaire pour les cartes "Unique", sinon 3.
     // La limite de copies s'applique au TOTAL (deck principal + réserve).
-    const isUnique = card.keywords?.some((k) => k.name === "Unique");
-    const maxCopies = isUnique ? 1 : MAX_COPIES_PER_CARD;
+    const maxCopies = isUniqueCard(card) ? 1 : MAX_COPIES_PER_CARD;
     const totalCopies = currentDeck.value.cards
       .filter((c) => c.card.id === card.id)
       .reduce((a, c) => a + c.quantity, 0);
@@ -769,26 +815,38 @@ export const useDeckStore = defineStore("deck", () => {
             deck.havreSac = prepareCardForDeck(card);
             result.stats.havreSacSet = true;
           } else {
-            // Ajouter la carte avec la quantité spécifiée
+            // Plafond par carte (1 si Unique, sinon 3) ET plafond de deck (48).
+            const cap = maxCopiesForCard(card, MAX_COPIES_PER_CARD);
+            const mainTotal = deck.cards.reduce((a, c) => a + c.quantity, 0);
+            const roomDeck = MAX_DECK_SIZE - mainTotal;
             const existingCard = deck.cards.find((c) => c.card.id === card.id);
-            if (existingCard) {
-              const oldQuantity = existingCard.quantity;
-              existingCard.quantity = Math.min(
-                existingCard.quantity + quantity,
-                MAX_COPIES_PER_CARD,
-              );
-              if (existingCard.quantity !== oldQuantity + quantity) {
+            const already = existingCard ? existingCard.quantity : 0;
+            const allowed = Math.min(quantity, cap - already, roomDeck);
+
+            if (allowed <= 0) {
+              if (roomDeck <= 0) {
                 result.warnings.push(
-                  `Ligne ${i + 1}: Quantité limitée à ${MAX_COPIES_PER_CARD} pour "${card.name}"`,
+                  `Ligne ${i + 1}: deck principal plein (${MAX_DECK_SIZE}), "${card.name}" ignorée`,
+                );
+              } else {
+                result.warnings.push(
+                  `Ligne ${i + 1}: "${card.name}" limitée à ${cap} exemplaire(s)`,
                 );
               }
             } else {
-              deck.cards.push({
-                card: prepareCardForDeck(card),
-                quantity: Math.min(quantity, MAX_COPIES_PER_CARD),
-              });
+              if (existingCard) existingCard.quantity += allowed;
+              else
+                deck.cards.push({
+                  card: prepareCardForDeck(card),
+                  quantity: allowed,
+                });
+              if (allowed < quantity) {
+                result.warnings.push(
+                  `Ligne ${i + 1}: quantité réduite pour "${card.name}" (max ${cap} / 48 au total)`,
+                );
+              }
+              result.stats.cardsAdded += allowed;
             }
-            result.stats.cardsAdded += Math.min(quantity, MAX_COPIES_PER_CARD);
           }
         } else {
           // Carte non trouvée - essayer de donner des suggestions
@@ -903,10 +961,12 @@ export const useDeckStore = defineStore("deck", () => {
     typeDistribution,
     costCurve,
     loadingError,
+    syncState,
     initialize,
     loadDecks,
     saveDecks,
     pullCloudDecks,
+    flushCloudPush,
     clearAll,
     createDeck,
     duplicateDeck,

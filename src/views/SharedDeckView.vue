@@ -124,7 +124,7 @@
                     <img
                       :src="
                         resolvedHero.imageUrl ||
-                        `/images/cards/${resolvedHero.id}_recto.png`
+                        `/images/cards/${resolvedHero.id}_recto.webp`
                       "
                       :alt="resolvedHero.name"
                       class="aspect-[7/10] object-cover object-[50%_18%]"
@@ -159,7 +159,7 @@
                     <img
                       :src="
                         resolvedHavreSac.imageUrl ||
-                        `/images/cards/${resolvedHavreSac.id}.png`
+                        `/images/cards/${resolvedHavreSac.id}.webp`
                       "
                       :alt="resolvedHavreSac.name"
                       class="aspect-[7/10] object-cover object-[50%_18%]"
@@ -375,6 +375,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { decodeDeck } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
@@ -385,6 +386,7 @@ const route = useRoute();
 const router = useRouter();
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
+const authStore = useAuthStore();
 const toast = useToast();
 
 // Etat local
@@ -445,6 +447,7 @@ const resolvedHavreSac = computed<Card | null>(() => {
 interface ResolvedCard {
   card: Card;
   quantity: number;
+  isReserve?: boolean;
 }
 
 const resolvedCards = computed<ResolvedCard[]>(() => {
@@ -453,7 +456,11 @@ const resolvedCards = computed<ResolvedCard[]>(() => {
   for (const entry of decodedData.value.cards) {
     const card = cardStore.cards.find((c) => c.id === entry.cardId);
     if (card) {
-      result.push({ card, quantity: entry.quantity });
+      result.push({
+        card,
+        quantity: entry.quantity,
+        isReserve: entry.isReserve,
+      });
     }
   }
   return result;
@@ -557,6 +564,16 @@ onMounted(async () => {
 // Importer le deck dans le deckStore
 function importSharedDeck() {
   if (!decodedData.value) return;
+
+  // Importer nécessite un compte (les decks sont stockés par utilisateur).
+  // On renvoie vers la connexion en conservant l'URL de partage pour revenir
+  // ici ensuite, plutôt que de perdre l'utilisateur.
+  if (!authStore.isAuthenticated) {
+    toast.info("Connectez-vous pour importer ce deck dans votre collection.");
+    router.push({ name: "auth", query: { redirect: route.fullPath } });
+    return;
+  }
+
   importing.value = true;
 
   try {
@@ -574,9 +591,9 @@ function importSharedDeck() {
       deckStore.setHavreSac(resolvedHavreSac.value);
     }
 
-    // Ajouter les cartes
+    // Ajouter les cartes (en respectant la réserve)
     for (const item of resolvedCards.value) {
-      deckStore.addCard(item.card, item.quantity);
+      deckStore.addCard(item.card, item.quantity, item.isReserve ?? false);
     }
 
     toast.success(`Deck "${decodedData.value.name}" importe avec succes !`, {
@@ -601,7 +618,7 @@ function importSharedDeck() {
 function onImageError(event: Event) {
   const target = event.target as HTMLImageElement;
   if (target) {
-    target.src = "/images/card-back.png";
+    target.src = "/images/card-back.webp";
   }
 }
 </script>

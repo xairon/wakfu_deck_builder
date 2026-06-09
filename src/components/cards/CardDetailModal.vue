@@ -283,10 +283,10 @@ const cardImagePath = computed(() => {
   if (!props.card) return "";
   if (isHero.value) {
     return showVerso.value
-      ? `${props.card.id}_verso.png`
-      : `${props.card.id}_recto.png`;
+      ? `${props.card.id}_verso.webp`
+      : `${props.card.id}_recto.webp`;
   }
-  return `${props.card.id}.png`;
+  return `${props.card.id}.webp`;
 });
 
 const displayedStats = computed(() => {

@@ -182,10 +182,10 @@ const elementColor = computed(() => {
 
 const cardImg = computed(() => {
   const c = props.card;
-  if (!c) return "/images/card-back.png";
+  if (!c) return "/images/card-back.webp";
   if (c.imageUrl) return c.imageUrl;
-  if (c.mainType === "Héros") return `/images/cards/${c.id}_recto.png`;
-  return `/images/cards/${c.id}.png`;
+  if (c.mainType === "Héros") return `/images/cards/${c.id}_recto.webp`;
+  return `/images/cards/${c.id}.webp`;
 });
 
 const statRows = computed(() => {
@@ -206,6 +206,6 @@ const statRows = computed(() => {
 });
 
 function onImgError(e: Event) {
-  (e.target as HTMLImageElement).src = "/images/card-back.png";
+  (e.target as HTMLImageElement).src = "/images/card-back.webp";
 }
 </script>

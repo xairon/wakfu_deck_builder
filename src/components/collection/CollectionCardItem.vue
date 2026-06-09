@@ -21,7 +21,7 @@
       <!-- Illustration -->
       <div class="relative" :class="{ sheen: foilQuantity > 0 }">
         <img
-          :src="cardImagePath"
+          :src="displaySrc"
           :alt="`Carte ${card?.name || 'Wakfu'} - ${card?.mainType || 'Type inconnu'}`"
           class="aspect-[7/10] w-full object-cover"
           loading="lazy"
@@ -177,9 +177,10 @@
  * Composant pour afficher une carte individuelle dans la collection
  * Mise en avant de l'illustration avec informations minimalistes
  */
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref } from "vue";
 import type { Card } from "@/types/cards";
 import { useAuthStore } from "@/stores/authStore";
+import { getThumbPath } from "@/utils/imagePaths";
 
 // Définition des props
 interface Props {
@@ -218,6 +219,7 @@ const emit = defineEmits<{
 
 // État pour la gestion des erreurs d'image et l'interactivité
 const hasImageError = ref(false);
+const thumbFailed = ref(false); // repli vignette → image pleine
 const showVerso = ref(false);
 const isHovered = ref(false);
 
@@ -229,7 +231,7 @@ const isHeroCard = computed(() => {
 // Chemin de l'image - gère différents types de cartes
 const cardImagePath = computed(() => {
   if (hasImageError.value || !props.card?.id) {
-    return "/images/card-back.png";
+    return "/images/card-back.webp";
   }
 
   // Si la carte a une imageUrl, l'utiliser directement
@@ -240,14 +242,28 @@ const cardImagePath = computed(() => {
   // Sinon, construire le chemin à partir de l'ID
   // Si c'est un héros, utiliser recto ou verso selon l'état
   if (isHeroCard.value) {
-    return `/images/cards/${props.card.id}_${showVerso.value ? "verso" : "recto"}.png`;
+    return `/images/cards/${props.card.id}_${showVerso.value ? "verso" : "recto"}.webp`;
   }
 
-  return `/images/cards/${props.card.id}.png`;
+  return `/images/cards/${props.card.id}.webp`;
 });
+
+// En grille on affiche la VIGNETTE (~256px, ~15 Ko) ; repli vers l'image pleine
+// si la vignette manque (puis dos de carte via handleImageError).
+const displaySrc = computed(() =>
+  thumbFailed.value ? cardImagePath.value : getThumbPath(cardImagePath.value),
+);
 
 // Gérer les erreurs de chargement d'image
 function handleImageError() {
+  // 1) Échec de la vignette → tenter l'image pleine résolution.
+  if (
+    !thumbFailed.value &&
+    getThumbPath(cardImagePath.value) !== cardImagePath.value
+  ) {
+    thumbFailed.value = true;
+    return;
+  }
   // Si la carte a une URL d'image mais qu'elle ne charge pas, passer directement au fallback
   if (props.card.imageUrl) {
     hasImageError.value = true;
@@ -258,7 +274,7 @@ function handleImageError() {
   const img = new Image();
   if (isHeroCard.value) {
     // Si c'est une image de héros, essayer l'autre face
-    const alternatePath = `/images/cards/${props.card.id}_${showVerso.value ? "recto" : "verso"}.png`;
+    const alternatePath = `/images/cards/${props.card.id}_${showVerso.value ? "recto" : "verso"}.webp`;
     img.src = alternatePath;
 
     // Si l'autre face charge correctement, basculer automatiquement
@@ -298,36 +314,16 @@ function toggleCardSide(event: Event) {
   if (isHeroCard.value) {
     // Réinitialiser l'état d'erreur
     hasImageError.value = false;
+    thumbFailed.value = false;
 
     // Inverser l'état recto/verso
     showVerso.value = !showVerso.value;
   }
 }
 
-// Événements d'entrée/sortie de souris
-onMounted(() => {
-  const container = document.querySelector(".card-container");
-  if (container) {
-    container.addEventListener("mouseenter", () => {
-      isHovered.value = true;
-    });
-    container.addEventListener("mouseleave", () => {
-      isHovered.value = false;
-    });
-  }
-});
-
-onUnmounted(() => {
-  const container = document.querySelector(".card-container");
-  if (container) {
-    container.removeEventListener("mouseenter", () => {
-      isHovered.value = true;
-    });
-    container.removeEventListener("mouseleave", () => {
-      isHovered.value = false;
-    });
-  }
-});
+// Le survol est géré par instance via @mouseenter/@mouseleave sur la racine du
+// template (les anciens écouteurs globaux document.querySelector ciblaient la
+// mauvaise carte et fuyaient — supprimés).
 
 // Événements d'ajout au deck
 function emitAddToDeck() {

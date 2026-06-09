@@ -40,10 +40,14 @@ vi.mock("@/stores/authStore", () => ({
 }));
 
 import { useDeckStore } from "@/stores/deckStore";
+import { useCardStore } from "@/stores/cardStore";
 
 describe("deckStore — synchronisation cloud des decks", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
+    // pullCloudDecks exige un catalogue chargé (sinon il s'abstient pour ne pas
+    // écraser les decks par des coquilles vides).
+    useCardStore().setCards([{ id: "c1", name: "C1" } as never]);
     configured = true;
     authenticated = true;
     loadDecksFromCloud.mockReset();

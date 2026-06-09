@@ -131,7 +131,7 @@ const cardQuantity = computed(() => {
 
 // Image par défaut en cas d'erreur
 function getDefaultCardImage() {
-  return "/images/card-back.png";
+  return "/images/card-back.webp";
 }
 
 // Gestion des erreurs d'image

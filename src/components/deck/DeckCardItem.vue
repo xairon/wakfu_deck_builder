@@ -128,7 +128,7 @@ const showQuantityControls = computed(() => {
 
 // Image par défaut
 function getDefaultCardImage() {
-  return "/images/card-back.png";
+  return "/images/card-back.webp";
 }
 
 // Obtenir l'élément de la carte

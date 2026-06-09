@@ -12,48 +12,23 @@
       <p class="mt-2 text-base-content/70">Essayez de modifier vos filtres.</p>
     </div>
 
-    <!-- Grille de cartes avec virtualisation simple -->
     <div v-else class="cards-grid-container relative" ref="gridContainer">
-      <!-- Indication de chargement -->
-      <div
-        v-if="isLoading"
-        class="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 border border-base-content/30 bg-base-100 px-4 py-2"
-        role="status"
-        aria-label="Chargement de cartes supplémentaires"
-      >
-        <span class="eyebrow flex items-center gap-2" aria-hidden="true">
-          <span class="inline-block h-2 w-2 animate-pulse bg-primary"></span>
-          Chargement…
-        </span>
-        <span class="sr-only">Chargement...</span>
-      </div>
-
-      <!-- Grille virtualisée (contact-sheet) -->
+      <!-- Grille (contact-sheet), une page à la fois -->
       <div
         class="contact-sheet mt-4 cards-grid"
         role="list"
         aria-label="Grille de cartes de la collection"
       >
         <div
-          v-for="cardItem in visibleCards"
-          :key="
-            cardItem.hasOwnProperty('card') ? cardItem.card.id : cardItem.id
-          "
-          class="card-wrapper w-full h-auto relative"
+          v-for="cardItem in pagedCards"
+          :key="cardItem.card.id"
+          class="card-wrapper relative h-auto w-full"
           role="listitem"
         >
           <CollectionCardItem
-            :card="cardItem.hasOwnProperty('card') ? cardItem.card : cardItem"
-            :quantity="
-              cardItem.hasOwnProperty('quantity')
-                ? cardItem.quantity
-                : getCardQuantity(cardItem.id)
-            "
-            :foil-quantity="
-              cardItem.hasOwnProperty('foilQuantity')
-                ? cardItem.foilQuantity
-                : getFoilCardQuantity(cardItem.id)
-            "
+            :card="cardItem.card"
+            :quantity="cardItem.quantity"
+            :foil-quantity="cardItem.foilQuantity"
             :enable-add-to-deck="enableAddToDeck"
             :dim-unowned="dimUnowned"
             @update-quantity="handleQuantityUpdate"
@@ -62,45 +37,85 @@
           />
         </div>
       </div>
+
+      <!-- Pagination -->
+      <nav
+        v-if="totalPages > 1"
+        class="mt-8 flex flex-wrap items-center justify-center gap-2 border-t border-base-content/15 pt-6"
+        aria-label="Pagination de la collection"
+      >
+        <button
+          class="btn btn-ghost btn-sm px-2"
+          :disabled="currentPage === 0"
+          aria-label="Page précédente"
+          @click="goTo(currentPage - 1)"
+        >
+          ←
+        </button>
+
+        <button
+          v-for="p in pageButtons"
+          :key="p.key"
+          class="btn btn-sm min-w-9 font-mono tabular"
+          :class="
+            p.page === currentPage
+              ? 'btn-neutral'
+              : p.page === -1
+                ? 'btn-ghost pointer-events-none'
+                : 'btn-ghost'
+          "
+          :disabled="p.page === -1"
+          :aria-current="p.page === currentPage ? 'page' : undefined"
+          @click="p.page !== -1 && goTo(p.page)"
+        >
+          {{ p.page === -1 ? "…" : p.page + 1 }}
+        </button>
+
+        <button
+          class="btn btn-ghost btn-sm px-2"
+          :disabled="currentPage >= totalPages - 1"
+          aria-label="Page suivante"
+          @click="goTo(currentPage + 1)"
+        >
+          →
+        </button>
+      </nav>
+
+      <p
+        class="mt-3 text-center font-mono text-[11px] uppercase tracking-wider text-base-content/45"
+      >
+        {{ validCards.length }} carte{{ validCards.length > 1 ? "s" : "" }}
+        <template v-if="totalPages > 1">
+          · page {{ currentPage + 1 }}/{{ totalPages }}
+        </template>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 /**
- * Composant pour afficher une grille de cartes de la collection
- * Avec virtualisation simple pour améliorer les performances
+ * Grille paginée de la collection : une page de cartes à la fois (DOM borné,
+ * collection complète parcourable sans plafond).
  */
-import {
-  defineProps,
-  defineEmits,
-  computed,
-  ref,
-  onMounted,
-  onUnmounted,
-  watch,
-  withDefaults,
-} from "vue";
+import { computed, ref, watch, nextTick, withDefaults } from "vue";
 import { useCardStore } from "@/stores/cardStore";
-import { useWindowScroll, useThrottleFn } from "@vueuse/core";
 import CollectionCardItem from "./CollectionCardItem.vue";
 import type { Card } from "@/types/cards";
 
-// Définition des props
 interface Props {
-  filteredCards: any[]; // Accepte les deux formats de cartes
+  filteredCards: any[];
   pageSize?: number;
   enableAddToDeck?: boolean;
   dimUnowned?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  pageSize: 20,
+  pageSize: 60,
   enableAddToDeck: false,
   dimUnowned: false,
 });
 
-// Définition des émissions
 const emit = defineEmits<{
   (
     e: "update-quantity",
@@ -112,19 +127,12 @@ const emit = defineEmits<{
   (e: "add-to-deck", card: Card): void;
 }>();
 
-// Store
 const cardStore = useCardStore();
-
-// État pour la virtualisation
-const isLoading = ref(false);
 const gridContainer = ref<HTMLElement | null>(null);
-const { y: scrollY } = useWindowScroll();
 const currentPage = ref(0);
 
-// Déterminer le format des cartes reçues
 const isEncapsulatedFormat = computed(() => {
   if (!props.filteredCards || props.filteredCards.length === 0) return false;
-  // Format { card, quantity, foilQuantity } vs Card directement
   return (
     props.filteredCards[0] &&
     typeof props.filteredCards[0] === "object" &&
@@ -132,63 +140,64 @@ const isEncapsulatedFormat = computed(() => {
   );
 });
 
-// Cartes valides (filtrage des entrées incorrectes)
+// Normalise toujours au format { card, quantity, foilQuantity }.
 const validCards = computed(() => {
   try {
     if (isEncapsulatedFormat.value) {
       return props.filteredCards.filter(
         (item) => item && item.card && item.card.id,
       );
-    } else {
-      // Convertir au format encapsulé pour unifier le traitement
-      return props.filteredCards
-        .filter((item) => item && item.id)
-        .map((card) => ({
-          card,
-          quantity: getCardQuantity(card.id),
-          foilQuantity: getFoilCardQuantity(card.id),
-          available: getCardQuantity(card.id) + getFoilCardQuantity(card.id),
-        }));
     }
+    return props.filteredCards
+      .filter((item) => item && item.id)
+      .map((card) => ({
+        card,
+        quantity: getCardQuantity(card.id),
+        foilQuantity: getFoilCardQuantity(card.id),
+      }));
   } catch (error) {
     console.error("Erreur lors du filtrage des cartes valides:", error);
     return [];
   }
 });
 
-// Cartes visibles (en fonction de la pagination)
-const visibleCards = computed(() => {
-  const endIdx = (currentPage.value + 1) * props.pageSize;
-  return validCards.value.slice(0, endIdx);
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(validCards.value.length / props.pageSize)),
+);
+
+const pagedCards = computed(() => {
+  const start = currentPage.value * props.pageSize;
+  return validCards.value.slice(start, start + props.pageSize);
 });
 
-// Charger plus de cartes quand on scroll
-const loadMoreCards = useThrottleFn(() => {
-  const scrollPosition = window.scrollY;
-  const windowHeight = window.innerHeight;
-  const documentHeight = document.documentElement.scrollHeight;
-
-  // Si on approche du bas de la page (300px avant la fin)
-  if (
-    documentHeight - (scrollPosition + windowHeight) < 300 &&
-    validCards.value.length > visibleCards.value.length
-  ) {
-    isLoading.value = true;
-
-    // Simuler un petit délai pour éviter de bloquer le thread principal
-    setTimeout(() => {
-      currentPage.value++;
-      isLoading.value = false;
-    }, 50);
+// Boutons de page compacts : 1 … (p-1) p (p+1) … N
+const pageButtons = computed(() => {
+  const total = totalPages.value;
+  const cur = currentPage.value;
+  const pages = new Set<number>([0, total - 1, cur, cur - 1, cur + 1]);
+  const sorted = [...pages]
+    .filter((p) => p >= 0 && p < total)
+    .sort((a, b) => a - b);
+  const out: { key: string; page: number }[] = [];
+  let prev = -2;
+  for (const p of sorted) {
+    if (p - prev > 1) out.push({ key: `gap-${p}`, page: -1 });
+    out.push({ key: `p-${p}`, page: p });
+    prev = p;
   }
-}, 100);
-
-// Surveiller le scroll pour charger plus de cartes
-watch(scrollY, () => {
-  loadMoreCards();
+  return out;
 });
 
-// Surveiller les changements de filtres pour réinitialiser la pagination
+function goTo(page: number) {
+  const clamped = Math.min(Math.max(0, page), totalPages.value - 1);
+  if (clamped === currentPage.value) return;
+  currentPage.value = clamped;
+  nextTick(() => {
+    gridContainer.value?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+// Filtres modifiés → retour à la page 1 (et clamp si la page n'existe plus).
 watch(
   () => props.filteredCards,
   () => {
@@ -196,30 +205,19 @@ watch(
   },
   { deep: true },
 );
-
-// Setup des écouteurs d'événements
-onMounted(() => {
-  window.addEventListener("scroll", loadMoreCards);
-  // Charger les premières cartes
-  loadMoreCards();
+watch(totalPages, (tp) => {
+  if (currentPage.value > tp - 1) currentPage.value = tp - 1;
 });
 
-onUnmounted(() => {
-  window.removeEventListener("scroll", loadMoreCards);
-});
-
-// Fonctions d'aide pour obtenir les quantités de cartes
 function getCardQuantity(cardId: string): number {
   if (!cardId) return 0;
   return cardStore.getCardQuantity(cardId);
 }
-
 function getFoilCardQuantity(cardId: string): number {
   if (!cardId) return 0;
   return cardStore.getFoilCardQuantity(cardId);
 }
 
-// Gestion de la mise à jour de la quantité
 function handleQuantityUpdate(
   cardId: string,
   quantity: number,
@@ -228,20 +226,12 @@ function handleQuantityUpdate(
   if (!cardId) return;
   emit("update-quantity", cardId, quantity, isFoil);
 }
-
-// Gestion de la sélection de carte
 function handleCardSelect(card: Card) {
-  if (!card || !card.id) {
-    return;
-  }
+  if (!card || !card.id) return;
   emit("select-card", card);
 }
-
-// Gestion de l'ajout de carte au deck
 function handleAddToDeck(card: Card) {
-  if (!card || !card.id) {
-    return;
-  }
+  if (!card || !card.id) return;
   emit("add-to-deck", card);
 }
 </script>
@@ -252,9 +242,11 @@ function handleAddToDeck(card: Card) {
   transition: all 0.2s ease;
   overflow: visible;
   transform-style: preserve-3d;
+  /* Cartes hors écran non peintes par le navigateur (virtualisation native). */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 280px;
 }
 
-/* Styles pour la grille de cartes */
 .cards-grid {
   overflow: visible;
   width: 100%;
@@ -263,6 +255,7 @@ function handleAddToDeck(card: Card) {
 
 .cards-grid-container {
   min-height: 50vh;
+  scroll-margin-top: 5rem;
 }
 
 @media (min-width: 1600px) {

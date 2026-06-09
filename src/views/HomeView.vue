@@ -211,7 +211,7 @@ const plates = computed(() =>
       name: card?.name || "",
       elem: elKey.charAt(0).toUpperCase() + elKey.slice(1),
       color: elementColors[elKey] || elementColors.neutre,
-      img: `/images/cards/${id}_recto.png`,
+      img: `/images/cards/${id}_recto.webp`,
     };
   }),
 );
@@ -232,6 +232,6 @@ const features = [
 ];
 
 function onImgError(e: Event) {
-  (e.target as HTMLImageElement).src = "/images/card-back.png";
+  (e.target as HTMLImageElement).src = "/images/card-back.webp";
 }
 </script>

@@ -20,6 +20,7 @@ interactions avec une carte * @component */
           class="rounded-lg w-full h-auto object-contain transition-all duration-500"
           :class="{ 'group-hover:opacity-0': isHero }"
           loading="lazy"
+          @load="handleImageLoad"
           @error="handleImageError"
         />
       </picture>
@@ -83,6 +84,7 @@ const cardInCollection = computed(() => {
 });
 
 // État
+const cardRef = ref<HTMLElement | null>(null);
 const isLoading = ref(true);
 const hasError = ref(false);
 const retryCount = ref(0);
@@ -195,6 +197,10 @@ function handleImageError() {
       }
     }, 1000 * retryCount.value);
   } else {
+    // Après échec des essais : repli sur le dos de carte (comme les autres
+    // composants) plutôt que de laisser une image cassée.
+    const img = cardRef.value?.querySelector("img");
+    if (img) img.src = "/images/card-back.webp";
     hasError.value = true;
     isLoading.value = false;
     emit("imageError");

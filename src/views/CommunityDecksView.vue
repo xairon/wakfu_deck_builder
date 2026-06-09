@@ -71,7 +71,7 @@
                   :alt="deck.hero || deck.name"
                   class="aspect-[7/10] object-cover object-[50%_30%]"
                   loading="lazy"
-                  @error="onImgError"
+                  @error="onImgError($event, deck)"
                 />
               </div>
             </div>
@@ -212,18 +212,16 @@ function heroColor(deck: SourcedDeck): string {
 function heroImage(deck: SourcedDeck): string {
   const h = findHero(deck);
   if (h) return getIllustrationPath(h.id);
-  return "/images/card-back.png";
+  return "/images/card-back.webp";
 }
-function onImgError(e: Event) {
+function onImgError(e: Event, deck?: SourcedDeck) {
   const img = e.target as HTMLImageElement;
-  const h = findHero(
-    decks.value.find((d) => heroImage(d) === img.src) as SourcedDeck,
-  );
+  const h = deck ? findHero(deck) : null;
   // repli : recto de la carte puis dos
   if (h && !img.src.includes("_recto") && !img.src.includes("card-back")) {
-    img.src = `/images/cards/${h.id}_recto.png`;
+    img.src = `/images/cards/${h.id}_recto.webp`;
   } else {
-    img.src = "/images/card-back.png";
+    img.src = "/images/card-back.webp";
   }
 }
 

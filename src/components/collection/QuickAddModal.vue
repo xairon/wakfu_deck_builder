@@ -115,6 +115,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from "vue";
+import { matchesSearch } from "@/utils/text";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import type { Card } from "@/types/cards";
@@ -165,11 +166,9 @@ function ownedFoil(id: string): number {
 }
 
 const results = computed(() => {
-  const q = search.value.trim().toLowerCase();
+  const q = search.value.trim();
   if (!q) return [];
-  return cardStore.cards
-    .filter((c) => c.name.toLowerCase().includes(q))
-    .slice(0, 40);
+  return cardStore.cards.filter((c) => matchesSearch(c.name, q)).slice(0, 40);
 });
 
 function change(card: Card, delta: number, isFoil: boolean) {

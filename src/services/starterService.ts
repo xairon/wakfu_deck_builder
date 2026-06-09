@@ -351,12 +351,10 @@ const CARD_NAME_MAPPING: Record<string, string> = {
   "Dragodinde Rousse Sauvage": "dragodinde-rousse-sauvage-incarnam",
   Bwork: "bwork-incarnam",
   "Bwork Mage": "bwork-mage-incarnam",
-  Crocmaster: "crocmaster-incarnam",
   "Deyko Nexion": "deyko-nexion-incarnam",
   Tolot: "tolot-incarnam",
   Dwanlaposh: "dwanlaposh-incarnam",
   "Calt Aclysme": "calt-aclysme-incarnam",
-  "Zant Enograg": "zant-enograg-incarnam",
   Flaqueux: "flaqueux-incarnam",
   "Coffre Malveillant": "coffre-malveillant-incarnam",
   "Wa Wabbit": "wa-wabbit-incarnam",
@@ -397,7 +395,6 @@ const CARD_NAME_MAPPING: Record<string, string> = {
   Prospection: "prospection-incarnam",
 
   // === ZONES INCARNAM ===
-  "Temple Feca": "temple-feca-incarnam",
   "Temple Feca": "temple-feca-incarnam",
   "Temple Crâ": "temple-cra-incarnam",
   "Temple Iop": "temple-iop-incarnam",
@@ -466,8 +463,7 @@ const CARD_NAME_MAPPING: Record<string, string> = {
 
   // === CARTES BONTA & BRÂKMAR ===
   Téléportation: "teleportation-bonta-brakmar",
-  Invisibilté: "invisibilte-bonta-brakmar",
-  "Bonta, Cité des Bourgeois": "bonta-cite-des-bourgeois-bonta-brakmar",
+  Invisibilité: "invisibilte-astrub",
   "Brâkmar, Cité des Ténèbres": "brakmar-cite-des-tenebres-bonta-brakmar",
 
   // Alliés Bonta & Brâkmar
