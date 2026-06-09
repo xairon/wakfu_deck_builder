@@ -36,8 +36,6 @@
               :selected-id="selectedId"
               @select="select"
               @zoom="zoomInst"
-              @hover="onHover"
-              @unhover="onUnhover"
             />
           </div>
         </div>
@@ -53,8 +51,6 @@
             :selected-id="selectedId"
             @select="select"
             @zoom="zoomInst"
-            @hover="onHover"
-            @unhover="onUnhover"
           />
         </div>
         <div class="gseat__piles">
@@ -85,8 +81,6 @@
           :selected-id="selectedId"
           @select="select"
           @zoom="zoomInst"
-          @hover="onHover"
-          @unhover="onUnhover"
         />
       </div>
     </div>
@@ -95,74 +89,100 @@
     <section class="gseat">
       <div class="gseat__row">
         <SeatHud :seat="me" />
-        <div class="gseat__base" aria-label="Votre socle">
+        <div
+          class="gseat__base gseat__drop"
+          aria-label="Votre socle"
+          @dragover.prevent
+          @drop.prevent="onDrop($event, { zone: 'havreSac', owner: me })"
+        >
           <span class="gslot-label">Socle</span>
           <div class="gseat__base-cards">
             <CardSlot
               v-for="inst in baseCards(me)"
               :key="inst.instanceId"
               wide
+              draggable
               :inst="inst"
               :card="resolveCard(inst.cardId)"
               :selected-id="selectedId"
               @select="select"
               @zoom="zoomInst"
-              @hover="onHover"
-              @unhover="onUnhover"
             />
           </div>
         </div>
-        <div class="gseat__field" role="group" aria-label="Vos alliés">
+        <div
+          class="gseat__field gseat__field--play gseat__drop"
+          role="group"
+          aria-label="Vos alliés"
+          @dragover.prevent
+          @drop.prevent="onDrop($event, { zone: 'monde' })"
+        >
           <span v-if="!allies(me).length" class="gfield-hint"
-            >Vos alliés (jouez une carte ici)</span
+            >⬇ Glissez une carte ici pour la jouer</span
           >
           <CardSlot
             v-for="inst in allies(me)"
             :key="inst.instanceId"
+            draggable
             :inst="inst"
             :card="resolveCard(inst.cardId)"
             :selected-id="selectedId"
             @select="select"
             @zoom="zoomInst"
-            @hover="onHover"
-            @unhover="onUnhover"
           />
         </div>
         <div class="gseat__piles">
-          <Pile
-            label="Pioche"
-            :count="piocheCount(me)"
-            deck
-            @act="store.draw(me)"
-          />
-          <Pile
-            label="Défausse"
-            :top="topDiscard(me)"
-            :count="discardCount(me)"
-            :resolve="resolveCard"
-            @zoom="zoomInst"
-          />
-          <Pile
-            label="Réserve"
-            :count="reserveCount(me)"
-            deck
-            reserve
-            @act="store.drawFromReserve(me)"
-          />
+          <span
+            class="gseat__drop"
+            @dragover.prevent
+            @drop.prevent="
+              onDrop($event, { zone: 'pioche', owner: me }, { at: 'top' })
+            "
+          >
+            <Pile
+              label="Pioche"
+              :count="piocheCount(me)"
+              deck
+              @act="store.draw(me)"
+            />
+          </span>
+          <span
+            class="gseat__drop"
+            @dragover.prevent
+            @drop.prevent="
+              onDrop($event, { zone: 'defausse', owner: me }, { at: 'top' })
+            "
+          >
+            <Pile
+              label="Défausse"
+              :top="topDiscard(me)"
+              :count="discardCount(me)"
+              :resolve="resolveCard"
+              @zoom="zoomInst"
+            />
+          </span>
+          <span
+            class="gseat__drop"
+            @dragover.prevent
+            @drop.prevent="onDrop($event, { zone: 'reserve', owner: me })"
+          >
+            <Pile
+              label="Réserve"
+              :count="reserveCount(me)"
+              deck
+              reserve
+              @act="store.drawFromReserve(me)"
+            />
+          </span>
         </div>
       </div>
       <div class="gseat__hand" role="group" aria-label="Votre main">
-        <div
-          v-for="hcard in handList(me)"
-          :key="hcard.key"
-          class="ghand-card"
-          @mouseenter="onHover(hcard.inst?.instanceId)"
-          @mouseleave="onUnhover(hcard.inst?.instanceId)"
-        >
+        <div v-for="hcard in handList(me)" :key="hcard.key" class="ghand-card">
           <GameCard
             v-if="hcard.inst"
             :instance="hcard.inst"
             :card="resolveCard(hcard.inst.cardId)"
+            draggable
             :selected="hcard.inst.instanceId === selectedId"
             @select="select(hcard.inst.instanceId)"
             @zoom="zoomInst(hcard.inst.instanceId)"
@@ -172,13 +192,6 @@
         <p v-if="!handList(me).length" class="gseat__hand-empty">Main vide</p>
       </div>
     </section>
-
-    <!-- ════════ Aperçu au survol (façon MTGA) ════════ -->
-    <Transition name="hover">
-      <aside v-if="hoverCard" class="ghover" aria-hidden="true">
-        <img :src="hoverBig" :alt="hoverCard.name" class="ghover__img" />
-      </aside>
-    </Transition>
 
     <!-- ════════ Barre d'action de la carte sélectionnée ════════ -->
     <Transition name="slideup">
@@ -248,7 +261,13 @@ import { computed, h, ref } from "vue";
 import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
 import type { Card } from "@/types/cards";
-import type { Position, RedactedInstance, RedactedZone, Seat } from "@/game";
+import type {
+  Position,
+  RedactedInstance,
+  RedactedZone,
+  Seat,
+  ZoneRef,
+} from "@/game";
 import GameCard from "./GameCard.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import { getThumbPath } from "@/utils/imagePaths";
@@ -315,6 +334,16 @@ function reserveCount(seat: Seat): number {
   return !z ? 0 : z.kind === "count" ? z.count : z.instances.length;
 }
 
+// ── Glisser-déposer ──────────────────────────────────────────────────────────
+function onDrop(
+  e: DragEvent,
+  to: ZoneRef,
+  position: Position = { at: "any" },
+): void {
+  const id = e.dataTransfer?.getData("text/plain");
+  if (id) store.moveTo(id, to, position);
+}
+
 // ── Sélection / actions ──────────────────────────────────────────────────────
 const selectedId = ref<string | null>(null);
 const selectedInst = computed(() =>
@@ -345,27 +374,6 @@ function tapSelected(): void {
 function bumpDamage(delta: number): void {
   if (selectedInst.value)
     store.adjustCounter(selectedInst.value.instanceId, "damage", delta);
-}
-
-// ── Survol (aperçu MTGA) ─────────────────────────────────────────────────────
-const hoverId = ref<string | null>(null);
-const hoverCard = computed(() =>
-  hoverId.value
-    ? resolveCard(store.state.instances[hoverId.value]?.cardId ?? null)
-    : null,
-);
-const hoverBig = computed(() => {
-  const c = hoverCard.value;
-  if (!c) return "";
-  return c.mainType === "Héros"
-    ? `/images/cards/${c.id}_recto.webp`
-    : `/images/cards/${c.id}.webp`;
-});
-function onHover(id?: string): void {
-  if (id) hoverId.value = id;
-}
-function onUnhover(id?: string): void {
-  if (hoverId.value === id) hoverId.value = null;
 }
 
 // ── Zoom ─────────────────────────────────────────────────────────────────────
@@ -513,6 +521,7 @@ const CardSlot = (
     selectedId: string | null;
     wide?: boolean;
     small?: boolean;
+    draggable?: boolean;
   },
   { emit }: { emit: (e: string, ...a: unknown[]) => void },
 ) =>
@@ -530,10 +539,9 @@ const CardSlot = (
         instance: props.inst,
         card: props.card,
         selected: props.inst.instanceId === props.selectedId,
+        draggable: props.draggable,
         onSelect: () => emit("select", props.inst.instanceId),
         onZoom: () => emit("zoom", props.inst.instanceId),
-        onHover: () => emit("hover", props.inst.instanceId),
-        onUnhover: () => emit("unhover", props.inst.instanceId),
       }),
     ],
   );
@@ -620,6 +628,18 @@ const CardSlot = (
 .gseat--opp .gseat__field {
   align-items: flex-start;
 }
+.gseat__field--play {
+  border: 1px dashed rgba(240, 78, 34, 0.32);
+}
+.gseat__drop {
+  transition:
+    outline 0.12s ease,
+    background 0.12s ease;
+}
+.gseat__drop.drag-over {
+  outline: 2px dashed #f04e22;
+  background: rgba(240, 78, 34, 0.12);
+}
 .gslot-label,
 .gfield-hint {
   position: absolute;
@@ -636,7 +656,7 @@ const CardSlot = (
   position: static;
   align-self: center;
   margin: auto;
-  color: rgba(246, 245, 241, 0.32);
+  color: rgba(240, 78, 34, 0.6);
   font-style: italic;
   letter-spacing: 0.05em;
   text-transform: none;
@@ -902,33 +922,6 @@ const CardSlot = (
   outline: 2px solid #f04e22;
   outline-offset: 1px;
 }
-
-/* ── Aperçu au survol ── */
-.ghover {
-  position: fixed;
-  top: 50%;
-  right: 18px;
-  transform: translateY(-50%);
-  width: clamp(200px, 20vw, 300px);
-  z-index: 40;
-  pointer-events: none;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6));
-}
-.ghover__img {
-  width: 100%;
-  border-radius: 10px;
-  display: block;
-}
-.hover-enter-active,
-.hover-leave-active {
-  transition: opacity 0.12s ease;
-}
-.hover-enter-from,
-.hover-leave-to {
-  opacity: 0;
-}
-
-/* ── Barre d'action ── */
 .gactionbar {
   position: absolute;
   left: 50%;
@@ -1010,9 +1003,6 @@ const CardSlot = (
   }
   .gseat__piles {
     justify-self: start;
-  }
-  .ghover {
-    display: none;
   }
 }
 @media (max-width: 640px) {

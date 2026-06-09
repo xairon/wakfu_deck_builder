@@ -2,15 +2,22 @@
   <button
     type="button"
     class="game-card"
-    :class="{ 'game-card--tapped': tapped, 'game-card--selected': selected }"
+    :class="{
+      'game-card--tapped': tapped,
+      'game-card--selected': selected,
+      'game-card--draggable': draggable,
+    }"
     :style="{ '--spine': spine }"
     :aria-label="ariaLabel"
+    :draggable="draggable"
     @click="emit('select')"
     @dblclick="emit('zoom')"
-    @mouseenter="emit('hover')"
-    @mouseleave="emit('unhover')"
-    @focus="emit('hover')"
-    @blur="emit('unhover')"
+    @mouseenter="onEnter"
+    @mouseleave="onLeave"
+    @focus="onEnter"
+    @blur="onLeave"
+    @dragstart="onDragStart"
+    @dragend="onLeave"
   >
     <img
       :src="imgSrc"
@@ -50,17 +57,39 @@ import type { Card } from "@/types/cards";
 import type { RedactedInstance } from "@/game";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
+import { useCardPreview } from "@/composables/useCardPreview";
 
 const props = defineProps<{
   instance: RedactedInstance;
   card: Card | null;
   selected?: boolean;
+  draggable?: boolean;
 }>();
-const emit = defineEmits<{ (e: "select"): void; (e: "zoom"): void }>();
+const emit = defineEmits<{
+  (e: "select"): void;
+  (e: "zoom"): void;
+  (e: "dragcard", instanceId: string): void;
+}>();
+
+const preview = useCardPreview();
 
 const hidden = computed(
   () => props.instance.face === "hidden" || !props.instance.cardId,
 );
+
+function onEnter(): void {
+  if (!hidden.value) preview.show(props.card);
+}
+function onLeave(): void {
+  preview.hide();
+}
+function onDragStart(e: DragEvent): void {
+  if (hidden.value) return;
+  e.dataTransfer?.setData("text/plain", props.instance.instanceId);
+  if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+  emit("dragcard", props.instance.instanceId);
+  preview.hide();
+}
 const tapped = computed(() => props.instance.orientation === "tapped");
 const damage = computed(() => props.instance.counters.damage || 0);
 const hp = computed(() => props.instance.counters.hp);
@@ -103,6 +132,12 @@ const ariaLabel = computed(() => {
     transform 0.18s ease,
     box-shadow 0.18s ease;
   cursor: pointer;
+}
+.game-card--draggable {
+  cursor: grab;
+}
+.game-card--draggable:active {
+  cursor: grabbing;
 }
 .game-card::before {
   content: "";

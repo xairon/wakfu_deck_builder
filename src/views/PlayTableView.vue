@@ -169,6 +169,8 @@
       </aside>
     </div>
 
+    <CardPreviewLayer />
+
     <!-- Écran de passation -->
     <div v-if="store.passPending" class="overlay">
       <div class="overlay__card">
@@ -260,6 +262,7 @@ import { elementColor } from "@/config/elementColors";
 import GameBoard from "@/components/game/GameBoard.vue";
 import GameCard from "@/components/game/GameCard.vue";
 import ActionLog from "@/components/game/ActionLog.vue";
+import CardPreviewLayer from "@/components/game/CardPreviewLayer.vue";
 
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
