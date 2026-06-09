@@ -1,0 +1,35 @@
+/**
+ * Module de jeu « La Table des Douze » — moteur (L0+L1).
+ * Table virtuelle event-sourcée, libre de règles, à serveur autoritatif.
+ * Conception : docs/GAME-MODULE-V1.md & docs/CDC-MODULE-JEU-V1.md.
+ */
+export * from "./types/zones";
+export * from "./types/events";
+export * from "./types/state";
+export {
+  applyEvent,
+  deriveState,
+  emptyState,
+  assertAppendable,
+  EngineError,
+  getZoneArray,
+} from "./engine/reducer";
+export { redactStateFor, canSeeCardId } from "./engine/redact";
+export { permutationFromSeed, makeRng } from "./engine/rng";
+export {
+  move,
+  drawTop,
+  playToWorld,
+  discard,
+  worldHavenSwap,
+  tap,
+  untap,
+  flipLevel,
+  setCounter,
+  incCounter,
+  shuffle,
+  undo,
+  say,
+  sequence,
+} from "./engine/verbs";
+export { buildInitialLayout, setupEvents, createGame } from "./engine/setup";
