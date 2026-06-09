@@ -480,6 +480,7 @@ import {
 } from "@/services/starterService";
 import { generateShareUrl } from "@/utils/deckSharing";
 import type { Deck } from "@/types/cards";
+import { validateDeck } from "@/validators/deck";
 
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
@@ -614,7 +615,9 @@ function resetFilters() {
 }
 
 function isDeckValid(deck: Deck): boolean {
-  return !!deck.hero && !!deck.havreSac && getCardsCount(deck) === 48;
+  // Source unique de vérité : mêmes règles que l'atelier (Héros+Havre-Sac,
+  // 48 cartes, copies, réserve 0/12).
+  return validateDeck(deck).isValid;
 }
 
 function getCardsCount(deck: Deck): number {

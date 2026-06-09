@@ -181,24 +181,19 @@ const deckRules = [
     value: "1 + 1",
   },
   {
-    title: "Taille du deck principal",
-    desc: `Le deck principal contient exactement ${DECK_RULES.MAX_CARDS} cartes, ni plus ni moins.`,
-    value: `${DECK_RULES.MAX_CARDS}`,
+    title: "Taille du paquet",
+    desc: `Le paquet de base contient exactement ${DECK_RULES.TOTAL_CARDS} cartes : 1 Héros, 1 Havre-Sac et ${DECK_RULES.MAX_CARDS} autres cartes.`,
+    value: `${DECK_RULES.TOTAL_CARDS}`,
   },
   {
     title: "Limite de copies",
-    desc: `Au maximum ${DECK_RULES.MAX_COPIES} exemplaires d'une même carte — réduit à 1 seul exemplaire pour les cartes Unique.`,
+    desc: `Au maximum ${DECK_RULES.MAX_COPIES} exemplaires d'une même carte (paquet + réserve) — réduit à 1 pour les cartes Unique.`,
     value: `${DECK_RULES.MAX_COPIES} / 1`,
   },
   {
     title: "Réserve",
-    desc: `La réserve accueille au plus ${DECK_RULES.MAX_RESERVE} cartes, en marge du deck principal.`,
-    value: `${DECK_RULES.MAX_RESERVE}`,
-  },
-  {
-    title: "Types requis",
-    desc: `Le deck doit comporter au moins une carte ${DECK_RULES.REQUIRED_TYPES.join(" ou ")}.`,
-    value: "≥ 1",
+    desc: `Optionnelle : elle doit contenir exactement 0 ou ${DECK_RULES.RESERVE_SIZE} cartes (ni Héros ni Havre-Sac).`,
+    value: `0 / ${DECK_RULES.RESERVE_SIZE}`,
   },
 ];
 

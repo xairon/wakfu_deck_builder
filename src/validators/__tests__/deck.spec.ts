@@ -92,8 +92,7 @@ describe("Validation des decks", () => {
   });
 
   /**
-   * Helper: create deck cards that total exactly 48 cards (16 unique allies x 3 copies)
-   * Includes both 'Allié' and 'Action' types to satisfy REQUIRED_TYPES
+   * Helper : crée exactement 48 cartes (15 alliés ×3 + 1 action ×3).
    */
   function createValidDeckCards(): Array<{ card: Card; quantity: number }> {
     const cards: Array<{ card: Card; quantity: number }> = [];
@@ -263,13 +262,49 @@ describe("Validation des decks", () => {
     });
   });
 
-  describe("Validation de la réserve", () => {
-    it("devrait valider un deck avec une réserve correcte", () => {
+  describe("Validation de la réserve (101.4 : exactement 0 ou 12)", () => {
+    // 12 cartes de réserve réparties sur 4 cartes (×3) pour respecter la
+    // limite de 3 exemplaires (comptés paquet + réserve).
+    function reserve12(): Array<{
+      card: Card;
+      quantity: number;
+      isReserve: boolean;
+    }> {
+      const r = [];
+      for (let i = 1; i <= 4; i++) {
+        r.push({
+          card: { ...mockCard, id: `reserve-${i}`, name: `Réserve ${i}` },
+          quantity: 3,
+          isReserve: true,
+        });
+      }
+      return r;
+    }
+
+    it("devrait valider une réserve vide (0)", () => {
+      const deck = {
+        ...createMockDeck(createValidDeckCards()),
+        hero: mockHero,
+        havreSac: mockHavreSac,
+      };
+      expect(validateDeck(deck).isValid).toBe(true);
+    });
+
+    it("devrait valider une réserve d'exactement 12 cartes", () => {
+      const deck = {
+        ...createMockDeck([...createValidDeckCards(), ...reserve12()]),
+        hero: mockHero,
+        havreSac: mockHavreSac,
+      };
+      expect(validateDeck(deck).isValid).toBe(true);
+    });
+
+    it("devrait rejeter une réserve de taille ≠ 0 et ≠ 12", () => {
       const deck = {
         ...createMockDeck([
           ...createValidDeckCards(),
           {
-            card: { ...mockCard, id: "reserve-1" },
+            card: { ...mockCard, id: "reserve-x" },
             quantity: 2,
             isReserve: true,
           },
@@ -277,30 +312,30 @@ describe("Validation des decks", () => {
         hero: mockHero,
         havreSac: mockHavreSac,
       };
-
       const result = validateDeck(deck);
-      expect(result.isValid).toBe(true);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.includes("exactement 0 ou"))).toBe(
+        true,
+      );
     });
+  });
 
-    it("devrait rejeter un deck avec trop de cartes en réserve", () => {
+  describe("Pas d'exigence de type (aucune règle ne l'impose)", () => {
+    it("devrait accepter un deck sans Action ni Allié", () => {
+      const equip: Card = { ...mockCard, mainType: "Équipement" };
+      const cards: Array<{ card: Card; quantity: number }> = [];
+      for (let i = 1; i <= 16; i++) {
+        cards.push({
+          card: { ...equip, id: `eq-${i}`, name: `Équipement ${i}` },
+          quantity: 3,
+        }); // 16 × 3 = 48
+      }
       const deck = {
-        ...createMockDeck([
-          ...createValidDeckCards(),
-          {
-            card: { ...mockCard, id: "reserve-1" },
-            quantity: DECK_RULES.MAX_RESERVE + 1,
-            isReserve: true,
-          },
-        ]),
+        ...createMockDeck(cards),
         hero: mockHero,
         havreSac: mockHavreSac,
       };
-
-      const result = validateDeck(deck);
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        `La réserve ne peut pas contenir plus de ${DECK_RULES.MAX_RESERVE} cartes`,
-      );
+      expect(validateDeck(deck).isValid).toBe(true);
     });
   });
 

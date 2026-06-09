@@ -2,12 +2,18 @@ import type { Deck, Card } from "@/types/cards";
 import { ValidationError } from "@/utils/errors";
 import { isUniqueCard } from "@/utils/cardRules";
 
+// Règles officielles du Wakfu TCG (paquet construit) — wtcg-return.fr/regles/completes.
+// 101.1 : 50 cartes au total = 1 Héros + 1 Havre-Sac + 48 autres.
+// 101.4 : la réserve doit contenir exactement 0 ou 12 cartes.
+// 101.5 : 3 exemplaires max par carte (1 pour les cartes « Unique »),
+//         répartis entre paquet de base et réserve.
 export const DECK_RULES = {
   MIN_CARDS: 48,
   MAX_CARDS: 48,
+  TOTAL_CARDS: 50,
   MAX_COPIES: 3,
-  MAX_RESERVE: 12,
-  REQUIRED_TYPES: ["Action", "Allié"],
+  // Taille EXACTE imposée à la réserve (0 ou cette valeur), pas un simple plafond.
+  RESERVE_SIZE: 12,
 } as const;
 
 interface ValidationResult {
@@ -55,7 +61,7 @@ export function canAddCard(deck: Deck, card: Card, isReserve = false): boolean {
 
   if (isReserve) {
     const reserveCards = getReserveCards(deck);
-    return reserveCards < DECK_RULES.MAX_RESERVE;
+    return reserveCards < DECK_RULES.RESERVE_SIZE;
   } else {
     const totalCards = getTotalCards(deck);
     return totalCards < DECK_RULES.MAX_CARDS;
@@ -131,14 +137,16 @@ function validateCardCopies(deck: Deck, errors: string[]): boolean {
 }
 
 /**
- * Valide la réserve
+ * Valide la réserve.
+ * Règle 101.4 : en paquet construit, la réserve doit contenir EXACTEMENT
+ * 0 ou 12 cartes (pas un simple plafond) et aucun Héros / Havre-Sac.
  */
 function validateReserve(deck: Deck, errors: string[]): boolean {
   const reserveCards = getReserveCards(deck);
 
-  if (reserveCards > DECK_RULES.MAX_RESERVE) {
+  if (reserveCards !== 0 && reserveCards !== DECK_RULES.RESERVE_SIZE) {
     errors.push(
-      `La réserve ne peut pas contenir plus de ${DECK_RULES.MAX_RESERVE} cartes`,
+      `La réserve doit contenir exactement 0 ou ${DECK_RULES.RESERVE_SIZE} cartes (actuellement ${reserveCards}).`,
     );
     return false;
   }
@@ -147,25 +155,9 @@ function validateReserve(deck: Deck, errors: string[]): boolean {
 }
 
 /**
- * Valide les combinaisons de types de cartes
- */
-function validateCardCombinations(deck: Deck, errors: string[]): boolean {
-  const hasRequiredTypes = DECK_RULES.REQUIRED_TYPES.some((type) =>
-    deck.cards.some((c) => !c.isReserve && c.card.mainType === type),
-  );
-
-  if (!hasRequiredTypes) {
-    errors.push(
-      `Le deck doit contenir au moins un ${DECK_RULES.REQUIRED_TYPES.join(" ou ")}`,
-    );
-    return false;
-  }
-
-  return true;
-}
-
-/**
- * Valide un deck selon les règles du jeu
+ * Valide un deck selon les règles du jeu (paquet construit).
+ * NB : aucune règle officielle n'impose un type de carte minimum (« Action /
+ * Allié ») — on ne valide donc que Héros+Havre-Sac, 48 cartes, copies et réserve.
  */
 export function validateDeck(deck: Deck): ValidationResult {
   const errors: string[] = [];
@@ -174,15 +166,9 @@ export function validateDeck(deck: Deck): ValidationResult {
   const isCountValid = validateCardCount(deck, errors);
   const isCopiesValid = validateCardCopies(deck, errors);
   const isReserveValid = validateReserve(deck, errors);
-  const isCombinationsValid = validateCardCombinations(deck, errors);
 
   return {
-    isValid:
-      isHeroValid &&
-      isCountValid &&
-      isCopiesValid &&
-      isReserveValid &&
-      isCombinationsValid,
+    isValid: isHeroValid && isCountValid && isCopiesValid && isReserveValid,
     errors,
   };
 }

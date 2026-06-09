@@ -500,6 +500,7 @@
 import { ref, computed, watchEffect, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
+import { validateDeck } from "@/validators/deck";
 import { useToast } from "@/composables/useToast";
 import { generateShareUrl } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
@@ -548,9 +549,8 @@ const totalCardCount = computed(() =>
 const reserveCardCount = computed(() =>
   reserveCards.value.reduce((a, c) => a + c.quantity, 0),
 );
-const isDeckValid = computed(
-  () =>
-    !!deck.value?.hero && !!deck.value?.havreSac && totalCardCount.value === 48,
+const isDeckValid = computed(() =>
+  deck.value ? validateDeck(deck.value).isValid : false,
 );
 
 const elementColors: Record<string, string> = {
