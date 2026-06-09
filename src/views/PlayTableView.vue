@@ -95,6 +95,8 @@
           :key="s"
           class="seat-toggle"
           :class="{ 'seat-toggle--on': store.controlSeat === s }"
+          :aria-pressed="store.controlSeat === s"
+          :aria-label="`Contrôler le siège ${s}`"
           @click="store.setControlSeat(s)"
         >
           {{ s }}
@@ -374,6 +376,10 @@ onMounted(async () => {
 .seat-toggle--on {
   background: #f04e22;
   color: #f6f5f1;
+}
+.seat-toggle:focus-visible {
+  outline: 2px solid #f04e22;
+  outline-offset: 2px;
 }
 .glayout {
   display: flex;

@@ -226,6 +226,13 @@ export const useGameStore = defineStore("game", () => {
     dispatch(setCounterVerb(inst.controller, instanceId, counter, value));
   }
 
+  /** Déplace la première carte de la Réserve vers la Main du joueur. */
+  function drawFromReserve(seat: Seat = controlSeat.value): void {
+    const first = state.value.seats[seat].reserve[0];
+    if (!first) return;
+    moveTo(first, { zone: "main", owner: seat });
+  }
+
   function shufflePioche(seat: Seat = controlSeat.value): void {
     const size = state.value.seats[seat].pioche.length;
     if (size < 2) return;
@@ -313,6 +320,7 @@ export const useGameStore = defineStore("game", () => {
     toggleTap,
     adjustCounter,
     setCounter,
+    drawFromReserve,
     shufflePioche,
     nextTurn,
     undoLast,

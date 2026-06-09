@@ -132,17 +132,18 @@ const ariaLabel = computed(() => {
 .game-card__badge {
   position: absolute;
   z-index: 3;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
   display: grid;
   place-items: center;
   font-family: "Space Mono", ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #f6f5f1;
-  border-radius: 9px;
+  border-radius: 11px;
   line-height: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 .game-card__badge--dmg {
   top: 3px;
