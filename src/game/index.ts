@@ -15,6 +15,11 @@ export {
   getZoneArray,
 } from "./engine/reducer";
 export { redactStateFor, canSeeCardId } from "./engine/redact";
+export {
+  resolveDraft,
+  redactEventForBroadcast,
+  type AuthorityContext,
+} from "./engine/authority";
 export { permutationFromSeed, makeRng } from "./engine/rng";
 export {
   move,

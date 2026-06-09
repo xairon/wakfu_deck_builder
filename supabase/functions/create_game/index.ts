@@ -1,0 +1,55 @@
+// Edge Function : create_game — crée un salon 1v1 (siège A).
+// Réf. CdC §5.1 (FR-01..05). L'appelant fournit SON deck (snapshot figé à T0).
+import { adminClient, getUserId, makeRoomCode } from "../_shared/auth.ts";
+import { json, preflight } from "../_shared/cors.ts";
+
+async function sha256Hex(s: string): Promise<string> {
+  const buf = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(s),
+  );
+  return Array.from(new Uint8Array(buf), (b) =>
+    b.toString(16).padStart(2, "0"),
+  ).join("");
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return preflight();
+  try {
+    const uid = await getUserId(req);
+    if (!uid) return json({ error: "UNAUTHENTICATED" }, 401);
+
+    const { deck } = await req.json();
+    if (!deck?.hero || !deck?.havreSac)
+      return json({ error: "DECK_INVALIDE" }, 400);
+
+    const db = adminClient();
+    const code = makeRoomCode();
+    // masterSeed SECRÈTE : seul son hash est public (commit-reveal, §4.4).
+    const masterSeed = crypto.randomUUID() + crypto.randomUUID();
+    const masterSeedHash = await sha256Hex(masterSeed);
+
+    const { data: game, error } = await db
+      .from("games")
+      .insert({
+        code,
+        status: "lobby",
+        seat_a: uid,
+        master_seed_hash: masterSeedHash,
+      })
+      .select("id, code")
+      .single();
+    if (error) return json({ error: error.message }, 400);
+
+    await db
+      .from("game_players")
+      .insert({ game_id: game.id, seat: "A", user_id: uid, deck });
+    await db
+      .from("game_secrets")
+      .insert({ game_id: game.id, master_seed: masterSeed });
+
+    return json({ gameId: game.id, code: game.code });
+  } catch (e) {
+    return json({ error: String(e) }, 500);
+  }
+});
