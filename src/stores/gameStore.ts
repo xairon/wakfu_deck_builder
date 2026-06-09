@@ -9,7 +9,7 @@
  */
 import { defineStore } from "pinia";
 import { computed, ref, shallowRef } from "vue";
-import type { Deck } from "@/types/cards";
+import type { Card, Deck } from "@/types/cards";
 import type {
   DraftEvent,
   GameState,
@@ -26,6 +26,7 @@ import {
   move,
   otherSeat,
   redactStateFor,
+  say,
   sequence,
   setCounter as setCounterVerb,
   incCounter as incCounterVerb,
@@ -33,6 +34,20 @@ import {
   shuffle as shuffleVerb,
   undo as undoVerb,
 } from "@/game";
+import type { CombatTarget, RulesCtx } from "@/game/rules";
+import {
+  eligibleAttackers,
+  eligibleBlockers,
+  eligibleTargets,
+  planCost,
+  playDestination,
+  pmOf,
+  resolveCombat,
+  victoryFromState,
+  whyCannotDeclareAttack,
+  whyCannotPlay,
+} from "@/game/rules";
+import { useCardStore } from "@/stores/cardStore";
 
 function rndSeed(): string {
   return Math.random().toString(36).slice(2);
@@ -87,6 +102,44 @@ export const useGameStore = defineStore("game", () => {
   const opponent = computed<Seat>(() => otherSeat(perspective.value));
   const activeName = computed(() => players.value[turn.value.active].name);
 
+  // ── Moteur de règles (R1) ────────────────────────────────────────────────
+  const cardStore = useCardStore();
+  /** Règles assistées (coûts, légalité, combat) ; off = table libre. */
+  const assist = ref(true);
+  /** Dernier refus de coup, à afficher en toast. */
+  const ruleError = ref<string | null>(null);
+  /** Tour où l'attaque du joueur actif a été déclarée (1 attaque/tour). */
+  const attackedOnTurn = ref<number | null>(null);
+
+  const cardIndex = computed(() => {
+    const m = new Map<string, Card>();
+    for (const c of cardStore.cards) m.set(c.id, c);
+    return m;
+  });
+  function getCard(cardId: string | null): Card | null {
+    return cardId ? (cardIndex.value.get(cardId) ?? null) : null;
+  }
+  function rulesCtx(): RulesCtx {
+    return { state: state.value, getCard };
+  }
+  function rejectMove(reason: string): false {
+    ruleError.value = reason;
+    return false;
+  }
+  function clearRuleError(): void {
+    ruleError.value = null;
+  }
+
+  /** Fin de partie automatique d'après l'état (PV ≤ 0 / Niveau 3). */
+  function checkVictory(): void {
+    if (!assist.value || matchPhase.value !== "playing") return;
+    const w = victoryFromState(rulesCtx());
+    if (w) {
+      winner.value = w;
+      matchPhase.value = "finished";
+    }
+  }
+
   function heroOf(seat: Seat) {
     const id = state.value.seats[seat].heroInstanceId;
     return id ? (state.value.instances[id] ?? null) : null;
@@ -127,14 +180,27 @@ export const useGameStore = defineStore("game", () => {
         return ev.type;
     }
   }
+  /** Événements techniques invisibles dans le journal. */
+  function isInternalEvent(e: PersistedEvent): boolean {
+    if (e.type !== "SET_COUNTER" && e.type !== "INC_COUNTER") return false;
+    return (e.payload as { counter?: string }).counter === "arrivedTurn";
+  }
   const log = computed<LogLine[]>(() =>
     events.value
-      .filter((e) => e.type !== "SAID")
-      .map((e) => ({
-        seq: e.seq,
-        actor: e.actor,
-        text: `${labelOf(e.actor)} ${describe(e)}`,
-      })),
+      .filter((e) => !isInternalEvent(e))
+      .map((e) =>
+        e.type === "SAID"
+          ? {
+              seq: e.seq,
+              actor: e.actor,
+              text: String((e.payload as { text?: string }).text ?? ""),
+            }
+          : {
+              seq: e.seq,
+              actor: e.actor,
+              text: `${labelOf(e.actor)} ${describe(e)}`,
+            },
+      ),
   );
   function labelOf(actor: Seat | "system"): string {
     return actor === "system" ? "Table" : players.value[actor].name;
@@ -182,6 +248,9 @@ export const useGameStore = defineStore("game", () => {
     perspective.value = first;
     matchPhase.value = "mulligan";
     passPending.value = true;
+    combat.value = null;
+    attackedOnTurn.value = null;
+    ruleError.value = null;
   }
 
   /** Démarrage direct en partie (tests / bac à sable rapide). */
@@ -230,6 +299,7 @@ export const useGameStore = defineStore("game", () => {
 
   /** Finit le tour : pioche jusqu'aux PA (règle Wakfu) puis passe la main. */
   function endTurn(): void {
+    combat.value = null;
     const active = state.value.turn.active;
     const need = paOf(active) - state.value.seats[active].main.length;
     if (need > 0) draw(active, need);
@@ -249,6 +319,9 @@ export const useGameStore = defineStore("game", () => {
     passPending.value = false;
     mulliganSeat.value = null;
     winner.value = null;
+    combat.value = null;
+    attackedOnTurn.value = null;
+    ruleError.value = null;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -284,7 +357,7 @@ export const useGameStore = defineStore("game", () => {
     const swap =
       (inst.location.zone === "monde" && to.zone === "havreSac") ||
       (inst.location.zone === "havreSac" && to.zone === "monde");
-    dispatch(
+    const drafts: DraftEvent[] = [
       move(inst.controller, {
         instanceId,
         from: inst.location,
@@ -299,7 +372,78 @@ export const useGameStore = defineStore("game", () => {
         orientationOnArrival:
           to.zone === "monde" || to.zone === "havreSac" ? "upright" : null,
       }),
+    ];
+    // entrée en jeu (hors échange Monde↔Havre-Sac) : tour d'arrivée, pour le
+    // mal d'invocation (1821). Préservé par l'échange qui garde les compteurs.
+    const entersPlay = (to.zone === "monde" || to.zone === "havreSac") && !swap;
+    if (entersPlay) {
+      drafts.push(
+        setCounterVerb(
+          inst.controller,
+          instanceId,
+          "arrivedTurn",
+          state.value.turn.number,
+          true,
+        ),
+      );
+    }
+    dispatch(...drafts);
+  }
+
+  /**
+   * Jouer une carte de sa main (mode assisté) : légalité, inclinaison
+   * automatique des producteurs de Ressources, arrivée dans la bonne zone.
+   * Retourne `false` (avec `ruleError`) si le coup est refusé.
+   */
+  function playFromHand(instanceId: string): boolean {
+    const seat = perspective.value;
+    if (!assist.value) {
+      moveTo(instanceId, { zone: "monde" });
+      return true;
+    }
+    const ctx = rulesCtx();
+    const reason = whyCannotPlay(ctx, seat, instanceId);
+    if (reason) return rejectMove(reason);
+    const inst = state.value.instances[instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    if (!inst || !card) return rejectMove("Carte inconnue.");
+    const plan = planCost(ctx, seat, card);
+    if (!plan.ok) return rejectMove(plan.reason);
+
+    const drafts: DraftEvent[] = plan.producers.map((id) => ({
+      actor: seat,
+      type: "SET_ORIENTATION" as const,
+      payload: { instanceId: id, orientation: "tapped" },
+    }));
+    const dest = playDestination(card, seat);
+    drafts.push(
+      move(seat, {
+        instanceId,
+        from: inst.location,
+        to: dest,
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: false,
+        orientationOnArrival: "upright",
+      }),
+      setCounterVerb(
+        seat,
+        instanceId,
+        "arrivedTurn",
+        state.value.turn.number,
+        true,
+      ),
     );
+    if (plan.producers.length) {
+      drafts.push(
+        say(
+          seat,
+          `${players.value[seat].name} incline ${plan.producers.length} carte(s) pour payer ${card.name}.`,
+        ),
+      );
+    }
+    dispatch(...drafts);
+    return true;
   }
 
   function toggleTap(instanceId: string): void {
@@ -323,6 +467,152 @@ export const useGameStore = defineStore("game", () => {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
     dispatch(incCounterVerb(inst.controller, instanceId, counter, delta));
+    checkVictory();
+  }
+
+  // ── Combat assisté (702–708) ─────────────────────────────────────────────
+  const combat = ref<{
+    step: "attackers" | "blockers";
+    target: CombatTarget | null;
+    attackers: string[];
+    blocks: Record<string, string>;
+  } | null>(null);
+
+  const combatAttackerIds = computed(() =>
+    combat.value?.step === "attackers"
+      ? eligibleAttackers(rulesCtx(), turn.value.active)
+      : [],
+  );
+  const combatTargetIds = computed(() =>
+    combat.value?.step === "attackers"
+      ? eligibleTargets(rulesCtx(), turn.value.active).map((t) => t.instanceId)
+      : [],
+  );
+  const combatBlockerIds = computed(() =>
+    combat.value?.step === "blockers" && combat.value.target
+      ? eligibleBlockers(
+          rulesCtx(),
+          otherSeat(turn.value.active),
+          combat.value.target,
+        )
+      : [],
+  );
+
+  /** Ouvre la déclaration d'attaque (1/tour, jamais au premier tour). */
+  function beginCombat(firstAttacker?: string): boolean {
+    const err = whyCannotDeclareAttack(
+      rulesCtx(),
+      perspective.value,
+      attackedOnTurn.value,
+    );
+    if (err) return rejectMove(err);
+    combat.value = {
+      step: "attackers",
+      target: null,
+      attackers: [],
+      blocks: {},
+    };
+    if (firstAttacker) combatToggleAttacker(firstAttacker);
+    return true;
+  }
+
+  function combatToggleAttacker(instanceId: string): void {
+    const c = combat.value;
+    if (!c || c.step !== "attackers") return;
+    if (c.attackers.includes(instanceId)) {
+      c.attackers = c.attackers.filter((a) => a !== instanceId);
+      return;
+    }
+    if (
+      !eligibleAttackers(rulesCtx(), perspective.value).includes(instanceId)
+    ) {
+      const inst = state.value.instances[instanceId];
+      if (inst && inst.controller === perspective.value) {
+        ruleError.value =
+          "Cette carte ne peut pas attaquer (inclinée, arrivée ce tour, ou type non combattant).";
+      }
+      return;
+    }
+    const pm = pmOf(rulesCtx(), perspective.value);
+    if (c.attackers.length >= pm) {
+      ruleError.value = `Maximum ${pm} attaquant(s) — limite de PM (703).`;
+      return;
+    }
+    c.attackers = [...c.attackers, instanceId];
+  }
+
+  function combatChooseTarget(instanceId: string): void {
+    const c = combat.value;
+    if (!c || c.step !== "attackers") return;
+    const t = eligibleTargets(rulesCtx(), perspective.value).find(
+      (x) => x.instanceId === instanceId,
+    );
+    if (t) c.target = t;
+  }
+
+  function combatConfirmAttackers(): boolean {
+    const c = combat.value;
+    if (!c) return false;
+    if (!c.target)
+      return rejectMove(
+        "Choisis une cible : Héros, Allié ou Havre-Sac adverse (702.2).",
+      );
+    if (!c.attackers.length)
+      return rejectMove("Déclare au moins un attaquant redressé.");
+    c.step = "blockers";
+    return true;
+  }
+
+  /** Le défenseur (même écran) assigne un bloqueur à l'attaquant le moins bloqué. */
+  function combatToggleBlock(blockerId: string): void {
+    const c = combat.value;
+    if (!c || c.step !== "blockers" || !c.target) return;
+    if (c.blocks[blockerId]) {
+      const rest = { ...c.blocks };
+      delete rest[blockerId];
+      c.blocks = rest;
+      return;
+    }
+    const def = otherSeat(turn.value.active);
+    if (!eligibleBlockers(rulesCtx(), def, c.target).includes(blockerId))
+      return;
+    const pm = pmOf(rulesCtx(), def);
+    if (Object.keys(c.blocks).length >= pm) {
+      ruleError.value = `Maximum ${pm} bloqueur(s) — limite de PM (704).`;
+      return;
+    }
+    const counts = new Map<string, number>(c.attackers.map((a) => [a, 0]));
+    for (const a of Object.values(c.blocks))
+      counts.set(a, (counts.get(a) ?? 0) + 1);
+    const least = [...counts.entries()].sort((x, y) => x[1] - y[1])[0]?.[0];
+    if (least) c.blocks = { ...c.blocks, [blockerId]: least };
+  }
+
+  function combatResolve(): void {
+    const c = combat.value;
+    if (!c || !c.target) return;
+    const result = resolveCombat(rulesCtx(), {
+      attackerSeat: turn.value.active,
+      target: c.target,
+      attackers: c.attackers,
+      blocks: c.blocks,
+    });
+    dispatch(
+      ...result.events,
+      ...result.log.map((l) => say(turn.value.active, l)),
+    );
+    attackedOnTurn.value = turn.value.number;
+    combat.value = null;
+    if (result.winner) {
+      winner.value = result.winner;
+      matchPhase.value = "finished";
+    } else {
+      checkVictory();
+    }
+  }
+
+  function combatCancel(): void {
+    combat.value = null;
   }
 
   function drawFromReserve(seat: Seat = perspective.value): void {
@@ -426,5 +716,22 @@ export const useGameStore = defineStore("game", () => {
     shufflePioche,
     nextTurn,
     undoLast,
+    // moteur de règles (R1)
+    assist,
+    ruleError,
+    clearRuleError,
+    playFromHand,
+    attackedOnTurn,
+    combat,
+    combatAttackerIds,
+    combatTargetIds,
+    combatBlockerIds,
+    beginCombat,
+    combatToggleAttacker,
+    combatChooseTarget,
+    combatConfirmAttackers,
+    combatToggleBlock,
+    combatResolve,
+    combatCancel,
   };
 });

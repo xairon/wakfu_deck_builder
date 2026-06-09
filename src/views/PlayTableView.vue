@@ -143,6 +143,17 @@
           Mélanger
         </button>
         <button class="gtop-btn" @click="store.undoLast()">Annuler</button>
+        <label
+          class="gtop-toggle"
+          title="Coûts en Ressources, légalité des coups, combat et victoire automatiques"
+        >
+          <input
+            v-model="store.assist"
+            type="checkbox"
+            class="gtop-toggle__box"
+          />
+          Règles assistées
+        </label>
       </div>
       <div class="gtopbar__group">
         <button class="gtop-btn" @click="showJournal = !showJournal">
@@ -555,6 +566,23 @@ onMounted(async () => {
 }
 .gtop-btn--quit:hover {
   background: rgba(240, 78, 34, 0.25);
+}
+.gtop-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(240, 166, 43, 0.12);
+  border: 1px solid rgba(240, 166, 43, 0.35);
+  color: #f0a62b;
+  cursor: pointer;
+  user-select: none;
+}
+.gtop-toggle__box {
+  accent-color: #f0a62b;
 }
 .glayout {
   display: flex;

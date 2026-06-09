@@ -19,6 +19,7 @@
               v-for="inst in baseCards(opp)"
               :key="inst.instanceId"
               class="gslot gslot--wide"
+              :class="slotCls(inst.instanceId)"
             >
               <GameCard
                 :instance="inst"
@@ -55,7 +56,12 @@
           >Alliés adverses</span
         >
         <TransitionGroup tag="div" name="zone" class="gzone__cards">
-          <div v-for="inst in allies(opp)" :key="inst.instanceId" class="gslot">
+          <div
+            v-for="inst in allies(opp)"
+            :key="inst.instanceId"
+            class="gslot"
+            :class="slotCls(inst.instanceId)"
+          >
             <GameCard
               :instance="inst"
               :card="resolveCard(inst.cardId)"
@@ -112,7 +118,12 @@
           >⬇ Glissez une carte ici pour la jouer</span
         >
         <TransitionGroup tag="div" name="zone" class="gzone__cards">
-          <div v-for="inst in allies(me)" :key="inst.instanceId" class="gslot">
+          <div
+            v-for="inst in allies(me)"
+            :key="inst.instanceId"
+            class="gslot"
+            :class="slotCls(inst.instanceId)"
+          >
             <GameCard
               :instance="inst"
               :card="resolveCard(inst.cardId)"
@@ -154,6 +165,7 @@
               v-for="inst in baseCards(me)"
               :key="inst.instanceId"
               class="gslot gslot--wide"
+              :class="slotCls(inst.instanceId)"
             >
               <GameCard
                 :instance="inst"
@@ -264,6 +276,50 @@
       <span class="gendturn__txt">Fin du<br />tour</span>
     </button>
 
+    <!-- ════════ Bandeau de combat (déclaration → blocage → résolution) ════════ -->
+    <Transition name="slidedown">
+      <div
+        v-if="store.combat"
+        class="gcombat"
+        role="toolbar"
+        aria-label="Combat en cours"
+      >
+        <span class="gcombat__step">
+          {{
+            store.combat.step === "attackers"
+              ? "⚔ Choisis tes attaquants puis une cible adverse"
+              : `🛡 ${store.players[opp].name} — déclare tes bloqueurs`
+          }}
+        </span>
+        <span class="gcombat__info">
+          {{ store.combat.attackers.length }} attaquant(s)
+          <template v-if="store.combat.target"> · cible choisie</template>
+          <template v-if="store.combat.step === 'blockers'">
+            · {{ Object.keys(store.combat.blocks).length }} bloqueur(s)
+          </template>
+        </span>
+        <div class="gcombat__btns">
+          <button
+            v-if="store.combat.step === 'attackers'"
+            class="gbtn gbtn--accent"
+            @click="store.combatConfirmAttackers()"
+          >
+            Confirmer l'attaque
+          </button>
+          <button
+            v-else
+            class="gbtn gbtn--accent"
+            @click="store.combatResolve()"
+          >
+            Résoudre le combat
+          </button>
+          <button class="gbtn gbtn--ghost" @click="store.combatCancel()">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </Transition>
+
     <!-- ════════ Barre d'action de la carte sélectionnée ════════ -->
     <Transition name="slideup">
       <div
@@ -274,6 +330,13 @@
       >
         <span class="gactionbar__name">{{ selectedName }}</span>
         <div class="gactionbar__btns">
+          <button
+            v-if="canAttackSelected"
+            class="gbtn gbtn--accent"
+            @click="attackWithSelected"
+          >
+            ⚔ Attaquer
+          </button>
           <button class="gbtn gbtn--accent" @click="tapSelected">
             {{
               selectedInst.orientation === "tapped"
@@ -351,6 +414,7 @@ import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
+import { useToast } from "@/composables/useToast";
 
 const store = useGameStore();
 const cardStore = useCardStore();
@@ -431,6 +495,19 @@ function zoneCls(id: string): Record<string, boolean> {
 }
 onMounted(() => {
   dnd.setDropHandler((instanceId, spec) => {
+    // règles assistées : un drop main → table passe par le moteur de règles
+    // (légalité + inclinaison automatique des Ressources)
+    const inst = store.state.instances[instanceId];
+    const toPlay = spec.zone.zone === "monde" || spec.zone.zone === "havreSac";
+    if (
+      store.assist &&
+      toPlay &&
+      inst?.location.zone === "main" &&
+      inst.owner === me.value
+    ) {
+      store.playFromHand(instanceId);
+      return;
+    }
     store.moveTo(instanceId, spec.zone, spec.position ?? { at: "any" });
   });
 });
@@ -438,6 +515,18 @@ onUnmounted(() => {
   dnd.setDropHandler(null);
   dnd.resetZones();
 });
+
+// ── Refus de coup → toast ────────────────────────────────────────────────────
+const toast = useToast();
+watch(
+  () => store.ruleError,
+  (msg) => {
+    if (msg) {
+      toast.addToast(msg, { type: "warning" });
+      store.clearRuleError();
+    }
+  },
+);
 
 // ── Sélection / actions ──────────────────────────────────────────────────────
 const selectedId = ref<string | null>(null);
@@ -457,7 +546,50 @@ const selectedName = computed(() => {
   return resolveCard(inst.cardId)?.name ?? "Carte face cachée";
 });
 function select(instanceId: string): void {
+  // combat en cours : les clics désignent attaquants / cible / bloqueurs
+  if (store.combat) {
+    if (store.combat.step === "attackers") {
+      if (store.combatTargetIds.includes(instanceId))
+        store.combatChooseTarget(instanceId);
+      else store.combatToggleAttacker(instanceId);
+    } else {
+      store.combatToggleBlock(instanceId);
+    }
+    return;
+  }
   selectedId.value = selectedId.value === instanceId ? null : instanceId;
+}
+
+// ── Combat assisté : surbrillances + bouton Attaquer ────────────────────────
+function slotCls(instanceId: string): Record<string, boolean> {
+  const c = store.combat;
+  if (!c) return {};
+  return {
+    "gslot--atk-can":
+      c.step === "attackers" && store.combatAttackerIds.includes(instanceId),
+    "gslot--atk": c.attackers.includes(instanceId),
+    "gslot--target-can":
+      c.step === "attackers" && store.combatTargetIds.includes(instanceId),
+    "gslot--target": c.target?.instanceId === instanceId,
+    "gslot--blk-can":
+      c.step === "blockers" && store.combatBlockerIds.includes(instanceId),
+    "gslot--blk": c.step === "blockers" && !!c.blocks[instanceId],
+  };
+}
+const canAttackSelected = computed(() => {
+  const inst = selectedInst.value;
+  return (
+    store.assist &&
+    !store.combat &&
+    !!inst &&
+    inst.controller === me.value &&
+    (inst.location.zone === "monde" || inst.location.zone === "havreSac")
+  );
+});
+function attackWithSelected(): void {
+  const id = selectedInst.value?.instanceId;
+  selectedId.value = null;
+  if (id) store.beginCombat(id);
 }
 function moveSelected(
   zone: "monde" | "havreSac" | "main" | "defausse" | "pioche",
@@ -834,6 +966,95 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
+/* ── Combat : bandeau + surbrillances ── */
+.gcombat {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  z-index: 21;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(14, 11, 8, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(240, 78, 34, 0.5);
+  border-radius: 999px;
+  padding: 9px 22px;
+  box-shadow:
+    0 10px 34px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(240, 78, 34, 0.18);
+}
+.gcombat__step {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 15px;
+}
+.gcombat__info {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 11px;
+  color: rgba(246, 245, 241, 0.65);
+}
+.gcombat__btns {
+  display: flex;
+  gap: 6px;
+}
+.slidedown-enter-active,
+.slidedown-leave-active {
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+.slidedown-enter-from,
+.slidedown-leave-to {
+  transform: translate(-50%, -14px);
+  opacity: 0;
+}
+.gslot--atk-can :deep(.game-card),
+.gslot--target-can :deep(.game-card),
+.gslot--blk-can :deep(.game-card) {
+  cursor: pointer;
+}
+.gslot--atk-can :deep(.game-card) {
+  outline: 2px dashed rgba(95, 178, 42, 0.75);
+  outline-offset: 1px;
+}
+.gslot--atk :deep(.game-card) {
+  outline: 3px solid #5fb22a;
+  outline-offset: 1px;
+  box-shadow: 0 0 18px rgba(95, 178, 42, 0.5);
+}
+.gslot--target-can :deep(.game-card) {
+  outline: 2px dashed rgba(240, 78, 34, 0.8);
+  outline-offset: 1px;
+}
+.gslot--target :deep(.game-card) {
+  outline: 3px solid #f04e22;
+  outline-offset: 1px;
+  box-shadow: 0 0 20px rgba(240, 78, 34, 0.6);
+  animation: gtarget-pulse 1.2s ease-in-out infinite;
+}
+@keyframes gtarget-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(240, 78, 34, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(240, 78, 34, 0.85);
+  }
+}
+.gslot--blk-can :deep(.game-card) {
+  outline: 2px dashed rgba(31, 156, 236, 0.8);
+  outline-offset: 1px;
+}
+.gslot--blk :deep(.game-card) {
+  outline: 3px solid #1f9cec;
+  outline-offset: 1px;
+  box-shadow: 0 0 18px rgba(31, 156, 236, 0.55);
+}
+
 /* ── Barre d'action ── */
 .gactionbar {
   position: absolute;
@@ -958,7 +1179,8 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
 }
 @media (prefers-reduced-motion: reduce) {
   .gdrop--on,
-  .gendturn__ring {
+  .gendturn__ring,
+  .gslot--target :deep(.game-card) {
     animation: none;
   }
   .zone-move,
