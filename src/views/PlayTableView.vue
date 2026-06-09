@@ -128,7 +128,7 @@
   <div v-else class="gfull">
     <div class="gtopbar">
       <div class="gtopbar__group">
-        <span class="gtopbar__title">Table de jeu</span>
+        <span class="gtopbar__title">La Table des Douze</span>
         <span v-if="store.matchPhase === 'playing'" class="gtopbar__turn">
           Tour {{ store.turn.number }} · {{ store.activeName }} ·
           {{ store.phaseLabel }}
@@ -136,27 +136,19 @@
         <span v-else class="gtopbar__turn">Mise en place</span>
       </div>
       <div v-if="store.matchPhase === 'playing'" class="gtopbar__group">
-        <button class="btn btn-primary btn-sm" @click="store.endTurn()">
-          Finir le tour ▸
-        </button>
         <button
-          class="btn btn-sm"
+          class="gtop-btn"
           @click="store.shufflePioche(store.perspective)"
         >
           Mélanger
         </button>
-        <button class="btn btn-sm btn-ghost" @click="store.undoLast()">
-          Annuler
-        </button>
+        <button class="gtop-btn" @click="store.undoLast()">Annuler</button>
       </div>
       <div class="gtopbar__group">
-        <button
-          class="btn btn-sm btn-ghost"
-          @click="showJournal = !showJournal"
-        >
+        <button class="gtop-btn" @click="showJournal = !showJournal">
           {{ showJournal ? "Masquer le journal" : "Journal" }}
         </button>
-        <button class="btn btn-sm btn-ghost" @click="store.quitMatch()">
+        <button class="gtop-btn gtop-btn--quit" @click="store.quitMatch()">
           Quitter
         </button>
       </div>
@@ -170,83 +162,89 @@
     </div>
 
     <CardPreviewLayer />
+    <DragLayer />
+    <TurnBanner />
 
     <!-- Écran de passation -->
-    <div v-if="store.passPending" class="overlay">
-      <div class="overlay__card">
-        <p class="eyebrow text-primary">Passe l'appareil</p>
-        <h2 class="mt-2 font-display text-4xl">
-          {{ store.players[store.perspective].name }}
-        </h2>
-        <p class="mt-3 text-base-content/70">
-          {{
-            store.matchPhase === "mulligan"
-              ? "À toi de garder ou refaire ta main de départ."
-              : "C'est ton tour. Les autres, ne regardez pas !"
-          }}
-        </p>
-        <button class="btn btn-primary mt-6" @click="store.reveal()">
-          Je suis prêt — afficher
-        </button>
+    <Transition name="ovl">
+      <div v-if="store.passPending" class="overlay">
+        <div class="overlay__card">
+          <p class="eyebrow text-primary">Passe l'appareil</p>
+          <img
+            v-if="perspectivePortrait"
+            :src="perspectivePortrait"
+            alt=""
+            class="overlay__portrait"
+          />
+          <h2 class="mt-3 font-display text-4xl">
+            {{ store.players[store.perspective].name }}
+          </h2>
+          <p class="mt-3 text-base-content/70">
+            {{
+              store.matchPhase === "mulligan"
+                ? "À toi de garder ou refaire ta main de départ."
+                : "C'est ton tour. Les autres, ne regardez pas !"
+            }}
+          </p>
+          <button class="btn btn-primary mt-6" @click="store.reveal()">
+            Je suis prêt — afficher
+          </button>
+        </div>
       </div>
-    </div>
+    </Transition>
 
     <!-- Mulligan -->
-    <div
-      v-else-if="store.matchPhase === 'mulligan'"
-      class="overlay overlay--mulligan"
-    >
-      <div class="overlay__card overlay__card--wide">
-        <p class="eyebrow text-primary">
-          Main de départ — {{ store.players[store.perspective].name }}
-        </p>
-        <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
-        <div class="mulligan-hand">
-          <div
-            v-for="inst in mulliganHand"
-            :key="inst.instanceId"
-            class="mulligan-card"
-          >
-            <GameCard :instance="inst" :card="resolveCard(inst.cardId)" />
+    <Transition name="ovl">
+      <div
+        v-if="!store.passPending && store.matchPhase === 'mulligan'"
+        class="overlay overlay--mulligan"
+      >
+        <div class="overlay__card overlay__card--wide">
+          <p class="eyebrow text-primary">
+            Main de départ — {{ store.players[store.perspective].name }}
+          </p>
+          <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
+          <div class="mulligan-fan">
+            <HandFan mine :items="mulliganItems" :resolve-card="resolveCard" />
           </div>
-          <p v-if="!mulliganHand.length" class="text-base-content/50 italic">
-            Main vide.
+          <div class="mt-5 flex flex-wrap justify-center gap-3">
+            <button class="btn btn-primary" @click="store.keepHand()">
+              Garder ({{ mulliganHand.length }} cartes)
+            </button>
+            <button
+              class="btn btn-outline"
+              :disabled="mulliganHand.length === 0"
+              @click="store.mulligan(store.perspective)"
+            >
+              Mulligan (re-piocher
+              {{ Math.max(0, mulliganHand.length - 1) }})
+            </button>
+          </div>
+          <p class="mt-3 text-xs text-base-content/50">
+            Règle Wakfu : on recommence avec une carte de moins à chaque fois.
           </p>
         </div>
-        <div class="mt-5 flex flex-wrap justify-center gap-3">
-          <button class="btn btn-primary" @click="store.keepHand()">
-            Garder ({{ mulliganHand.length }} cartes)
-          </button>
-          <button
-            class="btn btn-outline"
-            :disabled="mulliganHand.length === 0"
-            @click="store.mulligan(store.perspective)"
-          >
-            Mulligan (re-piocher {{ Math.max(0, mulliganHand.length - 1) }})
-          </button>
-        </div>
-        <p class="mt-3 text-xs text-base-content/50">
-          Règle Wakfu : on recommence avec une carte de moins à chaque fois.
-        </p>
       </div>
-    </div>
+    </Transition>
 
     <!-- Fin de partie -->
-    <div v-if="store.matchPhase === 'finished'" class="overlay">
-      <div class="overlay__card">
-        <p class="eyebrow text-primary">Partie terminée</p>
-        <h2 class="mt-2 font-display text-4xl">
-          {{
-            store.winner
-              ? `${store.players[store.winner].name} l'emporte`
-              : "Match nul"
-          }}
-        </h2>
-        <button class="btn btn-primary mt-6" @click="store.quitMatch()">
-          Nouvelle partie
-        </button>
+    <Transition name="ovl">
+      <div v-if="store.matchPhase === 'finished'" class="overlay">
+        <div class="overlay__card">
+          <p class="eyebrow text-primary">Partie terminée</p>
+          <h2 class="mt-2 font-display text-4xl">
+            {{
+              store.winner
+                ? `${store.players[store.winner].name} l'emporte`
+                : "Match nul"
+            }}
+          </h2>
+          <button class="btn btn-primary mt-6" @click="store.quitMatch()">
+            Nouvelle partie
+          </button>
+        </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -259,10 +257,14 @@ import { useGameStore } from "@/stores/gameStore";
 import type { Card, Deck } from "@/types/cards";
 import type { RedactedInstance } from "@/game";
 import { elementColor } from "@/config/elementColors";
+import { getThumbPath } from "@/utils/imagePaths";
 import GameBoard from "@/components/game/GameBoard.vue";
-import GameCard from "@/components/game/GameCard.vue";
+import HandFan from "@/components/game/HandFan.vue";
+import type { HandItem } from "@/components/game/HandFan.vue";
 import ActionLog from "@/components/game/ActionLog.vue";
 import CardPreviewLayer from "@/components/game/CardPreviewLayer.vue";
+import DragLayer from "@/components/game/DragLayer.vue";
+import TurnBanner from "@/components/game/TurnBanner.vue";
 
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
@@ -320,6 +322,17 @@ function resolveCard(cardId: string | null): Card | null {
 const mulliganHand = computed<RedactedInstance[]>(() => {
   const z = store.view.seats[store.perspective].main;
   return z.kind === "full" ? z.instances : [];
+});
+const mulliganItems = computed<HandItem[]>(() =>
+  mulliganHand.value.map((inst) => ({ key: inst.instanceId, inst })),
+);
+
+// ── Portrait du héros (écran de passation) ───────────────────────────────────
+const perspectivePortrait = computed<string | null>(() => {
+  const id = store.view.seats[store.perspective].heroInstanceId;
+  const inst = id ? store.state.instances[id] : null;
+  if (!inst?.cardId) return null;
+  return getThumbPath(`/images/cards/${inst.cardId}_recto.webp`);
 });
 
 onMounted(async () => {
@@ -467,16 +480,24 @@ onMounted(async () => {
   opacity: 0.5;
 }
 
-/* ── Match (plein écran) ── */
+/* ── Match : plein écran fixe au-dessus du shell (immersion MTGA) ── */
 .gfull {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-top: calc(-1 * clamp(16px, 4vw, 48px));
-  padding: 12px clamp(8px, 2vw, 28px) 20px;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  padding: 10px clamp(8px, 2vw, 28px) 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      90% 60% at 50% 0%,
+      rgba(240, 78, 34, 0.05),
+      transparent 70%
+    ),
+    #0d0a07;
+  color: #f6f5f1;
 }
 .gtopbar {
   display: flex;
@@ -484,43 +505,77 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 8px 14px;
-  background: var(--paper-200, #edebe4);
-  border: 1px solid rgba(27, 26, 23, 0.14);
-  border-radius: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(246, 245, 241, 0.08);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
 }
 .gtopbar__group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .gtopbar__title {
   font-family: Fraunces, Georgia, serif;
   font-size: 18px;
   margin-right: 6px;
+  color: #f6f5f1;
 }
 .gtopbar__turn {
   font-family: "Space Mono", ui-monospace, monospace;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(27, 26, 23, 0.6);
+  color: rgba(246, 245, 241, 0.55);
+}
+.gtop-btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(246, 245, 241, 0.08);
+  color: #f6f5f1;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+.gtop-btn:hover {
+  background: rgba(246, 245, 241, 0.18);
+  transform: translateY(-1px);
+}
+.gtop-btn:focus-visible {
+  outline: 2px solid #f04e22;
+  outline-offset: 1px;
+}
+.gtop-btn--quit {
+  background: transparent;
+  outline: 1px solid rgba(246, 245, 241, 0.2);
+}
+.gtop-btn--quit:hover {
+  background: rgba(240, 78, 34, 0.25);
 }
 .glayout {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 .glayout__board {
   flex: 1;
   min-width: 0;
+  height: 100%;
 }
 .glayout__journal {
   flex: 0 0 264px;
-  background: var(--paper-200, #edebe4);
-  border: 1px solid rgba(27, 26, 23, 0.12);
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(246, 245, 241, 0.08);
+  border-radius: 10px;
   padding: 12px 14px;
   overflow: hidden;
 }
@@ -533,39 +588,79 @@ onMounted(async () => {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(10, 8, 6, 0.82);
-  backdrop-filter: blur(6px);
+  background: rgba(10, 8, 6, 0.84);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
 }
 .overlay__card {
   background: var(--paper, #f6f5f1);
   color: #1b1a17;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 32px 36px;
   text-align: center;
   max-width: 92vw;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(240, 78, 34, 0.25);
   border-top: 4px solid #f04e22;
 }
 .overlay__card--wide {
-  max-width: min(96vw, 980px);
+  max-width: min(96vw, 1020px);
 }
-.mulligan-hand {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 18px;
+.overlay__portrait {
+  width: 96px;
+  height: 96px;
+  border-radius: 14px;
+  object-fit: cover;
+  object-position: center 16%;
+  margin: 14px auto 0;
+  border: 3px solid #f04e22;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
 }
-.mulligan-card {
-  width: clamp(82px, 11vw, 120px);
+.mulligan-fan {
+  margin-top: 22px;
+  --card-hand: clamp(96px, 12vw, 140px);
+}
+.ovl-enter-active {
+  transition: opacity 0.25s ease;
+}
+.ovl-enter-active .overlay__card {
+  animation: ovl-card-in 0.35s cubic-bezier(0.2, 1.1, 0.3, 1);
+}
+.ovl-leave-active {
+  transition: opacity 0.2s ease;
+}
+.ovl-enter-from,
+.ovl-leave-to {
+  opacity: 0;
+}
+@keyframes ovl-card-in {
+  from {
+    transform: translateY(22px) scale(0.94);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
 }
 @media (max-width: 1100px) {
+  .gfull {
+    overflow-y: auto;
+  }
   .glayout {
     flex-direction: column;
+    flex: none;
+  }
+  .glayout__board {
+    height: auto;
   }
   .glayout__journal {
-    flex: 1;
+    flex: none;
     max-height: 200px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ovl-enter-active .overlay__card {
+    animation: none;
   }
 }
 </style>

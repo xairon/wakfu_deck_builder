@@ -6,18 +6,17 @@
       'game-card--tapped': tapped,
       'game-card--selected': selected,
       'game-card--draggable': draggable,
+      'game-card--ghost': isDragSource,
     }"
     :style="{ '--spine': spine }"
     :aria-label="ariaLabel"
-    :draggable="draggable"
-    @click="emit('select')"
+    @click="onClick"
     @dblclick="emit('zoom')"
     @mouseenter="onEnter"
     @mouseleave="onLeave"
     @focus="onEnter"
     @blur="onLeave"
-    @dragstart="onDragStart"
-    @dragend="onLeave"
+    @pointerdown="onPointerDown"
   >
     <img
       :src="imgSrc"
@@ -27,8 +26,10 @@
       decoding="async"
       draggable="false"
     />
+    <span class="game-card__sheen" aria-hidden="true"></span>
     <span
       v-if="damage"
+      :key="`dmg-${damage}`"
       class="game-card__badge game-card__badge--dmg"
       title="Dommages"
     >
@@ -36,6 +37,7 @@
     </span>
     <span
       v-if="hp !== undefined"
+      :key="`hp-${hp}`"
       class="game-card__badge game-card__badge--hp"
       title="PV"
     >
@@ -43,6 +45,7 @@
     </span>
     <span
       v-if="level && level > 1"
+      :key="`lvl-${level}`"
       class="game-card__badge game-card__badge--lvl"
       title="Niveau"
     >
@@ -58,6 +61,7 @@ import type { RedactedInstance } from "@/game";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useCardPreview } from "@/composables/useCardPreview";
+import { useBoardDnd } from "@/composables/useBoardDnd";
 
 const props = defineProps<{
   instance: RedactedInstance;
@@ -68,28 +72,38 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "select"): void;
   (e: "zoom"): void;
-  (e: "dragcard", instanceId: string): void;
 }>();
 
 const preview = useCardPreview();
+const dnd = useBoardDnd();
 
 const hidden = computed(
   () => props.instance.face === "hidden" || !props.instance.cardId,
 );
+const isDragSource = computed(
+  () => dnd.drag.value?.instanceId === props.instance.instanceId,
+);
 
 function onEnter(): void {
-  if (!hidden.value) preview.show(props.card);
+  if (!hidden.value && !dnd.isDragging.value) preview.show(props.card);
 }
 function onLeave(): void {
   preview.hide();
 }
-function onDragStart(e: DragEvent): void {
-  if (hidden.value) return;
-  e.dataTransfer?.setData("text/plain", props.instance.instanceId);
-  if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
-  emit("dragcard", props.instance.instanceId);
-  preview.hide();
+function onClick(): void {
+  if (dnd.consumeClick()) return;
+  emit("select");
 }
+function onPointerDown(e: PointerEvent): void {
+  if (!props.draggable || hidden.value) return;
+  dnd.armDrag(e, {
+    instanceId: props.instance.instanceId,
+    card: props.card,
+    imgSrc: imgSrc.value,
+    onStart: () => preview.hide(),
+  });
+}
+
 const tapped = computed(() => props.instance.orientation === "tapped");
 const damage = computed(() => props.instance.counters.damage || 0);
 const hp = computed(() => props.instance.counters.hp);
@@ -123,21 +137,47 @@ const ariaLabel = computed(() => {
   display: block;
   width: 100%;
   aspect-ratio: 63 / 88;
-  border-radius: 4px;
+  border-radius: 5px;
   overflow: hidden;
-  border: 1px solid rgba(27, 26, 23, 0.18);
-  box-shadow: 0 1px 2px rgba(27, 26, 23, 0.18);
-  background: var(--paper-300, #dfdcd2);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 4px 10px rgba(0, 0, 0, 0.25);
+  background: #14110e;
   transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
+    transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.15),
+    box-shadow 0.22s ease,
+    opacity 0.15s ease,
+    outline-color 0.15s ease;
   cursor: pointer;
 }
 .game-card--draggable {
   cursor: grab;
+  touch-action: none;
 }
-.game-card--draggable:active {
-  cursor: grabbing;
+.game-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.game-card__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    transparent 28%,
+    transparent 75%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.game-card:hover .game-card__sheen {
+  opacity: 1;
 }
 .game-card::before {
   content: "";
@@ -147,26 +187,33 @@ const ariaLabel = computed(() => {
   background: var(--spine, #98a1af);
   z-index: 2;
 }
-.game-card__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
 .game-card--tapped {
   transform: rotate(90deg) scale(0.84);
+  filter: saturate(0.75) brightness(0.88);
 }
 .game-card--selected {
-  outline: 2px solid #f04e22;
+  outline: 2px solid #f0a62b;
   outline-offset: 1px;
-  box-shadow: 0 4px 12px rgba(240, 78, 34, 0.35);
+  box-shadow:
+    0 0 0 4px rgba(240, 166, 43, 0.22),
+    0 6px 18px rgba(240, 166, 43, 0.3);
+}
+.game-card--ghost {
+  opacity: 0.3;
+  filter: grayscale(0.4);
 }
 .game-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(27, 26, 23, 0.28);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 .game-card--tapped:hover {
   transform: rotate(90deg) scale(0.86);
+}
+.game-card:focus-visible {
+  outline: 2px solid #f04e22;
+  outline-offset: 2px;
 }
 .game-card__badge {
   position: absolute;
@@ -182,22 +229,36 @@ const ariaLabel = computed(() => {
   color: #f6f5f1;
   border-radius: 11px;
   line-height: 1;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  animation: badge-pop 0.28s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+@keyframes badge-pop {
+  0% {
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 .game-card__badge--dmg {
   top: 3px;
   right: 3px;
-  background: #c0392b;
+  background: linear-gradient(180deg, #d94a36, #a72f1f);
 }
 .game-card__badge--hp {
   bottom: 3px;
   right: 3px;
-  background: #1b1a17;
+  background: linear-gradient(180deg, #2d2b26, #16140f);
 }
 .game-card__badge--lvl {
   top: 3px;
   left: 6px;
-  background: #f0a62b;
+  background: linear-gradient(180deg, #f7bc4e, #de9418);
   color: #1b1a17;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -209,6 +270,9 @@ const ariaLabel = computed(() => {
   .game-card--tapped,
   .game-card--tapped:hover {
     transform: rotate(90deg) scale(0.84);
+  }
+  .game-card__badge {
+    animation: none;
   }
 }
 </style>
