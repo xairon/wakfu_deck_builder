@@ -7,6 +7,10 @@
     :aria-label="ariaLabel"
     @click="emit('select')"
     @dblclick="emit('zoom')"
+    @mouseenter="emit('hover')"
+    @mouseleave="emit('unhover')"
+    @focus="emit('hover')"
+    @blur="emit('unhover')"
   >
     <img
       :src="imgSrc"

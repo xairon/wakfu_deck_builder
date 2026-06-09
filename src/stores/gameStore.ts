@@ -1,9 +1,11 @@
 /**
- * gameStore — pilote la table de jeu. Réf. docs/GAME-MODULE-V1.md §7.
+ * gameStore — partie guidée hot-seat « façon MTGA, sauce Wakfu TCG ».
+ * Réf. docs/superpowers/specs/2026-06-09-table-jeu-mtga-design.md.
  *
- * V1 : mode LOCAL (bac à sable / hot-seat sur une machine) entièrement piloté
- * par le moteur event-sourcé. Le mode EN LIGNE (Edge + Realtime) se branchera
- * ici une fois les fonctions déployées (src/services/gameClient.ts).
+ * Machine à états du match : lobby → mulligan → playing → finished.
+ * Vue par PERSPECTIVE (joueur actif) : la main adverse est cachée (dos). Un
+ * écran de passation couvre la bascule de perspective entre deux joueurs.
+ * Table ASSISTÉE : pioche/mulligan/tours automatisés, effets joués à la main.
  */
 import { defineStore } from "pinia";
 import { computed, ref, shallowRef } from "vue";
@@ -22,20 +24,21 @@ import {
   deriveState,
   drawTop,
   move,
+  otherSeat,
+  redactStateFor,
   sequence,
   setCounter as setCounterVerb,
   incCounter as incCounterVerb,
   setPhase,
   shuffle as shuffleVerb,
   undo as undoVerb,
-  omniscientView,
-  redactStateFor,
-  otherSeat,
 } from "@/game";
 
 function rndSeed(): string {
   return Math.random().toString(36).slice(2);
 }
+
+export type MatchPhase = "lobby" | "mulligan" | "playing" | "finished";
 
 export interface LogLine {
   seq: number;
@@ -43,84 +46,113 @@ export interface LogLine {
   text: string;
 }
 
-const ACTOR_LABEL: Record<Seat | "system", string> = {
-  A: "Joueur A",
-  B: "Joueur B",
-  system: "Table",
+const PHASE_LABEL: Record<string, string> = {
+  redressement: "Redressement",
+  principale: "Principale",
+  pioche: "Pioche",
+  fin: "Fin",
 };
 
-function describe(ev: PersistedEvent): string {
-  const p = ev.payload as Record<string, unknown>;
-  switch (ev.type) {
-    case "GAME_STARTED":
-      return "La partie commence.";
-    case "SHUFFLE":
-      return "mélange sa Pioche.";
-    case "MOVE": {
-      const from = (p.from as ZoneRef)?.zone;
-      const to = (p.to as ZoneRef)?.zone;
-      if (from === "pioche" && to === "main") return "pioche une carte.";
-      if (from === "main" && to === "monde") return "joue une carte.";
-      if (to === "defausse") return "défausse une carte.";
-      if (to === "pioche") return "renvoie une carte dans la Pioche.";
-      return `déplace une carte (${from} → ${to}).`;
-    }
-    case "SET_ORIENTATION":
-      return (p.orientation as string) === "tapped"
-        ? "incline une carte."
-        : "redresse une carte.";
-    case "SET_LEVEL":
-      return "change le niveau d'une carte.";
-    case "SET_COUNTER":
-    case "INC_COUNTER":
-      return `ajuste « ${String(p.counter)} ».`;
-    case "SET_PHASE":
-      return `commence le tour ${String(p.number ?? "")}.`;
-    case "UNDONE":
-      return "annule un coup.";
-    default:
-      return ev.type;
-  }
-}
-
 export const useGameStore = defineStore("game", () => {
-  // shallowRef : le journal reste un tableau d'objets BRUTS (non proxifiés par
-  // Vue) — indispensable car le reducer utilise structuredClone, qui échoue sur
-  // les proxies réactifs. On réassigne toujours events.value (jamais de mutation).
+  // shallowRef : journal d'objets BRUTS (le reducer fait structuredClone, qui
+  // échoue sur les proxies réactifs Vue). On réassigne toujours events.value.
   const events = shallowRef<PersistedEvent[]>([]);
   const gameId = ref("local");
-  const mode = ref<"local" | "online">("local");
-  const mySeat = ref<Seat>("A");
-  /** Côté contrôlé par la barre d'outils (bac à sable : on joue les deux). */
-  const controlSeat = ref<Seat>("A");
-  /** Vue omnisciente (bac à sable) vs vue d'un siège (hot-seat). */
-  const omniscient = ref(true);
 
-  const started = computed(() => events.value.length > 0);
+  // ── État du match ────────────────────────────────────────────────────────
+  const matchPhase = ref<MatchPhase>("lobby");
+  const players = ref<Record<Seat, { name: string }>>({
+    A: { name: "Joueur 1" },
+    B: { name: "Joueur 2" },
+  });
+  const firstPlayer = ref<Seat>("A");
+  /** Siège dont on affiche la vue (joueur actif / joueur en mulligan). */
+  const perspective = ref<Seat>("A");
+  /** Écran de passation actif (cache le plateau pendant la bascule). */
+  const passPending = ref(false);
+  const mulliganSeat = ref<Seat | null>(null);
+  const mulliganDone = ref<Record<Seat, boolean>>({ A: false, B: false });
+  const winner = ref<Seat | null>(null);
+
+  // ── Dérivés moteur ───────────────────────────────────────────────────────
   const state = computed<GameState>(() => deriveState(events.value));
   const view = computed<RedactedGameState>(() =>
-    omniscient.value
-      ? omniscientView(state.value)
-      : redactStateFor(state.value, mySeat.value),
+    redactStateFor(state.value, perspective.value),
   );
   const turn = computed(() => state.value.turn);
+  const phaseLabel = computed(
+    () => PHASE_LABEL[state.value.turn.phase] ?? state.value.turn.phase,
+  );
+
+  const opponent = computed<Seat>(() => otherSeat(perspective.value));
+  const activeName = computed(() => players.value[turn.value.active].name);
+
+  function heroOf(seat: Seat) {
+    const id = state.value.seats[seat].heroInstanceId;
+    return id ? (state.value.instances[id] ?? null) : null;
+  }
+  function paOf(seat: Seat): number {
+    return heroOf(seat)?.counters.pa ?? 6;
+  }
+
+  // ── Journal lisible ──────────────────────────────────────────────────────
+  function describe(ev: PersistedEvent): string {
+    const p = ev.payload as Record<string, unknown>;
+    switch (ev.type) {
+      case "GAME_STARTED":
+        return "La partie commence.";
+      case "SHUFFLE":
+        return "mélange sa Pioche.";
+      case "MOVE": {
+        const from = (p.from as ZoneRef)?.zone;
+        const to = (p.to as ZoneRef)?.zone;
+        if (from === "pioche" && to === "main") return "pioche une carte.";
+        if (from === "main" && to === "monde") return "joue une carte.";
+        if (to === "defausse") return "défausse une carte.";
+        if (to === "pioche") return "renvoie une carte dans la Pioche.";
+        return `déplace une carte (${from} → ${to}).`;
+      }
+      case "SET_ORIENTATION":
+        return (p.orientation as string) === "tapped"
+          ? "incline une carte."
+          : "redresse une carte.";
+      case "SET_COUNTER":
+      case "INC_COUNTER":
+        return `ajuste « ${String(p.counter)} ».`;
+      case "SET_PHASE":
+        return `entame le tour ${String(p.number ?? "")}.`;
+      case "UNDONE":
+        return "annule un coup.";
+      default:
+        return ev.type;
+    }
+  }
   const log = computed<LogLine[]>(() =>
     events.value
       .filter((e) => e.type !== "SAID")
       .map((e) => ({
         seq: e.seq,
         actor: e.actor,
-        text: `${ACTOR_LABEL[e.actor]} ${describe(e)}`,
+        text: `${labelOf(e.actor)} ${describe(e)}`,
       })),
   );
+  function labelOf(actor: Seat | "system"): string {
+    return actor === "system" ? "Table" : players.value[actor].name;
+  }
 
-  // ── Cycle de partie ────────────────────────────────────────────────────────
+  // ── Dispatch bas niveau (local : on est l'autorité) ──────────────────────
+  function dispatch(...drafts: DraftEvent[]): void {
+    if (!drafts.length) return;
+    events.value = [
+      ...events.value,
+      ...sequence(drafts, gameId.value, state.value.seq + 1),
+    ];
+  }
 
-  function startSandbox(deckA: Deck, deckB: Deck, first: Seat = "A"): void {
-    mode.value = "local";
+  // ── Cycle de match ───────────────────────────────────────────────────────
+  function initEngine(deckA: Deck, deckB: Deck, first: Seat): void {
     gameId.value = "local";
-    omniscient.value = true;
-    controlSeat.value = first;
+    winner.value = null;
     const { events: evs } = createGame(
       "local",
       { A: deckA, B: deckB },
@@ -129,21 +161,98 @@ export const useGameStore = defineStore("game", () => {
     events.value = evs;
   }
 
-  function reset(): void {
+  /** Démarre une partie complète (lobby → mulligan). Premier joueur = pile/face. */
+  function startMatch(
+    deckA: Deck,
+    deckB: Deck,
+    opts: { nameA?: string; nameB?: string; first?: Seat } = {},
+  ): void {
+    const first = opts.first ?? (Math.random() < 0.5 ? "A" : "B");
+    firstPlayer.value = first;
+    players.value = {
+      A: { name: opts.nameA?.trim() || "Joueur 1" },
+      B: { name: opts.nameB?.trim() || "Joueur 2" },
+    };
+    initEngine(deckA, deckB, first);
+    // Main de départ : chaque joueur pioche un nombre de cartes = ses PA.
+    draw("A", paOf("A"));
+    draw("B", paOf("B"));
+    mulliganDone.value = { A: false, B: false };
+    mulliganSeat.value = first;
+    perspective.value = first;
+    matchPhase.value = "mulligan";
+    passPending.value = true;
+  }
+
+  /** Démarrage direct en partie (tests / bac à sable rapide). */
+  function startSandbox(deckA: Deck, deckB: Deck, first: Seat = "A"): void {
+    firstPlayer.value = first;
+    players.value = { A: { name: "Joueur 1" }, B: { name: "Joueur 2" } };
+    initEngine(deckA, deckB, first);
+    mulliganSeat.value = null;
+    perspective.value = first;
+    matchPhase.value = "playing";
+    passPending.value = false;
+  }
+
+  /** Recycle toute la main du joueur, re-mélange, re-pioche (−1). */
+  function mulligan(seat: Seat): void {
+    const hand = [...state.value.seats[seat].main];
+    const target = Math.max(0, hand.length - 1);
+    for (const id of hand)
+      moveTo(id, { zone: "pioche", owner: seat }, { at: "top" });
+    shufflePioche(seat);
+    if (target) draw(seat, target);
+  }
+
+  /** Le joueur garde sa main → joueur suivant, ou début de partie. */
+  function keepHand(): void {
+    const seat = mulliganSeat.value;
+    if (!seat) return;
+    mulliganDone.value = { ...mulliganDone.value, [seat]: true };
+    const other = otherSeat(seat);
+    if (!mulliganDone.value[other]) {
+      mulliganSeat.value = other;
+      perspective.value = other;
+      passPending.value = true;
+    } else {
+      mulliganSeat.value = null;
+      matchPhase.value = "playing";
+      perspective.value = firstPlayer.value;
+      passPending.value = true; // passe l'appareil au premier joueur
+    }
+  }
+
+  /** Révèle le plateau après l'écran de passation. */
+  function reveal(): void {
+    passPending.value = false;
+  }
+
+  /** Finit le tour : pioche jusqu'aux PA (règle Wakfu) puis passe la main. */
+  function endTurn(): void {
+    const active = state.value.turn.active;
+    const need = paOf(active) - state.value.seats[active].main.length;
+    if (need > 0) draw(active, need);
+    nextTurn();
+    perspective.value = state.value.turn.active;
+    passPending.value = true;
+  }
+
+  function concede(seat: Seat): void {
+    winner.value = otherSeat(seat);
+    matchPhase.value = "finished";
+  }
+
+  function quitMatch(): void {
     events.value = [];
+    matchPhase.value = "lobby";
+    passPending.value = false;
+    mulliganSeat.value = null;
+    winner.value = null;
   }
 
-  // ── Dispatch (local : on est l'autorité ; en ligne : on proposerait au serveur) ──
-
-  function dispatch(...drafts: DraftEvent[]): void {
-    if (!drafts.length) return;
-    const start = state.value.seq + 1;
-    events.value = [...events.value, ...sequence(drafts, gameId.value, start)];
-  }
-
-  // ── Verbes exposés à l'UI ────────────────────────────────────────────────────
-
-  function draw(seat: Seat = controlSeat.value, n = 1): void {
+  // ── Verbes exposés au plateau ─────────────────────────────────────────────
+  function draw(seat: Seat = perspective.value, n = 1): void {
     const drafts: DraftEvent[] = [];
     let working = state.value;
     for (let i = 0; i < n; i++) {
@@ -152,7 +261,7 @@ export const useGameStore = defineStore("game", () => {
       drafts.push(d);
       working = deriveState([
         ...events.value,
-        ...sequence(drafts, gameId.value, working.seq + 1),
+        ...sequence(drafts, gameId.value, state.value.seq + 1),
       ]);
     }
     dispatch(...drafts);
@@ -216,24 +325,12 @@ export const useGameStore = defineStore("game", () => {
     dispatch(incCounterVerb(inst.controller, instanceId, counter, delta));
   }
 
-  function setCounter(
-    instanceId: string,
-    counter: string,
-    value: number,
-  ): void {
-    const inst = state.value.instances[instanceId];
-    if (!inst) return;
-    dispatch(setCounterVerb(inst.controller, instanceId, counter, value));
-  }
-
-  /** Déplace la première carte de la Réserve vers la Main du joueur. */
-  function drawFromReserve(seat: Seat = controlSeat.value): void {
+  function drawFromReserve(seat: Seat = perspective.value): void {
     const first = state.value.seats[seat].reserve[0];
-    if (!first) return;
-    moveTo(first, { zone: "main", owner: seat });
+    if (first) moveTo(first, { zone: "main", owner: seat });
   }
 
-  function shufflePioche(seat: Seat = controlSeat.value): void {
+  function shufflePioche(seat: Seat = perspective.value): void {
     const size = state.value.seats[seat].pioche.length;
     if (size < 2) return;
     dispatch(
@@ -241,7 +338,7 @@ export const useGameStore = defineStore("game", () => {
     );
   }
 
-  /** Passe le tour : joueur suivant, redresse ses cartes, retire les Dommages. */
+  /** Passe au joueur suivant : redresse ses cartes + retire les Dommages. */
   function nextTurn(): void {
     const s = state.value;
     const next = otherSeat(s.turn.active);
@@ -270,7 +367,6 @@ export const useGameStore = defineStore("game", () => {
     dispatch(...drafts);
   }
 
-  /** Annule le dernier coup d'un joueur (journal immuable → event UNDONE). */
   function undoLast(): void {
     for (let i = events.value.length - 1; i >= 0; i--) {
       const e = events.value[i];
@@ -280,7 +376,6 @@ export const useGameStore = defineStore("game", () => {
         e.actor === "system"
       )
         continue;
-      // déjà annulé ?
       const already = events.value.some(
         (u) =>
           u.type === "UNDONE" &&
@@ -292,39 +387,44 @@ export const useGameStore = defineStore("game", () => {
     }
   }
 
-  function setControlSeat(seat: Seat): void {
-    controlSeat.value = seat;
-  }
-  function toggleOmniscient(): void {
-    omniscient.value = !omniscient.value;
-  }
+  const started = computed(() => matchPhase.value !== "lobby");
 
   return {
     // état
     events,
-    started,
     state,
     view,
     turn,
+    phaseLabel,
     log,
-    mode,
-    mySeat,
-    controlSeat,
-    omniscient,
+    started,
+    matchPhase,
+    players,
+    firstPlayer,
+    perspective,
+    opponent,
+    passPending,
+    mulliganSeat,
+    winner,
+    activeName,
+    paOf,
     // cycle
+    startMatch,
     startSandbox,
-    reset,
+    mulligan,
+    keepHand,
+    reveal,
+    endTurn,
+    concede,
+    quitMatch,
     // verbes
     draw,
     moveTo,
     toggleTap,
     adjustCounter,
-    setCounter,
     drawFromReserve,
     shufflePioche,
     nextTurn,
     undoLast,
-    setControlSeat,
-    toggleOmniscient,
   };
 });

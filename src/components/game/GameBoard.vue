@@ -1,6 +1,6 @@
 <template>
   <div class="gtable">
-    <!-- ════════ ADVERSAIRE (siège B, en haut) ════════ -->
+    <!-- ════════ ADVERSAIRE (en haut, main cachée) ════════ -->
     <section class="gseat gseat--opp">
       <div
         class="gseat__hand gseat__hand--opp"
@@ -8,28 +8,27 @@
         aria-label="Main de l'adversaire"
       >
         <div
-          v-for="h in handList('B')"
-          :key="h.key"
+          v-for="hcard in handList(opp)"
+          :key="hcard.key"
           class="ghand-card ghand-card--opp"
         >
           <GameCard
-            v-if="h.inst"
-            :instance="h.inst"
-            :card="resolveCard(h.inst.cardId)"
-            :selected="h.inst.instanceId === selectedId"
-            @select="select(h.inst.instanceId)"
-            @zoom="zoomInst(h.inst.instanceId)"
+            v-if="hcard.inst"
+            :instance="hcard.inst"
+            :card="resolveCard(hcard.inst.cardId)"
+            @select="select(hcard.inst.instanceId)"
+            @zoom="zoomInst(hcard.inst.instanceId)"
           />
           <div v-else class="ghand-back"></div>
         </div>
       </div>
       <div class="gseat__row">
-        <SeatHud seat="B" />
+        <SeatHud :seat="opp" />
         <div class="gseat__base" aria-label="Socle adverse">
           <span class="gslot-label">Socle</span>
           <div class="gseat__base-cards">
             <CardSlot
-              v-for="inst in baseCards('B')"
+              v-for="inst in baseCards(opp)"
               :key="inst.instanceId"
               wide
               :inst="inst"
@@ -37,47 +36,42 @@
               :selected-id="selectedId"
               @select="select"
               @zoom="zoomInst"
+              @hover="onHover"
+              @unhover="onUnhover"
             />
           </div>
         </div>
         <div class="gseat__field" role="group" aria-label="Alliés adverses">
-          <span v-if="!allies('B').length" class="gfield-hint">Alliés</span>
+          <span v-if="!allies(opp).length" class="gfield-hint"
+            >Alliés adverses</span
+          >
           <CardSlot
-            v-for="inst in allies('B')"
+            v-for="inst in allies(opp)"
             :key="inst.instanceId"
             :inst="inst"
             :card="resolveCard(inst.cardId)"
             :selected-id="selectedId"
             @select="select"
             @zoom="zoomInst"
+            @hover="onHover"
+            @unhover="onUnhover"
           />
         </div>
         <div class="gseat__piles">
-          <Pile
-            label="Pioche"
-            :count="piocheCount('B')"
-            deck
-            @act="store.draw('B')"
-          />
+          <Pile label="Pioche" :count="piocheCount(opp)" deck />
           <Pile
             label="Défausse"
-            :top="topDiscard('B')"
-            :count="discardCount('B')"
+            :top="topDiscard(opp)"
+            :count="discardCount(opp)"
             :resolve="resolveCard"
             @zoom="zoomInst"
           />
-          <Pile
-            label="Réserve"
-            :count="reserveCount('B')"
-            deck
-            reserve
-            @act="store.drawFromReserve('B')"
-          />
+          <Pile label="Réserve" :count="reserveCount(opp)" deck reserve />
         </div>
       </div>
     </section>
 
-    <!-- ════════ LIGNE MÉDIANE — LE MONDE ════════ -->
+    <!-- ════════ LIGNE MÉDIANE — LE MONDE / FILE D'ATTENTE ════════ -->
     <div class="gmid">
       <span class="gmid__label">⬩ Le Monde ⬩</span>
       <div v-if="queue.length" class="gmid__queue">
@@ -91,19 +85,21 @@
           :selected-id="selectedId"
           @select="select"
           @zoom="zoomInst"
+          @hover="onHover"
+          @unhover="onUnhover"
         />
       </div>
     </div>
 
-    <!-- ════════ JOUEUR (siège A, en bas) ════════ -->
+    <!-- ════════ TOI (en bas, main révélée) ════════ -->
     <section class="gseat">
       <div class="gseat__row">
-        <SeatHud seat="A" />
+        <SeatHud :seat="me" />
         <div class="gseat__base" aria-label="Votre socle">
           <span class="gslot-label">Socle</span>
           <div class="gseat__base-cards">
             <CardSlot
-              v-for="inst in baseCards('A')"
+              v-for="inst in baseCards(me)"
               :key="inst.instanceId"
               wide
               :inst="inst"
@@ -111,63 +107,78 @@
               :selected-id="selectedId"
               @select="select"
               @zoom="zoomInst"
+              @hover="onHover"
+              @unhover="onUnhover"
             />
           </div>
         </div>
         <div class="gseat__field" role="group" aria-label="Vos alliés">
-          <span v-if="!allies('A').length" class="gfield-hint"
+          <span v-if="!allies(me).length" class="gfield-hint"
             >Vos alliés (jouez une carte ici)</span
           >
           <CardSlot
-            v-for="inst in allies('A')"
+            v-for="inst in allies(me)"
             :key="inst.instanceId"
             :inst="inst"
             :card="resolveCard(inst.cardId)"
             :selected-id="selectedId"
             @select="select"
             @zoom="zoomInst"
+            @hover="onHover"
+            @unhover="onUnhover"
           />
         </div>
         <div class="gseat__piles">
           <Pile
             label="Pioche"
-            :count="piocheCount('A')"
+            :count="piocheCount(me)"
             deck
-            @act="store.draw('A')"
+            @act="store.draw(me)"
           />
           <Pile
             label="Défausse"
-            :top="topDiscard('A')"
-            :count="discardCount('A')"
+            :top="topDiscard(me)"
+            :count="discardCount(me)"
             :resolve="resolveCard"
             @zoom="zoomInst"
           />
           <Pile
             label="Réserve"
-            :count="reserveCount('A')"
+            :count="reserveCount(me)"
             deck
             reserve
-            @act="store.drawFromReserve('A')"
+            @act="store.drawFromReserve(me)"
           />
         </div>
       </div>
       <div class="gseat__hand" role="group" aria-label="Votre main">
-        <div v-for="h in handList('A')" :key="h.key" class="ghand-card">
+        <div
+          v-for="hcard in handList(me)"
+          :key="hcard.key"
+          class="ghand-card"
+          @mouseenter="onHover(hcard.inst?.instanceId)"
+          @mouseleave="onUnhover(hcard.inst?.instanceId)"
+        >
           <GameCard
-            v-if="h.inst"
-            :instance="h.inst"
-            :card="resolveCard(h.inst.cardId)"
-            :selected="h.inst.instanceId === selectedId"
-            @select="select(h.inst.instanceId)"
-            @zoom="zoomInst(h.inst.instanceId)"
+            v-if="hcard.inst"
+            :instance="hcard.inst"
+            :card="resolveCard(hcard.inst.cardId)"
+            :selected="hcard.inst.instanceId === selectedId"
+            @select="select(hcard.inst.instanceId)"
+            @zoom="zoomInst(hcard.inst.instanceId)"
           />
           <div v-else class="ghand-back"></div>
         </div>
-        <p v-if="!handList('A').length" class="gseat__hand-empty">
-          ↑ Piochez pour remplir votre main
-        </p>
+        <p v-if="!handList(me).length" class="gseat__hand-empty">Main vide</p>
       </div>
     </section>
+
+    <!-- ════════ Aperçu au survol (façon MTGA) ════════ -->
+    <Transition name="hover">
+      <aside v-if="hoverCard" class="ghover" aria-hidden="true">
+        <img :src="hoverBig" :alt="hoverCard.name" class="ghover__img" />
+      </aside>
+    </Transition>
 
     <!-- ════════ Barre d'action de la carte sélectionnée ════════ -->
     <Transition name="slideup">
@@ -245,6 +256,9 @@ import { elementColor } from "@/config/elementColors";
 
 const store = useGameStore();
 const cardStore = useCardStore();
+
+const me = computed(() => store.perspective);
+const opp = computed(() => store.opponent);
 
 const cardIndex = computed(() => {
   const m = new Map<string, Card>();
@@ -333,6 +347,27 @@ function bumpDamage(delta: number): void {
     store.adjustCounter(selectedInst.value.instanceId, "damage", delta);
 }
 
+// ── Survol (aperçu MTGA) ─────────────────────────────────────────────────────
+const hoverId = ref<string | null>(null);
+const hoverCard = computed(() =>
+  hoverId.value
+    ? resolveCard(store.state.instances[hoverId.value]?.cardId ?? null)
+    : null,
+);
+const hoverBig = computed(() => {
+  const c = hoverCard.value;
+  if (!c) return "";
+  return c.mainType === "Héros"
+    ? `/images/cards/${c.id}_recto.webp`
+    : `/images/cards/${c.id}.webp`;
+});
+function onHover(id?: string): void {
+  if (id) hoverId.value = id;
+}
+function onUnhover(id?: string): void {
+  if (hoverId.value === id) hoverId.value = null;
+}
+
 // ── Zoom ─────────────────────────────────────────────────────────────────────
 const zoomCard = ref<Card | null>(null);
 const zoomOpen = ref(false);
@@ -345,7 +380,7 @@ function zoomInst(instanceId: string): void {
   }
 }
 
-// ── HUD de siège (composant local : portrait Héros + PV/PA/PM/XP/Niv) ────────
+// ── HUD de siège ─────────────────────────────────────────────────────────────
 function heroPortrait(seat: Seat): string | null {
   const id = view.value.seats[seat].heroInstanceId;
   const inst = id ? store.state.instances[id] : null;
@@ -364,6 +399,7 @@ const SeatHud = (props: { seat: Seat }) => {
   const card = inst ? resolveCard(inst.cardId) : null;
   const accent = elementColor(card?.stats?.niveau?.element);
   const portrait = heroPortrait(props.seat);
+  const active = store.turn.active === props.seat;
   const stat = (k: string, key: string, val: number | undefined, big = false) =>
     h("div", { class: ["ghud__stat", big ? "ghud__stat--big" : ""] }, [
       h("span", { class: "ghud__k" }, k),
@@ -373,7 +409,7 @@ const SeatHud = (props: { seat: Seat }) => {
           "button",
           {
             class: "ghud__btn",
-            "aria-label": `Augmenter ${k} siège ${props.seat}`,
+            "aria-label": `+ ${k}`,
             onClick: () => bumpHero(props.seat, key, 1),
           },
           "+",
@@ -382,35 +418,43 @@ const SeatHud = (props: { seat: Seat }) => {
           "button",
           {
             class: "ghud__btn",
-            "aria-label": `Diminuer ${k} siège ${props.seat}`,
+            "aria-label": `− ${k}`,
             onClick: () => bumpHero(props.seat, key, -1),
           },
           "−",
         ),
       ]),
     ]);
-  return h("div", { class: "ghud", style: { "--accent": accent } }, [
-    portrait
-      ? h("img", {
-          class: "ghud__portrait",
-          src: portrait,
-          alt: card?.name ?? "",
-        })
-      : h("div", { class: "ghud__portrait ghud__portrait--empty" }),
-    h("div", { class: "ghud__body" }, [
-      h("span", { class: "ghud__seat" }, [
-        h("span", { class: "ghud__seat-dot" }),
-        h("span", { class: "ghud__hero" }, card?.name ?? `Siège ${props.seat}`),
+  return h(
+    "div",
+    {
+      class: ["ghud", active ? "ghud--active" : ""],
+      style: { "--accent": accent },
+    },
+    [
+      portrait
+        ? h("img", {
+            class: "ghud__portrait",
+            src: portrait,
+            alt: card?.name ?? "",
+          })
+        : h("div", { class: "ghud__portrait ghud__portrait--empty" }),
+      h("div", { class: "ghud__body" }, [
+        h("span", { class: "ghud__seat" }, [
+          h("span", { class: "ghud__seat-dot" }),
+          h("span", { class: "ghud__name" }, store.players[props.seat].name),
+          active ? h("span", { class: "ghud__active" }, "● actif") : null,
+        ]),
+        h("div", { class: "ghud__row" }, [
+          stat("PV", "hp", c.hp, true),
+          stat("PA", "pa", c.pa),
+          stat("PM", "pm", c.pm),
+          stat("XP", "xp", c.xp),
+          stat("NIV", "level", c.level),
+        ]),
       ]),
-      h("div", { class: "ghud__row" }, [
-        stat("PV", "hp", c.hp, true),
-        stat("PA", "pa", c.pa),
-        stat("PM", "pm", c.pm),
-        stat("XP", "xp", c.xp),
-        stat("NIV", "level", c.level),
-      ]),
-    ]),
-  ]);
+    ],
+  );
 };
 
 // ── Pile (Pioche / Défausse / Réserve) ───────────────────────────────────────
@@ -488,6 +532,8 @@ const CardSlot = (
         selected: props.inst.instanceId === props.selectedId,
         onSelect: () => emit("select", props.inst.instanceId),
         onZoom: () => emit("zoom", props.inst.instanceId),
+        onHover: () => emit("hover", props.inst.instanceId),
+        onUnhover: () => emit("unhover", props.inst.instanceId),
       }),
     ],
   );
@@ -531,8 +577,6 @@ const CardSlot = (
   background-size: 5px 5px;
   pointer-events: none;
 }
-
-/* ── Demi-plateaux : se répartissent la hauteur, contenu poussé vers la médiane ── */
 .gseat {
   position: relative;
   display: flex;
@@ -542,8 +586,6 @@ const CardSlot = (
   flex: 1;
   min-height: 0;
 }
-
-/* Rangée principale : HUD | Socle | Alliés (remplit) | Piles → occupe la largeur */
 .gseat__row {
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto;
@@ -553,8 +595,6 @@ const CardSlot = (
 .gseat--opp .gseat__row {
   align-items: start;
 }
-
-/* ── Socle (Havre-Sac + Héros) ── */
 .gseat__base,
 .gseat__field {
   position: relative;
@@ -601,8 +641,6 @@ const CardSlot = (
   letter-spacing: 0.05em;
   text-transform: none;
 }
-
-/* ── Ligne médiane ── */
 .gmid {
   display: flex;
   align-items: center;
@@ -632,8 +670,6 @@ const CardSlot = (
   text-transform: uppercase;
   color: rgba(246, 245, 241, 0.55);
 }
-
-/* ── Mains ── */
 .gseat__hand {
   display: flex;
   justify-content: center;
@@ -684,8 +720,6 @@ const CardSlot = (
   color: rgba(246, 245, 241, 0.5);
   font-style: italic;
 }
-
-/* ── Slots de carte (terrain) ── */
 .gslot {
   width: var(--card-field);
 }
@@ -695,8 +729,6 @@ const CardSlot = (
 .gslot--small {
   width: var(--card-opp);
 }
-
-/* ── Piles ── */
 .gseat__piles {
   display: flex;
   gap: 10px;
@@ -769,8 +801,6 @@ const CardSlot = (
   color: rgba(246, 245, 241, 0.78);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
 }
-
-/* ── HUD (héros + stats) ── */
 :deep(.ghud) {
   display: flex;
   align-items: center;
@@ -779,6 +809,12 @@ const CardSlot = (
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.28);
   border: 1px solid rgba(246, 245, 241, 0.08);
+}
+:deep(.ghud--active) {
+  border-color: rgba(240, 78, 34, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(240, 78, 34, 0.5),
+    0 0 18px rgba(240, 78, 34, 0.25);
 }
 :deep(.ghud__portrait) {
   width: 76px;
@@ -805,10 +841,16 @@ const CardSlot = (
   border-radius: 50%;
   background: var(--accent, #98a1af);
 }
-:deep(.ghud__hero) {
+:deep(.ghud__name) {
   font-family: Fraunces, Georgia, serif;
   font-size: 16px;
   color: #f6f5f1;
+}
+:deep(.ghud__active) {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #f04e22;
 }
 :deep(.ghud__row) {
   display: flex;
@@ -861,6 +903,31 @@ const CardSlot = (
   outline-offset: 1px;
 }
 
+/* ── Aperçu au survol ── */
+.ghover {
+  position: fixed;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+  width: clamp(200px, 20vw, 300px);
+  z-index: 40;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.6));
+}
+.ghover__img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+.hover-enter-active,
+.hover-leave-active {
+  transition: opacity 0.12s ease;
+}
+.hover-enter-from,
+.hover-leave-to {
+  opacity: 0;
+}
+
 /* ── Barre d'action ── */
 .gactionbar {
   position: absolute;
@@ -878,7 +945,7 @@ const CardSlot = (
   border-radius: 9px;
   padding: 9px 16px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-  z-index: 10;
+  z-index: 20;
 }
 .gactionbar__name {
   font-family: Fraunces, Georgia, serif;
@@ -932,8 +999,6 @@ const CardSlot = (
   transform: translate(-50%, 14px);
   opacity: 0;
 }
-
-/* ── Responsive ── */
 @media (max-width: 1024px) {
   .gtable {
     height: auto;
@@ -945,6 +1010,9 @@ const CardSlot = (
   }
   .gseat__piles {
     justify-self: start;
+  }
+  .ghover {
+    display: none;
   }
 }
 @media (max-width: 640px) {

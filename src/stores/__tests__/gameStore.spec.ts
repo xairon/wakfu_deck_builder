@@ -56,3 +56,59 @@ describe("gameStore — table locale (bac à sable)", () => {
     expect(store.state.instances[havre].orientation).toBe("upright");
   });
 });
+
+describe("gameStore — flux de match (lobby/mulligan/tour)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("startMatch distribue une main de départ de 6 (= PA) et passe en mulligan", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startMatch(deck, deck, { first: "A" });
+    expect(store.matchPhase).toBe("mulligan");
+    expect(store.passPending).toBe(true);
+    expect(store.perspective).toBe("A");
+    expect(store.state.seats.A.main.length).toBe(6);
+    expect(store.state.seats.B.main.length).toBe(6);
+    expect(store.state.seats.A.pioche.length).toBe(42);
+  });
+
+  it("reveal lève l'écran de passation", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startMatch(deck, deck, { first: "A" });
+    store.reveal();
+    expect(store.passPending).toBe(false);
+  });
+
+  it("mulligan re-pioche une carte de moins", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startMatch(deck, deck, { first: "A" });
+    store.mulligan("A");
+    expect(store.state.seats.A.main.length).toBe(5);
+  });
+
+  it("keepHand enchaîne joueur 2 puis lance la partie", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startMatch(deck, deck, { first: "A" });
+    store.keepHand(); // A garde → au tour de B (mulligan)
+    expect(store.matchPhase).toBe("mulligan");
+    expect(store.perspective).toBe("B");
+    store.keepHand(); // B garde → partie
+    expect(store.matchPhase).toBe("playing");
+    expect(store.perspective).toBe("A");
+  });
+
+  it("endTurn pioche jusqu'aux PA puis bascule la perspective", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, deck, "A"); // partie directe, main vide
+    expect(store.turn.active).toBe("A");
+    store.endTurn();
+    expect(store.state.seats.A.main.length).toBe(6); // pioche fin de tour = PA
+    expect(store.turn.active).toBe("B");
+    expect(store.perspective).toBe("B");
+    expect(store.passPending).toBe(true);
+  });
+});
