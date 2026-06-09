@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-6">
+  <!-- ═══════════ Mise en place ═══════════ -->
+  <div v-if="!store.started" class="space-y-6">
     <header class="flex flex-wrap items-end justify-between gap-4">
       <div>
         <p class="eyebrow text-primary">La Table des Douze</p>
@@ -19,8 +20,7 @@
 
     <div class="h-px w-full bg-base-content/20"></div>
 
-    <!-- ───────── Mise en place ───────── -->
-    <section v-if="!store.started" class="space-y-5">
+    <section class="space-y-5">
       <p class="section-rule eyebrow">Choisir un deck</p>
 
       <p v-if="!decks.length" class="text-base-content/60">
@@ -76,54 +76,62 @@
         Lancer le bac à sable
       </button>
     </section>
+  </div>
 
-    <!-- ───────── Partie en cours ───────── -->
-    <section v-else class="grid gap-5 lg:grid-cols-[1fr_280px]">
-      <div class="space-y-4">
-        <!-- Barre d'outils -->
-        <div class="table-toolbar">
-          <div class="table-toolbar__group">
-            <span class="eyebrow"
-              >Tour {{ store.turn.number }} · Siège
-              {{ store.turn.active }}</span
-            >
-          </div>
-          <div class="table-toolbar__group">
-            <span class="table-toolbar__lbl">Agir comme</span>
-            <button
-              v-for="s in ['A', 'B'] as const"
-              :key="s"
-              class="seat-toggle"
-              :class="{ 'seat-toggle--on': store.controlSeat === s }"
-              @click="store.setControlSeat(s)"
-            >
-              {{ s }}
-            </button>
-          </div>
-          <div class="table-toolbar__group">
-            <button class="btn btn-sm" @click="store.draw()">Piocher</button>
-            <button class="btn btn-sm" @click="store.shufflePioche()">
-              Mélanger
-            </button>
-            <button class="btn btn-sm" @click="store.nextTurn()">
-              Passer le tour
-            </button>
-            <button class="btn btn-sm btn-ghost" @click="store.undoLast()">
-              Annuler
-            </button>
-            <button class="btn btn-sm btn-ghost" @click="store.reset()">
-              Réinitialiser
-            </button>
-          </div>
-        </div>
-
-        <GameBoard />
+  <!-- ═══════════ Partie en cours — plein écran immersif ═══════════ -->
+  <div v-else class="gfull">
+    <div class="gtopbar">
+      <div class="gtopbar__group">
+        <span class="gtopbar__title">Table de jeu</span>
+        <span class="gtopbar__turn"
+          >Tour {{ store.turn.number }} · joueur actif
+          {{ store.turn.active }}</span
+        >
       </div>
-
-      <aside class="table-aside">
+      <div class="gtopbar__group">
+        <span class="gtopbar__lbl">Agir comme</span>
+        <button
+          v-for="s in ['A', 'B'] as const"
+          :key="s"
+          class="seat-toggle"
+          :class="{ 'seat-toggle--on': store.controlSeat === s }"
+          @click="store.setControlSeat(s)"
+        >
+          {{ s }}
+        </button>
+        <span class="gtopbar__sep"></span>
+        <button class="btn btn-sm" @click="store.draw()">Piocher</button>
+        <button class="btn btn-sm" @click="store.shufflePioche()">
+          Mélanger
+        </button>
+        <button class="btn btn-sm" @click="store.nextTurn()">
+          Passer le tour
+        </button>
+        <button class="btn btn-sm btn-ghost" @click="store.undoLast()">
+          Annuler
+        </button>
+        <button class="btn btn-sm btn-ghost" @click="store.reset()">
+          Quitter
+        </button>
+      </div>
+      <div class="gtopbar__group">
+        <button
+          class="btn btn-sm btn-ghost"
+          @click="showJournal = !showJournal"
+        >
+          {{ showJournal ? "Masquer le journal" : "Journal" }}
+        </button>
+        <RouterLink to="/play" class="btn btn-ghost btn-sm"
+          >← Compagnon</RouterLink
+        >
+      </div>
+    </div>
+    <div class="glayout">
+      <GameBoard class="glayout__board" />
+      <aside v-if="showJournal" class="glayout__journal">
         <ActionLog :lines="store.log" />
       </aside>
-    </section>
+    </div>
   </div>
 </template>
 
@@ -144,6 +152,7 @@ const store = useGameStore();
 
 const decks = computed<Deck[]>(() => deckStore.decks ?? []);
 const pickedId = ref<string | null>(null);
+const showJournal = ref(true);
 const picked = computed(
   () => decks.value.find((d) => d.id === pickedId.value) ?? null,
 );
@@ -302,26 +311,57 @@ onMounted(async () => {
 .deck-pick__sep {
   opacity: 0.5;
 }
-.table-toolbar {
+/* ═══════════ Partie en cours — plein écran ═══════════ */
+/* Sort du conteneur centré de l'app pour occuper toute la largeur. */
+.gfull {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: calc(-1 * clamp(16px, 4vw, 48px));
+  padding: 12px clamp(8px, 2vw, 28px) 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gtopbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
-  padding: 10px 12px;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 14px;
   background: var(--paper-200, #edebe4);
-  border: 1px solid rgba(27, 26, 23, 0.12);
-  border-radius: 6px;
+  border: 1px solid rgba(27, 26, 23, 0.14);
+  border-radius: 8px;
 }
-.table-toolbar__group {
+.gtopbar__group {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
-.table-toolbar__lbl {
+.gtopbar__title {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 18px;
+  margin-right: 6px;
+}
+.gtopbar__turn {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(27, 26, 23, 0.55);
+}
+.gtopbar__lbl {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: rgba(27, 26, 23, 0.5);
+}
+.gtopbar__sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(27, 26, 23, 0.15);
+  margin: 0 4px;
 }
 .seat-toggle {
   width: 26px;
@@ -332,15 +372,34 @@ onMounted(async () => {
   background: rgba(27, 26, 23, 0.08);
 }
 .seat-toggle--on {
-  background: #1b1a17;
+  background: #f04e22;
   color: #f6f5f1;
 }
-.table-aside {
+.glayout {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+.glayout__board {
+  flex: 1;
+  min-width: 0;
+}
+.glayout__journal {
+  flex: 0 0 264px;
   background: var(--paper-200, #edebe4);
   border: 1px solid rgba(27, 26, 23, 0.12);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 12px 14px;
-  max-height: 70vh;
+  align-self: stretch;
   overflow: hidden;
+}
+@media (max-width: 1100px) {
+  .glayout {
+    flex-direction: column;
+  }
+  .glayout__journal {
+    flex: 1;
+    max-height: 200px;
+  }
 }
 </style>

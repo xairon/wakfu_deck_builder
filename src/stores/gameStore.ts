@@ -208,7 +208,7 @@ export const useGameStore = defineStore("game", () => {
 
   function adjustCounter(
     instanceId: string,
-    counter: "hp" | "damage" | "xp" | "level" | "resistance",
+    counter: string,
     delta: number,
   ): void {
     const inst = state.value.instances[instanceId];

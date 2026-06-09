@@ -8,6 +8,8 @@ import type { InstanceId } from "./events";
 
 export interface CardCounters {
   hp?: number; // PV courant (Héros, 410.2)
+  pa?: number; // Points d'Action disponibles (suivi de table)
+  pm?: number; // Points de Mouvement disponibles (suivi de table)
   resistance?: number; // Résistance (Havre-Sac, 306.3)
   damage?: number; // Dommages cumulés, purgés fin de tour (410.8)
   level?: number; // 1→2→3 (307.4/307.5)

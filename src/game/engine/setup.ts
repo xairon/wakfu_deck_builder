@@ -65,7 +65,13 @@ export function buildInitialLayout(
         location: { zone: "havreSac", owner: seat },
         face: "recto",
         orientation: "upright",
-        counters: { level: 1, xp: 0, ...(pv !== undefined ? { hp: pv } : {}) },
+        counters: {
+          level: 1,
+          xp: 0,
+          pa: 6,
+          pm: 3,
+          ...(pv !== undefined ? { hp: pv } : {}),
+        },
         attachments: [],
         revealedTo: ["A", "B"],
       });
