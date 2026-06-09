@@ -99,6 +99,7 @@ export type EventType =
   | "DETACH"
   | "LOOK"
   | "REVEAL"
+  | "SET_PHASE"
   | "SAID"
   | "UNDONE";
 

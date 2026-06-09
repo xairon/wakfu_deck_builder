@@ -103,3 +103,50 @@ export function redactStateFor(
     seq: state.seq,
   };
 }
+
+/**
+ * Vue OMNISCIENTE — tout est visible (Pioche & ordre compris). Réservée au jeu
+ * LOCAL (bac à sable / hot-seat, une seule machine) ; à NE JAMAIS diffuser.
+ */
+export function omniscientView(state: GameState): RedactedGameState {
+  const reveal = (ids: InstanceId[]): RedactedZone => ({
+    kind: "full",
+    instances: ids.map((id) => {
+      const i = state.instances[id];
+      return {
+        instanceId: i.instanceId,
+        cardId: i.cardId,
+        owner: i.owner,
+        controller: i.controller,
+        face: i.face,
+        orientation: i.orientation,
+        counters: i.counters,
+        attachments: i.attachments,
+      };
+    }),
+  });
+  const board = (seat: Seat): RedactedBoard => {
+    const b = state.seats[seat];
+    return {
+      seat,
+      pioche: reveal(b.pioche),
+      main: reveal(b.main),
+      havreSac: reveal(b.havreSac),
+      defausse: reveal(b.defausse),
+      reserve: reveal(b.reserve),
+      exil: reveal(b.exil),
+      heroInstanceId: b.heroInstanceId,
+      havreSacInstanceId: b.havreSacInstanceId,
+    };
+  };
+  return {
+    gameId: state.gameId,
+    status: state.status,
+    viewer: "spectator",
+    seats: { A: board("A"), B: board("B") },
+    monde: reveal(state.monde),
+    fileAttente: reveal(state.fileAttente),
+    turn: state.turn,
+    seq: state.seq,
+  };
+}

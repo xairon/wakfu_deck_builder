@@ -64,6 +64,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/play/table/:code?",
+      name: "playTable",
+      component: () => import("@/views/PlayTableView.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
       path: "/deck/share",
       name: "sharedDeck",
       component: SharedDeckView,

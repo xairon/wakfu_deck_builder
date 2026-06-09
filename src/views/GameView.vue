@@ -11,6 +11,12 @@
           Comptez les PV, lancez le dé, suivez les tours. L'écran reste allumé
           le temps de la partie.
         </p>
+        <RouterLink to="/play/table" class="btn btn-primary btn-sm mt-4 gap-2">
+          🎴 Ouvrir la table de jeu
+          <span class="font-mono text-[10px] uppercase opacity-70"
+            >nouveau</span
+          >
+        </RouterLink>
       </div>
       <div class="flex items-center gap-3">
         <span

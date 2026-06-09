@@ -249,6 +249,11 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
       }
       break;
     }
+    case "SET_PHASE": {
+      const p = ev.payload as Partial<GameState["turn"]>;
+      next.turn = { ...next.turn, ...p };
+      break;
+    }
   }
   next.seq = ev.seq;
   return next;

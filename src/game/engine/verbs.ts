@@ -10,7 +10,7 @@ import type {
   InstanceId,
   ShufflePayload,
 } from "../types/events";
-import type { GameState } from "../types/state";
+import type { GameState, TurnPhase } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
 import { permutationFromSeed } from "./rng";
 
@@ -169,6 +169,14 @@ export function undo(actor: Seat, targetSeq: number): DraftEvent {
 
 export function say(actor: Seat, text: string): DraftEvent {
   return { actor, type: "SAID", payload: { text } };
+}
+
+/** Met à jour le tour (joueur actif, numéro, phase) — assistance non bloquante. */
+export function setPhase(
+  actor: Seat | "system",
+  turn: { active?: Seat; number?: number; phase?: TurnPhase },
+): DraftEvent {
+  return { actor, type: "SET_PHASE", payload: turn };
 }
 
 /**

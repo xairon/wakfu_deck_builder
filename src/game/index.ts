@@ -14,7 +14,7 @@ export {
   EngineError,
   getZoneArray,
 } from "./engine/reducer";
-export { redactStateFor, canSeeCardId } from "./engine/redact";
+export { redactStateFor, omniscientView, canSeeCardId } from "./engine/redact";
 export {
   resolveDraft,
   redactEventForBroadcast,
@@ -35,6 +35,7 @@ export {
   shuffle,
   undo,
   say,
+  setPhase,
   sequence,
 } from "./engine/verbs";
 export { buildInitialLayout, setupEvents, createGame } from "./engine/setup";
