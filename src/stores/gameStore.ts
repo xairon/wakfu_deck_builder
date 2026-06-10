@@ -36,9 +36,11 @@ import {
 } from "@/game";
 import type { CombatTarget, RulesCtx } from "@/game/rules";
 import {
+  arrivalEffects,
   eligibleAttackers,
   eligibleBlockers,
   eligibleTargets,
+  grantXpEvents,
   planCost,
   playDestination,
   pmOf,
@@ -443,7 +445,41 @@ export const useGameStore = defineStore("game", () => {
       );
     }
     dispatch(...drafts);
+    runArrivalEffects(seat, card);
     return true;
+  }
+
+  /** Exécute les effets d'apparition entièrement parsés par le DSL strict. */
+  function runArrivalEffects(seat: Seat, card: Card): void {
+    if (!assist.value) return;
+    for (const atom of arrivalEffects(card)) {
+      dispatch(
+        say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
+      );
+      for (const op of atom.ops) {
+        if (op.op === "draw") {
+          draw(seat, op.n);
+        } else if (op.op === "gainXp") {
+          const grant = grantXpEvents(rulesCtx(), seat, op.n);
+          dispatch(
+            ...grant.events,
+            ...grant.log.map((l) =>
+              say(seat, `Le Héros de ${players.value[seat].name} ${l}`),
+            ),
+          );
+          if (grant.won) {
+            winner.value = seat;
+            matchPhase.value = "finished";
+          }
+        } else if (op.op === "heroGainPv") {
+          const heroId = state.value.seats[seat].heroInstanceId;
+          if (heroId) adjustCounter(heroId, "hp", op.n);
+        } else if (op.op === "damageOppHero") {
+          const oppHeroId = state.value.seats[otherSeat(seat)].heroInstanceId;
+          if (oppHeroId) adjustCounter(oppHeroId, "hp", -op.n);
+        }
+      }
+    }
   }
 
   function toggleTap(instanceId: string): void {
