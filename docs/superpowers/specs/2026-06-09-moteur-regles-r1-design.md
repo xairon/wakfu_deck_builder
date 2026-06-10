@@ -44,12 +44,31 @@ couverte retombe sur le **mode manuel** (la table reste libre) : un toggle
   courants augmentés du delta de PV max) ; 18ᵉ XP → Niveau 3 = victoire.
   Défaite si PV du Héros ≤ 0.
 
-## Hors R1 (assumé, reste manuel)
+## Étape C (livrée en partie) — mots-clés data-driven
 
-Effets de cartes et mots-clés (Riposte, Portée…), Réactions/File d'Attente
-(timing), capacité (Taille) du Havre-Sac, redressement gratuit du Havre-Sac du
-2ᵉ joueur (2342), Challenges/Quêtes, choix du bloqueur frappé par l'attaquant,
-égalité 103.3, contrainte PM sur le Héros attaquant depuis le Havre-Sac.
+Audit des données (1613 cartes, 2479 effets) : les seuls mots-clés de combat
+réellement présents sont **Résistance** (185 cartes, structuré dans
+`keywords[]` : `{name, description: '<N>', elements: ['terre']}`) et
+**Géant** (93 cartes, texte d'effet strictement égal à « Géant »). Les autres
+entrées du type `CardKeyword` (Riposte, Portée, Critique, Parade) n'existent
+pas dans les données scrapées. Implémenté dans
+`src/game/rules/effects/keywords.ts` + `combat.ts` :
+
+- **Résistance [Élément] N** (7469) : prévention de N Dommages de cet
+  Élément, appliquée par infliction (duels, attaquants libres, cible Allié,
+  Héros — pas le Havre-Sac dont la Résistance est un compteur, 306.3).
+- **Géant** (6135) : l'attaquant répartit sa Force entre tous ses bloqueurs ;
+  politique automatique = maximiser les bloqueurs détruits (parts létales les
+  moins chères d'abord, reliquat sur un survivant).
+
+## Hors périmètre (assumé, reste manuel)
+
+Effets de cartes texte libre (DSL carte-par-carte à venir : triggers
+apparition / début / fin de tour mesurés à 200-270 cartes chacun),
+Réactions/File d'Attente (timing), Tacle (pas de Phase d'Actions modélisée),
+capacité (Taille) du Havre-Sac, redressement gratuit du Havre-Sac du 2ᵉ
+joueur (2342), Challenges/Quêtes, choix manuel du bloqueur frappé,
+égalité 103.3.
 
 ## Architecture — `src/game/rules/` (pur, zéro dépendance UI)
 

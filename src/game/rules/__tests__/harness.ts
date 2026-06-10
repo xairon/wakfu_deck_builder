@@ -56,6 +56,9 @@ export function makeAlly(
     element?: CardElement;
     force?: number;
     xp?: number;
+    /** Mot-clé Résistance : [élément, valeur]. */
+    resist?: [CardElement, number];
+    geant?: boolean;
   } = {},
 ): AllyCard {
   const element = opts.element ?? "Feu";
@@ -67,6 +70,16 @@ export function makeAlly(
       force: { value: opts.force ?? 2, element },
     },
     experience: opts.xp ?? 1,
+    keywords: opts.resist
+      ? [
+          {
+            name: "Résistance",
+            description: String(opts.resist[1]),
+            elements: [opts.resist[0]],
+          },
+        ]
+      : [],
+    effects: opts.geant ? [{ description: "Géant" }] : [],
   });
 }
 
