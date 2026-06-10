@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { arrivalEffects, playEffects, tapPowers } from "@/game/rules";
+﻿import { describe, expect, it } from "vitest";
+import { arrivalEffects, playEffects, tapPowers, turnStartEffects } from "@/game/rules";
 import { createMockAllyCard } from "tests/factories/card";
 
 function cardWith(name: string, ...descriptions: string[]) {
@@ -318,5 +318,38 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
       cardWith("Bworky", "Au début de votre tour, piochez une carte."),
     );
     expect(atoms).toEqual([]);
+  });
+
+  it("compile « Au début de votre tour, X ou détruisez [self] » (entretien)", () => {
+    const upkeep = cardWith(
+      "Cimetière d'Amakna",
+      "Au début de votre tour, recyclez une carte ou détruisez le Cimetière d'Amakna.",
+    );
+    const atoms = turnStartEffects(upkeep);
+    expect(atoms).toHaveLength(1);
+    expect(atoms[0].trigger).toBe("onTurnStart");
+    expect(atoms[0].orElse).toBe("destroySelf");
+    expect(atoms[0].ops).toEqual([{ op: "recycleFromDiscard", n: 1 }]);
+    // perte de PV comme coût d'entretien
+    const dungeon = cardWith(
+      "Donjon des Craqueleurs",
+      "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Craqueleurs.",
+    );
+    expect(turnStartEffects(dungeon)[0]?.ops).toEqual([
+      { op: "heroLosePv", n: 2 },
+    ]);
+    // sujet de la branche destruction ≠ la carte → rejet
+    const wrong = cardWith(
+      "Tour",
+      "Au début de votre tour, recyclez une carte ou détruisez le Bworky.",
+    );
+    expect(turnStartEffects(wrong)).toEqual([]);
+    // effet direct sans alternative
+    const direct = cardWith(
+      "Fontaine",
+      "Au début de votre tour, piochez une carte.",
+    );
+    expect(turnStartEffects(direct)[0]?.ops).toEqual([{ op: "draw", n: 1 }]);
+    expect(turnStartEffects(direct)[0]?.orElse).toBeUndefined();
   });
 });

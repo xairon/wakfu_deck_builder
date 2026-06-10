@@ -19,6 +19,7 @@ import {
   compileActionEffectText,
   compileEffectText,
   compileTapEffectText,
+  compileTurnStartEffectText,
 } from "../src/game/rules/effects/dsl";
 
 const DATA_DIR = join(__dirname, "..", "public", "data");
@@ -138,7 +139,8 @@ function compileEffects(
       ? compileTapEffectText(text, cardName, sourceElement)
       : isAction
         ? compileActionEffectText(text, cardName, sourceElement)
-        : compileEffectText(text, cardName, sourceElement);
+        : (compileEffectText(text, cardName, sourceElement) ??
+          compileTurnStartEffectText(text, cardName, sourceElement));
     if (compiled) {
       e.compiled = compiled;
       stats.compiled++;

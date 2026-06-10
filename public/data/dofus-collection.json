@@ -1212,7 +1212,17 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Le pouvoir du Chacha Noir devient : \"Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Chacha Noir.\"",
@@ -1360,7 +1370,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 1 PV ou détruisez le Chafer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -2134,7 +2154,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 3 PV ou détruisez le Dark Vlad.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 3
+            }
+          ]
+        }
       },
       {
         "description": "Le Dark Vlad inflige 2 Dommages à tous les Alliés ou Héros attaquants ou Bloqueurs.",

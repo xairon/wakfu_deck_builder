@@ -781,7 +781,17 @@
           "Eau"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Détruisez l'Île des Wabbits : Cherchez un Allié Wabbit dans votre Défausse et prenez-le en main.",

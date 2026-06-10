@@ -1881,7 +1881,17 @@
           "Terre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Choisissez un Allié de Niveau 1 dans votre Défausse et mettez-le jeu. Votre Héros perd 1 PV.",
@@ -2849,7 +2859,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Craqueleurs.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Tous les Dommages sur le point d'être infligés à vos Craqueleurs sont réduits de 1.",
@@ -7091,7 +7111,17 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Inclinez une de vos Princesses : Redressez un de vos Chevaliers de votre choix. Il gagne +1 en Force jusqu'à la fin du tour.",

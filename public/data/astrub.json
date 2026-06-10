@@ -1212,7 +1212,17 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Tous vos Alliés et Héros attaquants ou bloqueurs gagnent +1 en Force jusqu'à la fin du combat.",
@@ -1256,7 +1266,17 @@
           "Air"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Quand un Allié adverse apparaît, redressez un de vos Alliés Bandits de Niveau inférieur ou égal au Niveau de cet Allié.",
@@ -1349,7 +1369,17 @@
           "Eau"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Quand un Allié Marchand apparaît sous votre contrôle, cherchez une carte Potion ou Parchemin dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
@@ -2645,7 +2675,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Prespics.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Tant qu'ils sont dressés, vos Alliés Prespic ne peuvent pas être choisis par un joueur adverse.",
@@ -2818,7 +2858,17 @@
       {
         "description": "Au début de votre tour, défaussez-vous d'une carte de votre main ou détruisez l'Écureuil Chenapan.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "discardFromHand",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Le joueur de votre choix se défausse d'une carte de sa main au hasard.",
@@ -6962,7 +7012,17 @@
           "Terre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "L'Allié Bouftou qui vient d'apparaître dans le Monde gagne +1 en Force et jusqu'à la fin du tour.",

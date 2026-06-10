@@ -5890,7 +5890,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Rats.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Tous vos Rats dans le Monde gagnent le pouvoir suivant : « : Le Rat de votre choix gagne +1 en Force jusqu'à la fin du tour. »",
@@ -5930,7 +5940,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon Fungus.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Tous vos Champignons dans le Monde gagnent le pouvoir suivant : « , Détruisez ce Champignon : Il inflige 1 Dommage de son élément à l'Allié ou Héros incliné de votre choix. »",

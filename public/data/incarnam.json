@@ -1066,7 +1066,17 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Quand votre Héros attaque, il gagne +2 en Force jusqu'à la fin du tour.",
@@ -1778,7 +1788,17 @@
           "Eau"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Piochez une carte.",
@@ -2705,7 +2725,17 @@
           "Eau"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Les Calanques d'Astrub apparaissent inclinés.",
@@ -3240,7 +3270,17 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Le pouvoir du Chacha Noir devient : \"Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Chacha Noir.\"",
@@ -3296,7 +3336,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 1 PV ou détruisez le Chafer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -3337,7 +3387,17 @@
           "Air"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Les Champs d'Astrub apparaissent inclinés.",
@@ -4404,7 +4464,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 3 PV ou détruisez le Dark Vlad.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 3
+            }
+          ]
+        }
       },
       {
         "description": "Le Dark Vlad inflige 2 Dommages à tous les Alliés ou Héros attaquants ou Bloqueurs.",
@@ -5147,7 +5217,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Bouftous.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Vos Alliés Bouftous gagnent +1 en Force et .",
@@ -5188,7 +5268,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Larves.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Vos Alliés Larves gagnent +1 en Force.",
@@ -5233,7 +5323,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Tofus.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Tous vos Alliés Tofus gagnent +1 en Force et .",
@@ -6443,7 +6543,17 @@
           "Terre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Les Forêts d'Astrub apparaissent inclinés.",
@@ -6756,7 +6866,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez la Gelaxième Dimension.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Inclinez un de vos Alliés Gelées : Mettez en jeu un Allié Gelée de Niveau inférieur ou égal gratuitement de votre main.",
@@ -9891,7 +10011,17 @@
           "Terre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Le Porteur du Marcassin gagne .",
@@ -10132,7 +10262,17 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Les Mines d'Astrub apparaissent inclinés.",
@@ -12065,12 +12205,35 @@
           "Eau"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Recyclez une carte, puis piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Si votre Défausse ne contient aucune carte à la résolution du pouvoir, aucune carte ne peut être recyclée. Dans ce cas, vous ne piochez pas de carte car la pioche est une action conditionnelle.",
@@ -13662,7 +13825,17 @@
           "Terre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Chaque fois que votre Héros attaque ou bloque, gagnez 1 XP.",
@@ -14286,7 +14459,17 @@
           "Air"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Redressez le Porteur du Tiwabbit.",
@@ -15056,7 +15239,17 @@
           "Air"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "recycleFromDiscard",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Détruisez un de vos Alliés dans le Monde : Remettez en jeu un autre Allié de Niveau inférieur ou égal de votre Défausse.",

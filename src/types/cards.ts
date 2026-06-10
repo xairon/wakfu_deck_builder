@@ -80,16 +80,21 @@ export type CompiledEffectOp =
       dest: "main" | "monde";
     }
   /** « … puis mélangez votre Pioche ». */
-  | { op: "shuffleDeck" };
+  | { op: "shuffleDeck" }
+  /** Détruit la carte source de l'effet (branche « ou détruisez X »). */
+  | { op: "destroySelf" };
 
 export interface CompiledEffect {
   /** onArrive : entrée en jeu ; onTap : pouvoir incliné ; onPlay : Action
-   *  résolue au moment où elle est jouée (puis défaussée, 302.1). */
-  trigger: "onArrive" | "onTap" | "onPlay";
+   *  résolue au moment où elle est jouée (puis défaussée, 302.1) ;
+   *  onTurnStart : début du tour de son contrôleur (602). */
+  trigger: "onArrive" | "onTap" | "onPlay" | "onTurnStart";
   /** « Vous pouvez … » : le joueur confirme avant exécution. */
   optional?: boolean;
   /** « Détruisez [cette carte] : … » — le coût remplace l'inclinaison. */
   cost?: "sacrificeSelf";
+  /** « … ou détruisez [cette carte] » : refuser `ops` détruit la source. */
+  orElse?: "destroySelf";
   ops: CompiledEffectOp[];
 }
 

@@ -1719,7 +1719,22 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [
@@ -2459,7 +2474,17 @@
       {
         "description": "Au début de votre tour, votre Héros perd 2 PV ou détruisez le Donjon des Bworks.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Chaque fois qu'un Bwork apparaît, il inflige 1 Dommage à l'Allié ou Héros de votre choix.",
@@ -4095,7 +4120,20 @@
       {
         "description": "Au début de votre tour, vous pouvez détruire la Zone de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Zone",
+              "zones": [
+                "monde"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -6811,7 +6849,20 @@
       {
         "description": "Au début de votre tour, vous pouvez détruire l'Équipement de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": [
+                "monde"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

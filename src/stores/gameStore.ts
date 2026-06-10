@@ -1,4 +1,4 @@
-/**
+﻿/**
  * gameStore — partie guidée hot-seat « façon MTGA, sauce Wakfu TCG ».
  * Réf. docs/superpowers/specs/2026-06-09-table-jeu-mtga-design.md.
  *
@@ -58,6 +58,7 @@ import {
   resolveDestroyTarget,
   resolveHealHeroTarget,
   tapPowers,
+  turnStartEffects,
   victoryFromState,
   whyCannotDeclareAttack,
   whyCannotPlay,
@@ -270,6 +271,7 @@ export const useGameStore = defineStore("game", () => {
     effectTargeting.value = null;
     effectPicking.value = null;
     effectQueue.value = [];
+    turnStartFiredOn.value = null;
   }
 
   /** Démarrage direct en partie (tests / bac à sable rapide). */
@@ -312,8 +314,56 @@ export const useGameStore = defineStore("game", () => {
   }
 
   /** Révèle le plateau après l'écran de passation. */
+  /** Dernier tour dont les effets « Au début de votre tour » ont tiré. */
+  const turnStartFiredOn = ref<number | null>(null);
+
   function reveal(): void {
     passPending.value = false;
+    fireTurnStartEffects();
+  }
+
+  /** Déclenche les effets onTurnStart des cartes en jeu du joueur actif (602). */
+  function fireTurnStartEffects(): void {
+    if (!assist.value || matchPhase.value !== "playing") return;
+    const turnNo = state.value.turn.number;
+    if (turnStartFiredOn.value === turnNo) return;
+    turnStartFiredOn.value = turnNo;
+    const seat = state.value.turn.active;
+    for (const inst of Object.values(state.value.instances)) {
+      if (inst.controller !== seat) continue;
+      const zone = inst.location.zone;
+      if (zone !== "monde" && zone !== "havreSac") continue;
+      const card = getCard(inst.cardId);
+      if (!card) continue;
+      for (const atom of turnStartEffects(card)) {
+        if (atom.optional || atom.orElse) {
+          effectChoices.value = [
+            ...effectChoices.value,
+            {
+              seat,
+              cardName: card.name,
+              text: atom.text,
+              ops: atom.ops,
+              declineOps:
+                atom.orElse === "destroySelf"
+                  ? [{ op: "destroySelf" }]
+                  : undefined,
+              sourceId: inst.instanceId,
+            },
+          ];
+          continue;
+        }
+        dispatch(
+          say(seat, `Effet de début de tour — ${card.name} : « ${atom.text} »`),
+        );
+        enqueueEffect({
+          seat,
+          cardName: card.name,
+          ops: atom.ops,
+          sourceId: inst.instanceId,
+        });
+      }
+    }
   }
 
   /** Finit le tour : pioche jusqu'aux PA (règle Wakfu) puis passe la main. */
@@ -345,6 +395,7 @@ export const useGameStore = defineStore("game", () => {
     effectTargeting.value = null;
     effectPicking.value = null;
     effectQueue.value = [];
+    turnStartFiredOn.value = null;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -493,6 +544,8 @@ export const useGameStore = defineStore("game", () => {
       cardName: string;
       text: string;
       ops: EffectOp[];
+      /** Branche exécutée si le joueur décline (« ou détruisez X »). */
+      declineOps?: EffectOp[];
       sourceId?: string;
     }[]
   >([]);
@@ -733,6 +786,24 @@ export const useGameStore = defineStore("game", () => {
       } else if (op.op === "havreSacGainResistance") {
         const sacId = state.value.seats[seat].havreSacInstanceId;
         if (sacId) adjustCounter(sacId, "resistance", op.n);
+      } else if (op.op === "destroySelf") {
+        const src = sourceId ? state.value.instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay) {
+          dispatch(
+            move(seat, {
+              instanceId: sourceId!,
+              from: src!.location,
+              to: { zone: "defausse", owner: src!.owner },
+              position: { at: "top" },
+              visibility: { faceDown: false, visibleTo: "all" },
+              preservesIdentity: false,
+            }),
+            say(seat, `${cardName} est détruit.`),
+          );
+        }
       }
     }
     return false;
@@ -873,6 +944,14 @@ export const useGameStore = defineStore("game", () => {
     effectChoices.value = effectChoices.value.slice(1);
     if (!accept) {
       dispatch(say(choice.seat, `Effet décliné — ${choice.cardName}.`));
+      if (choice.declineOps?.length) {
+        enqueueEffect({
+          seat: choice.seat,
+          cardName: choice.cardName,
+          ops: choice.declineOps,
+          sourceId: choice.sourceId,
+        });
+      }
       return;
     }
     dispatch(

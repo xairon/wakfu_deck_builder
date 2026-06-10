@@ -9,7 +9,7 @@ import {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const CACHE_KEY = "wakfu-cards-cache-v9";
+const CACHE_KEY = "wakfu-cards-cache-v10";
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24h - mirrors the source constant
 
 /**

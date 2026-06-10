@@ -226,7 +226,11 @@
               class="btn btn-outline"
               @click="store.effectChoiceResolve(false)"
             >
-              Décliner
+              {{
+                store.effectChoice.declineOps?.length
+                  ? "Refuser (la carte est détruite)"
+                  : "Décliner"
+              }}
             </button>
           </div>
         </div>

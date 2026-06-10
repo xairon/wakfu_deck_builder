@@ -76,7 +76,7 @@ function parseSentence(
   m = sentence.match(/^gagne[zr] (\d+) (?:points? de )?resistance$/);
   if (m) return { op: "havreSacGainResistance", n: toNumber(m[1]) };
   m = sentence.match(
-    /^recycle[zr] (une|deux|trois|\d+) cartes? de votre defausse$/,
+    /^recycle[zr] (une|deux|trois|\d+) cartes?( de votre defausse)?$/,
   );
   if (m) return { op: "recycleFromDiscard", n: toNumber(m[1]) };
   m = sentence.match(
@@ -309,6 +309,67 @@ export function compileActionEffectText(
     ops.push(...parsed);
   }
   return { trigger: "onPlay", ops };
+}
+
+/**
+ * Compile un effet « Au début de votre tour, … » (602). Deux formes :
+ * directe (ops), ou coût d'entretien « X ou détruisez [cette carte] » —
+ * refuser X détruit la source (`orElse`). « Vous pouvez X » → optionnel.
+ */
+export function compileTurnStartEffectText(
+  text: string,
+  cardName: string,
+  sourceElement = "Neutre",
+): CompiledEffect | null {
+  const m = norm(text).match(/^au debut de votre tour\s*,\s*(.+)$/);
+  if (!m) return null;
+  let body = m[1].replace(/\.$/, "").trim();
+  let orElse: "destroySelf" | undefined;
+  const alt = body.match(/^(.+?) ou detruisez (.+)$/);
+  if (alt && subjectIsSelf(alt[2].trim(), cardName)) {
+    orElse = "destroySelf";
+    body = alt[1].trim();
+  }
+  let optional = false;
+  const opt = body.match(/^vous pouvez (.+)$/);
+  if (opt) {
+    optional = true;
+    body = opt[1];
+  }
+  const sentences = body
+    .split(/\.\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!sentences.length || (optional && sentences.length > 1)) return null;
+  const ops: EffectOp[] = [];
+  for (const s of sentences) {
+    const parsed = parseOps(s, cardName, sourceElement);
+    if (!parsed) return null;
+    ops.push(...parsed);
+  }
+  return {
+    trigger: "onTurnStart",
+    ...(optional ? { optional } : {}),
+    ...(orElse ? { orElse } : {}),
+    ops,
+  };
+}
+
+/** Effets « Au début de votre tour » de cette carte (trigger onTurnStart). */
+export function turnStartEffects(card: Card | null): EffectAtom[] {
+  if (!card) return [];
+  const atoms: EffectAtom[] = [];
+  for (const e of card.effects ?? []) {
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      (text && !e?.requiresIncline
+        ? compileTurnStartEffectText(text, card.name, effectSourceElement(card))
+        : null);
+    if (compiled && compiled.trigger === "onTurnStart")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
 }
 
 /** Effets de résolution d'une carte Action (trigger onPlay). */

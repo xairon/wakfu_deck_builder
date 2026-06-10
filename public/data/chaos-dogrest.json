@@ -7296,7 +7296,16 @@
       {
         "description": "Au début de votre tour, votre Héros regagne 2 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "ops": [
+            {
+              "op": "heroGainPv",
+              "n": 2
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
