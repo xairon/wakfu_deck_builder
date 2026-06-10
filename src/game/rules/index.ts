@@ -11,3 +11,4 @@ export * from "./combat";
 export * from "./progress";
 export * from "./effects/keywords";
 export * from "./effects/dsl";
+export * from "./effects/targeting";

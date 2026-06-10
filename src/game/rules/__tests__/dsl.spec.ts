@@ -58,8 +58,8 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
   it("rejette les effets optionnels dont l'op n'est pas comprise", () => {
     const atoms = arrivalEffects(
       cardWith(
-        "Crocodaille",
-        "Quand le Crocodaille apparaît, vous pouvez détruire la Zone de votre choix.",
+        "Crail",
+        "Quand Crail apparaît, vous pouvez chercher un Dofus dans votre Pioche.",
       ),
     );
     expect(atoms).toEqual([]);
@@ -88,6 +88,64 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
       cardWith(
         "Démon",
         "Quand le Démon apparaît, gagnez 2 XP. Détruisez un Allié.",
+      ),
+    );
+    expect(atoms).toEqual([]);
+  });
+
+  it("parse les ops à cible : détruire / infliger des Dommages", () => {
+    const destroy = arrivalEffects(
+      cardWith(
+        "Crocodaille",
+        "Quand le Crocodaille apparaît, vous pouvez détruire la Zone de votre choix.",
+      ),
+    );
+    expect(destroy).toHaveLength(1);
+    expect(destroy[0].optional).toBe(true);
+    expect(destroy[0].ops).toEqual([
+      { op: "destroyTarget", what: "Zone", zones: ["monde"] },
+    ]);
+
+    const both = arrivalEffects(
+      cardWith(
+        "Ébène",
+        "Quand Ébène apparaît, détruisez l'Allié de votre choix dans le Monde ou dans un Havre Sac.",
+      ),
+    );
+    expect(both[0]?.ops).toEqual([
+      { op: "destroyTarget", what: "Allié", zones: ["monde", "havreSac"] },
+    ]);
+
+    const dmg = arrivalEffects(
+      cardWith(
+        "Piou",
+        "Quand le Piou apparaît, infligez 2 Dommages à l'Allié de votre choix.",
+      ),
+    );
+    expect(dmg[0]?.ops).toEqual([
+      { op: "damageAllyTarget", n: 2, element: "Neutre" },
+    ]);
+  });
+
+  it("parse perte de PV (soi / adverse) et gain de Résistance", () => {
+    const atoms = arrivalEffects(
+      cardWith(
+        "Sacrieur",
+        "Quand le Sacrieur apparaît, votre Héros perd 2 PV. Le Héros adverse perd 1 PV. Gagnez 3 Résistance.",
+      ),
+    );
+    expect(atoms[0]?.ops).toEqual([
+      { op: "heroLosePv", n: 2 },
+      { op: "damageOppHero", n: 1 },
+      { op: "havreSacGainResistance", n: 3 },
+    ]);
+  });
+
+  it("rejette un optionnel multi-phrases (portée du « vous pouvez » ambiguë)", () => {
+    const atoms = arrivalEffects(
+      cardWith(
+        "Dofus Ébène",
+        "Quand le Dofus Ébène apparaît, vous pouvez détruire l'Allié de votre choix dans le Monde. Gagnez 2 XP.",
       ),
     );
     expect(atoms).toEqual([]);

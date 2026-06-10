@@ -37,7 +37,18 @@ export type CompiledEffectOp =
   | { op: "gainXp"; n: number }
   | { op: "draw"; n: number }
   | { op: "heroGainPv"; n: number }
-  | { op: "damageOppHero"; n: number };
+  | { op: "heroLosePv"; n: number }
+  | { op: "damageOppHero"; n: number }
+  | { op: "havreSacGainResistance"; n: number }
+  /** « Détruisez [quoi] de votre choix » — le joueur cible à la table. */
+  | {
+      op: "destroyTarget";
+      what: "Allié" | "Zone" | "Équipement";
+      zones: ("monde" | "havreSac")[];
+    }
+  /** « Infligez N Dommages à l'Allié de votre choix » (élément de la source,
+   *  figé à la compilation pour la Résistance de la cible). */
+  | { op: "damageAllyTarget"; n: number; element: string };
 
 export interface CompiledEffect {
   /** Déclencheur : la carte qui porte l'effet vient d'entrer en jeu. */

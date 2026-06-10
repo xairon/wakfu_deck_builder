@@ -31,12 +31,24 @@ function toNumber(raw: string): number {
   return WORD_NUMBERS[raw] ?? Number.parseInt(raw, 10);
 }
 
+const TARGET_WHAT: Record<string, "Allié" | "Zone" | "Équipement"> = {
+  "l allie": "Allié",
+  "l'allie": "Allié",
+  "la zone": "Zone",
+  "l equipement": "Équipement",
+  "l'equipement": "Équipement",
+};
+
 /**
  * Une phrase → une op sûre, ou null (l'effet entier est alors abandonné).
  * Accepte l'impératif (« piochez ») et, après « vous pouvez », l'infinitif
- * (« piocher »).
+ * (« piocher »). `sourceElement` = Élément de la carte source (410.1), figé
+ * dans les ops de dommages pour la Résistance de la cible.
  */
-function parseSentence(sentence: string): EffectOp | null {
+function parseSentence(
+  sentence: string,
+  sourceElement: string,
+): EffectOp | null {
   let m = sentence.match(/^gagne[zr] (\d+) xp$/);
   if (m) return { op: "gainXp", n: toNumber(m[1]) };
   m = sentence.match(/^pioche[zr] (une|deux|trois|\d+) cartes?$/);
@@ -45,8 +57,34 @@ function parseSentence(sentence: string): EffectOp | null {
     /^(?:gagne[zr]|votre heros gagne) (\d+) (?:pv|points? de vie)$/,
   );
   if (m) return { op: "heroGainPv", n: toNumber(m[1]) };
-  m = sentence.match(/^inflige[zr] (\d+) dommages? au heros adverse$/);
-  if (m) return { op: "damageOppHero", n: toNumber(m[1]) };
+  m = sentence.match(/^votre heros perd (\d+) (?:pv|points? de vie)$/);
+  if (m) return { op: "heroLosePv", n: toNumber(m[1]) };
+  m = sentence.match(
+    /^(?:inflige[zr] (\d+) dommages? au heros adverse|le heros adverse perd (\d+) (?:pv|points? de vie))$/,
+  );
+  if (m) return { op: "damageOppHero", n: toNumber(m[1] ?? m[2]) };
+  m = sentence.match(/^gagne[zr] (\d+) (?:points? de )?resistance$/);
+  if (m) return { op: "havreSacGainResistance", n: toNumber(m[1]) };
+  m = sentence.match(
+    /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m) {
+    const what = TARGET_WHAT[m[1].replace(/['’]/g, "'").replace(/\s+/g, " ")];
+    if (!what) return null;
+    const zones: ("monde" | "havreSac")[] = m[3]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return { op: "destroyTarget", what, zones };
+  }
+  m = sentence.match(
+    /^inflige[zr] (\d+) dommages? a l['’ ]?\s?allie de votre choix(?: dans le monde)?$/,
+  );
+  if (m)
+    return {
+      op: "damageAllyTarget",
+      n: toNumber(m[1]),
+      element: sourceElement,
+    };
   return null;
 }
 
@@ -65,6 +103,7 @@ function subjectIsSelf(subject: string, cardName: string): boolean {
 export function compileEffectText(
   text: string,
   cardName: string,
+  sourceElement = "Neutre",
 ): CompiledEffect | null {
   const m = norm(text).match(
     /^(?:quand|lorsque) (.{1,60}?) apparait\s*,\s*(.+)$/,
@@ -82,9 +121,12 @@ export function compileEffectText(
     .map((s) => s.trim())
     .filter(Boolean);
   if (!sentences.length) return null;
+  // « vous pouvez » ne porte que sur sa phrase : un optionnel multi-phrases
+  // est ambigu (le reste serait-il obligatoire ?) → on ne compile pas.
+  if (optional && sentences.length > 1) return null;
   const ops: EffectOp[] = [];
   for (const s of sentences) {
-    const op = parseSentence(s);
+    const op = parseSentence(s, sourceElement);
     if (!op) return null;
     ops.push(op);
   }
@@ -97,13 +139,21 @@ export function compileEffectText(
  * Effets d'apparition automatisables de cette carte : forme compilée des
  * données si présente, sinon re-parsing strict du texte.
  */
+/** Élément d'une carte pour les Dommages de ses effets (410.1). */
+export function effectSourceElement(card: Card): string {
+  return card.stats?.force?.element ?? card.stats?.niveau?.element ?? "Neutre";
+}
+
 export function arrivalEffects(card: Card | null): EffectAtom[] {
   if (!card) return [];
   const atoms: EffectAtom[] = [];
   for (const e of card.effects ?? []) {
     const text = String(e?.description ?? "").trim();
     const compiled =
-      e?.compiled ?? (text ? compileEffectText(text, card.name) : null);
+      e?.compiled ??
+      (text
+        ? compileEffectText(text, card.name, effectSourceElement(card))
+        : null);
     if (compiled && compiled.trigger === "onArrive")
       atoms.push({ ...compiled, text });
   }

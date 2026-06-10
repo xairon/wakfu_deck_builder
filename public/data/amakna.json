@@ -2020,7 +2020,18 @@
       {
         "description": "Quand le Crocodaille apparaît, vous pouvez détruire la Zone de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Zone",
+              "zones": ["monde"]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -3999,7 +4010,17 @@
       {
         "description": "Quand la Masse du Corailleur apparaît, détruisez l'Équipement de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": ["monde"]
+            }
+          ]
+        }
       },
       {
         "description": "S'il n'y a pas d'autre Équipement en jeu au moment où la Masse du Corailleur apparaît, vous devez détruire celle-ci.",

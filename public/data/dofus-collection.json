@@ -1426,7 +1426,18 @@
       {
         "description": "Quand le Corailleur apparaît, vous pouvez détruire l'Équipement de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": ["monde"]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -1716,7 +1727,18 @@
       {
         "description": "Quand le Crocodaille apparaît, vous pouvez détruire la Zone de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Zone",
+              "zones": ["monde"]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

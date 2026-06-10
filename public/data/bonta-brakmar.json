@@ -7048,7 +7048,18 @@
       {
         "description": "Quand le Grand Shushu Vaporeux apparaît, vous pouvez détruire l'Équipement de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": ["monde"]
+            }
+          ]
+        }
       },
       {
         "description": "Détruisez un Équipement que vous contrôlez : Détruisez le Grand Shushu Vaporeux. Chaque joueur peut utiliser ce pouvoir.",

@@ -79,12 +79,23 @@ interface RawEffect {
   description?: string;
   compiled?: unknown;
 }
+interface RawStats {
+  niveau?: { element?: string };
+  force?: { element?: string };
+}
 interface RawCard {
   name?: string;
+  stats?: RawStats;
   keywords?: RawKeyword[];
   effects?: RawEffect[];
-  recto?: { effects?: RawEffect[]; keywords?: RawKeyword[] };
-  verso?: { effects?: RawEffect[]; keywords?: RawKeyword[] };
+  recto?: { stats?: RawStats; effects?: RawEffect[]; keywords?: RawKeyword[] };
+  verso?: { stats?: RawStats; effects?: RawEffect[]; keywords?: RawKeyword[] };
+}
+
+/** Élément des Dommages des effets de la carte (410.1), après normalisation. */
+function sourceElementOf(card: RawCard): string {
+  const s = card.stats ?? card.recto?.stats;
+  return s?.force?.element ?? s?.niveau?.element ?? "Neutre";
 }
 
 const stats = {
@@ -111,12 +122,13 @@ function cleanKeywords(keywords: RawKeyword[] | undefined): RawKeyword[] {
 function compileEffects(
   effects: RawEffect[] | undefined,
   cardName: string,
+  sourceElement: string,
 ): void {
   for (const e of effects ?? []) {
     const text = String(e?.description ?? "").trim();
     if (!text) continue;
     stats.effects++;
-    const compiled = compileEffectText(text, cardName);
+    const compiled = compileEffectText(text, cardName, sourceElement);
     if (compiled) {
       e.compiled = compiled;
       stats.compiled++;
@@ -137,14 +149,15 @@ for (const file of EXTENSION_FILES) {
     normalizeElements(card);
     card.keywords = cleanKeywords(card.keywords);
     const name = String(card.name ?? "");
-    compileEffects(card.effects, name);
+    const element = sourceElementOf(card);
+    compileEffects(card.effects, name, element);
     if (card.recto) {
       card.recto.keywords = cleanKeywords(card.recto.keywords);
-      compileEffects(card.recto.effects, name);
+      compileEffects(card.recto.effects, name, element);
     }
     if (card.verso) {
       card.verso.keywords = cleanKeywords(card.verso.keywords);
-      compileEffects(card.verso.effects, name);
+      compileEffects(card.verso.effects, name, element);
     }
   }
   writeFileSync(path, JSON.stringify(cards, null, 2) + "\n", "utf8");

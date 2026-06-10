@@ -34,17 +34,26 @@ import {
   shuffle as shuffleVerb,
   undo as undoVerb,
 } from "@/game";
-import type { CombatTarget, EffectOp, RulesCtx } from "@/game/rules";
+import type {
+  CombatTarget,
+  EffectOp,
+  RulesCtx,
+  TargetingOp,
+} from "@/game/rules";
 import {
   arrivalEffects,
+  effectTargetIds,
   eligibleAttackers,
   eligibleBlockers,
   eligibleTargets,
   grantXpEvents,
+  isTargetingOp,
   planCost,
   playDestination,
   pmOf,
   resolveCombat,
+  resolveDamageAllyTarget,
+  resolveDestroyTarget,
   victoryFromState,
   whyCannotDeclareAttack,
   whyCannotPlay,
@@ -254,6 +263,7 @@ export const useGameStore = defineStore("game", () => {
     attackedOnTurn.value = null;
     ruleError.value = null;
     effectChoices.value = [];
+    effectTargeting.value = null;
   }
 
   /** Démarrage direct en partie (tests / bac à sable rapide). */
@@ -326,6 +336,7 @@ export const useGameStore = defineStore("game", () => {
     attackedOnTurn.value = null;
     ruleError.value = null;
     effectChoices.value = [];
+    effectTargeting.value = null;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -457,8 +468,46 @@ export const useGameStore = defineStore("game", () => {
   >([]);
   const effectChoice = computed(() => effectChoices.value[0] ?? null);
 
-  function executeEffectOps(seat: Seat, ops: EffectOp[]): void {
-    for (const op of ops) {
+  /** Op à cible en attente du clic du joueur (mode ciblage du plateau). */
+  const effectTargeting = ref<{
+    seat: Seat;
+    cardName: string;
+    op: TargetingOp;
+    rest: EffectOp[];
+  } | null>(null);
+  const effectTargetIdsList = computed(() =>
+    effectTargeting.value
+      ? effectTargetIds(rulesCtx(), effectTargeting.value.op)
+      : [],
+  );
+
+  /**
+   * Exécute les ops d'un effet ; s'arrête sur une op à cible (le clic du
+   * joueur — `effectTargetChoose` — reprend la suite).
+   */
+  function executeEffectOps(
+    seat: Seat,
+    cardName: string,
+    ops: EffectOp[],
+  ): void {
+    for (let i = 0; i < ops.length; i++) {
+      const op = ops[i];
+      if (isTargetingOp(op)) {
+        const eligible = effectTargetIds(rulesCtx(), op);
+        if (!eligible.length) {
+          dispatch(
+            say(seat, `${cardName} : aucune cible légale, effet passé.`),
+          );
+          continue;
+        }
+        effectTargeting.value = {
+          seat,
+          cardName,
+          op,
+          rest: ops.slice(i + 1),
+        };
+        return;
+      }
       if (op.op === "draw") {
         draw(seat, op.n);
       } else if (op.op === "gainXp") {
@@ -476,11 +525,46 @@ export const useGameStore = defineStore("game", () => {
       } else if (op.op === "heroGainPv") {
         const heroId = state.value.seats[seat].heroInstanceId;
         if (heroId) adjustCounter(heroId, "hp", op.n);
+      } else if (op.op === "heroLosePv") {
+        const heroId = state.value.seats[seat].heroInstanceId;
+        if (heroId) adjustCounter(heroId, "hp", -op.n);
       } else if (op.op === "damageOppHero") {
         const oppHeroId = state.value.seats[otherSeat(seat)].heroInstanceId;
         if (oppHeroId) adjustCounter(oppHeroId, "hp", -op.n);
+      } else if (op.op === "havreSacGainResistance") {
+        const sacId = state.value.seats[seat].havreSacInstanceId;
+        if (sacId) adjustCounter(sacId, "resistance", op.n);
       }
     }
+  }
+
+  /** Le joueur clique une cible légale : résout l'op puis continue l'effet. */
+  function effectTargetChoose(instanceId: string): void {
+    const t = effectTargeting.value;
+    if (!t || !effectTargetIdsList.value.includes(instanceId)) return;
+    effectTargeting.value = null;
+    const res =
+      t.op.op === "destroyTarget"
+        ? resolveDestroyTarget(rulesCtx(), t.seat, instanceId)
+        : resolveDamageAllyTarget(
+            rulesCtx(),
+            t.seat,
+            instanceId,
+            t.op.n,
+            t.op.element,
+          );
+    dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+    checkVictory();
+    executeEffectOps(t.seat, t.cardName, t.rest);
+  }
+
+  /** Passe l'op à cible en cours (cible illégale / choix du joueur). */
+  function effectTargetSkip(): void {
+    const t = effectTargeting.value;
+    if (!t) return;
+    effectTargeting.value = null;
+    dispatch(say(t.seat, `${t.cardName} : ciblage passé.`));
+    executeEffectOps(t.seat, t.cardName, t.rest);
   }
 
   /** Exécute les effets d'apparition compilés (DSL strict). */
@@ -497,7 +581,7 @@ export const useGameStore = defineStore("game", () => {
       dispatch(
         say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
       );
-      executeEffectOps(seat, atom.ops);
+      executeEffectOps(seat, card.name, atom.ops);
     }
   }
 
@@ -516,7 +600,7 @@ export const useGameStore = defineStore("game", () => {
         `Effet appliqué — ${choice.cardName} : « ${choice.text} »`,
       ),
     );
-    executeEffectOps(choice.seat, choice.ops);
+    executeEffectOps(choice.seat, choice.cardName, choice.ops);
   }
 
   function toggleTap(instanceId: string): void {
@@ -808,5 +892,9 @@ export const useGameStore = defineStore("game", () => {
     combatCancel,
     effectChoice,
     effectChoiceResolve,
+    effectTargeting,
+    effectTargetIdsList,
+    effectTargetChoose,
+    effectTargetSkip,
   };
 });

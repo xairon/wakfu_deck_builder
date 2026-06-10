@@ -276,6 +276,36 @@
       <span class="gendturn__txt">Fin du<br />tour</span>
     </button>
 
+    <!-- ════════ Bandeau de ciblage d'effet ════════ -->
+    <Transition name="slidedown">
+      <div
+        v-if="store.effectTargeting"
+        class="gcombat gcombat--effect"
+        role="toolbar"
+        aria-label="Ciblage d'effet"
+      >
+        <span class="gcombat__step">
+          ✨ {{ store.effectTargeting.cardName }} —
+          {{
+            store.effectTargeting.op.op === "destroyTarget"
+              ? `choisis ${
+                  store.effectTargeting.op.what === "Allié"
+                    ? "l'Allié"
+                    : store.effectTargeting.op.what === "Zone"
+                      ? "la Zone"
+                      : "l'Équipement"
+                } à détruire`
+              : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+          }}
+        </span>
+        <div class="gcombat__btns">
+          <button class="gbtn gbtn--ghost" @click="store.effectTargetSkip()">
+            Passer
+          </button>
+        </div>
+      </div>
+    </Transition>
+
     <!-- ════════ Bandeau de combat (déclaration → blocage → résolution) ════════ -->
     <Transition name="slidedown">
       <div
@@ -546,6 +576,11 @@ const selectedName = computed(() => {
   return resolveCard(inst.cardId)?.name ?? "Carte face cachée";
 });
 function select(instanceId: string): void {
+  // effet à cible en cours : le clic désigne la cible
+  if (store.effectTargeting) {
+    store.effectTargetChoose(instanceId);
+    return;
+  }
   // combat en cours : les clics désignent attaquants / cible / bloqueurs
   if (store.combat) {
     if (store.combat.step === "attackers") {
@@ -562,6 +597,11 @@ function select(instanceId: string): void {
 
 // ── Combat assisté : surbrillances + bouton Attaquer ────────────────────────
 function slotCls(instanceId: string): Record<string, boolean> {
+  if (store.effectTargeting) {
+    return {
+      "gslot--target-can": store.effectTargetIdsList.includes(instanceId),
+    };
+  }
   const c = store.combat;
   if (!c) return {};
   return {
@@ -987,6 +1027,12 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
   box-shadow:
     0 10px 34px rgba(0, 0, 0, 0.6),
     0 0 24px rgba(240, 78, 34, 0.18);
+}
+.gcombat--effect {
+  border-color: rgba(240, 166, 43, 0.55);
+  box-shadow:
+    0 10px 34px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(240, 166, 43, 0.2);
 }
 .gcombat__step {
   font-family: Fraunces, Georgia, serif;

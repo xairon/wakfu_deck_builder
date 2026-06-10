@@ -5611,7 +5611,18 @@
       {
         "description": "Quand le Poulpy apparaît, vous pouvez détruire l'Équipement de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": ["monde"]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
