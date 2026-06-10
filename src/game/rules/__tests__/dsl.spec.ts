@@ -1,5 +1,10 @@
 ﻿import { describe, expect, it } from "vitest";
-import { arrivalEffects, playEffects, tapPowers, turnStartEffects } from "@/game/rules";
+import {
+  arrivalEffects,
+  playEffects,
+  tapPowers,
+  turnStartEffects,
+} from "@/game/rules";
 import { createMockAllyCard } from "tests/factories/card";
 
 function cardWith(name: string, ...descriptions: string[]) {
@@ -280,12 +285,17 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
       { op: "searchDeck", what: "Salle", dest: "monde" },
       { op: "shuffleDeck" },
     ]);
-    // qualificatif non compris (« Allié Chevalier ») → rejet strict
+    // qualificatif simple (« Allié Chevalier ») → compilé avec filtre famille
     const qualified = cardWith(
       "Château",
       "Quand le Château apparaît, cherchez un Allié Chevalier dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche.",
     );
-    expect(arrivalEffects(qualified)).toEqual([]);
+    expect(arrivalEffects(qualified)[0]?.ops[0]).toEqual({
+      op: "searchDeck",
+      what: "Allié",
+      sub: "chevalier",
+      dest: "main",
+    });
   });
 
   it("compile l'effet d'une carte Action (onPlay), pas celui des autres types", () => {
@@ -318,6 +328,73 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
       cardWith("Bworky", "Au début de votre tour, piochez une carte."),
     );
     expect(atoms).toEqual([]);
+  });
+
+  it("parse les recherches qualifiées (famille, niveau max) et rejette le reste", () => {
+    const fam = arrivalEffects(
+      cardWith(
+        "Tanière",
+        "Quand la Tanière apparaît, cherchez un Allié Wabbit dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche.",
+      ),
+    );
+    expect(fam[0]?.ops[0]).toEqual({
+      op: "searchDeck",
+      what: "Allié",
+      sub: "wabbit",
+      dest: "main",
+    });
+    const lvl = arrivalEffects(
+      cardWith(
+        "Émissaire",
+        "Quand l'Émissaire apparaît, cherchez un Allié Chevalier de Niveau inférieur ou égal à 3 dans votre Pioche et mettez-le en jeu, puis mélangez votre Pioche.",
+      ),
+    );
+    expect(lvl[0]?.ops[0]).toEqual({
+      op: "searchDeck",
+      what: "Allié",
+      sub: "chevalier",
+      maxLevel: 3,
+      dest: "monde",
+    });
+    // qualificatifs complexes (« ou non Unique », « portant le même nom ») → rejet
+    const complex = arrivalEffects(
+      cardWith(
+        "Salle de Garde",
+        "Quand la Salle de Garde apparaît, cherchez un Allié ou non Unique dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche.",
+      ),
+    );
+    expect(complex).toEqual([]);
+  });
+
+  it("« Il apparaît incliné. » marque la recherche-mise-en-jeu (malgré le mélange)", () => {
+    const tapped = playEffects(
+      Object.assign(
+        cardWith(
+          "Émissaire",
+          "Cherchez un Allié Chevalier de Niveau inférieur ou égal à 3 dans votre Pioche et mettez-le en jeu, puis mélangez votre Pioche. Il apparaît incliné.",
+        ),
+        { mainType: "Action" },
+      ),
+    );
+    expect(tapped[0]?.ops).toEqual([
+      {
+        op: "searchDeck",
+        what: "Allié",
+        sub: "chevalier",
+        maxLevel: 3,
+        tapped: true,
+        dest: "monde",
+      },
+      { op: "shuffleDeck" },
+    ]);
+    // sans recherche-mise-en-jeu en amont → rejet
+    const orphan = playEffects(
+      Object.assign(
+        cardWith("Sort", "Piochez une carte. Il apparaît incliné."),
+        { mainType: "Action" },
+      ),
+    );
+    expect(orphan).toEqual([]);
   });
 
   it("compile « Au début de votre tour, X ou détruisez [self] » (entretien)", () => {

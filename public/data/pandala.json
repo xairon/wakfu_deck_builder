@@ -3,11 +3,7 @@
     "id": "abrakaska-ancestral-pandala",
     "name": "Abrakaska Ancestral",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Ancestrale"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Ancestrale"],
     "extension": {
       "name": "Pandala",
       "number": "130/162",
@@ -23,9 +19,7 @@
     "effects": [
       {
         "description": "La Force de l'Allié ou Héros de votre choix est réduite de 1 jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -39,15 +33,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le pouvoir de la Panoplie Ancestrale se déclenche quand une carte est sur le point d'être mise dans la Défausse d'un adversaire, quelque soit la zone dont elle provient. Ce pouvoir de Panoplie génère un pouvoir de remplacement : la carte ainsi recyclée ne passe jamais par la Défausse de son propriétaire."
     ],
@@ -64,10 +53,7 @@
     "id": "abraknyde-perchoir-pandala",
     "name": "Abraknyde Perchoir",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Abraknyde"
-    ],
+    "subTypes": ["Monstre", "Abraknyde"],
     "extension": {
       "name": "Pandala",
       "number": "8/162",
@@ -103,9 +89,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le pouvoir de l'Abraknyde Perchoir ne se déclenche que si des Dommages sont effectivement infligés. Des Dommages réduits à 0 par une Action, un pouvoir ou une Résistance ne déclencheront donc pas ce pouvoir."
     ],
@@ -120,11 +104,7 @@
     "id": "alliance-feudala-pandala",
     "name": "Alliance Feudala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau",
-      "Feudala"
-    ],
+    "subTypes": ["Bijou", "Anneau", "Feudala"],
     "extension": {
       "name": "Pandala",
       "number": "146/162",
@@ -153,21 +133,15 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le Porteur de l'Alliance Feudala peut toujours être choisi par des Actions adverses comme Exclusion ou Agression. Il est également toujours affecté par les pouvoirs adverses qui ne choisissent pas explicitement, comme le pouvoir de Luc Ylook."
     ],
@@ -184,10 +158,7 @@
     "id": "amulette-de-la-bouboule-pandala",
     "name": "Amulette de la Bouboule",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Amulette"
-    ],
+    "subTypes": ["Bijou", "Amulette"],
     "extension": {
       "name": "Pandala",
       "number": "147/162",
@@ -203,17 +174,13 @@
     "effects": [
       {
         "description": "X : Renvoyez un de vos Alliés de Niveau X de votre choix dans la main de son propriétaire.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "Deux fois plus puissante que l'Amulette de la Boule, elle est pourtant à la portée de toutes les bourses."
@@ -228,10 +195,7 @@
     "id": "amulette-du-kam-assutra-pandala",
     "name": "Amulette du Kam Assutra",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Amulette"
-    ],
+    "subTypes": ["Bijou", "Amulette"],
     "extension": {
       "name": "Pandala",
       "number": "148/162",
@@ -262,14 +226,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [
       "Le premier pouvoir de l'Amulette du Kam Assutra est actif en continu, tandis que second pouvoir vérifie en permanence vos PA et ceux de tous vos adversaires s'applique simultanément en prenant en compte la valeur modifiée par le premier pouvoir. La réduction de PA liée à ce pouvoir n'est pas une perte de PA. Si votre Héros possède 6PA et qu'un Héros adverse en possède également 6, le premier pouvoir augmente vos PA à 7, que le second réduit à 6. Si votre Héros possède 6PA et que tous les Héros adverses en possèdent 7, le premier pouvoir augmente vos PA à 7, et le second pouvoir ne fait rien. Le second pouvoir de l'Amulette du Kam Assutra ne constitue pas une perte de PA.",
       "Le fonctionnement de l'Amulette du Kam Assutra peut varier si vous perdez un ou plusieurs PA. Si votre Héros possède 7PA et que le Héros adverse en possède également 7, vos PA sous Amulette du Kam Assutra sont de 7. Si votre Héros perd 1PA, son nombre de PA de base passe à 6, augmentée à 7 par le premier pouvoir, et le second pouvoir cesse d'être actif. Vos PA restent donc à 7 malgré la perte de PA que vous venez de subir. Les deux pouvoirs s'appliquant simultanément, votre Héros n'a jamais été temporairement à 6PA : vous ne défaussez donc pas de carte."
@@ -286,9 +246,7 @@
     "id": "ancestral-z-pandala",
     "name": "Ancestral Z",
     "mainType": "Allié",
-    "subTypes": [
-      "Maître Spirituel"
-    ],
+    "subTypes": ["Maître Spirituel"],
     "extension": {
       "name": "Pandala",
       "number": "81/162",
@@ -323,9 +281,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Deruyck Vincent (Ancestral Z)"
-    ],
+    "artists": ["Deruyck Vincent (Ancestral Z)"],
     "notes": [],
     "flavor": {
       "text": "Arrêtez, il va encore danser…",
@@ -337,11 +293,7 @@
     "id": "anneau-ancestral-pandala",
     "name": "Anneau Ancestral",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau",
-      "Ancestrale"
-    ],
+    "subTypes": ["Bijou", "Anneau", "Ancestrale"],
     "extension": {
       "name": "Pandala",
       "number": "145/162",
@@ -370,14 +322,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le pouvoir de la Panoplie Ancestrale se déclenche quand une carte est sur le point d'être mise dans la Défausse d'un adversaire, quelque soit la zone dont elle provient. Ce pouvoir de Panoplie génère un pouvoir de remplacement : la carte ainsi recyclée ne passe jamais par la Défausse de son propriétaire."
     ],
@@ -394,10 +342,7 @@
     "id": "atouin-pandala",
     "name": "Atouin",
     "mainType": "Équipement",
-    "subTypes": [
-      "Familier",
-      "Unique"
-    ],
+    "subTypes": ["Familier", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "157/162",
@@ -413,28 +358,19 @@
     "effects": [
       {
         "description": "Au début de votre tour, vous pouvez recycler une carte ou de votre Défausse.",
-        "elements": [
-          "Feu",
-          "Terre"
-        ],
+        "elements": ["Feu", "Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Si vous recyclez une carte , votre Héros regagne 2 PV. Si vous recyclez une carte , le Porteur de l'Atouin gagne +2 en Force jusqu'à la fin du tour.",
-        "elements": [
-          "Feu",
-          "Terre"
-        ],
+        "elements": ["Feu", "Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["François Houssin (Franho)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "L'Atouin sait très bien se défendre. C'est bien connu, lorsqu'elles se sentent menacées, les Tortues luttent !"
@@ -449,11 +385,7 @@
     "id": "baguette-ouratagou-pandala",
     "name": "Baguette Ouratagou",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Baguette",
-      "Ethérée"
-    ],
+    "subTypes": ["Arme", "Baguette", "Ethérée"],
     "extension": {
       "name": "Pandala",
       "number": "137/162",
@@ -484,10 +416,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "A ne pas confondre avec l'Epée Ouvatagoule."
@@ -502,10 +431,7 @@
     "id": "bambouto-pandala",
     "name": "Bambouto",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Plante"
-    ],
+    "subTypes": ["Monstre", "Plante"],
     "extension": {
       "name": "Pandala",
       "number": "6/162",
@@ -527,14 +453,10 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "L'un des rares Alliés de Pandala qui n'air pas à rougir de sa gueule de bois !"
@@ -546,11 +468,7 @@
     "id": "baton-du-fetusoli-pandala",
     "name": "Bâton du Fetusoli",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Bâton",
-      "Ethérée"
-    ],
+    "subTypes": ["Arme", "Bâton", "Ethérée"],
     "extension": {
       "name": "Pandala",
       "number": "138/162",
@@ -571,9 +489,7 @@
       },
       {
         "description": "Retirez X éthers du Bâton du Fetusoli : Il inflige X Dommages à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -584,10 +500,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "F'est pas poffible ! T'as tout caffé avec ton bâton ! Rhalala !",
@@ -603,10 +516,7 @@
     "id": "benediction-animale-pandala",
     "name": "Bénédiction Animale",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Osamodas"
-    ],
+    "subTypes": ["Sort", "Osamodas"],
     "extension": {
       "name": "Pandala",
       "number": "110/162",
@@ -627,9 +537,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [
       "Si plusieurs Monstres satisfaisant la condition de Niveau sont révélés ainsi, vous décidez lequel vous prenez en main. Les cartes que vous ne prenez pas en main restent face cachée sur le dessus de votre Pioche, dans l'ordre de votre choix."
     ],
@@ -642,9 +550,7 @@
     "id": "boing-pandala",
     "name": "Boing",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa"
-    ],
+    "subTypes": ["Pandawa"],
     "extension": {
       "name": "Pandala",
       "number": "15/162",
@@ -680,9 +586,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [
       "Boing gagne également +1 en Force pour chaque Potion jouée par un autre joueur."
     ],
@@ -695,10 +599,7 @@
     "id": "boite-de-pandore-pandala",
     "name": "Boîte de Pandore",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Enutrof"
-    ],
+    "subTypes": ["Sort", "Enutrof"],
     "extension": {
       "name": "Pandala",
       "number": "107/162",
@@ -719,9 +620,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aurélie Neyret"
-    ],
+    "artists": ["Aurélie Neyret"],
     "notes": [],
     "flavor": {
       "text": "Cette Boîte de Pandore ne contient pas d'or. Tout ce que vous risquez d'y trouver, c'est la mort !"
@@ -732,9 +631,7 @@
     "id": "boomba-pandala",
     "name": "Boomba",
     "mainType": "Allié",
-    "subTypes": [
-      "Pirate"
-    ],
+    "subTypes": ["Pirate"],
     "extension": {
       "name": "Pandala",
       "number": "71/162",
@@ -759,9 +656,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Paul Mayafon"
-    ],
+    "artists": ["Paul Mayafon"],
     "notes": [],
     "flavor": {
       "text": "Ce Pirate sanguinaire est un grand sensible : quand il respire une fleur, ça fait \"Boomba\" dans son cœur."
@@ -772,10 +667,7 @@
     "id": "botan-ficus-pandala",
     "name": "Botan Ficus",
     "mainType": "Allié",
-    "subTypes": [
-      "Kanniboul",
-      "Unique"
-    ],
+    "subTypes": ["Kanniboul", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "46/162",
@@ -795,18 +687,14 @@
     "effects": [
       {
         "description": "Chaque fois qu'une carte est bannie, vous pouvez payer . Si vous le faites, piochez une carte, puis défaussez-vous d'une carte.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "D'habitude, les Kannibouls vous chamboulent ? Celui",
@@ -819,11 +707,7 @@
     "id": "bottes-du-chef-bwork-pandala",
     "name": "Bottes du Chef Bwork",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Chef Bwork"
-    ],
+    "subTypes": ["Armure", "Bottes", "Chef Bwork"],
     "extension": {
       "name": "Pandala",
       "number": "129/162",
@@ -841,22 +725,15 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Bottes du Chef Bwork, Bworttes du Chef Botte, Bwork du Chef Bottes…",
@@ -872,10 +749,7 @@
     "id": "bouclier-aerdala-pandala",
     "name": "Bouclier Aerdala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bouclier",
-      "Aerdala"
-    ],
+    "subTypes": ["Bouclier", "Aerdala"],
     "extension": {
       "name": "Pandala",
       "number": "152/162",
@@ -891,9 +765,7 @@
     "effects": [
       {
         "description": "Quand un de vos Alliés ou Héros est sur le point de subir un ou plusieurs Dommages, vous pouvez payer pour mettre en jeu le Bouclier Aerdala sur cet Allié ou Héros.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -912,15 +784,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit."
     ],
@@ -934,10 +801,7 @@
     "id": "bouclier-akwadala-pandala",
     "name": "Bouclier Akwadala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bouclier",
-      "Akwadala"
-    ],
+    "subTypes": ["Bouclier", "Akwadala"],
     "extension": {
       "name": "Pandala",
       "number": "155/162",
@@ -953,9 +817,7 @@
     "effects": [
       {
         "description": "Quand un de vos Alliés ou Héros est sur le point de subir un ou plusieurs Dommages, vous pouvez payer pour mettre en jeu le Bouclier Akwadala sur cet Allié ou Héros.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -969,15 +831,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit."
     ],
@@ -991,10 +848,7 @@
     "id": "bouclier-feca-pandala",
     "name": "Bouclier Féca",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Féca"
-    ],
+    "subTypes": ["Sort", "Féca"],
     "extension": {
       "name": "Pandala",
       "number": "108/162",
@@ -1020,9 +874,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Nénent"
-    ],
+    "artists": ["Nénent"],
     "notes": [
       "L'Allié ou le Héros vers lequel les Dommages sont redirigés doit pouvoir être affecté par le paquet de Dommages avant redirection. Vous ne pouvez donc pas rediriger des Dommages vers un de vos Alliés ou Héros dans votre Havre Sac, sauf si la source de ces Dommages aurait légalement pu les infliger dans votre Havre Sac (une Flèche Chercheuse, par exemple)."
     ],
@@ -1035,10 +887,7 @@
     "id": "bouclier-feudala-pandala",
     "name": "Bouclier Feudala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bouclier",
-      "Feudala"
-    ],
+    "subTypes": ["Bouclier", "Feudala"],
     "extension": {
       "name": "Pandala",
       "number": "153/162",
@@ -1054,17 +903,13 @@
     "effects": [
       {
         "description": "Le Porteur du Bouclier Feudala gagne .",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Quand un de vos Alliés ou Héros est sur le point de subir un ou plusieurs Dommages, vous pouvez payer pour mettre en jeu le Bouclier Feudala sur cet Allié ou Héros.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1078,22 +923,15 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit.",
       "Cette carte a reçu un errata officiel : en cohérence avec l'Alliance Feudala, la Résistance du bonus de Panoplie est ."
@@ -1108,9 +946,7 @@
     "id": "bouclier-fi-squal-pandala",
     "name": "Bouclier Fi'squal",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bouclier"
-    ],
+    "subTypes": ["Bouclier"],
     "extension": {
       "name": "Pandala",
       "number": "156/162",
@@ -1126,9 +962,7 @@
     "effects": [
       {
         "description": "Quand un joueur adverse est sur le point de vous faire perdre un ou plusieurs PA, vous pouvez payer pour mettre en jeu le Bouclier Fi'squal sur un de vos Alliés ou Héros.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1152,15 +986,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Si vous mettez en jeu le Bouclier Fi'squal en Réaction à une perte de PA que vous êtes sur le point de subir, le Bouclier Fi'squal est en jeu au moment où cette perte de PA est résolue. Par conséquent, si cette perte de PA est la première que vous êtes sur le point de subir ce tour, le Bouclier Fi'squal la réduira à 0. Si vous contrôlez plusieurs copies du Bouclier Fi'squal, vous ne pourrez pas réduire à 0 plusieurs pertes de PA : tous les Boucliers réduisent en effet la même perte de PA.",
       "Certaines versions de la carte ont un problème d'impression : il manque le trait \"Bouclier\". Il n'apparait qu'en transparence sur la couche brillante. La carte n'en est pas moins un bouclier."
@@ -1178,10 +1007,7 @@
     "id": "bouclier-terrdala-pandala",
     "name": "Bouclier Terrdala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bouclier",
-      "Terrdala"
-    ],
+    "subTypes": ["Bouclier", "Terrdala"],
     "extension": {
       "name": "Pandala",
       "number": "154/162",
@@ -1197,9 +1023,7 @@
     "effects": [
       {
         "description": "Quand un de vos Alliés ou Héros est sur le point de subir un ou plusieurs Dommages, vous pouvez payer pour mettre en jeu le Bouclier Terrdala sur cet Allié ou Héros.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1213,22 +1037,15 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit."
     ],
@@ -1242,9 +1059,7 @@
     "id": "bouclier-volant-pandala",
     "name": "Bouclier Volant",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bouclier"
-    ],
+    "subTypes": ["Bouclier"],
     "extension": {
       "name": "Pandala",
       "number": "151/162",
@@ -1260,9 +1075,7 @@
     "effects": [
       {
         "description": "Quand un adversaire effectue une action dans ce combat, vous pouvez payer pour mettre en jeu le Bouclier Volant sur un de vos Alliés ou Héros attaquant ou bloqueur.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1276,15 +1089,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 1",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Par effectuer une action pendant ce combat, on entend jouer une carte Action (y compris une Réaction), utiliser un pouvoir d'une carte ou réaffecter un Allié ou Héros bloqueur."
     ],
@@ -1302,10 +1110,7 @@
     "id": "boufmouth-pandala",
     "name": "Boufmouth",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bouftou"
-    ],
+    "subTypes": ["Monstre", "Bouftou"],
     "extension": {
       "name": "Pandala",
       "number": "18/162",
@@ -1325,18 +1130,14 @@
     "effects": [
       {
         "description": "Vos Alliés et Héros attaquants gagnent +1 en Force jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonathan Garnier"
-    ],
+    "artists": ["Jonathan Garnier"],
     "notes": [],
     "flavor": {
       "text": "Sa fourrure dense est à l'origine de la fameuse Boufmoumouth, qui fait tant fureur auprès des Enutrofs."
@@ -1348,11 +1149,7 @@
     "id": "bracelet-du-chef-crocodaille-pandala",
     "name": "Bracelet du Chef Crocodaille",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau",
-      "Chef Crocodaille"
-    ],
+    "subTypes": ["Bijou", "Anneau", "Chef Crocodaille"],
     "extension": {
       "name": "Pandala",
       "number": "144/162",
@@ -1368,9 +1165,7 @@
     "effects": [
       {
         "description": "Tant que le Porteur du Bracelet du Chef Crocodaille est en jeu, chaque fois qu'un joueur devrait piocher une carte pendant sa phase principale, il peut payer . S'il ne le fait pas, annulez cette pioche.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1381,9 +1176,7 @@
       },
       {
         "description": "Les pioches de carte multiples sont traitées individuellement comme des événements distincts de pioche d'une carte. Pour chaque événement de pioche d'une carte, vous devrez donc payer ou annulez cette pioche. Vous pouvez choisir de payer ou non pour chaque événement de pioche, et non pour la globalité du pouvoir qui génère les pioches : si vous devez piochez 3 cartes, vous pouvez choisir de payer puis pour piocher 2 cartes seulement, la dernière pioche étant annulée.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -1392,23 +1185,15 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Terre",
-          "Air"
-        ]
+        "elements": ["Terre", "Air"]
       }
     ],
-    "artists": [
-      "François Houssin (Franho)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Les pioches de carte multiples sont traitées individuellement comme des événements distincts de pioche d'une carte. Pour chaque événement de pioche d'une carte, vous devrez donc payer ou annulez cette pioche. Vous pouvez choisir de payer ou non pour chaque événement de pioche, et non pour la globalité du pouvoir qui génère les pioches : si vous devez piochez 3 cartes, vous pouvez choisir de payer puis pour piocher 2 cartes seulement, la dernière pioche étant annulée."
     ],
@@ -1425,10 +1210,7 @@
     "id": "brulure-de-sang-pandala",
     "name": "Brûlure de Sang",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sacrieur"
-    ],
+    "subTypes": ["Sort", "Sacrieur"],
     "extension": {
       "name": "Pandala",
       "number": "112/162",
@@ -1439,17 +1221,13 @@
     "effects": [
       {
         "description": "La Brûlure de Sang inflige X Dommages à votre Héros, puis à l'Allié ou au Héros de votre choix. X doit être inférieur ou égal à 3. Si votre Héros est Sacrieur, X doit être inférieur ou égal à 5 à la place.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Simon Loche"
-    ],
+    "artists": ["Simon Loche"],
     "notes": [],
     "flavor": {
       "text": "Quand il s'agit de massacrer l'ennemi, le Sacrieur est prêt à tout, même à sacrifier une partie de sa vie."
@@ -1460,11 +1238,7 @@
     "id": "brumen-tinctorias-pandala",
     "name": "Brumen Tinctorias",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa",
-      "Alchimiste",
-      "Unique"
-    ],
+    "subTypes": ["Eniripsa", "Alchimiste", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "66/162",
@@ -1490,9 +1264,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Si Brumen est imbuvable, c'est parce qu'il n'a jamais réussi à avaler la disparition de sa bien",
@@ -1505,10 +1277,7 @@
     "id": "bworkzone-pandala",
     "name": "Bworkzone",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork"
-    ],
+    "subTypes": ["Monstre", "Bwork"],
     "extension": {
       "name": "Pandala",
       "number": "49/162",
@@ -1534,9 +1303,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Plutôt que de passer leurs journées à zoner, ces déserteurs ont décidé de se reconvertir dans la chanson."
@@ -1548,9 +1315,7 @@
     "id": "cabinet-d-aisances-pandala",
     "name": "Cabinet d'Aisances",
     "mainType": "Salle",
-    "subTypes": [
-      "Toilettes"
-    ],
+    "subTypes": ["Toilettes"],
     "extension": {
       "name": "Pandala",
       "number": "127/162",
@@ -1585,9 +1350,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Du papier s'il vous plaît !",
@@ -1598,9 +1361,7 @@
     "id": "canon-dorf-pandala",
     "name": "Canon Dorf",
     "mainType": "Allié",
-    "subTypes": [
-      "Pirate"
-    ],
+    "subTypes": ["Pirate"],
     "extension": {
       "name": "Pandala",
       "number": "55/162",
@@ -1620,18 +1381,14 @@
     "effects": [
       {
         "description": "Tant que le Canon Dorf est dans le Monde, tous vos Pirates gagnent : \", , Détruisez ce Pirate : Le Héros de votre choix perd 1 PV.\"",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "Canon Dorf est un vrai boulet. La seule chose qu'il sait faire, c'est jeter de la poudre aux yeux !"
@@ -1642,11 +1399,7 @@
     "id": "cape-akwadala-pandala",
     "name": "Cape Akwadala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Cape",
-      "Akwadala"
-    ],
+    "subTypes": ["Armure", "Cape", "Akwadala"],
     "extension": {
       "name": "Pandala",
       "number": "131/162",
@@ -1662,9 +1415,7 @@
     "effects": [
       {
         "description": "Chaque joueur pioche une carte.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -1673,15 +1424,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Ça tombe bien, vous n'aviez rien pour descendre les poubelles !"
@@ -1696,10 +1442,7 @@
     "id": "cape-houte-pandala",
     "name": "Cape Houte",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Cape"
-    ],
+    "subTypes": ["Armure", "Cape"],
     "extension": {
       "name": "Pandala",
       "number": "133/162",
@@ -1715,9 +1458,7 @@
     "effects": [
       {
         "description": "Au début de votre tour, la Cape Houte inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
         "compiled": {
@@ -1728,10 +1469,7 @@
               "n": 1,
               "element": "Neutre",
               "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
@@ -1741,15 +1479,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Beaucoup moins compliquée à enfiler que la Cape Hôte, la Cape Houte n'en est pas moins difficile à porter."
@@ -1764,9 +1497,7 @@
     "id": "certificat-de-monture-pandala",
     "name": "Certificat de Monture",
     "mainType": "Action",
-    "subTypes": [
-      "Parchemin"
-    ],
+    "subTypes": ["Parchemin"],
     "extension": {
       "name": "Pandala",
       "number": "96/162",
@@ -1797,9 +1528,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Un Enclos est une carte qui possède le trait « Enclos » dans sa ligne de Traits. À date de la sortie de l'extension Pandala, la Dernière Rasade, on compte deux Enclos : les Zones Enclos de Dragodindes (Bonta&Brâkmar) et Pâturages (Pandala)."
     ],
@@ -1812,10 +1541,7 @@
     "id": "chafer-d-elite-pandala",
     "name": "Chafer d'Élite",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Chafer"
-    ],
+    "subTypes": ["Monstre", "Chafer"],
     "extension": {
       "name": "Pandala",
       "number": "60/162",
@@ -1846,9 +1572,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Augustin Bonne (Roxnin)"
-    ],
+    "artists": ["Augustin Bonne (Roxnin)"],
     "notes": [],
     "flavor": {
       "text": "Attention sur CC au CAC, il vous OS !",
@@ -1861,11 +1585,7 @@
     "id": "chapeau-aerdala-pandala",
     "name": "Chapeau Aerdala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Aerdala"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Aerdala"],
     "extension": {
       "name": "Pandala",
       "number": "128/162",
@@ -1881,9 +1601,7 @@
     "effects": [
       {
         "description": "Le coût des Actions ou des pouvoirs adverses qui choisissent le Porteur du Chapeau Aerdala est augmenté de .",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1897,15 +1615,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Digne de son créateur Pandawa, ce chapeau absorbe n'importe quel liquide. Idéal par temps de pluie."
@@ -1920,9 +1633,7 @@
     "id": "chateau-du-comte-harebourg-pandala",
     "name": "Château du Comte Harebourg",
     "mainType": "Zone",
-    "subTypes": [
-      "Château"
-    ],
+    "subTypes": ["Château"],
     "extension": {
       "name": "Pandala",
       "number": "125/162",
@@ -1943,9 +1654,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "La servante du Comte Harebourg ? Une vraie bombe !"
@@ -1955,10 +1664,7 @@
     "id": "colere-de-zatoishwan-pandala",
     "name": "Colère de Zatoïshwan",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Pandawa"
-    ],
+    "subTypes": ["Sort", "Pandawa"],
     "extension": {
       "name": "Pandala",
       "number": "111/162",
@@ -1979,9 +1685,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Carlos Pardo (Made)"
-    ],
+    "artists": ["Carlos Pardo (Made)"],
     "notes": [],
     "flavor": {
       "text": "Lorsqu'un Pandawa est vénère, Zatoïshwan se met en colère !",
@@ -1993,10 +1697,7 @@
     "id": "cooleuvre-pandala",
     "name": "Cooleuvre",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Reptile"
-    ],
+    "subTypes": ["Monstre", "Reptile"],
     "extension": {
       "name": "Pandala",
       "number": "41/162",
@@ -2027,9 +1728,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Koolio pensait qu'avaler des Cooleuvres le rendrait plus cool. Mais ça ne fit que lui donner la colique."
@@ -2041,10 +1740,7 @@
     "id": "craqueleur-ballonne-pandala",
     "name": "Craqueleur Ballonné",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Pandala",
       "number": "7/162",
@@ -2069,9 +1765,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Pierre qui coule encrasse la mousse.",
@@ -2084,10 +1778,7 @@
     "id": "craqueleur-d-adamai-pandala",
     "name": "Craqueleur d'Adamaï",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Pandala",
       "number": "21/162",
@@ -2123,9 +1814,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le second pouvoir du Craqueleur d'Adamaï affecte également les cartes adverses dans leur Havre Sac. Si le Craqueleur apparaît sans pouvoirs, aucune carte ne peut être nommée lorsqu'il apparaît : dans ce cas, le second pouvoir ne fera rien s'il récupère ses pouvoirs par la suite. Si le Craqueleur perd ses pouvoirs une fois une carte nommée, les cartes nommées récupèrent leur pouvoir. En revanche, le Craqueleur garde mémoire de la carte nommée : celles-ci perdent de nouveau leurs pouvoirs lorsque le Craqueleur récupère les siens."
     ],
@@ -2139,11 +1828,7 @@
     "id": "dagues-de-boisaille-pandala",
     "name": "Dagues de Boisaille",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Dagues",
-      "Brâkmar"
-    ],
+    "subTypes": ["Arme", "Dagues", "Brâkmar"],
     "extension": {
       "name": "Pandala",
       "number": "134/162",
@@ -2172,15 +1857,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Si les Dagues de Boisaille sont portées par un Allié Bonta possédant un pouvoir qui n'est actif que si le Héros est d'Alignement Bonta (écrit sous la forme « Bonta. [Pouvoir]) », les Dagues de Boisaille modifient également ce pouvoir qui devient actif si le Héros est d'Alignement Brâkmar (le pouvoir devient donc « Brâkmar. [Pouvoir] »)."
     ],
@@ -2198,11 +1878,7 @@
     "id": "dagues-de-flapegel-pandala",
     "name": "Dagues de Flapegel",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Dagues",
-      "Ethérée"
-    ],
+    "subTypes": ["Arme", "Dagues", "Ethérée"],
     "extension": {
       "name": "Pandala",
       "number": "140/162",
@@ -2233,10 +1909,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Vous avez trouvé une dague… dans une flaque de gel ?!",
@@ -2252,10 +1925,7 @@
     "id": "dante-sion-pandala",
     "name": "Dante Sion",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop",
-      "Brâkmar"
-    ],
+    "subTypes": ["Iop", "Brâkmar"],
     "extension": {
       "name": "Pandala",
       "number": "32/162",
@@ -2284,10 +1954,7 @@
               "op": "buffForceTarget",
               "n": 2,
               "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
@@ -2295,9 +1962,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "Quand Dante se met en colère, ce n'est jamais de la comédie. C'est plutôt carrément l'enfer !"
@@ -2330,9 +1995,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Entrée payante !"
@@ -2342,10 +2005,7 @@
     "id": "demon-iii-pandala",
     "name": "Démon III",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Unique"
-    ],
+    "subTypes": ["Démon", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "47/162",
@@ -2378,15 +2038,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Sur le cadran de son ceinturon, les démones peuvent lire \"trois p'tits tours et puis s'en vont\"."
@@ -2398,10 +2054,7 @@
     "id": "demon-ix-et-demone-xxi-pandala",
     "name": "Démon IX et Démone XXI",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Unique"
-    ],
+    "subTypes": ["Démon", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "25/162",
@@ -2434,15 +2087,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "u me vas vraiment comme un gant, poupée.",
@@ -2455,9 +2104,7 @@
     "id": "donjon-des-bworks-pandala",
     "name": "Donjon des Bworks",
     "mainType": "Zone",
-    "subTypes": [
-      "Donjon"
-    ],
+    "subTypes": ["Donjon"],
     "extension": {
       "name": "Pandala",
       "number": "124/162",
@@ -2488,18 +2135,13 @@
       },
       {
         "description": "Chaque fois qu'un Bwork apparaît, il inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jean-Luc Istin",
-      "Djief"
-    ],
+    "artists": ["Jean-Luc Istin", "Djief"],
     "notes": [],
     "flavor": {
       "text": "Un donjon à l'ancienne, dans le plus pur style Bwork,avec cadavres d'aventuriers et armes qui rouillent."
@@ -2509,11 +2151,7 @@
     "id": "dopeul-enutrof-pandala",
     "name": "Dopeul Enutrof",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dopeul",
-      "Enutrof"
-    ],
+    "subTypes": ["Monstre", "Dopeul", "Enutrof"],
     "extension": {
       "name": "Pandala",
       "number": "61/162",
@@ -2533,26 +2171,20 @@
     "effects": [
       {
         "description": "Si votre Héros est Enutrof, le coût du Dopeul Enutrof est réduit de .",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Le Dopeul Enutrof inflige 1 Dommage à l'Allié ou Héros de votre choix. Annulez tous les bonus de Force et les pouvoirs qui durent jusqu'à la fin du tour gagnés par cet Allié ou Héros.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Maud Chalmel"
-    ],
+    "artists": ["Maud Chalmel"],
     "notes": [],
     "flavor": {
       "text": "Moitié moins grand qu'un Enutrof, mais doublement plus avare !"
@@ -2564,11 +2196,7 @@
     "id": "dopeul-feca-pandala",
     "name": "Dopeul Féca",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dopeul",
-      "Féca"
-    ],
+    "subTypes": ["Monstre", "Dopeul", "Féca"],
     "extension": {
       "name": "Pandala",
       "number": "82/162",
@@ -2588,9 +2216,7 @@
     "effects": [
       {
         "description": "Si votre Héros est Féca, le coût du Dopeul Féca est réduit de .",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2602,9 +2228,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Camille André"
-    ],
+    "artists": ["Camille André"],
     "notes": [],
     "flavor": {
       "text": "Pour ceux qui l'ignoraient encore, oui, les Fécas disposent aussi de boucliers vivants."
@@ -2616,11 +2240,7 @@
     "id": "dopeul-pandawa-pandala",
     "name": "Dopeul Pandawa",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dopeul",
-      "Pandawa"
-    ],
+    "subTypes": ["Monstre", "Dopeul", "Pandawa"],
     "extension": {
       "name": "Pandala",
       "number": "19/162",
@@ -2645,9 +2265,7 @@
       },
       {
         "description": "Si votre Héros est Pandawa, le coût du Dopeul Pandawa est réduit de .",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2659,9 +2277,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Petit format, mais grande descente !"
@@ -2673,11 +2289,7 @@
     "id": "dopeul-xelor-pandala",
     "name": "Dopeul Xélor",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dopeul",
-      "Xélor"
-    ],
+    "subTypes": ["Monstre", "Dopeul", "Xélor"],
     "extension": {
       "name": "Pandala",
       "number": "40/162",
@@ -2697,26 +2309,20 @@
     "effects": [
       {
         "description": "Si votre Héros est Xélor, le coût du Dopeul Xélor est réduit de .",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Le Dopeul Xélor inflige 1 Dommage au Héros du joueur de votre choix qui vient de perdre un ou plusieurs PA.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Alice Dufeu"
-    ],
+    "artists": ["Alice Dufeu"],
     "notes": [],
     "flavor": {
       "text": "Si t'as pas battu un Dopeul Xélor avant le niveau 50, c'est que t'as raté ta vie !",
@@ -2729,11 +2335,7 @@
     "id": "dragodinde-ebene-et-orchidee-pandala",
     "name": "Dragodinde Ébène et Orchidée",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragodinde",
-      "Monture"
-    ],
+    "subTypes": ["Monstre", "Dragodinde", "Monture"],
     "extension": {
       "name": "Pandala",
       "number": "38/162",
@@ -2753,17 +2355,13 @@
     "effects": [
       {
         "description": "Capture : 1",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Capture : 1",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2780,9 +2378,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, cette Dragodinde donne des bonus en Agilité, Intelligence et Vitalité."
@@ -2794,11 +2390,7 @@
     "id": "dragodinde-ebene-et-pourpre-pandala",
     "name": "Dragodinde Ébène et Pourpre",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragodinde",
-      "Monture"
-    ],
+    "subTypes": ["Monstre", "Dragodinde", "Monture"],
     "extension": {
       "name": "Pandala",
       "number": "17/162",
@@ -2818,17 +2410,13 @@
     "effects": [
       {
         "description": "Capture : 1",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Capture : 1",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2845,9 +2433,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, cette Dragodinde donne des bonus en Agilité, Force et Vitalité."
@@ -2859,11 +2445,7 @@
     "id": "dragodinde-indigo-et-orchidee-pandala",
     "name": "Dragodinde Indigo et Orchidée",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragodinde",
-      "Monture"
-    ],
+    "subTypes": ["Monstre", "Dragodinde", "Monture"],
     "extension": {
       "name": "Pandala",
       "number": "59/162",
@@ -2883,17 +2465,13 @@
     "effects": [
       {
         "description": "Capture : 1",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Capture : 1",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2910,9 +2488,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [
       "Cette carte a reçu un errata officiel : la **Résistance **disparait à la fin du tour."
     ],
@@ -2926,11 +2502,7 @@
     "id": "dragodinde-indigo-et-pourpre-pandala",
     "name": "Dragodinde Indigo et Pourpre",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragodinde",
-      "Monture"
-    ],
+    "subTypes": ["Monstre", "Dragodinde", "Monture"],
     "extension": {
       "name": "Pandala",
       "number": "80/162",
@@ -2950,17 +2522,13 @@
     "effects": [
       {
         "description": "Capture : 1",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Capture : 1",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2977,9 +2545,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, cette Dragodinde donne des bonus en Chance, Force et Vitalité."
@@ -2991,10 +2557,7 @@
     "id": "dragoune-noire-pandala",
     "name": "Dragoune Noire",
     "mainType": "Équipement",
-    "subTypes": [
-      "Familier",
-      "Unique"
-    ],
+    "subTypes": ["Familier", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "158/162",
@@ -3015,10 +2578,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["François Houssin (Franho)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Dragoune Noooiiiire ! Il n'y a plus d'espoooiiiiir !",
@@ -3034,9 +2594,7 @@
     "id": "drill-pandala",
     "name": "Drill",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas"
-    ],
+    "subTypes": ["Osamodas"],
     "extension": {
       "name": "Pandala",
       "number": "63/162",
@@ -3056,9 +2614,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Réaction. Recyclez Drill depuis le Monde : Le Monstre de votre choix sur le point d'être détruit par un adversaire reste en jeu à la place. Si ceContrairement à ce que son nom pourrait laisser croire, cet Osamodas est loin d'être un joyeux drille !"
@@ -3090,9 +2646,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [
       "Les joueurs jouent à tour de rôle à un petit jeu d'enchères sur l'Allié choisi par Enchère Démoniaque. Le joueur qui contrôle l'Allié choisi effectue la première enchère, puis tous les joueurs peuvent proposer une enchère supérieure. La première enchère peut être de 0 PV, mais ne peut pas être négative. Les enchères s'arrêtent lorsque plus personne ne veut proposer d'enchère supérieure à l'enchère actuelle la plus haute. Lors d'une enchère à 3 joueurs ou plus, un joueur peut refuser d'augmenter l'enchère une première fois, puis décider de l'augmenter par la suite lorsque c'est de nouveau à son tour de parler. Exemple : Jonathan joue Enchère Démoniaque sur la Sellor Noob de Charly. Charly mise 1 PV. Jonathan surenchérit à 2 PV. Charly décide de ne pas surenchérir : Jonathan ayant fait l'enchère la plus haute, il gagne le contrôle de Sellor Noob et son Héros perd 2 PV."
     ],
@@ -3104,10 +2658,7 @@
     "id": "engin-grouilleux-pandala",
     "name": "Engin Grouilleux",
     "mainType": "Allié",
-    "subTypes": [
-      "Machine",
-      "Grouilleux"
-    ],
+    "subTypes": ["Machine", "Grouilleux"],
     "extension": {
       "name": "Pandala",
       "number": "42/162",
@@ -3138,9 +2689,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "L'Engin Grouilleux affecte toute la boite de texte des Equipements adverses. Le cartouche de caractéristiques n'est pas affecté. Un Allié adverse portant une Cape du Tofu ne possèdera plus Tacle mais conservera bien le bonus de +1 en Force. Les bonus de Panoplie sont également perdus. Tous les Equipements adverses sont affectés par l'Engin Grouilleux, y compris ceux dans le Havre Sac de leur propriétaire."
     ],
@@ -3154,11 +2703,7 @@
     "id": "epee-de-boisaille-pandala",
     "name": "Épée de Boisaille",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Épée",
-      "Bonta"
-    ],
+    "subTypes": ["Arme", "Épée", "Bonta"],
     "extension": {
       "name": "Pandala",
       "number": "135/162",
@@ -3187,15 +2732,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Si l'Epée de Boisaille est portée par un Allié Brâkmar possédant un pouvoir qui n'est actif que si le Héros est d'Alignement Brâkmar (écrit sous la forme « Brâkmar. [Pouvoir]) », l'Epée de Boisaille modifie également ce pouvoir qui devient actif si le Héros est d'Alignement Bonta (le pouvoir devient donc « Bonta. [Pouvoir] »)."
     ],
@@ -3213,9 +2753,7 @@
     "id": "exploration-de-pandala-pandala",
     "name": "Exploration de Pandala",
     "mainType": "Action",
-    "subTypes": [
-      "Quête"
-    ],
+    "subTypes": ["Quête"],
     "extension": {
       "name": "Pandala",
       "number": "117/162",
@@ -3230,9 +2768,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Anthony Roux (Tot)"
-    ],
+    "artists": ["Anthony Roux (Tot)"],
     "notes": [],
     "flavor": {
       "text": "Réaction. Piochez deux cartes.Avant d'explorer Pandala, vaccinez",
@@ -3244,11 +2780,7 @@
     "id": "fantome-apero-pandala",
     "name": "Fantôme Apéro",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas",
-      "Fantôme",
-      "Bonta"
-    ],
+    "subTypes": ["Osamodas", "Fantôme", "Bonta"],
     "extension": {
       "name": "Pandala",
       "number": "77/162",
@@ -3273,18 +2805,14 @@
       },
       {
         "description": "Détruisez le Fantôme Apéro : Renvoyez le Monstre adverse de votre choix dans la main de son propriétaire.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "C'est un verre de Glouto Rhum qui acheva cet aventurier et le laissa littéralement ivre mort…"
@@ -3296,11 +2824,7 @@
     "id": "fantome-ardent-pandala",
     "name": "Fantôme Ardent",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop",
-      "Fantôme",
-      "Bonta"
-    ],
+    "subTypes": ["Iop", "Fantôme", "Bonta"],
     "extension": {
       "name": "Pandala",
       "number": "35/162",
@@ -3325,18 +2849,14 @@
       },
       {
         "description": "Détruisez le Fantôme Ardent : Chaque joueur peut redresser son Héros.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Par le passé, ce Fantôme s'était enflammé pour sa cousine prénommée Fhanie."
@@ -3348,11 +2868,7 @@
     "id": "fantome-arrogant-pandala",
     "name": "Fantôme Arrogant",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur",
-      "Fantôme",
-      "Brâkmar"
-    ],
+    "subTypes": ["Sacrieur", "Fantôme", "Brâkmar"],
     "extension": {
       "name": "Pandala",
       "number": "14/162",
@@ -3387,10 +2903,7 @@
               "op": "buffForceTarget",
               "n": 2,
               "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
@@ -3398,10 +2911,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Didier Chrispeels (Crisse)",
-      "Fred Besson"
-    ],
+    "artists": ["Didier Chrispeels (Crisse)", "Fred Besson"],
     "notes": [],
     "flavor": {
       "text": "Même vivante, vous n'auriez pas pu la serrer dans vos bras…"
@@ -3413,11 +2923,7 @@
     "id": "fantome-brave-pandala",
     "name": "Fantôme Brave",
     "mainType": "Allié",
-    "subTypes": [
-      "Crâ",
-      "Fantôme",
-      "Brâkmar"
-    ],
+    "subTypes": ["Crâ", "Fantôme", "Brâkmar"],
     "extension": {
       "name": "Pandala",
       "number": "56/162",
@@ -3442,18 +2948,14 @@
       },
       {
         "description": "Détruisez le Fantôme Brave : Le Fantôme Brave inflige 2 Dommages à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Cet ancien compagnon de Guy Yomtella a disparu lors d'une exploration. On ne retrouva que sa Dora."
@@ -3465,11 +2967,7 @@
     "id": "fantome-maho-firefoux-pandala",
     "name": "Fantôme Maho Firefoux",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Firefoux",
-      "Fantôme"
-    ],
+    "subTypes": ["Monstre", "Firefoux", "Fantôme"],
     "extension": {
       "name": "Pandala",
       "number": "22/162",
@@ -3499,18 +2997,14 @@
       },
       {
         "description": "Le Fantôme Maho Firefoux inflige 3 Dommages à l'Allié ou Héros de votre choix qui le bloque.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Depuis toujours, le Fantôme Maho arpente les terres de Pandala à la recherche d'une seule chose : ses tongs."
@@ -3522,11 +3016,7 @@
     "id": "fantome-pandikaze-pandala",
     "name": "Fantôme Pandikaze",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Pandawa",
-      "Fantôme"
-    ],
+    "subTypes": ["Monstre", "Pandawa", "Fantôme"],
     "extension": {
       "name": "Pandala",
       "number": "43/162",
@@ -3572,9 +3062,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Cédric Plaisant (Aisk)"
-    ],
+    "artists": ["Cédric Plaisant (Aisk)"],
     "notes": [
       "Le pouvoir du Fantôme Pandikaze permet de redresser tous les Fantômes qui ont été attaquants pendant le combat qui vient de se terminer, y compris ceux qui ont cessé de l'être avant la fin du combat, et ce qu'elle qu'en soit la raison. Le Fantôme Pandikaze se redresse également s'il a été attaquant.",
       "Un Allié qui quitte le jeu puis revient est considéré comme un nouvel Allié : si vous déclarez votre Fantôme Arrogant comme attaquant alors que vous contrôlez le Fantôme Pandikaze, puis utilisez son pouvoir pour donner +2 en Force à votre Héros et que vous le renvoyez ensuite en jeu via Fantôme, ce nouveau Fantôme Arrogant ne sera pas redressé à la fin du combat."
@@ -3589,11 +3077,7 @@
     "id": "fantome-pandule-pandala",
     "name": "Fantôme Pandule",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Pandawa",
-      "Fantôme"
-    ],
+    "subTypes": ["Monstre", "Pandawa", "Fantôme"],
     "extension": {
       "name": "Pandala",
       "number": "85/162",
@@ -3624,9 +3108,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Si par malheur vous croisez le Fantôme Pandule, c'est que l'heure de votre mort a sonné !"
@@ -3638,11 +3120,7 @@
     "id": "fantome-soryo-firefoux-pandala",
     "name": "Fantôme Soryo Firefoux",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Firefoux",
-      "Fantôme"
-    ],
+    "subTypes": ["Monstre", "Firefoux", "Fantôme"],
     "extension": {
       "name": "Pandala",
       "number": "64/162",
@@ -3678,9 +3156,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Amélie Flechais"
-    ],
+    "artists": ["Amélie Flechais"],
     "notes": [
       "Le Fantôme Soryo Firefoux ne causant pas de Dommages, son pouvoir affectera un Héros présent dans le Havre Sac de son propriétaire. Tous les joueurs subissent ce pouvoir, y compris le joueur qui contrôle le Fantôme Soryo Firefoux."
     ],
@@ -3694,11 +3170,7 @@
     "id": "fantome-tanukoui-san-pandala",
     "name": "Fantôme Tanukouï San",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fantôme",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Fantôme", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "87/162",
@@ -3734,9 +3206,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "De toutes les créatures du Monde des 12, c'est lui qui a la plus belle paire… d'échasses !"
@@ -3769,9 +3239,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Souillon (Maliki)"
-    ],
+    "artists": ["Souillon (Maliki)"],
     "notes": [],
     "flavor": {
       "text": "Fette déeffe n'accorde fes faveurs qu'à fes favoris ! Vous le faviez ?",
@@ -3782,10 +3250,7 @@
     "id": "festino-pandala",
     "name": "Festino",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor",
-      "Forgemage"
-    ],
+    "subTypes": ["Xélor", "Forgemage"],
     "extension": {
       "name": "Pandala",
       "number": "34/162",
@@ -3811,9 +3276,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ce Forgemage enchante si bien ses montres qu'il enchante tout le monde lorsqu'il leur montre !"
@@ -3825,10 +3288,7 @@
     "id": "fiole-de-pandaburg-pandala",
     "name": "Fiole de Pandaburg",
     "mainType": "Action",
-    "subTypes": [
-      "Potion",
-      "Boisson"
-    ],
+    "subTypes": ["Potion", "Boisson"],
     "extension": {
       "name": "Pandala",
       "number": "90/162",
@@ -3859,10 +3319,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
       "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons."
@@ -3876,10 +3333,7 @@
     "id": "fiole-de-pandapiler-pandala",
     "name": "Fiole de Pandapiler",
     "mainType": "Action",
-    "subTypes": [
-      "Potion",
-      "Boisson"
-    ],
+    "subTypes": ["Potion", "Boisson"],
     "extension": {
       "name": "Pandala",
       "number": "91/162",
@@ -3915,10 +3369,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
       "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons."
@@ -3932,10 +3383,7 @@
     "id": "fiole-de-pandapils-pandala",
     "name": "Fiole de Pandapils",
     "mainType": "Action",
-    "subTypes": [
-      "Potion",
-      "Boisson"
-    ],
+    "subTypes": ["Potion", "Boisson"],
     "extension": {
       "name": "Pandala",
       "number": "92/162",
@@ -3971,10 +3419,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
       "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons."
@@ -3988,10 +3433,7 @@
     "id": "fiole-de-pandneken-pandala",
     "name": "Fiole de Pandneken",
     "mainType": "Action",
-    "subTypes": [
-      "Potion",
-      "Boisson"
-    ],
+    "subTypes": ["Potion", "Boisson"],
     "extension": {
       "name": "Pandala",
       "number": "93/162",
@@ -4007,17 +3449,13 @@
     "effects": [
       {
         "description": "La Fiole de Pandneken inflige un nombre de Dommages égal à 1 plus le nombre de Boissons dans votre Défausse à l'Allié ou au Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Si vous avez plus de 3 Boissons dans votre Défausse, la Fiole de Pandneken inflige ensuite le même nombre de Dommages à un de vos Alliés.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4033,10 +3471,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
       "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons."
@@ -4051,10 +3486,7 @@
     "id": "fleche-d-expiation-pandala",
     "name": "Flèche d'Expiation",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Crâ"
-    ],
+    "subTypes": ["Sort", "Crâ"],
     "extension": {
       "name": "Pandala",
       "number": "104/162",
@@ -4070,17 +3502,13 @@
     "effects": [
       {
         "description": "La Flèche d'Expiation inflige 3 Dommages au Héros de votre choix. Si votre Héros est Crâ, vous pouvez choisir un Héros dans son Havre Sac.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Gray Shuko"
-    ],
+    "artists": ["Gray Shuko"],
     "notes": [],
     "flavor": {
       "text": "Une Flèfe d'Expiafion ?! Mais fa fuffit ! Reftez poli !",
@@ -4092,9 +3520,7 @@
     "id": "frankula-pandala",
     "name": "Frankula",
     "mainType": "Allié",
-    "subTypes": [
-      "Vampyre"
-    ],
+    "subTypes": ["Vampyre"],
     "extension": {
       "name": "Pandala",
       "number": "78/162",
@@ -4128,9 +3554,7 @@
             {
               "op": "destroyTarget",
               "what": "Zone",
-              "zones": [
-                "monde"
-              ]
+              "zones": ["monde"]
             }
           ]
         }
@@ -4138,9 +3562,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Laurent Carlot (Lorko)"
-    ],
+    "artists": ["Laurent Carlot (Lorko)"],
     "notes": [],
     "flavor": {
       "text": "Attention ! S'il a décidé d'en découdre avec vous, il pourrait bien vous tailler en pièces !"
@@ -4151,10 +3573,7 @@
     "id": "franom-ontaje-pandala",
     "name": "Franom Ontaje",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas",
-      "Forgemage"
-    ],
+    "subTypes": ["Osamodas", "Forgemage"],
     "extension": {
       "name": "Pandala",
       "number": "57/162",
@@ -4190,9 +3609,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [
       "Ce pouvoir ne fonctionne que contre les cartes qui choisissent explicitement vos Equipements, comme Brisé ou Fée d'Artifice. Vos Equipements seront toujours détruits si votre adversaire joue une Rouille de Stasis ou un Déluge d'Ogrest."
     ],
@@ -4206,11 +3623,7 @@
     "id": "galgarion-pandala",
     "name": "Galgarion",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Bonta",
-      "Unique"
-    ],
+    "subTypes": ["Chevalier", "Bonta", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "65/162",
@@ -4235,19 +3648,14 @@
       },
       {
         "description": "Recyclez Galgarion depuis le Monde. N'utilisez ce pouvoir que si Galgarion bloque ou est bloqué par un Allié ou Héros de Force supérieure ou égale à la sienne.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Deruyck Vincent (Ancestral Z)",
-      "Joachim Leclercq (Mojojojo)"
-    ],
+    "artists": ["Deruyck Vincent (Ancestral Z)", "Joachim Leclercq (Mojojojo)"],
     "notes": [],
     "flavor": {
       "text": "Quand Galgarion fait ses gargarismes, gare aux postillons !"
@@ -4259,10 +3667,7 @@
     "id": "griffe-rose-pandala",
     "name": "Griffe Rose",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Épée"
-    ],
+    "subTypes": ["Arme", "Épée"],
     "extension": {
       "name": "Pandala",
       "number": "143/162",
@@ -4291,15 +3696,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Avec elle, les aventurières se réjouissent et les aventuriers deviennent chaque jour un peu plus gais."
@@ -4314,9 +3714,7 @@
     "id": "grobot-pandala",
     "name": "Grobot",
     "mainType": "Allié",
-    "subTypes": [
-      "Machine"
-    ],
+    "subTypes": ["Machine"],
     "extension": {
       "name": "Pandala",
       "number": "5/162",
@@ -4344,16 +3742,11 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 4",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Mig",
-      "Toshy"
-    ],
+    "artists": ["Mig", "Toshy"],
     "notes": [],
     "flavor": {
       "text": "Gare aux gros bobos ! Seul Shak Shaka roi des Robomates sait mater Grobot le gros robot."
@@ -4364,10 +3757,7 @@
     "id": "grouilleux-folvermine-pandala",
     "name": "Grouilleux Folvermine",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Grouilleux"
-    ],
+    "subTypes": ["Monstre", "Grouilleux"],
     "extension": {
       "name": "Pandala",
       "number": "27/162",
@@ -4389,14 +3779,10 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Sa réputation de crapule, il se l'est taillée à coups de griffes !"
@@ -4408,10 +3794,7 @@
     "id": "habel-pandala",
     "name": "Habel",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa",
-      "Brâkmar"
-    ],
+    "subTypes": ["Eniripsa", "Brâkmar"],
     "extension": {
       "name": "Pandala",
       "number": "74/162",
@@ -4436,9 +3819,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Grâce aux comptines que lui récita sa grande soeur Hateyna, Habel acquit la sagesse d'un hibou."
@@ -4450,11 +3831,7 @@
     "id": "hache-terrdala-pandala",
     "name": "Hache Terrdala",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Hache",
-      "Terrdala"
-    ],
+    "subTypes": ["Arme", "Hache", "Terrdala"],
     "extension": {
       "name": "Pandala",
       "number": "141/162",
@@ -4470,9 +3847,7 @@
     "effects": [
       {
         "description": "Le Porteur de la Hache Terrdala inflige 2 Dommages à l'Allié ou Héros bloqueur de votre choix. Si le Porteur de la Hache Terrdala a , vous pouvez répartir ces Dommages librement entre les Alliés ou Héros bloqueurs de votre choix à la place.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -4481,22 +3856,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "La Hache de Terre est déguerrée !"
@@ -4511,10 +3879,7 @@
     "id": "havre-sac-du-fotome-pandala",
     "name": "Havre Sac du Fotôme",
     "mainType": "Havre-Sac",
-    "subTypes": [
-      "Taille 4",
-      "Résistance 12"
-    ],
+    "subTypes": ["Taille 4", "Résistance 12"],
     "extension": {
       "name": "Pandala",
       "number": "1/162",
@@ -4535,20 +3900,14 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": []
   },
   {
     "id": "igole-pandala",
     "name": "Igôle",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Félin",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Félin", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "67/162",
@@ -4589,9 +3948,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Si une Action choisit plusieurs Alliés, tous les Alliés sont détruits. L'Allié est détruit après avoir été choisi, mais avant la résolution de l'Action qui le choisit. Pour rappel, une Action dont tous les choix sont devenus illégaux voit son effet annulé dans son intégralité : si vous jouez Cervelle de Iop sur un Allié adverse alors qu'Igôle est dans le Monde, vous ne piocherez pas de carte. L'Allié est détruit par son contrôleur : le contrôleur d'Igôle ne gagne donc pas d'XP si un Allié adverse est ainsi détruit."
     ],
@@ -4605,9 +3962,7 @@
     "id": "ile-de-moon-pandala",
     "name": "Île de Moon",
     "mainType": "Zone",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Pandala",
       "number": "126/162",
@@ -4628,9 +3983,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Le célèbre peintre Dany Wousso est tellement tombé amoureux de cette île qu'il y a passé sa lune de miel."
@@ -4640,10 +3993,7 @@
     "id": "intimidation-pandala",
     "name": "Intimidation",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Iop"
-    ],
+    "subTypes": ["Sort", "Iop"],
     "extension": {
       "name": "Pandala",
       "number": "109/162",
@@ -4659,17 +4009,13 @@
     "effects": [
       {
         "description": "L'Intimidation inflige 2 Dommages à l'Allié ou Héros de votre choix. Si votre Héros est Iop, les Dommages infligés par vos Alliés ou Héros à un Allié ou Héros adverse ne peuvent pas être réduits ou redirigés vers un autre Allié ou Héros jusqu'à la fin du tour.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Crowley"
-    ],
+    "artists": ["Crowley"],
     "notes": [],
     "flavor": {
       "text": "On peut se demander ce qu'il y a de plus intimidant chez un Iop : sa coupe de cheveux ou sa stupidité."
@@ -4680,9 +4026,7 @@
     "id": "jactance-alamogorda-pandala",
     "name": "Jactance Alamogorda",
     "mainType": "Allié",
-    "subTypes": [
-      "Présentateur"
-    ],
+    "subTypes": ["Présentateur"],
     "extension": {
       "name": "Pandala",
       "number": "3/162",
@@ -4707,9 +4051,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Si tout le monde est suspendu à ses lèvres, c'est qu'il n'a pas sa langue dans sa poche !"
@@ -4720,9 +4062,7 @@
     "id": "jean-sol-patre-pandala",
     "name": "Jean-Sol Patre",
     "mainType": "Allié",
-    "subTypes": [
-      "Hibou"
-    ],
+    "subTypes": ["Hibou"],
     "extension": {
       "name": "Pandala",
       "number": "4/162",
@@ -4755,15 +4095,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
       "Tant que Jean-Sol Patre est dans le Monde, tous les gains d'XP provenant d'autres sources que la destruction d'un Allié adverse, que ce soit par exemple un pouvoir ou une Action, sont réduits à 0. Un événement qui se déclenche quand un joueur gagne un ou plusieurs XP ne se déclenchera pas si Jean-Sol Patre réduit ce gain à 0. En revanche, un pouvoir qui vient augmenter un gain d'XP, comme celui de la Dragoune Rose, sera bien appliqué si le gain d'XP provient de la destruction d'un Allié adverse."
     ],
@@ -4802,9 +4138,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
       "Le nouveau Porteur de l'Equipement doit être un Porteur légal pour cet Equipement. Vous ne pouvez ainsi pas déplacer cet Equipement sur un Monstre, ni sur un Allié ou Héros adverse. Si ce nouvel Equipement amène le Porteur à violer une restriction de port d'Equipement, son contrôleur détruit un des Equipements violant la restriction."
     ],
@@ -4816,10 +4150,7 @@
     "id": "kaiser-pandala",
     "name": "Kaiser",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Marteau"
-    ],
+    "subTypes": ["Arme", "Marteau"],
     "extension": {
       "name": "Pandala",
       "number": "142/162",
@@ -4835,12 +4166,7 @@
     "effects": [
       {
         "description": "Chaque fois que le Porteur du Kaiser inflige un ou plusieurs Dommages de combat à un Héros adverse, il inflige successivement 1 Dommage , , et à l'Allié de votre choix contrôlé par le même joueur.",
-        "elements": [
-          "Air",
-          "Terre",
-          "Feu",
-          "Eau"
-        ],
+        "elements": ["Air", "Terre", "Feu", "Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -4849,14 +4175,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Un magnifique marteau en forme de crâne, pour fracasser ceux de vos ennemis et crâner auprès de vos alliés !"
@@ -4871,10 +4193,7 @@
     "id": "kamasu-tar-jr-pandala",
     "name": "Kamasu tar Jr",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Phorreur"
-    ],
+    "subTypes": ["Monstre", "Phorreur"],
     "extension": {
       "name": "Pandala",
       "number": "70/162",
@@ -4905,9 +4224,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Cette carte a reçu un errata officiel : le niveau de l'Equipement ramené doit être strictement inférieur au niveau de l'Equipement détruit."
     ],
@@ -4921,9 +4238,7 @@
     "id": "kanniboul-archer-pandala",
     "name": "Kanniboul Archer",
     "mainType": "Allié",
-    "subTypes": [
-      "Kanniboul"
-    ],
+    "subTypes": ["Kanniboul"],
     "extension": {
       "name": "Pandala",
       "number": "58/162",
@@ -4959,9 +4274,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues."
     ],
@@ -4990,9 +4303,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "A la sortie de l'extension Pandala, la Dernière Rasade, les différents types de cartes sont Allié, Dofus, Equipement, Havre Sac, Héros, Protecteur, Salle et Zone. Une Arme et une Armure ne sont pas deux cartes de type différent : ce sont toutes deux des cartes de type Equipement."
     ],
@@ -5004,9 +4315,7 @@
     "id": "kanniboul-jav-pandala",
     "name": "Kanniboul Jav",
     "mainType": "Allié",
-    "subTypes": [
-      "Kanniboul"
-    ],
+    "subTypes": ["Kanniboul"],
     "extension": {
       "name": "Pandala",
       "number": "79/162",
@@ -5042,9 +4351,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues."
     ],
@@ -5057,9 +4364,7 @@
     "id": "kanniboul-sarbak-pandala",
     "name": "Kanniboul Sarbak",
     "mainType": "Allié",
-    "subTypes": [
-      "Kanniboul"
-    ],
+    "subTypes": ["Kanniboul"],
     "extension": {
       "name": "Pandala",
       "number": "37/162",
@@ -5095,9 +4400,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues."
     ],
@@ -5111,9 +4414,7 @@
     "id": "kanniboul-thierry-pandala",
     "name": "Kanniboul Thierry",
     "mainType": "Allié",
-    "subTypes": [
-      "Kanniboul"
-    ],
+    "subTypes": ["Kanniboul"],
     "extension": {
       "name": "Pandala",
       "number": "16/162",
@@ -5149,9 +4450,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues."
     ],
@@ -5164,10 +4463,7 @@
     "id": "karibd-pandala",
     "name": "Karibd",
     "mainType": "Allié",
-    "subTypes": [
-      "Brâkmar",
-      "Unique"
-    ],
+    "subTypes": ["Brâkmar", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "44/162",
@@ -5203,9 +4499,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "En l'an 24, avec l'aide de son frère Silar, Karibd a permis aux Shushus d'envahir le Monde des Douze."
@@ -5217,10 +4511,7 @@
     "id": "katar-pandala",
     "name": "Katar",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur",
-      "Unique"
-    ],
+    "subTypes": ["Sacrieur", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "45/162",
@@ -5251,9 +4542,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Quand Katar attaque Goultard, c'est la cata tôt ou tard !"
@@ -5265,10 +4554,7 @@
     "id": "kira-shak-pandala",
     "name": "Kira Shak",
     "mainType": "Allié",
-    "subTypes": [
-      "Sram",
-      "Bonta"
-    ],
+    "subTypes": ["Sram", "Bonta"],
     "extension": {
       "name": "Pandala",
       "number": "31/162",
@@ -5299,9 +4585,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
       "Le pouvoir de Kira Shak choisit un joueur et non un Havre Sac : vous pouvez donc choisir un joueur adverse qui ne contrôle plus de Havre Sac. Dans ce cas, le pouvoir de Kira Shak ne fera rien."
     ],
@@ -5315,10 +4599,7 @@
     "id": "kura-sao-pandala",
     "name": "Kura Sao",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa",
-      "Forgemage"
-    ],
+    "subTypes": ["Pandawa", "Forgemage"],
     "extension": {
       "name": "Pandala",
       "number": "76/162",
@@ -5349,9 +4630,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Kura Sao aimait nager dans un lagon bleu avec son ami Perry Stoff. Mais un jour il finit par la soûler."
@@ -5389,9 +4668,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
       "Cette carte est bannie en tournoi officiel au format Bloc depuis le 15 Août 2011."
     ],
@@ -5403,10 +4680,7 @@
     "id": "le-chouque-pandala",
     "name": "Le Chouque",
     "mainType": "Allié",
-    "subTypes": [
-      "Pirate",
-      "Unique"
-    ],
+    "subTypes": ["Pirate", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "88/162",
@@ -5439,15 +4713,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "Si Le Chouque s'est installé sur Moon, c'est parce qu'il s'agit de « l'île au singe »."
@@ -5459,9 +4729,7 @@
     "id": "le-flib-pandala",
     "name": "Le Flib",
     "mainType": "Allié",
-    "subTypes": [
-      "Pirate"
-    ],
+    "subTypes": ["Pirate"],
     "extension": {
       "name": "Pandala",
       "number": "83/162",
@@ -5492,9 +4760,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Séverin Baclet"
-    ],
+    "artists": ["Séverin Baclet"],
     "notes": [
       "Si un Pirate confère un pouvoir déclenché aux autres Pirates, comme par exemple Le Flib, les Pirates apparaissent avec ce pouvoir. Le Pirate qui accorde le pouvoir étant également lui-même un Pirate, il bénéficie de son propre pouvoir."
     ],
@@ -5507,10 +4773,7 @@
     "id": "le-kikoolarc-pandala",
     "name": "Le Kikoolarc",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Arc"
-    ],
+    "subTypes": ["Arme", "Arc"],
     "extension": {
       "name": "Pandala",
       "number": "136/162",
@@ -5526,9 +4789,7 @@
     "effects": [
       {
         "description": "Quand le Kikoolarc apparaît, vous pouvez payer pour piocher une carte.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -5537,14 +4798,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "Trop b1 7 arc ! lol ! Trop kawaï ! Je kiffe !",
@@ -5560,11 +4817,7 @@
     "id": "les-300-bonsiates-pandala",
     "name": "Les 300 Bonsiates",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Bonta",
-      "Unique"
-    ],
+    "subTypes": ["Chevalier", "Bonta", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "23/162",
@@ -5600,10 +4853,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Deruyck Vincent (Ancestral Z)",
-      "Joachim Leclercq (Mojojojo)"
-    ],
+    "artists": ["Deruyck Vincent (Ancestral Z)", "Joachim Leclercq (Mojojojo)"],
     "notes": [
       "Si Les 300 Bonsiates cessent d'être attaquants pendant le combat, vos autres Alliés ou Héros attaquants perdent immédiatement le +1 en Force."
     ],
@@ -5618,10 +4868,7 @@
     "id": "lotie-pandala",
     "name": "Lotie",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas",
-      "Petite Fille"
-    ],
+    "subTypes": ["Osamodas", "Petite Fille"],
     "extension": {
       "name": "Pandala",
       "number": "69/162",
@@ -5646,9 +4893,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Les animaux que Lotie ramène dans son logis, et contre qui elle se blottit, sont plutôt bien lotis."
@@ -5660,10 +4905,7 @@
     "id": "lucie-fhair-pandala",
     "name": "Lucie Fhair",
     "mainType": "Allié",
-    "subTypes": [
-      "Crâ",
-      "Bonta"
-    ],
+    "subTypes": ["Crâ", "Bonta"],
     "extension": {
       "name": "Pandala",
       "number": "52/162",
@@ -5689,9 +4931,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Lucie Fhair est loin d'être un ange : à l'instar de Khû Pydon, elle vous enverra une flèche dans le croupion !"
@@ -5703,10 +4943,7 @@
     "id": "macrobio-pandala",
     "name": "Macrobio",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca",
-      "Boulanger"
-    ],
+    "subTypes": ["Féca", "Boulanger"],
     "extension": {
       "name": "Pandala",
       "number": "72/162",
@@ -5726,17 +4963,13 @@
     "effects": [
       {
         "description": "Nommez un élément. Macrobio gagne dans cet élément jusqu'à la fin du tour.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "La Résistance est cumulative. Si vous utilisez deux fois le pouvoir de Macrobio en nommant le même Elément, Macrobio aura Résistance 2 dans cet Elément."
     ],
@@ -5750,11 +4983,7 @@
     "id": "maitre-pandore-pandala",
     "name": "Maître Pandore",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Pandawa",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Pandawa", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "89/162",
@@ -5787,16 +5016,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Terre",
-          "Feu"
-        ]
+        "elements": ["Terre", "Feu"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Recherché pour ouvrage de Bouate intempestif. Mais la milice n'a encore jamais réussi à le coffrer…"
@@ -5808,11 +5032,7 @@
     "id": "mandhal-pandala",
     "name": "Mandhal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Taure",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Taure", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "24/162",
@@ -5837,18 +5057,14 @@
       },
       {
         "description": "Chaque fois que Mandhal inflige un ou plusieurs Dommages à un Havre Sac, il peut infliger 2 Dommages au Héros de votre choix dans ce Havre Sac.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ce grand bêta à poils est un vandale aux mœurs bestiales qui ne rate jamais une occasion de coller une mandale !"
@@ -5860,10 +5076,7 @@
     "id": "marteau-de-moon-pandala",
     "name": "Marteau de Moon",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Élémentaire"
-    ],
+    "subTypes": ["Sort", "Élémentaire"],
     "extension": {
       "name": "Pandala",
       "number": "116/162",
@@ -5879,17 +5092,13 @@
     "effects": [
       {
         "description": "Inclinez votre Héros : Le Marteau de Moon inflige 3 Dommages à l'Allié ou Héros de votre choix dans le Monde ou dans son Havre Sac. Ne jouez cette Action que si votre Héros est attaquant.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Obtenir le Marteau de Moon, c'est un peu comme décrocher la lune !"
@@ -5921,9 +5130,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "La Mise à Sac choisit un joueur et non un Havre Sac : vous pouvez donc choisir un joueur adverse qui ne contrôle plus de Havre Sac. Dans ce cas, la Mise à Sac ne fera rien."
     ],
@@ -5936,10 +5143,7 @@
     "id": "mishel-berger-pandala",
     "name": "Mishel Berger",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca",
-      "Bonta"
-    ],
+    "subTypes": ["Féca", "Bonta"],
     "extension": {
       "name": "Pandala",
       "number": "73/162",
@@ -5969,9 +5173,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
       "Si la carte ainsi révélée n'est pas un Allié de Niveau 1, ou si c'est un Allié de Niveau 1 que vous ne souhaitez pas mettre en jeu, la carte révélée retourne face cachée sur le dessus de votre pioche."
     ],
@@ -5986,10 +5188,7 @@
     "id": "mot-de-redemption-pandala",
     "name": "Mot de Rédemption",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Eniripsa"
-    ],
+    "subTypes": ["Sort", "Eniripsa"],
     "extension": {
       "name": "Pandala",
       "number": "106/162",
@@ -6015,9 +5214,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Simon Loche"
-    ],
+    "artists": ["Simon Loche"],
     "notes": [
       "L'Allié attaquant dont vous prenez le contrôle conserve leur état incliné ou dressé. Si votre Héros n'est pas Eniripsa, l'Allié dont vous prenez le contrôle retourne dans le Monde."
     ],
@@ -6030,9 +5227,7 @@
     "id": "nakunbra-pandala",
     "name": "Nakunbra",
     "mainType": "Allié",
-    "subTypes": [
-      "Pirate"
-    ],
+    "subTypes": ["Pirate"],
     "extension": {
       "name": "Pandala",
       "number": "50/162",
@@ -6057,9 +5252,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Paul Mayafon"
-    ],
+    "artists": ["Paul Mayafon"],
     "notes": [],
     "flavor": {
       "text": "Ce pirate était si sûr de gagner son dernier combat qu'il en a mis sa main à couper. Et voilà le résultat !"
@@ -6070,10 +5263,7 @@
     "id": "nikole-hick-pandala",
     "name": "Nikole Hick",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip",
-      "Chasseur"
-    ],
+    "subTypes": ["Ecaflip", "Chasseur"],
     "extension": {
       "name": "Pandala",
       "number": "2/162",
@@ -6098,9 +5288,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Ce passionné de courses de Dragodindes a remporté plusieurs fois le prix de la Selle de Bronze."
@@ -6112,9 +5300,7 @@
     "id": "ordre-de-mission-pandala",
     "name": "Ordre de Mission",
     "mainType": "Action",
-    "subTypes": [
-      "Parchemin"
-    ],
+    "subTypes": ["Parchemin"],
     "extension": {
       "name": "Pandala",
       "number": "95/162",
@@ -6130,17 +5316,13 @@
     "effects": [
       {
         "description": "Choisissez un Allié ou Héros et un Allié ou Héros dans le Monde. Chacun de ces Alliés ou Héros inflige sa Force en Dommages à l'autre.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Elen Le Tannou"
-    ],
+    "artists": ["Elen Le Tannou"],
     "notes": [],
     "flavor": {
       "text": "Votre mission, si vous l'acceptez, est si impossible que cet ordre s'autodétruira avant que vous ne le lisiez."
@@ -6151,10 +5333,7 @@
     "id": "parisse-milton-pandala",
     "name": "Parisse Milton",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip",
-      "Bonta"
-    ],
+    "subTypes": ["Ecaflip", "Bonta"],
     "extension": {
       "name": "Pandala",
       "number": "10/162",
@@ -6179,9 +5358,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Xavier Houssin (Xa)"
-    ],
+    "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
     "flavor": {
       "text": "Avant d'adopter son Chienchien Tinkerboul, Parisse avait une jolie Chachatte qu'elle montrait à tout le monde."
@@ -6193,9 +5370,7 @@
     "id": "paturage-pandala",
     "name": "Pâturage",
     "mainType": "Zone",
-    "subTypes": [
-      "Enclos"
-    ],
+    "subTypes": ["Enclos"],
     "extension": {
       "name": "Pandala",
       "number": "118/162",
@@ -6216,9 +5391,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Le paradis rêvé des Dragodindes !"
@@ -6228,11 +5401,7 @@
     "id": "peki-peki-pandala",
     "name": "Péki Péki",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Péki",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Péki", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "68/162",
@@ -6265,15 +5434,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
     "experience": 3,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Parisse Miltone baptisa le sien Tinkerboul, après quoi elle décida de le stériliser."
@@ -6285,11 +5450,7 @@
     "id": "pelle-du-neloma-pandala",
     "name": "Pelle du Neloma",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Pelle",
-      "Ethérée"
-    ],
+    "subTypes": ["Arme", "Pelle", "Ethérée"],
     "extension": {
       "name": "Pandala",
       "number": "139/162",
@@ -6320,10 +5481,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Cette pelle est si luisante que votre ennemi pourra s'y admirer une dernière fois avant d'être défiguré !"
@@ -6338,10 +5496,7 @@
     "id": "percimol-heros-flaqueux-pandala",
     "name": "Percimol, Héros Flaqueux",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flaqueux"
-    ],
+    "subTypes": ["Monstre", "Flaqueux"],
     "extension": {
       "name": "Pandala",
       "number": "84/162",
@@ -6374,15 +5529,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
       "Le pouvoir de Percimol, Héros Flaqueux impacte notamment les cartes ou les pouvoirs qui stipulent explicitement « le joueur de votre choix » ou « l'adversaire de votre choix », comme Filouteries au Zaap d'Astrub ou Aeron Zeklox. Les cartes adverses peuvent toujours choisir votre Héros. De même, vous êtes toujours affecté par les cartes qui ne vous choisissent pas explicitement, comme Ogivol Scalarcin ou À la Foire du Trooll."
     ],
@@ -6396,10 +5547,7 @@
     "id": "piralak-pandala",
     "name": "Piralak",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Koalak"
-    ],
+    "subTypes": ["Monstre", "Koalak"],
     "extension": {
       "name": "Pandala",
       "number": "9/162",
@@ -6419,18 +5567,14 @@
     "effects": [
       {
         "description": "Le Piralak gagne +1 en Force jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Mig"
-    ],
+    "artists": ["Mig"],
     "notes": [],
     "flavor": {
       "text": "Le pire qu'il peut arriver à un Piralak, c'est de rester croupir aux Lacs enchantés."
@@ -6463,9 +5607,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "La plupart des aventuriers qui s'introduisent par cette porte en ressortent avec la banane."
@@ -6475,10 +5617,7 @@
     "id": "prespic-assiette-pandala",
     "name": "Prespic Assiette",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Prespic"
-    ],
+    "subTypes": ["Monstre", "Prespic"],
     "extension": {
       "name": "Pandala",
       "number": "51/162",
@@ -6498,17 +5637,13 @@
     "effects": [
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige un ou plusieurs Dommages au Prespic Assiette, le Prespic Assiette lui inflige 1 Dommage .",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Mettez un peu de piquant dans votre décoration : une fois empaillé, il fera une ravissante table basse !"
@@ -6520,10 +5655,7 @@
     "id": "prisme-de-conquete-pandala",
     "name": "Prisme de Conquête",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Prisme"
-    ],
+    "subTypes": ["Objet", "Prisme"],
     "extension": {
       "name": "Pandala",
       "number": "150/162",
@@ -6547,14 +5679,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "Don Rouann a beau être un expert en conquêtes féminines, il n'a jamais eu la chance de gagner un seul prisme."
@@ -6569,11 +5697,7 @@
     "id": "protege-tibias-ancestraux-pandala",
     "name": "Protège-Tibias Ancestraux",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Ancestrale"
-    ],
+    "subTypes": ["Armure", "Bottes", "Ancestrale"],
     "extension": {
       "name": "Pandala",
       "number": "132/162",
@@ -6597,15 +5721,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le pouvoir de la Panoplie Ancestrale se déclenche quand une carte est sur le point d'être mise dans la Défausse d'un adversaire, quelque soit la zone dont elle provient. Ce pouvoir de Panoplie génère un pouvoir de remplacement : la carte ainsi recyclée ne passe jamais par la Défausse de son propriétaire."
     ],
@@ -6623,9 +5742,7 @@
     "id": "ranger-bleu-pandala",
     "name": "Ranger Bleu",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Pandala",
       "number": "75/162",
@@ -6661,9 +5778,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas."
     ],
@@ -6676,9 +5791,7 @@
     "id": "ranger-rouge-pandala",
     "name": "Ranger Rouge",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Pandala",
       "number": "54/162",
@@ -6709,9 +5822,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas."
     ],
@@ -6724,9 +5835,7 @@
     "id": "ranger-vert-pandala",
     "name": "Ranger Vert",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Pandala",
       "number": "12/162",
@@ -6762,9 +5871,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas."
     ],
@@ -6777,9 +5884,7 @@
     "id": "ranger-violet-pandala",
     "name": "Ranger Violet",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Pandala",
       "number": "33/162",
@@ -6810,9 +5915,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
       "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas."
     ],
@@ -6825,10 +5928,7 @@
     "id": "rat-bajoie-pandala",
     "name": "Rat Bajoie",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Rat"
-    ],
+    "subTypes": ["Monstre", "Rat"],
     "extension": {
       "name": "Pandala",
       "number": "36/162",
@@ -6857,9 +5957,7 @@
             {
               "op": "destroyTarget",
               "what": "Équipement",
-              "zones": [
-                "monde"
-              ]
+              "zones": ["monde"]
             }
           ]
         }
@@ -6867,9 +5965,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, le Rat Bajoie est un monstre vivant dans les égoûts de Bonta et attaquant les amateurs d'eaux usées qui y passent."
@@ -6881,10 +5977,7 @@
     "id": "rat-basher-pandala",
     "name": "Rat Basher",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Rat"
-    ],
+    "subTypes": ["Monstre", "Rat"],
     "extension": {
       "name": "Pandala",
       "number": "30/162",
@@ -6909,9 +6002,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Alexandre Papet"
-    ],
+    "artists": ["Alexandre Papet"],
     "notes": [],
     "flavor": {
       "text": "Tuer un Rat Basher avec des dagues Bashers, voilà une occasion à ne pas rater !"
@@ -6923,9 +6014,7 @@
     "id": "rosal-protecteur-de-maisial-pandala",
     "name": "Rosal, Protecteur de Maisial",
     "mainType": "Protecteur",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Pandala",
       "number": "162/162",
@@ -6946,9 +6035,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Ce Protecteur a une sensibilité à fleur de peau : il ne supporte pas de se faire envoyer sur les roses."
@@ -6959,10 +6046,7 @@
     "id": "roulette-pandala",
     "name": "Roulette",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Ecaflip"
-    ],
+    "subTypes": ["Sort", "Ecaflip"],
     "extension": {
       "name": "Pandala",
       "number": "105/162",
@@ -6983,9 +6067,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Thorn"
-    ],
+    "artists": ["Thorn"],
     "notes": [],
     "flavor": {
       "text": "Ce sort marche comme sur des roulettes ! Enfin… sauf quand il ne marche pas."
@@ -6996,10 +6078,7 @@
     "id": "salbatroce-pandala",
     "name": "Salbatroce",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Oiseau"
-    ],
+    "subTypes": ["Monstre", "Oiseau"],
     "extension": {
       "name": "Pandala",
       "number": "29/162",
@@ -7021,14 +6100,10 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Salbatroooce, Salbatroooce, du fond de la nuit d'ooor, de babord à tribooord !",
@@ -7041,10 +6116,7 @@
     "id": "saule-le-tortueux-pandala",
     "name": "Saule le Tortueux",
     "mainType": "Allié",
-    "subTypes": [
-      "Kanniboul",
-      "Unique"
-    ],
+    "subTypes": ["Kanniboul", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "26/162",
@@ -7070,9 +6142,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Saule le Tortueux avait beau être malin comme un singe, Moon a réussi à l'expédier droit vers la lune."
@@ -7084,10 +6154,7 @@
     "id": "shatte-roulette-pandala",
     "name": "Shatte Roulette",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip",
-      "Forgemage"
-    ],
+    "subTypes": ["Ecaflip", "Forgemage"],
     "extension": {
       "name": "Pandala",
       "number": "13/162",
@@ -7118,9 +6185,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Avec Shatte, tout est possible, il y a juste à tourner la roulette !"
@@ -7132,10 +6197,7 @@
     "id": "silar-pandala",
     "name": "Silar",
     "mainType": "Allié",
-    "subTypes": [
-      "Brâkmar",
-      "Unique"
-    ],
+    "subTypes": ["Brâkmar", "Unique"],
     "extension": {
       "name": "Pandala",
       "number": "86/162",
@@ -7171,9 +6233,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "A la mort de ses parents, pour fuir son désespoir, Silar se transforma en rat de laboratoire."
@@ -7185,9 +6245,7 @@
     "id": "silouate-protecteur-d-aperirel-pandala",
     "name": "Silouate, Protecteur d'Aperirel",
     "mainType": "Protecteur",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Pandala",
       "number": "161/162",
@@ -7213,9 +6271,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "En Aperirel, Silouate ne se découvre pas d'une ficelle."
@@ -7226,9 +6282,7 @@
     "id": "silvosse-protecteur-de-flovore-pandala",
     "name": "Silvosse, Protecteur de Flovore",
     "mainType": "Protecteur",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Pandala",
       "number": "159/162",
@@ -7254,9 +6308,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Lorsqu'il était jeune, Silvosse bourgeonnait. Aujourd'hui, toutes les belles plantes sont folles de lui."
@@ -7267,10 +6319,7 @@
     "id": "sournoiserie-pandala",
     "name": "Sournoiserie",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sram"
-    ],
+    "subTypes": ["Sort", "Sram"],
     "extension": {
       "name": "Pandala",
       "number": "114/162",
@@ -7291,9 +6340,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Crowley"
-    ],
+    "artists": ["Crowley"],
     "notes": [],
     "flavor": {
       "text": "Quels sont ces Srams sournois qui agressent l'ennemi à distance ?",
@@ -7305,10 +6352,7 @@
     "id": "spaice-bworkettes-pandala",
     "name": "Spaïce Bworkettes",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Bwork"
-    ],
+    "subTypes": ["Monstre", "Bwork"],
     "extension": {
       "name": "Pandala",
       "number": "62/162",
@@ -7328,18 +6372,14 @@
     "effects": [
       {
         "description": "Cherchez un Bwork dans votre Défausse et mettez-le en jeu dans le Monde. Il apparaît incliné. N'utilisez ce pouvoir que si les Spaïce Bworkettes sont dans le Monde.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "\"Pouvoir aux Bworks !\" Tel est le slogan de ce célèbre groupe de Bwork' N Roule."
@@ -7351,10 +6391,7 @@
     "id": "tofukaz-pandala",
     "name": "Tofukaz",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tofu"
-    ],
+    "subTypes": ["Monstre", "Tofu"],
     "extension": {
       "name": "Pandala",
       "number": "28/162",
@@ -7374,17 +6411,13 @@
     "effects": [
       {
         "description": "Quand le Tofukaz est bloqué, vous pouvez le détruire. Si vous le faites, il inflige 3 Dommages à l'Allié ou Héros de votre choix qui le bloque.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kosal Sok"
-    ],
+    "artists": ["Kosal Sok"],
     "notes": [],
     "flavor": {
       "text": "Pas besoin d'être kamikaze pour jouer les Tofukaz. Il suffit d'être un Tofu, avec une case en plus."
@@ -7396,10 +6429,7 @@
     "id": "tom-shausseur-pandala",
     "name": "Tom Shausseur",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur",
-      "Brâkmar"
-    ],
+    "subTypes": ["Sacrieur", "Brâkmar"],
     "extension": {
       "name": "Pandala",
       "number": "11/162",
@@ -7435,9 +6465,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [
       "Si l'Allié peut légalement bloquer Tom Shausseur, alors il doit obligatoirement être déclaré pour le faire. Si le contrôleur de cet Allié ne possède qu'un seul PM, il doit utiliser ce PM pour déclarer l'Allié comme bloqueur de Tom Shausseur. Le pouvoir de Tom Shausseur est sans effet si l'Allié choisi ne peut pas bloquer Tom Shausseur. C'est entre autres le cas si l'Allié choisi ne peut pas bloquer (comme Epouvantail, Jicé Aouaire), ou si son contrôleur possède 0 PM."
     ],
@@ -7452,10 +6480,7 @@
     "id": "tonneau-explosif-pandala",
     "name": "Tonneau Explosif",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Tonneau"
-    ],
+    "subTypes": ["Objet", "Tonneau"],
     "extension": {
       "name": "Pandala",
       "number": "149/162",
@@ -7471,9 +6496,7 @@
     "effects": [
       {
         "description": "X , Détruisez le Tonneau Explosif : Tous les Équipements de Niveau X dans le Monde et dans les Havres Sacs sont détruits.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -7482,14 +6505,10 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Quand un tonneau explose, Jé ricane. Pourtant y a vraiment pas de quoi se bidonner….",
@@ -7505,10 +6524,7 @@
     "id": "touffe-pandala",
     "name": "Touffe",
     "mainType": "Allié",
-    "subTypes": [
-      "Sadida",
-      "Petit Garçon"
-    ],
+    "subTypes": ["Sadida", "Petit Garçon"],
     "extension": {
       "name": "Pandala",
       "number": "48/162",
@@ -7533,9 +6549,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Sylvain Trabut"
-    ],
+    "artists": ["Sylvain Trabut"],
     "notes": [],
     "flavor": {
       "text": "Avec sa sœur Feuille, ils ont un credo : un pour Touffe et Touffe pour un !"
@@ -7547,10 +6561,7 @@
     "id": "tremblement-de-terre-pandala",
     "name": "Tremblement de Terre",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sadida"
-    ],
+    "subTypes": ["Sort", "Sadida"],
     "extension": {
       "name": "Pandala",
       "number": "113/162",
@@ -7571,9 +6582,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aurélie Neyret"
-    ],
+    "artists": ["Aurélie Neyret"],
     "notes": [],
     "flavor": {
       "text": "Ça y est je suis touchée, je n'peux pas résister !",
@@ -7585,10 +6594,7 @@
     "id": "tromperelle-pandala",
     "name": "Tromperelle",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Champignon"
-    ],
+    "subTypes": ["Monstre", "Champignon"],
     "extension": {
       "name": "Pandala",
       "number": "39/162",
@@ -7608,9 +6614,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Ne vous y trompez pas ! Malgré son air frêle, la Tromperelle trempe dans tout un tas d'affaires criminelles !"
@@ -7622,9 +6626,7 @@
     "id": "ulgrude-protecteur-de-martalo-pandala",
     "name": "Ulgrude, Protecteur de Martalo",
     "mainType": "Protecteur",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Pandala",
       "number": "160/162",
@@ -7650,9 +6652,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "Depuis qu'Ulgrude du Tonnerre a eu le coup de foudre pour Jiva, il y a de l'orage dans l'air…"
@@ -7684,9 +6684,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "D'après ses admiratrices, la meilleure arme de Goultard, c'est son charme de destruction massive."
@@ -7696,10 +6694,7 @@
     "id": "viktor-yugo-pandala",
     "name": "Viktor Yugo",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof",
-      "Brâkmar"
-    ],
+    "subTypes": ["Enutrof", "Brâkmar"],
     "extension": {
       "name": "Pandala",
       "number": "53/162",
@@ -7735,9 +6730,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Kosal Sok"
-    ],
+    "artists": ["Kosal Sok"],
     "notes": [
       "Le pouvoir de Viktor Yugo supprime à la fois le contenu de la boite de texte des Equipements portés par les Alliés ou Héros qui le bloquent ou qui sont bloqués par lui, mais également tous les autres bonus comme les bonus de Force, de PV, de PA ou de PM. Un « malus » est un bonus négatif conféré par l'Equipement et est donc également perdu."
     ],
@@ -7751,9 +6744,7 @@
     "id": "village-aerdala-pandala",
     "name": "Village Aerdala",
     "mainType": "Zone",
-    "subTypes": [
-      "Territoire de Conquête"
-    ],
+    "subTypes": ["Territoire de Conquête"],
     "extension": {
       "name": "Pandala",
       "number": "120/162",
@@ -7779,9 +6770,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Il n'y a pas meilleur endroit pour prendre un bol d'air frais !"
@@ -7791,9 +6780,7 @@
     "id": "village-akwadala-pandala",
     "name": "Village Akwadala",
     "mainType": "Zone",
-    "subTypes": [
-      "Territoire de Conquête"
-    ],
+    "subTypes": ["Territoire de Conquête"],
     "extension": {
       "name": "Pandala",
       "number": "123/162",
@@ -7819,9 +6806,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Ça coule de source : Akwadala est le meilleur endroit pour se rincer le gosier !"
@@ -7831,9 +6816,7 @@
     "id": "village-feudala-pandala",
     "name": "Village Feudala",
     "mainType": "Zone",
-    "subTypes": [
-      "Territoire de Conquête"
-    ],
+    "subTypes": ["Territoire de Conquête"],
     "extension": {
       "name": "Pandala",
       "number": "121/162",
@@ -7869,9 +6852,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [
       "Le joueur dont c'est le tour doit détruire un de ses Alliés si au moins un de ses Allié peut être détruit. S'il ne peut détruire aucun Allié, le pouvoir du Village Feudala ne fait rien.",
       "Cette carte a reçu un errata officiel : Le choix dans le pouvoir a été retiré pour une meilleure cohérence du wording vis-à-vis du fonctionnement de la carte. Le second pouvoir devient : \"Tant que le Village Feudala est en jeu, au début du tour de chaque joueur, ce joueur détruit un Allié qu'il contrôle.\""
@@ -7885,9 +6866,7 @@
     "id": "village-terrdala-pandala",
     "name": "Village Terrdala",
     "mainType": "Zone",
-    "subTypes": [
-      "Territoire de Conquête"
-    ],
+    "subTypes": ["Territoire de Conquête"],
     "extension": {
       "name": "Pandala",
       "number": "122/162",
@@ -7918,9 +6897,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [
       "Un Héros est considéré comme ne pouvant pas attaquer ce tour si un pouvoir l'en empêche explicitement, comme ceux des cartes Incarnam ou Apaisement de Maimane, ou si son contrôleur possède 0 PM. Un Héros qui n'a pas attaqué parce que son contrôleur ne le souhaitait pas ou parce qu'il était incliné au moment de la déclaration de l'attaque perdra 2PV. Si le Héros cesse d'être attaquant avant la fin du combat, le pouvoir du Village Terrdala ne se déclenchera pas."
     ],
@@ -7932,10 +6909,7 @@
     "id": "vol-du-temps-pandala",
     "name": "Vol du Temps",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Xélor"
-    ],
+    "subTypes": ["Sort", "Xélor"],
     "extension": {
       "name": "Pandala",
       "number": "115/162",
@@ -7956,9 +6930,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Gray Shuko"
-    ],
+    "artists": ["Gray Shuko"],
     "notes": [],
     "flavor": {
       "text": "Avec le temps, va, tout s'envole ! On oublie ses sorts et l'on oublie ses PA !",
@@ -7970,10 +6942,7 @@
     "id": "yokai-firefoux-pandala",
     "name": "Yokaï Firefoux",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Firefoux"
-    ],
+    "subTypes": ["Monstre", "Firefoux"],
     "extension": {
       "name": "Pandala",
       "number": "20/162",
@@ -7999,9 +6968,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [],
     "flavor": {
       "text": "On raconte que le premier Firefoux à s'être installé sur Pandala était un navigateur libre nommé Fozilla."

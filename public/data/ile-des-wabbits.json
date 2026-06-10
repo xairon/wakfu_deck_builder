@@ -19,17 +19,13 @@
     "effects": [
       {
         "description": "Jusqu'à la fin du tour, chaque fois qu'un Allié Wabbit apparaît dans le Monde, il inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Véronique Meignaud"
-    ],
+    "artists": ["Véronique Meignaud"],
     "notes": [],
     "flavor": {
       "text": "Non, non et non ! On ne dit pas « Agression », mais « Agwession » ! C'est pouwtant simple ! — Wogew Wabbit."
@@ -39,11 +35,7 @@
     "id": "bandeau-du-black-tiwabbit-ile-des-wabbits",
     "name": "Bandeau du Black Tiwabbit",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Coiffe",
-      "Wabbit"
-    ],
+    "subTypes": ["Armure", "Coiffe", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "12/30",
@@ -64,18 +56,13 @@
       },
       {
         "description": "Le Porteur du Bandeau du Black Tiwabbit inflige un nombre de Dommages égal à sa Force à l'Allié ou Héros de votre choix, puis détruisez-le.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Si le Black Tiwabbit pousse des cris aussi ridicules, c'est parce que son bandeau lui comprime le cerveau…"
@@ -90,11 +77,7 @@
     "id": "baton-du-wa-wabbit-ile-des-wabbits",
     "name": "Bâton du Wa Wabbit",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Bâton",
-      "Wa"
-    ],
+    "subTypes": ["Arme", "Bâton", "Wa"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "30/30",
@@ -112,10 +95,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "On comprend qu'avec ce bâton, le Wa Wabbit soit capable de vous battre les doigts dans le nez…"
@@ -129,10 +109,7 @@
     "id": "black-tiwabbit-ile-des-wabbits",
     "name": "Black Tiwabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "3/30",
@@ -157,18 +134,14 @@
       },
       {
         "description": "Dites \"WABEHAMEHA !\" : Le Black Tiwabbit inflige 1 Dommage à l'Allié ou Héros de votre choix, puis détruisez-le.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
     "flavor": {
       "text": "L'amouw wend fou, il n'y a que la guewwe qui Wambo — Black Tiwabbit."
@@ -180,10 +153,7 @@
     "id": "black-wabbit-ile-des-wabbits",
     "name": "Black Wabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "20/30",
@@ -214,9 +184,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [],
     "flavor": {
       "text": "Si le Black Wabbit est aussi sombre, c'est qu'il se gave de Cawottes twop cuites !"
@@ -228,10 +196,7 @@
     "id": "boo-ile-des-wabbits",
     "name": "Boo",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flasque"
-    ],
+    "subTypes": ["Monstre", "Flasque"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "13/30",
@@ -250,9 +215,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Gao Lao"
-    ],
+    "artists": ["Gao Lao"],
     "notes": [],
     "flavor": {
       "text": "Il baraît que les vabeurs de la boue de Boo  qui bout beuvent bousser n'imborte qui à bout."
@@ -264,9 +227,7 @@
     "id": "bowissette-ile-des-wabbits",
     "name": "Bowissette",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa"
-    ],
+    "subTypes": ["Pandawa"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "17/30",
@@ -292,9 +253,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Ce soir, chez Bowissette, événement, c'est soirée Bouftonik !"
@@ -305,11 +264,7 @@
     "id": "cape-du-wa-wabbit-ile-des-wabbits",
     "name": "Cape du Wa Wabbit",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Cape",
-      "Wa"
-    ],
+    "subTypes": ["Armure", "Cape", "Wa"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "29/30",
@@ -327,10 +282,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Cette magnifique cape pourrait vous servir de sortie de bain. Mais pour ça, il faudrait que vous vous laviez."
@@ -344,10 +296,7 @@
     "id": "cawotte-ile-des-wabbits",
     "name": "Cawotte",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Élémentaire"
-    ],
+    "subTypes": ["Sort", "Élémentaire"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "8/30",
@@ -383,10 +332,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["François Houssin (Franho)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Klawa Owgane m'a dit un jouw qu'elle adowait les gwosses Cawottes. — Le Wa Wabbit."
@@ -397,10 +343,7 @@
     "id": "chateau-des-wabbits-ile-des-wabbits",
     "name": "Château des Wabbits",
     "mainType": "Zone",
-    "subTypes": [
-      "Château",
-      "Unique"
-    ],
+    "subTypes": ["Château", "Unique"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "9/30",
@@ -421,9 +364,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Clé du Matin Pewlant, Clé du Midi Wayonnant et Clé du Soiw Woulant vous ouvriront les portes du Château des Wabbits."
@@ -433,10 +374,7 @@
     "id": "coffre-malveillant-ile-des-wabbits",
     "name": "Coffre Malveillant",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Coffre"
-    ],
+    "subTypes": ["Monstre", "Coffre"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "14/30",
@@ -461,9 +399,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ne lui tournez pas le dos ! C'est bien connu :  dès que ça tourne, il passe à l'action et c'est dans la boîte !"
@@ -475,11 +411,7 @@
     "id": "couronne-du-wa-wabbit-ile-des-wabbits",
     "name": "Couronne du Wa Wabbit",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Wa"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Wa"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "28/30",
@@ -497,10 +429,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Cette couronne qui sent bon la Cawotte ne vous rendra pas plus aimable. Plus élégant, peut",
@@ -541,9 +470,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Eric Herenguel"
-    ],
+    "artists": ["Eric Herenguel"],
     "notes": [
       "Échec critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement et ne sont pas considérés comme joués. Échec critique ne permet donc pas de les annuler."
     ],
@@ -555,9 +482,7 @@
     "id": "festin-des-wabbits-ile-des-wabbits",
     "name": "Festin des Wabbits",
     "mainType": "Action",
-    "subTypes": [
-      "Quête"
-    ],
+    "subTypes": ["Quête"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "25/30",
@@ -592,9 +517,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Beaucoup aiment le Wabbit à la sauce chasseur. Les Wabbits, eux, préfèrent le chasseur à la sauce Cawotte."
@@ -605,10 +528,7 @@
     "id": "flaqueux-ile-des-wabbits",
     "name": "Flaqueux",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flaqueux"
-    ],
+    "subTypes": ["Monstre", "Flaqueux"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "22/30",
@@ -628,18 +548,14 @@
     "effects": [
       {
         "description": "Si le Flaqueux se trouve dans votre Défausse, vous pouvez payer pour le recycler. Votre Héros regagne 2 PV.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Pour avoir toujours du liquide sur soi, il suffit d'adopter un Flaqueux ! — Arpa Goutt, Enutrof à sec."
@@ -651,10 +567,7 @@
     "id": "grand-pa-wabbit-ile-des-wabbits",
     "name": "Grand Pa Wabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "4/30",
@@ -679,9 +592,7 @@
       },
       {
         "description": "Le Grand Pa Wabbit inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
         "compiled": {
@@ -692,10 +603,7 @@
               "n": 1,
               "element": "Eau",
               "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
@@ -703,9 +611,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Clément Lefèvre"
-    ],
+    "artists": ["Clément Lefèvre"],
     "notes": [],
     "flavor": {
       "text": "Ce n'est pas au Wabbit qu'on appwend à mangew une Cawotte ! — Pwovewbe Wabbit."
@@ -717,10 +623,7 @@
     "id": "havre-sac-du-wa-wabbit-ile-des-wabbits",
     "name": "Havre Sac du Wa Wabbit",
     "mainType": "Havre-Sac",
-    "subTypes": [
-      "Taille 4",
-      "Résistance 12"
-    ],
+    "subTypes": ["Taille 4", "Résistance 12"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "2/30",
@@ -741,10 +644,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "François Houssin (Franho)",
-      "Sandrine Vanneste (Alhera)"
-    ],
+    "artists": ["François Houssin (Franho)", "Sandrine Vanneste (Alhera)"],
     "notes": [],
     "flavor": {
       "text": "Si vous cwoyez y twouver un Dofus Cawotte, vous pwenez vos wêves pouw des wéalités !"
@@ -754,9 +654,7 @@
     "id": "ile-des-wabbits-ile-des-wabbits",
     "name": "Île des Wabbits",
     "mainType": "Zone",
-    "subTypes": [
-      "Île"
-    ],
+    "subTypes": ["Île"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "10/30",
@@ -777,9 +675,7 @@
       },
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez l'Île des Wabbits.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
         "compiled": {
@@ -800,9 +696,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Bertrand Hottin"
-    ],
+    "artists": ["Bertrand Hottin"],
     "notes": [],
     "flavor": {
       "text": "Île des Wabbits ! Moins 10 % sur les allers sans retour ! — Employé de l'Agence Touriste."
@@ -833,9 +727,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Florian Dupre"
-    ],
+    "artists": ["Florian Dupre"],
     "notes": [],
     "flavor": {
       "text": "Évitez de faire le malin alors que vous savez à peine aligner trois sorts ! Sinon, gare à la déculottée !"
@@ -845,10 +737,7 @@
     "id": "petit-flaqueux-ile-des-wabbits",
     "name": "Petit Flaqueux",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flaqueux"
-    ],
+    "subTypes": ["Monstre", "Flaqueux"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "15/30",
@@ -873,9 +762,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Laisse pas traîner ton fils, si tu veux pas que je glisse. — Joey Etoile."
@@ -887,10 +774,7 @@
     "id": "phorreur-immature-ile-des-wabbits",
     "name": "Phorreur Immature",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Phorreur"
-    ],
+    "subTypes": ["Monstre", "Phorreur"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "16/30",
@@ -915,9 +799,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Forer en forêt sans foret ni Phorreur, faudrait pas rêver !"
@@ -929,9 +811,7 @@
     "id": "potion-de-rappel-ile-des-wabbits",
     "name": "Potion de Rappel",
     "mainType": "Action",
-    "subTypes": [
-      "Potion"
-    ],
+    "subTypes": ["Potion"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "23/30",
@@ -952,9 +832,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ceyles"
-    ],
+    "artists": ["Ceyles"],
     "notes": [],
     "flavor": {
       "text": "Elle peut s'avérer très utile… si vous vous rappelez dans quel cas il faut la boire !"
@@ -986,9 +864,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Etienne Corbaux (Blacklilipute)"
-    ],
+    "artists": ["Etienne Corbaux (Blacklilipute)"],
     "notes": [],
     "flavor": {
       "text": "On a beau y trouver la plus grosse réserve de Cawottes, ce n'est pas ça qui rend le Wa plus aimable !"
@@ -1024,9 +900,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [
       "Stratégie de groupe génère un modificateur continu défini qui affecte tous les Alliés dans le Monde. Un Allié présent dans le Monde à la résolution de Stratégie de Groupe et qui se déplace dans le Havre Sac ne bénéficie plus du bonus de Force. En revanche, un Allié qui apparaît dans le Monde après la résolution de Stratégie de groupe bénéficiera tout de même du bonus de Force."
     ],
@@ -1039,10 +913,7 @@
     "id": "tiwabbit-kiafin-ile-des-wabbits",
     "name": "Tiwabbit Kiafin",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "21/30",
@@ -1062,9 +933,7 @@
     "effects": [
       {
         "description": "Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, le Tiwabbit Kiafin lui inflige 1 Dommage .",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -1076,9 +945,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Pierre Loyvet"
-    ],
+    "artists": ["Pierre Loyvet"],
     "notes": [
       "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions."
     ],
@@ -1092,10 +959,7 @@
     "id": "vener-ile-des-wabbits",
     "name": "Vener",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fossoyeur"
-    ],
+    "subTypes": ["Monstre", "Fossoyeur"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "18/30",
@@ -1121,9 +985,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ce fantôme est une vraie menace. Les seuls os avec lesquels il aime jouer, ce sont les vôtres."
@@ -1135,9 +997,7 @@
     "id": "wa-wabbit-ile-des-wabbits",
     "name": "Wa Wabbit",
     "mainType": "Héros",
-    "subTypes": [
-      "Wabbit"
-    ],
+    "subTypes": ["Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "1/30",
@@ -1170,9 +1030,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "class": "Wabbit",
     "level": {
@@ -1242,10 +1100,7 @@
     "id": "wabbit-ile-des-wabbits",
     "name": "Wabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "19/30",
@@ -1264,9 +1119,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Matteo De Longis"
-    ],
+    "artists": ["Matteo De Longis"],
     "notes": [],
     "flavor": {
       "text": "Pour chasser le Wabbit, rien de plus simple : faites le cri de la Cawotte !"
@@ -1278,10 +1131,7 @@
     "id": "wo-wabbit-ile-des-wabbits",
     "name": "Wo Wabbit",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "6/30",
@@ -1307,9 +1157,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Karine Le Logeais (Kness)"
-    ],
+    "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
     "flavor": {
       "text": "Un célèbre proverbe Wabbit dit :  « Wo Wabbit qui woule distwibue das woustes ! »"
@@ -1321,10 +1169,7 @@
     "id": "wobot-ile-des-wabbits",
     "name": "Wobot",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Île des Wabbits",
       "number": "5/30",
@@ -1355,9 +1200,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [
       "La mention \"Détruisez le Wobot\" fait partie de sont effet et non de son coût d'activation."
     ],

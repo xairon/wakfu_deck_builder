@@ -489,9 +489,14 @@ export const useGameStore = defineStore("game", () => {
       type: "SET_ORIENTATION" as const,
       payload: { instanceId: id, orientation: "tapped" },
     }));
-    // Action dont l'effet est entièrement compilé : elle se résout puis va
-    // en défausse (302.1) au lieu de rester sur la table.
-    const actionAtoms = card.mainType === "Action" ? playEffects(card) : [];
+    // Action dont TOUS les effets sont compilés : elle se résout puis va en
+    // défausse (302.1). Un seul effet incompris (ex. restriction de jeu
+    // « Ne jouez cette carte que… ») → la carte reste jouée manuellement.
+    const effectsCount = (card.effects ?? []).filter((e) =>
+      String(e?.description ?? "").trim(),
+    ).length;
+    const playAtoms = card.mainType === "Action" ? playEffects(card) : [];
+    const actionAtoms = playAtoms.length === effectsCount ? playAtoms : [];
     const dest: ZoneRef = actionAtoms.length
       ? { zone: "defausse", owner: seat }
       : playDestination(card, seat);
@@ -559,14 +564,39 @@ export const useGameStore = defineStore("game", () => {
     sourceId?: string;
   } | null>(null);
 
+  /** Filtre de recherche dans une pile (type, famille, niveau max). */
+  interface PickFilter {
+    mainType?: string;
+    sub?: string;
+    maxLevel?: number;
+  }
+  function normWord(s: string): string {
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  }
+  function matchesPickFilter(card: Card | null, f?: PickFilter): boolean {
+    if (!f) return true;
+    if (!card) return false;
+    if (f.mainType && card.mainType !== f.mainType) return false;
+    if (f.sub && !(card.subTypes ?? []).some((s) => normWord(s) === f.sub))
+      return false;
+    if (
+      f.maxLevel !== undefined &&
+      (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) > f.maxLevel
+    )
+      return false;
+    return true;
+  }
+
   /** Choix de carte(s) dans une pile (recycler / défausser / chercher). */
   const effectPicking = ref<{
     seat: Seat;
     cardName: string;
     zone: "defausse" | "main" | "pioche";
     action: "recycle" | "discard" | "toHand" | "toMonde";
-    /** Filtre par type principal (recherche dans la Pioche). */
-    filter?: string;
+    /** Filtre de la recherche dans la Pioche. */
+    filter?: PickFilter;
+    /** « Il apparaît incliné. » — la carte mise en jeu arrive inclinée. */
+    enterTapped?: boolean;
     remaining: number;
     sourceId?: string;
   } | null>(null);
@@ -616,10 +646,11 @@ export const useGameStore = defineStore("game", () => {
     if (!p) return [];
     const ids = [...state.value.seats[p.seat][p.zone]];
     if (!p.filter) return ids;
-    return ids.filter(
-      (id) =>
-        getCard(state.value.instances[id]?.cardId ?? null)?.mainType ===
+    return ids.filter((id) =>
+      matchesPickFilter(
+        getCard(state.value.instances[id]?.cardId ?? null),
         p.filter,
+      ),
     );
   });
 
@@ -644,7 +675,19 @@ export const useGameStore = defineStore("game", () => {
       );
     } else {
       moveTo(instanceId, { zone: "monde" });
-      dispatch(say(p.seat, `${p.cardName} : la carte cherchée entre en jeu.`));
+      if (p.enterTapped) {
+        dispatch({
+          actor: p.seat,
+          type: "SET_ORIENTATION",
+          payload: { instanceId, orientation: "tapped" },
+        });
+      }
+      dispatch(
+        say(
+          p.seat,
+          `${p.cardName} : la carte cherchée entre en jeu${p.enterTapped ? " (inclinée)" : ""}.`,
+        ),
+      );
       // la carte mise en jeu par l'effet « apparaît » : son propre effet
       // d'apparition part en cascade (en queue de file)
       queueArrivalEffects(
@@ -703,13 +746,24 @@ export const useGameStore = defineStore("game", () => {
         continue;
       }
       if (op.op === "searchDeck") {
-        const hasMatch = state.value.seats[seat].pioche.some(
-          (id) =>
-            getCard(state.value.instances[id]?.cardId ?? null)?.mainType ===
-            op.what,
+        const filter: PickFilter = {
+          mainType: op.what,
+          ...(op.sub ? { sub: op.sub } : {}),
+          ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
+        };
+        const hasMatch = state.value.seats[seat].pioche.some((id) =>
+          matchesPickFilter(
+            getCard(state.value.instances[id]?.cardId ?? null),
+            filter,
+          ),
         );
         if (!hasMatch) {
-          dispatch(say(seat, `${cardName} : aucun ${op.what} dans la Pioche.`));
+          dispatch(
+            say(
+              seat,
+              `${cardName} : aucune carte correspondante dans la Pioche.`,
+            ),
+          );
           continue;
         }
         effectPicking.value = {
@@ -717,7 +771,8 @@ export const useGameStore = defineStore("game", () => {
           cardName,
           zone: "pioche",
           action: op.dest === "main" ? "toHand" : "toMonde",
-          filter: op.what,
+          filter,
+          ...(op.tapped ? { enterTapped: true } : {}),
           remaining: 1,
           sourceId,
         };

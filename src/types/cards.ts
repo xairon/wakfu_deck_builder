@@ -72,11 +72,17 @@ export type CompiledEffectOp =
   | { op: "recycleFromDiscard"; n: number }
   /** « Défaussez-vous de N carte(s) » — choix dans sa main. */
   | { op: "discardFromHand"; n: number }
-  /** « Cherchez un [type] dans votre Pioche … » — choix filtré dans la
-   *  Pioche, vers la main ou le jeu (le mélange suit via shuffleDeck). */
+  /** « Cherchez un [type] [Famille] [de Niveau ≤ N] dans votre Pioche … » —
+   *  choix filtré dans la Pioche, vers la main ou le jeu. */
   | {
       op: "searchDeck";
       what: "Dofus" | "Action" | "Équipement" | "Zone" | "Salle" | "Allié";
+      /** Sous-type/famille requis (normalisé minuscules, ex. "wabbit"). */
+      sub?: string;
+      /** Niveau maximal de la carte cherchée. */
+      maxLevel?: number;
+      /** « Il apparaît incliné. » — la carte mise en jeu arrive inclinée. */
+      tapped?: boolean;
       dest: "main" | "monde";
     }
   /** « … puis mélangez votre Pioche ». */

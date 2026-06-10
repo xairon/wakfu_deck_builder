@@ -3,11 +3,7 @@
     "id": "abraknyde-ancestral-chaos-dogrest",
     "name": "Abraknyde Ancestral",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Abraknyde",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Abraknyde", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "32/162",
@@ -38,9 +34,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Cet Abraknyde est si vieux, que ses congénères le saluent en lui disant \"ça va, vieille branche ?\""
@@ -52,9 +46,7 @@
     "id": "aermyne-scalptaras-chaos-dogrest",
     "name": "Aermyne Scalptaras",
     "mainType": "Allié",
-    "subTypes": [
-      "Bandit"
-    ],
+    "subTypes": ["Bandit"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "45/162",
@@ -85,9 +77,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Qu'importe que vous soyez une bonne pâte ou un dur à cuir ! Aermyne ne fera qu'une bouchée de vous !"
@@ -114,17 +104,13 @@
     "effects": [
       {
         "description": "Inclinez un de vos Alliés ou Héros : Il inflige sa Force en Dommages à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Xavier Banteignie"
-    ],
+    "artists": ["Xavier Banteignie"],
     "notes": [],
     "flavor": {
       "text": "Affronter une créature aussi féroce qu'un Tofu demande forcément un minimum d'agressivité…"
@@ -134,12 +120,7 @@
     "id": "amulette-cristaline-chaos-dogrest",
     "name": "Amulette Cristaline",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Amulette",
-      "Ethérée",
-      "Cristaline"
-    ],
+    "subTypes": ["Bijou", "Amulette", "Ethérée", "Cristaline"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "150/162",
@@ -170,9 +151,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Les archers la surnomment \"cristal d'arc\"."
@@ -187,12 +166,7 @@
     "id": "anneau-cristalin-chaos-dogrest",
     "name": "Anneau Cristalin",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau",
-      "Ethérée",
-      "Cristaline"
-    ],
+    "subTypes": ["Bijou", "Anneau", "Ethérée", "Cristaline"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "149/162",
@@ -223,9 +197,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Etour Drif se demande encore s'il est à Chris ou à Alain…"
@@ -240,10 +212,7 @@
     "id": "anneau-mer-chaos-dogrest",
     "name": "Anneau Mèr",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Anneau"
-    ],
+    "subTypes": ["Bijou", "Anneau"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "148/162",
@@ -258,14 +227,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Benoit Laigle (Ben Pirate)"
-    ],
+    "artists": ["Benoit Laigle (Ben Pirate)"],
     "notes": [],
     "flavor": {
       "text": "Ooh Pinaise ! Il est drôlement chouette ce petit anneau !",
@@ -280,9 +245,7 @@
     "id": "anny-koleta-chaos-dogrest",
     "name": "Anny Koléta",
     "mainType": "Allié",
-    "subTypes": [
-      "Crâ"
-    ],
+    "subTypes": ["Crâ"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "35/162",
@@ -302,17 +265,13 @@
     "effects": [
       {
         "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Marie Fromont"
-    ],
+    "artists": ["Marie Fromont"],
     "notes": [],
     "flavor": {
       "text": "La musique ! Oui, la musique, je le sais, sera la clé, pour décrocher mes flèches aiguisées !",
@@ -324,9 +283,7 @@
     "id": "apprentissage-chaos-dogrest",
     "name": "Apprentissage",
     "mainType": "Action",
-    "subTypes": [
-      "Parchemin"
-    ],
+    "subTypes": ["Parchemin"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "112/162",
@@ -347,9 +304,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Attends ! Je tue Toriel et après je viens t'aider, OK ?",
@@ -361,10 +316,7 @@
     "id": "arbre-hakam-chaos-dogrest",
     "name": "Arbre Hakam",
     "mainType": "Zone",
-    "subTypes": [
-      "Arbre",
-      "Unique"
-    ],
+    "subTypes": ["Arbre", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "129/162",
@@ -385,9 +337,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
       "text": "L'Arbre à Kam ? Je savais que Kam aimait les Chafers, mais pas qu'il aimait les arbres !",
@@ -398,10 +348,7 @@
     "id": "arc-de-chasse-chaos-dogrest",
     "name": "Arc de Chasse",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Arc"
-    ],
+    "subTypes": ["Arme", "Arc"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "143/162",
@@ -417,9 +364,7 @@
     "effects": [
       {
         "description": "Détruisez un de vos Monstres : Le Porteur de l'Arc de Chasse gagne un bonus de Force égal à la Force de ce Monstre et jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -428,14 +373,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "Un faffeur fafant faffer doit favoir faffer avec fon arc de faffe ! Fofy Fafié, philosophe."
@@ -474,16 +415,12 @@
             {
               "op": "destroyTarget",
               "what": "Allié",
-              "zones": [
-                "monde"
-              ]
+              "zones": ["monde"]
             },
             {
               "op": "destroyTarget",
               "what": "Équipement",
-              "zones": [
-                "monde"
-              ]
+              "zones": ["monde"]
             }
           ]
         }
@@ -495,10 +432,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ulrick Wery",
-      "Edouard Guiton"
-    ],
+    "artists": ["Ulrick Wery", "Edouard Guiton"],
     "notes": [
       "Vous ne pouvez pas jouer l'Attaque Frontale si vous êtes dans l'impossibilité de choisir à la fois un Allié et un Equipement. À la résolution de l'Attaque Frontale, si un des deux choix effectués est devenu illégal, l'autre choix reste affecté normalement."
     ],
@@ -511,11 +445,7 @@
     "id": "bakkaluffy-chaos-dogrest",
     "name": "Bakkaluffy",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor",
-      "Champion",
-      "Unique"
-    ],
+    "subTypes": ["Xélor", "Champion", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "54/162",
@@ -548,15 +478,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Augustin Bonne (Roxnin)"
-    ],
+    "artists": ["Augustin Bonne (Roxnin)"],
     "notes": [
       "L'intégralité de la phase d'action est supprimée de la structure du combat, qui passe donc directement de la fin de la déclaration des bloqueurs au début de la résolution des duels. Par conséquent, des pouvoirs qui se déclenchent au début de la phase d'action, comme le pouvoir de Marty Nïe, ne se déclencheront pas si un Champion est attaquant, bloqueur ou cible de ce combat. Les pouvoirs qui se déclenchent lors de la déclaration de la cible, des attaquants ou des bloqueurs se déclenchent normalement, de même que ceux qui se déclenchent en fin de combat."
     ],
@@ -570,9 +496,7 @@
     "id": "blak-mambo-chaos-dogrest",
     "name": "Blak Mambo",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur"
-    ],
+    "subTypes": ["Sacrieur"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "27/162",
@@ -608,9 +532,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "David Cicerone"
-    ],
+    "artists": ["David Cicerone"],
     "notes": [
       "Un Allié ou Héros est considéré comme étant en dehors du combat s'il n'est ni attaquant, ni bloqueur, ni cible dans ce combat."
     ],
@@ -623,11 +545,7 @@
     "id": "blop-coco-royal-chaos-dogrest",
     "name": "Blop Coco Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Blop",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Blop", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "55/162",
@@ -647,9 +565,7 @@
     "effects": [
       {
         "description": "Le Blop Coco Royal inflige 3 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
         "compiled": {
@@ -660,36 +576,27 @@
               "n": 3,
               "element": "Air",
               "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
       },
       {
         "description": "Renvoyez l'Allié adverse de votre choix dans la main de son propriétaire.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "L'Allié ou Héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Quand il est à bout, Blop Coco met les bouts."
@@ -701,11 +608,7 @@
     "id": "blop-griotte-royal-chaos-dogrest",
     "name": "Blop Griotte Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Blop",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Blop", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "78/162",
@@ -725,34 +628,26 @@
     "effects": [
       {
         "description": "Renvoyez l'Allié adverse de votre choix dans la main de son propriétaire.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "L'Allié ou héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Détruisez l'Équipement ou la Zone de votre choix.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Lorsque le Blop Griotte Royal voit rouge, plus rien ne bouge !"
@@ -764,11 +659,7 @@
     "id": "blop-indigo-royal-chaos-dogrest",
     "name": "Blop Indigo Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Blop",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Blop", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "104/162",
@@ -788,25 +679,19 @@
     "effects": [
       {
         "description": "L'Allié ou héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Détruisez l'Équipement ou la Zone de votre choix.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Le Blop Indigo Royal inflige 3 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
         "compiled": {
@@ -817,10 +702,7 @@
               "n": 3,
               "element": "Eau",
               "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
@@ -828,9 +710,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Si vous ne voulez pas être recouvert de bleus, ne lui dîtes pas qu'il en est un !"
@@ -842,11 +722,7 @@
     "id": "blop-multicolore-royal-chaos-dogrest",
     "name": "Blop Multicolore Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Blop",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Blop", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "8/162",
@@ -882,9 +758,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Enaibi"
-    ],
+    "artists": ["Enaibi"],
     "notes": [
       "Les éléments sont Neutre, Terre, Air, Feu et Eau. Le Blop qui apparaît dans le Monde est compté lors de la résolution de ce pouvoir. Le Blop Multicolore Royal déclenche son propre pouvoir. Si vous contrôlez le Blop Multicolore Royal et deux Blop Griotte, et qu'un Blop Coco apparaît dans le Monde, alors vous contrôlez des Blops d'éléments Neutre, Feu et Air (donc de 3 éléments), et par conséquent le Blop Coco qui vient d'apparaître inflige 3 Dommages Air à l'Allié ou au Héros de votre choix."
     ],
@@ -898,11 +772,7 @@
     "id": "blop-reinette-royal-chaos-dogrest",
     "name": "Blop Reinette Royal",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Blop",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Blop", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "31/162",
@@ -922,17 +792,13 @@
     "effects": [
       {
         "description": "Détruisez l'Équipement ou la Zone de votre choix.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Le Blop Reinette Royal inflige 3 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
         "compiled": {
@@ -943,28 +809,21 @@
               "n": 3,
               "element": "Terre",
               "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
       },
       {
         "description": "Renvoyez l'Allié adverse de votre choix dans la main de son propriétaire.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Evitez de le rendre vert de rage, car il risquerait de vous en faire voir des vertes et des pas mûres !"
@@ -976,10 +835,7 @@
     "id": "boostache-chaos-dogrest",
     "name": "Boostache",
     "mainType": "Allié",
-    "subTypes": [
-      "Fantôme",
-      "Unique"
-    ],
+    "subTypes": ["Fantôme", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "105/162",
@@ -1005,9 +861,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Moi, contre les taches de Boos, j'ai la solution : le Chacha lessive !",
@@ -1020,11 +874,7 @@
     "id": "bottes-du-champion-chaos-dogrest",
     "name": "Bottes du Champion",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes",
-      "Champion"
-    ],
+    "subTypes": ["Armure", "Bottes", "Champion"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "138/162",
@@ -1048,14 +898,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Oh les champiooons, on est tous enseeemble",
@@ -1071,10 +917,7 @@
     "id": "bottes-harry-chaos-dogrest",
     "name": "Bottes Harry",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes"
-    ],
+    "subTypes": ["Armure", "Bottes"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "136/162",
@@ -1098,14 +941,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Grâce à ces bottes, vous aurez enfin le pied marin ! En plus, vous y serez comme un Pichon dans l'eau !"
@@ -1120,10 +959,7 @@
     "id": "bulbiflore-chaos-dogrest",
     "name": "Bulbiflore",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Fleur"
-    ],
+    "subTypes": ["Monstre", "Fleur"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "13/162",
@@ -1143,17 +979,13 @@
     "effects": [
       {
         "description": "Détruisez le Bulbiflore : Le Bulbiflore inflige 2 Dommages à l'Allié ou Héros avec de votre choix. Cet Allié ou Héros perd jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Il parait que lorsqu'on jette un Bulbiflore dans l'eau, il bulbiflotte !"
@@ -1165,10 +997,7 @@
     "id": "bulbig-chaos-dogrest",
     "name": "Bulbig",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Plante"
-    ],
+    "subTypes": ["Monstre", "Plante"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "28/162",
@@ -1194,9 +1023,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Le Bulbig est peut",
@@ -1209,11 +1036,7 @@
     "id": "cape-du-champion-chaos-dogrest",
     "name": "Cape du Champion",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Cape",
-      "Champion"
-    ],
+    "subTypes": ["Armure", "Cape", "Champion"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "140/162",
@@ -1229,13 +1052,7 @@
     "effects": [
       {
         "description": "Tant qu'il est attaquant, le Porteur de la Cape du Champion gagne .",
-        "elements": [
-          "Air",
-          "Terre",
-          "Eau",
-          "Feu",
-          "Neutre"
-        ],
+        "elements": ["Air", "Terre", "Eau", "Feu", "Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -1244,14 +1061,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Jupers Lelien ne s'en sépare jamais ! Pas question pour un champion de sortir sans une cape digne de ce nom !"
@@ -1282,9 +1095,7 @@
     "effects": [
       {
         "description": "Le Cataclysme inflige 3 Dommages à l'Allié de votre choix.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
         "compiled": {
@@ -1295,19 +1106,14 @@
               "n": 3,
               "element": "Neutre",
               "heroes": false,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
+              "zones": ["monde", "havreSac"]
             }
           ]
         }
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Attention, Météo Douze prévoir une grosse perturbation sur l'ensemble du monde. Sortez couverts !",
@@ -1318,10 +1124,7 @@
     "id": "ceinture-bitoufale-chaos-dogrest",
     "name": "Ceinture Bitoufale",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Ceinture"
-    ],
+    "subTypes": ["Armure", "Ceinture"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "135/162",
@@ -1350,14 +1153,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Contrairement à ce que son nom peut laisser penser, cet accessoire ne se place pas en",
@@ -1373,11 +1172,7 @@
     "id": "ceinture-du-champion-chaos-dogrest",
     "name": "Ceinture du Champion",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Ceinture",
-      "Champion"
-    ],
+    "subTypes": ["Armure", "Ceinture", "Champion"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "141/162",
@@ -1393,9 +1188,7 @@
     "effects": [
       {
         "description": "Tant qu'il est attaquant, le coût des Actions et des pouvoirs adverses qui choississent le Porteur de la Ceinture du Champion est augmentée de .",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -1404,14 +1197,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Même les champions doivent parfois se serrer la ceinture…"
@@ -1426,10 +1215,7 @@
     "id": "ceinture-forcesque-chaos-dogrest",
     "name": "Ceinture Forcesque",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Ceinture"
-    ],
+    "subTypes": ["Armure", "Ceinture"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "131/162",
@@ -1447,14 +1233,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "Il vous faudra beaucoup de force pour la porter. Et encore plus pour la supporter…"
@@ -1469,10 +1251,7 @@
     "id": "chapeau-du-mineur-sombre-chaos-dogrest",
     "name": "Chapeau du Mineur Sombre",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Coiffe"
-    ],
+    "subTypes": ["Armure", "Coiffe"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "133/162",
@@ -1496,14 +1275,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 3",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Grâce à ce chapeau, même après une mine, vous aurez les idées claires !"
@@ -1518,10 +1293,7 @@
     "id": "chaussures-du-tetounik-chaos-dogrest",
     "name": "Chaussures du Tétounik",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Bottes"
-    ],
+    "subTypes": ["Armure", "Bottes"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "130/162",
@@ -1545,14 +1317,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "DJ Bouftou ne les quitte jamais. Ce qui explique l'odeur…"
@@ -1567,9 +1335,7 @@
     "id": "chevalier-bowort-chaos-dogrest",
     "name": "Chevalier Bôwort",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "96/162",
@@ -1589,9 +1355,7 @@
     "effects": [
       {
         "description": "Le Chevalier Bôwort ne peut pas être bloqué par un Allié ou Héros .",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -1600,15 +1364,11 @@
       {
         "name": "Résistance",
         "description": "5",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Bill"
-    ],
+    "artists": ["Bill"],
     "notes": [],
     "flavor": {
       "text": "Malgré sa phobie des Wabbits adultes et son amour pour les tartelettes, Bôwort reste un redoutable guerrier."
@@ -1619,9 +1379,7 @@
     "id": "chevalier-de-montmirai-chaos-dogrest",
     "name": "Chevalier de Montmiraï",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "47/162",
@@ -1641,9 +1399,7 @@
     "effects": [
       {
         "description": "Le Chevalier de Montmiraï ne peut pas être bloqué par un Allié ou Héros .",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -1652,15 +1408,11 @@
       {
         "name": "Résistance",
         "description": "5",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Bill"
-    ],
+    "artists": ["Bill"],
     "notes": [],
     "flavor": {
       "text": "Que trépassse si je faiblis !!!",
@@ -1672,9 +1424,7 @@
     "id": "chevalier-donky-chocotte-chaos-dogrest",
     "name": "Chevalier Donky Chocotte",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "71/162",
@@ -1694,9 +1444,7 @@
     "effects": [
       {
         "description": "Le Chevalier Donky Chocotte ne peut pas être bloqué par un Allié ou Héros .",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -1705,15 +1453,11 @@
       {
         "name": "Résistance",
         "description": "5",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Bill"
-    ],
+    "artists": ["Bill"],
     "notes": [],
     "flavor": {
       "text": "Depuis que cet ancien paysan s'est fait rouler dans la farine, il ne supporte plus la vue des moulins !"
@@ -1724,10 +1468,7 @@
     "id": "chevalier-justice-chaos-dogrest",
     "name": "Chevalier Justice",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Unique"
-    ],
+    "subTypes": ["Chevalier", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "53/162",
@@ -1763,9 +1504,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "La justice appelle la … justiiice !",
@@ -1778,9 +1517,7 @@
     "id": "chevalier-richaw-twa-chaos-dogrest",
     "name": "Chevalier Richaw Twa",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier"
-    ],
+    "subTypes": ["Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "23/162",
@@ -1800,9 +1537,7 @@
     "effects": [
       {
         "description": "Le Chevalier Richaw Twa ne peut pas être bloqué par un Allié ou Héros .",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -1811,15 +1546,11 @@
       {
         "name": "Résistance",
         "description": "5",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Bill"
-    ],
+    "artists": ["Bill"],
     "notes": [],
     "flavor": {
       "text": "Une Dragodinde ! Mon royaume pour une Dragodinde !",
@@ -1831,12 +1562,7 @@
     "id": "coiffe-cristaline-chaos-dogrest",
     "name": "Coiffe Cristaline",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Ethérée",
-      "Cristaline"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Ethérée", "Cristaline"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "134/162",
@@ -1867,9 +1593,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Elle est si belle, cette Coiffe Cristaline ! Ca coule de source !"
@@ -1884,11 +1608,7 @@
     "id": "coiffe-du-champion-chaos-dogrest",
     "name": "Coiffe du Champion",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau",
-      "Champion"
-    ],
+    "subTypes": ["Armure", "Chapeau", "Champion"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "139/162",
@@ -1912,14 +1632,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Une coiffe de Champignon ? Hm… j'ai du mal à l'avaler…",
@@ -1935,10 +1651,7 @@
     "id": "corbacape-mastralis-chaos-dogrest",
     "name": "Corbacape Mastralis",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Cape"
-    ],
+    "subTypes": ["Armure", "Cape"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "137/162",
@@ -1959,14 +1672,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Cette cape faite à partir de la dépouille putride du Maître Corbac est idéale pour les soirées mondaines !"
@@ -1980,10 +1689,7 @@
     "id": "craqueleur-bedonnant-chaos-dogrest",
     "name": "Craqueleur Bedonnant",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "21/162",
@@ -2009,9 +1715,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Cédric Plaisant (Aisk)"
-    ],
+    "artists": ["Cédric Plaisant (Aisk)"],
     "notes": [],
     "flavor": {
       "text": "Si ce craqueleur connait une légère surcharge pondérale, c'est qu'il s'est gavé de babas au roc !"
@@ -2023,10 +1727,7 @@
     "id": "daguette-chaos-dogrest",
     "name": "Daguette",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Baguette"
-    ],
+    "subTypes": ["Arme", "Baguette"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "145/162",
@@ -2050,14 +1751,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Bonjour ! Une Daguette et un pain coupé s'il vous plait !",
@@ -2073,10 +1770,7 @@
     "id": "demon-xxii-chaos-dogrest",
     "name": "Démon XXII",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Unique"
-    ],
+    "subTypes": ["Démon", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "106/162",
@@ -2101,9 +1795,7 @@
       },
       {
         "description": "Quand le Démon XXII apparaît, vous pouvez choisir jusqu'à trois cartes non Héros, non Havre Sac contrôlées par le même joueur. Pour chaque carte choisir de cette façon, vous pouvez payer pour la renvoyer dans la main de son propriétaire.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -2112,15 +1804,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Daniel Qualizza"
-    ],
+    "artists": ["Daniel Qualizza"],
     "notes": [],
     "flavor": {
       "text": "XXII, v'là la milice !",
@@ -2133,10 +1821,7 @@
     "id": "demone-xx-chaos-dogrest",
     "name": "Démone XX",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Unique"
-    ],
+    "subTypes": ["Démon", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "29/162",
@@ -2169,15 +1854,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Daniel Qualizza"
-    ],
+    "artists": ["Daniel Qualizza"],
     "notes": [],
     "flavor": {
       "text": "Tu tombes à pic ! J'ai une belle brochette de gladiateurs pour toi !",
@@ -2190,10 +1871,7 @@
     "id": "dharm-metreu-chaos-dogrest",
     "name": "Dharm Métreu",
     "mainType": "Allié",
-    "subTypes": [
-      "Chevalier",
-      "Maître d'Armes"
-    ],
+    "subTypes": ["Chevalier", "Maître d'Armes"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "5/162",
@@ -2218,18 +1896,14 @@
       },
       {
         "description": "Inclinez une Arme portée par Dharm Métreu : Dharm Métreu inflige un nombre de Dommages égal au bonus de Force de cette Arme à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Mais je ne mange",
@@ -2242,9 +1916,7 @@
     "id": "disciple-zoth-chaos-dogrest",
     "name": "Disciple Zoth",
     "mainType": "Allié",
-    "subTypes": [
-      "Zoth"
-    ],
+    "subTypes": ["Zoth"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "22/162",
@@ -2280,9 +1952,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Santiago Montiel"
-    ],
+    "artists": ["Santiago Montiel"],
     "notes": [
       "La Force du Disciple Zoth est toujours égale à 4. Les bonus de Force conférés temporairement ou indéfiniment par un effet et les bonus de Force conférés par un Equipement au Disciple Zoth sont ignorés."
     ],
@@ -2296,9 +1966,7 @@
     "id": "dokfa-talys-chaos-dogrest",
     "name": "Dokfa Talys",
     "mainType": "Allié",
-    "subTypes": [
-      "Zobal"
-    ],
+    "subTypes": ["Zobal"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "99/162",
@@ -2329,9 +1997,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jonoo Takeshi"
-    ],
+    "artists": ["Jonoo Takeshi"],
     "notes": [
       "La rareté d'une carte est déterminée par le symbole de rareté en haut à gauche de la carte. Le symbole de la carte est doré pour les cartes Rares, argenté pour les cartes Peu Communes, vide pour les cartes Communes, et d'une couleur différente pour les Rares Draconiques (vert pour les Dofus, turquoise pour les Protecteurs)."
     ],
@@ -2344,11 +2010,7 @@
     "id": "donatella-chaos-dogrest",
     "name": "Donatella",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tortue",
-      "Chevalier"
-    ],
+    "subTypes": ["Monstre", "Tortue", "Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "39/162",
@@ -2379,9 +2041,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Il suffit de jeter un coup d'oeil à son arme pour comprendre que là où il y a de la chaîne, il n'y a pas de plaisir."
@@ -2393,11 +2053,7 @@
     "id": "dragouf-chaos-dogrest",
     "name": "Dragouf",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragon",
-      "Monture"
-    ],
+    "subTypes": ["Monstre", "Dragon", "Monture"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "158/162",
@@ -2417,9 +2073,7 @@
     "effects": [
       {
         "description": "Capture : 2",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2436,9 +2090,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "N'hésitez plus ! Echangez votre Dragodinde contre un Dragon dingue ! Osez le Montilier !"
@@ -2450,9 +2102,7 @@
     "id": "eglou-chaos-dogrest",
     "name": "Eglou",
     "mainType": "Allié",
-    "subTypes": [
-      "Bourreau"
-    ],
+    "subTypes": ["Bourreau"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "65/162",
@@ -2478,9 +2128,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Mince ! Je vais être à la bourre au bourreau… euh, au boulot !",
@@ -2492,10 +2140,7 @@
     "id": "emmet-stein-chaos-dogrest",
     "name": "Emmet Steïn",
     "mainType": "Allié",
-    "subTypes": [
-      "Alchimiste",
-      "Unique"
-    ],
+    "subTypes": ["Alchimiste", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "102/162",
@@ -2520,26 +2165,20 @@
       },
       {
         "description": "Quand Emmet Steïn apparaît, piochez trois cartes. Pour chaque carte piochée de cette façon, payez ou recyclez une carte de votre main.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Vous décidez de payer ou de recycler une carte de votre main après avoir pioché chaque carte, et vous pouvez prendre une décision différente à chaque carte piochée. Si la pioche d'une carte via Emmet Steïn est annulée par une Action ou un pouvoir, vous n'avez pas à payer ou à recycler une carte.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Daniel Qualizza"
-    ],
+    "artists": ["Daniel Qualizza"],
     "notes": [
       "Vous décidez de payer ou de recycler une carte de votre main après avoir pioché chaque carte, et vous pouvez prendre une décision différente à chaque carte piochée. Si la pioche d'une carte via Emmet Steïn est annulée par une Action ou un pouvoir, vous n'avez pas à payer ou à recycler une carte."
     ],
@@ -2553,9 +2192,7 @@
     "id": "emmy-wanahouse-chaos-dogrest",
     "name": "Emmy Wanahouse",
     "mainType": "Allié",
-    "subTypes": [
-      "Sram"
-    ],
+    "subTypes": ["Sram"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "26/162",
@@ -2586,10 +2223,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Nespouik"
-    ],
+    "artists": ["Edouard Guiton", "Nespouik"],
     "notes": [],
     "flavor": {
       "text": "C'est parce que son petit ami Pört Desorty l'a mise dehos qu'Emmy s'est noyée dans la boisson fermentée…"
@@ -2600,9 +2234,7 @@
     "id": "emy-lijoly-chaos-dogrest",
     "name": "Emy Lijoly",
     "mainType": "Allié",
-    "subTypes": [
-      "Crâ"
-    ],
+    "subTypes": ["Crâ"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "61/162",
@@ -2622,19 +2254,14 @@
     "effects": [
       {
         "description": "Quand Emy Lijoly apparaît, elle inflige 2 Dommages à l'Allié ou au Héros incliné de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Ocarian"
-    ],
+    "artists": ["Edouard Guiton", "Ocarian"],
     "notes": [],
     "flavor": {
       "text": "Je m'apelle Emy Lijoly, je m'appelle Emy Lijoly, et je rêve d'embrocher des Piouuus avec vouuus !",
@@ -2646,10 +2273,7 @@
     "id": "epee-royale-du-bouftou-chaos-dogrest",
     "name": "Épée Royale du Bouftou",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Épée"
-    ],
+    "subTypes": ["Arme", "Épée"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "147/162",
@@ -2673,14 +2297,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "Neutre"
-        ]
+        "elements": ["Neutre"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Cette épée est l'instrument idéal pour découper un bon rôti de Bouftou, et préparer ainsi un festin de roi !"
@@ -2716,9 +2336,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "Esquiiiiive ! Prouve que tu es agiiiiiile !",
@@ -2729,10 +2347,7 @@
     "id": "eve-rett-chaos-dogrest",
     "name": "Eve Rett",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip",
-      "Marchand"
-    ],
+    "subTypes": ["Ecaflip", "Marchand"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "34/162",
@@ -2752,17 +2367,13 @@
     "effects": [
       {
         "description": "Quand Eve Rett apparaît, vous pouvez recycler jusqu'à trois cartes de votre Défausse. Pour chaque carte recyclée de cette façon, un de vos Alliés ou Héros gagne jusqu'à la fin du tour.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Laureline Molenda"
-    ],
+    "artists": ["Laureline Molenda"],
     "notes": [],
     "flavor": {
       "text": "Peu importe son jeu, Eve joue toujours tapis. Autant dire que les parties sont courtes…"
@@ -2774,11 +2385,7 @@
     "id": "fantomayte-chaos-dogrest",
     "name": "Fantômayte",
     "mainType": "Allié",
-    "subTypes": [
-      "Bandit",
-      "Fantôme",
-      "Unique"
-    ],
+    "subTypes": ["Bandit", "Fantôme", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "103/162",
@@ -2803,9 +2410,7 @@
       },
       {
         "description": "Fantômayte perd tous ses pouvoirs excepté celui-ci, puis gagne tous les pouvoirs d'un autre Allié de votre choix jusqu'à la fin de la partie.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2817,9 +2422,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Si vous utilisez le pouvoir de Fantômayte pour copier les pouvoirs d'un autre Allié, Fantômayte perd son pouvoir Fantôme. Néanmoins, comme le pouvoir de copie s'arrête si Fantômayte quitte le jeu, donc si par exemple elle est détruite et mise dans votre Défausse, Fantômayte pourra tout de même être remise en jeu depuis votre Défausse grâce à son pouvoir Fantôme."
     ],
@@ -2833,9 +2436,7 @@
     "id": "globule-la-crapule-chaos-dogrest",
     "name": "Globule la Crapule",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur"
-    ],
+    "subTypes": ["Sacrieur"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "52/162",
@@ -2860,18 +2461,14 @@
       },
       {
         "description": "Redressez votre Héros. N'utilisez ce pouvoir qu'une seule fois par tour après un combat dans lequel votre Héros a été attaquant.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Guillaume Achard"
-    ],
+    "artists": ["Guillaume Achard"],
     "notes": [],
     "flavor": {
       "text": "Globule ? Il a la méchanceté dans le sang ! Pff ! C'est bien ma veine !",
@@ -2883,11 +2480,7 @@
     "id": "grasmera-chaos-dogrest",
     "name": "Grasmera",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragon",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Dragon", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "81/162",
@@ -2923,9 +2516,7 @@
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Nicolas Detrain (Tiko)"
-    ],
+    "artists": ["Nicolas Detrain (Tiko)"],
     "notes": [],
     "flavor": {
       "text": "Les Dragueuses ne résistent pas à son regard de braise. Dès qu'il ouvre la bouche, il enflamme leurs cœurs."
@@ -2937,9 +2528,7 @@
     "id": "grin-lanteur-chaos-dogrest",
     "name": "Grin Lanteur",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop"
-    ],
+    "subTypes": ["Iop"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "50/162",
@@ -2965,9 +2554,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "Lorsqu'on dit à Grin Lanteur qu'il est loin d'être une lumière, ça le rend vert de rage !"
@@ -2978,11 +2565,7 @@
     "id": "grozilla-chaos-dogrest",
     "name": "Grozilla",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Dragon",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Dragon", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "80/162",
@@ -3007,9 +2590,7 @@
       },
       {
         "description": "Quand Grozilla attaque, vous pouvez payer X . Si vous le faites, Grozilla inflige X Dommages à l'Allié de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -3018,15 +2599,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Jérémy Couturier"
-    ],
+    "artists": ["Jérémy Couturier"],
     "notes": [],
     "flavor": {
       "text": "Grozilla a beau être plus gros que Grasmera, il est quand même moins gras !"
@@ -3038,9 +2615,7 @@
     "id": "industrie-magique-chaos-dogrest",
     "name": "Industrie Magique",
     "mainType": "Zone",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "128/162",
@@ -3071,9 +2646,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "L'Industrie Magique continue de produire de la Ressource de l'élément de votre Havre Sac même si celui-ci a été banni."
     ],
@@ -3086,9 +2659,7 @@
     "id": "inoks-chaos-dogrest",
     "name": "Inoks",
     "mainType": "Allié",
-    "subTypes": [
-      "Sadida"
-    ],
+    "subTypes": ["Sadida"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "12/162",
@@ -3107,9 +2678,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Fernando Monillor Perez"
-    ],
+    "artists": ["Fernando Monillor Perez"],
     "notes": [],
     "flavor": {
       "text": "Avec son cœur d'or, ses muscles et sa santé de fer, Inoks peut se vanter d'être un allié précieux !"
@@ -3120,10 +2689,7 @@
     "id": "jekide-chaos-dogrest",
     "name": "Jékïde",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof",
-      "Forgemage"
-    ],
+    "subTypes": ["Enutrof", "Forgemage"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "101/162",
@@ -3154,9 +2720,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Xu Zhifeng (XZF)"
-    ],
+    "artists": ["Xu Zhifeng (XZF)"],
     "notes": [],
     "flavor": {
       "text": "Enigmatique et cruel à la fois, Jékïde se faisait aussi appeler \"Mystère Aïe\"."
@@ -3168,10 +2732,7 @@
     "id": "jeune-ogrest-chaos-dogrest",
     "name": "Jeune Ogrest",
     "mainType": "Allié",
-    "subTypes": [
-      "Ogre",
-      "Unique"
-    ],
+    "subTypes": ["Ogre", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "161/162",
@@ -3207,10 +2768,7 @@
     ],
     "keywords": [],
     "experience": 3,
-    "artists": [
-      "Romain Pergod (Sephy)",
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Romain Pergod (Sephy)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [
       "Le pouvoir du Jeune Ogrest permet de déclarer une attaque pendant la Phase de Fin de Tour. Le combat qui en découle se déroule comme les combats qui se déroulent pendant la Phase Principale, et respecte les règles de combat classique. Ce combat comprendra notamment une Phase d'Actions au cours de laquelle les deux joueurs pourront jouer des Actions ou utiliser des pouvoirs. Pour rappel, la Phase de Fin de Tour se déroule après la Phase de Pioche. Par conséquent, le joueur dont c'est le tour aura pioché ses cartes avant le combat du Jeune Ogrest. Il ne repiochera pas de cartes à la fin de ce combat."
     ],
@@ -3225,10 +2783,7 @@
     "id": "jhar-jhar-bing-chaos-dogrest",
     "name": "Jhär Jhär Bing",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "98/162",
@@ -3264,9 +2819,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les Dommages qu'infligent les Alliés ou Héros lors de la résolution des duels ou lors de la résolution des Dommages sur la cible sont des Dommages de combat."
     ],
@@ -3280,10 +2833,7 @@
     "id": "kaskargo-chaos-dogrest",
     "name": "Kaskargo",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kaskargo"
-    ],
+    "subTypes": ["Monstre", "Kaskargo"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "44/162",
@@ -3309,9 +2859,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "Certains racontent qu'en trempant une Sousouris dans l'huile puis dans l'eau, on obtient un Kaskargo… mort."
@@ -3323,9 +2871,7 @@
     "id": "kasta-folle-chaos-dogrest",
     "name": "Kasta Folle",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop"
-    ],
+    "subTypes": ["Iop"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "36/162",
@@ -3345,9 +2891,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Laureline Molenda"
-    ],
+    "artists": ["Laureline Molenda"],
     "notes": [],
     "flavor": {
       "text": "Kasta Folle a peut",
@@ -3359,10 +2903,7 @@
     "id": "kitsou-nae-chaos-dogrest",
     "name": "Kitsou Nae",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kitsou"
-    ],
+    "subTypes": ["Monstre", "Kitsou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "43/162",
@@ -3382,9 +2923,7 @@
     "effects": [
       {
         "description": "Regardez la main du joueur de votre choix et choisissez-y une Action ou un Équipement de Niveau inférieur ou égal au nombre de Kitsous que vous contrôlez. Ce joueur défausse cette carte. Si vous contrôlez au moins trois Kitsous, ce joueur la recycle à la place.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -3393,15 +2932,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Ce Kitsou est tellement gonflé à bloc qu'il met tout sens dessus dessous !"
@@ -3413,10 +2948,7 @@
     "id": "kitsou-nakwa-chaos-dogrest",
     "name": "Kitsou Nakwa",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kitsou"
-    ],
+    "subTypes": ["Monstre", "Kitsou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "92/162",
@@ -3444,15 +2976,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Ce Kitsou n'a pas peur de se mouiller pour mettre tout sens dessus dessous !"
@@ -3464,10 +2992,7 @@
     "id": "kitsou-nere-chaos-dogrest",
     "name": "Kitsou Nere",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kitsou"
-    ],
+    "subTypes": ["Monstre", "Kitsou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "19/162",
@@ -3487,9 +3012,7 @@
     "effects": [
       {
         "description": "Le Kitsou de votre choix gagne un bonus de Force égal au nombre de Kitsous que vous contrôlez jusqu'à la fin du tour. Si vous contrôlez au moins trois Kitsous, le Kitsou choisi de cette façon gagne également jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -3498,15 +3021,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Ce Kitsou va vous faire mordre la poussière et mettre tout sens dessus dessus !"
@@ -3518,10 +3037,7 @@
     "id": "kitsou-nufeu-chaos-dogrest",
     "name": "Kitsou Nufeu",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kitsou"
-    ],
+    "subTypes": ["Monstre", "Kitsou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "67/162",
@@ -3541,9 +3057,7 @@
     "effects": [
       {
         "description": "Le Kitsou Nufeu inflige un nombre de Dommages égal au nombre de Kitsous que vous contrôlez à l'Allié de votre choix. Si vous contrôlez au moins trois Kitsous, détruisez cet Allié à la place.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -3552,15 +3066,11 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Ce Kitsou s'enflamme tellement vite qu'il a tendance à mettre tout sens dessus dessous !"
@@ -3572,9 +3082,7 @@
     "id": "kloe-psidre-chaos-dogrest",
     "name": "Kloé Psidre",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor"
-    ],
+    "subTypes": ["Xélor"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "89/162",
@@ -3594,18 +3102,14 @@
     "effects": [
       {
         "description": "Produisez deux Ressources . N'utilisez ce pouvoir que pour payer le coût d'un Sort Xélor.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Nicolas Haye"
-    ],
+    "artists": ["Nicolas Haye"],
     "notes": [],
     "flavor": {
       "text": "Quoi qu'il arrive, Kloé Psidre continuera à compter le temps qui s'écoule, goutte que goutte !"
@@ -3616,9 +3120,7 @@
     "id": "kontwar-chaos-dogrest",
     "name": "Kontwar",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor"
-    ],
+    "subTypes": ["Xélor"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "41/162",
@@ -3638,10 +3140,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Mau"
-    ],
+    "artists": ["Edouard Guiton", "Mau"],
     "notes": [],
     "flavor": {
       "text": "Ce Xélor a sans doute été un Pandawa dans une autre vie : il est toujours à l'heure pour aller au bistrot !"
@@ -3652,10 +3151,7 @@
     "id": "koupe-koupe-chaos-dogrest",
     "name": "Koupe-Koupe",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Épée"
-    ],
+    "subTypes": ["Arme", "Épée"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "142/162",
@@ -3673,14 +3169,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": [
-          "Eau"
-        ]
+        "elements": ["Eau"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Il me faut cette épée, koupe que koupe !",
@@ -3696,10 +3188,7 @@
     "id": "kramelehon-chaos-dogrest",
     "name": "Kraméléhon",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kraméléhon"
-    ],
+    "subTypes": ["Monstre", "Kraméléhon"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "46/162",
@@ -3725,9 +3214,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le pouvoir du Kraméléhon est un pouvoir de copie. Il ne copie que les caractéristiques imprimées sur les autres Alliés et Héros. Si vous contrôlez un Allié possédant Résistance 1 , un Allié possédant Résistance 1 et un Allié possédant Résistance 2 , le Kraméléhon possèdera Résistance 1 et Résistance 3 , car les Résistances sont cumulatives. Le Kraméléhon ne bénéficiera pas de Résistances gagnées temporairement par un pouvoir ou par une Action, comme par exemple les Résistances que se donne Macrobio. Pour la même raison, deux Kraméléhons « ne bouclent pas » de manière infinie."
     ],
@@ -3742,9 +3229,7 @@
     "id": "kristian-trool-chaos-dogrest",
     "name": "Kristian Trool",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa"
-    ],
+    "subTypes": ["Eniripsa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "87/162",
@@ -3780,9 +3265,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Lassé par son physique ingrat, Kristian Trool est devenu accroc aux opérations d'alchimie esthétique."
@@ -3793,10 +3276,7 @@
     "id": "krokille-mature-boueuse-chaos-dogrest",
     "name": "Krokille Mature Boueuse",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Krokille"
-    ],
+    "subTypes": ["Monstre", "Krokille"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "9/162",
@@ -3818,14 +3298,10 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Marre de jeter des œufs pourris à vos ennemis ? Essayez la Krokille Boueuse ! Ca sent moins, mais ça tache plus !"
@@ -3837,10 +3313,7 @@
     "id": "krokille-mature-humide-chaos-dogrest",
     "name": "Krokille Mature Humide",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Krokille"
-    ],
+    "subTypes": ["Monstre", "Krokille"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "82/162",
@@ -3862,14 +3335,10 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Cette Krokille Humide va vous en faire baver !"
@@ -3881,10 +3350,7 @@
     "id": "krokille-mature-incandescente-chaos-dogrest",
     "name": "Krokille Mature Incandescente",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Krokille"
-    ],
+    "subTypes": ["Monstre", "Krokille"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "57/162",
@@ -3906,14 +3372,10 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Avec cette Krokille Incandescente, preparez en un tour de main une savoureuse omelette déjà cuite !"
@@ -3925,10 +3387,7 @@
     "id": "krokille-mature-seche-chaos-dogrest",
     "name": "Krokille Mature Sèche",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Krokille"
-    ],
+    "subTypes": ["Monstre", "Krokille"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "33/162",
@@ -3947,9 +3406,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Pour assainir et déshumidifier son intérieur, Rhûb Sône met une Krokille Sèche dans chaque coin de pièce."
@@ -3961,9 +3418,7 @@
     "id": "kromoignon-chaos-dogrest",
     "name": "Kromoignon",
     "mainType": "Allié",
-    "subTypes": [
-      "Maître d'Armes"
-    ],
+    "subTypes": ["Maître d'Armes"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "38/162",
@@ -3989,9 +3444,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ce que Kromoignon déteste par",
@@ -4003,10 +3456,7 @@
     "id": "kwakwa-chaos-dogrest",
     "name": "Kwakwa",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Kwak"
-    ],
+    "subTypes": ["Monstre", "Kwak"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "49/162",
@@ -4037,9 +3487,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Quoi \"quoi, quoi\" ? Calme",
@@ -4052,10 +3500,7 @@
     "id": "l-etendue-de-cra-chaos-dogrest",
     "name": "L'Étendue de Crâ",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Crâ"
-    ],
+    "subTypes": ["Sort", "Crâ"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "115/162",
@@ -4076,17 +3521,13 @@
       },
       {
         "description": "L'Étendue de Crâ inflige 4 Dommages à l'Allié ou Héros de votre choix, puis, si cet Allié ou Héros est détruit de cette façon, l'Étendue de Crâ inflige 1 Dommage à tous les Alliés et Héros dans le Monde.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "La déesse Crâ est une archère hors pair. Toucher ses disciples en plein cœur, c'est dans ses cordes."
@@ -4097,10 +3538,7 @@
     "id": "l-ombre-de-sram-chaos-dogrest",
     "name": "L'Ombre de Sram",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sram"
-    ],
+    "subTypes": ["Sort", "Sram"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "125/162",
@@ -4121,17 +3559,13 @@
       },
       {
         "description": "L'Ombre de Sram inflige 2 Dommages à l'Allié ou Héros de votre choix. Si un Héros subit des Dommages de cette façon, son contrôleur ne peut pas jouer d'Action jusqu'à la fin du tour.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Ce que Sram aime par",
@@ -4143,10 +3577,7 @@
     "id": "la-chopine-de-pandawa-chaos-dogrest",
     "name": "La Chopine de Pandawa",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Pandawa"
-    ],
+    "subTypes": ["Sort", "Pandawa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "122/162",
@@ -4167,9 +3598,7 @@
       },
       {
         "description": "La Chopine de Pandawa inflige 4 Dommages à l'Allié ou Héros de votre choix ; ou 2 Dommages à l'Allié ou Héros de votre choix, puis vous piochez une carte.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4180,9 +3609,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [
       "La Chopine de Pandawa propose plusieurs effets différents séparés par « ; ou ». Vous décidez quel effet s'applique lorsque vous jouez La Chopine de Pandawa. Si vous utilisez le second effet, vous ne piochez pas de carte si l'Allié ou le Héros choisi n'est plus un choix légal lors de la résolution de La Chopine de Pandawa."
     ],
@@ -4195,10 +3622,7 @@
     "id": "la-piece-d-ecaflip-chaos-dogrest",
     "name": "La Pièce d'Ecaflip",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Ecaflip"
-    ],
+    "subTypes": ["Sort", "Ecaflip"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "116/162",
@@ -4224,9 +3648,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Ne pariez pas qu'elle vous portera chance, car vous ne tarderiez pas à connaître le revers de la médaille !"
@@ -4237,10 +3659,7 @@
     "id": "le-bouclier-de-feca-chaos-dogrest",
     "name": "Le Bouclier de Féca",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Féca"
-    ],
+    "subTypes": ["Sort", "Féca"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "119/162",
@@ -4265,9 +3684,7 @@
       },
       {
         "description": "Mettez Le Bouclier de Féca en jeu comme un \"Monstre - Bouclier\" de Force 1 qui ne peut pas attaquer ou être incliné pour produire une Ressource.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4283,9 +3700,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [
       "Le Bouclier de Féca est mis en jeu comme un Monstre possédant le trait Bouclier. Ce Monstre est un Allié. Il n'est pas considéré comme un Equipement de type Bouclier."
     ],
@@ -4298,10 +3713,7 @@
     "id": "le-c-ur-d-iop-chaos-dogrest",
     "name": "Le Cœur d'Iop",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Iop"
-    ],
+    "subTypes": ["Sort", "Iop"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "120/162",
@@ -4327,9 +3739,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Le dieu Iop a un cœur gros comme ça ! Ca compense un peu la taille de son intelligence…"
@@ -4340,10 +3750,7 @@
     "id": "le-fouet-d-osamodas-chaos-dogrest",
     "name": "Le Fouet d'Osamodas",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Osamodas"
-    ],
+    "subTypes": ["Sort", "Osamodas"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "121/162",
@@ -4364,17 +3771,13 @@
       },
       {
         "description": "Inclinez un de vos Monstres : il gagne +1 en Force jusqu'à la fin du tour, puis il inflige un nombre de Dommages égal à sa Force à l'Allié ou Héros de votre choix.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Attention : quand le dieu Osamodas se met à fouetter, ça sent mauvais…"
@@ -4385,10 +3788,7 @@
     "id": "le-sablier-de-xelor-chaos-dogrest",
     "name": "Le Sablier de Xélor",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Xélor"
-    ],
+    "subTypes": ["Sort", "Xélor"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "126/162",
@@ -4414,9 +3814,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Lorsque le dieu Xélor sort son sablier, soyez sûr que votre dernière heure a sonné !"
@@ -4427,10 +3825,7 @@
     "id": "le-sang-de-sacrieur-chaos-dogrest",
     "name": "Le Sang de Sacrieur",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sacrieur"
-    ],
+    "subTypes": ["Sort", "Sacrieur"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "123/162",
@@ -4451,17 +3846,13 @@
       },
       {
         "description": "Le Sang de Sacrieur inflige 2 Dommages à l'Allié ou Héros de votre choix. Si votre Héros a moins de 10 PV, le Sang de Sacrieur inflige 5 Dommages à la place.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Se sacrifier pour ses disciples, la déesse Sacrieur à ça dans le sang."
@@ -4472,10 +3863,7 @@
     "id": "le-soulier-de-sadida-chaos-dogrest",
     "name": "Le Soulier de Sadida",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Sadida"
-    ],
+    "subTypes": ["Sort", "Sadida"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "124/162",
@@ -4506,9 +3894,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [
       "Le Soulier de Sadida propose plusieurs effets différents séparés par « ; ou ». Vous décidez quel effet s'applique lorsque vous jouez Le Soulier de Sadida. Si vous utilisez le second effet, la prise de contrôle ne s'arrête pas à la fin du tour."
     ],
@@ -4521,11 +3907,7 @@
     "id": "leonardawa-chaos-dogrest",
     "name": "Leonardawa",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tortue",
-      "Chevalier"
-    ],
+    "subTypes": ["Monstre", "Tortue", "Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "63/162",
@@ -4556,9 +3938,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Partout où elle passe, Leonardawa met le … dawa !"
@@ -4570,10 +3950,7 @@
     "id": "les-doigts-d-enutrof-chaos-dogrest",
     "name": "Les Doigts d'Enutrof",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Enutrof"
-    ],
+    "subTypes": ["Sort", "Enutrof"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "118/162",
@@ -4599,9 +3976,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "Qui s'endort avec le kama qui gratte se réveille avec le doigt doré. Heureusement, l'argent n'a pas d'odeur !"
@@ -4612,10 +3987,7 @@
     "id": "les-mains-d-eniripsa-chaos-dogrest",
     "name": "Les Mains d'Eniripsa",
     "mainType": "Action",
-    "subTypes": [
-      "Sort",
-      "Eniripsa"
-    ],
+    "subTypes": ["Sort", "Eniripsa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "117/162",
@@ -4641,9 +4013,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Jérôme Bretzner"
-    ],
+    "artists": ["Jérôme Bretzner"],
     "notes": [],
     "flavor": {
       "text": "En plus d'avoir la main sur le cœur, la déesse Eniripsa a des doigts de fée."
@@ -4654,9 +4024,7 @@
     "id": "lili-kea-chaos-dogrest",
     "name": "Lili Kéa",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa"
-    ],
+    "subTypes": ["Eniripsa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "85/162",
@@ -4675,9 +4043,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "Cette bricoleuse hors pair est la pro du montage de meubles ! Enfin… seulement ceux qui sont en kits."
@@ -4688,9 +4054,7 @@
     "id": "maitre-vampyre-chaos-dogrest",
     "name": "Maître Vampyre",
     "mainType": "Allié",
-    "subTypes": [
-      "Vampyre"
-    ],
+    "subTypes": ["Vampyre"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "68/162",
@@ -4716,9 +4080,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ail, Ail, Ail !",
@@ -4730,10 +4092,7 @@
     "id": "makroute-chaos-dogrest",
     "name": "Makroute",
     "mainType": "Équipement",
-    "subTypes": [
-      "Armure",
-      "Chapeau"
-    ],
+    "subTypes": ["Armure", "Chapeau"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "132/162",
@@ -4751,14 +4110,10 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": [
-          "Air"
-        ]
+        "elements": ["Air"]
       }
     ],
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "Pff ! N'importe quoi ! J'ai jamais eu d'croûte moi !",
@@ -4774,9 +4129,7 @@
     "id": "makum-bah-chaos-dogrest",
     "name": "Makum Bah",
     "mainType": "Allié",
-    "subTypes": [
-      "Sadida"
-    ],
+    "subTypes": ["Sadida"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "17/162",
@@ -4807,10 +4160,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Nespouik"
-    ],
+    "artists": ["Edouard Guiton", "Nespouik"],
     "notes": [],
     "flavor": {
       "text": "On raconte que la jolie Makum Bah danse tous les soirs pour les Xélors du port qui ne pensent qu'à boire."
@@ -4821,9 +4171,7 @@
     "id": "mali-bouh-chaos-dogrest",
     "name": "Mali Bouh",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa"
-    ],
+    "subTypes": ["Pandawa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "86/162",
@@ -4842,10 +4190,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Edouard Guiton",
-      "Mau"
-    ],
+    "artists": ["Edouard Guiton", "Mau"],
     "notes": [],
     "flavor": {
       "text": "Mali Bouh ? J'en suis baba !",
@@ -4857,10 +4202,7 @@
     "id": "mandrine-chaos-dogrest",
     "name": "Mandrine",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Mandrine"
-    ],
+    "subTypes": ["Monstre", "Mandrine"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "42/162",
@@ -4891,9 +4233,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [
       "L'adversaire que vous choisissez décide quelle carte de sa main est défaussée de cette façon."
     ],
@@ -4907,10 +4247,7 @@
     "id": "manitou-zoth-chaos-dogrest",
     "name": "Manitou Zoth",
     "mainType": "Allié",
-    "subTypes": [
-      "Zoth",
-      "Unique"
-    ],
+    "subTypes": ["Zoth", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "77/162",
@@ -4943,16 +4280,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Air",
-          "Eau"
-        ]
+        "elements": ["Air", "Eau"]
       }
     ],
     "experience": 2,
-    "artists": [
-      "Santiago Montiel"
-    ],
+    "artists": ["Santiago Montiel"],
     "notes": [],
     "flavor": {
       "text": "Bâton, hache, marteau : le Manitou Zoth manie tout mieux que les autres !"
@@ -4964,9 +4296,7 @@
     "id": "maria-boo-chaos-dogrest",
     "name": "Maria Boo",
     "mainType": "Allié",
-    "subTypes": [
-      "Sadida"
-    ],
+    "subTypes": ["Sadida"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "56/162",
@@ -4997,9 +4327,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Mathieu Delaruelle (Asid)"
-    ],
+    "artists": ["Mathieu Delaruelle (Asid)"],
     "notes": [],
     "flavor": {
       "text": "Maria hiii ! Maria aaah ! Maria Boo ! Maria ah ah !",
@@ -5011,9 +4339,7 @@
     "id": "marlene-frimeur-chaos-dogrest",
     "name": "Marlène Frimeur",
     "mainType": "Allié",
-    "subTypes": [
-      "Zobal"
-    ],
+    "subTypes": ["Zobal"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "40/162",
@@ -5033,17 +4359,13 @@
     "effects": [
       {
         "description": "Quand Marlène Frimeur est détruite, vous pouvez payer pour piocher une carte.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Kiri"
-    ],
+    "artists": ["Kiri"],
     "notes": [],
     "flavor": {
       "text": "A force de changer de personnalité, sans contrefaçon, Marlène ne sait plus si elle est fille ou garçon."
@@ -5054,10 +4376,7 @@
     "id": "marteau-minokers-chaos-dogrest",
     "name": "Marteau Minokers",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Marteau"
-    ],
+    "subTypes": ["Arme", "Marteau"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "146/162",
@@ -5081,14 +4400,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "Voici l'arme favorite du Roi Stéphane, un tyran qui terrorisait ses sujets pour le plaisir, juste comme ça."
@@ -5103,10 +4418,7 @@
     "id": "mega-craqueleur-chaos-dogrest",
     "name": "Méga Craqueleur",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Craqueleur"
-    ],
+    "subTypes": ["Monstre", "Craqueleur"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "25/162",
@@ -5137,9 +4449,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Nicolas Dhennin"
-    ],
+    "artists": ["Nicolas Dhennin"],
     "notes": [
       "Si le Méga Craqueleur devrait être détruit par toute autre source que des Dommages de combat, il reste en jeu à la place. Un Allié est détruit lorsqu'il reçoit des Dommages cumulés supérieurs ou égaux à sa Force. Dans ce cas, on considère qu'il est détruit par le paquet de Dommages létaux qu'il reçoit. Si ce paquet de Dommages létaux n'est pas un paquet de Dommages de combat, alors le Méga Craqueleur reste en jeu avec des Dommages cumulés supérieurs ou égaux à sa Force. Exemple : Le Méga Craqueleur bloque un Engin Grouilleux et reçoit 3 Dommages de combat. Une Agression inflige ensuite 3 Dommages au Méga Craqueleur, qui reste en jeu avec 6 Dommages. Si les Dommages avaient tout d'abord été infligés par l'Agression, puis par l'Engin Grouilleux, le Méga Craqueleur aurait été détruit."
     ],
@@ -5153,10 +4463,7 @@
     "id": "melita-chaos-dogrest",
     "name": "Mélita",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca",
-      "Forgemage"
-    ],
+    "subTypes": ["Féca", "Forgemage"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "6/162",
@@ -5176,9 +4483,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Mé",
@@ -5215,9 +4520,7 @@
             {
               "op": "destroyTarget",
               "what": "Équipement",
-              "zones": [
-                "monde"
-              ]
+              "zones": ["monde"]
             },
             {
               "op": "draw",
@@ -5233,9 +4536,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Si l'Equipement choisi n'est plus un choix légal à la résolution du Ménage de Printemps, le Ménage de Printemps n'a plus aucun choix légal et est donc entièrement annulé : vous ne piochez pas de carte."
     ],
@@ -5268,9 +4569,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "En séduction, Don Rouann lui a tout appris. Et pourtant, Kasa Nôva n'est toujours pas casé aujourd'hui…"
@@ -5280,10 +4579,7 @@
     "id": "metaria-mage-bleue-chaos-dogrest",
     "name": "Métaria Mage Bleue",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Métaria"
-    ],
+    "subTypes": ["Objet", "Métaria"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "156/162",
@@ -5304,9 +4600,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée."
     ],
@@ -5323,10 +4617,7 @@
     "id": "metaria-mage-jaune-chaos-dogrest",
     "name": "Métaria Mage Jaune",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Métaria"
-    ],
+    "subTypes": ["Objet", "Métaria"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "154/162",
@@ -5347,9 +4638,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée."
     ],
@@ -5366,10 +4655,7 @@
     "id": "metaria-mage-rouge-chaos-dogrest",
     "name": "Métaria Mage Rouge",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Métaria"
-    ],
+    "subTypes": ["Objet", "Métaria"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "155/162",
@@ -5390,9 +4676,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée."
     ],
@@ -5409,10 +4693,7 @@
     "id": "metaria-mage-verte-chaos-dogrest",
     "name": "Métaria Mage Verte",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Métaria"
-    ],
+    "subTypes": ["Objet", "Métaria"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "153/162",
@@ -5428,9 +4709,7 @@
     "effects": [
       {
         "description": "Produisez une Ressource , puis ajoutez une charge Elementaire sur la Métaria Mage Verte. N'utilisez ce pouvoir que pour jouer un Équipement .",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -5446,9 +4725,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée."
     ],
@@ -5465,11 +4742,7 @@
     "id": "meulou-chaos-dogrest",
     "name": "Meulou",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Mulou",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Mulou", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "30/162",
@@ -5505,9 +4778,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [
       "Le pouvoir du Meulou est déclenché lorsque le Meulou est déclaré comme attaquant. Il ne se déclenche pas si le Meulou est placé en combat via une Action ou un pouvoir, comme par exemple le pouvoir de Mawwy Bloodie. Le PM n'est pas perdu si le Meulou est renvoyé dans le Monde pendant le combat."
     ],
@@ -5522,10 +4793,7 @@
     "id": "meupette-chaos-dogrest",
     "name": "Meupette",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Meupette"
-    ],
+    "subTypes": ["Monstre", "Meupette"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "20/162",
@@ -5545,9 +4813,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Croyez",
@@ -5560,11 +4826,7 @@
     "id": "michelangela-chaos-dogrest",
     "name": "Michelangela",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tortue",
-      "Chevalier"
-    ],
+    "subTypes": ["Monstre", "Tortue", "Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "15/162",
@@ -5595,9 +4857,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Michangela a peut",
@@ -5610,9 +4870,7 @@
     "id": "mik-thai-son-chaos-dogrest",
     "name": "Mik Thaï Son'",
     "mainType": "Allié",
-    "subTypes": [
-      "Coach"
-    ],
+    "subTypes": ["Coach"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "51/162",
@@ -5638,9 +4896,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Alexandre Papet"
-    ],
+    "artists": ["Alexandre Papet"],
     "notes": [],
     "flavor": {
       "text": "Ce grand gagnant du tournoi MasterCoach est l'inventeur d'un sport viril nommée la \"Bosse Thaï\"."
@@ -5651,9 +4907,7 @@
     "id": "mik-vendeta-chaos-dogrest",
     "name": "Mik Vendeta",
     "mainType": "Allié",
-    "subTypes": [
-      "Iop"
-    ],
+    "subTypes": ["Iop"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "14/162",
@@ -5679,10 +4933,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Ocarian"
-    ],
+    "artists": ["Edouard Guiton", "Ocarian"],
     "notes": [],
     "flavor": {
       "text": "Je suis un ouineur, quoiqu'il arrive je gagne.",
@@ -5694,11 +4945,7 @@
     "id": "mini-champion-chaos-dogrest",
     "name": "Mini Champion",
     "mainType": "Équipement",
-    "subTypes": [
-      "Familier",
-      "Champion",
-      "Unique"
-    ],
+    "subTypes": ["Familier", "Champion", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "157/162",
@@ -5719,9 +4966,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ce petit familier ne suit que les champions. À qui l'avez",
@@ -5737,10 +4982,7 @@
     "id": "monsa-von-chaos-dogrest",
     "name": "Monsa Von",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca",
-      "Marchand"
-    ],
+    "subTypes": ["Féca", "Marchand"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "58/162",
@@ -5760,21 +5002,13 @@
     "effects": [
       {
         "description": "Quand Monsa Von apparaît, vous pouvez recyclez jusqu'à trois cartes de votre Défausse. Pour chaque carte recyclée de cette façon, un de vos Alliés ou Héros gagne jusqu'à la fin du tour.",
-        "elements": [
-          "Feu",
-          "Air",
-          "Terre",
-          "Eau",
-          "Neutre"
-        ],
+        "elements": ["Feu", "Air", "Terre", "Eau", "Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "L'Allié ou Héros qui gagne la Résistance est déterminé à la résolution du pouvoir, il n'est pas choisi lors de la mise en File d'Attente du pouvoir. Il en est de même pour le nombre de cartes à recycler. Il est possible de donner plusieurs fois Résistance 1 ATEFN au même Allié ou Héros par l'intermédiaire de ce pouvoir, car ce pouvoir ne choisit pas les Alliés ou les Héros affectés. Il est donc également possible de donner la Résistance 1 ATEFN à un Allié ou un Héros qui ne peut pas être choisi."
     ],
@@ -5788,10 +5022,7 @@
     "id": "nami-felabel-chaos-dogrest",
     "name": "Nami Félabel",
     "mainType": "Allié",
-    "subTypes": [
-      "Bandit",
-      "Brigandin"
-    ],
+    "subTypes": ["Bandit", "Brigandin"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "95/162",
@@ -5822,9 +5053,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Chaque fois que Nami Félabel se fait attraper, il lui suffit d'user de ses charmes pour se faire la belle !"
@@ -5836,9 +5065,7 @@
     "id": "nek-romancier-chaos-dogrest",
     "name": "Nek Romancier",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas"
-    ],
+    "subTypes": ["Osamodas"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "75/162",
@@ -5869,9 +5096,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Jérémy Couturier"
-    ],
+    "artists": ["Jérémy Couturier"],
     "notes": [],
     "flavor": {
       "text": "Que ce soit avec sa plume ou ses sortilèges, Nek Romancier aime faire revivre les célébrités disparues."
@@ -5882,9 +5107,7 @@
     "id": "ocehan-zileveun-chaos-dogrest",
     "name": "Océhan Ziléveun",
     "mainType": "Allié",
-    "subTypes": [
-      "Roublard"
-    ],
+    "subTypes": ["Roublard"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "84/162",
@@ -5904,17 +5127,13 @@
     "effects": [
       {
         "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Son credo pour couler des jours heureux : engranger un max de liquidités et nager littéralement dans l'argent !"
@@ -5925,9 +5144,7 @@
     "id": "ogrest-au-zinit-chaos-dogrest",
     "name": "Ogrest au Zinit",
     "mainType": "Action",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "159/162",
@@ -5948,9 +5165,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Romain Pergod (Sephy)"
-    ],
+    "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
     "flavor": {
       "text": "Ogrest en représentation exceptionnelle, ce soir au Zinit ! Achat des billets aux points de vente habituels !"
@@ -5961,10 +5176,7 @@
     "id": "ogrest-chaos-dogrest",
     "name": "Ogrest",
     "mainType": "Allié",
-    "subTypes": [
-      "Ogre",
-      "Unique"
-    ],
+    "subTypes": ["Ogre", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "162/162",
@@ -6000,9 +5212,7 @@
     ],
     "keywords": [],
     "experience": 4,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Le jour où il a perdu sa poupée, Ogrest est devenu furieux…"
@@ -6014,10 +5224,7 @@
     "id": "ogrine-chaos-dogrest",
     "name": "Ogrine",
     "mainType": "Équipement",
-    "subTypes": [
-      "Objet",
-      "Ogrine"
-    ],
+    "subTypes": ["Objet", "Ogrine"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "152/162",
@@ -6038,9 +5245,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Certains disent qu'il s'agit de Wakfu concentré. D'autres que c'est de la morve d'Ogrest. À vous de voir…"
@@ -6055,9 +5260,7 @@
     "id": "oliphan-chaos-dogrest",
     "name": "Oliphan",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca"
-    ],
+    "subTypes": ["Féca"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "76/162",
@@ -6090,19 +5293,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Neutre",
-          "Terre",
-          "Air",
-          "Feu",
-          "Eau"
-        ]
+        "elements": ["Neutre", "Terre", "Air", "Feu", "Eau"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Xu Zhifeng (XZF)"
-    ],
+    "artists": ["Xu Zhifeng (XZF)"],
     "notes": [],
     "flavor": {
       "text": "Et s'il peut, Oliphan tuera Maskemane plusieurs fois !!!",
@@ -6135,9 +5330,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Chérie, et si on se pactait ?",
@@ -6148,10 +5341,7 @@
     "id": "padgref-demoel-chaos-dogrest",
     "name": "Padgref Demoel",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur",
-      "Bandit"
-    ],
+    "subTypes": ["Sacrieur", "Bandit"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "74/162",
@@ -6177,9 +5367,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Fabrice Nzinzi (Ntamak)"
-    ],
+    "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
       "text": "Peuh ! Padgref ? Il est corrompu jusqu'à la moelle !",
@@ -6192,10 +5380,7 @@
     "id": "paie-peur-chaos-dogrest",
     "name": "Païe Peur",
     "mainType": "Allié",
-    "subTypes": [
-      "Xélor",
-      "Marchand"
-    ],
+    "subTypes": ["Xélor", "Marchand"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "83/162",
@@ -6215,9 +5400,7 @@
     "effects": [
       {
         "description": "Quand Païe Peur apparaît, vous pouvez recycler jusqu'à trois cartes de votre Défausse. Le joueur de votre choix vous rélève le même nombre de cartes de sa main.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -6228,9 +5411,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Enaibi"
-    ],
+    "artists": ["Enaibi"],
     "notes": [
       "L'adversaire que vous choisissez décide quelles cartes de sa main sont révélées de cette façon. Les cartes sont révélées simultanément."
     ],
@@ -6245,9 +5426,7 @@
     "id": "pandaluk-skaiwoker-chaos-dogrest",
     "name": "Pandaluk Skaïwoker",
     "mainType": "Allié",
-    "subTypes": [
-      "Pandawa"
-    ],
+    "subTypes": ["Pandawa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "11/162",
@@ -6267,17 +5446,13 @@
     "effects": [
       {
         "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Pandaluk, je suis ta mère !",
@@ -6289,10 +5464,7 @@
     "id": "pelle-aigante-chaos-dogrest",
     "name": "Pelle Aigante",
     "mainType": "Équipement",
-    "subTypes": [
-      "Arme",
-      "Pelle"
-    ],
+    "subTypes": ["Arme", "Pelle"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "144/162",
@@ -6308,9 +5480,7 @@
     "effects": [
       {
         "description": "Au début de votre tour, la Pelle Aigante inflige 5 Dommages à son porteur. Ces Dommages ne peuvent pas être réduits ou redirigés.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -6319,14 +5489,10 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Equipée de cette arme élégante, vous serez incontestablement la plus pelle pour aller danser !"
@@ -6341,10 +5507,7 @@
     "id": "piou-bleu-chaos-dogrest",
     "name": "Piou Bleu",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Piou"
-    ],
+    "subTypes": ["Monstre", "Piou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "4/162",
@@ -6364,17 +5527,13 @@
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Bruno Bellamy"
-    ],
+    "artists": ["Bruno Bellamy"],
     "notes": [],
     "flavor": {
       "text": "Avez",
@@ -6387,10 +5546,7 @@
     "id": "piou-jaune-chaos-dogrest",
     "name": "Piou Jaune",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Piou"
-    ],
+    "subTypes": ["Monstre", "Piou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "2/162",
@@ -6410,17 +5566,13 @@
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Bruno Bellamy"
-    ],
+    "artists": ["Bruno Bellamy"],
     "notes": [],
     "flavor": {
       "text": "Piou Jaune du matin… Euh… Bah Piou Jaune du matin.",
@@ -6433,10 +5585,7 @@
     "id": "piou-rouge-chaos-dogrest",
     "name": "Piou Rouge",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Piou"
-    ],
+    "subTypes": ["Monstre", "Piou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "3/162",
@@ -6456,17 +5605,13 @@
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Bruno Bellamy"
-    ],
+    "artists": ["Bruno Bellamy"],
     "notes": [],
     "flavor": {
       "text": "Oh le joli Piou Rouge ! Gouzi gouzi !",
@@ -6479,10 +5624,7 @@
     "id": "piou-vert-chaos-dogrest",
     "name": "Piou Vert",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Piou"
-    ],
+    "subTypes": ["Monstre", "Piou"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "1/162",
@@ -6502,17 +5644,13 @@
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": [
-      "Bruno Bellamy"
-    ],
+    "artists": ["Bruno Bellamy"],
     "notes": [],
     "flavor": {
       "text": "Le Piou Vert a l'avantage de pouvoir se camoufler dans l'herbe pour passer inaperçu… ou se faire piétiner."
@@ -6524,10 +5662,7 @@
     "id": "poulpy-chaos-dogrest",
     "name": "Poulpy",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Poulpe"
-    ],
+    "subTypes": ["Monstre", "Poulpe"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "93/162",
@@ -6561,9 +5696,7 @@
             {
               "op": "destroyTarget",
               "what": "Équipement",
-              "zones": [
-                "monde"
-              ]
+              "zones": ["monde"]
             }
           ]
         }
@@ -6571,9 +5704,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Kim Ettinoff (Tcho)"
-    ],
+    "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
     "flavor": {
       "text": "Le Poulpy n'a pas d'ampoules aux pieds. La pieuvre : il n'a pas de pieds !"
@@ -6585,11 +5716,7 @@
     "id": "raphaela-chaos-dogrest",
     "name": "Raphaela",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Tortue",
-      "Chevalier"
-    ],
+    "subTypes": ["Monstre", "Tortue", "Chevalier"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "88/162",
@@ -6620,9 +5747,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aymeric Kevin (Aymrc)"
-    ],
+    "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
     "flavor": {
       "text": "Vous auriez tort de vous moquer de son physique ingrat. Chacun sait qu'avec Raphaela, avoir tort tue !"
@@ -6634,10 +5759,7 @@
     "id": "rascaille-chaos-dogrest",
     "name": "Rascaille",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Poisson"
-    ],
+    "subTypes": ["Monstre", "Poisson"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "66/162",
@@ -6657,9 +5779,7 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "La Rascaille est le lascar des océans : elle terrorise les autres poissons et met le feu aux bancs de lieus."
@@ -6671,10 +5791,7 @@
     "id": "ratou-chaos-dogrest",
     "name": "Ratou",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Rat"
-    ],
+    "subTypes": ["Monstre", "Rat"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "37/162",
@@ -6705,9 +5822,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Clakoss, fromage au Lait de Boufette ou au Lait de Bambou : le Ratou râpe tout !"
@@ -6719,9 +5834,7 @@
     "id": "rebeca-bloc-chaos-dogrest",
     "name": "Rebeca Bloc",
     "mainType": "Allié",
-    "subTypes": [
-      "Ecaflip"
-    ],
+    "subTypes": ["Ecaflip"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "18/162",
@@ -6740,10 +5853,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Edouard Guiton",
-      "Nespouik"
-    ],
+    "artists": ["Edouard Guiton", "Nespouik"],
     "notes": [],
     "flavor": {
       "text": "Rebeca est devenue célèbre en assommant une horde de Mulous rien qu'en chantant \"Fraïdé, fraïdééé\" !"
@@ -6754,10 +5864,7 @@
     "id": "rib-chaos-dogrest",
     "name": "Rib",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Chafer"
-    ],
+    "subTypes": ["Monstre", "Chafer"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "70/162",
@@ -6783,9 +5890,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Charlène Le Scanff"
-    ],
+    "artists": ["Charlène Le Scanff"],
     "notes": [],
     "flavor": {
       "text": "Etrangement, le Rib est un animal qui n'a pas trop la côte…"
@@ -6797,10 +5902,7 @@
     "id": "rynana-chaos-dogrest",
     "name": "Rynana",
     "mainType": "Allié",
-    "subTypes": [
-      "Alchimiste",
-      "Unique"
-    ],
+    "subTypes": ["Alchimiste", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "7/162",
@@ -6831,9 +5933,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Mélanie Christin (Méli)"
-    ],
+    "artists": ["Mélanie Christin (Méli)"],
     "notes": [
       "Lors d'une partie amicale, Rynana permet de chercher n'importe quelle carte que possède le joueur. Lors d'une partie en tournoi, la Collection est limitée au contenu de la réserve de cartes du joueur, à savoir 0 ou 12 cartes pour un tournoi Construit, ou toute carte non jouée dans le paquet de base pour un tournoi en Limité. Rynana ne permet pas de rendre un paquet illégal : en Limité où on peut avoir plusieurs Protecteurs ou plusieurs Alliés Uniques identiques répartis entre son paquet de base et sa réserve, Rynana ne permettra pas d'aller chercher un Protecteur ou un Allié Unique depuis la réserve si on joue déjà un Protecteur ou cet Allié Unique dans le paquet de base."
     ],
@@ -6847,9 +5947,7 @@
     "id": "sandy-sanlbeur-chaos-dogrest",
     "name": "Sandy Sanlbeur",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa"
-    ],
+    "subTypes": ["Eniripsa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "60/162",
@@ -6868,9 +5966,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "Sa superbe armure lui a valu le doux surnom de \"Moskito de Lumière\"."
@@ -6881,10 +5977,7 @@
     "id": "serpiplume-chaos-dogrest",
     "name": "Serpiplume",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Reptile"
-    ],
+    "subTypes": ["Monstre", "Reptile"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "62/162",
@@ -6903,9 +5996,7 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Mon Serpiplume, plume de z'oiseaux, de z'animauuux.",
@@ -6918,11 +6009,7 @@
     "id": "shin-larve-chaos-dogrest",
     "name": "Shin Larve",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Larve",
-      "Unique"
-    ],
+    "subTypes": ["Monstre", "Larve", "Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "79/162",
@@ -6953,9 +6040,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "Cuca"
-    ],
+    "artists": ["Cuca"],
     "notes": [],
     "flavor": {
       "text": "Repoussez vos ennemis grâce à Shinel n°5, de Paro Cabanne : le parfum à base de véritable mucus de Shin Larve !"
@@ -6967,10 +6052,7 @@
     "id": "shushu-alak-rhem-chaos-dogrest",
     "name": "Shushu Alak Rhem",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Shushu"
-    ],
+    "subTypes": ["Démon", "Shushu"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "97/162",
@@ -6990,26 +6072,20 @@
     "effects": [
       {
         "description": "Détruisez le Shushu Alak Rhem : Prenez le contrôle de l'Équipement adverse de votre choix de Niveau inférieur ou égal à la Force du Shushu Alak Rhem et déplacez-le sur un de vos Alliés ou Héros.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Quand vous jouez un Équipement , vous pouvez reprendre le Shushu Alak Rhem en main depuis votre Défausse.",
-        "elements": [
-          "Eau"
-        ],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Sous ses airs de gros dur, le Shushu Alak Rhem a un cœur tendre !"
@@ -7021,10 +6097,7 @@
     "id": "shushu-bidouwa-chaos-dogrest",
     "name": "Shushu Bidouwa",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Shushu"
-    ],
+    "subTypes": ["Démon", "Shushu"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "24/162",
@@ -7044,26 +6117,20 @@
     "effects": [
       {
         "description": "Détruisez le Shushu Bidouwa : L'Allié ou Héros de votre choix gagne un bonus de Force égal à la Force du Shushu Bidouwa jusqu'à la fin du tour.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Quand vous jouez un Équipement , vous pouvez reprendre en main le Shushu Bidouwa depuis votre Défausse.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Ce Shushu met le feu sur les pistes de danse et bouge ses braises sur des rythmes endiablés !"
@@ -7075,10 +6142,7 @@
     "id": "shushu-dalwin-chaos-dogrest",
     "name": "Shushu Dalwin",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Shushu"
-    ],
+    "subTypes": ["Démon", "Shushu"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "72/162",
@@ -7098,26 +6162,20 @@
     "effects": [
       {
         "description": "Détruisez le Shushu Dalwin : Détruisez l'Allié de votre choix de Niveau inférieur ou égal à la Force du Shushu Dalwin.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Quand vous jouez un Équipement , vous pouvez reprendre en main le Shushu Dalwin depuis votre Défausse.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "On dit que ce Shushu sort la nuit d'Halouine pour ficher la trouille à tous ceux qui ont peur des Citwouilles."
@@ -7129,10 +6187,7 @@
     "id": "shushu-fleh-chaos-dogrest",
     "name": "Shushu Fleh",
     "mainType": "Allié",
-    "subTypes": [
-      "Démon",
-      "Shushu"
-    ],
+    "subTypes": ["Démon", "Shushu"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "48/162",
@@ -7152,26 +6207,20 @@
     "effects": [
       {
         "description": "Détruisez le Shushu Fleh : Regardez la main du joueur de votre choix et choisissez-y une carte de Niveau inférieur ou égal à la Force du Shushu Fleh. Ce joueur défausse cette carte.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Quand vous jouez un Équipement , vous pouvez reprendre le Shushu Fleh en main depuis votre Défausse.",
-        "elements": [
-          "Air"
-        ],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [],
     "flavor": {
       "text": "Lorsque ce Shushu donne des coups de tête, forcément ça décoiffe !"
@@ -7183,9 +6232,7 @@
     "id": "soda-moza-chaos-dogrest",
     "name": "Soda Moza",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas"
-    ],
+    "subTypes": ["Osamodas"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "59/162",
@@ -7205,18 +6252,14 @@
     "effects": [
       {
         "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
-        "elements": [
-          "Feu"
-        ],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Jérôme Brulin (Vliir)"
-    ],
+    "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [],
     "flavor": {
       "text": "Si Soda Moza pète autant le feu, c'est parce que dans la vie, il n'hésite pas à mettre les gaz !"
@@ -7227,9 +6270,7 @@
     "id": "symone-vieille-chaos-dogrest",
     "name": "Symone Vieille",
     "mainType": "Allié",
-    "subTypes": [
-      "Enutrof"
-    ],
+    "subTypes": ["Enutrof"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "69/162",
@@ -7249,19 +6290,14 @@
     "effects": [
       {
         "description": "Quand Symone Vieille apparaît, vous pouvez choisir un Équipement adverse. Son propriétaire peut payer pour chaque Enutrof que vous contrôlez. S'il ne le fait pas, prenez le contrôle de cet Équipement et placez-le sur un de vos Alliés ou Héros.",
-        "elements": [
-          "Neutre"
-        ],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Ocarian"
-    ],
+    "artists": ["Edouard Guiton", "Ocarian"],
     "notes": [],
     "flavor": {
       "text": "Ce n'est pas aux vieux Enutrofs qu'on apprend à se faire des kamas",
@@ -7273,9 +6309,7 @@
     "id": "theo-maks-chaos-dogrest",
     "name": "Theo Maks",
     "mainType": "Allié",
-    "subTypes": [
-      "Eniripsa"
-    ],
+    "subTypes": ["Eniripsa"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "64/162",
@@ -7309,10 +6343,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ulrick Wery",
-      "Edouard Guiton"
-    ],
+    "artists": ["Ulrick Wery", "Edouard Guiton"],
     "notes": [],
     "flavor": {
       "text": "Theo Maks est un adversaire redoutable. À tel point qu'on le surnomme Theo Maks la menace."
@@ -7349,9 +6380,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Vincent Joubert"
-    ],
+    "artists": ["Vincent Joubert"],
     "notes": [
       "Un Monstre est un Allié possédant le Trait « Monstre » sur sa ligne de Traits. La Famille du Monstre correspond aux informations qui suivent l'information « Monstre » sur cette ligne de Trait. Par exemple, incliner un Tofu Maléfique avec le Tofulailler permet de donner +1 en Force à tous vos Monstres possédant le Trait « Tofu » ou le Trait « Vampyre ». Un Allié « Vampyre » non Monstre tel qu'Elisabetron ne bénéficiera pas de ce bonus. « Unique » n'est pas un Trait de Famille."
     ],
@@ -7363,9 +6392,7 @@
     "id": "tomy-bokeur-chaos-dogrest",
     "name": "Tomy Bokeur",
     "mainType": "Allié",
-    "subTypes": [
-      "Osamodas"
-    ],
+    "subTypes": ["Osamodas"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "91/162",
@@ -7396,10 +6423,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Ocarian"
-    ],
+    "artists": ["Edouard Guiton", "Ocarian"],
     "notes": [],
     "flavor": {
       "text": "Tomy murmure à l'oreille des Tofus. Il les rend féroces comme des Mulous et voraces comme des Bouftous !"
@@ -7410,10 +6434,7 @@
     "id": "tourbassingue-chaos-dogrest",
     "name": "Tourbassingue",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Flasque"
-    ],
+    "subTypes": ["Monstre", "Flasque"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "73/162",
@@ -7444,9 +6465,7 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": [
-      "François Houssin (Franho)"
-    ],
+    "artists": ["François Houssin (Franho)"],
     "notes": [],
     "flavor": {
       "text": "La Tourbassingue bassine tellement ceux qui l'approchent qu'ils repartent toujours complètement lessivés !"
@@ -7458,9 +6477,7 @@
     "id": "typla-nett-chaos-dogrest",
     "name": "Typla Nett",
     "mainType": "Allié",
-    "subTypes": [
-      "Féca"
-    ],
+    "subTypes": ["Féca"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "90/162",
@@ -7488,16 +6505,11 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": [
-          "Terre"
-        ]
+        "elements": ["Terre"]
       }
     ],
     "experience": 1,
-    "artists": [
-      "Edouard Guiton",
-      "Mau"
-    ],
+    "artists": ["Edouard Guiton", "Mau"],
     "notes": [],
     "flavor": {
       "text": "On se lève tous pour Typlaaa Neeett, plaaa Neeett, plaaaa Nett !",
@@ -7509,9 +6521,7 @@
     "id": "ultimatum-d-ogrest-chaos-dogrest",
     "name": "Ultimatum d'Ogrest",
     "mainType": "Action",
-    "subTypes": [
-      "Unique"
-    ],
+    "subTypes": ["Unique"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "160/162",
@@ -7542,9 +6552,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les arrondis sont effectués de manière mathématique, c'est-à-dire à l'entier supérieur. Par conséquent, si un joueur contrôle 21 Alliés et choisit l'option « il détruit la moitié de ses Alliés », ce joueur devra détruire 11 (arrondi de 10,5) de ses Alliés. Dans ce cas de figure, c'est lui qui détermine quels Alliés seront détruits. Le principe est identique pour les PV (un joueur possèdent 7 PV en perdra 4) et les PA (un joueur possédant 5 PA en perdra 3)."
     ],
@@ -7558,9 +6566,7 @@
     "id": "viscere-chaos-dogrest",
     "name": "Viscère",
     "mainType": "Allié",
-    "subTypes": [
-      "Marchand"
-    ],
+    "subTypes": ["Marchand"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "10/162",
@@ -7580,9 +6586,7 @@
     "effects": [
       {
         "description": "Quand Viscère apparaît, vous pouvez recyclez jusqu'à trois cartes de votre Défausse. Pour chaque carte recyclée de cette façon, inclinez un Allié ou Héros adverse.",
-        "elements": [
-          "Terre"
-        ],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -7593,9 +6597,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ankama"
-    ],
+    "artists": ["Ankama"],
     "notes": [
       "Les Alliés et Héros à incliner ne sont pas choisis. Il est donc possible d'incliner un Allié ou Héros qui ne peut pas être choisi avec le pouvoir de Viscère. De plus, comme aucun choix n'est effectué pour ce pouvoir, l'ensemble des décisions est prise par le joueur lors de la résolution du pouvoir, que ce soit sur le nombre de cartes recyclées ou ensuite sur les Alliés ou Héros à incliner."
     ],
@@ -7609,10 +6611,7 @@
     "id": "wobot-chaos-dogrest",
     "name": "Wobot",
     "mainType": "Allié",
-    "subTypes": [
-      "Monstre",
-      "Wabbit"
-    ],
+    "subTypes": ["Monstre", "Wabbit"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "100/162",
@@ -7638,9 +6637,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Aimé Jalon"
-    ],
+    "artists": ["Aimé Jalon"],
     "notes": [],
     "flavor": {
       "text": "Un Wobot doit fwacassew la tête de tout êtwe humain qui cwoise sa woute. — Pwemièwe loi de la Wobotique."
@@ -7652,9 +6649,7 @@
     "id": "ypersan-syble-chaos-dogrest",
     "name": "Ypersan Syble",
     "mainType": "Allié",
-    "subTypes": [
-      "Sacrieur"
-    ],
+    "subTypes": ["Sacrieur"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "16/162",
@@ -7679,10 +6674,7 @@
       }
     ],
     "keywords": [],
-    "artists": [
-      "Ulrick Wery",
-      "Edouard Guiton"
-    ],
+    "artists": ["Ulrick Wery", "Edouard Guiton"],
     "notes": [],
     "flavor": {
       "text": "Pas facile d'être Sacrieur lorsqu'on est de nature douillette ! Ypersan l'a compris à ses dépens…"
@@ -7693,9 +6685,7 @@
     "id": "zellina-chaos-dogrest",
     "name": "Zellina",
     "mainType": "Allié",
-    "subTypes": [
-      "Mascotte"
-    ],
+    "subTypes": ["Mascotte"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "94/162",
@@ -7721,9 +6711,7 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": [
-      "Deruyck Vincent (Ancestral Z)"
-    ],
+    "artists": ["Deruyck Vincent (Ancestral Z)"],
     "notes": [],
     "flavor": {
       "text": "Zelli aime",
@@ -7735,10 +6723,7 @@
     "id": "zothulette-chaos-dogrest",
     "name": "Zothulette",
     "mainType": "Équipement",
-    "subTypes": [
-      "Bijou",
-      "Amulette"
-    ],
+    "subTypes": ["Bijou", "Amulette"],
     "extension": {
       "name": "Chaos d'Ogrest",
       "number": "151/162",
@@ -7759,14 +6744,10 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": [
-          "Feu"
-        ]
+        "elements": ["Feu"]
       }
     ],
-    "artists": [
-      "Jonathan Dhenry (Jonat)"
-    ],
+    "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
       "text": "Z'arriiiive ! Zuis Zothulette !",

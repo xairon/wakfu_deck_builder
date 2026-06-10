@@ -248,8 +248,8 @@
                 : store.effectPicking.action === "discard"
                   ? "Défausser une carte de ta main"
                   : store.effectPicking.action === "toHand"
-                    ? `Cherche ${store.effectPicking.filter ?? "une carte"} dans ta Pioche — vers ta main`
-                    : `Cherche ${store.effectPicking.filter ?? "une carte"} dans ta Pioche — mise en jeu`
+                    ? `Cherche ${pickFilterLabel} dans ta Pioche — vers ta main`
+                    : `Cherche ${pickFilterLabel} dans ta Pioche — mise en jeu`
             }}
           </p>
           <h2 class="mt-1 font-display text-3xl">
@@ -410,6 +410,16 @@ const mulliganHand = computed<RedactedInstance[]>(() => {
 const mulliganItems = computed<HandItem[]>(() =>
   mulliganHand.value.map((inst) => ({ key: inst.instanceId, inst })),
 );
+
+// ── Libellé du filtre de recherche en pile ───────────────────────────────────
+const pickFilterLabel = computed(() => {
+  const f = store.effectPicking?.filter;
+  if (!f) return "une carte";
+  const parts = [f.mainType ?? "une carte"];
+  if (f.sub) parts.push(f.sub.charAt(0).toUpperCase() + f.sub.slice(1));
+  if (f.maxLevel !== undefined) parts.push(`(Niveau ≤ ${f.maxLevel})`);
+  return parts.join(" ");
+});
 
 // ── Portrait du héros (écran de passation) ───────────────────────────────────
 const perspectivePortrait = computed<string | null>(() => {

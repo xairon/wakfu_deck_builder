@@ -83,10 +83,11 @@ function parseSentence(
     /^defaussez[- ]vous d['’ ]?\s?(une|deux|trois|\d+) cartes?(?: de votre main)?$/,
   );
   if (m) return { op: "discardFromHand", n: toNumber(m[1]) };
-  // « Cherchez un [type] dans votre Pioche, révélez-le et prenez-le en main »
-  // ou « … et mettez-le en jeu » (le mélange arrive en op suivante).
+  // « Cherchez un [type] [Famille] [de Niveau ≤ N] dans votre Pioche,
+  // révélez-le et prenez-le en main » ou « … et mettez-le en jeu »
+  // (le mélange arrive en op suivante).
   m = sentence.match(
-    /^cherchez (?:un|une) (dofus|action|equipement|zone|salle|allie) dans votre pioche,? (?:revelez-l[ea] et prenez-l[ea] en main|et mettez-l[ea] en jeu)$/,
+    /^cherchez (?:un|une) (dofus|action|equipement|zone|salle|allie)( [a-z]+)?( de niveau inferieur ou egal a (\d+))? dans votre pioche,? (?:revelez-l[ea] et prenez-l[ea] en main|et mettez-l[ea] en jeu)$/,
   );
   if (m) {
     const WHAT: Record<
@@ -100,9 +101,14 @@ function parseSentence(
       salle: "Salle",
       allie: "Allié",
     };
+    const sub = m[2]?.trim();
+    // mots de liaison = pas une famille (« ou non Unique », « portant… »)
+    if (sub && ["ou", "non", "portant", "de", "et"].includes(sub)) return null;
     return {
       op: "searchDeck",
       what: WHAT[m[1]],
+      ...(sub ? { sub } : {}),
+      ...(m[4] ? { maxLevel: toNumber(m[4]) } : {}),
       dest: sentence.includes("en jeu") ? "monde" : "main",
     };
   }
@@ -180,6 +186,46 @@ function parseOps(
   return ops;
 }
 
+/**
+ * Compile un corps d'effet (déjà normalisé, sans point final) en ops.
+ * Gère la clause de liaison « Il apparaît incliné. » : elle marque la
+ * recherche-mise-en-jeu précédente (`tapped`), sinon rejet.
+ */
+function compileBody(
+  body: string,
+  cardName: string,
+  sourceElement: string,
+): EffectOp[] | null {
+  const sentences = body
+    .replace(/\.$/, "")
+    .split(/\.\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!sentences.length) return null;
+  const ops: EffectOp[] = [];
+  for (const s of sentences) {
+    if (s === "il apparait incline") {
+      // se rapporte à la dernière recherche-mise-en-jeu (le mélange peut
+      // s'être intercalé : « …mettez-le en jeu, puis mélangez… »)
+      const search = [...ops]
+        .reverse()
+        .find(
+          (o): o is Extract<EffectOp, { op: "searchDeck" }> =>
+            o.op === "searchDeck",
+        );
+      if (search && search.dest === "monde") {
+        search.tapped = true;
+        continue;
+      }
+      return null;
+    }
+    const parsed = parseOps(s, cardName, sourceElement);
+    if (!parsed) return null;
+    ops.push(...parsed);
+  }
+  return ops;
+}
+
 /** Le sujet du déclencheur désigne-t-il la carte elle-même ? */
 function subjectIsSelf(subject: string, cardName: string): boolean {
   const s = subject.replace(/^(le |la |les |l['’]\s?|un |une )/, "").trim();
@@ -208,20 +254,11 @@ export function compileEffectText(
     optional = true;
     rest = opt[1];
   }
-  const sentences = rest
-    .split(/\.\s*/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (!sentences.length) return null;
   // « vous pouvez » ne porte que sur sa phrase : un optionnel multi-phrases
   // est ambigu (le reste serait-il obligatoire ?) → on ne compile pas.
-  if (optional && sentences.length > 1) return null;
-  const ops: EffectOp[] = [];
-  for (const s of sentences) {
-    const parsed = parseOps(s, cardName, sourceElement);
-    if (!parsed) return null;
-    ops.push(...parsed);
-  }
+  if (optional && /\.\s+\S/.test(rest)) return null;
+  const ops = compileBody(rest, cardName, sourceElement);
+  if (!ops) return null;
   return optional
     ? { trigger: "onArrive", optional, ops }
     : { trigger: "onArrive", ops };
@@ -247,18 +284,8 @@ export function compileTapEffectText(
     cost = "sacrificeSelf";
     body = costMatch[2];
   }
-  const sentences = body
-    .replace(/\.$/, "")
-    .split(/\.\s*/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (!sentences.length) return null;
-  const ops: EffectOp[] = [];
-  for (const s of sentences) {
-    const parsed = parseOps(s, cardName, sourceElement);
-    if (!parsed) return null;
-    ops.push(...parsed);
-  }
+  const ops = compileBody(body, cardName, sourceElement);
+  if (!ops) return null;
   return cost ? { trigger: "onTap", cost, ops } : { trigger: "onTap", ops };
 }
 
@@ -296,18 +323,8 @@ export function compileActionEffectText(
   cardName: string,
   sourceElement = "Neutre",
 ): CompiledEffect | null {
-  const sentences = norm(text)
-    .replace(/\.$/, "")
-    .split(/\.\s*/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (!sentences.length) return null;
-  const ops: EffectOp[] = [];
-  for (const s of sentences) {
-    const parsed = parseOps(s, cardName, sourceElement);
-    if (!parsed) return null;
-    ops.push(...parsed);
-  }
+  const ops = compileBody(norm(text), cardName, sourceElement);
+  if (!ops) return null;
   return { trigger: "onPlay", ops };
 }
 
@@ -336,17 +353,9 @@ export function compileTurnStartEffectText(
     optional = true;
     body = opt[1];
   }
-  const sentences = body
-    .split(/\.\s*/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (!sentences.length || (optional && sentences.length > 1)) return null;
-  const ops: EffectOp[] = [];
-  for (const s of sentences) {
-    const parsed = parseOps(s, cardName, sourceElement);
-    if (!parsed) return null;
-    ops.push(...parsed);
-  }
+  if (optional && /\.\s+\S/.test(body)) return null;
+  const ops = compileBody(body, cardName, sourceElement);
+  if (!ops) return null;
   return {
     trigger: "onTurnStart",
     ...(optional ? { optional } : {}),
