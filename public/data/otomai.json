@@ -334,7 +334,16 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "heroGainPv",
+              "n": 3
+            }
+          ]
+        }
       },
       {
         "description": "Piochez une carte.",
@@ -2990,7 +2999,16 @@
       {
         "description": "Quand Fée Lhur apparaît, le Héros de votre choix regagne 4 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 4
+            }
+          ]
+        }
       },
       {
         "description": "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien.",

@@ -369,7 +369,17 @@
       {
         "description": "Détruisez la Cawotte : Le Héros de votre choix regagne 3 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 3
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

@@ -4,6 +4,7 @@ import {
   effectTargetIds,
   resolveDamageTarget,
   resolveDestroyTarget,
+  resolveHealHeroTarget,
 } from "@/game/rules";
 import {
   HERO_A,
@@ -103,6 +104,15 @@ describe("rules/effects — ciblage", () => {
     const hero = ctxOf(f).state.instances[HERO_A];
     expect(hero.counters.hp).toBe(13); // 16 − 3
     expect(hero.counters.damage ?? 0).toBe(0);
+  });
+
+  it("healHeroTarget : cibles = les deux Héros, soin appliqué", () => {
+    const f = fixture([]);
+    const ids = effectTargetIds(ctxOf(f), { op: "healHeroTarget", n: 3 });
+    expect(ids.sort()).toEqual([HERO_A, "ci_B_001"].sort());
+    dispatch(f, ...resolveDamageTarget(ctxOf(f), "B", HERO_A, 5, "Eau").events);
+    dispatch(f, ...resolveHealHeroTarget(ctxOf(f), "A", HERO_A, 3).events);
+    expect(ctxOf(f).state.instances[HERO_A].counters.hp).toBe(14); // 16−5+3
   });
 
   it("les Héros sont ciblables seulement si l'op le permet", () => {

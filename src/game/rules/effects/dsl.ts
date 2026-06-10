@@ -75,6 +75,12 @@ function parseSentence(
   if (m) return { op: "damageOppHero", n: toNumber(m[1] ?? m[2]) };
   m = sentence.match(/^gagne[zr] (\d+) (?:points? de )?resistance$/);
   if (m) return { op: "havreSacGainResistance", n: toNumber(m[1]) };
+  m = sentence.match(/^votre heros regagne (\d+) (?:pv|points? de vie)$/);
+  if (m) return { op: "heroGainPv", n: toNumber(m[1]) };
+  m = sentence.match(
+    /^le heros de votre choix regagne (\d+) (?:pv|points? de vie)$/,
+  );
+  if (m) return { op: "healHeroTarget", n: toNumber(m[1]) };
   m = sentence.match(
     /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );
@@ -161,7 +167,17 @@ export function compileTapEffectText(
   cardName: string,
   sourceElement = "Neutre",
 ): CompiledEffect | null {
-  const sentences = norm(text)
+  let body = norm(text);
+  // Coût « Détruisez [cette carte] : effet » — le sacrifice remplace
+  // l'inclinaison ; un coût dont le sujet n'est pas la carte → rejet.
+  let cost: "sacrificeSelf" | undefined;
+  const costMatch = body.match(/^detruisez ([^:]{1,50}?)\s*:\s*(.+)$/);
+  if (costMatch) {
+    if (!subjectIsSelf(costMatch[1].trim(), cardName)) return null;
+    cost = "sacrificeSelf";
+    body = costMatch[2];
+  }
+  const sentences = body
     .replace(/\.$/, "")
     .split(/\.\s*/)
     .map((s) => s.trim())
@@ -173,7 +189,7 @@ export function compileTapEffectText(
     if (!op) return null;
     ops.push(op);
   }
-  return { trigger: "onTap", ops };
+  return cost ? { trigger: "onTap", cost, ops } : { trigger: "onTap", ops };
 }
 
 /**

@@ -155,6 +155,33 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
     expect(arrivalEffects(card)).toEqual([]);
   });
 
+  it("compile le coût de sacrifice « Détruisez [cette carte] : effet »", () => {
+    const card = cardWith(
+      "Cawotte",
+      "Détruisez la Cawotte : Le Héros de votre choix regagne 3 PV.",
+    );
+    card.effects![0].requiresIncline = true;
+    const atoms = tapPowers(card);
+    expect(atoms).toHaveLength(1);
+    expect(atoms[0].cost).toBe("sacrificeSelf");
+    expect(atoms[0].ops).toEqual([{ op: "healHeroTarget", n: 3 }]);
+    // coût dont le sujet n'est pas la carte → rejet (pas un self-sacrifice)
+    const other = cardWith(
+      "Temple",
+      "Détruisez un de vos Monstres : Piochez une carte.",
+    );
+    other.effects![0].requiresIncline = true;
+    expect(tapPowers(other)).toEqual([]);
+  });
+
+  it("parse les soins : « votre Héros regagne N PV » et la cible au choix", () => {
+    const self = cardWith(
+      "Fée",
+      "Quand la Fée apparaît, votre Héros regagne 2 PV.",
+    );
+    expect(arrivalEffects(self)[0]?.ops).toEqual([{ op: "heroGainPv", n: 2 }]);
+  });
+
   it("rejette un pouvoir à inclinaison conditionnel ou au sujet étranger", () => {
     const cond = cardWith(
       "Bwork Archer",

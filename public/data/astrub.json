@@ -26,22 +26,7 @@
           "Terre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": true,
-        "compiled": {
-          "trigger": "onTap",
-          "ops": [
-            {
-              "op": "damageTarget",
-              "n": 1,
-              "element": "Neutre",
-              "heroes": true,
-              "zones": [
-                "monde",
-                "havreSac"
-              ]
-            }
-          ]
-        }
+        "requiresIncline": true
       }
     ],
     "keywords": [
@@ -3858,7 +3843,23 @@
           "Eau"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Eau",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -5099,6 +5100,7 @@
         "requiresIncline": true,
         "compiled": {
           "trigger": "onTap",
+          "cost": "sacrificeSelf",
           "ops": [
             {
               "op": "damageTarget",

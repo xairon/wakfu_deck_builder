@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v5"; // v5 : pouvoirs à inclinaison compilés (onTap)
+const CACHE_KEY = "wakfu-cards-cache-v6"; // v6 : sacrifices + soins cibles compiles
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;

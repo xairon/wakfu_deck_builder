@@ -12369,7 +12369,17 @@
           "Neutre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Détruisez le Petit Anneau d'Agilité : L'Allié ou héros de votre choix gagne jusqu'à la fin du tour.",
@@ -12429,7 +12439,17 @@
           "Neutre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Détruisez le Petit Anneau d'Intelligence : L'Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
@@ -12489,7 +12509,17 @@
           "Neutre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Détruisez le Petit Anneau de Chance : L'Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
@@ -12549,7 +12579,17 @@
           "Neutre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Détruisez le Petit Anneau de Force : L'Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
@@ -15599,7 +15639,16 @@
       {
         "description": "Quand Xav le Boulanger apparaît, le Héros de votre choix regagne 1 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Quand Xav le Boulanger est détruit, le Héros de votre choix regagne 1 PV.",

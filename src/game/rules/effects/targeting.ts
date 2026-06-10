@@ -16,16 +16,21 @@ import { grantXpEvents } from "../progress";
 
 export type TargetingOp = Extract<
   CompiledEffectOp,
-  { op: "destroyTarget" } | { op: "damageTarget" }
+  { op: "destroyTarget" } | { op: "damageTarget" } | { op: "healHeroTarget" }
 >;
 
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
-  return op.op === "destroyTarget" || op.op === "damageTarget";
+  return (
+    op.op === "destroyTarget" ||
+    op.op === "damageTarget" ||
+    op.op === "healHeroTarget"
+  );
 }
 
 /** Cibles légales d'une op (n'importe quel contrôleur). */
 export function effectTargetIds(ctx: RulesCtx, op: TargetingOp): InstanceId[] {
-  const zones = op.zones;
+  const zones: ("monde" | "havreSac")[] =
+    op.op === "healHeroTarget" ? ["monde", "havreSac"] : op.zones;
   const out: InstanceId[] = [];
   for (const inst of Object.values(ctx.state.instances)) {
     if (!zones.includes(inst.location.zone as "monde" | "havreSac")) continue;
@@ -34,10 +39,28 @@ export function effectTargetIds(ctx: RulesCtx, op: TargetingOp): InstanceId[] {
     const ok =
       op.op === "destroyTarget"
         ? card.mainType === op.what
-        : card.mainType === "Allié" || (op.heroes && card.mainType === "Héros");
+        : op.op === "healHeroTarget"
+          ? card.mainType === "Héros"
+          : card.mainType === "Allié" ||
+            (op.heroes && card.mainType === "Héros");
     if (ok) out.push(inst.instanceId);
   }
   return out;
+}
+
+/** « regagne N PV » : soin du Héros ciblé (pas de plafond suivi en V1). */
+export function resolveHealHeroTarget(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+  n: number,
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  return {
+    events: [incCounter(actor, targetId, "hp", n)],
+    log: [`${nameOf(ctx, targetId)} regagne ${n} PV.`],
+  };
 }
 
 export interface EffectResolution {

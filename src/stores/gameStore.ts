@@ -54,6 +54,7 @@ import {
   resolveCombat,
   resolveDamageTarget,
   resolveDestroyTarget,
+  resolveHealHeroTarget,
   tapPowers,
   victoryFromState,
   whyCannotDeclareAttack,
@@ -547,13 +548,15 @@ export const useGameStore = defineStore("game", () => {
     const res =
       t.op.op === "destroyTarget"
         ? resolveDestroyTarget(rulesCtx(), t.seat, instanceId)
-        : resolveDamageTarget(
-            rulesCtx(),
-            t.seat,
-            instanceId,
-            t.op.n,
-            t.op.element,
-          );
+        : t.op.op === "healHeroTarget"
+          ? resolveHealHeroTarget(rulesCtx(), t.seat, instanceId, t.op.n)
+          : resolveDamageTarget(
+              rulesCtx(),
+              t.seat,
+              instanceId,
+              t.op.n,
+              t.op.element,
+            );
     dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     checkVictory();
     executeEffectOps(t.seat, t.cardName, t.rest);
@@ -580,15 +583,34 @@ export const useGameStore = defineStore("game", () => {
     if (state.value.turn.active !== perspective.value)
       return rejectMove("Ce n'est pas votre tour.");
     const seat = perspective.value;
-    dispatch(
-      {
-        actor: seat,
-        type: "SET_ORIENTATION",
-        payload: { instanceId, orientation: "tapped" },
-      },
-      say(seat, `Pouvoir activé — ${card.name} : « ${atoms[0].text} »`),
-    );
-    for (const atom of atoms) executeEffectOps(seat, card.name, atom.ops);
+    const atom = atoms[0];
+    if (atom.cost === "sacrificeSelf") {
+      // « Détruisez [cette carte] : … » — le sacrifice remplace l'inclinaison
+      dispatch(
+        move(seat, {
+          instanceId,
+          from: inst.location,
+          to: { zone: "defausse", owner: inst.owner },
+          position: { at: "top" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+        }),
+        say(
+          seat,
+          `Pouvoir activé (sacrifice) — ${card.name} : « ${atom.text} »`,
+        ),
+      );
+    } else {
+      dispatch(
+        {
+          actor: seat,
+          type: "SET_ORIENTATION",
+          payload: { instanceId, orientation: "tapped" },
+        },
+        say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`),
+      );
+    }
+    executeEffectOps(seat, card.name, atom.ops);
     return true;
   }
 

@@ -197,7 +197,16 @@
       {
         "description": "Quand Amal Odoua apparaît, le Héros de votre choix regagne 3 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 3
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

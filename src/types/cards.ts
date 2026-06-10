@@ -54,13 +54,17 @@ export type CompiledEffectOp =
       element: string;
       heroes: boolean;
       zones: ("monde" | "havreSac")[];
-    };
+    }
+  /** « Le Héros de votre choix regagne N PV ». */
+  | { op: "healHeroTarget"; n: number };
 
 export interface CompiledEffect {
   /** onArrive : la carte entre en jeu ; onTap : pouvoir activé en l'inclinant. */
   trigger: "onArrive" | "onTap";
   /** « Vous pouvez … » : le joueur confirme avant exécution. */
   optional?: boolean;
+  /** « Détruisez [cette carte] : … » — le coût remplace l'inclinaison. */
+  cost?: "sacrificeSelf";
   ops: CompiledEffectOp[];
 }
 
