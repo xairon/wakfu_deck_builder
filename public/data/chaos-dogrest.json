@@ -467,7 +467,26 @@
       {
         "description": "Détruisez l'Allié de votre choix. Détruisez l'Équipement de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Allié",
+              "zones": [
+                "monde"
+              ]
+            },
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": [
+                "monde"
+              ]
+            }
+          ]
+        }
       },
       {
         "description": "Vous ne pouvez pas jouer l'Attaque Frontale si vous êtes dans l'impossibilité de choisir à la fois un Allié et un Equipement. À la résolution de l'Attaque Frontale, si un des deux choix effectués est devenu illégal, l'autre choix reste affecté normalement.",
@@ -1267,7 +1286,22 @@
           "Neutre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 3,
+              "element": "Neutre",
+              "heroes": false,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -5174,7 +5208,23 @@
       {
         "description": "Détruisez l'Équipement de votre choix. Piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": [
+                "monde"
+              ]
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Si l'Equipement choisi n'est plus un choix légal à la résolution du Ménage de Printemps, le Ménage de Printemps n'a plus aucun choix légal et est donc entièrement annulé : vous ne piochez pas de carte.",

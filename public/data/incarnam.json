@@ -22,7 +22,20 @@
       {
         "description": "Cherchez un Dofus dans votre Pioche et mettez-le en jeu, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Dofus",
+              "dest": "monde"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        }
       },
       {
         "description": "Ne jouez cette carte que lorsque vous venez de détruire un Allié Unique.",
@@ -1593,7 +1606,19 @@
       {
         "description": "Détruisez la Zone de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Zone",
+              "zones": [
+                "monde"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -2437,7 +2462,19 @@
       {
         "description": "Détruisez l'Équipement de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "zones": [
+                "monde"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -6027,7 +6064,16 @@
       {
         "description": "Votre Héros regagne 5 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "heroGainPv",
+              "n": 5
+            }
+          ]
+        }
       },
       {
         "description": "Ne jouez cette carte que si votre Héros est incliné dans le Monde quand vous déclarez la fin de votre tour.",
@@ -6072,7 +6118,22 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       },
       {
         "description": "Au début de votre tour, si la Flamiche se trouve dans votre Défausse, vous pouvez payer pour la reprendre en main.",
@@ -6207,7 +6268,22 @@
           "Air"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -10499,7 +10575,16 @@
       {
         "description": "Le Héros de votre choix regagne 3 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 3
+            }
+          ]
+        }
       },
       {
         "description": "Au début de votre tour, si le Mot Soignant se trouve dans votre Défausse, vous pouvez payer pour le reprendre en main.",
@@ -10960,7 +11045,16 @@
       {
         "description": "Le Héros de votre choix regagne 3 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 3
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -11135,7 +11229,16 @@
       {
         "description": "Gagnez 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -11653,7 +11756,16 @@
       {
         "description": "Piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Ne jouez cette carte que lorsque vous venez de détruire un Allié adverse.",
@@ -12890,7 +13002,22 @@
           "Terre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

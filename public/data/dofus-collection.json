@@ -4227,7 +4227,16 @@
       {
         "description": "Gagnez 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

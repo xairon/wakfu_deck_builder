@@ -71,11 +71,21 @@ export type CompiledEffectOp =
    *  remise SOUS la Pioche du propriétaire (3389). */
   | { op: "recycleFromDiscard"; n: number }
   /** « Défaussez-vous de N carte(s) » — choix dans sa main. */
-  | { op: "discardFromHand"; n: number };
+  | { op: "discardFromHand"; n: number }
+  /** « Cherchez un [type] dans votre Pioche … » — choix filtré dans la
+   *  Pioche, vers la main ou le jeu (le mélange suit via shuffleDeck). */
+  | {
+      op: "searchDeck";
+      what: "Dofus" | "Action" | "Équipement" | "Zone" | "Salle" | "Allié";
+      dest: "main" | "monde";
+    }
+  /** « … puis mélangez votre Pioche ». */
+  | { op: "shuffleDeck" };
 
 export interface CompiledEffect {
-  /** onArrive : la carte entre en jeu ; onTap : pouvoir activé en l'inclinant. */
-  trigger: "onArrive" | "onTap";
+  /** onArrive : entrée en jeu ; onTap : pouvoir incliné ; onPlay : Action
+   *  résolue au moment où elle est jouée (puis défaussée, 302.1). */
+  trigger: "onArrive" | "onTap" | "onPlay";
   /** « Vous pouvez … » : le joueur confirme avant exécution. */
   optional?: boolean;
   /** « Détruisez [cette carte] : … » — le coût remplace l'inclinaison. */

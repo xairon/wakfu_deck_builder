@@ -657,7 +657,16 @@
       {
         "description": "Piochez deux cartes.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Ne jouez cette carte que lorsque vous venez de détruire un Allié Bandit.",
@@ -6141,7 +6150,16 @@
       {
         "description": "Gagnez 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Ne jouez cette carte que quand vous venez de piocher Pleur Nycheuz. Révélez-la, puis bannissez-la.",

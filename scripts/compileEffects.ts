@@ -16,6 +16,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  compileActionEffectText,
   compileEffectText,
   compileTapEffectText,
 } from "../src/game/rules/effects/dsl";
@@ -127,6 +128,7 @@ function compileEffects(
   effects: RawEffect[] | undefined,
   cardName: string,
   sourceElement: string,
+  isAction = false,
 ): void {
   for (const e of effects ?? []) {
     const text = String(e?.description ?? "").trim();
@@ -134,7 +136,9 @@ function compileEffects(
     stats.effects++;
     const compiled = e.requiresIncline
       ? compileTapEffectText(text, cardName, sourceElement)
-      : compileEffectText(text, cardName, sourceElement);
+      : isAction
+        ? compileActionEffectText(text, cardName, sourceElement)
+        : compileEffectText(text, cardName, sourceElement);
     if (compiled) {
       e.compiled = compiled;
       stats.compiled++;
@@ -156,7 +160,12 @@ for (const file of EXTENSION_FILES) {
     card.keywords = cleanKeywords(card.keywords);
     const name = String(card.name ?? "");
     const element = sourceElementOf(card);
-    compileEffects(card.effects, name, element);
+    compileEffects(
+      card.effects,
+      name,
+      element,
+      (card as { mainType?: string }).mainType === "Action",
+    );
     if (card.recto) {
       card.recto.keywords = cleanKeywords(card.recto.keywords);
       compileEffects(card.recto.effects, name, element);

@@ -50,6 +50,7 @@ import {
   isTargetingOp,
   planCost,
   playDestination,
+  playEffects,
   pmOf,
   resolveBuffForceTarget,
   resolveCombat,
@@ -435,25 +436,34 @@ export const useGameStore = defineStore("game", () => {
       type: "SET_ORIENTATION" as const,
       payload: { instanceId: id, orientation: "tapped" },
     }));
-    const dest = playDestination(card, seat);
+    // Action dont l'effet est entièrement compilé : elle se résout puis va
+    // en défausse (302.1) au lieu de rester sur la table.
+    const actionAtoms = card.mainType === "Action" ? playEffects(card) : [];
+    const dest: ZoneRef = actionAtoms.length
+      ? { zone: "defausse", owner: seat }
+      : playDestination(card, seat);
     drafts.push(
       move(seat, {
         instanceId,
         from: inst.location,
         to: dest,
-        position: { at: "any" },
+        position: actionAtoms.length ? { at: "top" } : { at: "any" },
         visibility: { faceDown: false, visibleTo: "all" },
         preservesIdentity: false,
-        orientationOnArrival: "upright",
+        orientationOnArrival: actionAtoms.length ? null : "upright",
       }),
-      setCounterVerb(
-        seat,
-        instanceId,
-        "arrivedTurn",
-        state.value.turn.number,
-        true,
-      ),
     );
+    if (!actionAtoms.length) {
+      drafts.push(
+        setCounterVerb(
+          seat,
+          instanceId,
+          "arrivedTurn",
+          state.value.turn.number,
+          true,
+        ),
+      );
+    }
     if (plan.producers.length) {
       drafts.push(
         say(
@@ -463,7 +473,14 @@ export const useGameStore = defineStore("game", () => {
       );
     }
     dispatch(...drafts);
-    runArrivalEffects(seat, card, instanceId);
+    if (actionAtoms.length) {
+      for (const atom of actionAtoms) {
+        dispatch(say(seat, `Action résolue — ${card.name} : « ${atom.text} »`));
+        executeEffectOps(seat, card.name, atom.ops);
+      }
+    } else {
+      runArrivalEffects(seat, card, instanceId);
+    }
     return true;
   }
 
@@ -488,25 +505,29 @@ export const useGameStore = defineStore("game", () => {
     sourceId?: string;
   } | null>(null);
 
-  /** Choix de carte(s) dans une pile (Défausse à recycler / main à défausser). */
+  /** Choix de carte(s) dans une pile (recycler / défausser / chercher). */
   const effectPicking = ref<{
     seat: Seat;
     cardName: string;
-    zone: "defausse" | "main";
-    action: "recycle" | "discard";
+    zone: "defausse" | "main" | "pioche";
+    action: "recycle" | "discard" | "toHand" | "toMonde";
+    /** Filtre par type principal (recherche dans la Pioche). */
+    filter?: string;
     remaining: number;
     rest: EffectOp[];
     sourceId?: string;
   } | null>(null);
-  const effectPickIds = computed(() =>
-    effectPicking.value
-      ? [
-          ...state.value.seats[effectPicking.value.seat][
-            effectPicking.value.zone
-          ],
-        ]
-      : [],
-  );
+  const effectPickIds = computed(() => {
+    const p = effectPicking.value;
+    if (!p) return [];
+    const ids = [...state.value.seats[p.seat][p.zone]];
+    if (!p.filter) return ids;
+    return ids.filter(
+      (id) =>
+        getCard(state.value.instances[id]?.cardId ?? null)?.mainType ===
+        p.filter,
+    );
+  });
 
   /** Le joueur choisit une carte dans la pile ; continue l'effet une fois fini. */
   function effectPick(instanceId: string): void {
@@ -517,11 +538,22 @@ export const useGameStore = defineStore("game", () => {
       dispatch(
         say(p.seat, `${p.cardName} : une carte est recyclée sous la Pioche.`),
       );
-    } else {
+    } else if (p.action === "discard") {
       moveTo(instanceId, { zone: "defausse", owner: p.seat }, { at: "top" });
+    } else if (p.action === "toHand") {
+      moveTo(instanceId, { zone: "main", owner: p.seat });
+      dispatch(
+        say(
+          p.seat,
+          `${p.cardName} : ${getCard(state.value.instances[instanceId]?.cardId ?? null)?.name ?? "une carte"} rejoint la main.`,
+        ),
+      );
+    } else {
+      moveTo(instanceId, { zone: "monde" });
+      dispatch(say(p.seat, `${p.cardName} : la carte cherchée entre en jeu.`));
     }
     const remaining = p.remaining - 1;
-    const stillHas = state.value.seats[p.seat][p.zone].length > 0;
+    const stillHas = effectPickIds.value.length > 0;
     if (remaining > 0 && stillHas) {
       effectPicking.value = { ...p, remaining };
       return;
@@ -568,6 +600,32 @@ export const useGameStore = defineStore("game", () => {
           seat,
           cardName,
           op,
+          rest: ops.slice(i + 1),
+          sourceId,
+        };
+        return;
+      }
+      if (op.op === "shuffleDeck") {
+        shufflePioche(seat);
+        continue;
+      }
+      if (op.op === "searchDeck") {
+        const hasMatch = state.value.seats[seat].pioche.some(
+          (id) =>
+            getCard(state.value.instances[id]?.cardId ?? null)?.mainType ===
+            op.what,
+        );
+        if (!hasMatch) {
+          dispatch(say(seat, `${cardName} : aucun ${op.what} dans la Pioche.`));
+          continue;
+        }
+        effectPicking.value = {
+          seat,
+          cardName,
+          zone: "pioche",
+          action: op.dest === "main" ? "toHand" : "toMonde",
+          filter: op.what,
+          remaining: 1,
           rest: ops.slice(i + 1),
           sourceId,
         };

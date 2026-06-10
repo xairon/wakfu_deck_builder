@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { arrivalEffects, tapPowers } from "@/game/rules";
+import { arrivalEffects, playEffects, tapPowers } from "@/game/rules";
 import { createMockAllyCard } from "tests/factories/card";
 
 function cardWith(name: string, ...descriptions: string[]) {
@@ -261,6 +261,56 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
     expect(arrivalEffects(rec)[0]?.ops).toEqual([
       { op: "recycleFromDiscard", n: 1 },
     ]);
+  });
+
+  it("parse « Cherchez un [type] dans votre Pioche … puis mélangez »", () => {
+    const toHand = cardWith(
+      "Crail",
+      "Quand Crail apparaît, cherchez un Dofus dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche.",
+    );
+    expect(arrivalEffects(toHand)[0]?.ops).toEqual([
+      { op: "searchDeck", what: "Dofus", dest: "main" },
+      { op: "shuffleDeck" },
+    ]);
+    const toPlay = cardWith(
+      "Quête",
+      "Quand la Quête apparaît, cherchez une Salle dans votre Pioche et mettez-la en jeu, puis mélangez votre Pioche.",
+    );
+    expect(arrivalEffects(toPlay)[0]?.ops).toEqual([
+      { op: "searchDeck", what: "Salle", dest: "monde" },
+      { op: "shuffleDeck" },
+    ]);
+    // qualificatif non compris (« Allié Chevalier ») → rejet strict
+    const qualified = cardWith(
+      "Château",
+      "Quand le Château apparaît, cherchez un Allié Chevalier dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche.",
+    );
+    expect(arrivalEffects(qualified)).toEqual([]);
+  });
+
+  it("compile l'effet d'une carte Action (onPlay), pas celui des autres types", () => {
+    const action = cardWith(
+      "À la poursuite d'Ogrest",
+      "Cherchez un Dofus dans votre Pioche et mettez-le en jeu, puis mélangez votre Pioche.",
+    );
+    (action as { mainType: string }).mainType = "Action";
+    const atoms = playEffects(action);
+    expect(atoms).toHaveLength(1);
+    expect(atoms[0].trigger).toBe("onPlay");
+    expect(atoms[0].ops).toEqual([
+      { op: "searchDeck", what: "Dofus", dest: "monde" },
+      { op: "shuffleDeck" },
+    ]);
+    // un Allié avec un texte sans préfixe ne compile PAS en onPlay
+    const ally = cardWith("Bouftou", "Piochez une carte.");
+    expect(playEffects(ally)).toEqual([]);
+    // une Action avec restriction non comprise → rejet strict
+    const cond = cardWith(
+      "Quête",
+      "Piochez une carte. Ne jouez cette carte que si votre Héros a subi des Dommages.",
+    );
+    (cond as { mainType: string }).mainType = "Action";
+    expect(playEffects(cond)).toEqual([]);
   });
 
   it("ignore les autres déclencheurs (début de tour, texte libre)", () => {

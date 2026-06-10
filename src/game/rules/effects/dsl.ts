@@ -83,6 +83,31 @@ function parseSentence(
     /^defaussez[- ]vous d['’ ]?\s?(une|deux|trois|\d+) cartes?(?: de votre main)?$/,
   );
   if (m) return { op: "discardFromHand", n: toNumber(m[1]) };
+  // « Cherchez un [type] dans votre Pioche, révélez-le et prenez-le en main »
+  // ou « … et mettez-le en jeu » (le mélange arrive en op suivante).
+  m = sentence.match(
+    /^cherchez (?:un|une) (dofus|action|equipement|zone|salle|allie) dans votre pioche,? (?:revelez-l[ea] et prenez-l[ea] en main|et mettez-l[ea] en jeu)$/,
+  );
+  if (m) {
+    const WHAT: Record<
+      string,
+      "Dofus" | "Action" | "Équipement" | "Zone" | "Salle" | "Allié"
+    > = {
+      dofus: "Dofus",
+      action: "Action",
+      equipement: "Équipement",
+      zone: "Zone",
+      salle: "Salle",
+      allie: "Allié",
+    };
+    return {
+      op: "searchDeck",
+      what: WHAT[m[1]],
+      dest: sentence.includes("en jeu") ? "monde" : "main",
+    };
+  }
+  m = sentence.match(/^melangez(?:[- ]la)? votre pioche$/);
+  if (m) return { op: "shuffleDeck" };
   m = sentence.match(/^votre heros regagne (\d+) (?:pv|points? de vie)$/);
   if (m) return { op: "heroGainPv", n: toNumber(m[1]) };
   m = sentence.match(
@@ -257,6 +282,47 @@ export function arrivalEffects(card: Card | null): EffectAtom[] {
         ? compileEffectText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onArrive")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
+}
+
+/**
+ * Compile l'effet d'une carte ACTION : pas de préfixe, le texte est ce qui
+ * se résout quand la carte est jouée (302.1). Strict comme le reste.
+ */
+export function compileActionEffectText(
+  text: string,
+  cardName: string,
+  sourceElement = "Neutre",
+): CompiledEffect | null {
+  const sentences = norm(text)
+    .replace(/\.$/, "")
+    .split(/\.\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!sentences.length) return null;
+  const ops: EffectOp[] = [];
+  for (const s of sentences) {
+    const parsed = parseOps(s, cardName, sourceElement);
+    if (!parsed) return null;
+    ops.push(...parsed);
+  }
+  return { trigger: "onPlay", ops };
+}
+
+/** Effets de résolution d'une carte Action (trigger onPlay). */
+export function playEffects(card: Card | null): EffectAtom[] {
+  if (!card || card.mainType !== "Action") return [];
+  const atoms: EffectAtom[] = [];
+  for (const e of card.effects ?? []) {
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      (text && !e?.requiresIncline
+        ? compileActionEffectText(text, card.name, effectSourceElement(card))
+        : null);
+    if (compiled && compiled.trigger === "onPlay")
       atoms.push({ ...compiled, text });
   }
   return atoms;

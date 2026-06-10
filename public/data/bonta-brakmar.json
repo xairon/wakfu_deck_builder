@@ -1691,7 +1691,22 @@
           "Feu"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Feu",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -7316,7 +7331,16 @@
       {
         "description": "Votre Héros perd 2 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "heroLosePv",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Tant que la Flagellation est dans votre Défausse, votre Héros a +1 en Force.",
@@ -12139,7 +12163,16 @@
       {
         "description": "Gagnez 2 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 2
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

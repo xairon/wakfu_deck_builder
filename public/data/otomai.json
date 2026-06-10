@@ -4839,7 +4839,26 @@
           "Eau"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Ces Potions sont de Niveau 1 et possèdent un coût additionnel à payer lorsqu'on joue la Potion. Ces Actions sont d'Elément Terre, Feu, Eau ou Air, et ce coût additionnel peut être payé par l'Alchimiste correspondant. On peut par exemple jouer une Akwafiole en inclinant une carte de son choix pour payer le coût en Neutre, puis en payant le coût additionnel avec le pouvoir de Nico la Flammèche.",
@@ -4965,7 +4984,26 @@
           "Neutre"
         ],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -5903,7 +5941,16 @@
       {
         "description": "Piochez trois cartes.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 3
+            }
+          ]
+        }
       },
       {
         "description": "Ne jouez l'Éternelle Moisson que si vous contrôlez des Monstres d'au moins cinq Familles différentes.",

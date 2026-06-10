@@ -241,7 +241,11 @@
             {{
               store.effectPicking.action === "recycle"
                 ? "Recycler — la carte ira sous ta Pioche"
-                : "Défausser une carte de ta main"
+                : store.effectPicking.action === "discard"
+                  ? "Défausser une carte de ta main"
+                  : store.effectPicking.action === "toHand"
+                    ? `Cherche ${store.effectPicking.filter ?? "une carte"} dans ta Pioche — vers ta main`
+                    : `Cherche ${store.effectPicking.filter ?? "une carte"} dans ta Pioche — mise en jeu`
             }}
           </p>
           <h2 class="mt-1 font-display text-3xl">
