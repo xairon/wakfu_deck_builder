@@ -81,6 +81,23 @@ function parseSentence(
     /^le heros de votre choix regagne (\d+) (?:pv|points? de vie)$/,
   );
   if (m) return { op: "healHeroTarget", n: toNumber(m[1]) };
+  // « L'Allié (ou Héros) de votre choix gagne +N en Force jusqu'à la fin du tour »
+  m = sentence.match(
+    /^l['’ ]?\s?allie( ou heros)? de votre choix gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m)
+    return {
+      op: "buffForceTarget",
+      n: toNumber(m[2]),
+      heroes: !!m[1],
+      zones: ["monde", "havreSac"],
+    };
+  // « [Cette carte] gagne +N en Force jusqu'à la fin du tour »
+  m = sentence.match(
+    /^(.{1,50}?) gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return { op: "buffForceSelf", n: toNumber(m[2]) };
   m = sentence.match(
     /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );

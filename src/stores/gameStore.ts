@@ -51,6 +51,7 @@ import {
   planCost,
   playDestination,
   pmOf,
+  resolveBuffForceTarget,
   resolveCombat,
   resolveDamageTarget,
   resolveDestroyTarget,
@@ -460,13 +461,19 @@ export const useGameStore = defineStore("game", () => {
       );
     }
     dispatch(...drafts);
-    runArrivalEffects(seat, card);
+    runArrivalEffects(seat, card, instanceId);
     return true;
   }
 
   /** Effets optionnels (« vous pouvez… ») en attente de confirmation. */
   const effectChoices = ref<
-    { seat: Seat; cardName: string; text: string; ops: EffectOp[] }[]
+    {
+      seat: Seat;
+      cardName: string;
+      text: string;
+      ops: EffectOp[];
+      sourceId?: string;
+    }[]
   >([]);
   const effectChoice = computed(() => effectChoices.value[0] ?? null);
 
@@ -476,6 +483,7 @@ export const useGameStore = defineStore("game", () => {
     cardName: string;
     op: TargetingOp;
     rest: EffectOp[];
+    sourceId?: string;
   } | null>(null);
   const effectTargetIdsList = computed(() =>
     effectTargeting.value
@@ -491,6 +499,7 @@ export const useGameStore = defineStore("game", () => {
     seat: Seat,
     cardName: string,
     ops: EffectOp[],
+    sourceId?: string,
   ): void {
     for (let i = 0; i < ops.length; i++) {
       const op = ops[i];
@@ -507,10 +516,25 @@ export const useGameStore = defineStore("game", () => {
           cardName,
           op,
           rest: ops.slice(i + 1),
+          sourceId,
         };
         return;
       }
-      if (op.op === "draw") {
+      if (op.op === "buffForceSelf") {
+        const src = sourceId ? state.value.instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay) {
+          dispatch(
+            incCounterVerb(seat, sourceId!, "forceMod", op.n, true),
+            say(
+              seat,
+              `${cardName} gagne +${op.n} en Force jusqu'à la fin du tour.`,
+            ),
+          );
+        }
+      } else if (op.op === "draw") {
         draw(seat, op.n);
       } else if (op.op === "gainXp") {
         const grant = grantXpEvents(rulesCtx(), seat, op.n);
@@ -550,16 +574,18 @@ export const useGameStore = defineStore("game", () => {
         ? resolveDestroyTarget(rulesCtx(), t.seat, instanceId)
         : t.op.op === "healHeroTarget"
           ? resolveHealHeroTarget(rulesCtx(), t.seat, instanceId, t.op.n)
-          : resolveDamageTarget(
-              rulesCtx(),
-              t.seat,
-              instanceId,
-              t.op.n,
-              t.op.element,
-            );
+          : t.op.op === "buffForceTarget"
+            ? resolveBuffForceTarget(rulesCtx(), t.seat, instanceId, t.op.n)
+            : resolveDamageTarget(
+                rulesCtx(),
+                t.seat,
+                instanceId,
+                t.op.n,
+                t.op.element,
+              );
     dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     checkVictory();
-    executeEffectOps(t.seat, t.cardName, t.rest);
+    executeEffectOps(t.seat, t.cardName, t.rest, t.sourceId);
   }
 
   /**
@@ -610,7 +636,7 @@ export const useGameStore = defineStore("game", () => {
         say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`),
       );
     }
-    executeEffectOps(seat, card.name, atom.ops);
+    executeEffectOps(seat, card.name, atom.ops, instanceId);
     return true;
   }
 
@@ -627,24 +653,30 @@ export const useGameStore = defineStore("game", () => {
     if (!t) return;
     effectTargeting.value = null;
     dispatch(say(t.seat, `${t.cardName} : ciblage passé.`));
-    executeEffectOps(t.seat, t.cardName, t.rest);
+    executeEffectOps(t.seat, t.cardName, t.rest, t.sourceId);
   }
 
   /** Exécute les effets d'apparition compilés (DSL strict). */
-  function runArrivalEffects(seat: Seat, card: Card): void {
+  function runArrivalEffects(seat: Seat, card: Card, sourceId?: string): void {
     if (!assist.value) return;
     for (const atom of arrivalEffects(card)) {
       if (atom.optional) {
         effectChoices.value = [
           ...effectChoices.value,
-          { seat, cardName: card.name, text: atom.text, ops: atom.ops },
+          {
+            seat,
+            cardName: card.name,
+            text: atom.text,
+            ops: atom.ops,
+            sourceId,
+          },
         ];
         continue;
       }
       dispatch(
         say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
       );
-      executeEffectOps(seat, card.name, atom.ops);
+      executeEffectOps(seat, card.name, atom.ops, sourceId);
     }
   }
 
@@ -663,7 +695,7 @@ export const useGameStore = defineStore("game", () => {
         `Effet appliqué — ${choice.cardName} : « ${choice.text} »`,
       ),
     );
-    executeEffectOps(choice.seat, choice.cardName, choice.ops);
+    executeEffectOps(choice.seat, choice.cardName, choice.ops, choice.sourceId);
   }
 
   function toggleTap(instanceId: string): void {
@@ -860,6 +892,11 @@ export const useGameStore = defineStore("game", () => {
       }),
     ];
     for (const inst of Object.values(s.instances)) {
+      // « jusqu'à la fin du tour » : les modificateurs de Force expirent à
+      // chaque transition de tour, quel que soit le contrôleur.
+      if (inst.counters.tokens?.forceMod) {
+        drafts.push(setCounterVerb(next, inst.instanceId, "forceMod", 0, true));
+      }
       const inPlay =
         inst.location.zone === "monde" || inst.location.zone === "havreSac";
       if (inst.controller !== next || !inPlay) continue;

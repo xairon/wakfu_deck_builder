@@ -56,7 +56,17 @@ export type CompiledEffectOp =
       zones: ("monde" | "havreSac")[];
     }
   /** « Le Héros de votre choix regagne N PV ». */
-  | { op: "healHeroTarget"; n: number };
+  | { op: "healHeroTarget"; n: number }
+  /** « L'Allié (ou Héros) de votre choix gagne +N en Force jusqu'à la fin
+   *  du tour » — compteur temporaire purgé à la fin du tour. */
+  | {
+      op: "buffForceTarget";
+      n: number;
+      heroes: boolean;
+      zones: ("monde" | "havreSac")[];
+    }
+  /** « [Cette carte] gagne +N en Force jusqu'à la fin du tour ». */
+  | { op: "buffForceSelf"; n: number };
 
 export interface CompiledEffect {
   /** onArrive : la carte entre en jeu ; onTap : pouvoir activé en l'inclinant. */

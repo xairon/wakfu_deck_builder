@@ -51,6 +51,14 @@
     >
       N{{ level }}
     </span>
+    <span
+      v-if="forceMod"
+      :key="`fmod-${forceMod}`"
+      class="game-card__badge game-card__badge--fmod"
+      title="Force modifiée jusqu'à la fin du tour"
+    >
+      {{ forceMod > 0 ? `+${forceMod}` : forceMod }}
+    </span>
   </button>
 </template>
 
@@ -108,6 +116,7 @@ const tapped = computed(() => props.instance.orientation === "tapped");
 const damage = computed(() => props.instance.counters.damage || 0);
 const hp = computed(() => props.instance.counters.hp);
 const level = computed(() => props.instance.counters.level);
+const forceMod = computed(() => props.instance.counters.tokens?.forceMod ?? 0);
 
 const label = computed(() => props.card?.name ?? "Carte");
 const spine = computed(() => elementColor(props.card?.stats?.niveau?.element));
@@ -260,6 +269,11 @@ const ariaLabel = computed(() => {
   left: 6px;
   background: linear-gradient(180deg, #f7bc4e, #de9418);
   color: #1b1a17;
+}
+.game-card__badge--fmod {
+  bottom: 3px;
+  left: 6px;
+  background: linear-gradient(180deg, #6cc23a, #4a8f1f);
 }
 @media (prefers-reduced-motion: reduce) {
   .game-card,

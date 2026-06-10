@@ -10,20 +10,25 @@ import type { Seat } from "../../types/zones";
 import { otherSeat } from "../../types/zones";
 import type { RulesCtx } from "../types";
 import { discard, incCounter } from "../../engine/verbs";
-import { forceValue, xpValue } from "../cardAttrs";
+import { xpValue } from "../cardAttrs";
+import { effectiveForce } from "../stats";
 import { combatKeywords, preventDamage } from "./keywords";
 import { grantXpEvents } from "../progress";
 
 export type TargetingOp = Extract<
   CompiledEffectOp,
-  { op: "destroyTarget" } | { op: "damageTarget" } | { op: "healHeroTarget" }
+  | { op: "destroyTarget" }
+  | { op: "damageTarget" }
+  | { op: "healHeroTarget" }
+  | { op: "buffForceTarget" }
 >;
 
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
   return (
     op.op === "destroyTarget" ||
     op.op === "damageTarget" ||
-    op.op === "healHeroTarget"
+    op.op === "healHeroTarget" ||
+    op.op === "buffForceTarget"
   );
 }
 
@@ -126,11 +131,28 @@ export function resolveDamageTarget(
   events.push(incCounter(actor, targetId, "damage", eff));
   log.push(`${eff} Dommage(s) sur ${nameOf(ctx, targetId)}.`);
   const total = (inst.counters.damage ?? 0) + eff;
-  const force = forceValue(card, side);
+  const force = effectiveForce(ctx, targetId);
   if (force > 0 && total >= force) {
     const destroy = resolveDestroyTarget(ctx, actor, targetId);
     events.push(...destroy.events);
     log.push(...destroy.log);
   }
   return { events, log };
+}
+
+/** « gagne +N en Force jusqu'à la fin du tour » — token purgé en fin de tour. */
+export function resolveBuffForceTarget(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+  n: number,
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  return {
+    events: [incCounter(actor, targetId, "forceMod", n, true)],
+    log: [
+      `${nameOf(ctx, targetId)} gagne +${n} en Force jusqu'à la fin du tour.`,
+    ],
+  };
 }

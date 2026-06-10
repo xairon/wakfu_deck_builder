@@ -13,7 +13,8 @@ import type { Seat } from "../types/zones";
 import { otherSeat } from "../types/zones";
 import type { CombatPlan, CombatResult, RulesCtx } from "./types";
 import { discard, incCounter, tap } from "../engine/verbs";
-import { forceValue, producedElement, xpValue } from "./cardAttrs";
+import { producedElement, xpValue } from "./cardAttrs";
+import { effectiveForce } from "./stats";
 import { grantXpEvents } from "./progress";
 import { combatKeywords, preventDamage } from "./effects/keywords";
 import type { CombatKeywords } from "./effects/keywords";
@@ -28,8 +29,7 @@ function sideOf(ctx: RulesCtx, id: InstanceId): "recto" | "verso" {
 }
 
 function forceOf(ctx: RulesCtx, id: InstanceId): number {
-  const card = cardOf(ctx, id);
-  return card ? forceValue(card, sideOf(ctx, id)) : 0;
+  return effectiveForce(ctx, id);
 }
 
 function keywordsOf(ctx: RulesCtx, id: InstanceId): CombatKeywords {

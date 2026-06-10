@@ -2247,7 +2247,21 @@
       {
         "description": "Quand Dante Sion apparaît, l'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -3325,7 +3339,22 @@
       {
         "description": "Détruisez le Fantôme Arrogant : L'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

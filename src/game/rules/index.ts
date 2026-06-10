@@ -9,6 +9,7 @@ export * from "./resources";
 export * from "./legality";
 export * from "./combat";
 export * from "./progress";
+export * from "./stats";
 export * from "./effects/keywords";
 export * from "./effects/dsl";
 export * from "./effects/targeting";

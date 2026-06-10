@@ -174,6 +174,27 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
     expect(tapPowers(other)).toEqual([]);
   });
 
+  it("parse les buffs de Force : cible au choix et auto-référent", () => {
+    const target = cardWith(
+      "Kabrok",
+      "Quand Kabrok apparaît, l'Allié ou Héros de votre choix gagne +1 en Force jusqu'à la fin du tour.",
+    );
+    expect(arrivalEffects(target)[0]?.ops).toEqual([
+      {
+        op: "buffForceTarget",
+        n: 1,
+        heroes: true,
+        zones: ["monde", "havreSac"],
+      },
+    ]);
+    const self = cardWith(
+      "Mama Bwork",
+      "La Mama Bwork gagne +1 en Force jusqu'à la fin du tour.",
+    );
+    self.effects![0].requiresIncline = true;
+    expect(tapPowers(self)[0]?.ops).toEqual([{ op: "buffForceSelf", n: 1 }]);
+  });
+
   it("parse les soins : « votre Héros regagne N PV » et la cible au choix", () => {
     const self = cardWith(
       "Fée",

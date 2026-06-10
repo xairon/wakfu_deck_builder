@@ -1,7 +1,9 @@
 ﻿import { describe, expect, it } from "vitest";
 import type { Card } from "@/types/cards";
 import {
+  effectiveForce,
   effectTargetIds,
+  resolveBuffForceTarget,
   resolveDamageTarget,
   resolveDestroyTarget,
   resolveHealHeroTarget,
@@ -113,6 +115,34 @@ describe("rules/effects — ciblage", () => {
     dispatch(f, ...resolveDamageTarget(ctxOf(f), "B", HERO_A, 5, "Eau").events);
     dispatch(f, ...resolveHealHeroTarget(ctxOf(f), "A", HERO_A, 3).events);
     expect(ctxOf(f).state.instances[HERO_A].counters.hp).toBe(14); // 16−5+3
+  });
+
+  it("buffForceTarget : +N Force temporaire, pris en compte par la létalité", () => {
+    const f = fixture([], [makeAlly("b0", { force: 2 })]);
+    bringToMonde(f, "B", instId("B", 0));
+    dispatch(
+      f,
+      ...resolveBuffForceTarget(ctxOf(f), "B", instId("B", 0), 2).events,
+    );
+    expect(
+      ctxOf(f).state.instances[instId("B", 0)].counters.tokens?.forceMod,
+    ).toBe(2);
+    // 3 Dommages < Force effective 4 → survit (sans le buff il mourrait)
+    const r = resolveDamageTarget(ctxOf(f), "A", instId("B", 0), 3, "Feu");
+    dispatch(f, ...r.events);
+    expect(ctxOf(f).state.seats.B.defausse).not.toContain(instId("B", 0));
+    expect(ctxOf(f).state.instances[instId("B", 0)].counters.damage).toBe(3);
+  });
+
+  it("effectiveForce additionne Force imprimée et forceMod", () => {
+    const f = fixture([makeAlly("a0", { force: 2 })]);
+    bringToMonde(f, "A", instId("A", 0));
+    expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(2);
+    dispatch(
+      f,
+      ...resolveBuffForceTarget(ctxOf(f), "A", instId("A", 0), 3).events,
+    );
+    expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(5);
   });
 
   it("les Héros sont ciblables seulement si l'op le permet", () => {
