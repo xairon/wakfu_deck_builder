@@ -204,6 +204,35 @@
       </div>
     </Transition>
 
+    <!-- Effet optionnel (« vous pouvez… ») -->
+    <Transition name="ovl">
+      <div v-if="store.effectChoice" class="overlay">
+        <div class="overlay__card">
+          <p class="eyebrow text-primary">Effet optionnel</p>
+          <h2 class="mt-2 font-display text-3xl">
+            {{ store.effectChoice.cardName }}
+          </h2>
+          <p class="mt-3 max-w-md text-base-content/75">
+            « {{ store.effectChoice.text }} »
+          </p>
+          <div class="mt-6 flex justify-center gap-3">
+            <button
+              class="btn btn-primary"
+              @click="store.effectChoiceResolve(true)"
+            >
+              Appliquer l'effet
+            </button>
+            <button
+              class="btn btn-outline"
+              @click="store.effectChoiceResolve(false)"
+            >
+              Décliner
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Mulligan -->
     <Transition name="ovl">
       <div

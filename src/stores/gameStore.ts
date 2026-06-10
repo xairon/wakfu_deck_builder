@@ -34,7 +34,7 @@ import {
   shuffle as shuffleVerb,
   undo as undoVerb,
 } from "@/game";
-import type { CombatTarget, RulesCtx } from "@/game/rules";
+import type { CombatTarget, EffectOp, RulesCtx } from "@/game/rules";
 import {
   arrivalEffects,
   eligibleAttackers,
@@ -253,6 +253,7 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
     attackedOnTurn.value = null;
     ruleError.value = null;
+    effectChoices.value = [];
   }
 
   /** Démarrage direct en partie (tests / bac à sable rapide). */
@@ -324,6 +325,7 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
     attackedOnTurn.value = null;
     ruleError.value = null;
+    effectChoices.value = [];
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -449,37 +451,72 @@ export const useGameStore = defineStore("game", () => {
     return true;
   }
 
-  /** Exécute les effets d'apparition entièrement parsés par le DSL strict. */
+  /** Effets optionnels (« vous pouvez… ») en attente de confirmation. */
+  const effectChoices = ref<
+    { seat: Seat; cardName: string; text: string; ops: EffectOp[] }[]
+  >([]);
+  const effectChoice = computed(() => effectChoices.value[0] ?? null);
+
+  function executeEffectOps(seat: Seat, ops: EffectOp[]): void {
+    for (const op of ops) {
+      if (op.op === "draw") {
+        draw(seat, op.n);
+      } else if (op.op === "gainXp") {
+        const grant = grantXpEvents(rulesCtx(), seat, op.n);
+        dispatch(
+          ...grant.events,
+          ...grant.log.map((l) =>
+            say(seat, `Le Héros de ${players.value[seat].name} ${l}`),
+          ),
+        );
+        if (grant.won) {
+          winner.value = seat;
+          matchPhase.value = "finished";
+        }
+      } else if (op.op === "heroGainPv") {
+        const heroId = state.value.seats[seat].heroInstanceId;
+        if (heroId) adjustCounter(heroId, "hp", op.n);
+      } else if (op.op === "damageOppHero") {
+        const oppHeroId = state.value.seats[otherSeat(seat)].heroInstanceId;
+        if (oppHeroId) adjustCounter(oppHeroId, "hp", -op.n);
+      }
+    }
+  }
+
+  /** Exécute les effets d'apparition compilés (DSL strict). */
   function runArrivalEffects(seat: Seat, card: Card): void {
     if (!assist.value) return;
     for (const atom of arrivalEffects(card)) {
+      if (atom.optional) {
+        effectChoices.value = [
+          ...effectChoices.value,
+          { seat, cardName: card.name, text: atom.text, ops: atom.ops },
+        ];
+        continue;
+      }
       dispatch(
         say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
       );
-      for (const op of atom.ops) {
-        if (op.op === "draw") {
-          draw(seat, op.n);
-        } else if (op.op === "gainXp") {
-          const grant = grantXpEvents(rulesCtx(), seat, op.n);
-          dispatch(
-            ...grant.events,
-            ...grant.log.map((l) =>
-              say(seat, `Le Héros de ${players.value[seat].name} ${l}`),
-            ),
-          );
-          if (grant.won) {
-            winner.value = seat;
-            matchPhase.value = "finished";
-          }
-        } else if (op.op === "heroGainPv") {
-          const heroId = state.value.seats[seat].heroInstanceId;
-          if (heroId) adjustCounter(heroId, "hp", op.n);
-        } else if (op.op === "damageOppHero") {
-          const oppHeroId = state.value.seats[otherSeat(seat)].heroInstanceId;
-          if (oppHeroId) adjustCounter(oppHeroId, "hp", -op.n);
-        }
-      }
+      executeEffectOps(seat, atom.ops);
     }
+  }
+
+  /** Le joueur accepte (ou refuse) l'effet optionnel en tête de file. */
+  function effectChoiceResolve(accept: boolean): void {
+    const choice = effectChoices.value[0];
+    if (!choice) return;
+    effectChoices.value = effectChoices.value.slice(1);
+    if (!accept) {
+      dispatch(say(choice.seat, `Effet décliné — ${choice.cardName}.`));
+      return;
+    }
+    dispatch(
+      say(
+        choice.seat,
+        `Effet appliqué — ${choice.cardName} : « ${choice.text} »`,
+      ),
+    );
+    executeEffectOps(choice.seat, choice.ops);
   }
 
   function toggleTap(instanceId: string): void {
@@ -769,5 +806,7 @@ export const useGameStore = defineStore("game", () => {
     combatToggleBlock,
     combatResolve,
     combatCancel,
+    effectChoice,
+    effectChoiceResolve,
   };
 });

@@ -13,7 +13,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -25,7 +25,16 @@
       {
         "description": "Quand le Dofus des Glaces apparaît, gagnez 2 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 2
+            }
+          ]
+        }
       },
       {
         "description": "Tant que vous contrôlez le Dofus des Glaces, les Alliés ou Héros attaquants ou bloqueurs ne se redressent pas lors de la prochaine phase de redressement de leur contrôleur.",

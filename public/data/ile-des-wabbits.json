@@ -13,13 +13,13 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Jusqu'à la fin du tour, chaque fois qu'un Allié Wabbit apparaît dans le Monde, il inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -45,7 +45,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -56,7 +56,7 @@
       },
       {
         "description": "Le Porteur du Bandeau du Black Tiwabbit inflige un nombre de Dommages égal à sa Force à l'Allié ou Héros de votre choix, puis détruisez-le.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -119,11 +119,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -134,7 +134,7 @@
       },
       {
         "description": "Dites \"WABEHAMEHA !\" : Le Black Tiwabbit inflige 1 Dommage à l'Allié ou Héros de votre choix, puis détruisez-le.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -163,11 +163,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -206,11 +206,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -237,11 +237,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -306,7 +306,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -343,7 +343,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -374,11 +374,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -444,7 +444,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -482,7 +482,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -519,17 +519,17 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Si le Flaqueux se trouve dans votre Défausse, vous pouvez payer pour le recycler. Votre Héros regagne 2 PV.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -558,11 +558,11 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -573,7 +573,7 @@
       },
       {
         "description": "Le Grand Pa Wabbit inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -602,7 +602,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -633,7 +633,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -644,7 +644,7 @@
       },
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez l'Île des Wabbits.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -675,7 +675,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -706,11 +706,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -743,11 +743,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -780,7 +780,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -812,7 +812,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -843,7 +843,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -882,17 +882,17 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, le Tiwabbit Kiafin lui inflige 1 Dommage .",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -928,11 +928,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -969,11 +969,11 @@
       "pv": 18,
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -994,7 +994,7 @@
     "class": "Wabbit",
     "level": {
       "value": 1,
-      "element": "eau"
+      "element": "Eau"
     },
     "recto": {
       "stats": {
@@ -1003,11 +1003,11 @@
         "pv": 18,
         "niveau": {
           "value": 1,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 1,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -1022,12 +1022,7 @@
           "requiresIncline": true
         }
       ],
-      "keywords": [
-        {
-          "name": "Agilité",
-          "description": ""
-        }
-      ],
+      "keywords": [],
       "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/ile-des-wabbits/wa-wabbit-1.png"
     },
     "verso": {
@@ -1037,11 +1032,11 @@
         "pv": 22,
         "niveau": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -1056,12 +1051,7 @@
           "requiresIncline": true
         }
       ],
-      "keywords": [
-        {
-          "name": "Agilité",
-          "description": ""
-        }
-      ],
+      "keywords": [],
       "imageUrl": "https://www.wtcg-return.fr/media/cache/page_card/ile-des-wabbits/wa-wabbit-2.png"
     }
   },
@@ -1079,11 +1069,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -1110,11 +1100,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -1148,11 +1138,11 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [

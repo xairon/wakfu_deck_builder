@@ -13,7 +13,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -50,7 +50,7 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -88,7 +88,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -96,12 +96,12 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -131,17 +131,17 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
       {
         "description": "Mettez en jeu un jeton \"Monstre - Arakne\" de Force 1 . N'utilisez ce pouvoir qu'une seule fois par tour.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -183,12 +183,12 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -218,11 +218,11 @@
       "pv": 14,
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -245,7 +245,7 @@
     "class": "Xélor",
     "level": {
       "value": 1,
-      "element": "eau"
+      "element": "Eau"
     },
     "recto": {
       "stats": {
@@ -254,11 +254,11 @@
         "pv": 14,
         "niveau": {
           "value": 1,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 1,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -283,11 +283,11 @@
         "pv": 18,
         "niveau": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -320,13 +320,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Inclinez l'un de vos Alliés ou Héros : il inflige sa Force en Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -365,13 +365,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Quand l'Aiguille gluante arrive en jeu, elle inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -380,7 +380,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -408,11 +408,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [],
@@ -438,11 +438,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -475,17 +475,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
       {
         "description": "Amar Casto gagne le de votre choix jusqu'à la fin du tour.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -538,7 +538,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": [
@@ -579,7 +579,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Benoit Laigle (Ben Pirate)"],
@@ -607,17 +607,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Détruisez jusqu'à 3 de vos Alliés Vampyres : Anerice la Shushess inflige le même nombre de Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -658,7 +658,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jérôme Brulin (Vliir)"],
@@ -691,7 +691,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 3",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -720,13 +720,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic lui inflige 1 Dommage .",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -740,7 +740,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -775,12 +775,12 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       },
       {
-        "name": "**Résistance",
+        "name": "Résistance",
         "description": "1 **.",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -808,11 +808,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -839,13 +839,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "L'Arc Hidsad inflige 1 Dommage à l'Allié ou Héros de votre choix, puis inflige 1 Dommage à son Porteur.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -859,7 +859,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": [
@@ -894,13 +894,13 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez l'Arène des Démons des Heures.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -911,7 +911,7 @@
       },
       {
         "description": "A la fin de votre tour, si votre Héros n'a pas attaqué ce tour-ci, l'Arène des Démons des lui inflige 3 Dommages .",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -943,7 +943,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -972,13 +972,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Défaussez une carte Équipement : L'Art du Lancer inflige le Niveau de cet Équipement en Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1013,11 +1013,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -1028,7 +1028,7 @@
       },
       {
         "description": "Détruisez Arty : Il inflige sa Force en Dommages à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -1057,7 +1057,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1071,7 +1071,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Aurore Demilly"],
@@ -1097,11 +1097,11 @@
       "pv": 20,
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -1124,7 +1124,7 @@
     "class": "Sacrieur",
     "level": {
       "value": 1,
-      "element": "air"
+      "element": "Air"
     },
     "recto": {
       "stats": {
@@ -1133,11 +1133,11 @@
         "pv": 20,
         "niveau": {
           "value": 1,
-          "element": "air"
+          "element": "Air"
         },
         "force": {
           "value": 1,
-          "element": "air"
+          "element": "Air"
         }
       },
       "effects": [
@@ -1162,11 +1162,11 @@
         "pv": 26,
         "niveau": {
           "value": 2,
-          "element": "air"
+          "element": "Air"
         },
         "force": {
           "value": 1,
-          "element": "air"
+          "element": "Air"
         }
       },
       "effects": [
@@ -1199,11 +1199,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -1236,11 +1236,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -1273,7 +1273,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1287,7 +1287,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Benoit Laigle (Ben Pirate)"],
@@ -1315,7 +1315,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1329,12 +1329,12 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -1362,7 +1362,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1394,7 +1394,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1427,7 +1427,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -1435,7 +1435,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -1495,13 +1495,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Bébé Panda.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1537,11 +1537,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -1568,11 +1568,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -1599,7 +1599,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1644,7 +1644,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1675,11 +1675,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -1706,7 +1706,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1738,7 +1738,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1752,7 +1752,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Kim Ettinoff (Tcho)"],
@@ -1775,7 +1775,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1789,7 +1789,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Ankama"],
@@ -1818,11 +1818,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -1850,7 +1850,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -1886,11 +1886,11 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 4,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -1947,11 +1947,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -2018,11 +2018,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -2055,11 +2055,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -2099,7 +2099,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -2133,11 +2133,11 @@
       "pv": 18,
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -2160,7 +2160,7 @@
     "class": "Iop",
     "level": {
       "value": 1,
-      "element": "terre"
+      "element": "Terre"
     },
     "recto": {
       "stats": {
@@ -2169,11 +2169,11 @@
         "pv": 18,
         "niveau": {
           "value": 1,
-          "element": "terre"
+          "element": "Terre"
         },
         "force": {
           "value": 3,
-          "element": "terre"
+          "element": "Terre"
         }
       },
       "effects": [
@@ -2198,11 +2198,11 @@
         "pv": 22,
         "niveau": {
           "value": 2,
-          "element": "terre"
+          "element": "Terre"
         },
         "force": {
           "value": 4,
-          "element": "terre"
+          "element": "Terre"
         }
       },
       "effects": [
@@ -2235,17 +2235,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
       {
         "description": "Défaussez une carte : Le Bwork Mage inflige 1 Dommage à l'Allié ou Héros de votre choix. N'utilisez ce pouvoir qu'une seule fois par tour.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -2274,11 +2274,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -2307,13 +2307,13 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez les Calanques d'Astrub.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2345,7 +2345,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -2376,17 +2376,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Quand un joueur adverse effectue une action dans ce combat, redressez Calt Aclysme. Il inflige 1 Dommage à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2426,7 +2426,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -2455,13 +2455,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de la cape du Prespic, la Cape du Prespic lui inflige 1 Dommage .",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2480,7 +2480,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -2527,7 +2527,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -2589,7 +2589,7 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -2628,13 +2628,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Recyclez une carte de votre Défausse : Piochez une carte.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -2658,7 +2658,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -2695,7 +2695,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -2729,7 +2729,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Benoit Dupuy (BenK)"],
@@ -2757,19 +2757,19 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Chacha Noir.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Le pouvoir du Chacha Noir devient : \"Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Chacha Noir.\"",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -2802,11 +2802,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -2840,13 +2840,13 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez les Champs d'Astrub.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2877,7 +2877,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -2910,11 +2910,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -2947,11 +2947,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -2985,11 +2985,11 @@
     "stats": {
       "niveau": {
         "value": 8,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 8,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -3000,13 +3000,13 @@
       },
       {
         "description": "Tant que le Chêne Mou est dans le Monde, vos autres Monstres ont +1 en Force.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Choisissez jusqu'à deux Alliés ou Héros attaquants ou bloqueurs. Le Chêne Mou leur inflige 2 Dommages .",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -3020,7 +3020,7 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "experience": 3,
@@ -3048,11 +3048,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -3082,7 +3082,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -3114,11 +3114,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -3151,7 +3151,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -3159,7 +3159,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": [
@@ -3192,7 +3192,7 @@
     "effects": [
       {
         "description": "La colère de Iop inflige X Dommages répartis librement entre les Alliés ou Héros attaquants ou bloqueurs de votre choix.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -3232,7 +3232,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -3264,11 +3264,11 @@
     "stats": {
       "niveau": {
         "value": 6,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -3279,7 +3279,7 @@
       },
       {
         "description": "Défaussez jusqu'à 3 cartes : Le Comte Harebourg inflige le même nombre de Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -3315,11 +3315,11 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -3359,11 +3359,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -3398,7 +3398,7 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -3444,7 +3444,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -3478,7 +3478,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -3550,11 +3550,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -3589,11 +3589,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -3601,7 +3601,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "experience": 1,
@@ -3627,11 +3627,11 @@
     "stats": {
       "niveau": {
         "value": 7,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 7,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -3642,7 +3642,7 @@
       },
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige des Dommages au Crocabulia, le Crocabulia lui inflige 3 Dommages .",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -3651,7 +3651,7 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "experience": 3,
@@ -3677,13 +3677,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Le Héros du joueur qui vient de gagner de l'XP subit le même nombre de Dommages .",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -3709,13 +3709,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, les Dames de Bouffe infligent 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -3724,7 +3724,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)"],
@@ -3752,11 +3752,11 @@
     "stats": {
       "niveau": {
         "value": 6,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 6,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -3772,7 +3772,7 @@
       },
       {
         "description": "Le Dark Vlad inflige 2 Dommages à tous les Alliés ou Héros attaquants ou Bloqueurs.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -3801,7 +3801,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -3833,11 +3833,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -3869,11 +3869,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -3899,11 +3899,11 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -3922,7 +3922,7 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "experience": 2,
@@ -3948,11 +3948,11 @@
     "stats": {
       "niveau": {
         "value": 6,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 5,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -3976,7 +3976,7 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "experience": 2,
@@ -4004,7 +4004,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4037,11 +4037,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -4060,7 +4060,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "experience": 1,
@@ -4085,7 +4085,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4118,11 +4118,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -4167,11 +4167,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -4218,7 +4218,16 @@
       {
         "description": "Quand le Dofawa apparaît, gagnez 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -4245,7 +4254,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4257,7 +4266,16 @@
       {
         "description": "Quand le Dofus Cawotte apparaît, gagnez 3 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 3
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -4326,7 +4344,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4372,11 +4390,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -4410,7 +4428,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4447,7 +4465,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4488,7 +4506,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4531,7 +4549,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4545,7 +4563,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 3",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -4574,11 +4592,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -4607,11 +4625,11 @@
     "stats": {
       "niveau": {
         "value": 6,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 6,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -4622,7 +4640,7 @@
       },
       {
         "description": "Le prochain Allié ou Héros qui s'incline subit 4 Dommages",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -4636,7 +4654,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "experience": 3,
@@ -4664,7 +4682,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4719,17 +4737,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Dwanlaposh inflige 1 Dommage à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -4757,7 +4775,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4796,7 +4814,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4834,17 +4852,17 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 5,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Redirigez vers Edasse le Trouble Fête les Dommages sur le point d'être infligés à un autre de vos Bandits.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -4874,11 +4892,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -4910,11 +4928,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -4954,7 +4972,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -4987,11 +5005,11 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 5,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -5025,17 +5043,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
       {
         "description": "Tant que Erbus Erport est dressé dans le Monde, le coût des Équipements est augmenté de .",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -5070,13 +5088,13 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Nommez une famille de Monstres : Tous les Monstres de cette famille dans le Monde subissent 1 Dommage . Vous ne gagnez pas d'xp.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -5116,7 +5134,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5155,7 +5173,7 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5193,11 +5211,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -5231,7 +5249,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5268,19 +5286,19 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "La Flamiche inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Au début de votre tour, si la Flamiche se trouve dans votre Défausse, vous pouvez payer pour la reprendre en main.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -5307,17 +5325,17 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Si le Flaqueux se trouve dans votre Défausse, vous pouvez payer pour le recycler. Votre Héros regagne 2 PV.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -5347,13 +5365,13 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "La Flèche Blizzard inflige 2 Dommages à tous les Alliés et Héros dans le Monde. Vous ne gagnez pas d'XP.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -5380,13 +5398,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "La Flèche Chercheuse inflige 1 Dommage à l'Allié ou Héros de votre choix dans le Monde ou dans son Havre Sac.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -5413,13 +5431,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "La flèche d'Immolation inflige 2 Dommages à l'Allié ou Héros qui vient de sincliner.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -5453,13 +5471,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Défaussez jusqu'à 3 cartes : Infligez le même nombre de Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -5486,11 +5504,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -5516,13 +5534,13 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez les Forêts d'Astrub.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -5553,7 +5571,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5567,7 +5585,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 1",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Souillon (Maliki)"],
@@ -5590,7 +5608,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5621,13 +5639,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "La Furie inflige 1 Dommage à l'Allié ou Héros de votre choix. Il gagne +1 en Force jusqu'à la fin du tour.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -5657,7 +5675,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5696,7 +5714,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5707,7 +5725,7 @@
       },
       {
         "description": "Déplacez la Gelamu du Porteur vers un autre Porteur de votre choix.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -5721,7 +5739,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Aurore Demilly"],
@@ -5756,7 +5774,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 3",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Aurore Demilly"],
@@ -5786,7 +5804,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -5822,18 +5840,28 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Quand la Gelée Bleue apparaît, vous pouvez piocher une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -5861,11 +5889,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -5900,11 +5928,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -5938,11 +5966,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -5977,7 +6005,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -5985,7 +6013,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Aurore Demilly"],
@@ -6015,13 +6043,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, le Glyphe Incandescent lui inflige 2 Dommages .",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -6055,7 +6083,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -6087,11 +6115,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -6118,17 +6146,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Gonard copie la Force de l'Allié de votre choix jusqu'à la fin du tour. Chaque joueur peut utiliser ce pouvoir.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -6163,11 +6191,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -6202,11 +6230,11 @@
     "stats": {
       "niveau": {
         "value": 8,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 6,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -6257,7 +6285,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -6288,11 +6316,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -6334,11 +6362,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -6353,12 +6381,7 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [
-      {
-        "name": ",",
-        "description": "Recycler une carte Équipement : Le Havre Sac de votre choix regagne un nombre de Points de Résistance égal au Niveau de cet Équipement."
-      }
-    ],
+    "keywords": [],
     "experience": 1,
     "artists": ["Stéphane Baton"],
     "notes": [],
@@ -6381,11 +6404,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -6418,23 +6441,23 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Guy Yomtella inflige 1 Dommage à l'Allié de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Redressez Guy Yomtella.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -6480,7 +6503,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -6528,7 +6551,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -6553,7 +6576,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -6579,7 +6602,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [],
@@ -6604,7 +6627,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -6626,7 +6649,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -6667,11 +6690,11 @@
       "pv": 18,
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -6687,7 +6710,7 @@
     "class": "Enutrof",
     "level": {
       "value": 1,
-      "element": "eau"
+      "element": "Eau"
     },
     "recto": {
       "stats": {
@@ -6696,11 +6719,11 @@
         "pv": 18,
         "niveau": {
           "value": 1,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -6720,11 +6743,11 @@
         "pv": 22,
         "niveau": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -6752,7 +6775,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -6797,7 +6820,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -6830,7 +6853,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -6862,7 +6885,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -6900,11 +6923,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -6945,11 +6968,11 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 4,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -7005,11 +7028,11 @@
       "pv": 18,
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -7032,7 +7055,7 @@
     "class": "Ecaflip",
     "level": {
       "value": 1,
-      "element": "air"
+      "element": "Air"
     },
     "recto": {
       "stats": {
@@ -7041,11 +7064,11 @@
         "pv": 18,
         "niveau": {
           "value": 1,
-          "element": "air"
+          "element": "Air"
         },
         "force": {
           "value": 2,
-          "element": "air"
+          "element": "Air"
         }
       },
       "effects": [
@@ -7070,11 +7093,11 @@
         "pv": 22,
         "niveau": {
           "value": 2,
-          "element": "air"
+          "element": "Air"
         },
         "force": {
           "value": 3,
-          "element": "air"
+          "element": "Air"
         }
       },
       "effects": [
@@ -7107,17 +7130,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
       {
         "description": "Katsou Mee gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de de cette façon, détruisez Katsou Mee à la fin du tour.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -7145,11 +7168,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -7164,12 +7187,7 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [
-      {
-        "name": ":",
-        "description": "Le Havre Sac de votre choix regagne 2 Points de Résistance."
-      }
-    ],
+    "keywords": [],
     "experience": 1,
     "artists": ["Christophe Bulteel (Kuri)"],
     "notes": [
@@ -7197,11 +7215,11 @@
       "pv": 18,
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -7224,7 +7242,7 @@
     "class": "Sadida",
     "level": {
       "value": 1,
-      "element": "terre"
+      "element": "Terre"
     },
     "recto": {
       "stats": {
@@ -7233,11 +7251,11 @@
         "pv": 18,
         "niveau": {
           "value": 1,
-          "element": "terre"
+          "element": "Terre"
         },
         "force": {
           "value": 2,
-          "element": "terre"
+          "element": "Terre"
         }
       },
       "effects": [
@@ -7262,11 +7280,11 @@
         "pv": 22,
         "niveau": {
           "value": 2,
-          "element": "terre"
+          "element": "Terre"
         },
         "force": {
           "value": 2,
-          "element": "terre"
+          "element": "Terre"
         }
       },
       "effects": [
@@ -7302,17 +7320,17 @@
       "pv": 16,
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
       {
         "description": "Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, il subit 1 Dommage .",
-        "elements": ["neutre", "terre"],
+        "elements": ["Neutre", "Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -7336,7 +7354,7 @@
     "class": "Sram",
     "level": {
       "value": 1,
-      "element": "terre"
+      "element": "Terre"
     },
     "recto": {
       "stats": {
@@ -7345,11 +7363,11 @@
         "pv": 16,
         "niveau": {
           "value": 1,
-          "element": "terre"
+          "element": "Terre"
         },
         "force": {
           "value": 2,
-          "element": "terre"
+          "element": "Terre"
         }
       },
       "effects": [
@@ -7379,11 +7397,11 @@
         "pv": 20,
         "niveau": {
           "value": 2,
-          "element": "terre"
+          "element": "Terre"
         },
         "force": {
           "value": 3,
-          "element": "terre"
+          "element": "Terre"
         }
       },
       "effects": [
@@ -7411,11 +7429,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -7478,11 +7496,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [],
@@ -7514,12 +7532,12 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -7546,7 +7564,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -7554,12 +7572,12 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -7589,7 +7607,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -7597,12 +7615,12 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -7632,11 +7650,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -7675,11 +7693,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -7711,7 +7729,7 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 3",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -7740,7 +7758,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -7767,7 +7785,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -7804,17 +7822,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
       {
         "description": "Mettez la Folle en jeu dans votre Monde comme un Monstre de Force 1 . Quand la Folle apparaît, le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -7846,7 +7864,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -7877,13 +7895,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Défaussez une carte Monstre : La Sacrifiée inflige la Force de ce Monstre en Dommages à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -7917,7 +7935,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -7936,7 +7954,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 4",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Vincent Joubert"],
@@ -7959,17 +7977,17 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
       {
         "description": "Lâme Ourduvis inflige 1 Dommage à l'Allié ou Héros qui vient d'effectuer un mouvement.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -8004,7 +8022,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -8012,20 +8030,12 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": ["feu"]
-      },
-      {
-        "name": ":",
-        "description": "Recyclez une carte de l'élément de votre choix, le Porteur de la Larvamulette gagne** Résistance 1 **contre cet élément jusqu'à la fin du tour."
+        "elements": ["Feu"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["feu"]
-      },
-      {
-        "name": "Si",
-        "description": "votre Défausse ne contient aucune carte à la résolution du pouvoir, aucune carte ne peut être recyclée et par conséquent aucune Résistance ne peut être gagnée."
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -8055,11 +8065,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -8067,7 +8077,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Fabrice Nzinzi (Ntamak)"],
@@ -8093,11 +8103,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -8105,7 +8115,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Fabrice Nzinzi (Ntamak)"],
@@ -8131,11 +8141,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -8143,7 +8153,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Fabrice Nzinzi (Ntamak)"],
@@ -8168,11 +8178,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -8210,11 +8220,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -8253,17 +8263,17 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
       {
         "description": "Le Léopardo gagne +3 en Force et jusqu'à la fin du tour. N'utilisez ce pouvoir qu'une seule fois par tour.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -8293,7 +8303,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -8325,11 +8335,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -8369,7 +8379,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -8383,7 +8393,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Ankama"],
@@ -8406,11 +8416,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -8445,11 +8455,11 @@
     "stats": {
       "niveau": {
         "value": 6,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 5,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -8473,7 +8483,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "experience": 3,
@@ -8501,7 +8511,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -8539,13 +8549,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Marcassin.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -8581,7 +8591,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -8589,7 +8599,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -8618,13 +8628,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Choisissez jusqu'à deux Alliés ou Héros attaquants ou bloqueurs différents. Le Marteau Toh'Lo leur inflige 1 Dommage .",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -8633,7 +8643,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -8661,11 +8671,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -8676,7 +8686,7 @@
       },
       {
         "description": "X : Détruisez l'Équipement de Niveau X de votre choix.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -8704,11 +8714,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -8742,13 +8752,13 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez les Mines d'Astrub.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -8779,11 +8789,11 @@
     "stats": {
       "niveau": {
         "value": 7,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 7,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -8802,7 +8812,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "experience": 3,
@@ -8828,11 +8838,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -8867,7 +8877,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -8898,11 +8908,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -8928,11 +8938,11 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 4,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -8943,7 +8953,7 @@
       },
       {
         "description": "Le Moon inflige 3 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -8952,7 +8962,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "experience": 2,
@@ -8978,11 +8988,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -9014,11 +9024,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [],
@@ -9046,7 +9056,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9079,7 +9089,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9118,7 +9128,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9129,7 +9139,7 @@
       },
       {
         "description": "Au début de votre tour, si le Mot Soignant se trouve dans votre Défausse, vous pouvez payer pour le reprendre en main.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -9157,7 +9167,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9197,17 +9207,17 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 5,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Nomekop le Crapoteur inflige successivement 1 Dommage , , et à l'Allié ou Héros de votre choix.",
-        "elements": ["feu", "terre", "air", "eau"],
+        "elements": ["Feu", "Terre", "Air", "Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -9238,13 +9248,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Le Nommon inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -9253,7 +9263,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -9282,7 +9292,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9324,11 +9334,11 @@
       "pv": 14,
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -9356,7 +9366,7 @@
     "class": "Eniripsa",
     "level": {
       "value": 1,
-      "element": "feu"
+      "element": "Feu"
     },
     "recto": {
       "stats": {
@@ -9365,11 +9375,11 @@
         "pv": 14,
         "niveau": {
           "value": 1,
-          "element": "feu"
+          "element": "Feu"
         },
         "force": {
           "value": 1,
-          "element": "feu"
+          "element": "Feu"
         }
       },
       "effects": [
@@ -9399,11 +9409,11 @@
         "pv": 18,
         "niveau": {
           "value": 2,
-          "element": "feu"
+          "element": "Feu"
         },
         "force": {
           "value": 1,
-          "element": "feu"
+          "element": "Feu"
         }
       },
       "effects": [
@@ -9436,11 +9446,11 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -9493,11 +9503,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 3,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -9531,7 +9541,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9562,13 +9572,13 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Choisissez jusqu'à deux Alliés ou Héros différents. La Pandatak leur inflige 3 Dommages .",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -9603,7 +9613,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9641,7 +9651,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9655,7 +9665,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Benoit Laigle (Ben Pirate)"],
@@ -9683,7 +9693,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9715,13 +9725,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Recyclez jusqu'à 3 cartes de votre Défausse : Redressez le même nombre d'Alliés ou Héros de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -9748,13 +9758,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Recyclez jusqu'à 3 cartes de votre Défausse : Infligez le même nombre de Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -9781,13 +9791,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Recycler jusqu'à 3 cartes de votre Défausse : Piochez le même nombre de cartes.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -9815,13 +9825,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Recyclez jusqu'à 3 cartes de votre Défausse : La Force de l'Allié ou Héros de votre choix est augmentée du même nombre jusqu'à la fin du tour.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -9848,7 +9858,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9879,7 +9889,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -9887,7 +9897,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -9915,7 +9925,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -9947,17 +9957,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       },
       "force": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -9993,17 +10003,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       },
       "force": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -10039,17 +10049,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       },
       "force": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -10085,17 +10095,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       },
       "force": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Produisez une Ressource .",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -10130,7 +10140,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10175,17 +10185,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Le Pissenlit Diabolique peut être recyclé comme une carte ou .",
-        "elements": ["air", "feu"],
+        "elements": ["Air", "Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -10214,17 +10224,17 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Tant que vous contrôlez au moins une Zone , Pohn Bèche a +1 en Force.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -10252,11 +10262,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -10298,11 +10308,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       },
       "force": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10344,11 +10354,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -10390,13 +10400,13 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Port de Madrestam.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -10435,7 +10445,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10467,7 +10477,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10498,7 +10508,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10529,7 +10539,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10563,11 +10573,11 @@
       "pv": 16,
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -10583,7 +10593,7 @@
     "class": "Féca",
     "level": {
       "value": 1,
-      "element": "feu"
+      "element": "Feu"
     },
     "recto": {
       "stats": {
@@ -10592,11 +10602,11 @@
         "pv": 16,
         "niveau": {
           "value": 1,
-          "element": "feu"
+          "element": "Feu"
         },
         "force": {
           "value": 1,
-          "element": "feu"
+          "element": "Feu"
         }
       },
       "effects": [
@@ -10616,11 +10626,11 @@
         "pv": 20,
         "niveau": {
           "value": 2,
-          "element": "feu"
+          "element": "Feu"
         },
         "force": {
           "value": 2,
-          "element": "feu"
+          "element": "Feu"
         }
       },
       "effects": [
@@ -10648,7 +10658,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10686,17 +10696,17 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 5,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
       {
         "description": "Chaque fois que le Prespic Royal subit des Dommages, il inflige le même nombre de Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -10705,7 +10715,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "experience": 2,
@@ -10731,17 +10741,17 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
       {
         "description": "Le Prespic Ventru inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -10770,11 +10780,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -10808,7 +10818,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10847,7 +10857,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10879,7 +10889,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -10915,7 +10925,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -10945,7 +10955,7 @@
     "effects": [
       {
         "description": "Le Porteur de la Razielle gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de de cette façon, détruisez Razielle à la fin du tour.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -10954,7 +10964,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jérôme Brulin (Vliir)"],
@@ -10981,7 +10991,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11040,7 +11050,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11071,7 +11081,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11111,7 +11121,7 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -11155,11 +11165,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -11170,7 +11180,7 @@
       },
       {
         "description": "Quand Rolac le Bandit est détruit lorsqu'il est attaquant ou bloqueur, il inflige sa Force en Dommages à l'Allié attaquant ou Bloqueur de votre choix.",
-        "elements": ["feu"],
+        "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -11198,7 +11208,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -11223,13 +11233,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "La Ronce inflige 2 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -11256,7 +11266,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11288,7 +11298,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11302,7 +11312,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Ankama"],
@@ -11325,7 +11335,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11339,7 +11349,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Ankama"],
@@ -11362,7 +11372,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11408,7 +11418,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [],
@@ -11416,12 +11426,12 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["air"]
+        "elements": ["Air"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -11454,12 +11464,12 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["air"]
+        "elements": ["Air"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -11491,12 +11501,12 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": ["air"]
+        "elements": ["Air"]
       },
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -11523,11 +11533,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -11564,11 +11574,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [],
@@ -11594,11 +11604,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -11641,11 +11651,11 @@
       "pv": 18,
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -11668,7 +11678,7 @@
     "class": "Pandawa",
     "level": {
       "value": 1,
-      "element": "eau"
+      "element": "Eau"
     },
     "recto": {
       "stats": {
@@ -11677,11 +11687,11 @@
         "pv": 18,
         "niveau": {
           "value": 1,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -11706,11 +11716,11 @@
         "pv": 22,
         "niveau": {
           "value": 2,
-          "element": "eau"
+          "element": "Eau"
         },
         "force": {
           "value": 3,
-          "element": "eau"
+          "element": "Eau"
         }
       },
       "effects": [
@@ -11743,17 +11753,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Quand le smare apparaît, vous pouvez payer pour piocher une carte.",
-        "elements": ["neutre"],
+        "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -11788,13 +11798,13 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Stade de Boufball.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -11826,7 +11836,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11865,7 +11875,7 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11879,12 +11889,7 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["terre"]
-      },
-      {
-        "name": "Le",
-        "description": "Porteur du String du Mulou gagne **Résistance 1 **.",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -11915,11 +11920,11 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 2,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [
@@ -11958,7 +11963,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -11989,7 +11994,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12020,7 +12025,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12034,7 +12039,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": ["air"]
+        "elements": ["Air"]
       }
     ],
     "artists": ["Vincent Joubert"],
@@ -12057,7 +12062,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12071,7 +12076,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "artists": ["Vincent Joubert"],
@@ -12094,7 +12099,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12108,7 +12113,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Vincent Joubert"],
@@ -12131,7 +12136,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12145,7 +12150,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 3",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "artists": ["Vincent Joubert"],
@@ -12172,17 +12177,17 @@
       "pv": 16,
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Tirlangue Portey inflige 2 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -12193,7 +12198,7 @@
     "class": "Crâ",
     "level": {
       "value": 1,
-      "element": "air"
+      "element": "Air"
     },
     "recto": {
       "stats": {
@@ -12202,11 +12207,11 @@
         "pv": 16,
         "niveau": {
           "value": 1,
-          "element": "air"
+          "element": "Air"
         },
         "force": {
           "value": 1,
-          "element": "air"
+          "element": "Air"
         }
       },
       "effects": [
@@ -12226,11 +12231,11 @@
         "pv": 20,
         "niveau": {
           "value": 2,
-          "element": "air"
+          "element": "Air"
         },
         "force": {
           "value": 2,
-          "element": "air"
+          "element": "Air"
         }
       },
       "effects": [
@@ -12263,17 +12268,17 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, le Tiwabbit Kiafin lui inflige 1 Dommage .",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -12309,13 +12314,13 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Tiwabbit.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -12351,11 +12356,11 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 4,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
@@ -12366,7 +12371,7 @@
       },
       {
         "description": "Quand un de vos Tofus est détruit, vous pouvez payer pour mettre en jeu le Tofu Céleste de votre main. Il apparaît incliné.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -12395,17 +12400,17 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 2,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Quand le Tofu Mutant est détruit, il inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -12434,11 +12439,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [],
@@ -12465,7 +12470,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12479,7 +12484,7 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 1",
-        "elements": ["neutre"]
+        "elements": ["Neutre"]
       }
     ],
     "artists": ["Ankama"],
@@ -12502,11 +12507,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -12539,11 +12544,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       },
       "force": {
         "value": 1,
-        "element": "terre"
+        "element": "Terre"
       }
     },
     "effects": [],
@@ -12569,17 +12574,17 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 1,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Le Tournesol Sauvage peut être recyclé comme une carte ou .",
-        "elements": ["air", "terre"],
+        "elements": ["Air", "Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -12610,11 +12615,11 @@
       "pv": 18,
       "niveau": {
         "value": 1,
-        "element": "feu"
+        "element": "Feu"
       },
       "force": {
         "value": 2,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -12637,7 +12642,7 @@
     "class": "Osamodas",
     "level": {
       "value": 1,
-      "element": "feu"
+      "element": "Feu"
     },
     "recto": {
       "stats": {
@@ -12646,11 +12651,11 @@
         "pv": 18,
         "niveau": {
           "value": 1,
-          "element": "feu"
+          "element": "Feu"
         },
         "force": {
           "value": 2,
-          "element": "feu"
+          "element": "Feu"
         }
       },
       "effects": [
@@ -12675,11 +12680,11 @@
         "pv": 22,
         "niveau": {
           "value": 2,
-          "element": "feu"
+          "element": "Feu"
         },
         "force": {
           "value": 2,
-          "element": "feu"
+          "element": "Feu"
         }
       },
       "effects": [
@@ -12707,7 +12712,7 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12744,13 +12749,13 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Recyclez une carte de la Défausse du joueur de votre choix.",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -12759,7 +12764,7 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["terre"]
+        "elements": ["Terre"]
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Michael Olivier (Mikl)"],
@@ -12787,7 +12792,7 @@
     "stats": {
       "niveau": {
         "value": 0,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12824,13 +12829,13 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Choisissez jusqu'à trois Alliés ou Héros attaquants ou bloqueurs différents. La Vague Tournoyante leur inflige respectivement 1 Dommage , 2 Dommages et 3 Dommages dans l'ordre de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -12864,7 +12869,7 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -12895,17 +12900,17 @@
     "stats": {
       "niveau": {
         "value": 4,
-        "element": "air"
+        "element": "Air"
       },
       "force": {
         "value": 3,
-        "element": "air"
+        "element": "Air"
       }
     },
     "effects": [
       {
         "description": "Recyclez un Monstre de votre choix : Mettez en jeu un jeton \"Monstre - Vampyre\" de Force 1 .",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -12947,11 +12952,11 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 1,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -12985,13 +12990,13 @@
     "stats": {
       "niveau": {
         "value": 3,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Village des Katrepats.",
-        "elements": ["air"],
+        "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -13062,7 +13067,7 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "feu"
+        "element": "Feu"
       }
     },
     "effects": [
@@ -13104,11 +13109,11 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
@@ -13119,7 +13124,7 @@
       },
       {
         "description": "Le Wa Wabbit inflige 2 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["eau"],
+        "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -13128,12 +13133,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["eau"]
-      },
-      {
-        "name": "Vous",
-        "description": "ne piochez qu'une seule carte par paquet de Dommages. Si la Résistance du Wa Wabbit réduit à 0 des Dommages qui devraient lui être infligés, le Wa Wabbit ne subit aucun Dommage et vous ne piochez pas de carte. Vous pouvez piocher une carte si le Wa Wabbit utilise son pouvoir sur lui même en s'infligeant 2 Dommages  (il n'en recevra d'ailleurs qu'un puisqu'il résiste de 1 )",
-        "elements": ["eau"]
+        "elements": ["Eau"]
       }
     ],
     "experience": 2,
@@ -13162,11 +13162,11 @@
     "stats": {
       "niveau": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 2,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [],
@@ -13193,7 +13193,7 @@
     "stats": {
       "niveau": {
         "value": 1,
-        "element": "neutre"
+        "element": "Neutre"
       }
     },
     "effects": [
@@ -13225,17 +13225,17 @@
     "stats": {
       "niveau": {
         "value": 5,
-        "element": "eau"
+        "element": "Eau"
       },
       "force": {
         "value": 4,
-        "element": "eau"
+        "element": "Eau"
       }
     },
     "effects": [
       {
         "description": "Choisissez jusqu'à deux Alliés ou Héros attaquants ou bloqueurs différents. Zatoïshwan leur inflige 2 Dommages .",
-        "elements": ["terre"],
+        "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -13244,7 +13244,7 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["feu"]
+        "elements": ["Feu"]
       }
     ],
     "experience": 2,

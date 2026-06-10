@@ -29,12 +29,32 @@ export interface ElementalCost {
   count: number;
 }
 
+// ── Effets compilés (moteur de règles) ──────────────────────────────────────
+// Forme machine d'un effet, générée hors-ligne par `scripts/compileEffects.ts`
+// (parsing STRICT du texte : si une phrase n'est pas comprise, pas de
+// `compiled` — l'effet reste manuel à la table).
+export type CompiledEffectOp =
+  | { op: "gainXp"; n: number }
+  | { op: "draw"; n: number }
+  | { op: "heroGainPv"; n: number }
+  | { op: "damageOppHero"; n: number };
+
+export interface CompiledEffect {
+  /** Déclencheur : la carte qui porte l'effet vient d'entrer en jeu. */
+  trigger: "onArrive";
+  /** « Vous pouvez … » : le joueur confirme avant exécution. */
+  optional?: boolean;
+  ops: CompiledEffectOp[];
+}
+
 // Interface pour les effets
 export interface CardEffect {
   description: string;
   elements?: CardElement[];
   isOncePerTurn?: boolean;
   requiresIncline?: boolean;
+  /** Présent uniquement si le texte est entièrement compris par le DSL. */
+  compiled?: CompiledEffect;
   linkedTokens?: {
     name: string;
     type: string[];
@@ -280,6 +300,7 @@ export type CardKeyword =
   | "Critique"
   | "Parade"
   | "Résistance"
+  | "Recette"
   | "Unique";
 
 export interface DeckCard {
