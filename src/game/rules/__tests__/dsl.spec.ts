@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { arrivalEffects } from "@/game/rules";
+import { arrivalEffects, tapPowers } from "@/game/rules";
 import { createMockAllyCard } from "tests/factories/card";
 
 function cardWith(name: string, ...descriptions: string[]) {
@@ -123,8 +123,51 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
       ),
     );
     expect(dmg[0]?.ops).toEqual([
-      { op: "damageAllyTarget", n: 2, element: "Neutre" },
+      {
+        op: "damageTarget",
+        n: 2,
+        element: "Neutre",
+        heroes: false,
+        zones: ["monde", "havreSac"],
+      },
     ]);
+  });
+
+  it("compile un pouvoir à inclinaison auto-référent (Allié ou Héros, zones)", () => {
+    const card = cardWith(
+      "Abraknyde Sombre",
+      "L'Abraknyde Sombre inflige 2 Dommages à l'Allié ou Héros de votre choix dans le Monde ou dans son Havre Sac.",
+    );
+    card.effects![0].requiresIncline = true;
+    const atoms = tapPowers(card);
+    expect(atoms).toHaveLength(1);
+    expect(atoms[0].trigger).toBe("onTap");
+    expect(atoms[0].ops).toEqual([
+      {
+        op: "damageTarget",
+        n: 2,
+        element: "Neutre",
+        heroes: true,
+        zones: ["monde", "havreSac"],
+      },
+    ]);
+    // un pouvoir à inclinaison n'est PAS un effet d'apparition
+    expect(arrivalEffects(card)).toEqual([]);
+  });
+
+  it("rejette un pouvoir à inclinaison conditionnel ou au sujet étranger", () => {
+    const cond = cardWith(
+      "Bwork Archer",
+      "Le Bwork Archer inflige 1 Dommage à l'Allié de votre choix qui vient de subir des Dommages.",
+    );
+    cond.effects![0].requiresIncline = true;
+    expect(tapPowers(cond)).toEqual([]);
+    const foreign = cardWith(
+      "Espion",
+      "Le Bouftou inflige 1 Dommage à l'Allié de votre choix.",
+    );
+    foreign.effects![0].requiresIncline = true;
+    expect(tapPowers(foreign)).toEqual([]);
   });
 
   it("parse perte de PV (soi / adverse) et gain de Résistance", () => {

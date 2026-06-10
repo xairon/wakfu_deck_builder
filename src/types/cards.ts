@@ -46,13 +46,19 @@ export type CompiledEffectOp =
       what: "Allié" | "Zone" | "Équipement";
       zones: ("monde" | "havreSac")[];
     }
-  /** « Infligez N Dommages à l'Allié de votre choix » (élément de la source,
-   *  figé à la compilation pour la Résistance de la cible). */
-  | { op: "damageAllyTarget"; n: number; element: string };
+  /** « [X] inflige N Dommages à l'Allié (ou Héros) de votre choix » —
+   *  élément de la source figé à la compilation (Résistance de la cible). */
+  | {
+      op: "damageTarget";
+      n: number;
+      element: string;
+      heroes: boolean;
+      zones: ("monde" | "havreSac")[];
+    };
 
 export interface CompiledEffect {
-  /** Déclencheur : la carte qui porte l'effet vient d'entrer en jeu. */
-  trigger: "onArrive";
+  /** onArrive : la carte entre en jeu ; onTap : pouvoir activé en l'inclinant. */
+  trigger: "onArrive" | "onTap";
   /** « Vous pouvez … » : le joueur confirme avant exécution. */
   optional?: boolean;
   ops: CompiledEffectOp[];

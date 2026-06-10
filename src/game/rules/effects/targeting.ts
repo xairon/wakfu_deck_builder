@@ -16,24 +16,26 @@ import { grantXpEvents } from "../progress";
 
 export type TargetingOp = Extract<
   CompiledEffectOp,
-  { op: "destroyTarget" } | { op: "damageAllyTarget" }
+  { op: "destroyTarget" } | { op: "damageTarget" }
 >;
 
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
-  return op.op === "destroyTarget" || op.op === "damageAllyTarget";
+  return op.op === "destroyTarget" || op.op === "damageTarget";
 }
 
-/** Cibles légales d'une op (n'importe quel contrôleur, hors Héros/Havre-Sac). */
+/** Cibles légales d'une op (n'importe quel contrôleur). */
 export function effectTargetIds(ctx: RulesCtx, op: TargetingOp): InstanceId[] {
-  const zones: ("monde" | "havreSac")[] =
-    op.op === "destroyTarget" ? op.zones : ["monde"];
-  const what = op.op === "destroyTarget" ? op.what : "Allié";
+  const zones = op.zones;
   const out: InstanceId[] = [];
   for (const inst of Object.values(ctx.state.instances)) {
     if (!zones.includes(inst.location.zone as "monde" | "havreSac")) continue;
     const card = ctx.getCard(inst.cardId);
-    if (!card || card.mainType !== what) continue;
-    out.push(inst.instanceId);
+    if (!card) continue;
+    const ok =
+      op.op === "destroyTarget"
+        ? card.mainType === op.what
+        : card.mainType === "Allié" || (op.heroes && card.mainType === "Héros");
+    if (ok) out.push(inst.instanceId);
   }
   return out;
 }
@@ -69,8 +71,11 @@ export function resolveDestroyTarget(
   return { events, log };
 }
 
-/** Inflige n Dommages (élément de la source, Résistance déduite) + létalité. */
-export function resolveDamageAllyTarget(
+/**
+ * Inflige n Dommages (élément de la source, Résistance déduite) : un Héros
+ * perd des PV (410.2), un Allié cumule des Dommages + létalité (204.6).
+ */
+export function resolveDamageTarget(
   ctx: RulesCtx,
   actor: Seat,
   targetId: InstanceId,
@@ -80,8 +85,9 @@ export function resolveDamageAllyTarget(
   const inst = ctx.state.instances[targetId];
   const card = inst ? ctx.getCard(inst.cardId) : null;
   if (!inst || !card) return { events: [], log: [] };
+  const side = inst.face === "verso" ? "verso" : "recto";
   const eff = preventDamage(
-    combatKeywords(card, inst.face === "verso" ? "verso" : "recto"),
+    combatKeywords(card, side),
     n,
     element.toLowerCase(),
   );
@@ -89,10 +95,15 @@ export function resolveDamageAllyTarget(
   const log: string[] = [];
   if (eff < n) log.push(`Résistance : ${n - eff} Dommage(s) prévenu(s).`);
   if (eff <= 0) return { events, log };
+  if (card.mainType === "Héros") {
+    events.push(incCounter(actor, targetId, "hp", -eff));
+    log.push(`${nameOf(ctx, targetId)} perd ${eff} PV.`);
+    return { events, log };
+  }
   events.push(incCounter(actor, targetId, "damage", eff));
   log.push(`${eff} Dommage(s) sur ${nameOf(ctx, targetId)}.`);
   const total = (inst.counters.damage ?? 0) + eff;
-  const force = forceValue(card, inst.face === "verso" ? "verso" : "recto");
+  const force = forceValue(card, side);
   if (force > 0 && total >= force) {
     const destroy = resolveDestroyTarget(ctx, actor, targetId);
     events.push(...destroy.events);

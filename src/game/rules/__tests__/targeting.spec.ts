@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import type { Card } from "@/types/cards";
 import {
   effectTargetIds,
-  resolveDamageAllyTarget,
+  resolveDamageTarget,
   resolveDestroyTarget,
 } from "@/game/rules";
 import {
@@ -87,12 +87,43 @@ describe("rules/effects — ciblage", () => {
     bringToMonde(f, "B", instId("B", 0));
     bringToMonde(f, "B", instId("B", 1));
     // 3 Feu sur le résistant : 2 effectifs < 5 → survit
-    const r1 = resolveDamageAllyTarget(ctxOf(f), "A", instId("B", 0), 3, "Feu");
+    const r1 = resolveDamageTarget(ctxOf(f), "A", instId("B", 0), 3, "Feu");
     dispatch(f, ...r1.events);
     expect(ctxOf(f).state.instances[instId("B", 0)].counters.damage).toBe(2);
     // 3 sur le frêle (force 2) → détruit
-    const r2 = resolveDamageAllyTarget(ctxOf(f), "A", instId("B", 1), 3, "Feu");
+    const r2 = resolveDamageTarget(ctxOf(f), "A", instId("B", 1), 3, "Feu");
     dispatch(f, ...r2.events);
     expect(ctxOf(f).state.seats.B.defausse).toContain(instId("B", 1));
+  });
+
+  it("dommages ciblés sur un Héros : perte de PV, jamais de compteur damage", () => {
+    const f = fixture([]);
+    const r = resolveDamageTarget(ctxOf(f), "B", HERO_A, 3, "Eau");
+    dispatch(f, ...r.events);
+    const hero = ctxOf(f).state.instances[HERO_A];
+    expect(hero.counters.hp).toBe(13); // 16 − 3
+    expect(hero.counters.damage ?? 0).toBe(0);
+  });
+
+  it("les Héros sont ciblables seulement si l'op le permet", () => {
+    const f = fixture([makeAlly("a0")]);
+    bringToMonde(f, "A", instId("A", 0));
+    const noHeroes = effectTargetIds(ctxOf(f), {
+      op: "damageTarget",
+      n: 1,
+      element: "Feu",
+      heroes: false,
+      zones: ["monde", "havreSac"],
+    });
+    expect(noHeroes).toEqual([instId("A", 0)]);
+    const withHeroes = effectTargetIds(ctxOf(f), {
+      op: "damageTarget",
+      n: 1,
+      element: "Feu",
+      heroes: true,
+      zones: ["monde", "havreSac"],
+    });
+    expect(withHeroes).toContain(HERO_A);
+    expect(withHeroes).toContain(instId("A", 0));
   });
 });

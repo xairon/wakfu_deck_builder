@@ -367,6 +367,13 @@
           >
             ⚔ Attaquer
           </button>
+          <button
+            v-if="canActivateSelected"
+            class="gbtn gbtn--accent"
+            @click="activateSelected"
+          >
+            ⚡ Activer
+          </button>
           <button class="gbtn gbtn--accent" @click="tapSelected">
             {{
               selectedInst.orientation === "tapped"
@@ -630,6 +637,24 @@ function attackWithSelected(): void {
   const id = selectedInst.value?.instanceId;
   selectedId.value = null;
   if (id) store.beginCombat(id);
+}
+const canActivateSelected = computed(() => {
+  const inst = selectedInst.value;
+  return (
+    store.assist &&
+    !store.combat &&
+    !store.effectTargeting &&
+    !!inst &&
+    inst.controller === me.value &&
+    inst.orientation === "upright" &&
+    (inst.location.zone === "monde" || inst.location.zone === "havreSac") &&
+    store.hasTapPower(inst.instanceId)
+  );
+});
+function activateSelected(): void {
+  const id = selectedInst.value?.instanceId;
+  selectedId.value = null;
+  if (id) store.activateTapPower(id);
 }
 function moveSelected(
   zone: "monde" | "havreSac" | "main" | "defausse" | "pioche",

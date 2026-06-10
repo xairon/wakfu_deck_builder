@@ -15,7 +15,10 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { compileEffectText } from "../src/game/rules/effects/dsl";
+import {
+  compileEffectText,
+  compileTapEffectText,
+} from "../src/game/rules/effects/dsl";
 
 const DATA_DIR = join(__dirname, "..", "public", "data");
 const EXTENSION_FILES = [
@@ -78,6 +81,7 @@ interface RawKeyword {
 interface RawEffect {
   description?: string;
   compiled?: unknown;
+  requiresIncline?: boolean;
 }
 interface RawStats {
   niveau?: { element?: string };
@@ -128,7 +132,9 @@ function compileEffects(
     const text = String(e?.description ?? "").trim();
     if (!text) continue;
     stats.effects++;
-    const compiled = compileEffectText(text, cardName, sourceElement);
+    const compiled = e.requiresIncline
+      ? compileTapEffectText(text, cardName, sourceElement)
+      : compileEffectText(text, cardName, sourceElement);
     if (compiled) {
       e.compiled = compiled;
       stats.compiled++;

@@ -52,8 +52,9 @@ import {
   playDestination,
   pmOf,
   resolveCombat,
-  resolveDamageAllyTarget,
+  resolveDamageTarget,
   resolveDestroyTarget,
+  tapPowers,
   victoryFromState,
   whyCannotDeclareAttack,
   whyCannotPlay,
@@ -546,7 +547,7 @@ export const useGameStore = defineStore("game", () => {
     const res =
       t.op.op === "destroyTarget"
         ? resolveDestroyTarget(rulesCtx(), t.seat, instanceId)
-        : resolveDamageAllyTarget(
+        : resolveDamageTarget(
             rulesCtx(),
             t.seat,
             instanceId,
@@ -556,6 +557,46 @@ export const useGameStore = defineStore("game", () => {
     dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     checkVictory();
     executeEffectOps(t.seat, t.cardName, t.rest);
+  }
+
+  /**
+   * Active un pouvoir à inclinaison compilé : incline la carte puis exécute
+   * ses ops. Retourne `false` (avec raison) si l'activation est illégale.
+   */
+  function activateTapPower(instanceId: string): boolean {
+    if (!assist.value) return false;
+    const inst = state.value.instances[instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    if (!inst || !card) return rejectMove("Carte inconnue.");
+    const atoms = tapPowers(card);
+    if (!atoms.length)
+      return rejectMove("Pas de pouvoir à inclinaison automatisé.");
+    if (inst.controller !== perspective.value)
+      return rejectMove("Vous ne contrôlez pas cette carte.");
+    if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
+      return rejectMove("La carte doit être en jeu.");
+    if (inst.orientation !== "upright")
+      return rejectMove("La carte est déjà inclinée.");
+    if (state.value.turn.active !== perspective.value)
+      return rejectMove("Ce n'est pas votre tour.");
+    const seat = perspective.value;
+    dispatch(
+      {
+        actor: seat,
+        type: "SET_ORIENTATION",
+        payload: { instanceId, orientation: "tapped" },
+      },
+      say(seat, `Pouvoir activé — ${card.name} : « ${atoms[0].text} »`),
+    );
+    for (const atom of atoms) executeEffectOps(seat, card.name, atom.ops);
+    return true;
+  }
+
+  /** La carte sélectionnée a-t-elle un pouvoir à inclinaison activable ? */
+  function hasTapPower(instanceId: string): boolean {
+    const inst = state.value.instances[instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    return !!card && tapPowers(card).length > 0;
   }
 
   /** Passe l'op à cible en cours (cible illégale / choix du joueur). */
@@ -896,5 +937,7 @@ export const useGameStore = defineStore("game", () => {
     effectTargetIdsList,
     effectTargetChoose,
     effectTargetSkip,
+    activateTapPower,
+    hasTapPower,
   };
 });

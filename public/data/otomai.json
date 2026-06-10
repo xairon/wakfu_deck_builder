@@ -3,7 +3,9 @@
     "id": "otomai-l-enchanteur-otomai",
     "name": "Otomaï L'Enchanteur",
     "mainType": "Héros",
-    "subTypes": ["Alchimiste"],
+    "subTypes": [
+      "Alchimiste"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "1/162",
@@ -28,7 +30,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Kim Ettinoff (Tcho)"],
+    "artists": [
+      "Kim Ettinoff (Tcho)"
+    ],
     "class": "Alchimiste",
     "recto": {
       "stats": {
@@ -76,7 +80,10 @@
     "id": "polter-otomai",
     "name": "Polter",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Polter"],
+    "subTypes": [
+      "Monstre",
+      "Polter"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "2/162",
@@ -96,14 +103,19 @@
     "effects": [
       {
         "description": "X , Bannissez le Polter : Choisissez un Allié de Niveau X dans la Défausse d'un adversaire et mettez-le en jeu sous votre contrôle.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Augustin Bonne (Roxnin)", "Sabine Van Aperdoorn"],
+    "artists": [
+      "Augustin Bonne (Roxnin)",
+      "Sabine Van Aperdoorn"
+    ],
     "notes": [],
     "flavor": {
       "text": "Il est tombe par terre, c'est la faute au Polter ! Le nez dans la gadoue, la faute au Polter Bouftou !"
@@ -115,7 +127,10 @@
     "id": "toad-otomai",
     "name": "Toad",
     "mainType": "Allié",
-    "subTypes": ["Amphibion", "Commandeur"],
+    "subTypes": [
+      "Amphibion",
+      "Commandeur"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "3/162",
@@ -135,7 +150,9 @@
     "effects": [
       {
         "description": "Copiez les effets du Sort que vous venez de jouer. Vous pouvez faire de nouveaux choix pour la copie. N'utilisez ce pouvoir qu'une seule fois par tour et uniquement si Toad est dans le Monde.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -147,7 +164,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [
       "Copier une Action revient à mettre une copie de cette Action dans la File d'Attente. Cette copie d'Action est simplement mise dans la File d'Attente à la résolution du pouvoir qui génère la copie : elle n'est pas jouée par un joueur, et on ne peut en conséquent pas y réagir avec un effet qui réagit à une Action qui vient d'être jouée. Il est par exemple illégal de copier une Action avec le pouvoir d'un Toad, et de copier la copie avec le pouvoir d'un second Toad. Il n'est pas obligatoire d'effectuer de nouveaux choix pour la copie, en revanche tous les choix effectués pour la copie doivent être légaux."
     ],
@@ -161,7 +180,9 @@
     "id": "gardien-du-pont-de-la-mort-otomai",
     "name": "Gardien du Pont de la Mort",
     "mainType": "Allié",
-    "subTypes": ["Gardien"],
+    "subTypes": [
+      "Gardien"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "4/162",
@@ -181,7 +202,9 @@
     "effects": [
       {
         "description": "Posez une carte de votre main face cachée. Si l'adversaire de votre choix en devine le type, défaussez-la. Sinon, reprenez-la en main et piochez deux cartes.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -193,7 +216,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Aleksi Briclot"],
+    "artists": [
+      "Aleksi Briclot"
+    ],
     "notes": [
       "A la résolution du pouvoir du Gardien du Pont de la Mort, son contrôleur écarte face cachée une carte de sa main. Ensuite, l'adversaire choisit nomme un type de carte. Les types de cartes sont Héros, Havre Sac, Allié, Equipement, Action, Protecteur, Zone, Salle, Dofus. Une fois le type nommé, la carte est révélée à tous les joueurs, et le reste du pouvoir est résolu en fonction."
     ],
@@ -206,7 +231,11 @@
     "id": "kralamoure-geant-otomai",
     "name": "Kralamoure Géant",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Kralamoure", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Kralamoure",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "5/162",
@@ -239,11 +268,19 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Neutre", "Terre", "Air", "Feu", "Eau"]
+        "elements": [
+          "Neutre",
+          "Terre",
+          "Air",
+          "Feu",
+          "Eau"
+        ]
       }
     ],
     "experience": 3,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Le Kralamoure a tant d'amour à donner que ceux qu'il caline avec ses tentacules se sentent vite étouffés."
@@ -255,7 +292,9 @@
     "id": "robomates-de-shak-shaka-otomai",
     "name": "Robomates de Shak Shaka",
     "mainType": "Allié",
-    "subTypes": ["Machine"],
+    "subTypes": [
+      "Machine"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "6/162",
@@ -275,38 +314,59 @@
     "effects": [
       {
         "description": "Votre Héros gagne +2 en Force jusqu'à la fin du tour.",
-        "elements": ["Terre"],
+        "elements": [
+          "Terre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Redressez votre Héros.",
-        "elements": ["Air"],
+        "elements": [
+          "Air"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Votre Héros regagne 3 PV.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Piochez une carte.",
-        "elements": ["Eau"],
+        "elements": [
+          "Eau"
+        ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [
       {
         "name": "Recette",
         "description": ": Bricoleur 5",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Mig"],
+    "artists": [
+      "Mig"
+    ],
     "notes": [],
     "flavor": {
       "text": "J'adore mes Robomates ! Ils sont trop beaux, mate un peu !",
@@ -318,7 +378,9 @@
     "id": "marty-nie-otomai",
     "name": "Marty Nïe",
     "mainType": "Allié",
-    "subTypes": ["Pandawa"],
+    "subTypes": [
+      "Pandawa"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "7/162",
@@ -348,7 +410,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -361,7 +425,9 @@
     "id": "rackhai-le-bougre-otomai",
     "name": "Rackhaï le Bougre",
     "mainType": "Allié",
-    "subTypes": ["Pirate"],
+    "subTypes": [
+      "Pirate"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "8/162",
@@ -386,7 +452,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Fabien Rodriguez"],
+    "artists": [
+      "Fabien Rodriguez"
+    ],
     "notes": [],
     "flavor": {
       "text": "On dit que Rackhaï le Bougre s'est enrichi grâce à un trésor caché, baptisé \"le secret de la jolie corne\"."
@@ -397,7 +465,9 @@
     "id": "seth-ottomathix-otomai",
     "name": "Seth Ottomathix",
     "mainType": "Allié",
-    "subTypes": ["Forgemage"],
+    "subTypes": [
+      "Forgemage"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "9/162",
@@ -427,7 +497,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [
       "Fabriquer un Equipement revient à le jouer pour son coût de Recette. Cet Allié ne se déclenchera pas si l'Equipement est joué de manière classique, ou s'il est mis en jeu de quelque manière que ce soit."
     ],
@@ -440,7 +512,10 @@
     "id": "anna-jaizik-otomai",
     "name": "Anna Jaizik",
     "mainType": "Allié",
-    "subTypes": ["Sadida", "Alchimiste"],
+    "subTypes": [
+      "Sadida",
+      "Alchimiste"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "10/162",
@@ -460,7 +535,10 @@
     "effects": [
       {
         "description": "Recyclez Anna Jaizik depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
-        "elements": ["Terre", "Feu"],
+        "elements": [
+          "Terre",
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -471,7 +549,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["Didier Chrispeels (Crisse)", "Fred Besson"],
+    "artists": [
+      "Didier Chrispeels (Crisse)",
+      "Fred Besson"
+    ],
     "notes": [
       "Les Alchimistes permettent de produire 2 ressources pour payer des Actions de leur Elément. Une Action est d'un Elément donné si le symbole d'Elément dans le coin supérieur droit de la carte est cet Elément. Bien que les Actions soient payables avec des ressources Neutres, les Alchimistes permettent bien de les payer, mais également de payer les coûts additionnels des Potions de l'extension Otomaï, Poulpe Fiction."
     ],
@@ -485,7 +566,9 @@
     "id": "gzenah-la-guerriere-otomai",
     "name": "Gzenah la Guerrière",
     "mainType": "Allié",
-    "subTypes": ["Iop"],
+    "subTypes": [
+      "Iop"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "11/162",
@@ -518,10 +601,14 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -534,7 +621,10 @@
     "id": "gamino-otomai",
     "name": "Gamino",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Minos"],
+    "subTypes": [
+      "Monstre",
+      "Minos"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "12/162",
@@ -565,7 +655,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Tu n'as rien d'un Minotorooor, Gamino, Gamino. Car tu es trop jeune encooore, Gamino, Gamino.",
@@ -578,7 +670,9 @@
     "id": "love-krado-otomai",
     "name": "Love Krado",
     "mainType": "Allié",
-    "subTypes": ["Pirate"],
+    "subTypes": [
+      "Pirate"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "13/162",
@@ -609,7 +703,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jérémy Couturier"],
+    "artists": [
+      "Jérémy Couturier"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ce pirate à l'hygiène douteuse n'a pas son pareil pour voler des baisers aux jolies demoiselles…"
@@ -620,7 +716,10 @@
     "id": "rouliett-otomai",
     "name": "Rouliett",
     "mainType": "Allié",
-    "subTypes": ["Sacrieur", "Brâkmar"],
+    "subTypes": [
+      "Sacrieur",
+      "Brâkmar"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "14/162",
@@ -648,11 +747,15 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Air"]
+        "elements": [
+          "Air"
+        ]
       }
     ],
     "experience": 1,
-    "artists": ["Souillon (Maliki)"],
+    "artists": [
+      "Souillon (Maliki)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Avant de lui empoisonner la vie, son histoire avec Roh Méo marchait comme sur des roulettes !"
@@ -664,7 +767,10 @@
     "id": "craqueboule-poli-otomai",
     "name": "Craqueboule Poli",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Craqueleur"],
+    "subTypes": [
+      "Monstre",
+      "Craqueleur"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "15/162",
@@ -700,7 +806,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Bertrand Hottin"],
+    "artists": [
+      "Bertrand Hottin"
+    ],
     "notes": [
       "Ces Alliés apparaissent en Renfort s'ils sont joués par l'intermédiaire de leur pouvoir Renfort. Leur pouvoir ne se déclenche pas s'ils sont joués en dehors du combat, ou s'ils sont mis en jeu par une Action ou un autre pouvoir lors d'un combat, et ce même si votre Héros est attaquant."
     ],
@@ -715,7 +823,9 @@
     "id": "anna-tomy-otomai",
     "name": "Anna Tomy",
     "mainType": "Allié",
-    "subTypes": ["Sacrieur"],
+    "subTypes": [
+      "Sacrieur"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "16/162",
@@ -746,7 +856,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -759,7 +871,9 @@
     "id": "guerriers-zoths-otomai",
     "name": "Guerriers Zoths",
     "mainType": "Allié",
-    "subTypes": ["Zoth"],
+    "subTypes": [
+      "Zoth"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "17/162",
@@ -795,7 +909,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Et alors ? Ze zont des zozes qui arrivent ! Moi auzi ze zozotte !",
@@ -807,7 +923,11 @@
     "id": "dragodinde-emeraude-otomai",
     "name": "Dragodinde Émeraude",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dragodinde", "Monture"],
+    "subTypes": [
+      "Monstre",
+      "Dragodinde",
+      "Monture"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "18/162",
@@ -827,7 +947,9 @@
     "effects": [
       {
         "description": "Capture : 2",
-        "elements": ["Terre"],
+        "elements": [
+          "Terre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -844,7 +966,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, cette Dragodinde donne 1 PM supplémentaire au joueur, ainsi qu'un bonus en Vitalité."
@@ -856,7 +980,10 @@
     "id": "mominotor-otomai",
     "name": "Mominotor",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Minos"],
+    "subTypes": [
+      "Monstre",
+      "Minos"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "19/162",
@@ -892,7 +1019,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Une terrible malédiction frappe le Mominotor : son odeur est si fétide qu'elle embaume l'air partout où il va."
@@ -904,7 +1033,11 @@
     "id": "dopeul-ecaflip-otomai",
     "name": "Dopeul Ecaflip",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dopeul", "Ecaflip"],
+    "subTypes": [
+      "Monstre",
+      "Dopeul",
+      "Ecaflip"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "20/162",
@@ -924,7 +1057,9 @@
     "effects": [
       {
         "description": "Si votre Héros est Ecaflip, le coût du Dopeul Ecaflip est réduit de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -941,7 +1076,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Aymeric Kevin (Aymrc)"],
+    "artists": [
+      "Aymeric Kevin (Aymrc)"
+    ],
     "notes": [
       "Si deux adversaires sont sous le pouvoir du Dopeul Ecaflip, alors on considère qu'ils ont tous les deux gagné le prochain Chi-Fu-Mi qu'ils jouent ensemble."
     ],
@@ -956,7 +1093,11 @@
     "id": "boufdegou-le-refoulant-otomai",
     "name": "Boufdégou le Refoulant",
     "mainType": "Allié",
-    "subTypes": ["Archimonstre", "Bouftou", "Unique"],
+    "subTypes": [
+      "Archimonstre",
+      "Bouftou",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "21/162",
@@ -992,7 +1133,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ce Bouftou mange comme un Porkass ! Pas étonnant qu'il pue la bouffe !"
@@ -1004,7 +1147,10 @@
     "id": "garry-mouduli-otomai",
     "name": "Garry Mouduli",
     "mainType": "Allié",
-    "subTypes": ["Enutrof", "Forgemage"],
+    "subTypes": [
+      "Enutrof",
+      "Forgemage"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "22/162",
@@ -1037,11 +1183,15 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
     "experience": 1,
-    "artists": ["Thon"],
+    "artists": [
+      "Thon"
+    ],
     "notes": [
       "Certains pouvoirs contrôlés par un adversaire peuvent vous contraindre de détruire un ou plusieurs de vos Equipements, comme par exemple le pouvoir du Démon I. Dans ce cas de figure, puisque c'est vous-même qui détruisez vos Equipements, le pouvoir de Garry Mouduli sera sans effet. Le pouvoir de Garry Mouduli n'empêche pas vos adversaires de choisir vos Equipements."
     ],
@@ -1055,7 +1205,11 @@
     "id": "gelee-royale-menthe-otomai",
     "name": "Gelée Royale Menthe",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Gelée", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Gelée",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "23/162",
@@ -1086,7 +1240,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [],
     "flavor": {
       "text": "La première fois qu'on la voit, elle fait froid dans le dos : c'est ce qu'on appelle \"le déclic fraîcheur\"."
@@ -1098,7 +1254,11 @@
     "id": "tentacule-primaire-otomai",
     "name": "Tentacule Primaire",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Tentacule", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Tentacule",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "24/162",
@@ -1131,11 +1291,15 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Depuis qu'il a acheté cette \"Multi Ventouz\" à Emsiss Boutique, Nikole Hick n'a plus ses cabinet bouchés !"
@@ -1147,7 +1311,11 @@
     "id": "minotoboule-de-nowel-otomai",
     "name": "Minotoboule de Nowel",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Minos", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Minos",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "25/162",
@@ -1183,7 +1351,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [
       "Si la Force du Minotoboule de Nowel est égale à 6, chaque joueur va choisir 6 de ses Alliés. À la résolution du pouvoir du Minotoboule, tous les Alliés qui n'ont pas été choisis de cette façon sont détruits. Si un de ces Alliés ne peut pas être détruit, alors le pouvoir du Minotoboule n'aura pas d'effet sur lui. Si un joueur contrôle moins d'Alliés que la Force du Minotoboule, alors il ne peut pas choisir un nombre d'Alliés égal à la Force. Dans ce cas de figure, le pouvoir du Minotoboule ne fait rien, faute de choix légaux possibles."
     ],
@@ -1197,7 +1367,10 @@
     "id": "demone-viii-otomai",
     "name": "Démone VIII",
     "mainType": "Allié",
-    "subTypes": ["Démon", "Unique"],
+    "subTypes": [
+      "Démon",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "26/162",
@@ -1230,11 +1403,15 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Cédric Plaisant (Aisk)"],
+    "artists": [
+      "Cédric Plaisant (Aisk)"
+    ],
     "notes": [],
     "flavor": {
       "text": "VIII est très sensible : elle n'hésite pas à offrir à ses acolytes des aventuriers sur des plateaux d'argent !"
@@ -1246,7 +1423,11 @@
     "id": "lamortpeonesque-otomai",
     "name": "Lamortpeonesque",
     "mainType": "Allié",
-    "subTypes": ["Sacrieur", "Champion", "Unique"],
+    "subTypes": [
+      "Sacrieur",
+      "Champion",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "27/162",
@@ -1271,14 +1452,18 @@
       },
       {
         "description": "Au début de votre tour, si Lamortpeonesque est dans le Monde, elle inflige 2 Dommage à l'Allié ou Héros adverse de votre choix. Cet Allié ou Héros perd tous ses pouvoirs et ne peut pas bloquer jusqu'à la fin du tour.",
-        "elements": ["Terre"],
+        "elements": [
+          "Terre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si vous croisez Lamortpeonesque, soyez sûr que la mort vous pend au nez !"
@@ -1290,7 +1475,9 @@
     "id": "srammy-otomai",
     "name": "Srammy",
     "mainType": "Allié",
-    "subTypes": ["Sram"],
+    "subTypes": [
+      "Sram"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "28/162",
@@ -1325,7 +1512,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -1338,7 +1527,9 @@
     "id": "foteuz-detroub-otomai",
     "name": "Fôteuz Detroub'",
     "mainType": "Allié",
-    "subTypes": ["Roublard"],
+    "subTypes": [
+      "Roublard"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "29/162",
@@ -1360,10 +1551,14 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
-    "artists": ["Xavier Houssin (Xa)"],
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Fôteuz Detroub' n'hésite pas à entrer dans le lard de ses ennemis. Du moins, c'est ce que les Roublards disent."
@@ -1374,7 +1569,9 @@
     "id": "arnold-ovouarcraf-otomai",
     "name": "Arnold Ovouarcraf",
     "mainType": "Allié",
-    "subTypes": ["Forgemage"],
+    "subTypes": [
+      "Forgemage"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "30/162",
@@ -1404,7 +1601,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [
       "Fabriquer un Equipement revient à le jouer pour son coût de Recette. Cet Allié ne se déclenchera pas si l'Equipement est joué de manière classique, ou s'il est mis en jeu de quelque manière que ce soit."
     ],
@@ -1418,7 +1617,10 @@
     "id": "july-vamine-otomai",
     "name": "July Vamine",
     "mainType": "Allié",
-    "subTypes": ["Ecaflip", "Alchimiste"],
+    "subTypes": [
+      "Ecaflip",
+      "Alchimiste"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "31/162",
@@ -1438,7 +1640,10 @@
     "effects": [
       {
         "description": "Recyclez July Vamine depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
-        "elements": ["Air", "Terre"],
+        "elements": [
+          "Air",
+          "Terre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -1449,7 +1654,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["Didier Chrispeels (Crisse)", "Fred Besson"],
+    "artists": [
+      "Didier Chrispeels (Crisse)",
+      "Fred Besson"
+    ],
     "notes": [
       "Les Alchimistes permettent de produire 2 ressources pour payer des Actions de leur Elément. Une Action est d'un Elément donné si le symbole d'Elément dans le coin supérieur droit de la carte est cet Elément. Bien que les Actions soient payables avec des ressources Neutres, les Alchimistes permettent bien de les payer, mais également de payer les coûts additionnels des Potions de l'extension Otomaï, Poulpe Fiction."
     ],
@@ -1463,7 +1671,10 @@
     "id": "bash-skwal-otomai",
     "name": "Bash Skwal",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Pirate"],
+    "subTypes": [
+      "Monstre",
+      "Pirate"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "32/162",
@@ -1494,7 +1705,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Xavier Houssin (Xa)"],
+    "artists": [
+      "Xavier Houssin (Xa)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ce pirate a les dents longues. Il est tellement rongé par l'ambition qu'on le surnomme \"les Dents de l'amer\"."
@@ -1506,7 +1719,9 @@
     "id": "naz-rael-otomai",
     "name": "Naz Raël",
     "mainType": "Allié",
-    "subTypes": ["Ecaflip"],
+    "subTypes": [
+      "Ecaflip"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "33/162",
@@ -1536,7 +1751,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -1549,7 +1766,10 @@
     "id": "chef-meccanox-otomai",
     "name": "Chef Meccanox",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Grouilleux"],
+    "subTypes": [
+      "Monstre",
+      "Grouilleux"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "34/162",
@@ -1574,7 +1794,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "Le jouer où il accepta de travailler pour Nox, ce Grouilleux mit le doigt dans l'engrenage."
@@ -1586,7 +1808,10 @@
     "id": "charly-otomai",
     "name": "Charly",
     "mainType": "Allié",
-    "subTypes": ["Ecaflip", "Bonta"],
+    "subTypes": [
+      "Ecaflip",
+      "Bonta"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "35/162",
@@ -1614,11 +1839,15 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
     "experience": 1,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Un peu d'astuce, de Chi",
@@ -1631,7 +1860,10 @@
     "id": "kilibriss-otomai",
     "name": "Kilibriss",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Kilibriss"],
+    "subTypes": [
+      "Monstre",
+      "Kilibriss"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "36/162",
@@ -1667,7 +1899,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Mael Hemon"],
+    "artists": [
+      "Mael Hemon"
+    ],
     "notes": [
       "Ces Alliés apparaissent en Renfort s'ils sont joués par l'intermédiaire de leur pouvoir Renfort. Leur pouvoir ne se déclenche pas s'ils sont joués en dehors du combat, ou s'ils sont mis en jeu par une Action ou un autre pouvoir lors d'un combat, et ce même si votre Héros est attaquant."
     ],
@@ -1681,7 +1915,9 @@
     "id": "liz-talheur-otomai",
     "name": "Liz Talheur",
     "mainType": "Allié",
-    "subTypes": ["Xélor"],
+    "subTypes": [
+      "Xélor"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "37/162",
@@ -1712,7 +1948,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -1725,7 +1963,9 @@
     "id": "remington-otomai",
     "name": "Remington",
     "mainType": "Allié",
-    "subTypes": ["Roublard"],
+    "subTypes": [
+      "Roublard"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "38/162",
@@ -1750,14 +1990,18 @@
       },
       {
         "description": "Chaque fois que Remington est choisi par un joueur adverse, vous pouvez payer . Si vous le faîtes, Remington inflige 1 Dommage au Havre Sac ou au Héros de ce joueur.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Gray Shuko"],
+    "artists": [
+      "Gray Shuko"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si Remington fanfaronne, c'est qu'en matière de cambriolages, il cartonne ! Ca vous étonne ?"
@@ -1768,7 +2012,11 @@
     "id": "dragodinde-prune-otomai",
     "name": "Dragodinde Prune",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dragodinde", "Monture"],
+    "subTypes": [
+      "Monstre",
+      "Dragodinde",
+      "Monture"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "39/162",
@@ -1788,7 +2036,9 @@
     "effects": [
       {
         "description": "Capture : 2",
-        "elements": ["Air"],
+        "elements": [
+          "Air"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1810,7 +2060,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Ce pouvoir permet de choisir les Alliés adverses comme s'ils n'avaient pas les pouvoirs qui vous empêche de les choisir. La Dragodinde Prune n'impacte que les pouvoirs qui appartiennent directement aux Alliés, ou que ces Alliés ont gagné. La Dragodinde Prune ne permet pas de choisir les Alliés qui portent un Equipement tel que la Larvacoiffe, puisque le pouvoir n'est pas gagné par le Porteur mais appartient à la Larvacoiffe."
     ],
@@ -1824,7 +2076,9 @@
     "id": "jak-sparron-otomai",
     "name": "Jak Sparron",
     "mainType": "Allié",
-    "subTypes": ["Pirate"],
+    "subTypes": [
+      "Pirate"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "40/162",
@@ -1844,14 +2098,18 @@
     "effects": [
       {
         "description": "Tant que Jak Sparron est dans le Monde, le coût des Actions ou des pouvoirs qui choisissent vos Pirates est augmenté de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "A passer sa vie à la recherche d'une certaine \"Perle Noire\", ce pirate a fini par ne plus tourner très rond."
@@ -1862,7 +2120,11 @@
     "id": "dopeul-iop-otomai",
     "name": "Dopeul Iop",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dopeul", "Iop"],
+    "subTypes": [
+      "Monstre",
+      "Dopeul",
+      "Iop"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "41/162",
@@ -1882,7 +2144,9 @@
     "effects": [
       {
         "description": "Si votre Héros est Iop, le coût du Dopeul Iop est réduit de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -1894,7 +2158,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Aymeric Kevin (Aymrc)"],
+    "artists": [
+      "Aymeric Kevin (Aymrc)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Le seul Iop dont la taille du cerveau est proportionnelle à celle du corps…"
@@ -1906,7 +2172,11 @@
     "id": "tofuldebeu-l-explosif-otomai",
     "name": "Tofuldebeu l'Explosif",
     "mainType": "Allié",
-    "subTypes": ["Archimonstre", "Tofu", "Unique"],
+    "subTypes": [
+      "Archimonstre",
+      "Tofu",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "42/162",
@@ -1942,7 +2212,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "Veillez à ne pas trop faire d'étincelles en sa présence : Tofuldebeu s'enflamme vite !"
@@ -1954,7 +2226,10 @@
     "id": "bitouf-des-plaines-otomai",
     "name": "Bitouf des Plaines",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Bitouf"],
+    "subTypes": [
+      "Monstre",
+      "Bitouf"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "43/162",
@@ -1990,7 +2265,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "On ne le répétera jamais assez : avaler des Nodkokos est dangereux pour la santé !"
@@ -2002,7 +2279,11 @@
     "id": "gelee-royale-citron-otomai",
     "name": "Gelée Royale Citron",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Gelée", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Gelée",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "44/162",
@@ -2033,7 +2314,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si elle vous donne des caries, faites",
@@ -2046,7 +2329,11 @@
     "id": "ben-le-ripate-otomai",
     "name": "Ben le Ripate",
     "mainType": "Allié",
-    "subTypes": ["Pirate", "Fantôme", "Unique"],
+    "subTypes": [
+      "Pirate",
+      "Fantôme",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "45/162",
@@ -2084,11 +2371,16 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Air", "Eau"]
+        "elements": [
+          "Air",
+          "Eau"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Jérôme Brulin (Vliir)"],
+    "artists": [
+      "Jérôme Brulin (Vliir)"
+    ],
     "notes": [
       "Le Pirate que l'on peut incliner est le Pirate qui vient d'apparaître, et non Ben le Ripate. Néanmoins, puisque Ben le Ripate est lui même un Pirate, il est possible de l'incliner pour son propre pouvoir lorsqu'il apparaît. Le pouvoir appartient à Ben le Ripate : jouer une Embuscade sur un Pirate qui est sur le point d'apparaître n'empêchera pas de l'incliner pour redresser un autre Pirate."
     ],
@@ -2102,7 +2394,11 @@
     "id": "monture-du-corbeau-noir-otomai",
     "name": "Monture du Corbeau Noir",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Monture", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Monture",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "46/162",
@@ -2122,7 +2418,9 @@
     "effects": [
       {
         "description": "Capture : 3",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2139,7 +2437,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Adrian"],
+    "artists": [
+      "Adrian"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ligne élégante, châssis renforcé, bec profilé : ce véhicule est vraiment à la pointe de la technologie !"
@@ -2151,7 +2451,11 @@
     "id": "silf-le-rasboul-majeur-otomai",
     "name": "Silf le Rasboul Majeur",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Rasboul", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Rasboul",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "47/162",
@@ -2179,11 +2483,19 @@
       {
         "name": "Résistance",
         "description": "3",
-        "elements": ["Neutre", "Terre", "Air", "Feu", "Eau"]
+        "elements": [
+          "Neutre",
+          "Terre",
+          "Air",
+          "Feu",
+          "Eau"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Nicolas Detrain (Tiko)"],
+    "artists": [
+      "Nicolas Detrain (Tiko)"
+    ],
     "notes": [
       "Si Silf, le Rasboul Majeur possède Résistance 3 Terre au moment où ce pouvoir est joué et qu'une carte Terre est recyclée de cette façon, alors Silf possèdera Résistance 2 Terre à la résolution. Silf ne perdra de Résistance que si la carte est recyclée spécifiquement pour ce pouvoir. Il est possible de recycler une carte d'un Elément dont Silf ne possède aucune Résistance. Dans ce cas, Silf ne gagne pas Résistance -1 dans cet Elément car une Résistance ne peut pas être négative. Le pouvoir ne fera rien."
     ],
@@ -2197,7 +2509,11 @@
     "id": "radigan-otomai",
     "name": "Radigan",
     "mainType": "Allié",
-    "subTypes": ["Xélor", "Champion", "Unique"],
+    "subTypes": [
+      "Xélor",
+      "Champion",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "48/162",
@@ -2228,7 +2544,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Le nom de ce Xélor est aussi celui d'un Kolérat qui tenta de conquérir le monde des Sousouris… sans succès."
@@ -2240,7 +2558,9 @@
     "id": "terry-l-ermite-otomai",
     "name": "Terry l'Ermite",
     "mainType": "Allié",
-    "subTypes": ["Sadida"],
+    "subTypes": [
+      "Sadida"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "49/162",
@@ -2260,7 +2580,9 @@
     "effects": [
       {
         "description": "Tant que Terry l'Ermite est dans le Monde, le coût de vos est réduit de , jusqu'à un minimum de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2271,7 +2593,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -2284,7 +2608,10 @@
     "id": "kido-otomai",
     "name": "Kido",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Kido"],
+    "subTypes": [
+      "Monstre",
+      "Kido"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "50/162",
@@ -2303,7 +2630,9 @@
     },
     "effects": [],
     "keywords": [],
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "C'est un roc ! C'est un pic ! C'est un bec, que dis",
@@ -2316,7 +2645,9 @@
     "id": "bobby-lapinte-otomai",
     "name": "Bobby Lapinte",
     "mainType": "Allié",
-    "subTypes": ["Forgemage"],
+    "subTypes": [
+      "Forgemage"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "51/162",
@@ -2341,13 +2672,17 @@
       },
       {
         "description": "Tant que Bobby Lapinte est dans le Monde, chaque fois que vous fabriquez un Objet, une Salle ou un Bouclier, il inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Gilles Aris"],
+    "artists": [
+      "Gilles Aris"
+    ],
     "notes": [
       "Fabriquer un Equipement revient à le jouer pour son coût de Recette. Cet Allié ne se déclenchera pas si l'Equipement est joué de manière classique, ou s'il est mis en jeu de quelque manière que ce soit."
     ],
@@ -2360,7 +2695,11 @@
     "id": "o-zaune-otomai",
     "name": "Ô Zaune",
     "mainType": "Allié",
-    "subTypes": ["Eniripsa", "Petite Fille", "Alchimiste"],
+    "subTypes": [
+      "Eniripsa",
+      "Petite Fille",
+      "Alchimiste"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "52/162",
@@ -2380,7 +2719,10 @@
     "effects": [
       {
         "description": "Recyclez Ô Zaune depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
-        "elements": ["Feu", "Eau"],
+        "elements": [
+          "Feu",
+          "Eau"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -2391,7 +2733,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [
       "Les Alchimistes permettent de produire 2 ressources pour payer des Actions de leur Elément. Une Action est d'un Elément donné si le symbole d'Elément dans le coin supérieur droit de la carte est cet Elément. Bien que les Actions soient payables avec des ressources Neutres, les Alchimistes permettent bien de les payer, mais également de payer les coûts additionnels des Potions de l'extension Otomaï, Poulpe Fiction."
     ],
@@ -2405,7 +2749,9 @@
     "id": "jems-blond-otomai",
     "name": "Jèms Blond",
     "mainType": "Allié",
-    "subTypes": ["Crâ"],
+    "subTypes": [
+      "Crâ"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "53/162",
@@ -2425,9 +2771,26 @@
     "effects": [
       {
         "description": "Jèms Blond inflige 1 Dommage à l'Allié ou Héros de votre choix.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Feu",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       },
       {
         "description": "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien.",
@@ -2439,11 +2802,15 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Eau"]
+        "elements": [
+          "Eau"
+        ]
       }
     ],
     "experience": 1,
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -2456,7 +2823,10 @@
     "id": "poolay-otomai",
     "name": "Poolay",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Poolay"],
+    "subTypes": [
+      "Monstre",
+      "Poolay"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "54/162",
@@ -2476,13 +2846,17 @@
     "effects": [
       {
         "description": "Détruisez le Poolay : Le Poolay inflige 2 Dommages au Héros de votre choix.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si ses cheveux ne lui cachaient pas le visage, le Poolay serait encore plus laid !"
@@ -2494,7 +2868,10 @@
     "id": "nerbe-otomai",
     "name": "Nerbe",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Nerbe"],
+    "subTypes": [
+      "Monstre",
+      "Nerbe"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "55/162",
@@ -2525,7 +2902,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "Cette mauvaise herbe va vous mettre les nerfs en pelote et vous faire perdre les pétales !"
@@ -2537,7 +2916,10 @@
     "id": "klara-boss-otomai",
     "name": "Klara Bôss",
     "mainType": "Allié",
-    "subTypes": ["Eniripsa", "Brâkmar"],
+    "subTypes": [
+      "Eniripsa",
+      "Brâkmar"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "56/162",
@@ -2565,11 +2947,15 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Eau"]
+        "elements": [
+          "Eau"
+        ]
       }
     ],
     "experience": 1,
-    "artists": ["Souillon (Maliki)"],
+    "artists": [
+      "Souillon (Maliki)"
+    ],
     "notes": [],
     "flavor": {
       "text": "A force de passer sa vie à bosser, Klara Bôss est toute cabossée !"
@@ -2581,7 +2967,9 @@
     "id": "fee-lhur-otomai",
     "name": "Fée Lhur",
     "mainType": "Allié",
-    "subTypes": ["Eniripsa"],
+    "subTypes": [
+      "Eniripsa"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "57/162",
@@ -2611,7 +2999,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -2624,7 +3014,10 @@
     "id": "mufafah-otomai",
     "name": "Mufafah",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Mufafah"],
+    "subTypes": [
+      "Monstre",
+      "Mufafah"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "58/162",
@@ -2649,7 +3042,9 @@
       },
       {
         "description": "Quand le Mufafah apparaît en , il inflige 3 Dommages à l'Allié ou Héros de votre choix qui bloque votre Héros.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2661,7 +3056,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Sampajo"],
+    "artists": [
+      "Sampajo"
+    ],
     "notes": [
       "Ces Alliés apparaissent en Renfort s'ils sont joués par l'intermédiaire de leur pouvoir Renfort. Leur pouvoir ne se déclenche pas s'ils sont joués en dehors du combat, ou s'ils sont mis en jeu par une Action ou un autre pouvoir lors d'un combat, et ce même si votre Héros est attaquant."
     ],
@@ -2675,7 +3072,9 @@
     "id": "crocodaille-dandi-otomai",
     "name": "Crocodaille Dandi",
     "mainType": "Allié",
-    "subTypes": ["Chasseur"],
+    "subTypes": [
+      "Chasseur"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "59/162",
@@ -2700,14 +3099,18 @@
       },
       {
         "description": "Crocodaille Dandi inflige 1 Dommage au Monstre de votre choix. Si ce Monstre est Unique, Crocodaille Dandi lui inflige 4 Dommages à la place.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Cédric Plaisant (Aisk)"],
+    "artists": [
+      "Cédric Plaisant (Aisk)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si Crocodaille Dandi ne cesse de se dandiner, c'est parce qu'il se les caille dans son slip en écailles !"
@@ -2718,7 +3121,11 @@
     "id": "dragodinde-ivoire-otomai",
     "name": "Dragodinde Ivoire",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dragodinde", "Monture"],
+    "subTypes": [
+      "Monstre",
+      "Dragodinde",
+      "Monture"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "60/162",
@@ -2738,7 +3145,9 @@
     "effects": [
       {
         "description": "Capture : 2",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2755,7 +3164,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, cette Dragodinde donne à son propriétaire des bonus en Vitalité ainsi qu'en Dommages."
@@ -2767,7 +3178,10 @@
     "id": "abrakleur-clair-otomai",
     "name": "Abrakleur Clair",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Abrakleur"],
+    "subTypes": [
+      "Monstre",
+      "Abrakleur"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "61/162",
@@ -2787,7 +3201,9 @@
     "effects": [
       {
         "description": "Défaussez une carte : L'Abrakleur Clair inflige 1 Dommage à l'Allié ou Héros de votre choix. N'utilisez ce pouvoir qu'une seule fois par tour.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -2796,11 +3212,15 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
     "experience": 1,
-    "artists": ["Gilles Aris"],
+    "artists": [
+      "Gilles Aris"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ce colosse végétal est si fort que les aventuriers le surnomment parfois \"le Craqueleur de bois\" !"
@@ -2812,7 +3232,11 @@
     "id": "dopeul-cra-otomai",
     "name": "Dopeul Crâ",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dopeul", "Crâ"],
+    "subTypes": [
+      "Monstre",
+      "Dopeul",
+      "Crâ"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "62/162",
@@ -2832,20 +3256,26 @@
     "effects": [
       {
         "description": "Si votre Héros est Crâ, le coût du Dopeul Crâ est réduit de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Le Dopeul Crâ inflige 2 Dommages à l'Allié ou Héros de votre choix qui vient de subir un ou plusieurs Dommages.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Aymeric Kevin (Aymrc)"],
+    "artists": [
+      "Aymeric Kevin (Aymrc)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Son point faible : sa petite taille. Ce qui explique qu'il soit si touché quand il est la cible de quolibets."
@@ -2857,7 +3287,11 @@
     "id": "bworkasse-le-degoutant-otomai",
     "name": "Bworkasse le Dégoûtant",
     "mainType": "Allié",
-    "subTypes": ["Archimonstre", "Bwork", "Unique"],
+    "subTypes": [
+      "Archimonstre",
+      "Bwork",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "63/162",
@@ -2877,7 +3311,9 @@
     "effects": [
       {
         "description": "Quand Bworkasse le Dégoûtant apparaît dans le Monde, il inflige 2 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -2889,7 +3325,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si Bworkasse le Dégoûtant a une peau si répugnante, c'est parce qu'il ne se nourrit que de Rats d'Egoutants !"
@@ -2901,7 +3339,9 @@
     "id": "hellviss-otomai",
     "name": "Hellviss",
     "mainType": "Allié",
-    "subTypes": ["Fantôme"],
+    "subTypes": [
+      "Fantôme"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "64/162",
@@ -2937,7 +3377,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "Wooooneforzeumonie ! Tooouforzeucho !",
@@ -2949,7 +3391,11 @@
     "id": "gelee-royale-fraise-otomai",
     "name": "Gelée Royale Fraise",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Gelée", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Gelée",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "65/162",
@@ -2980,7 +3426,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Flasque et rose, cette Gelée a tout d'une fesse d'Enutrofette. Sauf le goût !"
@@ -2992,7 +3440,10 @@
     "id": "brolklass-otomai",
     "name": "Brôlklass",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "66/162",
@@ -3023,7 +3474,10 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Deruyck Vincent (Ancestral Z)", "Joachim Leclercq (Mojojojo)"],
+    "artists": [
+      "Deruyck Vincent (Ancestral Z)",
+      "Joachim Leclercq (Mojojojo)"
+    ],
     "notes": [
       "Brôlklass vous permet de jouer vos Sorts comme si vous contrôliez un Allié ou un Héros de cette Classe. Néanmoins, le Brôlklass ne possède pas toutes ces Classes. Il est ainsi impossible de l'incliner pour payer un coût réclamant spécifiquement d'incliner ou de choisir un Allié ou un Héros d'une Classe donnée comme une Flèche de Dispersion ou une Félintion. De plus, il ne renforcera pas les effets des Sorts de l'extension Pandala comme Tremblement de Terre."
     ],
@@ -3037,7 +3491,10 @@
     "id": "demon-xv-otomai",
     "name": "Démon XV",
     "mainType": "Allié",
-    "subTypes": ["Démon", "Unique"],
+    "subTypes": [
+      "Démon",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "67/162",
@@ -3062,7 +3519,9 @@
       },
       {
         "description": "Quand le Démon XV apparaît depuis votre main, vous pouvez l'incliner et payer X . Si vous le faites, le Démon XV inflige X Dommages à chaque autre Allié ou Héros dans le Monde. Vous ne gagnez pas d'XP.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -3071,11 +3530,15 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Fabrice Nzinzi (Ntamak)"],
+    "artists": [
+      "Fabrice Nzinzi (Ntamak)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Question violence et cruauté, XV n'en est pas à son premier essai. D'où son surnom de \"XV de souffrance\"."
@@ -3087,7 +3550,11 @@
     "id": "wymp-otomai",
     "name": "Wymp",
     "mainType": "Allié",
-    "subTypes": ["Crâ", "Champion", "Unique"],
+    "subTypes": [
+      "Crâ",
+      "Champion",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "68/162",
@@ -3107,14 +3574,18 @@
     "effects": [
       {
         "description": "Wymp inflige 3 Dommages à l'Allié ou Héros incliné de votre choix.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ce Crâ a plus d'une corde à son bâton… Euh ! plus d'un bâton à son arc… Euh ! bref …"
@@ -3126,7 +3597,11 @@
     "id": "nemoh-otomai",
     "name": "Nemoh",
     "mainType": "Allié",
-    "subTypes": ["Osamodas", "Brâkmar", "Unique"],
+    "subTypes": [
+      "Osamodas",
+      "Brâkmar",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "69/162",
@@ -3157,7 +3632,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Aleksi Briclot"],
+    "artists": [
+      "Aleksi Briclot"
+    ],
     "notes": [],
     "flavor": {
       "text": "J'ai dit : couché !"
@@ -3169,7 +3646,9 @@
     "id": "aude-kolon-otomai",
     "name": "Aude Kolon",
     "mainType": "Allié",
-    "subTypes": ["Osamodas"],
+    "subTypes": [
+      "Osamodas"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "70/162",
@@ -3199,7 +3678,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -3212,7 +3693,9 @@
     "id": "kreol-panikon-otomai",
     "name": "Kréol Panikon",
     "mainType": "Allié",
-    "subTypes": ["Zobal"],
+    "subTypes": [
+      "Zobal"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "71/162",
@@ -3234,10 +3717,14 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
-    "artists": ["Charlène Le Scanff"],
+    "artists": [
+      "Charlène Le Scanff"
+    ],
     "notes": [],
     "flavor": {
       "text": "Zobal ! Zobal masqué, ohé ! ohé ! Il rosse, il rosse, il rosse, Zobal masqué !",
@@ -3249,7 +3736,10 @@
     "id": "moe-pioussin-otomai",
     "name": "Moe Pioussin",
     "mainType": "Allié",
-    "subTypes": ["Enutrof", "Forgemage"],
+    "subTypes": [
+      "Enutrof",
+      "Forgemage"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "72/162",
@@ -3279,7 +3769,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [
       "Fabriquer un Equipement revient à le jouer pour son coût de Recette. Cet Allié ne se déclenchera pas si l'Equipement est joué de manière classique, ou s'il est mis en jeu de quelque manière que ce soit."
     ],
@@ -3293,7 +3785,11 @@
     "id": "niko-la-flameche-otomai",
     "name": "Niko la Flamèche",
     "mainType": "Allié",
-    "subTypes": ["Féca", "Petit Garçon", "Alchimiste"],
+    "subTypes": [
+      "Féca",
+      "Petit Garçon",
+      "Alchimiste"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "73/162",
@@ -3313,7 +3809,10 @@
     "effects": [
       {
         "description": "Recyclez Niko la Flamèche depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
-        "elements": ["Eau", "Air"],
+        "elements": [
+          "Eau",
+          "Air"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -3324,7 +3823,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [
       "Les Alchimistes permettent de produire 2 ressources pour payer des Actions de leur Elément. Une Action est d'un Elément donné si le symbole d'Elément dans le coin supérieur droit de la carte est cet Elément. Bien que les Actions soient payables avec des ressources Neutres, les Alchimistes permettent bien de les payer, mais également de payer les coûts additionnels des Potions de l'extension Otomaï, Poulpe Fiction."
     ],
@@ -3338,7 +3839,9 @@
     "id": "heuguiz-otomai",
     "name": "Heuguiz",
     "mainType": "Allié",
-    "subTypes": ["Féca"],
+    "subTypes": [
+      "Féca"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "74/162",
@@ -3368,7 +3871,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -3381,7 +3886,9 @@
     "id": "moumoune-otomai",
     "name": "Moumoune",
     "mainType": "Allié",
-    "subTypes": ["Enutrof"],
+    "subTypes": [
+      "Enutrof"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "75/162",
@@ -3412,7 +3919,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [
       "Le Bijou reste dans le même statut incliné ou dressé. Prendre le contrôle d'un Bijou incliné ne le redressera pas."
     ],
@@ -3425,7 +3934,10 @@
     "id": "jock-et-lack-otomai",
     "name": "Jock et Lack",
     "mainType": "Allié",
-    "subTypes": ["Ecaflip", "Iop"],
+    "subTypes": [
+      "Ecaflip",
+      "Iop"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "76/162",
@@ -3455,7 +3967,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["Deruyck Vincent (Ancestral Z)", "Joachim Leclercq (Mojojojo)"],
+    "artists": [
+      "Deruyck Vincent (Ancestral Z)",
+      "Joachim Leclercq (Mojojojo)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Croyant être perdus sur une île déserte, Jock et Lack se surnommèrent entre eux \"Les Disparus\"."
@@ -3467,7 +3982,10 @@
     "id": "liane-zolie-otomai",
     "name": "Liane Zolie",
     "mainType": "Allié",
-    "subTypes": ["Sadida", "Bonta"],
+    "subTypes": [
+      "Sadida",
+      "Bonta"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "77/162",
@@ -3493,7 +4011,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Liane passe tant d'heures à se la couler douce qu'elle finit parfois par prendre racine."
@@ -3505,7 +4025,9 @@
     "id": "skrouj-makdeuk-otomai",
     "name": "Skrouj Makdeuk",
     "mainType": "Allié",
-    "subTypes": ["Enutrof"],
+    "subTypes": [
+      "Enutrof"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "78/162",
@@ -3541,7 +4063,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Edouard Guiton"],
+    "artists": [
+      "Edouard Guiton"
+    ],
     "notes": [
       "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien."
     ],
@@ -3554,7 +4078,10 @@
     "id": "palmifleur-kuracao-otomai",
     "name": "Palmifleur Kuraçao",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Palmifleur"],
+    "subTypes": [
+      "Monstre",
+      "Palmifleur"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "79/162",
@@ -3590,7 +4117,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Séverine Dubosq"],
+    "artists": [
+      "Séverine Dubosq"
+    ],
     "notes": [
       "Ces Alliés apparaissent en Renfort s'ils sont joués par l'intermédiaire de leur pouvoir Renfort. Leur pouvoir ne se déclenche pas s'ils sont joués en dehors du combat, ou s'ils sont mis en jeu par une Action ou un autre pouvoir lors d'un combat, et ce même si votre Héros est attaquant."
     ],
@@ -3604,7 +4133,9 @@
     "id": "maskemane-otomai",
     "name": "Maskemane",
     "mainType": "Allié",
-    "subTypes": ["Zobal"],
+    "subTypes": [
+      "Zobal"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "80/162",
@@ -3629,14 +4160,18 @@
       },
       {
         "description": "Quand Maskemane attaque, vous pouvez payer . Si vous le faites, inclinez l'Allié ou Héros de votre choix contrôlé par le joueur défenseur, puis Maskemane gagne jusqu'à la fin du tour.",
-        "elements": ["Terre"],
+        "elements": [
+          "Terre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Le secret de Maskemane pour avoir bonne mine ? Chaque soir, il s'applique un masque de Boue de Boo !"
@@ -3647,7 +4182,11 @@
     "id": "dragodinde-turquoise-otomai",
     "name": "Dragodinde Turquoise",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dragodinde", "Monture"],
+    "subTypes": [
+      "Monstre",
+      "Dragodinde",
+      "Monture"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "81/162",
@@ -3667,7 +4206,9 @@
     "effects": [
       {
         "description": "Capture : 2",
-        "elements": ["Eau"],
+        "elements": [
+          "Eau"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -3684,7 +4225,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, cette Dragodinde donne à son propriétaire des bonus en Vitalité ainsi qu'en Prospection."
@@ -3696,7 +4239,10 @@
     "id": "crustorail-otomai",
     "name": "Crustorail",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Crustacé"],
+    "subTypes": [
+      "Monstre",
+      "Crustacé"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "82/162",
@@ -3716,7 +4262,9 @@
     "effects": [],
     "keywords": [],
     "experience": 1,
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "\"Aïe !\" crie la marmaille d'Otomaï lorsqu'elle se fait pincer l'orteil par un Crustorail."
@@ -3728,7 +4276,11 @@
     "id": "dopeul-osamodas-otomai",
     "name": "Dopeul Osamodas",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Dopeul", "Osamodas"],
+    "subTypes": [
+      "Monstre",
+      "Dopeul",
+      "Osamodas"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "83/162",
@@ -3748,7 +4300,9 @@
     "effects": [
       {
         "description": "Si votre Héros est Osamodas, le coût du Dopeul Osamodas est réduit de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -3760,7 +4314,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Aymeric Kevin (Aymrc)"],
+    "artists": [
+      "Aymeric Kevin (Aymrc)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si j'invoque autant mon Dopeul, c'est parce qu'il fouette bien mieux que mon mari ! Une Osamodas frustrée."
@@ -3772,7 +4328,11 @@
     "id": "wabbitud-le-constant-otomai",
     "name": "Wabbitud le Constant",
     "mainType": "Allié",
-    "subTypes": ["Archimonstre", "Wabbit", "Unique"],
+    "subTypes": [
+      "Archimonstre",
+      "Wabbit",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "84/162",
@@ -3808,7 +4368,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "Je me lève, et je te bouscule ! Comme Wabbittudeu !",
@@ -3821,7 +4383,10 @@
     "id": "gamine-zoth-otomai",
     "name": "Gamine Zoth",
     "mainType": "Allié",
-    "subTypes": ["Zoth", "Petite Fille"],
+    "subTypes": [
+      "Zoth",
+      "Petite Fille"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "85/162",
@@ -3841,7 +4406,9 @@
     "effects": [
       {
         "description": "Quand un adversaire vient de joueur une Action, vous pouvez payer pour mettre en jeu la Gamine Zoth dans le Monde. Quand la Gamine Zoth apparait de cette façon, vous pouvez annuler les effets d'une Action qui vient d'être jouée.",
-        "elements": ["Eau"],
+        "elements": [
+          "Eau"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -3853,7 +4420,9 @@
     ],
     "keywords": [],
     "experience": 1,
-    "artists": ["Miguel Coimbra"],
+    "artists": [
+      "Miguel Coimbra"
+    ],
     "notes": [
       "Les deux pouvoirs sont distincts. Le premier est jouable depuis la Main, en Réaction à un adversaire jouant une Action. Dans ce cas, la Gamine Zoth n'est pas jouée, mais mise en jeu. Il est donc impossible de l'annuler avec un Rire du Corbeau Noir, par exemple. Le second pouvoir se déclenche quand la Gamine Zoth apparaît. Si la Gamine Zoth apparaît sans pouvoir, aucune Action ne pourra être annulée. Si la Gamine Zoth apparaît alors qu'aucune Action adverse n'est dans la File d'Attente, son pouvoir d'apparition ne se déclenche pas. Il est possible de choisir une Action différente de celle qui a permis de mettre en jeu la Gamine Zoth, si plusieurs Actions adverses sont dans la File d'Attente au moment où elle apparaît."
     ],
@@ -3868,7 +4437,11 @@
     "id": "gelee-royale-bleue-otomai",
     "name": "Gelée Royale Bleue",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Gelée", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Gelée",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "86/162",
@@ -3904,7 +4477,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [
       "Vous pouvez piocher une carte si la Gelée Royale Bleue apparaît dans le Monde."
     ],
@@ -3919,7 +4494,11 @@
     "id": "tentacule-secondaire-otomai",
     "name": "Tentacule Secondaire",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Tentacule", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Tentacule",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "87/162",
@@ -3952,11 +4531,15 @@
       {
         "name": "Résistance",
         "description": "2",
-        "elements": ["Eau"]
+        "elements": [
+          "Eau"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Eh ! Parait que la tante à Luk a vu le Tentacule Secondaire de près !",
@@ -3969,7 +4552,11 @@
     "id": "corailleur-magistral-otomai",
     "name": "Corailleur Magistral",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Craqueleur", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Craqueleur",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "88/162",
@@ -3997,11 +4584,16 @@
       {
         "name": "Résistance",
         "description": "1",
-        "elements": ["Feu", "Eau"]
+        "elements": [
+          "Feu",
+          "Eau"
+        ]
       }
     ],
     "experience": 2,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "La raclée qu'il va vous mettre sera magistrale, elle aussi."
@@ -4013,7 +4605,11 @@
     "id": "minotot-otomai",
     "name": "Minotot",
     "mainType": "Allié",
-    "subTypes": ["Monstre", "Minos", "Unique"],
+    "subTypes": [
+      "Monstre",
+      "Minos",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "89/162",
@@ -4038,14 +4634,18 @@
       },
       {
         "description": "Tant que le Minotot est dans le Monde, le coût des Actions jouées par vos adversaires est augmenté de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Une mine haute haute ? Ah ben ça doit pas être facile d'y trouver du minerais !",
@@ -4058,7 +4658,11 @@
     "id": "papi-tsubi-otomai",
     "name": "Papi Tsubi",
     "mainType": "Allié",
-    "subTypes": ["Enutrof", "Champion", "Unique"],
+    "subTypes": [
+      "Enutrof",
+      "Champion",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "90/162",
@@ -4084,7 +4688,9 @@
     ],
     "keywords": [],
     "experience": 2,
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "On n'apprend pas à un vieil Enutrof à faire le rapace !",
@@ -4097,7 +4703,9 @@
     "id": "akwafiole-otomai",
     "name": "Akwafiole",
     "mainType": "Action",
-    "subTypes": ["Potion"],
+    "subTypes": [
+      "Potion"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "91/162",
@@ -4113,7 +4721,10 @@
     "effects": [
       {
         "description": "L'Allié ou Héros attaquant ou bloqueur de votre choix retourne incliné dans le Monde. Le contrôleur de cet Allié se défausse d'une carte de sa main.",
-        "elements": ["Eau", "Air"],
+        "elements": [
+          "Eau",
+          "Air"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4124,7 +4735,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Marie Fromont"],
+    "artists": [
+      "Marie Fromont"
+    ],
     "notes": [
       "Ces Potions sont de Niveau 1 et possèdent un coût additionnel à payer lorsqu'on joue la Potion. Ces Actions sont d'Elément Terre, Feu, Eau ou Air, et ce coût additionnel peut être payé par l'Alchimiste correspondant. On peut par exemple jouer une Akwafiole en inclinant une carte de son choix pour payer le coût en Neutre, puis en payant le coût additionnel avec le pouvoir de Nico la Flammèche."
     ],
@@ -4138,7 +4751,9 @@
     "id": "aerofiole-otomai",
     "name": "Aerofiole",
     "mainType": "Action",
-    "subTypes": ["Potion"],
+    "subTypes": [
+      "Potion"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "92/162",
@@ -4154,7 +4769,10 @@
     "effects": [
       {
         "description": "Redressez l'Allié ou Héros de votre choix, puis inclinez l'Allié ou Héros de votre choix.",
-        "elements": ["Air", "Terre"],
+        "elements": [
+          "Air",
+          "Terre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4165,7 +4783,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Marie Fromont"],
+    "artists": [
+      "Marie Fromont"
+    ],
     "notes": [
       "Ces Potions sont de Niveau 1 et possèdent un coût additionnel à payer lorsqu'on joue la Potion. Ces Actions sont d'Elément Terre, Feu, Eau ou Air, et ce coût additionnel peut être payé par l'Alchimiste correspondant. On peut par exemple jouer une Akwafiole en inclinant une carte de son choix pour payer le coût en Neutre, puis en payant le coût additionnel avec le pouvoir de Nico la Flammèche."
     ],
@@ -4178,7 +4798,9 @@
     "id": "pyrofiole-otomai",
     "name": "Pyrofiole",
     "mainType": "Action",
-    "subTypes": ["Potion"],
+    "subTypes": [
+      "Potion"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "93/162",
@@ -4194,7 +4816,10 @@
     "effects": [
       {
         "description": "La Pyrofiole inflige 2 Dommages à l'Allié ou Héros de votre choix. Piochez une carte.",
-        "elements": ["Feu", "Eau"],
+        "elements": [
+          "Feu",
+          "Eau"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4205,7 +4830,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Marie Fromont"],
+    "artists": [
+      "Marie Fromont"
+    ],
     "notes": [
       "Ces Potions sont de Niveau 1 et possèdent un coût additionnel à payer lorsqu'on joue la Potion. Ces Actions sont d'Elément Terre, Feu, Eau ou Air, et ce coût additionnel peut être payé par l'Alchimiste correspondant. On peut par exemple jouer une Akwafiole en inclinant une carte de son choix pour payer le coût en Neutre, puis en payant le coût additionnel avec le pouvoir de Nico la Flammèche."
     ],
@@ -4219,7 +4846,9 @@
     "id": "terrafiole-otomai",
     "name": "Terrafiole",
     "mainType": "Action",
-    "subTypes": ["Potion"],
+    "subTypes": [
+      "Potion"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "94/162",
@@ -4235,7 +4864,10 @@
     "effects": [
       {
         "description": "Bannissez l'Allié de votre choix dans la Défausse d'un adversaire. La Terrafiole inflige un nombre de Dommages égal au Niveau de l'Allié banni de cette façon à l'Allié de votre choix.",
-        "elements": ["Terre", "Feu"],
+        "elements": [
+          "Terre",
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -4246,7 +4878,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Marie Fromont"],
+    "artists": [
+      "Marie Fromont"
+    ],
     "notes": [
       "Ces Potions sont de Niveau 1 et possèdent un coût additionnel à payer lorsqu'on joue la Potion. Ces Actions sont d'Elément Terre, Feu, Eau ou Air, et ce coût additionnel peut être payé par l'Alchimiste correspondant. On peut par exemple jouer une Akwafiole en inclinant une carte de son choix pour payer le coût en Neutre, puis en payant le coût additionnel avec le pouvoir de Nico la Flammèche."
     ],
@@ -4280,7 +4914,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "Seul sur le saaable",
@@ -4307,13 +4943,17 @@
     "effects": [
       {
         "description": "Le Coup de Poing inflige 1 Dommage à l'Allié ou Héros de votre choix. Piochez une carte.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Jérôme Brulin (Vliir)"],
+    "artists": [
+      "Jérôme Brulin (Vliir)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Opératiiiooonnn coup de poooiiinnng !",
@@ -4324,7 +4964,9 @@
     "id": "potion-de-metal-liquide-otomai",
     "name": "Potion de Métal Liquide",
     "mainType": "Action",
-    "subTypes": ["Potion"],
+    "subTypes": [
+      "Potion"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "97/162",
@@ -4350,7 +4992,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "François Houssin (Franho)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "L'Arme Ethérée n'est pas choisie lors de l'annonce de la Potion de Métal Liquide. Il est donc possible de la jouer même si on ne contrôle aucune Arme Ethérée. Dans ce cas, la carte sera piochée, et le reste du pouvoir ne fera rien. Si vous contrôlez au moins une Arme Ethérée, vous décidez d'ajouter ou non un Ether sur l'une d'elles à la résolution de l'Action."
     ],
@@ -4385,7 +5030,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["François Houssin (Franho)"],
+    "artists": [
+      "François Houssin (Franho)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Qui court comme un dératé après le succès finit forcément par avoir des ratés.",
@@ -4417,7 +5064,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Cuca"],
+    "artists": [
+      "Cuca"
+    ],
     "notes": [],
     "flavor": {
       "text": "Les tours de riz ? C'est de l'architecture Pandawa ? Ca doit pas être très solide…",
@@ -4454,7 +5103,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [
       "On considère que vous contrôlez l'Allié possédant la plus grande Force si aucun autre joueur ne contrôle d'Allié de Force strictement supérieure dans le Monde. Vous pouvez donc jouer le Lancer de Tronc en cas d'égalité avec des Alliés contrôlés par d'autres joueurs."
     ],
@@ -4488,7 +5139,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Charlène Le Scanff"],
+    "artists": [
+      "Charlène Le Scanff"
+    ],
     "notes": [],
     "flavor": {
       "text": "N'insistez pas, jamais il ne vous le dévoilera le secret de sa coupe de cheveux…"
@@ -4519,7 +5172,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Généralement, les Bouftous préfèrent salir leur laine propre en famille…"
@@ -4529,7 +5184,10 @@
     "id": "fleche-aveuglante-otomai",
     "name": "Flèche Aveuglante",
     "mainType": "Action",
-    "subTypes": ["Sort", "Crâ"],
+    "subTypes": [
+      "Sort",
+      "Crâ"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "103/162",
@@ -4545,13 +5203,17 @@
     "effects": [
       {
         "description": "La Flèche Aveuglante inflige 1 Dommage au Héros du joueur de votre choix qui vient de jouer une Action. Vous pouvez annuler les effets de cette Action.",
-        "elements": ["Eau"],
+        "elements": [
+          "Eau"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Renaud Forestié (Reuno)"],
+    "artists": [
+      "Renaud Forestié (Reuno)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Face à l'ennmi, il faut toujours avoir l'oeil ouvert !",
@@ -4563,7 +5225,10 @@
     "id": "tout-ou-rien-otomai",
     "name": "Tout ou Rien",
     "mainType": "Action",
-    "subTypes": ["Sort", "Ecaflip"],
+    "subTypes": [
+      "Sort",
+      "Ecaflip"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "104/162",
@@ -4589,7 +5254,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Aurélie Neyret"],
+    "artists": [
+      "Aurélie Neyret"
+    ],
     "notes": [
       "Copier une Action revient à mettre une copie de cette Action dans la File d'Attente. Cette copie d'Action est simplement mise dans la File d'Attente à la résolution du pouvoir qui génère la copie : elle n'est pas jouée par un joueur, et on ne peut en conséquent pas y réagir avec un effet qui réagit à une Action qui vient d'être jouée. Il n'est pas obligatoire d'effectuer de nouveaux choix pour la copie, en revanche tous les choix effectués pour la copie doivent être légaux."
     ],
@@ -4603,7 +5270,10 @@
     "id": "mot-stimulant-otomai",
     "name": "Mot Stimulant",
     "mainType": "Action",
-    "subTypes": ["Sort", "Eniripsa"],
+    "subTypes": [
+      "Sort",
+      "Eniripsa"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "105/162",
@@ -4624,7 +5294,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Aurélie Neyret"],
+    "artists": [
+      "Aurélie Neyret"
+    ],
     "notes": [],
     "flavor": {
       "text": "Scarlate Jwanson a une méthode bien à elle pour stimuler ses alliés…"
@@ -4635,7 +5307,10 @@
     "id": "cupidite-otomai",
     "name": "Cupidité",
     "mainType": "Action",
-    "subTypes": ["Sort", "Enutrof"],
+    "subTypes": [
+      "Sort",
+      "Enutrof"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "106/162",
@@ -4656,7 +5331,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Clément Lefèvre"],
+    "artists": [
+      "Clément Lefèvre"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ne prenez pas pour argent comptant ce que dit Gryp' Soû : il aime rendre la monnaie de sa pièce à ses ennemis !"
@@ -4667,7 +5344,11 @@
     "id": "glyphe-de-silence-divin-otomai",
     "name": "Glyphe de Silence Divin",
     "mainType": "Action",
-    "subTypes": ["Sort", "Féca", "Unique"],
+    "subTypes": [
+      "Sort",
+      "Féca",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "107/162",
@@ -4688,7 +5369,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Thorn"],
+    "artists": [
+      "Thorn"
+    ],
     "notes": [],
     "flavor": {
       "text": "Pour faire taire un Mot d'Eniripsa, rien ne vaut un Glyphe de Silence de Féca !"
@@ -4699,7 +5382,10 @@
     "id": "ravage-otomai",
     "name": "Ravage",
     "mainType": "Action",
-    "subTypes": ["Sort", "Iop"],
+    "subTypes": [
+      "Sort",
+      "Iop"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "108/162",
@@ -4725,7 +5411,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Grelin"],
+    "artists": [
+      "Grelin"
+    ],
     "notes": [
       "Il est obligatoire de choisir un Equipement adverse lorsqu'on joue Ravage. Si l'adversaire ne contrôle aucun Equipement dans le Monde, le Ravage ne peut donc pas être joué. Si l'Equipement choisit n'est plus un choix légal à la résolution du Ravage, l'intégralité du Ravage est annulé : votre Héros ne gagnera pas +2 en Force."
     ],
@@ -4738,7 +5426,10 @@
     "id": "invocation-de-dragonnet-otomai",
     "name": "Invocation de Dragonnet",
     "mainType": "Action",
-    "subTypes": ["Sort", "Osamodas"],
+    "subTypes": [
+      "Sort",
+      "Osamodas"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "109/162",
@@ -4758,19 +5449,25 @@
     "effects": [
       {
         "description": "Mettez l'Invocation de Dragonnet en jeu comme un \"Monstre - Dragonnet\" de Force 5 .",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "L'Invocation de Dragonnet inflige 2 Dommages à l'Allié ou Héros de votre choix. Cet Allié ou Héros perd tous ses pouvoirs jusqu'à la fin du tour.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": ["Renaud Forestié (Reuno)"],
+    "artists": [
+      "Renaud Forestié (Reuno)"
+    ],
     "notes": [],
     "flavor": {
       "text": "A défaut d'avoir la drague comme vocation, Tim Ôrey a l'invocation du Dragonnet."
@@ -4781,7 +5478,10 @@
     "id": "kirhose-otomai",
     "name": "Kirhose",
     "mainType": "Action",
-    "subTypes": ["Sort", "Pandawa"],
+    "subTypes": [
+      "Sort",
+      "Pandawa"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "110/162",
@@ -4802,7 +5502,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Clément Lefèvre"],
+    "artists": [
+      "Clément Lefèvre"
+    ],
     "notes": [],
     "flavor": {
       "text": "Avec un peu d'alcool de Champ Champ, ce sort devient carrément une Kirhose royale !"
@@ -4813,7 +5515,10 @@
     "id": "cooperation-otomai",
     "name": "Coopération",
     "mainType": "Action",
-    "subTypes": ["Sort", "Sacrieur"],
+    "subTypes": [
+      "Sort",
+      "Sacrieur"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "111/162",
@@ -4834,7 +5539,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Karine Le Logeais (Kness)"],
+    "artists": [
+      "Karine Le Logeais (Kness)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Etrangement, lorsqu'un Sacrieur coopère, ses ennemis désespèrent."
@@ -4845,7 +5552,10 @@
     "id": "connaissance-des-poupees-otomai",
     "name": "Connaissance des Poupées",
     "mainType": "Action",
-    "subTypes": ["Sort", "Sadida"],
+    "subTypes": [
+      "Sort",
+      "Sadida"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "112/162",
@@ -4866,7 +5576,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Karine Le Logeais (Kness)"],
+    "artists": [
+      "Karine Le Logeais (Kness)"
+    ],
     "notes": [],
     "flavor": {
       "text": "J'adore toutes mes poupées. Mais celle que je connais le mieux, c'est la Gonflable !",
@@ -4878,7 +5590,10 @@
     "id": "attaque-mortelle-otomai",
     "name": "Attaque Mortelle",
     "mainType": "Action",
-    "subTypes": ["Sort", "Sram"],
+    "subTypes": [
+      "Sort",
+      "Sram"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "113/162",
@@ -4899,7 +5614,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Nicolab"],
+    "artists": [
+      "Nicolab"
+    ],
     "notes": [],
     "flavor": {
       "text": "Le jour où Sharl Martel fut victime d'Attaque Mortelle, il s'écria : \"Ya un pépin !\""
@@ -4910,7 +5627,10 @@
     "id": "synchronisation-otomai",
     "name": "Synchronisation",
     "mainType": "Action",
-    "subTypes": ["Sort", "Xélor"],
+    "subTypes": [
+      "Sort",
+      "Xélor"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "114/162",
@@ -4931,7 +5651,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Grelin"],
+    "artists": [
+      "Grelin"
+    ],
     "notes": [],
     "flavor": {
       "text": "Synchronisation des montres !",
@@ -4943,7 +5665,10 @@
     "id": "morsure-du-bouftou-otomai",
     "name": "Morsure du Bouftou",
     "mainType": "Action",
-    "subTypes": ["Sort", "Bouftou"],
+    "subTypes": [
+      "Sort",
+      "Bouftou"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "115/162",
@@ -4959,13 +5684,17 @@
     "effects": [
       {
         "description": "La Morsure du Bouftou inflige 2 Dommages à l'Allié ou Héros de votre choix. Cet Allié ou Héros ne peut pas effectuer de mouvement jusqu'au début de votre prochain tour.",
-        "elements": ["Terre"],
+        "elements": [
+          "Terre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "La morsure du Bouftou est si puissante qu'elle vous réserve une mort sûre… si vous êtes une touffe d'herbe !"
@@ -4976,7 +5705,10 @@
     "id": "beco-du-tofu-otomai",
     "name": "Béco du Tofu",
     "mainType": "Action",
-    "subTypes": ["Sort", "Tofu"],
+    "subTypes": [
+      "Sort",
+      "Tofu"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "116/162",
@@ -4992,13 +5724,17 @@
     "effects": [
       {
         "description": "Le Béco du Tofu inflige 1 Dommage à l'Allié ou Héros de votre choix. Un autre Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
-        "elements": ["Air"],
+        "elements": [
+          "Air"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "Les p'tits Tofus s'bécotent dans les champs publics, champs publics, champs public.",
@@ -5010,7 +5746,10 @@
     "id": "eventration-otomai",
     "name": "Éventration",
     "mainType": "Action",
-    "subTypes": ["Sort", "Bwork"],
+    "subTypes": [
+      "Sort",
+      "Bwork"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "117/162",
@@ -5026,13 +5765,17 @@
     "effects": [
       {
         "description": "Inclinez X de vos Bworks : L'Éventration inflige X Dommages répartis librement entre un, deux ou trois Alliés ou Héros de votre choix.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "Les Bworks adorent voir ce que leurs ennemis ont dans le ventre : ça les fait triper."
@@ -5043,7 +5786,10 @@
     "id": "wabehameha-otomai",
     "name": "Wabehameha",
     "mainType": "Action",
-    "subTypes": ["Sort", "Wabbit"],
+    "subTypes": [
+      "Sort",
+      "Wabbit"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "118/162",
@@ -5059,13 +5805,17 @@
     "effects": [
       {
         "description": "Inclinez un de vos Wabbits : il inflige un nombre de Dommages égal à sa Force à l'Allié ou Héros de votre choix, puis gagne +1 en Force jusqu'à la fin du tour.",
-        "elements": ["Eau"],
+        "elements": [
+          "Eau"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Bill"],
+    "artists": [
+      "Bill"
+    ],
     "notes": [],
     "flavor": {
       "text": "On dit que Sangroku poussa ce cri le jour où un dragon lui ficha les boules."
@@ -5076,7 +5826,10 @@
     "id": "phorzerkeur-otomai",
     "name": "Phorzerkeur",
     "mainType": "Action",
-    "subTypes": ["Sort", "Élémentaire"],
+    "subTypes": [
+      "Sort",
+      "Élémentaire"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "119/162",
@@ -5097,7 +5850,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [
       "Votre Héros ne gagne que les pouvoirs du Monstre détruit parmi Géant, Agilité, Tacle et Résistance. Par exemple, si vous détruisez un Bworker, votre Héros gagnera ainsi Géant, Résistance 2 Terre et Résistance 2 Feu. Votre Héros ne gagne pas les autres pouvoirs du Monstre, que ce soit un autre pouvoir à mot clé comme Agressivité, ou un pouvoir classique. Le bonus de Force gagné est égal à la Force actuelle du Monstre et non sa Force imprimée sur la carte."
     ],
@@ -5111,7 +5866,9 @@
     "id": "l-eternelle-moisson-otomai",
     "name": "L'Éternelle Moisson",
     "mainType": "Action",
-    "subTypes": ["Quête"],
+    "subTypes": [
+      "Quête"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "120/162",
@@ -5147,7 +5904,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Benoit Laigle (Ben Pirate)"],
+    "artists": [
+      "Benoit Laigle (Ben Pirate)"
+    ],
     "notes": [
       "Vous ne pouvez jouer qu'une seule carte appelée L'Eternelle Moisson par tour. Cette restriction s'applique également si une carte appelée L'Eternelle Moisson que vous avez jouée a été annulée."
     ],
@@ -5161,7 +5920,9 @@
     "id": "atelier-de-hel-munster-otomai",
     "name": "Atelier de Hel Munster",
     "mainType": "Zone",
-    "subTypes": ["Atelier"],
+    "subTypes": [
+      "Atelier"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "121/162",
@@ -5182,7 +5943,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "C'est vrai, l'atelier de Hel Munster dégage une drôle d'odeur. Mais vous n'allez pas en faire tout un fromage !"
@@ -5192,7 +5955,9 @@
     "id": "champs-de-glace-otomai",
     "name": "Champs de Glace",
     "mainType": "Zone",
-    "subTypes": ["Champs"],
+    "subTypes": [
+      "Champs"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "122/162",
@@ -5213,13 +5978,17 @@
       },
       {
         "description": "Tant que les Champs de Glace sont inclinés, l'Allié ou Héros incliné de votre choix ne peut pas se redresser à moins que son contrôleur ne paye .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
     ],
     "keywords": [],
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "L'endroit idéal, non pas pour se baigner, mais pour se prendre des beignes…"
@@ -5229,7 +5998,9 @@
     "id": "village-des-brigandins-otomai",
     "name": "Village des Brigandins",
     "mainType": "Zone",
-    "subTypes": ["Territoire de Conquête"],
+    "subTypes": [
+      "Territoire de Conquête"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "123/162",
@@ -5260,7 +6031,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Aymeric Kevin (Aymrc)"],
+    "artists": [
+      "Aymeric Kevin (Aymrc)"
+    ],
     "notes": [
       "Le Village des Brigandins permet d'ignorer les restrictions sur le moment où jouer cette carte. On peut par exemple jouer un Allié de cette façon, et ce même si la File d'Attente n'est pas vide. En revanche, toute autre contrainte doit être respectée, y compris les Règles de Portée. On ne pourra par exemple par jouer de Réaction si l'événement auquel elle réagit n'est pas présent, ou jouer un Brisé si aucun Equipement n'est dans le Monde. Toute carte révélée par le Village des Brigandins qui n'est pas jouée est retournée face cachée sur le dessus de la Pioche de son propriétaire."
     ],
@@ -5272,7 +6045,9 @@
     "id": "village-des-zoths-otomai",
     "name": "Village des Zoths",
     "mainType": "Zone",
-    "subTypes": ["Territoire de Conquête"],
+    "subTypes": [
+      "Territoire de Conquête"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "124/162",
@@ -5298,7 +6073,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Miguel Coimbra"],
+    "artists": [
+      "Miguel Coimbra"
+    ],
     "notes": [],
     "flavor": {
       "text": "Les Zoths semblent être perdus sur leur île depuis très longtemps. Trop longtemps peut",
@@ -5309,7 +6086,9 @@
     "id": "village-des-dopeuls-otomai",
     "name": "Village des Dopeuls",
     "mainType": "Zone",
-    "subTypes": ["Territoire de Conquête"],
+    "subTypes": [
+      "Territoire de Conquête"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "125/162",
@@ -5330,13 +6109,17 @@
       },
       {
         "description": "Tant que le cillage des Dopeuls est en jeu, le coût des Sorts qui sont de la même Classe que le Héros de leur propriétaire est réduit de , jusqu'à un minimum de .",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
     ],
     "keywords": [],
-    "artists": ["Charlène Le Scanff"],
+    "artists": [
+      "Charlène Le Scanff"
+    ],
     "notes": [],
     "flavor": {
       "text": "Mini Martyr adore y passer ses vacances. mais pour ne pas être reconnue, elle doit se faire toute petite…"
@@ -5346,7 +6129,9 @@
     "id": "ultime-demeure-otomai",
     "name": "Ultime Demeure",
     "mainType": "Zone",
-    "subTypes": ["Cimetière"],
+    "subTypes": [
+      "Cimetière"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "126/162",
@@ -5367,7 +6152,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "Une vue dégagée et des voisins peu bruyants : voilà l'endroit idéal pour un repos bien mérité."
@@ -5377,7 +6164,9 @@
     "id": "taverne-de-la-chouquette-otomai",
     "name": "Taverne de la Chouquette",
     "mainType": "Zone",
-    "subTypes": ["Auberge"],
+    "subTypes": [
+      "Auberge"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "127/162",
@@ -5398,7 +6187,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Vincent Joubert"],
+    "artists": [
+      "Vincent Joubert"
+    ],
     "notes": [],
     "flavor": {
       "text": "Elle a du poil aux pattes ! Elle sent bon la peau de bête  La Chouqueeeeeeeet",
@@ -5409,7 +6200,10 @@
     "id": "ile-d-otomai-otomai",
     "name": "Île d'Otomaï",
     "mainType": "Zone",
-    "subTypes": ["Île", "Unique"],
+    "subTypes": [
+      "Île",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "128/162",
@@ -5440,7 +6234,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [
       "Un Artisan est un personnage possédant un Métier : Forgeron, Armurier, Bijoutier ou Bricoleur. Un personnage qui est à la fois Alchimiste et Artisan ne bénéficiera que d'un seul bonus de +1 en Force. Le Héros Otomaï l'Enchanteur est un Alchimiste et bénéficie donc du bonus conféré par l'Ile d'Otomaï. Vous pouvez donner Résistance 1 à l'Allié de votre choix même si la Potion est jouée par un autre joueur."
     ],
@@ -5452,7 +6248,9 @@
     "id": "laboratoire-de-nausea-otomai",
     "name": "Laboratoire de Nauséa",
     "mainType": "Salle",
-    "subTypes": ["Laboratoire"],
+    "subTypes": [
+      "Laboratoire"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "129/162",
@@ -5473,7 +6271,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si ce laboratoire dégage une odeur nauséabonde, c'est que les potions douteuses de Nauséa y abondent."
@@ -5483,7 +6283,10 @@
     "id": "bottes-de-poursuite-otomai",
     "name": "Bottes de Poursuite",
     "mainType": "Équipement",
-    "subTypes": ["Armure", "Bottes"],
+    "subTypes": [
+      "Armure",
+      "Bottes"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "130/162",
@@ -5507,10 +6310,14 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": ["Air"]
+        "elements": [
+          "Air"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)"],
+    "artists": [
+      "Romain Pergod (Sephy)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Ces bottes sont idéales pour fuir vos poursuivants ou suivre vos pourfuyants… euh…"
@@ -5525,7 +6332,11 @@
     "id": "abrature-ancestrale-otomai",
     "name": "Abrature Ancestrale",
     "mainType": "Équipement",
-    "subTypes": ["Armure", "Ceinture", "Ancestrale"],
+    "subTypes": [
+      "Armure",
+      "Ceinture",
+      "Ancestrale"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "131/162",
@@ -5543,10 +6354,15 @@
       {
         "name": "Recette",
         "description": ": Armurier 1",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Il n'y a pas que la langue de Görge Bûche qui est en bois. Sa ceinture aussi !"
@@ -5561,7 +6377,11 @@
     "id": "sandales-du-minotot-otomai",
     "name": "Sandales du Minotot",
     "mainType": "Équipement",
-    "subTypes": ["Armure", "Bottes", "Minotot"],
+    "subTypes": [
+      "Armure",
+      "Bottes",
+      "Minotot"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "132/162",
@@ -5585,10 +6405,15 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["Eau"]
+        "elements": [
+          "Eau"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Même avec ces sandales ouvertes, les sabots du Minotot transpirent… et ce n'est rien de le dire !"
@@ -5603,7 +6428,10 @@
     "id": "cape-du-petit-chapon-rouge-otomai",
     "name": "Cape du Petit Chapon Rouge",
     "mainType": "Équipement",
-    "subTypes": ["Armure", "Cape"],
+    "subTypes": [
+      "Armure",
+      "Cape"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "133/162",
@@ -5627,10 +6455,15 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Pour échapper au grand méchant Mulou, sapez",
@@ -5646,7 +6479,10 @@
     "id": "ceinture-des-vents-otomai",
     "name": "Ceinture des Vents",
     "mainType": "Équipement",
-    "subTypes": ["Armure", "Ceinture"],
+    "subTypes": [
+      "Armure",
+      "Ceinture"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "134/162",
@@ -5670,10 +6506,15 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["Air"]
+        "elements": [
+          "Air"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Avec cette ceinture autour de l'abdomen, vous risquez d'avoir le vent en poupe… et des crises d'aérophagie !"
@@ -5688,7 +6529,11 @@
     "id": "coiffe-du-minotot-otomai",
     "name": "Coiffe du Minotot",
     "mainType": "Équipement",
-    "subTypes": ["Armure", "Chapeau", "Minotot"],
+    "subTypes": [
+      "Armure",
+      "Chapeau",
+      "Minotot"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "135/162",
@@ -5712,10 +6557,15 @@
       {
         "name": "Recette",
         "description": ": Armurier 2",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Cette coiffe résistante vous protégera du vent, même lorsqu'il fait un temps à décorner les Minotorors !"
@@ -5730,7 +6580,10 @@
     "id": "dagues-de-fouraille-otomai",
     "name": "Dagues de Fouraille",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Dagues"],
+    "subTypes": [
+      "Arme",
+      "Dagues"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "136/162",
@@ -5759,10 +6612,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Une dague qui rendra fous de joie ceux qui aiment fourrer leur ferraille dans n'importe quelles entrailles !"
@@ -5777,7 +6635,10 @@
     "id": "marteau-de-forgemagie-otomai",
     "name": "Marteau de Forgemagie",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Marteau"],
+    "subTypes": [
+      "Arme",
+      "Marteau"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "137/162",
@@ -5798,10 +6659,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Le pouvoir du Marteau de Forgemagie modifie tous les symboles, peu importe leur position sur la carte. Si vous choisissez par exemple Eau, un Marteau du Bouftou produira une ressource si on l'incline, un Arc du Koalak sera activable en payant une ressource Eau et infligera 1 Dommage , et le Porteur d'une Kwakature de Flammes accordera une Résistance 1 à son Porteur. En revanche, un bonus de Panoplie étant partagé entre plusieurs Equipements, celui-ci ne sera pas impacté par le Marteau de Forgemagie."
     ],
@@ -5817,7 +6683,10 @@
     "id": "epee-de-l-initie-otomai",
     "name": "Épée de l'Initié",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Épée"],
+    "subTypes": [
+      "Arme",
+      "Épée"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "138/162",
@@ -5841,10 +6710,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 1",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Les pets de l'initié ?? Mais quel initié d'abord ? Et puis, pourquoi il fait ça en public ?",
@@ -5860,7 +6734,11 @@
     "id": "arc-de-dikatugi-otomai",
     "name": "Arc de Dikatugi",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Arc", "Ethérée"],
+    "subTypes": [
+      "Arme",
+      "Arc",
+      "Ethérée"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "139/162",
@@ -5886,7 +6764,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Dis, qu'as",
@@ -5902,7 +6783,11 @@
     "id": "hache-de-feuhekel-otomai",
     "name": "Hache de Feuhekel",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Hache", "Ethérée"],
+    "subTypes": [
+      "Arme",
+      "Hache",
+      "Ethérée"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "140/162",
@@ -5923,7 +6808,12 @@
       },
       {
         "description": "Retirez 1 Ether de la Hache de Feuhekel : Jusqu'à la fin du tour, tous vos Monstres gagnent et .",
-        "elements": ["Terre", "Air", "Eau", "Feu"],
+        "elements": [
+          "Terre",
+          "Air",
+          "Eau",
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -5934,7 +6824,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Il n'y a pas que son nom que vous écorcherez…"
@@ -5949,7 +6842,11 @@
     "id": "epee-du-khebab-otomai",
     "name": "Épée du Khebab",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Épée", "Ethérée"],
+    "subTypes": [
+      "Arme",
+      "Épée",
+      "Ethérée"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "141/162",
@@ -5970,7 +6867,12 @@
       },
       {
         "description": "Retirez 1 Ether de l'Épée du Khebab : Jusqu'à la fin du tour, tous vos Monstres gagnent et .",
-        "elements": ["Eau", "Terre", "Air", "Feu"],
+        "elements": [
+          "Eau",
+          "Terre",
+          "Air",
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -5981,7 +6883,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Vos ennemis vont déguster…"
@@ -5996,7 +6901,11 @@
     "id": "marteau-de-cokelocu-otomai",
     "name": "Marteau de Cokelocu",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Marteau", "Ethérée"],
+    "subTypes": [
+      "Arme",
+      "Marteau",
+      "Ethérée"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "142/162",
@@ -6017,7 +6926,12 @@
       },
       {
         "description": "Retirez 1 Ether du Marteau de Cokelocu : Jusqu'à la fin du tour, tous vos Monstres gagnent et .",
-        "elements": ["Feu", "Terre", "Eau", "Air"],
+        "elements": [
+          "Feu",
+          "Terre",
+          "Eau",
+          "Air"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -6028,7 +6942,10 @@
       }
     ],
     "keywords": [],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "On raconte qu'il aurait été l'arme d'un crime passionnel…"
@@ -6043,7 +6960,10 @@
     "id": "l-hyldegarde-otomai",
     "name": "L'Hyldegarde",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Baguette"],
+    "subTypes": [
+      "Arme",
+      "Baguette"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "143/162",
@@ -6056,7 +6976,9 @@
     "effects": [
       {
         "description": "Détruisez l'Hyldegarde : Renvoyez l'Action dont les effets sont sur le point d'être annulés dans la main de son propriétaire.",
-        "elements": ["Eau"],
+        "elements": [
+          "Eau"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       }
@@ -6065,10 +6987,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["Eau"]
+        "elements": [
+          "Eau"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Lorsqu'un guérisseur Eniripsa porte cette baguette, ça veut dire qu'\"il est d'garde\""
@@ -6082,7 +7009,11 @@
     "id": "sceptre-du-minotot-otomai",
     "name": "Sceptre du Minotot",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Bâton", "Minotot"],
+    "subTypes": [
+      "Arme",
+      "Bâton",
+      "Minotot"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "144/162",
@@ -6098,13 +7029,20 @@
     "effects": [
       {
         "description": "Le Sceptre du Minotot inflige 1 Dommage à l'Allié ou Héros de votre choix. Si vous avez dépensé au moins une Ressource , piochez une carte. Si vous avez dépensé au moins une Ressource , votre Héros regagne 2PV.",
-        "elements": ["Neutre", "Eau", "Feu"],
+        "elements": [
+          "Neutre",
+          "Eau",
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
       {
         "description": "Vous ne piocherez qu'une seule carte si vous payez le coût du Sceptre du Minotot en dépensant deux ressources . De la même manière, votre Héros ne regagnera que 2 PV même si vous dépensez deux ressources . Si vous dépensez et pour utiliser ce pouvoir, vous piocherez une carte et votre Héros regagnera 2 PV.",
-        "elements": ["Eau", "Feu"],
+        "elements": [
+          "Eau",
+          "Feu"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -6113,10 +7051,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 3",
-        "elements": ["Eau"]
+        "elements": [
+          "Eau"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Vous ne piocherez qu'une seule carte si vous payez le coût du Sceptre du Minotot en dépensant deux ressources . De la même manière, votre Héros ne regagnera que 2 PV même si vous dépensez deux ressources . Si vous dépensez et pour utiliser ce pouvoir, vous piocherez une carte et votre Héros regagnera 2 PV."
     ],
@@ -6133,7 +7076,10 @@
     "id": "marteau-mato-otomai",
     "name": "Marteau Mato",
     "mainType": "Équipement",
-    "subTypes": ["Arme", "Marteau"],
+    "subTypes": [
+      "Arme",
+      "Marteau"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "145/162",
@@ -6149,13 +7095,17 @@
     "effects": [
       {
         "description": "Tant que le Porteur du Marteau Mato est attaquant, chaque fois qu'une de vos Actions est sur le point d'infliger un ou plusieurs Dommages à un Allié ou Héros adverse, vous pouvez payer . Si vous le faites, ces Dommages sont augmentés de 1.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
       {
         "description": "Le pouvoir du Marteau Mato se déclenche pour chaque paquet de Dommages sur le point d'être infligés par votre Action. Si votre Action inflige des Dommages à plusieurs Alliés ou Héros, le Marteau Mato se déclenchera autant de fois et vous pouvez payer 1 pour chaque paquet de Dommages pour augmenter les Dommages de ce paquet. Vous pouvez dans ce cas choisir de payer pour augmenter seulement certains des paquets de Dommages infligés par l'Action. Il n'est pas possible de payer plus de 1 pour chaque paquet de Dommages.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -6164,10 +7114,15 @@
       {
         "name": "Recette",
         "description": ": Forgeron 2",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Le pouvoir du Marteau Mato se déclenche pour chaque paquet de Dommages sur le point d'être infligés par votre Action. Si votre Action inflige des Dommages à plusieurs Alliés ou Héros, le Marteau Mato se déclenchera autant de fois et vous pouvez payer 1 pour chaque paquet de Dommages pour augmenter les Dommages de ce paquet. Vous pouvez dans ce cas choisir de payer pour augmenter seulement certains des paquets de Dommages infligés par l'Action. Il n'est pas possible de payer plus de 1 pour chaque paquet de Dommages."
     ],
@@ -6184,7 +7139,10 @@
     "id": "amulette-des-abimes-otomai",
     "name": "Amulette des Abîmes",
     "mainType": "Équipement",
-    "subTypes": ["Bijou", "Amulette"],
+    "subTypes": [
+      "Bijou",
+      "Amulette"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "146/162",
@@ -6204,7 +7162,9 @@
     "effects": [
       {
         "description": "Détruisez l'Amulette des Abîmes : Produisez une Ressource de l'élément de votre choix, puis piochez une carte.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": true
       },
@@ -6218,10 +7178,15 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Le pouvoir de l'Amulette des Abîmes est un pouvoir à ressource. Il ne peut être joué que lors du payement d'une carte et n'utilise pas la File d'Attente."
     ],
@@ -6238,7 +7203,10 @@
     "id": "amulette-du-puzzle-de-la-griffe-otomai",
     "name": "Amulette du Puzzle de la Griffe",
     "mainType": "Équipement",
-    "subTypes": ["Bijou", "Amulette"],
+    "subTypes": [
+      "Bijou",
+      "Amulette"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "147/162",
@@ -6262,10 +7230,14 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": ["Feu"]
+        "elements": [
+          "Feu"
+        ]
       }
     ],
-    "artists": ["Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Un petit effort ! Vous n'avez plus qu'à récupérer les milliers de pièces manquantes pour retrouver le trésor !"
@@ -6280,7 +7252,11 @@
     "id": "annolamour-otomai",
     "name": "Annolamour",
     "mainType": "Équipement",
-    "subTypes": ["Bijou", "Anneau", "Ventouse"],
+    "subTypes": [
+      "Bijou",
+      "Anneau",
+      "Ventouse"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "148/162",
@@ -6304,10 +7280,15 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 1",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "\"Atchoum\" À nos souhaits ! \"Atchouuum\" Annolamour !"
@@ -6322,7 +7303,11 @@
     "id": "kralano-otomai",
     "name": "Kralano",
     "mainType": "Équipement",
-    "subTypes": ["Bijou", "Anneau", "Ventouse"],
+    "subTypes": [
+      "Bijou",
+      "Anneau",
+      "Ventouse"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "149/162",
@@ -6340,10 +7325,15 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 2",
-        "elements": ["Air"]
+        "elements": [
+          "Air"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Grâce à ses ventouses ultra adhérentes, cet anneau empêchera votre bien",
@@ -6359,7 +7349,11 @@
     "id": "kralamansion-otomai",
     "name": "Kralamansion",
     "mainType": "Équipement",
-    "subTypes": ["Bijou", "Amulette", "Ventouse"],
+    "subTypes": [
+      "Bijou",
+      "Amulette",
+      "Ventouse"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "150/162",
@@ -6374,10 +7368,15 @@
       {
         "name": "Recette",
         "description": ": Bijoutier 3",
-        "elements": ["Eau"]
+        "elements": [
+          "Eau"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "L'alchimiste fou Ed Fredson portait cette amulette pour célébrer ce qu'il appelait \"le jour du tentacule\"."
@@ -6391,7 +7390,10 @@
     "id": "bombe-pirate-otomai",
     "name": "Bombe Pirate",
     "mainType": "Équipement",
-    "subTypes": ["Objet", "Bombe"],
+    "subTypes": [
+      "Objet",
+      "Bombe"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "151/162",
@@ -6412,7 +7414,9 @@
       },
       {
         "description": "A la fin du tour du contrôleur de la Bombe Pirate, elle inflige 1 Dommage à son Porteur.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -6421,10 +7425,15 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 1",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "C'est d'la bombe, bébé !",
@@ -6440,7 +7449,10 @@
     "id": "trousseau-de-clefs-otomai",
     "name": "Trousseau de Clefs",
     "mainType": "Équipement",
-    "subTypes": ["Objet", "Trousseau"],
+    "subTypes": [
+      "Objet",
+      "Trousseau"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "152/162",
@@ -6464,10 +7476,15 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "On dit que le gardien des clefs du légendaire et mystérieux Fort Boyeu était un brigandin nommé Passe Nulpar."
@@ -6482,7 +7499,9 @@
     "id": "bouclier-en-slip-otomai",
     "name": "Bouclier en Slip",
     "mainType": "Équipement",
-    "subTypes": ["Bouclier"],
+    "subTypes": [
+      "Bouclier"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "153/162",
@@ -6498,7 +7517,9 @@
     "effects": [
       {
         "description": "Quand un de vos Alliés ou Héros qui ne porte pas d'Équipement est choisi par un adversaire, vous pouvez payer pour mettre en jeu le Bouclier en Slip sur cet Allié ou Héros.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       }
@@ -6507,10 +7528,15 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 1",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Allez savoir pourquoi, certains l'appellent le Bouclier Répulslip…"
@@ -6525,7 +7551,9 @@
     "id": "bouclier-des-brigandins-otomai",
     "name": "Bouclier des Brigandins",
     "mainType": "Équipement",
-    "subTypes": ["Bouclier"],
+    "subTypes": [
+      "Bouclier"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "154/162",
@@ -6541,7 +7569,9 @@
     "effects": [
       {
         "description": "Quand une Action ou un pouvoir adverse est sur le point de vous faire défausser une ou plusieurs cartes, vous pouvez payer pour mettre en jeu le Bouclier des Brigandins sur un de vos Alliés ou Héros à la place.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -6555,10 +7585,14 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["Air"]
+        "elements": [
+          "Air"
+        ]
       }
     ],
-    "artists": ["Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Le pouvoir du Bouclier des Brigandins remplace entièrement la défausse, les cartes ne sont donc plus défaussées. Dans le cadre d'une perte de PA, seule la perte de PA est liée à l'Action ou au pouvoir contrôlé par un adversaire. La défausse qui en résulte est la conséquence des Règles du Jeu, et n'est donc pas due à une Action ou à un pouvoir adverse : on ne peut donc pas y réagir avec le Bouclier des Brigandins."
     ],
@@ -6576,7 +7610,9 @@
     "id": "bouclier-du-bawbawe-otomai",
     "name": "Bouclier du Bawbawe",
     "mainType": "Équipement",
-    "subTypes": ["Bouclier"],
+    "subTypes": [
+      "Bouclier"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "155/162",
@@ -6592,7 +7628,9 @@
     "effects": [
       {
         "description": "Quand un adversaire est sur le point de réduire des Dommages infligés par un de vos Alliés ou Héros, vous pouvez payer pour mettre en jeu le Bouclier du Bawbawe sur cet Allié ou Héros.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -6611,10 +7649,15 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["Terre"]
+        "elements": [
+          "Terre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Si on utilise le pouvoir du Bouclier du Bawbawe en Réaction à des Dommages sur le point d'être réduits, le Bouclier du Bawbawe est mis en jeu avant la résolution de la déduction de Dommages. Par conséquent, le second pouvoir du Bouclier est actif à ce moment, et la réduction des Dommages ne fera donc rien."
     ],
@@ -6631,7 +7674,10 @@
     "id": "bouclier-du-captain-amakna-otomai",
     "name": "Bouclier du Captain Amakna",
     "mainType": "Équipement",
-    "subTypes": ["Bouclier", "Unique"],
+    "subTypes": [
+      "Bouclier",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "156/162",
@@ -6647,7 +7693,9 @@
     "effects": [
       {
         "description": "Quand une Action ou un pouvoir vous choisit en tant que joueur, vous pouvez payer pour mettre le Bouclier du Captain Amakna en jeu sur un de vos Alliés ou Héros. Cette Action ou pouvoir choisit son propriétaire à la place si possible.",
-        "elements": ["Neutre"],
+        "elements": [
+          "Neutre"
+        ],
         "isOncePerTurn": false,
         "requiresIncline": false
       },
@@ -6661,10 +7709,15 @@
       {
         "name": "Recette",
         "description": ": Bricoleur 2",
-        "elements": ["Neutre"]
+        "elements": [
+          "Neutre"
+        ]
       }
     ],
-    "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
+    "artists": [
+      "Romain Pergod (Sephy)",
+      "Jonathan Dhenry (Jonat)"
+    ],
     "notes": [
       "Si l'Action ou le pouvoir mentionne spécifiquement qu'un adversaire doit être choisit, comme par exemple Arnaque, vous ne pouvez pas la renvoyer vers son propriétaire car il n'est pas un choix légal pour cette Action ou ce pouvoir. Dans ce cas, le Bouclier du Captain Amakna est tout de même mis en jeu, mais le reste de son pouvoir ne fait rien. Si l'Action ou le pouvoir peut choisir son propriétaire, alors elle doit le faire."
     ],
@@ -6682,7 +7735,10 @@
     "id": "miniminotot-otomai",
     "name": "Miniminotot",
     "mainType": "Équipement",
-    "subTypes": ["Familier", "Unique"],
+    "subTypes": [
+      "Familier",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "157/162",
@@ -6703,7 +7759,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Mélanie Christin (Méli)"],
+    "artists": [
+      "Mélanie Christin (Méli)"
+    ],
     "notes": [],
     "flavor": {
       "text": "Tout mino, tout mini, mais il fait le maximum !"
@@ -6718,7 +7776,10 @@
     "id": "bilby-otomai",
     "name": "Bilby",
     "mainType": "Équipement",
-    "subTypes": ["Familier", "Unique"],
+    "subTypes": [
+      "Familier",
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "158/162",
@@ -6734,13 +7795,32 @@
     "effects": [
       {
         "description": "Inclinez le Porteur du Bilby : Le Porteur du Bilby inflige 2 Dommages à l'Allié ou Héros de votre choix.",
-        "elements": ["Feu"],
+        "elements": [
+          "Feu"
+        ],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": [
+                "monde",
+                "havreSac"
+              ]
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
-    "artists": ["Ankama"],
+    "artists": [
+      "Ankama"
+    ],
     "notes": [],
     "flavor": {
       "text": "Une Gelée qui mange des fleurs ? Mais c'est complétement débilby !",
@@ -6756,7 +7836,9 @@
     "id": "sumens-protecteur-de-juinssidor-otomai",
     "name": "Sumens, Protecteur de Juinssidor",
     "mainType": "Protecteur",
-    "subTypes": ["Unique"],
+    "subTypes": [
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "159/162",
@@ -6777,7 +7859,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Sumens a beau être au régime sans sel, ses selles recèlent mille cristaux précieux qui étincellent."
@@ -6788,7 +7872,9 @@
     "id": "hecate-protectrice-de-joullier-otomai",
     "name": "Hecate, Protectrice de Joullier",
     "mainType": "Protecteur",
-    "subTypes": ["Unique"],
+    "subTypes": [
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "160/162",
@@ -6814,7 +7900,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Tu me lasses, tu m'agaces… Tu Trépasses !"
@@ -6825,7 +7913,9 @@
     "id": "pouchecot-protecteur-de-fraouctor-otomai",
     "name": "Pouchecot, Protecteur de Fraouctor",
     "mainType": "Protecteur",
-    "subTypes": ["Unique"],
+    "subTypes": [
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "161/162",
@@ -6851,7 +7941,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Si Pouchecot le Grand Fruité a toujours la pêche, c'est qu'il passe son temps à se fendre la poire !"
@@ -6862,7 +7954,9 @@
     "id": "raval-protecteur-de-septange-otomai",
     "name": "Raval, Protecteur de Septange",
     "mainType": "Protecteur",
-    "subTypes": ["Unique"],
+    "subTypes": [
+      "Unique"
+    ],
     "extension": {
       "name": "Otomaï",
       "number": "162/162",
@@ -6888,7 +7982,9 @@
       }
     ],
     "keywords": [],
-    "artists": ["Jonoo Takeshi"],
+    "artists": [
+      "Jonoo Takeshi"
+    ],
     "notes": [],
     "flavor": {
       "text": "Raval a dû ravaler sa fierté le jour où Sram lui a mis sa raclée."

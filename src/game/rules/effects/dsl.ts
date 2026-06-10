@@ -45,8 +45,18 @@ const TARGET_WHAT: Record<string, "Allié" | "Zone" | "Équipement"> = {
  * (« piocher »). `sourceElement` = Élément de la carte source (410.1), figé
  * dans les ops de dommages pour la Résistance de la cible.
  */
+/** Zones visées : sans qualificatif → tout le jeu (Monde + Havre-Sac). */
+function targetZones(
+  mondeOnly: string | undefined,
+  havreSacAlso: string | undefined,
+): ("monde" | "havreSac")[] {
+  if (havreSacAlso || !mondeOnly) return ["monde", "havreSac"];
+  return ["monde"];
+}
+
 function parseSentence(
   sentence: string,
+  cardName: string,
   sourceElement: string,
 ): EffectOp | null {
   let m = sentence.match(/^gagne[zr] (\d+) xp$/);
@@ -76,15 +86,21 @@ function parseSentence(
       : ["monde"];
     return { op: "destroyTarget", what, zones };
   }
+  // « Infligez N Dommages à l'Allié de votre choix » (impératif) ou
+  // « [La carte] inflige N Dommages à l'Allié ou Héros de votre choix … »
   m = sentence.match(
-    /^inflige[zr] (\d+) dommages? a l['’ ]?\s?allie de votre choix(?: dans le monde)?$/,
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? a l['’ ]?\s?allie( ou heros)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
   );
-  if (m)
+  if (m) {
+    if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
     return {
-      op: "damageAllyTarget",
-      n: toNumber(m[1]),
+      op: "damageTarget",
+      n: toNumber(m[2]),
       element: sourceElement,
+      heroes: !!m[3],
+      zones: targetZones(m[4], m[5]),
     };
+  }
   return null;
 }
 
@@ -126,13 +142,38 @@ export function compileEffectText(
   if (optional && sentences.length > 1) return null;
   const ops: EffectOp[] = [];
   for (const s of sentences) {
-    const op = parseSentence(s, sourceElement);
+    const op = parseSentence(s, cardName, sourceElement);
     if (!op) return null;
     ops.push(op);
   }
   return optional
     ? { trigger: "onArrive", optional, ops }
     : { trigger: "onArrive", ops };
+}
+
+/**
+ * Compile un POUVOIR À INCLINAISON (`requiresIncline`) : pas de préfixe de
+ * déclencheur, le texte est directement la suite d'opérations. Strict :
+ * toute phrase incomprise (condition, restriction…) → pas de compilation.
+ */
+export function compileTapEffectText(
+  text: string,
+  cardName: string,
+  sourceElement = "Neutre",
+): CompiledEffect | null {
+  const sentences = norm(text)
+    .replace(/\.$/, "")
+    .split(/\.\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!sentences.length) return null;
+  const ops: EffectOp[] = [];
+  for (const s of sentences) {
+    const op = parseSentence(s, cardName, sourceElement);
+    if (!op) return null;
+    ops.push(op);
+  }
+  return { trigger: "onTap", ops };
 }
 
 /**
@@ -151,10 +192,27 @@ export function arrivalEffects(card: Card | null): EffectAtom[] {
     const text = String(e?.description ?? "").trim();
     const compiled =
       e?.compiled ??
-      (text
+      (text && !e?.requiresIncline
         ? compileEffectText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onArrive")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
+}
+
+/** Pouvoirs à inclinaison automatisables de cette carte (trigger onTap). */
+export function tapPowers(card: Card | null): EffectAtom[] {
+  if (!card) return [];
+  const atoms: EffectAtom[] = [];
+  for (const e of card.effects ?? []) {
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      (text && e?.requiresIncline
+        ? compileTapEffectText(text, card.name, effectSourceElement(card))
+        : null);
+    if (compiled && compiled.trigger === "onTap")
       atoms.push({ ...compiled, text });
   }
   return atoms;
