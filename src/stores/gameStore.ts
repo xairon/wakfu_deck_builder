@@ -269,6 +269,7 @@ export const useGameStore = defineStore("game", () => {
     effectChoices.value = [];
     effectTargeting.value = null;
     effectPicking.value = null;
+    effectQueue.value = [];
   }
 
   /** Démarrage direct en partie (tests / bac à sable rapide). */
@@ -343,6 +344,7 @@ export const useGameStore = defineStore("game", () => {
     effectChoices.value = [];
     effectTargeting.value = null;
     effectPicking.value = null;
+    effectQueue.value = [];
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -476,10 +478,10 @@ export const useGameStore = defineStore("game", () => {
     if (actionAtoms.length) {
       for (const atom of actionAtoms) {
         dispatch(say(seat, `Action résolue — ${card.name} : « ${atom.text} »`));
-        executeEffectOps(seat, card.name, atom.ops);
+        enqueueEffect({ seat, cardName: card.name, ops: atom.ops });
       }
     } else {
-      runArrivalEffects(seat, card, instanceId);
+      queueArrivalEffects(seat, card, instanceId);
     }
     return true;
   }
@@ -501,7 +503,6 @@ export const useGameStore = defineStore("game", () => {
     seat: Seat;
     cardName: string;
     op: TargetingOp;
-    rest: EffectOp[];
     sourceId?: string;
   } | null>(null);
 
@@ -514,9 +515,49 @@ export const useGameStore = defineStore("game", () => {
     /** Filtre par type principal (recherche dans la Pioche). */
     filter?: string;
     remaining: number;
-    rest: EffectOp[];
     sourceId?: string;
   } | null>(null);
+
+  /**
+   * FILE D'EXÉCUTION des effets : chaque effet est une « frame » d'ops.
+   * Une op interactive (cible, pile) met la frame en pause — le reste de ses
+   * ops reste en tête de file ; les effets déclenchés en cascade (carte mise
+   * en jeu par un effet) s'ajoutent en queue. C'est l'embryon de la File
+   * d'Attente du jeu (503).
+   */
+  interface EffectFrame {
+    seat: Seat;
+    cardName: string;
+    ops: EffectOp[];
+    sourceId?: string;
+  }
+  const effectQueue = ref<EffectFrame[]>([]);
+
+  function enqueueEffect(frame: EffectFrame): void {
+    effectQueue.value = [...effectQueue.value, frame];
+    pumpEffects();
+  }
+
+  /** Avance la file tant qu'aucune interaction n'est en attente. */
+  function pumpEffects(): void {
+    while (
+      effectQueue.value.length &&
+      !effectTargeting.value &&
+      !effectPicking.value
+    ) {
+      const frame = effectQueue.value[0];
+      if (runFrame(frame)) return; // en pause — la frame reste en tête
+      effectQueue.value = effectQueue.value.slice(1);
+    }
+  }
+
+  /** Remplace les ops restantes de la frame en tête de file. */
+  function holdRest(frame: EffectFrame, rest: EffectOp[]): void {
+    effectQueue.value = [
+      { ...frame, ops: rest },
+      ...effectQueue.value.slice(1),
+    ];
+  }
   const effectPickIds = computed(() => {
     const p = effectPicking.value;
     if (!p) return [];
@@ -551,6 +592,13 @@ export const useGameStore = defineStore("game", () => {
     } else {
       moveTo(instanceId, { zone: "monde" });
       dispatch(say(p.seat, `${p.cardName} : la carte cherchée entre en jeu.`));
+      // la carte mise en jeu par l'effet « apparaît » : son propre effet
+      // d'apparition part en cascade (en queue de file)
+      queueArrivalEffects(
+        p.seat,
+        getCard(state.value.instances[instanceId]?.cardId ?? null),
+        instanceId,
+      );
     }
     const remaining = p.remaining - 1;
     const stillHas = effectPickIds.value.length > 0;
@@ -559,7 +607,7 @@ export const useGameStore = defineStore("game", () => {
       return;
     }
     effectPicking.value = null;
-    executeEffectOps(p.seat, p.cardName, p.rest, p.sourceId);
+    pumpEffects();
   }
 
   /** Passe le choix en cours (pile vide / décision du joueur). */
@@ -568,7 +616,7 @@ export const useGameStore = defineStore("game", () => {
     if (!p) return;
     effectPicking.value = null;
     dispatch(say(p.seat, `${p.cardName} : choix passé.`));
-    executeEffectOps(p.seat, p.cardName, p.rest, p.sourceId);
+    pumpEffects();
   }
   const effectTargetIdsList = computed(() =>
     effectTargeting.value
@@ -577,15 +625,12 @@ export const useGameStore = defineStore("game", () => {
   );
 
   /**
-   * Exécute les ops d'un effet ; s'arrête sur une op à cible (le clic du
-   * joueur — `effectTargetChoose` — reprend la suite).
+   * Exécute les ops de la frame de tête ; retourne `true` si une op
+   * interactive met la frame en pause (le reste attend via `holdRest`).
    */
-  function executeEffectOps(
-    seat: Seat,
-    cardName: string,
-    ops: EffectOp[],
-    sourceId?: string,
-  ): void {
+  function runFrame(frame: EffectFrame): boolean {
+    const { seat, cardName, sourceId } = frame;
+    const ops = frame.ops;
     for (let i = 0; i < ops.length; i++) {
       const op = ops[i];
       if (isTargetingOp(op)) {
@@ -596,14 +641,9 @@ export const useGameStore = defineStore("game", () => {
           );
           continue;
         }
-        effectTargeting.value = {
-          seat,
-          cardName,
-          op,
-          rest: ops.slice(i + 1),
-          sourceId,
-        };
-        return;
+        effectTargeting.value = { seat, cardName, op, sourceId };
+        holdRest(frame, ops.slice(i + 1));
+        return true;
       }
       if (op.op === "shuffleDeck") {
         shufflePioche(seat);
@@ -626,10 +666,10 @@ export const useGameStore = defineStore("game", () => {
           action: op.dest === "main" ? "toHand" : "toMonde",
           filter: op.what,
           remaining: 1,
-          rest: ops.slice(i + 1),
           sourceId,
         };
-        return;
+        holdRest(frame, ops.slice(i + 1));
+        return true;
       }
       if (op.op === "recycleFromDiscard" || op.op === "discardFromHand") {
         const zone = op.op === "recycleFromDiscard" ? "defausse" : "main";
@@ -648,10 +688,10 @@ export const useGameStore = defineStore("game", () => {
           zone,
           action: op.op === "recycleFromDiscard" ? "recycle" : "discard",
           remaining: op.n,
-          rest: ops.slice(i + 1),
           sourceId,
         };
-        return;
+        holdRest(frame, ops.slice(i + 1));
+        return true;
       }
       if (op.op === "buffForceSelf") {
         const src = sourceId ? state.value.instances[sourceId] : null;
@@ -695,6 +735,38 @@ export const useGameStore = defineStore("game", () => {
         if (sacId) adjustCounter(sacId, "resistance", op.n);
       }
     }
+    return false;
+  }
+
+  /**
+   * Met en file les effets d'apparition d'une carte qui vient d'entrer en
+   * jeu (jouée de la main ou mise en jeu par un effet).
+   */
+  function queueArrivalEffects(
+    seat: Seat,
+    card: Card | null,
+    sourceId?: string,
+  ): void {
+    if (!assist.value || !card) return;
+    for (const atom of arrivalEffects(card)) {
+      if (atom.optional) {
+        effectChoices.value = [
+          ...effectChoices.value,
+          {
+            seat,
+            cardName: card.name,
+            text: atom.text,
+            ops: atom.ops,
+            sourceId,
+          },
+        ];
+        continue;
+      }
+      dispatch(
+        say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
+      );
+      enqueueEffect({ seat, cardName: card.name, ops: atom.ops, sourceId });
+    }
   }
 
   /** Le joueur clique une cible légale : résout l'op puis continue l'effet. */
@@ -718,7 +790,7 @@ export const useGameStore = defineStore("game", () => {
               );
     dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     checkVictory();
-    executeEffectOps(t.seat, t.cardName, t.rest, t.sourceId);
+    pumpEffects();
   }
 
   /**
@@ -769,7 +841,12 @@ export const useGameStore = defineStore("game", () => {
         say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`),
       );
     }
-    executeEffectOps(seat, card.name, atom.ops, instanceId);
+    enqueueEffect({
+      seat,
+      cardName: card.name,
+      ops: atom.ops,
+      sourceId: instanceId,
+    });
     return true;
   }
 
@@ -786,31 +863,7 @@ export const useGameStore = defineStore("game", () => {
     if (!t) return;
     effectTargeting.value = null;
     dispatch(say(t.seat, `${t.cardName} : ciblage passé.`));
-    executeEffectOps(t.seat, t.cardName, t.rest, t.sourceId);
-  }
-
-  /** Exécute les effets d'apparition compilés (DSL strict). */
-  function runArrivalEffects(seat: Seat, card: Card, sourceId?: string): void {
-    if (!assist.value) return;
-    for (const atom of arrivalEffects(card)) {
-      if (atom.optional) {
-        effectChoices.value = [
-          ...effectChoices.value,
-          {
-            seat,
-            cardName: card.name,
-            text: atom.text,
-            ops: atom.ops,
-            sourceId,
-          },
-        ];
-        continue;
-      }
-      dispatch(
-        say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
-      );
-      executeEffectOps(seat, card.name, atom.ops, sourceId);
-    }
+    pumpEffects();
   }
 
   /** Le joueur accepte (ou refuse) l'effet optionnel en tête de file. */
@@ -828,7 +881,12 @@ export const useGameStore = defineStore("game", () => {
         `Effet appliqué — ${choice.cardName} : « ${choice.text} »`,
       ),
     );
-    executeEffectOps(choice.seat, choice.cardName, choice.ops, choice.sourceId);
+    enqueueEffect({
+      seat: choice.seat,
+      cardName: choice.cardName,
+      ops: choice.ops,
+      sourceId: choice.sourceId,
+    });
   }
 
   function toggleTap(instanceId: string): void {
