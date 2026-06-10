@@ -233,6 +233,41 @@
       </div>
     </Transition>
 
+    <!-- Choix de carte dans une pile (recycler / défausser) -->
+    <Transition name="ovl">
+      <div v-if="store.effectPicking" class="overlay">
+        <div class="overlay__card overlay__card--wide">
+          <p class="eyebrow text-primary">
+            {{
+              store.effectPicking.action === "recycle"
+                ? "Recycler — la carte ira sous ta Pioche"
+                : "Défausser une carte de ta main"
+            }}
+          </p>
+          <h2 class="mt-1 font-display text-3xl">
+            {{ store.effectPicking.cardName }}
+          </h2>
+          <div class="pick-grid">
+            <button
+              v-for="id in store.effectPickIds"
+              :key="id"
+              type="button"
+              class="pick-card"
+              @click="store.effectPick(id)"
+            >
+              <GameCard
+                :instance="store.state.instances[id]"
+                :card="resolveCard(store.state.instances[id]?.cardId ?? null)"
+              />
+            </button>
+          </div>
+          <button class="btn btn-outline mt-5" @click="store.effectPickSkip()">
+            Passer
+          </button>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Mulligan -->
     <Transition name="ovl">
       <div
@@ -299,6 +334,7 @@ import type { RedactedInstance } from "@/game";
 import { elementColor } from "@/config/elementColors";
 import { getThumbPath } from "@/utils/imagePaths";
 import GameBoard from "@/components/game/GameBoard.vue";
+import GameCard from "@/components/game/GameCard.vue";
 import HandFan from "@/components/game/HandFan.vue";
 import type { HandItem } from "@/components/game/HandFan.vue";
 import ActionLog from "@/components/game/ActionLog.vue";
@@ -677,6 +713,28 @@ onMounted(async () => {
 .mulligan-fan {
   margin-top: 22px;
   --card-hand: clamp(96px, 12vw, 140px);
+}
+.pick-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding: 4px;
+}
+.pick-card {
+  width: clamp(86px, 10vw, 120px);
+  border-radius: 6px;
+  transition: transform 0.15s ease;
+}
+.pick-card:hover {
+  transform: translateY(-4px) scale(1.04);
+}
+.pick-card:focus-visible {
+  outline: 2px solid #f04e22;
+  outline-offset: 2px;
 }
 .ovl-enter-active {
   transition: opacity 0.25s ease;

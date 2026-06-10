@@ -1567,7 +1567,21 @@
       {
         "description": "Détruisez le Cabinet d'Aisances : Piochez deux cartes, puis défaussez-vous d'une carte de votre main.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 2
+            },
+            {
+              "op": "discardFromHand",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

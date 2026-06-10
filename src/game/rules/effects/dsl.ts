@@ -75,6 +75,14 @@ function parseSentence(
   if (m) return { op: "damageOppHero", n: toNumber(m[1] ?? m[2]) };
   m = sentence.match(/^gagne[zr] (\d+) (?:points? de )?resistance$/);
   if (m) return { op: "havreSacGainResistance", n: toNumber(m[1]) };
+  m = sentence.match(
+    /^recycle[zr] (une|deux|trois|\d+) cartes? de votre defausse$/,
+  );
+  if (m) return { op: "recycleFromDiscard", n: toNumber(m[1]) };
+  m = sentence.match(
+    /^defaussez[- ]vous d['’ ]?\s?(une|deux|trois|\d+) cartes?(?: de votre main)?$/,
+  );
+  if (m) return { op: "discardFromHand", n: toNumber(m[1]) };
   m = sentence.match(/^votre heros regagne (\d+) (?:pv|points? de vie)$/);
   if (m) return { op: "heroGainPv", n: toNumber(m[1]) };
   m = sentence.match(
@@ -127,6 +135,26 @@ function parseSentence(
   return null;
 }
 
+/**
+ * Une phrase, éventuellement composée (« X, puis Y ») → ses ops, ou null si
+ * un seul fragment n'est pas compris.
+ */
+function parseOps(
+  sentence: string,
+  cardName: string,
+  sourceElement: string,
+): EffectOp[] | null {
+  const fragments = sentence.split(/,?\s+puis\s+/).map((s) => s.trim());
+  const ops: EffectOp[] = [];
+  for (const f of fragments) {
+    if (!f) return null;
+    const op = parseSentence(f, cardName, sourceElement);
+    if (!op) return null;
+    ops.push(op);
+  }
+  return ops;
+}
+
 /** Le sujet du déclencheur désigne-t-il la carte elle-même ? */
 function subjectIsSelf(subject: string, cardName: string): boolean {
   const s = subject.replace(/^(le |la |les |l['’]\s?|un |une )/, "").trim();
@@ -165,9 +193,9 @@ export function compileEffectText(
   if (optional && sentences.length > 1) return null;
   const ops: EffectOp[] = [];
   for (const s of sentences) {
-    const op = parseSentence(s, cardName, sourceElement);
-    if (!op) return null;
-    ops.push(op);
+    const parsed = parseOps(s, cardName, sourceElement);
+    if (!parsed) return null;
+    ops.push(...parsed);
   }
   return optional
     ? { trigger: "onArrive", optional, ops }
@@ -202,9 +230,9 @@ export function compileTapEffectText(
   if (!sentences.length) return null;
   const ops: EffectOp[] = [];
   for (const s of sentences) {
-    const op = parseSentence(s, cardName, sourceElement);
-    if (!op) return null;
-    ops.push(op);
+    const parsed = parseOps(s, cardName, sourceElement);
+    if (!parsed) return null;
+    ops.push(...parsed);
   }
   return cost ? { trigger: "onTap", cost, ops } : { trigger: "onTap", ops };
 }

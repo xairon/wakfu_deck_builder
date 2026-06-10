@@ -66,7 +66,12 @@ export type CompiledEffectOp =
       zones: ("monde" | "havreSac")[];
     }
   /** « [Cette carte] gagne +N en Force jusqu'à la fin du tour ». */
-  | { op: "buffForceSelf"; n: number };
+  | { op: "buffForceSelf"; n: number }
+  /** « Recyclez N carte(s) de votre Défausse » — choix dans la pile,
+   *  remise SOUS la Pioche du propriétaire (3389). */
+  | { op: "recycleFromDiscard"; n: number }
+  /** « Défaussez-vous de N carte(s) » — choix dans sa main. */
+  | { op: "discardFromHand"; n: number };
 
 export interface CompiledEffect {
   /** onArrive : la carte entre en jeu ; onTap : pouvoir activé en l'inclinant. */

@@ -267,6 +267,7 @@ export const useGameStore = defineStore("game", () => {
     ruleError.value = null;
     effectChoices.value = [];
     effectTargeting.value = null;
+    effectPicking.value = null;
   }
 
   /** Démarrage direct en partie (tests / bac à sable rapide). */
@@ -340,6 +341,7 @@ export const useGameStore = defineStore("game", () => {
     ruleError.value = null;
     effectChoices.value = [];
     effectTargeting.value = null;
+    effectPicking.value = null;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -485,6 +487,57 @@ export const useGameStore = defineStore("game", () => {
     rest: EffectOp[];
     sourceId?: string;
   } | null>(null);
+
+  /** Choix de carte(s) dans une pile (Défausse à recycler / main à défausser). */
+  const effectPicking = ref<{
+    seat: Seat;
+    cardName: string;
+    zone: "defausse" | "main";
+    action: "recycle" | "discard";
+    remaining: number;
+    rest: EffectOp[];
+    sourceId?: string;
+  } | null>(null);
+  const effectPickIds = computed(() =>
+    effectPicking.value
+      ? [
+          ...state.value.seats[effectPicking.value.seat][
+            effectPicking.value.zone
+          ],
+        ]
+      : [],
+  );
+
+  /** Le joueur choisit une carte dans la pile ; continue l'effet une fois fini. */
+  function effectPick(instanceId: string): void {
+    const p = effectPicking.value;
+    if (!p || !effectPickIds.value.includes(instanceId)) return;
+    if (p.action === "recycle") {
+      moveTo(instanceId, { zone: "pioche", owner: p.seat }, { at: "bottom" });
+      dispatch(
+        say(p.seat, `${p.cardName} : une carte est recyclée sous la Pioche.`),
+      );
+    } else {
+      moveTo(instanceId, { zone: "defausse", owner: p.seat }, { at: "top" });
+    }
+    const remaining = p.remaining - 1;
+    const stillHas = state.value.seats[p.seat][p.zone].length > 0;
+    if (remaining > 0 && stillHas) {
+      effectPicking.value = { ...p, remaining };
+      return;
+    }
+    effectPicking.value = null;
+    executeEffectOps(p.seat, p.cardName, p.rest, p.sourceId);
+  }
+
+  /** Passe le choix en cours (pile vide / décision du joueur). */
+  function effectPickSkip(): void {
+    const p = effectPicking.value;
+    if (!p) return;
+    effectPicking.value = null;
+    dispatch(say(p.seat, `${p.cardName} : choix passé.`));
+    executeEffectOps(p.seat, p.cardName, p.rest, p.sourceId);
+  }
   const effectTargetIdsList = computed(() =>
     effectTargeting.value
       ? effectTargetIds(rulesCtx(), effectTargeting.value.op)
@@ -515,6 +568,28 @@ export const useGameStore = defineStore("game", () => {
           seat,
           cardName,
           op,
+          rest: ops.slice(i + 1),
+          sourceId,
+        };
+        return;
+      }
+      if (op.op === "recycleFromDiscard" || op.op === "discardFromHand") {
+        const zone = op.op === "recycleFromDiscard" ? "defausse" : "main";
+        if (!state.value.seats[seat][zone].length) {
+          dispatch(
+            say(
+              seat,
+              `${cardName} : rien à ${op.op === "recycleFromDiscard" ? "recycler" : "défausser"}, effet passé.`,
+            ),
+          );
+          continue;
+        }
+        effectPicking.value = {
+          seat,
+          cardName,
+          zone,
+          action: op.op === "recycleFromDiscard" ? "recycle" : "discard",
+          remaining: op.n,
           rest: ops.slice(i + 1),
           sourceId,
         };
@@ -998,5 +1073,9 @@ export const useGameStore = defineStore("game", () => {
     effectTargetSkip,
     activateTapPower,
     hasTapPower,
+    effectPicking,
+    effectPickIds,
+    effectPick,
+    effectPickSkip,
   };
 });

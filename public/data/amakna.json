@@ -6585,7 +6585,21 @@
       {
         "description": "Détruisez le Smarmot : Piochez une carte, puis défaussez-vous d'une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            },
+            {
+              "op": "discardFromHand",
+              "n": 1
+            }
+          ]
+        }
       }
     ],
     "keywords": [],

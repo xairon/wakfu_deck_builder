@@ -242,6 +242,27 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
     expect(atoms).toEqual([]);
   });
 
+  it("parse recyclage, défausse et phrases composées « X, puis Y »", () => {
+    const smarmot = cardWith(
+      "Smarmot",
+      "Détruisez le Smarmot : Piochez une carte, puis défaussez-vous d'une carte.",
+    );
+    smarmot.effects![0].requiresIncline = true;
+    const atoms = tapPowers(smarmot);
+    expect(atoms[0]?.cost).toBe("sacrificeSelf");
+    expect(atoms[0]?.ops).toEqual([
+      { op: "draw", n: 1 },
+      { op: "discardFromHand", n: 1 },
+    ]);
+    const rec = cardWith(
+      "Anneau",
+      "Quand l'Anneau apparaît, recyclez une carte de votre Défausse.",
+    );
+    expect(arrivalEffects(rec)[0]?.ops).toEqual([
+      { op: "recycleFromDiscard", n: 1 },
+    ]);
+  });
+
   it("ignore les autres déclencheurs (début de tour, texte libre)", () => {
     const atoms = arrivalEffects(
       cardWith("Bworky", "Au début de votre tour, piochez une carte."),
