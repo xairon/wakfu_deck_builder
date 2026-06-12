@@ -21,6 +21,7 @@ import {
   compileTapEffectText,
   compileTurnStartEffectText,
 } from "../src/game/rules/effects/dsl";
+import { CARD_SCRIPTS } from "../src/game/rules/effects/cardScripts";
 
 const DATA_DIR = join(__dirname, "..", "public", "data");
 const EXTENSION_FILES = [
@@ -111,6 +112,7 @@ const stats = {
   compiled: 0,
   optional: 0,
   keywordsDropped: 0,
+  scripted: 0,
   ops: new Map<string, number>(),
 };
 
@@ -214,6 +216,18 @@ for (const file of EXTENSION_FILES) {
       card.verso.keywords = cleanKeywords(card.verso.keywords);
       compileEffects(card.verso.effects, name, element);
     }
+    // registre de scripts MANUELS : l'entrée écrite à la main gagne sur
+    // l'auto-compilation (approche XMage, carte par carte)
+    const overrides = CARD_SCRIPTS[(card as { id?: string }).id ?? ""];
+    if (overrides) {
+      for (const [idx, compiled] of Object.entries(overrides)) {
+        const eff = card.effects?.[Number(idx)];
+        if (!eff) continue;
+        if (!eff.compiled) stats.compiled++;
+        eff.compiled = compiled;
+        stats.scripted++;
+      }
+    }
   }
   writeFileSync(path, JSON.stringify(cards, null, 2) + "\n", "utf8");
   console.log(`✓ ${file} (${cards.length} cartes)`);
@@ -221,7 +235,7 @@ for (const file of EXTENSION_FILES) {
 
 console.log(
   `\nCartes: ${stats.cards} · Effets: ${stats.effects} · Compilés: ${stats.compiled}` +
-    ` (dont optionnels: ${stats.optional}) · Mots-clés bruités retirés: ${stats.keywordsDropped}`,
+    ` (dont optionnels: ${stats.optional}) · Mots-clés bruités retirés: ${stats.keywordsDropped} · Scripts manuels: ${stats.scripted}`,
 );
 for (const [op, n] of [...stats.ops.entries()].sort((a, b) => b[1] - a[1]))
   console.log(`  op ${op}: ${n}`);

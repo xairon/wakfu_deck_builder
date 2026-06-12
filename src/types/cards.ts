@@ -63,6 +63,8 @@ export type CompiledEffectOp =
       op: "buffForceTarget";
       n: number;
       heroes: boolean;
+      /** Famille requise de la cible (normalisée, ex. "monstre"). */
+      sub?: string;
       zones: ("monde" | "havreSac")[];
     }
   /** « [Cette carte] gagne +N en Force jusqu'à la fin du tour ». */
@@ -90,7 +92,9 @@ export type CompiledEffectOp =
   /** Détruit la carte source de l'effet (branche « ou détruisez X »). */
   | { op: "destroySelf" }
   /** « Perdez N PA/PM jusqu'à la fin du tour » — modificateur temporaire. */
-  | { op: "loseStatTurn"; stat: "pa" | "pm"; n: number };
+  | { op: "loseStatTurn"; stat: "pa" | "pm"; n: number }
+  /** Incline la carte source (« [X] apparaît incliné »). */
+  | { op: "tapSelf" };
 
 export interface CompiledEffect {
   /** onArrive : entrée en jeu ; onTap : pouvoir incliné ; onPlay : Action

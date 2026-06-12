@@ -108,6 +108,24 @@ describe("rules/effects — ciblage", () => {
     expect(hero.counters.damage ?? 0).toBe(0);
   });
 
+  it("buffForceTarget avec famille : seuls les Monstres sont ciblables", () => {
+    const monstre = makeAlly("m0");
+    monstre.subTypes = ["Monstre", "Bouftou"];
+    const humain = makeAlly("h0");
+    humain.subTypes = ["Bandit"];
+    const f = fixture([monstre, humain]);
+    bringToMonde(f, "A", instId("A", 0));
+    bringToMonde(f, "A", instId("A", 1));
+    const ids = effectTargetIds(ctxOf(f), {
+      op: "buffForceTarget",
+      n: 2,
+      heroes: false,
+      sub: "monstre",
+      zones: ["monde", "havreSac"],
+    });
+    expect(ids).toEqual([instId("A", 0)]);
+  });
+
   it("healHeroTarget : cibles = les deux Héros, soin appliqué", () => {
     const f = fixture([]);
     const ids = effectTargetIds(ctxOf(f), { op: "healHeroTarget", n: 3 });

@@ -923,6 +923,18 @@ export const useGameStore = defineStore("game", () => {
       } else if (op.op === "havreSacGainResistance") {
         const sacId = state.value.seats[seat].havreSacInstanceId;
         if (sacId) adjustCounter(sacId, "resistance", op.n);
+      } else if (op.op === "tapSelf") {
+        const src = sourceId ? state.value.instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay && src!.orientation === "upright") {
+          dispatch({
+            actor: seat,
+            type: "SET_ORIENTATION",
+            payload: { instanceId: sourceId!, orientation: "tapped" },
+          });
+        }
       } else if (op.op === "loseStatTurn") {
         const heroId = state.value.seats[seat].heroInstanceId;
         if (heroId) {

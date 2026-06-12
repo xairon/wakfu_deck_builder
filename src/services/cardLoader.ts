@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v13"; // v13 : op loseStatTurn (Croum)
+const CACHE_KEY = "wakfu-cards-cache-v14"; // v14 : registre de scripts manuels (starters)
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;

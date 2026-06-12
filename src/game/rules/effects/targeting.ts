@@ -32,6 +32,10 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
   );
 }
 
+function normWord(s: string): string {
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+}
+
 /** Cibles légales d'une op (n'importe quel contrôleur). */
 export function effectTargetIds(ctx: RulesCtx, op: TargetingOp): InstanceId[] {
   const zones: ("monde" | "havreSac")[] =
@@ -41,13 +45,17 @@ export function effectTargetIds(ctx: RulesCtx, op: TargetingOp): InstanceId[] {
     if (!zones.includes(inst.location.zone as "monde" | "havreSac")) continue;
     const card = ctx.getCard(inst.cardId);
     if (!card) continue;
-    const ok =
+    let ok =
       op.op === "destroyTarget"
         ? card.mainType === op.what
         : op.op === "healHeroTarget"
           ? card.mainType === "Héros"
           : card.mainType === "Allié" ||
             (op.heroes && card.mainType === "Héros");
+    // famille requise (« le Monstre de votre choix »)
+    if (ok && op.op === "buffForceTarget" && op.sub) {
+      ok = (card.subTypes ?? []).some((s) => normWord(s) === op.sub);
+    }
     if (ok) out.push(inst.instanceId);
   }
   return out;
