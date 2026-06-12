@@ -18,6 +18,14 @@ export function elementLabel(el: string): string {
   return el.charAt(0).toUpperCase() + el.slice(1);
 }
 
+/**
+ * Mot normalisé pour comparer familles/sous-types (minuscules, sans accents) :
+ * « Bouftou » ≡ « bouftou », « Fécas » ≢ « feca » (le pluriel reste à l'appelant).
+ */
+export function normWord(s: string): string {
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+}
+
 /** Coût de lancement = Niveau de la carte (4316). */
 export function levelCost(card: Card): number {
   return card.stats?.niveau?.value ?? 0;

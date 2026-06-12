@@ -8,7 +8,7 @@
     "clean-cards": "node scripts/generateCleanCards.js",
     "extract-illustrations": "tsx scripts/extractIllustrations.ts",
     "validate-data": "tsx scripts/validateData.ts",
-    "compile-effects": "tsx scripts/compileEffects.ts",
+    "compile-effects": "tsx scripts/compileEffects.ts && prettier --write \"public/data/*.json\"",
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest",

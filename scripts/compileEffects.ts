@@ -18,6 +18,7 @@ import { join } from "node:path";
 import {
   compileActionEffectText,
   compileEffectText,
+  compileStaticEffectText,
   compileTapEffectText,
   compileTurnStartEffectText,
 } from "../src/game/rules/effects/dsl";
@@ -188,7 +189,8 @@ function compileEffects(
       : isAction
         ? compileActionEffectText(text, cardName, sourceElement)
         : (compileEffectText(text, cardName, sourceElement) ??
-          compileTurnStartEffectText(text, cardName, sourceElement));
+          compileTurnStartEffectText(text, cardName, sourceElement) ??
+          compileStaticEffectText(text, cardName));
     if (compiled) {
       e.compiled = compiled;
       stats.compiled++;

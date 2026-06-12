@@ -97,17 +97,28 @@ export type CompiledEffectOp =
   /** Incline la carte source (« [X] apparaît incliné »). */
   | { op: "tapSelf" };
 
+// ── Pouvoirs continus (805 / 812.2) — couche dérivée, jamais d'événement ────
+export type StaticAbility =
+  | { kind: "forceAura"; n: number; sub: string } // Chef de Guerre Bouftou
+  | { kind: "forceWhileBlocking"; n: number } // Maître Bolet
+  | { kind: "forceEqualsHandSize" } // Vrombyx
+  | { kind: "cannotBlock" } // Jicé Aouaire
+  | { kind: "combatDamageReduction"; n: number }; // Poum Ondacié
+
 export interface CompiledEffect {
   /** onArrive : entrée en jeu ; onTap : pouvoir incliné ; onPlay : Action
    *  résolue au moment où elle est jouée (puis défaussée, 302.1) ;
-   *  onTurnStart : début du tour de son contrôleur (602). */
-  trigger: "onArrive" | "onTap" | "onPlay" | "onTurnStart";
+   *  onTurnStart : début du tour de son contrôleur (602) ;
+   *  static : pouvoir continu (couche dérivée, `static` requis, ops vides). */
+  trigger: "onArrive" | "onTap" | "onPlay" | "onTurnStart" | "static";
   /** « Vous pouvez … » : le joueur confirme avant exécution. */
   optional?: boolean;
   /** « Détruisez [cette carte] : … » — le coût remplace l'inclinaison. */
   cost?: "sacrificeSelf";
   /** « … ou détruisez [cette carte] » : refuser `ops` détruit la source. */
   orElse?: "destroySelf";
+  /** Pouvoir continu — présent ssi `trigger === "static"`. */
+  static?: StaticAbility;
   ops: CompiledEffectOp[];
 }
 

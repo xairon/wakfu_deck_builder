@@ -179,3 +179,39 @@ describe("rules/combat — résolution", () => {
     expect(result.winner).toBe("A");
   });
 });
+
+describe("rules/combat — pouvoirs continus en combat (805.1)", () => {
+  it("le Maître Bolet bloque à +2 : il tue l'attaquant et survit au duel (204.4)", () => {
+    const bolet = makeAlly("bolet", { force: 3, xp: 2 });
+    bolet.effects = [
+      {
+        description: "Tant qu'il bloque, le Maître Bolet gagne +2 en Force.",
+        compiled: {
+          trigger: "static",
+          static: { kind: "forceWhileBlocking", n: 2 },
+          ops: [],
+        },
+      },
+    ];
+    const f = fixture([makeAlly("atk", { force: 4, xp: 1 })], [bolet]);
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    // bloqueur à 5 (3 + 2) : il frappe 5 ≥ 4 → attaquant détruit ; il encaisse
+    // 4 < 5 → il survit AU DUEL (sans le bonus, 3 contre 4 le tuerait).
+    // À la Fin de Combat le bonus cesse (708.1) : la létalité différée des
+    // 4 Dommages relève alors des destructions d'état du store (3019).
+    expect(result.destroyed).toEqual([instId("A", 0)]);
+    expect(state.seats.A.defausse).toContain(instId("A", 0));
+    expect(state.instances[instId("B", 0)].counters.damage).toBe(4);
+    expect(state.seats.B.defausse).not.toContain(instId("B", 0));
+    // 415.1 : seul B gagne l'XP de l'attaquant détruit
+    expect(state.instances[HERO_B].counters.xp).toBe(1);
+  });
+});

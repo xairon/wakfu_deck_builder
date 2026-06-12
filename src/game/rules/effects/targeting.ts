@@ -10,7 +10,7 @@ import type { Seat } from "../../types/zones";
 import { otherSeat } from "../../types/zones";
 import type { RulesCtx } from "../types";
 import { discard, incCounter } from "../../engine/verbs";
-import { xpValue } from "../cardAttrs";
+import { normWord, xpValue } from "../cardAttrs";
 import { effectiveForce } from "../stats";
 import { combatKeywords, preventDamage } from "./keywords";
 import { grantXpEvents } from "../progress";
@@ -30,10 +30,6 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "healHeroTarget" ||
     op.op === "buffForceTarget"
   );
-}
-
-function normWord(s: string): string {
-  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 }
 
 /** Cibles légales d'une op (n'importe quel contrôleur). */

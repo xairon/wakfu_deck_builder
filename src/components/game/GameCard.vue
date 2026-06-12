@@ -52,12 +52,17 @@
       N{{ level }}
     </span>
     <span
-      v-if="forceMod"
-      :key="`fmod-${forceMod}`"
-      class="game-card__badge game-card__badge--fmod"
-      title="Force modifiée jusqu'à la fin du tour"
+      v-if="force && force.delta !== 0"
+      :key="`force-${force.value}-${force.delta}`"
+      class="game-card__badge game-card__badge--force"
+      :class="
+        force.delta > 0
+          ? 'game-card__badge--force-up'
+          : 'game-card__badge--force-down'
+      "
+      :title="`Force effective ${force.value} (${force.delta > 0 ? '+' : ''}${force.delta} vs Force imprimée)`"
     >
-      {{ forceMod > 0 ? `+${forceMod}` : forceMod }}
+      F{{ force.value }}
     </span>
     <span
       v-if="resistance !== undefined"
@@ -78,6 +83,7 @@ import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useCardPreview } from "@/composables/useCardPreview";
 import { useBoardDnd } from "@/composables/useBoardDnd";
+import { useGameStore } from "@/stores/gameStore";
 
 const props = defineProps<{
   instance: RedactedInstance;
@@ -120,12 +126,15 @@ function onPointerDown(e: PointerEvent): void {
   });
 }
 
+const game = useGameStore();
+
 const tapped = computed(() => props.instance.orientation === "tapped");
 const damage = computed(() => props.instance.counters.damage || 0);
 const hp = computed(() => props.instance.counters.hp);
 const level = computed(() => props.instance.counters.level);
 const resistance = computed(() => props.instance.counters.resistance);
-const forceMod = computed(() => props.instance.counters.tokens?.forceMod ?? 0);
+/** Force EFFECTIVE (auras, Vrombyx, jetons) — pas le jeton forceMod brut. */
+const force = computed(() => game.effectiveForceOf(props.instance.instanceId));
 
 const label = computed(() => props.card?.name ?? "Carte");
 const spine = computed(() => elementColor(props.card?.stats?.niveau?.element));
@@ -279,10 +288,15 @@ const ariaLabel = computed(() => {
   background: linear-gradient(180deg, #f7bc4e, #de9418);
   color: #1b1a17;
 }
-.game-card__badge--fmod {
+.game-card__badge--force {
   bottom: 3px;
   left: 6px;
+}
+.game-card__badge--force-up {
   background: linear-gradient(180deg, #6cc23a, #4a8f1f);
+}
+.game-card__badge--force-down {
+  background: linear-gradient(180deg, #d94a36, #a72f1f);
 }
 .game-card__badge--res {
   bottom: 3px;

@@ -346,6 +346,71 @@ export function arrivalEffects(card: Card | null): EffectAtom[] {
 }
 
 /**
+ * Compile un POUVOIR CONTINU (805 / 812.2) : « Tant que … », « [X] ne peut
+ * pas bloquer », « La force de [X] est toujours égale … ». Strict : le texte
+ * ENTIER doit correspondre à une forme connue dont le sujet est la carte
+ * elle-même, sinon null. Ces effets n'émettent jamais d'événement : ils sont
+ * relus à la volée par la couche dérivée (`rules/modifiers.ts`).
+ */
+export function compileStaticEffectText(
+  text: string,
+  cardName: string,
+): CompiledEffect | null {
+  const body = norm(text).replace(/\.$/, "").trim();
+  // « La force du Vrombyx est toujours égale au nombre de vos cartes en main. »
+  let m = body.match(
+    /^la force (?:du |de la |de l['’]\s?|des |de )?(.{1,60}?) est toujours egale au nombre de vos cartes en main$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "forceEqualsHandSize" },
+      ops: [],
+    };
+  // « Tant que le Chef de Guerre Bouftou est dans le Monde, vos autres
+  //   Alliés Bouftous dans le Monde gagnent +1 en Force. »
+  m = body.match(
+    /^tant que (.{1,60}?) est dans le monde\s*,\s*vos autres allies ([a-z-]+) dans le monde gagnent \+(\d+) en force$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: {
+        kind: "forceAura",
+        n: toNumber(m[3]),
+        sub: m[2].replace(/s$/, ""), // famille au singulier (« Bouftous »)
+      },
+      ops: [],
+    };
+  // « Tant qu'il bloque, le Maître Bolet gagne +2 en Force. »
+  m = body.match(
+    /^tant qu['’]\s?(?:il|elle) bloque\s*,\s*(.{1,60}?) gagne \+(\d+) en force$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "forceWhileBlocking", n: toNumber(m[2]) },
+      ops: [],
+    };
+  // « Jicé Aouaire ne peut pas bloquer. »
+  m = body.match(/^(.{1,60}?) ne peut pas bloquer$/);
+  if (m && subjectIsSelf(m[1], cardName))
+    return { trigger: "static", static: { kind: "cannotBlock" }, ops: [] };
+  // « Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque,
+  //   tous les Dommages sur le point de lui être infligés sont réduits de N. »
+  m = body.match(
+    /^tant que (.{1,60}?) est attaquant\s*,\s*bloqueur ou cible d['’]\s?une attaque\s*,\s*tous les dommages sur le point de lui etre infliges sont reduits de (\d+)$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "combatDamageReduction", n: toNumber(m[2]) },
+      ops: [],
+    };
+  return null;
+}
+
+/**
  * Compile l'effet d'une carte ACTION : pas de préfixe, le texte est ce qui
  * se résout quand la carte est jouée (302.1). Strict comme le reste.
  */

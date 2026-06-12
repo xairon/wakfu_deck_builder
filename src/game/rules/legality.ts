@@ -10,6 +10,7 @@ import type { Seat, ZoneRef } from "../types/zones";
 import { otherSeat } from "../types/zones";
 import type { CombatTarget, RulesCtx } from "./types";
 import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs";
+import { cannotBlock } from "./modifiers";
 import { planCost } from "./resources";
 
 /** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
@@ -110,7 +111,8 @@ export function eligibleTargets(ctx: RulesCtx, seat: Seat): CombatTarget[] {
   return out;
 }
 
-/** Bloqueurs légaux (704) : Alliés redressés du Monde du défenseur, hors cible. */
+/** Bloqueurs légaux (704) : Alliés redressés du Monde du défenseur, hors
+ *  cible — et hors « ne peut pas bloquer » (pouvoir continu, ex. Jicé). */
 export function eligibleBlockers(
   ctx: RulesCtx,
   defender: Seat,
@@ -123,7 +125,7 @@ export function eligibleBlockers(
     if (inst.orientation !== "upright") continue;
     if (id === target.instanceId) continue;
     const card = ctx.getCard(inst.cardId);
-    if (card && canBlockCard(card)) out.push(id);
+    if (card && canBlockCard(card) && !cannotBlock(ctx, id)) out.push(id);
   }
   return out;
 }

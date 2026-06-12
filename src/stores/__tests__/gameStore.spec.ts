@@ -1,8 +1,14 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
+import type { Card, Deck } from "@/types/cards";
 import { useGameStore } from "../gameStore";
 import { useCardStore } from "../cardStore";
-import { createMockDeck } from "tests/factories/card";
+import {
+  createMockAllyCard,
+  createMockDeck,
+  createMockHavreSacCard,
+  createMockHeroCard,
+} from "tests/factories/card";
 
 describe("gameStore — table locale (bac à sable)", () => {
   beforeEach(() => setActivePinia(createPinia()));
@@ -169,5 +175,96 @@ describe("gameStore — flux de match (lobby/mulligan/tour)", () => {
     expect(store.turn.active).toBe("B");
     expect(store.perspective).toBe("B");
     expect(store.passPending).toBe(true);
+  });
+});
+
+describe("gameStore — pouvoirs continus & destructions d'état (lot B)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  function smallDeck(cards: Card[]): Deck {
+    return {
+      id: `deck-${Math.random().toString(36).slice(2)}`,
+      name: "test",
+      hero: createMockHeroCard(),
+      havreSac: createMockHavreSacCard(),
+      cards: cards.map((card) => ({ card, quantity: 1 })),
+      createdAt: "",
+      updatedAt: "",
+    };
+  }
+
+  function instOf(store: ReturnType<typeof useGameStore>, cardId: string) {
+    return Object.values(store.state.instances).find(
+      (i) => i.cardId === cardId,
+    )!.instanceId;
+  }
+
+  it("devrait détruire d'office le Vrombyx à main vide (1414) avec XP adverse", () => {
+    const vrombyx = createMockAllyCard({
+      id: "vrombyx-test",
+      name: "Vrombyx",
+      stats: { niveau: { value: 5, element: "Feu" } }, // pas de Force imprimée
+      experience: 2,
+      effects: [
+        {
+          description:
+            "La force du Vrombyx est toujours égale au nombre de vos cartes en main.",
+        },
+      ],
+    });
+    const filler = createMockAllyCard({ id: "filler-test", name: "Filler" });
+    useCardStore().cards = [vrombyx, filler];
+    const store = useGameStore();
+    store.startSandbox(smallDeck([vrombyx, filler]), smallDeck([]), "A");
+    const vId = instOf(store, "vrombyx-test");
+    const fId = instOf(store, "filler-test");
+    // une carte en main : le Vrombyx entre en jeu à Force effective 1
+    store.moveTo(fId, { zone: "main", owner: "A" });
+    store.moveTo(vId, { zone: "monde" });
+    expect(store.state.monde).toContain(vId);
+    expect(store.effectiveForceOf(vId)).toEqual({ value: 1, delta: 1 });
+    // main vidée : destruction d'état immédiate + XP à l'adversaire (415.1)
+    store.moveTo(fId, { zone: "defausse", owner: "A" });
+    expect(store.state.seats.A.defausse).toContain(vId);
+    const heroB = store.state.seats.B.heroInstanceId!;
+    expect(store.state.instances[heroB].counters.xp).toBe(2);
+    expect(store.matchPhase).toBe("playing"); // le point fixe s'arrête
+  });
+
+  it("devrait expliquer le refus d'un bloqueur qui ne peut pas bloquer (Jicé)", () => {
+    const jice = createMockAllyCard({
+      id: "jice-test",
+      name: "Jicé Aouaire",
+      stats: {
+        niveau: { value: 2, element: "Terre" },
+        force: { value: 3, element: "Terre" },
+      },
+      effects: [{ description: "Jicé Aouaire ne peut pas bloquer." }],
+    });
+    const atk = createMockAllyCard({
+      id: "atk-test",
+      name: "Attaquant",
+      stats: {
+        niveau: { value: 1, element: "Feu" },
+        force: { value: 2, element: "Feu" },
+      },
+    });
+    useCardStore().cards = [jice, atk];
+    const store = useGameStore();
+    store.startSandbox(smallDeck([atk]), smallDeck([jice]), "A");
+    const atkId = instOf(store, "atk-test");
+    const jiceId = instOf(store, "jice-test");
+    store.moveTo(atkId, { zone: "monde" });
+    store.moveTo(jiceId, { zone: "monde" });
+    store.nextTurn(); // tour 2 (B)
+    store.nextTurn(); // tour 3 (A) — l'attaque devient légale
+    expect(store.beginCombat()).toBe(true);
+    store.combatToggleAttacker(atkId);
+    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    expect(store.combatConfirmAttackers()).toBe(true);
+    // clic sur Jicé : refus EXPLIQUÉ, pas silencieux
+    store.combatToggleBlock(jiceId);
+    expect(store.combat?.blocks).toEqual({});
+    expect(store.ruleError).toBe("Jicé Aouaire ne peut pas bloquer.");
   });
 });

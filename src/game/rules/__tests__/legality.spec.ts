@@ -210,4 +210,26 @@ describe("rules/legality — attaquants, cibles, bloqueurs", () => {
     });
     expect(blockers2).not.toContain(instId("B", 0));
   });
+
+  it("exclut un Allié au pouvoir « ne peut pas bloquer » (Jicé Aouaire)", () => {
+    const jice = makeAlly("jice", { force: 3 });
+    jice.effects = [
+      {
+        description: "Jicé Aouaire ne peut pas bloquer.",
+        compiled: {
+          trigger: "static",
+          static: { kind: "cannotBlock" },
+          ops: [],
+        },
+      },
+    ];
+    const f = fixture([], [jice, makeAlly("autre")]);
+    bringToMonde(f, "B", instId("B", 0));
+    bringToMonde(f, "B", instId("B", 1));
+    const blockers = eligibleBlockers(ctxOf(f), "B", {
+      kind: "hero",
+      instanceId: HERO_B,
+    });
+    expect(blockers).toEqual([instId("B", 1)]);
+  });
 });

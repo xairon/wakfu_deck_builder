@@ -14,6 +14,7 @@ import { otherSeat } from "../types/zones";
 import type { CombatPlan, CombatResult, RulesCtx } from "./types";
 import { discard, incCounter, tap } from "../engine/verbs";
 import { producedElement, xpValue } from "./cardAttrs";
+import type { ForceStance } from "./stats";
 import { effectiveForce } from "./stats";
 import { grantXpEvents } from "./progress";
 import { combatKeywords, preventDamage } from "./effects/keywords";
@@ -28,8 +29,8 @@ function sideOf(ctx: RulesCtx, id: InstanceId): "recto" | "verso" {
   return ctx.state.instances[id]?.face === "verso" ? "verso" : "recto";
 }
 
-function forceOf(ctx: RulesCtx, id: InstanceId): number {
-  return effectiveForce(ctx, id);
+function forceOf(ctx: RulesCtx, id: InstanceId, stance?: ForceStance): number {
+  return effectiveForce(ctx, id, stance);
 }
 
 function keywordsOf(ctx: RulesCtx, id: InstanceId): CombatKeywords {
@@ -87,20 +88,26 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
     list.push(blocker);
     blockersOf.set(attacker, list);
   }
+  // 805.1 — posture du combat : les pouvoirs « Tant qu'il bloque » (Maître
+  // Bolet) valent pour les duels ET le seuil de létalité (204.4).
+  const stance: ForceStance = {
+    blockers: [...blockersOf.values()].flat(),
+  };
 
   // 706 — duels : l'attaquant frappe UN bloqueur (Géant : répartit sa Force
   // entre tous, 6135) ; tous les bloqueurs le frappent simultanément.
   for (const attacker of plan.attackers) {
     const blockers = blockersOf.get(attacker);
     if (!blockers?.length) continue;
-    const aForce = forceOf(ctx, attacker);
+    const aForce = forceOf(ctx, attacker, stance);
     const el = damageElementOf(ctx, attacker);
     if (keywordsOf(ctx, attacker).geant && blockers.length > 1) {
       // politique auto : assigner d'abord les parts létales les moins chères
       const needRaw = (b: InstanceId) => {
         const remaining = Math.max(
           0,
-          forceOf(ctx, b) - (ctx.state.instances[b]?.counters.damage ?? 0),
+          forceOf(ctx, b, stance) -
+            (ctx.state.instances[b]?.counters.damage ?? 0),
         );
         return remaining + (keywordsOf(ctx, b).resistances[el] ?? 0);
       };
@@ -124,7 +131,7 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
       const struck = chosen && blockers.includes(chosen) ? chosen : blockers[0];
       inflict(attacker, struck, aForce);
     }
-    for (const b of blockers) inflict(b, attacker, forceOf(ctx, b));
+    for (const b of blockers) inflict(b, attacker, forceOf(ctx, b, stance));
     log.push(
       `Duel : ${nameOf(ctx, attacker)} contre ${blockers
         .map((b) => nameOf(ctx, b))
@@ -138,7 +145,7 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
   );
   let freeDamage = 0;
   for (const id of freeAttackers) {
-    const base = forceOf(ctx, id);
+    const base = forceOf(ctx, id, stance);
     if (plan.target.kind === "havreSac") {
       freeDamage += base; // la Résistance du Havre-Sac est son compteur (306.3)
     } else {
@@ -187,7 +194,7 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
     }
     events.push(incCounter(atk, id, "damage", n));
     const total = (inst.counters.damage ?? 0) + n;
-    const force = forceOf(ctx, id);
+    const force = forceOf(ctx, id, stance);
     if (force > 0 && total >= force) {
       destroyed.push(id);
       events.push(discard(inst.owner, id, inst.location));

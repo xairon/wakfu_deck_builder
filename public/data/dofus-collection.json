@@ -1238,7 +1238,16 @@
       {
         "description": "Tant que le Chef de Guerre Bouftou est dans le Monde, vos autres Alliés Bouftous dans le Monde gagnent +1 en Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceAura",
+            "n": 1,
+            "sub": "bouftou"
+          },
+          "ops": []
+        }
       }
     ],
     "keywords": [],
@@ -2902,7 +2911,14 @@
       {
         "description": "Jicé Aouaire ne peut pas bloquer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "cannotBlock"
+          },
+          "ops": []
+        }
       },
       {
         "description": "Jicé Aouaire ne peut pas être déclaré comme bloqueur par son contrôleur durant la Phase de Déclaration des Bloqueurs, ni être placé comme bloqueur durant la Phase d'Actions.",

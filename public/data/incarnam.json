@@ -3120,7 +3120,16 @@
       {
         "description": "Tant que le Chef de Guerre Bouftou est dans le Monde, vos autres Alliés Bouftous dans le Monde gagnent +1 en Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceAura",
+            "n": 1,
+            "sub": "bouftou"
+          },
+          "ops": []
+        }
       }
     ],
     "keywords": [],
@@ -7332,7 +7341,14 @@
       {
         "description": "Jicé Aouaire ne peut pas bloquer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "cannotBlock"
+          },
+          "ops": []
+        }
       },
       {
         "description": "Jicé Aouaire ne peut pas être déclaré comme bloqueur par son contrôleur durant la Phase de Déclaration des Bloqueurs, ni être placé comme bloqueur durant la Phase d'Actions.",
@@ -8856,7 +8872,15 @@
       {
         "description": "Tant qu'il bloque, le Maître Bolet gagne +2 en Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceWhileBlocking",
+            "n": 2
+          },
+          "ops": []
+        }
       }
     ],
     "keywords": [],
@@ -11141,7 +11165,15 @@
       {
         "description": "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "combatDamageReduction",
+            "n": 1
+          },
+          "ops": []
+        }
       }
     ],
     "keywords": [],
@@ -11170,7 +11202,15 @@
         {
           "description": "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 1.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "compiled": {
+            "trigger": "static",
+            "static": {
+              "kind": "combatDamageReduction",
+              "n": 1
+            },
+            "ops": []
+          }
         }
       ],
       "keywords": [],
@@ -11194,7 +11234,15 @@
         {
           "description": "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 2.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "compiled": {
+            "trigger": "static",
+            "static": {
+              "kind": "combatDamageReduction",
+              "n": 2
+            },
+            "ops": []
+          }
         }
       ],
       "keywords": [],
@@ -13737,7 +13785,14 @@
       {
         "description": "La force du Vrombyx est toujours égale au nombre de vos cartes en main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceEqualsHandSize"
+          },
+          "ops": []
+        }
       },
       {
         "description": "Si vous ne possédez aucune carte en main, le Vrombyx est détruit. En effet, tout Allié possédant 0 de Force est immédiatement détruit.",

@@ -40,14 +40,18 @@ import type {
   RulesCtx,
   TargetingOp,
 } from "@/game/rules";
+import type { ForceStance } from "@/game/rules";
 import {
   arrivalEffects,
+  cannotBlock,
   combatKeywords,
   effectTargetIds,
+  effectiveForce,
   eligibleAttackers,
   eligibleBlockers,
   eligibleTargets,
   equalityRescueEvents,
+  forceValue,
   grantXpEvents,
   havreSacHasRoom,
   isTargetingOp,
@@ -63,6 +67,7 @@ import {
   resolveDamageTarget,
   resolveDestroyTarget,
   resolveHealHeroTarget,
+  stateBasedDestroyEvents,
   tapPowers,
   turnStartEffects,
   victoryFromState,
@@ -152,6 +157,16 @@ export const useGameStore = defineStore("game", () => {
     ruleError.value = null;
   }
 
+  /** Posture de combat courante (805.1) : bloqueurs déclarés, s'il y en a. */
+  function currentStance(): ForceStance | undefined {
+    const c = combat.value;
+    if (!c) return undefined;
+    const blockers = Object.keys(c.blocks).filter((b) =>
+      c.attackers.includes(c.blocks[b]),
+    );
+    return blockers.length ? { blockers } : undefined;
+  }
+
   /**
    * Fin de partie automatique d'après l'état (PV ≤ 0 / Niveau 3, 103.2).
    * S'applique MÊME en mode libre : la mort à 0 PV est fondamentale.
@@ -159,6 +174,17 @@ export const useGameStore = defineStore("game", () => {
    */
   function checkVictory(): void {
     if (matchPhase.value !== "playing") return;
+    // 1414 / 3019 — destructions d'état en point fixe (≤ 32 passes) AVANT
+    // l'égalité et la victoire : Allié à Force effective 0 ou Dommages
+    // létaux (la perte d'une aura peut tuer en cascade). Mode assisté
+    // seulement : la table libre reste entièrement manuelle.
+    if (assist.value) {
+      for (let i = 0; i < 32; i++) {
+        const sbd = stateBasedDestroyEvents(rulesCtx(), currentStance());
+        if (!sbd.destroyed.length) break;
+        dispatch(...sbd.events, ...sbd.log.map((l) => say("system", l)));
+      }
+    }
     const rescue = equalityRescueEvents(rulesCtx());
     if (rescue.length) {
       dispatch(
@@ -540,6 +566,9 @@ export const useGameStore = defineStore("game", () => {
       );
     }
     dispatch(...drafts);
+    // un déplacement peut casser une aura / vider une main (Vrombyx) :
+    // destructions d'état + fin de partie re-vérifiées (1414/3019)
+    checkVictory();
   }
 
   /**
@@ -739,12 +768,14 @@ export const useGameStore = defineStore("game", () => {
       if (runFrame(frame)) return; // en pause — la frame reste en tête
       effectQueue.value = effectQueue.value.slice(1);
     }
-    // file vidée : la limite de main s'applique « à n'importe quel instant »
+    // file vidée : destructions d'état (1414/3019) puis limite de main
+    // (« à n'importe quel instant »)
     if (
       !effectQueue.value.length &&
       !effectTargeting.value &&
       !effectPicking.value
     ) {
+      checkVictory();
       enforceHandLimit(state.value.turn.active);
     }
   }
@@ -1348,8 +1379,17 @@ export const useGameStore = defineStore("game", () => {
       return;
     }
     const def = otherSeat(turn.value.active);
-    if (!eligibleBlockers(rulesCtx(), def, c.target).includes(blockerId))
+    if (!eligibleBlockers(rulesCtx(), def, c.target).includes(blockerId)) {
+      // refus EXPLIQUÉ (jamais silencieux) : pouvoir continu ou état
+      const inst = state.value.instances[blockerId];
+      if (inst && inst.controller === def) {
+        const card = getCard(inst.cardId);
+        ruleError.value = cannotBlock(rulesCtx(), blockerId)
+          ? `${card?.name ?? "Cette carte"} ne peut pas bloquer.`
+          : "Cette carte ne peut pas bloquer (inclinée, cible de l'attaque, ou type non combattant).";
+      }
       return;
+    }
     const pm = pmOf(rulesCtx(), def);
     if (Object.keys(c.blocks).length >= pm) {
       ruleError.value = `Maximum ${pm} bloqueur(s) — limite de PM (704).`;
@@ -1404,6 +1444,27 @@ export const useGameStore = defineStore("game", () => {
 
   function combatCancel(): void {
     combat.value = null;
+  }
+
+  /**
+   * Force EFFECTIVE d'une instance en jeu pour l'UI (812.2/805) :
+   * base|taille de main + auras + « tant qu'il bloque » + jetons. `delta` =
+   * écart à la Force imprimée (pastille verte si > 0, rouge si < 0).
+   * `null` hors du jeu ou pour les cartes sans Force (Zones, Havre-Sac…).
+   */
+  function effectiveForceOf(
+    instanceId: string,
+  ): { value: number; delta: number } | null {
+    const inst = state.value.instances[instanceId];
+    if (!inst) return null;
+    const zone = inst.location.zone;
+    if (zone !== "monde" && zone !== "havreSac") return null;
+    const card = getCard(inst.cardId);
+    if (!card || (card.mainType !== "Allié" && card.mainType !== "Héros"))
+      return null;
+    const value = effectiveForce(rulesCtx(), instanceId, currentStance());
+    const printed = forceValue(card, inst.face === "verso" ? "verso" : "recto");
+    return { value, delta: value - printed };
   }
 
   function drawFromReserve(seat: Seat = perspective.value): void {
@@ -1536,6 +1597,7 @@ export const useGameStore = defineStore("game", () => {
     combatStrikeIds,
     combatChooseStrike,
     combatCancel,
+    effectiveForceOf,
     effectChoice,
     effectChoiceResolve,
     effectTargeting,

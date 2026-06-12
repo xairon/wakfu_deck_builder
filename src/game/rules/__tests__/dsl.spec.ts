@@ -1,6 +1,7 @@
 ﻿import { describe, expect, it } from "vitest";
 import {
   arrivalEffects,
+  compileStaticEffectText,
   playEffects,
   printedEffects,
   tapPowers,
@@ -476,6 +477,92 @@ describe("rules/effects — effets imprimés vs notes de règles (kind)", () => 
     });
     expect(turnStartEffects(card)).toHaveLength(0);
     expect(arrivalEffects(card)).toHaveLength(0);
+  });
+
+  it("devrait compiler les 5 formes de pouvoirs continus des starters (textes réels)", () => {
+    expect(
+      compileStaticEffectText(
+        "La force du Vrombyx est toujours égale au nombre de vos cartes en main.",
+        "Vrombyx",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceEqualsHandSize" },
+      ops: [],
+    });
+    expect(
+      compileStaticEffectText(
+        "Tant que le Chef de Guerre Bouftou est dans le Monde, vos autres Alliés Bouftous dans le Monde gagnent +1 en Force.",
+        "Chef de Guerre Bouftou",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 1, sub: "bouftou" },
+      ops: [],
+    });
+    expect(
+      compileStaticEffectText(
+        "Tant qu'il bloque, le Maître Bolet gagne +2 en Force.",
+        "Maître Bolet",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceWhileBlocking", n: 2 },
+      ops: [],
+    });
+    expect(
+      compileStaticEffectText(
+        "Jicé Aouaire ne peut pas bloquer.",
+        "Jicé Aouaire",
+      ),
+    ).toEqual({ trigger: "static", static: { kind: "cannotBlock" }, ops: [] });
+  });
+
+  it("devrait compiler la réduction de Dommages de Poum recto (1) et verso (2)", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 1.",
+        "Poum Ondacié",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "combatDamageReduction", n: 1 },
+      ops: [],
+    });
+    expect(
+      compileStaticEffectText(
+        "Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque, tous les Dommages sur le point de lui être infligés sont réduits de 2.",
+        "Poum Ondacié",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "combatDamageReduction", n: 2 },
+      ops: [],
+    });
+  });
+
+  it("grammaire statique STRICTE : sujet étranger ou texte en trop → rejet", () => {
+    // le sujet n'est pas la carte elle-même
+    expect(
+      compileStaticEffectText(
+        "Le Bouftou ne peut pas bloquer.",
+        "Jicé Aouaire",
+      ),
+    ).toBeNull();
+    // une phrase de plus que la forme connue → rien ne compile
+    expect(
+      compileStaticEffectText(
+        "Tant que le Chef de Guerre Bouftou est dans le Monde, vos autres Alliés Bouftous dans le Monde gagnent +1 en Force. Piochez une carte.",
+        "Chef de Guerre Bouftou",
+      ),
+    ).toBeNull();
+    // verbe inconnu (« attaquer ») : pas une forme couverte
+    expect(
+      compileStaticEffectText(
+        "Jicé Aouaire ne peut pas attaquer.",
+        "Jicé Aouaire",
+      ),
+    ).toBeNull();
   });
 
   it("le registre scripte l'entretien des Forêts d'Astrub (élément + arrivée inclinée)", () => {
