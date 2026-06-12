@@ -146,9 +146,12 @@ export const useGameStore = defineStore("game", () => {
     ruleError.value = null;
   }
 
-  /** Fin de partie automatique d'après l'état (PV ≤ 0 / Niveau 3). */
+  /**
+   * Fin de partie automatique d'après l'état (PV ≤ 0 / Niveau 3, 103.2).
+   * S'applique MÊME en mode libre : la mort à 0 PV est fondamentale.
+   */
   function checkVictory(): void {
-    if (!assist.value || matchPhase.value !== "playing") return;
+    if (matchPhase.value !== "playing") return;
     const w = victoryFromState(rulesCtx());
     if (w) {
       winner.value = w;
@@ -378,6 +381,7 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function concede(seat: Seat): void {
+    dispatch(say(seat, `${players.value[seat].name} abandonne la partie.`));
     winner.value = otherSeat(seat);
     matchPhase.value = "finished";
   }

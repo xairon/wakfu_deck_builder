@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <!-- ═══════════ LOBBY : choix des decks (J1 puis J2) ═══════════ -->
   <div v-if="store.matchPhase === 'lobby'" class="space-y-6">
     <header class="flex flex-wrap items-end justify-between gap-4">
@@ -9,6 +9,18 @@
           Partie locale à deux (hot-seat). Chaque joueur choisit un deck, puis
           on passe l'appareil à tour de rôle.
         </p>
+        <button
+          class="btn btn-outline btn-sm mt-4 gap-2"
+          :disabled="!cardStore.cards.length"
+          @click="startTutorial"
+        >
+          🎓 Apprendre à jouer
+          <span
+            v-if="!tutorial.isDone()"
+            class="font-mono text-[10px] uppercase opacity-70"
+            >~5 min</span
+          >
+        </button>
       </div>
       <RouterLink to="/play" class="btn btn-ghost btn-sm"
         >← Compagnon</RouterLink
@@ -159,6 +171,14 @@
         <button class="gtop-btn" @click="showJournal = !showJournal">
           {{ showJournal ? "Masquer le journal" : "Journal" }}
         </button>
+        <button
+          v-if="store.matchPhase === 'playing'"
+          class="gtop-btn gtop-btn--quit"
+          :class="{ 'gtop-btn--danger': concedeArmed }"
+          @click="concedeClick"
+        >
+          {{ concedeArmed ? "Confirmer l'abandon ?" : "Abandonner" }}
+        </button>
         <button class="gtop-btn gtop-btn--quit" @click="store.quitMatch()">
           Quitter
         </button>
@@ -175,6 +195,7 @@
     <CardPreviewLayer />
     <DragLayer />
     <TurnBanner />
+    <TutorialCoach />
 
     <!-- Écran de passation -->
     <Transition name="ovl">
@@ -349,10 +370,42 @@ import ActionLog from "@/components/game/ActionLog.vue";
 import CardPreviewLayer from "@/components/game/CardPreviewLayer.vue";
 import DragLayer from "@/components/game/DragLayer.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
+import TutorialCoach from "@/components/game/TutorialCoach.vue";
+import { useTutorialStore } from "@/stores/tutorialStore";
+import { useToast } from "@/composables/useToast";
 
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
 const store = useGameStore();
+const tutorial = useTutorialStore();
+
+const toast = useToast();
+function startTutorial(): void {
+  if (!tutorial.start()) {
+    toast.addToast(
+      "Impossible de préparer le tutoriel (cartes indisponibles).",
+      { type: "warning" },
+    );
+  }
+}
+
+// ── Abandon (confirmation en deux temps) ─────────────────────────────────────
+const concedeArmed = ref(false);
+let concedeTimer: ReturnType<typeof setTimeout> | null = null;
+function concedeClick(): void {
+  if (!concedeArmed.value) {
+    concedeArmed.value = true;
+    if (concedeTimer) clearTimeout(concedeTimer);
+    concedeTimer = setTimeout(() => {
+      concedeArmed.value = false;
+      concedeTimer = null;
+    }, 3000);
+    return;
+  }
+  if (concedeTimer) clearTimeout(concedeTimer);
+  concedeArmed.value = false;
+  store.concede(store.perspective);
+}
 
 const decks = computed<Deck[]>(() => deckStore.decks ?? []);
 const showJournal = ref(true);
@@ -649,6 +702,13 @@ onMounted(async () => {
 }
 .gtop-btn--quit:hover {
   background: rgba(240, 78, 34, 0.25);
+}
+.gtop-btn--danger {
+  background: #c0392b;
+  outline-color: transparent;
+}
+.gtop-btn--danger:hover {
+  background: #a72f1f;
 }
 .gtop-toggle {
   display: flex;
