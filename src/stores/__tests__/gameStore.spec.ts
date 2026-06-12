@@ -55,6 +55,30 @@ describe("gameStore — table locale (bac à sable)", () => {
     store.toggleTap(havre);
     expect(store.state.instances[havre].orientation).toBe("upright");
   });
+
+  it("limite de main = PA (4873) : défausse obligatoire de l'excédent", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, deck, "A");
+    // PA = 6 ; piocher 8 → excédent de 2 → choix OBLIGATOIRE ouvert
+    store.draw("A", 8);
+    expect(store.state.seats.A.main.length).toBe(8);
+    expect(store.effectPicking?.mandatory).toBe(true);
+    expect(store.effectPicking?.remaining).toBe(2);
+    // impossible de passer le choix ni de finir le tour
+    store.effectPickSkip();
+    expect(store.effectPicking).not.toBeNull();
+    store.endTurn();
+    expect(store.turn.number).toBe(1);
+    // défausser 2 cartes → main à 6, choix fermé, le tour peut finir
+    store.effectPick(store.effectPickIds[0]);
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.state.seats.A.main.length).toBe(6);
+    expect(store.effectPicking).toBeNull();
+    expect(store.state.seats.A.defausse.length).toBe(2);
+    store.endTurn();
+    expect(store.turn.number).toBe(2);
+  });
 });
 
 describe("gameStore — flux de match (lobby/mulligan/tour)", () => {

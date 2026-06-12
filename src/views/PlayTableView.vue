@@ -290,7 +290,11 @@
               />
             </button>
           </div>
-          <button class="btn btn-outline mt-5" @click="store.effectPickSkip()">
+          <button
+            v-if="!store.effectPicking.mandatory"
+            class="btn btn-outline mt-5"
+            @click="store.effectPickSkip()"
+          >
             Passer
           </button>
         </div>

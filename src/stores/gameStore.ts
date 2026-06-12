@@ -372,8 +372,14 @@ export const useGameStore = defineStore("game", () => {
 
   /** Finit le tour : pioche jusqu'aux PA (règle Wakfu) puis passe la main. */
   function endTurn(): void {
-    combat.value = null;
     const active = state.value.turn.active;
+    // 4873 : on ne passe pas la main avec un excédent — défausse d'abord
+    if (assist.value && state.value.seats[active].main.length > paOf(active)) {
+      enforceHandLimit(active);
+      rejectMove("Main pleine : défausse l'excédent avant de finir le tour.");
+      return;
+    }
+    combat.value = null;
     const need = paOf(active) - state.value.seats[active].main.length;
     if (need > 0) draw(active, need);
     nextTurn();
@@ -417,6 +423,7 @@ export const useGameStore = defineStore("game", () => {
       ]);
     }
     dispatch(...drafts);
+    enforceHandLimit(seat);
   }
 
   function moveTo(
@@ -619,9 +626,36 @@ export const useGameStore = defineStore("game", () => {
     filter?: PickFilter;
     /** « Il apparaît incliné. » — la carte mise en jeu arrive inclinée. */
     enterTapped?: boolean;
+    /** Choix imposé par une règle (pas de bouton « Passer »). */
+    mandatory?: boolean;
     remaining: number;
     sourceId?: string;
   } | null>(null);
+
+  /**
+   * Limite de main = PA (4873) : « à n'importe quel instant », l'excédent
+   * doit être défaussé. Ouvre un choix OBLIGATOIRE dans la main.
+   */
+  function enforceHandLimit(seat: Seat): void {
+    if (!assist.value || matchPhase.value !== "playing") return;
+    if (effectPicking.value || effectTargeting.value) return; // re-vérifié après
+    const excess = state.value.seats[seat].main.length - paOf(seat);
+    if (excess <= 0) return;
+    dispatch(
+      say(
+        seat,
+        `Main pleine (maximum ${paOf(seat)} = PA) : défausse ${excess} carte(s).`,
+      ),
+    );
+    effectPicking.value = {
+      seat,
+      cardName: "Limite de main",
+      zone: "main",
+      action: "discard",
+      mandatory: true,
+      remaining: excess,
+    };
+  }
 
   /**
    * FILE D'EXÉCUTION des effets : chaque effet est une « frame » d'ops.
@@ -653,6 +687,14 @@ export const useGameStore = defineStore("game", () => {
       const frame = effectQueue.value[0];
       if (runFrame(frame)) return; // en pause — la frame reste en tête
       effectQueue.value = effectQueue.value.slice(1);
+    }
+    // file vidée : la limite de main s'applique « à n'importe quel instant »
+    if (
+      !effectQueue.value.length &&
+      !effectTargeting.value &&
+      !effectPicking.value
+    ) {
+      enforceHandLimit(state.value.turn.active);
     }
   }
 
@@ -731,7 +773,7 @@ export const useGameStore = defineStore("game", () => {
   /** Passe le choix en cours (pile vide / décision du joueur). */
   function effectPickSkip(): void {
     const p = effectPicking.value;
-    if (!p) return;
+    if (!p || p.mandatory) return; // un choix imposé ne se passe pas
     effectPicking.value = null;
     dispatch(say(p.seat, `${p.cardName} : choix passé.`));
     pumpEffects();
@@ -1216,7 +1258,10 @@ export const useGameStore = defineStore("game", () => {
 
   function drawFromReserve(seat: Seat = perspective.value): void {
     const first = state.value.seats[seat].reserve[0];
-    if (first) moveTo(first, { zone: "main", owner: seat });
+    if (first) {
+      moveTo(first, { zone: "main", owner: seat });
+      enforceHandLimit(seat);
+    }
   }
 
   function shufflePioche(seat: Seat = perspective.value): void {

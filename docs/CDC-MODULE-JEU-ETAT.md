@@ -28,7 +28,7 @@
 | Fin de partie : PV ≤ 0 / Niveau 3 (103.2) **même en mode libre**                                                      | ✅     | corrigé suite retour utilisateur                             |
 | Abandonner la partie (concession → victoire adverse)                                                                  | ✅     | bouton topbar, confirmation 2 temps — retour utilisateur     |
 | Égalité 103.3 (double 0 PV simultané → 1 PV chacun)                                                                   | ❌     | cas rare, non géré                                           |
-| Limite de main = PA (505.2 : défausse de l'excédent)                                                                  | ❌     | on pioche jusqu'aux PA mais on ne fait pas défausser au-delà |
+| Limite de main = PA (4873 : défausse de l'excédent, à tout instant)                                                  | ✅     | choix obligatoire (sans « Passer »), fin de tour bloquée tant que la main déborde |
 | Réserve : échange entre manches (101.4)                                                                               | 🟡     | zone gérée à la main, aucun flux « entre parties »           |
 | Mode Scellé/Draft (30 cartes, 101.2)                                                                                  | ❌     | seul le Construit 48+2 est validé                            |
 
@@ -48,18 +48,18 @@
 
 ## 4. Combat
 
-| Exigence                                                                         | Statut | Notes                                              |
-| -------------------------------------------------------------------------------- | ------ | -------------------------------------------------- |
-| 1 attaque/tour, pas au premier tour (603.2)                                      | ✅     |                                                    |
-| Cibles légales : Héros / Allié du Monde / Havre-Sac adverses (702.2/702.3)       | ✅     |                                                    |
-| Attaquants/bloqueurs ≤ PM, redressés, Élémentaires exclus (303.6)                | ✅     |                                                    |
-| Duels simultanés, dommages élémentaires, létalité damage ≥ Force (204.6)         | ✅     | Force effective = imprimée + modificateurs         |
-| Dommages sur cible libre : PV Héros / Résistance Havre-Sac / Allié               | ✅     |                                                    |
-| XP sur Alliés détruits, verso à 6 XP (stats ajustées), victoire à 18 (307/415)   | ✅     |                                                    |
-| Mots-clés : Résistance (prévention par élément, 7469), Géant (répartition, 6135) | ✅     | data-driven ; Géant promu en mot-clé STRUCTURÉ dans les données (90 cartes)                       |
-| Choix manuel du bloqueur frappé par l'attaquant (6105)                           | ❌     | auto : premier bloqueur assigné                    |
-| Réactions pendant le combat (Phase d'Actions, 705)                               | ❌     | voir §6 timing                                     |
-| Tacle / Agilité / Agressivité (mots-clés de blocage)                             | ❌     | absents des données scrapées, à scripter à la main |
+| Exigence                                                                         | Statut | Notes                                                                       |
+| -------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------------------- |
+| 1 attaque/tour, pas au premier tour (603.2)                                      | ✅     |                                                                             |
+| Cibles légales : Héros / Allié du Monde / Havre-Sac adverses (702.2/702.3)       | ✅     |                                                                             |
+| Attaquants/bloqueurs ≤ PM, redressés, Élémentaires exclus (303.6)                | ✅     |                                                                             |
+| Duels simultanés, dommages élémentaires, létalité damage ≥ Force (204.6)         | ✅     | Force effective = imprimée + modificateurs                                  |
+| Dommages sur cible libre : PV Héros / Résistance Havre-Sac / Allié               | ✅     |                                                                             |
+| XP sur Alliés détruits, verso à 6 XP (stats ajustées), victoire à 18 (307/415)   | ✅     |                                                                             |
+| Mots-clés : Résistance (prévention par élément, 7469), Géant (répartition, 6135) | ✅     | data-driven ; Géant promu en mot-clé STRUCTURÉ dans les données (90 cartes) |
+| Choix manuel du bloqueur frappé par l'attaquant (6105)                           | ❌     | auto : premier bloqueur assigné                                             |
+| Réactions pendant le combat (Phase d'Actions, 705)                               | ❌     | voir §6 timing                                                              |
+| Tacle / Agilité / Agressivité (mots-clés de blocage)                             | ❌     | absents des données scrapées, à scripter à la main                          |
 
 ## 5. Effets de cartes (DSL strict, compilation hors-ligne)
 
@@ -133,8 +133,7 @@ que si TOUS ses effets compilent).
 
 1. **Finir la fiabilisation du tutoriel** (en cours) — porte d'entrée des
    nouveaux joueurs.
-2. **Petites règles à fort impact perçu** : limite de main = PA, Taille du
-   Havre-Sac, indicateur de Ressources, choix du bloqueur frappé.
+2. **Petites règles à fort impact perçu** : indicateur de Ressources, choix du bloqueur frappé. (Limite de main et Taille du Havre-Sac : faites.)
 3. **Trancher le grand chantier** : timing (fidélité règles) **ou** en ligne
    (produit). Recommandation : en ligne — le serveur est déjà prêt et le
    mode assisté local est largement jouable.
