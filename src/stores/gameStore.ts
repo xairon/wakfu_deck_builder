@@ -55,6 +55,9 @@ import {
   playDestination,
   playEffects,
   pmOf,
+  printedEffects,
+  producedElement,
+  normElement,
   resolveBuffForceTarget,
   resolveCombat,
   resolveDamageTarget,
@@ -359,6 +362,34 @@ export const useGameStore = defineStore("game", () => {
       if (!card) continue;
       for (const atom of turnStartEffects(card)) {
         if (atom.optional || atom.orElse) {
+          // 804.8 : un coût d'entretien IMPAYABLE ne laisse pas le choix —
+          // la branche « ou détruisez » s'applique d'office (ex. officiel :
+          // Chacha Noir sans carte [Feu] dans la Défausse).
+          const first = atom.ops[0];
+          if (
+            atom.orElse === "destroySelf" &&
+            first?.op === "recycleFromDiscard" &&
+            !state.value.seats[seat].defausse.some((id) =>
+              matchesPickFilter(
+                getCard(state.value.instances[id]?.cardId ?? null),
+                first.element ? { element: first.element } : undefined,
+              ),
+            )
+          ) {
+            dispatch(
+              say(
+                seat,
+                `${card.name} : entretien impayable (rien à recycler${first.element ? ` en ${first.element}` : ""}) — détruit (804.8).`,
+              ),
+            );
+            enqueueEffect({
+              seat,
+              cardName: card.name,
+              ops: [{ op: "destroySelf" }],
+              sourceId: inst.instanceId,
+            });
+            continue;
+          }
           effectChoices.value = [
             ...effectChoices.value,
             {
@@ -539,9 +570,7 @@ export const useGameStore = defineStore("game", () => {
     // Action dont TOUS les effets sont compilés : elle se résout puis va en
     // défausse (302.1). Un seul effet incompris (ex. restriction de jeu
     // « Ne jouez cette carte que… ») → la carte reste jouée manuellement.
-    const effectsCount = (card.effects ?? []).filter((e) =>
-      String(e?.description ?? "").trim(),
-    ).length;
+    const effectsCount = printedEffects(card).length;
     const playAtoms = card.mainType === "Action" ? playEffects(card) : [];
     const actionAtoms = playAtoms.length === effectsCount ? playAtoms : [];
     const dest: ZoneRef = actionAtoms.length
@@ -611,11 +640,13 @@ export const useGameStore = defineStore("game", () => {
     sourceId?: string;
   } | null>(null);
 
-  /** Filtre de recherche dans une pile (type, famille, niveau max). */
+  /** Filtre de recherche dans une pile (type, famille, niveau max, élément). */
   interface PickFilter {
     mainType?: string;
     sub?: string;
     maxLevel?: number;
+    /** « une carte [Feu] » : seules les cartes de cet Élément. */
+    element?: string;
   }
   function normWord(s: string): string {
     return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
@@ -625,6 +656,8 @@ export const useGameStore = defineStore("game", () => {
     if (!card) return false;
     if (f.mainType && card.mainType !== f.mainType) return false;
     if (f.sub && !(card.subTypes ?? []).some((s) => normWord(s) === f.sub))
+      return false;
+    if (f.element && producedElement(card) !== normElement(f.element))
       return false;
     if (
       f.maxLevel !== undefined &&
@@ -863,11 +896,21 @@ export const useGameStore = defineStore("game", () => {
       }
       if (op.op === "recycleFromDiscard" || op.op === "discardFromHand") {
         const zone = op.op === "recycleFromDiscard" ? "defausse" : "main";
-        if (!state.value.seats[seat][zone].length) {
+        const filter: PickFilter | undefined =
+          op.op === "recycleFromDiscard" && op.element
+            ? { element: op.element }
+            : undefined;
+        const hasMatch = state.value.seats[seat][zone].some((id) =>
+          matchesPickFilter(
+            getCard(state.value.instances[id]?.cardId ?? null),
+            filter,
+          ),
+        );
+        if (!hasMatch) {
           dispatch(
             say(
               seat,
-              `${cardName} : rien à ${op.op === "recycleFromDiscard" ? "recycler" : "défausser"}, effet passé.`,
+              `${cardName} : rien à ${op.op === "recycleFromDiscard" ? "recycler" : "défausser"}${filter ? ` (aucune carte ${op.element})` : ""}, effet passé.`,
             ),
           );
           continue;
@@ -877,6 +920,7 @@ export const useGameStore = defineStore("game", () => {
           cardName,
           zone,
           action: op.op === "recycleFromDiscard" ? "recycle" : "discard",
+          ...(filter ? { filter } : {}),
           remaining: op.n,
           sourceId,
         };
@@ -1504,5 +1548,6 @@ export const useGameStore = defineStore("game", () => {
     effectPickIds,
     effectPick,
     effectPickSkip,
+    enqueueEffect,
   };
 });

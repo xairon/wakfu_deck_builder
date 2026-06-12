@@ -69,9 +69,10 @@ export type CompiledEffectOp =
     }
   /** « [Cette carte] gagne +N en Force jusqu'à la fin du tour ». */
   | { op: "buffForceSelf"; n: number }
-  /** « Recyclez N carte(s) de votre Défausse » — choix dans la pile,
-   *  remise SOUS la Pioche du propriétaire (3389). */
-  | { op: "recycleFromDiscard"; n: number }
+  /** « Recyclez N carte(s) [Élément] de votre Défausse » — choix dans la
+   *  pile, remise SOUS la Pioche du propriétaire (3389). `element` :
+   *  seules les cartes de cet Élément sont éligibles. */
+  | { op: "recycleFromDiscard"; n: number; element?: string }
   /** « Défaussez-vous de N carte(s) » — choix dans sa main. */
   | { op: "discardFromHand"; n: number }
   /** « Cherchez un [type] [Famille] [de Niveau ≤ N] dans votre Pioche … » —
@@ -116,6 +117,10 @@ export interface CardEffect {
   elements?: CardElement[];
   isOncePerTurn?: boolean;
   requiresIncline?: boolean;
+  /** Texte NON imprimé sur la carte (note de règle / errata du site,
+   *  scrapé dans effects[] à tort) : exclu du comptage d'effets et de
+   *  toute compilation. Posé par `npm run compile-effects`. */
+  kind?: "ruling" | "errata";
   /** Présent uniquement si le texte est entièrement compris par le DSL. */
   compiled?: CompiledEffect;
   linkedTokens?: {

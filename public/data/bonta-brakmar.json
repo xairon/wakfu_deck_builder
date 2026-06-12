@@ -507,7 +507,8 @@
       {
         "description": "Araknotanker Grouilleux ayant la famille Grouilleux, il se compte lui-même dans le calcul de sa Force. La Force de base de l'Araknotanker Grouilleux est calculée en permanence, que celui-ci soit en main, dans la Défausse ou en jeu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -570,7 +571,8 @@
       {
         "description": "L'indication de Force est à ignorer, une Zone n'a pas de valeur de Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -689,17 +691,20 @@
       {
         "description": "On ignore les restrictions de contrôle d'Alliés pour le lancement d'un Sort choisi (ex: vous pouvez lancer Colère de Iop si vous ne contrôlez pas de Iop).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Vous devez toujours payer les coûts éventuels de l'Action choisie.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Il est possible de choisir et jouer une Réaction depuis la main adverse grâce à l'Arnaque.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1230,12 +1235,14 @@
       {
         "description": "Les cartes révélées par le pouvoir de Babeth Safoueth sont ensuite remises sur le dessus de la pioche dans l'ordre de votre choix. Vous n'avez pas à révéler cet ordre à votre adversaire.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si plusieurs Monstres de Niveau inférieur ou égal à 3 sont ainsi révélés, vous choisissez celui que vous prenez en main. Le pouvoir de Babeth Safoueth ne vous permet pas de prendre tous ces Monstres en main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1272,12 +1279,14 @@
         {
           "description": "Les cartes révélées par le pouvoir de Babeth Safoueth sont ensuite remises sur le dessus de la pioche dans l'ordre de votre choix. Vous n'avez pas à révéler cet ordre à votre adversaire.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         },
         {
           "description": "Si plusieurs Monstres de Niveau inférieur ou égal à 3 sont ainsi révélés, vous choisissez celui que vous prenez en main. Le pouvoir de Babeth Safoueth ne vous permet pas de prendre tous ces Monstres en main.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -1378,7 +1387,8 @@
       {
         "description": "Certaines cartes permettent de jouer gratuitement un Equipement. Il n'est pas possible de jouer la Baguette des Limbes grâce à ces cartes, car la Baguette des Limbes reste jouée de manière normale. En revanche, il est possible de mettre en jeu la Baguette des Limbes, via le pouvoir de Thapa Sambal par exemple.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1920,7 +1930,8 @@
       {
         "description": "Le Blé d'Or se substitue aux ingrédients de la fabrication, à savoir les cartes à recycler. Il est néanmoins toujours nécessaire de disposer du bon Artisan pour pouvoir fabriquer l'objet (et donc de l'incliner).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1964,7 +1975,8 @@
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Coco ne vous permet pas de mettre tous les Alliés en jeu.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2017,7 +2029,8 @@
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Griotte ne vous permet pas de mettre tous les Alliés en jeu.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2071,7 +2084,8 @@
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Indigo ne vous permet pas de mettre tous les Alliés en jeu.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2124,7 +2138,8 @@
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Reinette ne vous permet pas de mettre tous les Alliés en jeu.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2837,7 +2852,8 @@
       {
         "description": "Cette carte est bannie en tournoi officiel au format Construit et Bloc depuis le 05 Mars 2011.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -3781,7 +3797,8 @@
       {
         "description": "Le changement de position doit être légal. Si vous attaquez avec Coa Gullay et un Tofu, par exemple, et que votre adversaire bloque Coa Gullay avec son Corailleur, vous ne pouvez pas changer la position du Corailleur en le plaçant devant le Tofu, car le Corailleur ne possède pas Agilité et n'est donc pas un bloqueur légal pour le Tofu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3817,7 +3834,8 @@
         {
           "description": "Le changement de position doit être légal. Si vous attaquez avec Coa Gullay et un Tofu, par exemple, et que votre adversaire bloque Coa Gullay avec son Corailleur, vous ne pouvez pas changer la position du Corailleur en le plaçant devant le Tofu, car le Corailleur ne possède pas Agilité et n'est donc pas un bloqueur légal pour le Tofu.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -4227,12 +4245,14 @@
       {
         "description": "Si vous jouez un Craqueleur Légendaire alors que votre adversaire en contrôle déjà un dans le Monde, votre Craqueleur Légendaire n'a pas de pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le pouvoir du Craqueleur Légendaire ne choisit pas et n'inflige pas de Dommages, il n'est donc pas affecté par les Règles de Portée. Les Alliés adverses dans leur Havre Sac perdent donc également leurs pouvoirs.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4914,7 +4934,8 @@
       {
         "description": "Si le Démon XIX quitte le jeu puis revient en jeu, il n'est plus considéré comme étant le même Allié, et il ne garde donc pas mémoire des pouvoirs qu'il aurait pu copier précédemment.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -5086,12 +5107,14 @@
       {
         "description": "Vous pouvez toujours jouer des cartes donnant des bonus de Force, mais ce bonus ne fera rien. Les pouvoirs qui se déclenchent quand un bonus de Force est gagné ne se déclencheront pas.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le Domen annule tout les bonus y compris les permanents telle que celui du Chef de Guerre Bouftou",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -6505,7 +6528,8 @@
       {
         "description": "Le pouvoir de Flix Flax rentre d'abord en File d'Attente, après avoir choisit l'Action à jouer et incliné Flix Flax. L'Action ne sera effectivement jouée que lors de la résolution de l'effet. À ce moment là, il faudra payer le coût de l'Action choisit, qui rentre alors à son tour dans la File d'Attente.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Vous ne pouvez pas jouer de par le biais du pouvoir de Flix Flax au Niveau 1, car celui-ci n'est pas lui-même une Réaction.",
@@ -6515,7 +6539,8 @@
       {
         "description": "Si vous utilisez le pouvoir de Flix Flax sur un Sort d'invocation comme Arbre ou Épée Volante, l'invocation apparaît et est immédiatement bannie par le pouvoir de Flix Flax. Si l'Action que vous rejouez est annulée, elle est tout de même bannie par le pouvoir de Flix Flax.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6553,17 +6578,20 @@
         {
           "description": "Le pouvoir de Flix Flax rentre d'abord en File d'Attente, après avoir choisit l'Action à jouer et incliné Flix Flax. L'Action ne sera effectivement jouée que lors de la résolution de l'effet. À ce moment là, il faudra payer le coût de l'Action choisit, qui rentre alors à son tour dans la File d'Attente.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         },
         {
           "description": "Vous ne pouvez pas jouer de Réaction par le biais du pouvoir de Flix Flax au Niveau 1, car celui-ci n'est pas lui-même une Réaction.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         },
         {
           "description": "Si vous utilisez le pouvoir de Flix Flax sur un Sort d'invocation comme Arbre ou Épée Volante, l'invocation apparaît et est immédiatement bannie par le pouvoir de Flix Flax. Si l'Action que vous rejouez est annulée, elle est tout de même bannie par le pouvoir de Flix Flax.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -6964,7 +6992,8 @@
       {
         "description": "Seuls sont concernés les bonus gagnés par le biais d'un pouvoir à paiement. Les bonus d'équipement ou les bonus permanents (ex : Chef de Guerre Bouftou) ne sont pas pris en compte dans ce pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -7271,7 +7300,8 @@
       {
         "description": "L'effet devient : « , Recyclez X Alliés de votre Défausse : Mettez en jeu un Équipement ou une Salle de Niveau X gratuitement de votre main. »",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7352,7 +7382,8 @@
       {
         "description": "La vérification de la carte du dessus de la pioche fait référence à la famille Grouilleux et non au titre de la carte révélé.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7397,12 +7428,14 @@
       {
         "description": "Une fois que Grufon est devenu la copie d'un Équipement, il gagne le type Équipement et perd le type Allié. Il peut alors être choisi par une carte qui choisit un Équipement, comme Fée d'Artifice, mais pas par une carte qui choisit un Allié.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Un adversaire qui détruit Grufon transformé en Équipement ne gagne pas d'XP. On ne gagne de l'XP que lorsqu'on détruit un Allié adverse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7849,7 +7882,8 @@
       {
         "description": "Le pouvoir de l'Horloge du Dieu Xélor rentre d'abord en File d'Attente. L'Action ne sera effectivement jouée que lors de la résolution de l'effet. À ce moment là, il faudra payer le coût de l'Action choisit, qui rentre alors à son tour dans la File d'Attente.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Vous ne pouvez pas jouer de par le biais du pouvoir de l'Horloge du Dieu Xélor car celle-ci n'est pas elle-même une Réaction.",
@@ -7859,7 +7893,8 @@
       {
         "description": "Si vous utilisez le pouvoir de l'Horloge du Dieu Xélor sur un Sort d'invocation comme Arbre ou Épée Volante, l'invocation apparaît et est immédiatement bannie par le pouvoir de l'Horloge du Dieu Xélor. Si l'Action que vous rejouez est annulée, elle est tout de même bannie par le pouvoir de l'Horloge du Dieu Xélor.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8128,7 +8163,8 @@
       {
         "description": "Les Monstres ne sont pas détruits s'ils reçoivent des Dommages supérieurs ou égaux à leur Force ou par des effets mentionnant spécifiquement une destruction, comme Noob! En revanche, les Dommages sont tout de même infligés aux Monstres, et un pouvoir qui se déclenche lorsqu'un Allié subit des Dommages se déclenchera même si le pouvoir de Jin Kobi Loba est actif.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8164,7 +8200,8 @@
         {
           "description": "Les Monstres ne sont pas détruits s'ils reçoivent des Dommages supérieurs ou égaux à leur Force ou par des effets mentionnant spécifiquement une destruction, comme Noob! En revanche, les Dommages sont tout de même infligés aux Monstres, et un pouvoir qui se déclenche lorsqu'un Allié subit des Dommages se déclenchera même si le pouvoir de Jin Kobi Loba est actif.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -8316,7 +8353,8 @@
         "description": "Le nouveau choix que vous effectuez doit respecter les contraintes restreignant les choix réalisables avec l'Action ou le pouvoir qui est joué. Le Sort Iop Pression inflige par exemple 1 Dommage à un Allié attaquant ou bloqueur. Vous ne pouvez pas modifier ce choix avec Justine Broudi en choisissant un Allié ou Héros non attaquant ou non bloqueur. De même, vous ne pouvez pas modifier le choix d'une Action ou un pouvoir adverse en choisissant un de vos Alliés ou Héros dans votre Havre Sac, sauf si l'Action ou le pouvoir peut explicitement choisir un de vos Allié ou Héros dans votre Havre Sac (Flèche d'Immolation ou Abraknyde Sombre, par exemple), car la source de l'Action ou du pouvoir ne change pas et que les Règles de Portée l'interdisent",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8352,7 +8390,8 @@
         {
           "description": "Le nouveau choix que vous effectuez doit respecter les contraintes restreignant les choix réalisables avec l'Action ou le pouvoir qui est joué. Le Sort Iop Pression inflige par exemple 1 Dommage à un Allié attaquant ou bloqueur. Vous ne pouvez pas modifier ce choix avec Justine Broudi en choisissant un Allié ou Héros non attaquant ou non bloqueur. De même, vous ne pouvez pas modifier le choix d'une Action ou un pouvoir adverse en choisissant un de vos Alliés ou Héros dans votre Havre Sac, sauf si l'Action ou le pouvoir peut explicitement choisir un de vos Allié ou Héros dans votre Havre Sac (Flèche d'Immolation ou Abraknyde Sombre, par exemple), car la source de l'Action ou du pouvoir ne change pas et que les Règles de Portée l'interdisent",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -8662,12 +8701,14 @@
       {
         "description": "L'Allié perd son Trait de Classe, et donc sa capacité à lancer des Sorts de Classe. Il perd également tous les bonus qui s'appliquaient exclusivement à son ancienne Classe.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Un Monstre ne peut pas porter d'Équipements. Les Équipements portés par l'Allié transformé en Monstre sont immédiatement détruits.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -9167,7 +9208,8 @@
       {
         "description": "Certaines cartes se bannissent elles-même lorsqu'on utilise un de leurs pouvoirs, comme par exemple Incarnam. Ce bannissement fait partie du coût du pouvoir et non de son effet, il ne peut donc pas être annulé par Lily.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -9254,17 +9296,20 @@
       {
         "description": "Le pouvoir ne demande aucun choix, vous pouvez donc infliger ces dommages à des alliés comme le Serpentin ou Azraoul qui ne peuvent pas être choisit en temps normal.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "En raison des Règles de Portée, Luc Ylook ne peut infliger des Dommages aux Alliés ou Héros attaquants ou bloqueurs adverses que s'il est dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Vous ne pouvez pas répartir 0 Dommage sur un Allié ou un Héros attaquant ou bloqueur. Au Niveau 1, Luc Ylook peut donc infliger au choix 2 Dommages à un seul Allié ou Héros, ou 1 Dommage à deux Alliés ou Héros.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -9302,17 +9347,20 @@
         {
           "description": "Le pouvoir ne demande aucun choix, vous pouvez donc infliger ces dommages à des alliés comme le Serpentin ou Azraoul qui ne peuvent pas être choisit en temps normal.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         },
         {
           "description": "En raison des Règles de Portée, Luc Ylook ne peut infliger des Dommages aux Alliés ou Héros attaquants ou bloqueurs adverses que s'il est dans le Monde.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         },
         {
           "description": "Vous ne pouvez pas répartir 0 Dommage sur un Allié ou un Héros attaquant ou bloqueur. Au Niveau 1, Luc Ylook peut donc infliger au choix 2 Dommages à un seul Allié ou Héros, ou 1 Dommage à deux Alliés ou Héros.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -9341,7 +9389,8 @@
         {
           "description": "Le pouvoir ne demande aucun choix, vous pouvez donc infliger ces dommages à des alliés comme le Serpentin ou Azraoul qui ne peuvent pas être choisit en temps normal.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -9763,12 +9812,14 @@
       {
         "description": "Il n'est pas possible de placer un Allié qui ne peut pas attaquer comme attaquant dans un combat. En revanche, on peut placer un Allié incliné, ou même un Allié est apparu pendant ce tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Il est possible d'utiliser le pouvoir de Mawy Blodie pour placer un 4ème attaquant alors que vous ne possédez que 3 PM. Une fois l'attaque déclarée légale, il n'y a en effet plus de vérification de la limite de PM.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -9805,12 +9856,14 @@
         {
           "description": "Il n'est pas possible de placer un Allié qui ne peut pas attaquer comme attaquant dans un combat. En revanche, on peut placer un Allié incliné, ou même un Allié est apparu pendant ce tour.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         },
         {
           "description": "Il est possible d'utiliser le pouvoir de Mawy Blodie pour placer un 4ème attaquant alors que vous ne possédez que 3 PM. Une fois l'attaque déclarée légale, il n'y a en effet plus de vérification de la limite de PM.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -9945,12 +9998,14 @@
       {
         "description": "Vous ne piochez qu'une seule carte à chaque fois que des Dommages sont infligés par Milo Zotis, peu importe le nombre de Dommages infligés.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si les Dommages que devrait infliger Milo Zotis sont réduits à 0 ou redirigés vers un Allié, le pouvoir de Milo Zotis ne se déclenchera pas.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10110,7 +10165,8 @@
       {
         "description": "Vous ne contrôlez pas l'Allié choisi, vous ne pouvez donc pas l'incliner pour payer un coût, ou même le déclarer attaquant ou bloqueur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10385,7 +10441,8 @@
         "description": "Les Dommages infligés par Olaf Requiem sont d'Élément .",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -11679,7 +11736,8 @@
       {
         "description": "Le pouvoir du Rat Blanc ne dure que jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -11807,7 +11865,8 @@
       {
         "description": "Le pouvoir du Rat Noir ne dure que jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -11940,12 +11999,14 @@
       {
         "description": "Un Héros ou un Havre Sac sont des cartes. Ils peuvent donc être détruit par le pouvoir de Razortemps. Dans ce cas, ils sont retirés de la partie.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Certaines cartes du Razortemps existent en version promotionnelles Extended Art Brillant avec le trait « Monstre ». Il s'agit d'une erreur de cette version de la carte, la ligne complète de trait est bien « Allié — Machine — Unique »",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -12220,7 +12281,8 @@
       {
         "description": "Rubilax ne gagne que +1 en Force, peu importe le nombre de Dommages qu'il subit. Il est recommandé d'utiliser des marqueurs pour comptabiliser la Force de Rubilax.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -12302,7 +12364,8 @@
       {
         "description": "Le Havre Sac animé est considéré comme un Allié pour la déclaration des attaquants, des bloqueurs, ainsi que pour la résolution des duels et des dommages sur la cible. En revanche, ce n'est pas un Allié, il ne peut donc pas être choisi par une carte qui choisit exclusivement un Allié.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -12450,12 +12513,14 @@
       {
         "description": "Le second pouvoir est un pouvoir à ressource, il ne rentre donc pas en File d'Attente et on ne peut donc pas réagir à la production des deux ressources. Néanmoins, on peut toujours réagir à l'inclinaison de la carte, par exemple avec Flèche d'Immolation.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les deux ressources peuvent être de deux éléments différents. Néanmoins, il n'est pas possible d'utiliser ces deux ressources pour jouer deux cartes différentes : il n'y a pas de réserve de ressources utilisables dans le futur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13616,7 +13681,8 @@
       {
         "description": "L'effet devient « Inclinez X de vos Alliés ou Héros Sram : Cherchez une carte Allié ou Équipement de Niveau inférieur ou égal à X dans la Pioche de l'adversaire de votre choix et mettez-la en jeu gratuitement sous votre contrôle, puis ce joueur mélange sa Pioche. »",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13893,7 +13959,8 @@
       {
         "description": "Si le Monstre choisi quitte le jeu avant la fin de votre tour, puis revient en jeu, on considère que c'est un nouveau Monstre. Ce Monstre ne sera donc pas détruit à la fin de votre tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],

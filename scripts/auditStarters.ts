@@ -29,6 +29,7 @@ interface RawEffect {
   description?: string;
   compiled?: unknown;
   requiresIncline?: boolean;
+  kind?: "ruling" | "errata";
 }
 interface RawCard {
   name?: string;
@@ -92,9 +93,12 @@ for (const deckId of TARGET_DECKS) {
       rows.push(`| ${name} | ? | — | ❓ INTROUVABLE | |`);
       continue;
     }
-    const effects = (
+    const all = (
       card.effects?.length ? card.effects : (card.recto?.effects ?? [])
     ).filter((e) => String(e?.description ?? "").trim());
+    // les notes de règles / erratas du site ne sont pas des effets imprimés
+    const effects = all.filter((e) => !e.kind);
+    const notesCount = all.length - effects.length;
     const compiled = effects.filter((e) => e.compiled).length;
     const kw = (card.keywords ?? [])
       .map((k) => k?.name)
@@ -122,7 +126,7 @@ for (const deckId of TARGET_DECKS) {
       )
       .join("<br>");
     rows.push(
-      `| ${name} | ${card.mainType} | ${compiled}/${effects.length}${kw ? ` · ${kw}` : ""} | ${verdict} | ${detail} |`,
+      `| ${name} | ${card.mainType} | ${compiled}/${effects.length}${notesCount ? ` (+${notesCount} note${notesCount > 1 ? "s" : ""})` : ""}${kw ? ` · ${kw}` : ""} | ${verdict} | ${detail} |`,
     );
   }
   lines.push(

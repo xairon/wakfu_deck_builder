@@ -13,7 +13,14 @@
  */
 import type { CompiledEffect } from "@/types/cards";
 
-export const CARD_SCRIPTS: Record<string, Record<number, CompiledEffect>> = {
+/**
+ * Une entrée `{ kind }` ne compile rien : elle classe l'effet comme note de
+ * règle / errata du site (exclu du comptage des effets imprimés). À n'utiliser
+ * que si l'auto-détection via `notes[]` du pipeline ne suffit pas.
+ */
+export type CardScriptEntry = CompiledEffect | { kind: "ruling" | "errata" };
+
+export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   // « Le Léopardo gagne +3 en Force [.] jusqu'à la fin du tour.
   //   N'utilisez ce pouvoir qu'une seule fois par tour. »
   // → pouvoir activé : l'inclinaison garantit l'unique utilisation par tour.
@@ -38,6 +45,35 @@ export const CARD_SCRIPTS: Record<string, Record<number, CompiledEffect>> = {
           zones: ["monde", "havreSac"],
         },
       ],
+    },
+  },
+  // Errata officiel : « Au début de votre tour, recyclez une carte [Feu]
+  // de votre Défausse ou détruisez le Chacha Noir. » — l'icône [Feu] a été
+  // perdue au scraping (vérifié sur raw-card-data/pages/incarnam).
+  "chacha-noir-incarnam": {
+    0: {
+      trigger: "onTurnStart",
+      orElse: "destroySelf",
+      ops: [{ op: "recycleFromDiscard", n: 1, element: "Feu" }],
+    },
+  },
+  // « Au début de votre tour, recyclez une carte [Terre] … ou détruisez
+  // les Forêts d'Astrub. » + « Les Forêts d'Astrub apparaissent inclinés. »
+  "forets-d-astrub-incarnam": {
+    0: {
+      trigger: "onTurnStart",
+      orElse: "destroySelf",
+      ops: [{ op: "recycleFromDiscard", n: 1, element: "Terre" }],
+    },
+    1: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
+  },
+  // « Au début de votre tour, recyclez une carte [Terre] … ou détruisez le
+  // Marcassin. » (« Le Porteur gagne Géant » attend le modèle Porteur, lot F)
+  "marcassin-incarnam": {
+    0: {
+      trigger: "onTurnStart",
+      orElse: "destroySelf",
+      ops: [{ op: "recycleFromDiscard", n: 1, element: "Terre" }],
     },
   },
 };

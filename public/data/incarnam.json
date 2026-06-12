@@ -75,7 +75,8 @@
       {
         "description": "Si un Allié devait apparaître dans un Havre Sac suite à un Abcès de Wakfu, il apparaît dans le Monde à la place. Si un Allié ou un Héros devait se déplacer depuis le Monde dans un Havre Sac suite à un Abcès de Wakfu, il reste là où il est à la place.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -161,7 +162,8 @@
       {
         "description": "La restriction d'utilisation ne s'applique qu'à un seul Abraknyde donné. Si vous contrôlez deux exemplaires de l'Abraknyde, vous pouvez utiliser le pouvoir de chacun une fois.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -247,7 +249,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -283,7 +286,8 @@
         {
           "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "errata"
         }
       ],
       "keywords": [],
@@ -312,7 +316,8 @@
         {
           "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "errata"
         }
       ],
       "keywords": [],
@@ -346,12 +351,14 @@
       {
         "description": "L'effet de cette carte prend en compte tous les modificateurs qui s'appliquent à la Force de l'Allié ou Héros incliné. Si l'Allié ou Héros incliné quitte le jeu avant qu'Agression ne soit résolue, on prend alors comme référence la valeur de Force qu'il avait au moment où il a quitté le jeu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les Règles de Portée impactent le fonctionnement d'Agression. Un Allié ou Héros dans son Havre Sac ne pouvant pas infliger de Dommages à un Allié ou Héros adverse dans le Monde, il est impossible d'incliner un Allié ou Héros dans son Havre Sac si un Allié ou Héros adverse dans le Monde a été choisi.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -543,17 +550,20 @@
       {
         "description": "Si vous n'avez aucune carte en Main à la résolution du pouvoir, aucune carte ne peut être défaussée. Dans ce cas, vous ne piochez pas de carte car la pioche est une action conditionnelle.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Bijou\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       },
       {
         "description": "Cette carte a reçu un Errata Officiel : la défausse devient un coût à payer lors de l'utilisation du pouvoir, et ne fait donc plus partie de l'effet.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -646,7 +656,8 @@
       {
         "description": "Vous pouvez détruire Anerice la Shushess pour payer le coût de son pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -755,7 +766,8 @@
       {
         "description": "Cette carte a reçu un Errata Officiel : le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -874,7 +886,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : Ajout de l'élement du Dommage infligé par l'arc au Porteur manquant dans l'effet.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -1017,7 +1030,8 @@
       {
         "description": "La Défausse est un coût supplémentaire pour jouer l'Art du Lancer. Si vous ne pouvez pas défausser d'Equipement, vous ne pouvez pas jouer l'Art du Lancer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1145,7 +1159,8 @@
       {
         "description": "Ce pouvoir se déclenche à chaque fois qu'une source fait perdre des PV à votre Héros, peu importe le contrôleur de la source. Au Niveau 1, Ayma Ragie ne gagne le bonus de Force qu'une seule fois par Dommages, peu importe leur quantité.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1181,7 +1196,8 @@
         {
           "description": "Ce pouvoir se déclenche à chaque fois qu'une source fait perdre des PV à votre Héros, peu importe le contrôleur de la source. Au Niveau 1, Ayma Ragie ne gagne le bonus de Force qu'une seule fois par Dommages, peu importe leur quantité.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -1210,7 +1226,8 @@
         {
           "description": "Ce pouvoir se déclenche à chaque fois qu'une source fait perdre des PV à votre Héros, peu importe le contrôleur de la source. Au Niveau 1, Ayma Ragie ne gagne le bonus de Force qu'une seule fois par Dommages, peu importe leur quantité.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -1681,12 +1698,14 @@
       {
         "description": "Bond peut amener le nombre de bloqueurs à dépasser les PM du Héros sans pour autant rendre la Phase de Déclaration des Bloqueurs illégale. Un Héros ou Allié ne possédant pas Agilité ne peut pas être placé en bloqueur d'un Héros ou Allié possédant Agilité.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Seul le joueur défenseur ou un partenaire du joueur défenseur lors d'une partie multijoueurs peut placer un Allié ou un Héros en bloqueur dans un combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1932,7 +1951,8 @@
       {
         "description": "Les joueurs sont libres d'imaginer ce qu'est la Bouftonik.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1982,12 +2002,14 @@
       {
         "description": "Le pouvoir du Bouftou Royal demande de chercher une carte \"Bouftou\" sans préciser son type. Ce pouvoir s'applique à tous les types de carte de la Famille Bouftou, c'est-à-dire contenant \"Bouftou\" dans la ligne de trait.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte a reçu un Errata Officiel : L'effet devient \"Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -2063,7 +2085,8 @@
       {
         "description": "Cet effet est permanent. Utilisez des marqueurs pour comptabiliser les bonus de PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2146,7 +2169,8 @@
       {
         "description": "Lorsque votre adversaire pioche plusieurs cartes, il s'agit d'évenements de pioche distincts d'une carte. Brelondass gagne autant en force que de cartes piochées.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2234,7 +2258,8 @@
       {
         "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2270,7 +2295,8 @@
         {
           "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -2299,7 +2325,8 @@
         {
           "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -2488,7 +2515,8 @@
       {
         "description": "Vous pouvez utiliser ce pouvoir à chaque fois qu'un joueur adverse effectue une action de jeu durant le combat, mais seulement si Calt Aclysme est incliné. On ne peut pas redresser un Allié déjà dressé.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2563,12 +2591,14 @@
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Armure\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       },
       {
         "description": "Cette carte a reçu un Errata Officiel : le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -2615,7 +2645,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Armure\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -2696,7 +2727,8 @@
       {
         "description": "Vous pouvez jouer cette Action même si vous n'avez pas de Monstre dans votre Défausse. S'il y a au moins une carte Monstre dans votre Défausse, vous ne pouvez pas choisir d'échouer dans la recherche car la Défausse est une zone publique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2736,17 +2768,20 @@
       {
         "description": "Si votre Défausse ne contient aucune carte à la résolution du pouvoir, aucune carte ne peut être recyclée. Dans ce cas, vous ne piochez pas de carte car la pioche est une action conditionnelle.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Armure\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       },
       {
         "description": "Cette carte a reçu un Errata Officiel : le recyclage devient un coût à payer lors de l'utilisation du pouvoir, et ne fait donc plus partie de l'effet.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -2867,7 +2902,8 @@
           "ops": [
             {
               "op": "recycleFromDiscard",
-              "n": 1
+              "n": 1,
+              "element": "Feu"
             }
           ]
         }
@@ -2876,7 +2912,8 @@
         "description": "Le pouvoir du Chacha Noir devient : \"Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Chacha Noir.\"",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3138,7 +3175,8 @@
       {
         "description": "Le bonus de +1 en Force s'applique également aux Monstres que vous contrôlez dans votre Havre Sac car la capacité du Chêne Mou n'est pas affectée par les Règles de Choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -3328,12 +3366,14 @@
       {
         "description": "Vous pouvez jouer cette Action même si X=0, auquel cas la Colère de Iop ne fera rien. La répartition des Dommages est effectuée au moment où le joueur joue le Sort. Chaque Héros ou Allié choisi doit se voir assigner au moins 1 Dommage.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Vous pouvez jouer la Colère de Iop hors combat si x=0 car dans ce cas précis, il n'y a aucun choix à faire, vous n'avez donc pas besoin de choisir un attaquant ou bloqueur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3415,7 +3455,8 @@
       {
         "description": "Un joueur ne peut pas avoir moins de 0 PA. Si les PA d'un joueur devraient être inférieurs à 0 suite à l'utilisation du pouvoir de Comte Harebourg, ils deviennent égaux à 0 a la place.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3555,12 +3596,14 @@
       {
         "description": "Si l'Allié choisi quitte le jeu avant la résolution, l'Action est annulée et l'échange n'a pas lieu. À la fin de la partie, chaque joueur récupère son Allié.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si un Allié attaquant ou bloqueur pendant un combat change de propriétaire, il cesse immédiatement d'être attaquant ou bloqueur et retourne dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3635,7 +3678,8 @@
       {
         "description": "Un Héros ne peut avoir moins de 0 PA. Si les PA d'un joueur devraient être inférieurs a 0 suite à la résolution de Coupure Temporelle, ils deviennent égaux à 0 à la place. Si vous jouez cette Action sur un joueur dont le Héros a déjà 0 PA, vous piochez quand même.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4149,7 +4193,8 @@
       {
         "description": "Le pouvoir de la Démone XXIV est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Echec Critique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4237,7 +4282,8 @@
       {
         "description": "Vous ne pouvez utiliser ce pouvoir que sur des Alliés en jeu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4323,7 +4369,8 @@
       {
         "description": "Chaque joueur peut choisir un Allié qu'il contrôle aussi bien dans le Monde que dans son Havre Sac, car les Règles de Choix s'appliquent à chaque joueur et non au Djakky Chwan.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4737,7 +4784,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : l'effet de la carte est \"Tous vos alliés Tofu…\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -4861,7 +4909,8 @@
       {
         "description": "Ce pouvoir surveille les évenements d'inclinaison. Ce pouvoir est aveugle aux évenements d'inclinaison qui se produisent dans le Havre Sac adverse. Si l'évenement d'inclinaison déclenche le pouvoir mais que l'Allié a été détruit avant la résolution du pouvoir, le pouvoir du Dragon Cochon se résout mais est sans effet.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4912,17 +4961,20 @@
       {
         "description": "Les gains d'XP sont calculés en une seule fois à chaque résolution de phase ou d'action. Ainsi, à la fin d'un combat où plusieurs alliés adverses ont été détruits, ou à la suite d'un de vos sorts détruisant plusieurs alliés adverses, si la Dragoune Rose est en jeu, on calcule d'abord la somme d'XP gagnés avant d'y ajouter 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Un gain d'XP de 0 n'est jamais pris en compte. Votre Héros ne gagne pas 1 XP à chaque fois qu'il devrait \"gagner\" 0 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte a reçu un Errata Officiel : L'effet devient \"Vos gains d'XP sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -5005,7 +5057,8 @@
       {
         "description": "Si votre adversaire ne possède aucune carte en Main, vous pouvez tout de même jouer Échange mais il ne se défaussera d'aucune carte. Dans ce cas, vous ne piochez aucune carte car la pioche est une action conditionnelle.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5162,7 +5215,8 @@
       {
         "description": "Le bonus de +2 en Force que gagne Elisabetron ne s'applique pas si l'Allié a été détruit pour une autre raison que le paiement du coût de ce pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5278,7 +5332,8 @@
       {
         "description": "Le pouvoir d'Erbus Erport s'applique également aux coûts de fabrication des Equipements.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5319,12 +5374,14 @@
       {
         "description": "Vous devez nommer une famille de Monstres existante. Les familles de Monstres de l'extension Incarnam sont : Abraknyde, Amphibion, Arakne, Bouftou, Bwork, Chafer, Champignon, Cochon, Coffre, Corbac, Craqueleur, Dragodinde, Dragoeuf, Éponge, Firefoux, Flaqueux, Flasque, Fleur, Fossoyeur, Gelée, Gobelin, Kanigrou, Larve, Minos, Moon, Moskito, Mulou, Piou, Polter, Porkass, Prespic, Smare, Tofu, Wabbit, Vampyre.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les Alliés non Monstre de la famille choisie, comme par exemple Vampyro ou Anerice la Shushess si \"Vampyre\" a été nommé, ne sont pas affectés par Espèce en Danger.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5364,7 +5421,8 @@
       {
         "description": "Le combat a lieu dans le Monde. La formulation \"… retourne dans le Monde\" ici signifie que l'Allié choisi cesse d'être attaquant ou bloqueur et ne participe plus au combat en cours.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5403,7 +5461,8 @@
       {
         "description": "Pendant la résolution de l'Expérience d'Otomaï, cette carte se trouve révélée sur le terrain. Le joueur recycle sa Défausse et mélange sa Pioche. À la fin de la résolution, l'Experience d'Otomaï est mise à la Défausse. L'Expérience d'Otomaï n'est pas recyclée et ne se retrouve pas à nouveau dans la Pioche immédiatement après sa résolution.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5695,7 +5754,8 @@
       {
         "description": "La Flèche d'Immolation ne peut pas être jouée en réaction à l'inclinaison d'un Allié présent dans un Havre Sac adverse : les événements qui se produisent dans un Havre Sac ne sont pas visibles pour un joueur adverse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5800,7 +5860,8 @@
           "ops": [
             {
               "op": "recycleFromDiscard",
-              "n": 1
+              "n": 1,
+              "element": "Terre"
             }
           ]
         }
@@ -5808,7 +5869,15 @@
       {
         "description": "Les Forêts d'Astrub apparaissent inclinés.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "tapSelf"
+            }
+          ]
+        }
       }
     ],
     "keywords": [],
@@ -5948,7 +6017,8 @@
       {
         "description": "Cette carte a reçu un Errata Officiel : en cas de perte du Chi-Fu-Mi, le gain de Force ne dure que jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -5993,7 +6063,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Bijou\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -6327,7 +6398,8 @@
       {
         "description": "Cet effet ne s'applique pas aux Alliés ou Héros inclinés durant la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6434,7 +6506,8 @@
       {
         "description": "La Force de Gonard est égale à la Force indiquée sur la carte du dernier Allié copié, et ce jusqu'à la fin du tour. L'effet de copie ne prend pas en compte tout modificateur qui s'applique à la Force de l'Allié dont la Force est copiée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6527,7 +6600,8 @@
       {
         "description": "Les pouvoirs de Goultard le Barbare sont des pouvoirs déclenchés et ne sont, comme tous les pouvoirs déclenchés, pas considérés comme joués par le joueur. Ces pouvoirs ne peuvent donc pas être annulés par la carte Echec Critique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6603,7 +6677,8 @@
       {
         "description": "Lorsque vous piochez plusieurs cartes, il s'agit d'évenements de pioche distincts d'une carte. Le Gros Smare gagne autant en force que de cartes piochées.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6747,7 +6822,8 @@
       {
         "description": "Cette carte a reçu un Errata Officiel: Guy Yomtella inflige des Dommages et non des blessures (terme obsolète).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -6952,7 +7028,8 @@
       {
         "description": "Les actions de pioche multiple sont découpées en évenement de pioche d'une carte. Vous ne pouvez réagir qu'à un seul de ces événement à la fois, séparemment. Vous ne pouvez donc jouer Humour de Pouchecot que sur la pioche d'une seule carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7105,12 +7182,14 @@
       {
         "description": "Si une carte ou un pouvoir devrait permettre à un joueur de déclarer une attaque après l'utilisation du pouvoir d'Incarnam (comme La Ruse d'Allister par exemple), la déclaration n'a pas lieu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte a reçu un errata officiel : Le coût supplémentaire devient \"Bannissez…\" à la place de \"Détruisez…\".",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -7215,7 +7294,8 @@
       {
         "description": "Les choix imposés par la carte se font avant le paiement de l'Action et doivent être valides. Jeunesse d'Ogrest demande de choisir un Allié incliné, vous ne pouvez donc pas payer cette action avec la même carte que vous auriez voulu redresser car la carte est soit dréssée est donc pas valide comme choix soit inclinée et ne peut pas produire de ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7257,7 +7337,8 @@
       {
         "description": "Jicé Aouaire ne peut pas être déclaré comme bloqueur par son contrôleur durant la Phase de Déclaration des Bloqueurs, ni être placé comme bloqueur durant la Phase d'Actions.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7302,17 +7383,20 @@
       {
         "description": "Vous n'êtes pas obligé d'utiliser ce pouvoir. Vous ne pouvez utiliser ce pouvoir que si le Kanigrou est sur le point de recevoir des Dommages, et seulement sur le prochain paquet de Dommages que le Kanigrou devrait subir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si le Kanigrou est détruit parce que vous avez décidez de jouer son pouvoir, votre adversaire ne gagne pas d'XP car vous êtes vous-même le contrôleur du pouvoir à l'origine de la destruction du Kanigrou.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte a reçu un Errata Officiel : Le pouvoir a été reformulé, sans impact pratique sur le fonctionnement de la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -7362,7 +7446,8 @@
       {
         "description": "Le Chi-Fu-Mi de début de partie ne confère aucun bonus à Karey Dass car celui-ci n'est pas joué pendant le tour d'un des deux joueurs mais au début de la partie.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7398,7 +7483,8 @@
         {
           "description": "Le Chi-Fu-Mi de début de partie ne confère aucun bonus à Karey Dass car celui-ci n'est pas joué pendant le tour d'un des deux joueurs mais au début de la partie.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -7427,7 +7513,8 @@
         {
           "description": "Le Chi-Fu-Mi de début de partie ne confère aucun bonus à Karey Dass car celui-ci n'est pas joué pendant le tour d'un des deux joueurs mais au début de la partie.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -7502,7 +7589,8 @@
       {
         "description": "Vous pouvez utiliser ce pouvoir même si Keyss Aouti est dans votre Havre Sac. Dans ce cas, vous ne pourrez que choisir votre propre Havre Sac.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7549,7 +7637,8 @@
       {
         "description": "Ce pouvoir doit être utilisé quand le joueur adverse déclare son attaque, avant la déclaration de la cible de l'attaque. On ne peut pas attendre de voir quels Alliés ou Héros seront envoyés au combat avant d'utiliser le pouvoir de Klore Ofil.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7585,7 +7674,8 @@
         {
           "description": "Ce pouvoir doit être utilisé quand le joueur adverse déclare son attaque, avant la déclaration de la cible de l'attaque. On ne peut pas attendre de voir quels Alliés ou Héros seront envoyés au combat avant d'utiliser le pouvoir de Klore Ofil.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -7614,7 +7704,8 @@
         {
           "description": "Ce pouvoir doit être utilisé quand le joueur adverse déclare son attaque, avant la déclaration de la cible de l'attaque. On ne peut pas attendre de voir quels Alliés ou Héros seront envoyés au combat avant d'utiliser le pouvoir de Klore Ofil.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -7655,12 +7746,14 @@
       {
         "description": "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les Alliés et les Héros qui s'inclinent reçoivent le Dommage même si Kouff Ourbe est dans son Havre Sac, car ce n'est pas Kouff Ourbe qui est la source de ce Dommage. Les Règles de Portée ne s'appliquent donc pas ici.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -7697,12 +7790,14 @@
         {
           "description": "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         },
         {
           "description": "Les Alliés et les Héros qui s'inclinent reçoivent le Dommage même si Kouff Ourbe est dans son Havre Sac, car ce n'est pas Kouff Ourbe qui est la source de ce Dommage. Les Règles de Portée ne s'appliquent donc pas ici.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -7768,22 +7863,26 @@
       {
         "description": "Si vous échangez Kriss la Krass avec la cible d'un combat, Kriss la Krass devient alors la nouvelle cible du combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si Kriss la Krass est déclaré comme attaquant et que vous l'échangez avec un autre Allié ou votre Héros hors du combat, le combat continue alors avec ce nouvel Allié ou votre Héros en tant qu'attaquant, et Kriss la Krass cesse d'être attaquant.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si Kriss la Krass est hors du combat et est échangé avec un autre Allié ou Héros attaquant, Kriss la Krass devient attaquant et l'autre Allié ou Héros cesse de l'être. La Déclaration des Bloqueurs ne devient pas illégale si l'échange de positions entraîne une diminution des PM du joueur attaquant en deça du nombre de Héros ou Alliés attaquants.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Vous ne pouvez pas échanger la position si le nouveau bloqueur n'aurait pas pu bloquer normalement l'attaquant. Cela concerne essentiellement l'Agilité et les pouvoirs du type \"ne peut pas bloquer\" comme celui de l'Epouvantail.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8226,7 +8325,8 @@
       {
         "description": "La Défausse est un coût supplémentaire pour jouer La Sacrifiée. Si vous ne pouvez pas défausser de Monstre, vous ne pouvez pas jouer La Sacrifiée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8312,7 +8412,8 @@
       {
         "description": "Le pouvoir de Lâme Ourduvis n'est pas soumis aux règles de choix. D'autre part un mouvement est visible à partir du monde comme du Havre Sac quelque soit le sens dans lequel il s'effectue. Le pouvoir de Lâme Ourduvis peut donc s'appliquer à un Allié qui vient d'effectuer un mouvement vers le Monde, comme vers le Havre Sac.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8678,7 +8779,8 @@
       {
         "description": "Ce pouvoir ne peut être utilisé qu'en combat. Le Monstre invoqué n'est détruit que s'il est toujours présent dans le Monde ou le Havre Sac à la fin du combat. Seul le joueur attaquant peut placer un Allié comme attaquant. Seul le joueur défenseur peut placer un Allié comme bloqueur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8803,7 +8905,8 @@
       {
         "description": "Le pouvoir du Maître Corbac est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Echec Critique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -8854,7 +8957,8 @@
       {
         "description": "L'Allié détruit et l'Allié remis en jeu ne sont pas déterminés au lancement de l'Action mais à sa résolution. Le second Allié peut apparaître dans le Monde ou dans le Havre Sac de son contrôleur. Il est possible de jouer cette carte même si il n'y a aucune carte Allié dans la Défausse de son contrôleur. Si vous ne contrôlez aucun Allié, aucun Allié ne peut être détruit. Dans ce cas, vous ne remettez pas d'Allié en jeu car cette action est une action conditionnelle.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -8895,7 +8999,8 @@
           "ops": [
             {
               "op": "recycleFromDiscard",
-              "n": 1
+              "n": 1,
+              "element": "Terre"
             }
           ]
         }
@@ -9476,7 +9581,8 @@
       {
         "description": "Si l'Allié choisi quitte le jeu avant la résolution du Mot de Purgation, l'effet du Sort est entièrement annulé et le Héros du contrôleur de cet Allié ne perd donc pas de PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -9563,7 +9669,8 @@
       {
         "description": "Cela ne prend pas en compte les cartes mises en jeu par un pouvoir (ex : Trantmy Londami).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -9688,7 +9795,8 @@
       {
         "description": "Cette carte a reçu un Errata Officiel : en cas de perte du Chi-Fu-Mi, le gain de Force ne dure que jusqu'au début de notre prochain tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -9739,7 +9847,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -9780,7 +9889,8 @@
         {
           "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "errata"
         }
       ],
       "keywords": [],
@@ -9851,12 +9961,14 @@
       {
         "description": "Le pouvoir d'Otomaï est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Echec Critique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si vous choisissez de recyclez la Défausse de votre adversaire, c'est votre adversaire qui choisit l'ordre des cartes à recycler car c'est le propriétaire de la Défausse qui choisit cet ordre lorsque plusieurs cartes sont à recycler simultanément.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -9978,7 +10090,8 @@
       {
         "description": "Si l'un des Alliés ou Héros choisis quitte le jeu avant la résolution du Sort, celui-ci n'est pas annulé, les autres Alliés ou Héros choisis se voient tout de même infliger les Dommages.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10018,7 +10131,8 @@
       {
         "description": "Il est possible de jouer Pandrista sur un Allié ou Héros déjà incliné. Dans ce cas il n'est pas incliné de nouveau mais ne peut tout de même pas se redresser par la suite.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10376,7 +10490,8 @@
       {
         "description": "Le pouvoir du Piou Bleu est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10422,7 +10537,8 @@
       {
         "description": "Le pouvoir du Piou Jaune est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10468,7 +10584,8 @@
       {
         "description": "Le pouvoir du Piou Rouge est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10514,7 +10631,8 @@
       {
         "description": "Le pouvoir du Piou Vert est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10568,7 +10686,8 @@
       {
         "description": "Vous avez détruit un Allié adverse s'il est placé dans la Défausse de son propriétaire suite à une carte que vous avez joué, ou à cause de Dommages de combat infligés par une carte que vous contrôlez.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10689,7 +10808,8 @@
       {
         "description": "Vous pouvez utiliser ce pouvoir à chaque moment où vous pourriez jouer une Action. Le pouvoir du Polter Bouftou ne peut être utilisé que depuis la Main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10735,7 +10855,8 @@
       {
         "description": "Vous pouvez utiliser ce pouvoir à chaque moment où vous pourriez jouer une Action. Le pouvoir du Polter Piou ne peut être utilisé que depuis la Main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10781,7 +10902,8 @@
       {
         "description": "Vous pouvez utiliser ce pouvoir à chaque moment où vous pourriez jouer une Action. Le pouvoir du Polter Tofu ne peut être utilisé que depuis la Main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -10852,7 +10974,8 @@
       {
         "description": "Si votre Défausse ne contient aucune carte à la résolution du pouvoir, aucune carte ne peut être recyclée. Dans ce cas, vous ne piochez pas de carte car la pioche est une action conditionnelle.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -11264,7 +11387,8 @@
       {
         "description": "Si le choix de l'Allié est devenu illégal à la résolution de la Prospection, l'effet de l'Action est entièrement annulé et le joueur ne pioche donc pas de carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -11527,7 +11651,8 @@
       {
         "description": "Vous pouvez jouer cette Action même si vous n'avez pas de Monstre dans votre Défausse. Néanmoins, si il y a au moins une carte Monstre dans votre Défausse, vous ne pouvez pas choisir d'échouer dans la recherche car la Défausse est une zone publique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -11835,12 +11960,14 @@
       {
         "description": "Cet effet prend en compte les Équipements portés par votre Héros ainsi que ceux portés par vos Alliés, mais ni ceux dans votre Main ni dans votre Défausse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte est bannie en tournoi officiel au format Construit et Bloc depuis le 16 Janvier 2010.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -12071,7 +12198,8 @@
       {
         "description": "Le pouvoir de Shika Ingalsse concerne un effet en File d'Attente. Le pouvoir de Shika Ingalsse peut être utilisé à partir du Havre Sac pour annuler l'effet d'un Bonus de Force qui se trouve dans la File d'Attente.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -12118,7 +12246,8 @@
       {
         "description": "Ce pouvoir ne s'appliquera pas si votre Héros a été incliné pour une autre raison (pour payer un coût, par exemple).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -12154,7 +12283,8 @@
         {
           "description": "Ce pouvoir ne s'appliquera pas si votre Héros a été incliné pour une autre raison (pour payer un coût, par exemple).",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -12183,7 +12313,8 @@
         {
           "description": "Cette carte a reçu un errata officiel : il gagne +2 en Force ET réduit les dommages de 2.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "errata"
         }
       ],
       "keywords": [],
@@ -12221,7 +12352,8 @@
       {
         "description": "L'évenement d'apparition se déclenche dès que le Smare entre en jeu, après son eventuel coût. Vous pouvez donc payez le pouvoir du Smare en produissant une ressource avec le Smare lui-même.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -12309,7 +12441,8 @@
       {
         "description": "Stratégie de Groupe génère un modificateur continu défini qui affecte tous les Alliés dans le Monde. Un Allié présent dans le Monde à la résolution de Stratégie de Groupe et qui se déplace dans le Havre Sac ne bénéficie plus du bonus de Force. En revanche, un Allié qui apparaît dans le Monde après la résolution de Stratégie de Groupe bénéfiera tout de même du bonus de Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -12343,7 +12476,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Armure\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [
@@ -12781,7 +12915,8 @@
       {
         "description": "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13142,7 +13277,8 @@
       {
         "description": "Un Monstre Invoqué n'est pas considéré comme ayant été joué. Le Monstre n'est choisi qu'à la résolution du pouvoir de Trantmy Londami, par conséquent l'adversaire ne peut pas attendre de savoir quel Monstre est invoqué pour jouer une éventuelle Réaction. On peut utiliser ce pouvoir sans carte Monstre en Main, dans ce cas le pouvoir ne fait rien.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13178,7 +13314,8 @@
         {
           "description": "Un Monstre Invoqué n'est pas considéré comme ayant été joué. Le Monstre n'est choisi qu'à la résolution du pouvoir de Trantmy Londami, par conséquent l'adversaire ne peut pas attendre de savoir quel Monstre est invoqué pour jouer une éventuelle Réaction. On peut utiliser ce pouvoir sans carte Monstre en Main, dans ce cas le pouvoir ne fait rien.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "kind": "ruling"
         }
       ],
       "keywords": [],
@@ -13235,7 +13372,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : Carte Unique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -13353,7 +13491,8 @@
       {
         "description": "Si l'un des Alliés ou Héros choisis quitte le jeu ou cesse d'être attaquant ou bloqueur avant la résolution du Sort, celui-ci n'est pas annulé, les autres Alliés ou Héros choisis se voient tout de même infliger les Dommages. Le montant des Dommages infligés à chaque Allié ou Héros choisi est déterminé au lancement de la Vague Tournoyante.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13433,7 +13572,8 @@
       {
         "description": "Vampyro est considéré comme étant « sur le point d'être détruit » lorsqu'une carte pouvant le détruire vient d'être jouée, ou s'il devrait recevoir des Dommages létaux soit en combat, soit à cause d'une Action ou d'un pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13529,7 +13669,8 @@
       {
         "description": "Vous pouvez utiliser ce pouvoir même si vous n'avez pas de Monstre satisfaisant le critère de Niveau dans votre Défausse. S'il y a au moins une carte Monstre satisfaisant le critère de Niveau dans votre Défausse, vous ne pouvez pas choisir d'échouer dans la recherche car la Défausse est une zone publique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13563,7 +13704,8 @@
       {
         "description": "Vous pouvez jouer cette Action même si X=0.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -13600,7 +13742,8 @@
       {
         "description": "Si vous ne possédez aucune carte en main, le Vrombyx est détruit. En effet, tout Allié possédant 0 de Force est immédiatement détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],

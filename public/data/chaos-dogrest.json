@@ -433,7 +433,8 @@
       {
         "description": "Vous ne pouvez pas jouer l'Attaque Frontale si vous êtes dans l'impossibilité de choisir à la fois un Allié et un Equipement. À la résolution de l'Attaque Frontale, si un des deux choix effectués est devenu illégal, l'autre choix reste affecté normalement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -476,7 +477,8 @@
       {
         "description": "L'intégralité de la phase d'action est supprimée de la structure du combat, qui passe donc directement de la fin de la déclaration des bloqueurs au début de la résolution des duels. Par conséquent, des pouvoirs qui se déclenchent au début de la phase d'action, comme le pouvoir de Marty Nïe, ne se déclencheront pas si un Champion est attaquant, bloqueur ou cible de ce combat. Les pouvoirs qui se déclenchent lors de la déclaration de la cible, des attaquants ou des bloqueurs se déclenchent normalement, de même que ceux qui se déclenchent en fin de combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -532,7 +534,8 @@
       {
         "description": "Un Allié ou Héros est considéré comme étant en dehors du combat s'il n'est ni attaquant, ni bloqueur, ni cible dans ce combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -763,7 +766,8 @@
       {
         "description": "Les éléments sont Neutre, Terre, Air, Feu et Eau. Le Blop qui apparaît dans le Monde est compté lors de la résolution de ce pouvoir. Le Blop Multicolore Royal déclenche son propre pouvoir. Si vous contrôlez le Blop Multicolore Royal et deux Blop Griotte, et qu'un Blop Coco apparaît dans le Monde, alors vous contrôlez des Blops d'éléments Neutre, Feu et Air (donc de 3 éléments), et par conséquent le Blop Coco qui vient d'apparaître inflige 3 Dommages Air à l'Allié ou au Héros de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1975,7 +1979,8 @@
       {
         "description": "La Force du Disciple Zoth est toujours égale à 4. Les bonus de Force conférés temporairement ou indéfiniment par un effet et les bonus de Force conférés par un Equipement au Disciple Zoth sont ignorés.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2020,7 +2025,8 @@
       {
         "description": "La rareté d'une carte est déterminée par le symbole de rareté en haut à gauche de la carte. Le symbole de la carte est doré pour les cartes Rares, argenté pour les cartes Peu Communes, vide pour les cartes Communes, et d'une couleur différente pour les Rares Draconiques (vert pour les Dofus, turquoise pour les Protecteurs).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2201,7 +2207,8 @@
         "description": "Vous décidez de payer ou de recycler une carte de votre main après avoir pioché chaque carte, et vous pouvez prendre une décision différente à chaque carte piochée. Si la pioche d'une carte via Emmet Steïn est annulée par une Action ou un pouvoir, vous n'avez pas à payer ou à recycler une carte.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2684,7 +2691,8 @@
       {
         "description": "L'Industrie Magique continue de produire de la Ressource de l'élément de votre Havre Sac même si celui-ci a été banni.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2805,7 +2813,8 @@
       {
         "description": "Le pouvoir du Jeune Ogrest permet de déclarer une attaque pendant la Phase de Fin de Tour. Le combat qui en découle se déroule comme les combats qui se déroulent pendant la Phase Principale, et respecte les règles de combat classique. Ce combat comprendra notamment une Phase d'Actions au cours de laquelle les deux joueurs pourront jouer des Actions ou utiliser des pouvoirs. Pour rappel, la Phase de Fin de Tour se déroule après la Phase de Pioche. Par conséquent, le joueur dont c'est le tour aura pioché ses cartes avant le combat du Jeune Ogrest. Il ne repiochera pas de cartes à la fin de ce combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2856,7 +2865,8 @@
       {
         "description": "Les Dommages qu'infligent les Alliés ou Héros lors de la résolution des duels ou lors de la résolution des Dommages sur la cible sont des Dommages de combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3647,7 +3657,8 @@
       {
         "description": "La Chopine de Pandawa propose plusieurs effets différents séparés par « ; ou ». Vous décidez quel effet s'applique lorsque vous jouez La Chopine de Pandawa. Si vous utilisez le second effet, vous ne piochez pas de carte si l'Allié ou le Héros choisi n'est plus un choix légal lors de la résolution de La Chopine de Pandawa.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3738,7 +3749,8 @@
       {
         "description": "Le Bouclier de Féca est mis en jeu comme un Monstre possédant le trait Bouclier. Ce Monstre est un Allié. Il n'est pas considéré comme un Equipement de type Bouclier.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3932,7 +3944,8 @@
       {
         "description": "Le Soulier de Sadida propose plusieurs effets différents séparés par « ; ou ». Vous décidez quel effet s'applique lorsque vous jouez Le Soulier de Sadida. Si vous utilisez le second effet, la prise de contrôle ne s'arrête pas à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4270,7 +4283,8 @@
       {
         "description": "L'adversaire que vous choisissez décide quelle carte de sa main est défaussée de cette façon.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4583,7 +4597,8 @@
       {
         "description": "Si l'Equipement choisi n'est plus un choix légal à la résolution du Ménage de Printemps, le Ménage de Printemps n'a plus aucun choix légal et est donc entièrement annulé : vous ne piochez pas de carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4647,7 +4662,8 @@
       {
         "description": "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4685,7 +4701,8 @@
       {
         "description": "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4723,7 +4740,8 @@
       {
         "description": "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4772,7 +4790,8 @@
       {
         "description": "Le premier pouvoir permet d'ajouter une charge Elémentaire sur la Métaria lorsqu'on l'utilise pour jouer un Equipement de l'élément de la Métaria. Cette charge Elémentaire est représentée par un marqueur nommé et placé sur la Métaria. Le second pouvoir permet de retirer une charge Elémentaire de la Métaria pour mettre en jeu un jeton Terra, Aero, Pyro ou Akwa. Ces jetons sont identiques à ceux utilisés pour le draft : ils ne peuvent ni attaquer, ni bloquer, ni porter un Equipement. Ils peuvent être représentés de la manière dont le souhaite le joueur tant qu'on peut clairement les identifier (ainsi que leur état), néanmoins l'utilisation des jetons Terra, Aero, Pyro ou Akwa officiels est fortement recommandée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4824,7 +4843,8 @@
       {
         "description": "Le pouvoir du Meulou est déclenché lorsque le Meulou est déclaré comme attaquant. Il ne se déclenche pas si le Meulou est placé en combat via une Action ou un pouvoir, comme par exemple le pouvoir de Mawwy Bloodie. Le PM n'est pas perdu si le Meulou est renvoyé dans le Monde pendant le combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -5468,7 +5488,8 @@
       {
         "description": "L'adversaire que vous choisissez décide quelles cartes de sa main sont révélées de cette façon. Les cartes sont révélées simultanément.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5989,7 +6010,8 @@
       {
         "description": "Lors d'une partie amicale, Rynana permet de chercher n'importe quelle carte que possède le joueur. Lors d'une partie en tournoi, la Collection est limitée au contenu de la réserve de cartes du joueur, à savoir 0 ou 12 cartes pour un tournoi Construit, ou toute carte non jouée dans le paquet de base pour un tournoi en Limité. Rynana ne permet pas de rendre un paquet illégal : en Limité où on peut avoir plusieurs Protecteurs ou plusieurs Alliés Uniques identiques répartis entre son paquet de base et sa réserve, Rynana ne permettra pas d'aller chercher un Protecteur ou un Allié Unique depuis la réserve si on joue déjà un Protecteur ou cet Allié Unique dans le paquet de base.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6442,7 +6464,8 @@
       {
         "description": "Un Monstre est un Allié possédant le Trait « Monstre » sur sa ligne de Traits. La Famille du Monstre correspond aux informations qui suivent l'information « Monstre » sur cette ligne de Trait. Par exemple, incliner un Tofu Maléfique avec le Tofulailler permet de donner +1 en Force à tous vos Monstres possédant le Trait « Tofu » ou le Trait « Vampyre ». Un Allié « Vampyre » non Monstre tel qu'Elisabetron ne bénéficiera pas de ce bonus. « Unique » n'est pas un Trait de Famille.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6619,7 +6642,8 @@
       {
         "description": "Les arrondis sont effectués de manière mathématique, c'est-à-dire à l'entier supérieur. Par conséquent, si un joueur contrôle 21 Alliés et choisit l'option « il détruit la moitié de ses Alliés », ce joueur devra détruire 11 (arrondi de 10,5) de ses Alliés. Dans ce cas de figure, c'est lui qui détermine quels Alliés seront détruits. Le principe est identique pour les PV (un joueur possèdent 7 PV en perdra 4) et les PA (un joueur possédant 5 PA en perdra 3).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6664,7 +6688,8 @@
       {
         "description": "Les Alliés et Héros à incliner ne sont pas choisis. Il est donc possible d'incliner un Allié ou Héros qui ne peut pas être choisi avec le pouvoir de Viscère. De plus, comme aucun choix n'est effectué pour ce pouvoir, l'ensemble des décisions est prise par le joueur lors de la résolution du pouvoir, que ce soit sur le nombre de cartes recyclées ou ensuite sur les Alliés ou Héros à incliner.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],

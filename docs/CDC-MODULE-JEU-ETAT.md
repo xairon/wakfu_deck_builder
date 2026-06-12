@@ -18,19 +18,19 @@
 
 ## 2. Cycle de partie (table locale hot-seat)
 
-| Exigence                                                                                                              | Statut | Notes                                                        |
-| --------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------ |
-| Lobby : choix des decks + noms (J1/J2)                                                                                | ✅     |                                                              |
-| Tirage du premier joueur                                                                                              | ✅     | aléatoire (ou forcé en option)                               |
-| Main de départ = PA, mulligan officiel (−1 carte par refus, 102.4)                                                    | ✅     |                                                              |
-| Écran de passation (cache la main de l'autre)                                                                         | ✅     |                                                              |
-| Structure de tour : Redressement auto, Principale, Pioche auto (fin de tour jusqu'aux PA), purge des Dommages (410.8) | ✅     | phases Pioche/Fin non distinctes à l'écran (assistées)       |
-| Fin de partie : PV ≤ 0 / Niveau 3 (103.2) **même en mode libre**                                                      | ✅     | corrigé suite retour utilisateur                             |
-| Abandonner la partie (concession → victoire adverse)                                                                  | ✅     | bouton topbar, confirmation 2 temps — retour utilisateur     |
-| Égalité 103.3 (double 0 PV simultané → 1 PV chacun)                                                                   | ❌     | cas rare, non géré                                           |
-| Limite de main = PA (4873 : défausse de l'excédent, à tout instant)                                                  | ✅     | choix obligatoire (sans « Passer »), fin de tour bloquée tant que la main déborde |
-| Réserve : échange entre manches (101.4)                                                                               | 🟡     | zone gérée à la main, aucun flux « entre parties »           |
-| Mode Scellé/Draft (30 cartes, 101.2)                                                                                  | ❌     | seul le Construit 48+2 est validé                            |
+| Exigence                                                                                                              | Statut | Notes                                                                             |
+| --------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------------------------- |
+| Lobby : choix des decks + noms (J1/J2)                                                                                | ✅     |                                                                                   |
+| Tirage du premier joueur                                                                                              | ✅     | aléatoire (ou forcé en option)                                                    |
+| Main de départ = PA, mulligan officiel (−1 carte par refus, 102.4)                                                    | ✅     |                                                                                   |
+| Écran de passation (cache la main de l'autre)                                                                         | ✅     |                                                                                   |
+| Structure de tour : Redressement auto, Principale, Pioche auto (fin de tour jusqu'aux PA), purge des Dommages (410.8) | ✅     | phases Pioche/Fin non distinctes à l'écran (assistées)                            |
+| Fin de partie : PV ≤ 0 / Niveau 3 (103.2) **même en mode libre**                                                      | ✅     | corrigé suite retour utilisateur                                                  |
+| Abandonner la partie (concession → victoire adverse)                                                                  | ✅     | bouton topbar, confirmation 2 temps — retour utilisateur                          |
+| Égalité 103.3 (double 0 PV simultané → 1 PV chacun)                                                                   | ❌     | cas rare, non géré                                                                |
+| Limite de main = PA (4873 : défausse de l'excédent, à tout instant)                                                   | ✅     | choix obligatoire (sans « Passer »), fin de tour bloquée tant que la main déborde |
+| Réserve : échange entre manches (101.4)                                                                               | 🟡     | zone gérée à la main, aucun flux « entre parties »                                |
+| Mode Scellé/Draft (30 cartes, 101.2)                                                                                  | ❌     | seul le Construit 48+2 est validé                                                 |
 
 ## 3. Règles de jeu (mode assisté)
 

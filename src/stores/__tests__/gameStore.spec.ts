@@ -1,6 +1,7 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
 import { useGameStore } from "../gameStore";
+import { useCardStore } from "../cardStore";
 import { createMockDeck } from "tests/factories/card";
 
 describe("gameStore — table locale (bac à sable)", () => {
@@ -54,6 +55,40 @@ describe("gameStore — table locale (bac à sable)", () => {
     expect(store.state.instances[havre].orientation).toBe("tapped");
     store.toggleTap(havre);
     expect(store.state.instances[havre].orientation).toBe("upright");
+  });
+
+  it("recycleFromDiscard filtré par élément : rien d'éligible → effet passé, sinon picker filtré", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    // toutes les cartes du deck produisent du Feu
+    for (const dc of deck.cards)
+      dc.card.stats = { niveau: { value: 1, element: "Feu" } };
+    // getCard résout via le cardStore : on y référence les cartes du deck
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    store.startSandbox(deck, deck, "A");
+    store.draw("A", 2);
+    for (const id of [...store.state.seats.A.main])
+      store.moveTo(id, { zone: "defausse", owner: "A" });
+    expect(store.state.seats.A.defausse.length).toBe(2);
+    // aucune carte Terre dans la défausse → l'effet est passé sans picker
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "Test Terre",
+      ops: [{ op: "recycleFromDiscard", n: 1, element: "Terre" }],
+    });
+    expect(store.effectPicking).toBeNull();
+    expect(store.state.seats.A.defausse.length).toBe(2);
+    // l'élément correspond → picker ouvert, filtré sur les 2 cartes Feu
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "Test Feu",
+      ops: [{ op: "recycleFromDiscard", n: 1, element: "Feu" }],
+    });
+    expect(store.effectPicking).not.toBeNull();
+    expect(store.effectPickIds.length).toBe(2);
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.state.seats.A.defausse.length).toBe(1);
+    expect(store.effectPicking).toBeNull();
   });
 
   it("limite de main = PA (4873) : défausse obligatoire de l'excédent", () => {

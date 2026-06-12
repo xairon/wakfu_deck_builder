@@ -26,7 +26,8 @@
       {
         "description": "Le pouvoir de la Panoplie Ancestrale se déclenche quand une carte est sur le point d'être mise dans la Défausse d'un adversaire, quelque soit la zone dont elle provient. Ce pouvoir de Panoplie génère un pouvoir de remplacement : la carte ainsi recyclée ne passe jamais par la Défausse de son propriétaire.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -131,7 +132,8 @@
       {
         "description": "Le Porteur de l'Alliance Feudala peut toujours être choisi par des Actions adverses comme Exclusion ou Agression. Il est également toujours affecté par les pouvoirs adverses qui ne choisissent pas explicitement, comme le pouvoir de Luc Ylook.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -219,12 +221,14 @@
       {
         "description": "Le premier pouvoir de l'Amulette du Kam Assutra est actif en continu, tandis que second pouvoir vérifie en permanence vos PA et ceux de tous vos adversaires s'applique simultanément en prenant en compte la valeur modifiée par le premier pouvoir. La réduction de PA liée à ce pouvoir n'est pas une perte de PA. Si votre Héros possède 6PA et qu'un Héros adverse en possède également 6, le premier pouvoir augmente vos PA à 7, que le second réduit à 6. Si votre Héros possède 6PA et que tous les Héros adverses en possèdent 7, le premier pouvoir augmente vos PA à 7, et le second pouvoir ne fait rien. Le second pouvoir de l'Amulette du Kam Assutra ne constitue pas une perte de PA.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le fonctionnement de l'Amulette du Kam Assutra peut varier si vous perdez un ou plusieurs PA. Si votre Héros possède 7PA et que le Héros adverse en possède également 7, vos PA sous Amulette du Kam Assutra sont de 7. Si votre Héros perd 1PA, son nombre de PA de base passe à 6, augmentée à 7 par le premier pouvoir, et le second pouvoir cesse d'être actif. Vos PA restent donc à 7 malgré la perte de PA que vous venez de subir. Les deux pouvoirs s'appliquant simultanément, votre Héros n'a jamais été temporairement à 6PA : vous ne défaussez donc pas de carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -320,7 +324,8 @@
       {
         "description": "Le pouvoir de la Panoplie Ancestrale se déclenche quand une carte est sur le point d'être mise dans la Défausse d'un adversaire, quelque soit la zone dont elle provient. Ce pouvoir de Panoplie génère un pouvoir de remplacement : la carte ainsi recyclée ne passe jamais par la Défausse de son propriétaire.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -538,7 +543,8 @@
       {
         "description": "Si plusieurs Monstres satisfaisant la condition de Niveau sont révélés ainsi, vous décidez lequel vous prenez en main. Les cartes que vous ne prenez pas en main restent face cachée sur le dessus de votre Pioche, dans l'ordre de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -586,7 +592,8 @@
       {
         "description": "Boing gagne également +1 en Force pour chaque Potion jouée par un autre joueur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -787,7 +794,8 @@
       {
         "description": "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -834,7 +842,8 @@
       {
         "description": "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -880,7 +889,8 @@
       {
         "description": "L'Allié ou le Héros vers lequel les Dommages sont redirigés doit pouvoir être affecté par le paquet de Dommages avant redirection. Vous ne pouvez donc pas rediriger des Dommages vers un de vos Alliés ou Héros dans votre Havre Sac, sauf si la source de ces Dommages aurait légalement pu les infliger dans votre Havre Sac (une Flèche Chercheuse, par exemple).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -926,7 +936,8 @@
       {
         "description": "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -989,7 +1000,8 @@
       {
         "description": "Certaines versions de la carte ont un problème d'impression : il manque le trait \"Bouclier\". Il n'apparait qu'en transparence sur la couche brillante. La carte n'en est pas moins un bouclier.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1040,7 +1052,8 @@
       {
         "description": "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1188,7 +1201,8 @@
         "description": "Les pioches de carte multiples sont traitées individuellement comme des événements distincts de pioche d'une carte. Pour chaque événement de pioche d'une carte, vous devrez donc payer ou annulez cette pioche. Vous pouvez choisir de payer ou non pour chaque événement de pioche, et non pour la globalité du pouvoir qui génère les pioches : si vous devez piochez 3 cartes, vous pouvez choisir de payer puis pour piocher 2 cartes seulement, la dernière pioche étant annulée.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1534,7 +1548,8 @@
       {
         "description": "Un Enclos est une carte qui possède le trait « Enclos » dans sa ligne de Traits. À date de la sortie de l'extension Pandala, la Dernière Rasade, on compte deux Enclos : les Zones Enclos de Dragodindes (Bonta&Brâkmar) et Pâturages (Pandala).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1819,7 +1834,8 @@
       {
         "description": "Le second pouvoir du Craqueleur d'Adamaï affecte également les cartes adverses dans leur Havre Sac. Si le Craqueleur apparaît sans pouvoirs, aucune carte ne peut être nommée lorsqu'il apparaît : dans ce cas, le second pouvoir ne fera rien s'il récupère ses pouvoirs par la suite. Si le Craqueleur perd ses pouvoirs une fois une carte nommée, les cartes nommées récupèrent leur pouvoir. En revanche, le Craqueleur garde mémoire de la carte nommée : celles-ci perdent de nouveau leurs pouvoirs lorsque le Craqueleur récupère les siens.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3075,7 +3091,8 @@
       {
         "description": "Le pouvoir du Fantôme Pandikaze permet de redresser tous les Fantômes qui ont été attaquants pendant le combat qui vient de se terminer, y compris ceux qui ont cessé de l'être avant la fin du combat, et ce qu'elle qu'en soit la raison. Le Fantôme Pandikaze se redresse également s'il a été attaquant.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Un Allié qui quitte le jeu puis revient est considéré comme un nouvel Allié : si vous déclarez votre Fantôme Arrogant comme attaquant alors que vous contrôlez le Fantôme Pandikaze, puis utilisez son pouvoir pour donner +2 en Force à votre Héros et que vous le renvoyez ensuite en jeu via , ce nouveau Fantôme Arrogant ne sera pas redressé à la fin du combat.",
@@ -3174,7 +3191,8 @@
       {
         "description": "Le Fantôme Soryo Firefoux ne causant pas de Dommages, son pouvoir affectera un Héros présent dans le Havre Sac de son propriétaire. Tous les joueurs subissent ce pouvoir, y compris le joueur qui contrôle le Fantôme Soryo Firefoux.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3338,12 +3356,14 @@
       {
         "description": "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3388,12 +3408,14 @@
       {
         "description": "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3438,12 +3460,14 @@
       {
         "description": "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3490,12 +3514,14 @@
       {
         "description": "Le nombre de cartes est calculé pendant la résolution de la Fiole. À ce moment, la Fiole est toujours dans la File d'Attente et ne se compte donc pas elle-même dans le nombre de Fioles. Le « même nombre » du second pouvoir fait référence au nombre calculé pour le premier pouvoir (nombre de Boissons dans votre Défausse +1), et non au nombre de Fioles en excès par rapport à 3.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les cartes qui font référence à des « Boissons » font référence à des cartes possédant le mot « Boisson » dans leur ligne de traits. Les 4 Fioles sont des Boissons.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3632,7 +3658,8 @@
       {
         "description": "Ce pouvoir ne fonctionne que contre les cartes qui choisissent explicitement vos Equipements, comme Brisé ou Fée d'Artifice. Vos Equipements seront toujours détruits si votre adversaire joue une Rouille de Stasis ou un Déluge d'Ogrest.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3973,7 +4000,8 @@
       {
         "description": "Si une Action choisit plusieurs Alliés, tous les Alliés sont détruits. L'Allié est détruit après avoir été choisi, mais avant la résolution de l'Action qui le choisit. Pour rappel, une Action dont tous les choix sont devenus illégaux voit son effet annulé dans son intégralité : si vous jouez Cervelle de Iop sur un Allié adverse alors qu'Igôle est dans le Monde, vous ne piocherez pas de carte. L'Allié est détruit par son contrôleur : le contrôleur d'Igôle ne gagne donc pas d'XP si un Allié adverse est ainsi détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4118,7 +4146,8 @@
       {
         "description": "Tant que Jean-Sol Patre est dans le Monde, tous les gains d'XP provenant d'autres sources que la destruction d'un Allié adverse, que ce soit par exemple un pouvoir ou une Action, sont réduits à 0. Un événement qui se déclenche quand un joueur gagne un ou plusieurs XP ne se déclenchera pas si Jean-Sol Patre réduit ce gain à 0. En revanche, un pouvoir qui vient augmenter un gain d'XP, comme celui de la Dragoune Rose, sera bien appliqué si le gain d'XP provient de la destruction d'un Allié adverse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4164,7 +4193,8 @@
       {
         "description": "Le nouveau Porteur de l'Equipement doit être un Porteur légal pour cet Equipement. Vous ne pouvez ainsi pas déplacer cet Equipement sur un Monstre, ni sur un Allié ou Héros adverse. Si ce nouvel Equipement amène le Porteur à violer une restriction de port d'Equipement, son contrôleur détruit un des Equipements violant la restriction.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4249,7 +4279,8 @@
       {
         "description": "Cette carte a reçu un errata officiel : le niveau de l'Equipement ramené doit être strictement inférieur au niveau de l'Equipement détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -4299,7 +4330,8 @@
       {
         "description": "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4329,7 +4361,8 @@
       {
         "description": "A la sortie de l'extension Pandala, la Dernière Rasade, les différents types de cartes sont Allié, Dofus, Equipement, Havre Sac, Héros, Protecteur, Salle et Zone. Une Arme et une Armure ne sont pas deux cartes de type différent : ce sont toutes deux des cartes de type Equipement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4376,7 +4409,8 @@
       {
         "description": "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4425,7 +4459,8 @@
       {
         "description": "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4475,7 +4510,8 @@
       {
         "description": "Les Kannibouls permettent de bannir des cartes dans différentes zones du jeu, cartes qui restent bannies tant que le Kanniboul est dans le Monde et qui sont rendues à leur propriétaire lorsque le Kanniboul quitte le Monde. Un Kanniboul qui est détruit, renvoyé en main ou qui se déplace dans son Havre Sac quitte le Monde. Le second pouvoir fait exclusivement référence aux cartes bannies par le premier pouvoir. Si vous avez banni d'autres cartes adverses grâce à d'autres pouvoirs, ces autres cartes ne seront pas rendues. Si le Kanniboul quitte le Monde sans pouvoirs, les cartes ne sont pas rendues.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4610,7 +4646,8 @@
       {
         "description": "Le pouvoir de Kira Shak choisit un joueur et non un Havre Sac : vous pouvez donc choisir un joueur adverse qui ne contrôle plus de Havre Sac. Dans ce cas, le pouvoir de Kira Shak ne fera rien.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4694,7 +4731,8 @@
       {
         "description": "Cette carte est bannie en tournoi officiel au format Bloc depuis le 15 Août 2011.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4789,7 +4827,8 @@
       {
         "description": "Si un Pirate confère un pouvoir déclenché aux autres Pirates, comme par exemple Le Flib, les Pirates apparaissent avec ce pouvoir. Le Pirate qui accorde le pouvoir étant également lui-même un Pirate, il bénéficie de son propre pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4882,7 +4921,8 @@
       {
         "description": "Si Les 300 Bonsiates cessent d'être attaquants pendant le combat, vos autres Alliés ou Héros attaquants perdent immédiatement le +1 en Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5169,7 +5209,8 @@
       {
         "description": "La Mise à Sac choisit un joueur et non un Havre Sac : vous pouvez donc choisir un joueur adverse qui ne contrôle plus de Havre Sac. Dans ce cas, la Mise à Sac ne fera rien.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5212,7 +5253,8 @@
       {
         "description": "Si la carte ainsi révélée n'est pas un Allié de Niveau 1, ou si c'est un Allié de Niveau 1 que vous ne souhaitez pas mettre en jeu, la carte révélée retourne face cachée sur le dessus de votre pioche.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5253,7 +5295,8 @@
       {
         "description": "L'Allié attaquant dont vous prenez le contrôle conserve leur état incliné ou dressé. Si votre Héros n'est pas Eniripsa, l'Allié dont vous prenez le contrôle retourne dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5569,7 +5612,8 @@
       {
         "description": "Le pouvoir de Percimol, Héros Flaqueux impacte notamment les cartes ou les pouvoirs qui stipulent explicitement « le joueur de votre choix » ou « l'adversaire de votre choix », comme Filouteries au Zaap d'Astrub ou Aeron Zeklox. Les cartes adverses peuvent toujours choisir votre Héros. De même, vous êtes toujours affecté par les cartes qui ne vous choisissent pas explicitement, comme Ogivol Scalarcin ou À la Foire du Trooll.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -5761,7 +5805,8 @@
       {
         "description": "Le pouvoir de la Panoplie Ancestrale se déclenche quand une carte est sur le point d'être mise dans la Défausse d'un adversaire, quelque soit la zone dont elle provient. Ce pouvoir de Panoplie génère un pouvoir de remplacement : la carte ainsi recyclée ne passe jamais par la Défausse de son propriétaire.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -6507,7 +6552,8 @@
       {
         "description": "Si l'Allié peut légalement bloquer Tom Shausseur, alors il doit obligatoirement être déclaré pour le faire. Si le contrôleur de cet Allié ne possède qu'un seul PM, il doit utiliser ce PM pour déclarer l'Allié comme bloqueur de Tom Shausseur. Le pouvoir de Tom Shausseur est sans effet si l'Allié choisi ne peut pas bloquer Tom Shausseur. C'est entre autres le cas si l'Allié choisi ne peut pas bloquer (comme Epouvantail, Jicé Aouaire), ou si son contrôleur possède 0 PM.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6772,7 +6818,8 @@
       {
         "description": "Le pouvoir de Viktor Yugo supprime à la fois le contenu de la boite de texte des Equipements portés par les Alliés ou Héros qui le bloquent ou qui sont bloqués par lui, mais également tous les autres bonus comme les bonus de Force, de PV, de PA ou de PM. Un « malus » est un bonus négatif conféré par l'Equipement et est donc également perdu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6890,12 +6937,14 @@
       {
         "description": "Le joueur dont c'est le tour doit détruire un de ses Alliés si au moins un de ses Allié peut être détruit. S'il ne peut détruire aucun Allié, le pouvoir du Village Feudala ne fait rien.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Cette carte a reçu un errata officiel : Le choix dans le pouvoir a été retiré pour une meilleure cohérence du wording vis-à-vis du fonctionnement de la carte. Le second pouvoir devient : \"Tant que le Village Feudala est en jeu, au début du tour de chaque joueur, ce joueur détruit un Allié qu'il contrôle.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "errata"
       }
     ],
     "keywords": [],
@@ -6940,7 +6989,8 @@
       {
         "description": "Un Héros est considéré comme ne pouvant pas attaquer ce tour si un pouvoir l'en empêche explicitement, comme ceux des cartes Incarnam ou Apaisement de Maimane, ou si son contrôleur possède 0 PM. Un Héros qui n'a pas attaqué parce que son contrôleur ne le souhaitait pas ou parce qu'il était incliné au moment de la déclaration de l'attaque perdra 2PV. Si le Héros cesse d'être attaquant avant la fin du combat, le pouvoir du Village Terrdala ne se déclenchera pas.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],

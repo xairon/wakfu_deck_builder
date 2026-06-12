@@ -39,6 +39,14 @@ describe("rules/effects — extraction des mots-clés", () => {
     expect(preventDamage(kw, 1, "feu")).toBe(0);
     expect(preventDamage(kw, 3, "eau")).toBe(3);
   });
+
+  it("devrait ignorer les mots-clés d'une carte Équipement (bonus de panoplie scrapé à tort)", () => {
+    const scaranneau = makeAlly("s", { resist: ["Air", 1] });
+    (scaranneau as { mainType: string }).mainType = "Équipement";
+    const kw = combatKeywords(scaranneau);
+    expect(kw.resistances).toEqual({});
+    expect(kw.geant).toBe(false);
+  });
 });
 
 describe("rules/effects — mots-clés en combat", () => {

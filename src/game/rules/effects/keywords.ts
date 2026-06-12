@@ -27,6 +27,11 @@ export function combatKeywords(
   side: "recto" | "verso" = "recto",
 ): CombatKeywords {
   if (!card) return NONE;
+  // Un Équipement ne combat pas lui-même : ses `keywords[]` scrapés sont des
+  // morceaux de bonus de panoplie attribués à tort à la carte seule (ex.
+  // « Résistance 1 Air » du Scaranneau Blanc). Les bonus au Porteur arrivent
+  // avec le modèle Équipement (lot F).
+  if (card.mainType === "Équipement") return NONE;
   const face = isHeroCard(card)
     ? side === "verso"
       ? (card.verso ?? card.recto)

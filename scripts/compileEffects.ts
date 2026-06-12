@@ -86,6 +86,7 @@ interface RawEffect {
   description?: string;
   compiled?: unknown;
   requiresIncline?: boolean;
+  kind?: "ruling" | "errata";
 }
 interface RawStats {
   niveau?: { element?: string };
@@ -96,6 +97,7 @@ interface RawCard {
   stats?: RawStats;
   keywords?: RawKeyword[];
   effects?: RawEffect[];
+  notes?: unknown[];
   recto?: { stats?: RawStats; effects?: RawEffect[]; keywords?: RawKeyword[] };
   verso?: { stats?: RawStats; effects?: RawEffect[]; keywords?: RawKeyword[] };
 }
@@ -113,8 +115,50 @@ const stats = {
   optional: 0,
   keywordsDropped: 0,
   scripted: 0,
+  rulings: 0,
+  erratas: 0,
   ops: new Map<string, number>(),
 };
+
+/** Normalisation de comparaison texte (accents, casse, espaces). */
+function normText(s: unknown): string {
+  return String(s ?? "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .trim();
+}
+
+const ERRATA_RE = /^cette carte a recu un\b.*\berrata/;
+
+/**
+ * Classification rulings/erratas : le scraping a recopié dans `effects[]`
+ * des paragraphes qui sont en réalité des NOTES de règles du site (ils
+ * figurent aussi dans `notes[]`) ou des erratas officiels. Ils ne sont pas
+ * du texte imprimé : on les marque `kind` pour les exclure du comptage
+ * d'effets et de la compilation. Re-dérivé à chaque run (idempotent).
+ */
+function classifyKinds(card: RawCard): void {
+  const notes = new Set((card.notes ?? []).map(normText).filter(Boolean));
+  const visit = (effects: RawEffect[] | undefined) => {
+    for (const e of effects ?? []) {
+      const t = normText(e?.description);
+      if (!t) continue;
+      if (notes.has(t) || ERRATA_RE.test(t)) {
+        e.kind = ERRATA_RE.test(t) ? "errata" : "ruling";
+        delete e.compiled;
+        if (e.kind === "errata") stats.erratas++;
+        else stats.rulings++;
+      } else {
+        delete e.kind;
+      }
+    }
+  };
+  visit(card.effects);
+  visit(card.recto?.effects);
+  visit(card.verso?.effects);
+}
 
 function cleanKeywords(keywords: RawKeyword[] | undefined): RawKeyword[] {
   if (!keywords) return [];
@@ -135,6 +179,7 @@ function compileEffects(
   isAction = false,
 ): void {
   for (const e of effects ?? []) {
+    if (e.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
     if (!text) continue;
     stats.effects++;
@@ -200,6 +245,7 @@ for (const file of EXTENSION_FILES) {
     card.keywords = cleanKeywords(card.keywords);
     extractBagStats(card);
     promoteTextKeywords(card);
+    classifyKinds(card);
     const name = String(card.name ?? "");
     const element = sourceElementOf(card);
     compileEffects(
@@ -217,14 +263,25 @@ for (const file of EXTENSION_FILES) {
       compileEffects(card.verso.effects, name, element);
     }
     // registre de scripts MANUELS : l'entrée écrite à la main gagne sur
-    // l'auto-compilation (approche XMage, carte par carte)
+    // l'auto-compilation (approche XMage, carte par carte). Une entrée
+    // `{ kind }` classe l'effet ruling/errata au lieu de le compiler.
     const overrides = CARD_SCRIPTS[(card as { id?: string }).id ?? ""];
     if (overrides) {
-      for (const [idx, compiled] of Object.entries(overrides)) {
+      for (const [idx, entry] of Object.entries(overrides)) {
         const eff = card.effects?.[Number(idx)];
         if (!eff) continue;
+        if (!("ops" in entry)) {
+          if (!eff.kind) {
+            if (entry.kind === "errata") stats.erratas++;
+            else stats.rulings++;
+          }
+          eff.kind = entry.kind;
+          delete eff.compiled;
+          continue;
+        }
         if (!eff.compiled) stats.compiled++;
-        eff.compiled = compiled;
+        delete eff.kind;
+        eff.compiled = entry;
         stats.scripted++;
       }
     }
@@ -235,7 +292,8 @@ for (const file of EXTENSION_FILES) {
 
 console.log(
   `\nCartes: ${stats.cards} · Effets: ${stats.effects} · Compilés: ${stats.compiled}` +
-    ` (dont optionnels: ${stats.optional}) · Mots-clés bruités retirés: ${stats.keywordsDropped} · Scripts manuels: ${stats.scripted}`,
+    ` (dont optionnels: ${stats.optional}) · Mots-clés bruités retirés: ${stats.keywordsDropped} · Scripts manuels: ${stats.scripted}` +
+    ` · Rulings: ${stats.rulings} · Erratas: ${stats.erratas}`,
 );
 for (const [op, n] of [...stats.ops.entries()].sort((a, b) => b[1] - a[1]))
   console.log(`  op ${op}: ${n}`);

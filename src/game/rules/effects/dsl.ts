@@ -12,7 +12,13 @@
  * repli (données non migrées, tests). « Vous pouvez … » donne un effet
  * `optional` que la table fait confirmer au joueur avant exécution.
  */
-import type { Card, CompiledEffect, CompiledEffectOp } from "@/types/cards";
+import type {
+  Card,
+  CardEffect,
+  CompiledEffect,
+  CompiledEffectOp,
+} from "@/types/cards";
+import { isHeroCard } from "@/types/cards";
 
 export type EffectOp = CompiledEffectOp;
 
@@ -306,10 +312,27 @@ export function effectSourceElement(card: Card): string {
   return card.stats?.force?.element ?? card.stats?.niveau?.element ?? "Neutre";
 }
 
+/**
+ * Effets réellement IMPRIMÉS sur la carte : exclut les notes de règles et
+ * erratas du site (`kind`, posé à la compilation des données) et les
+ * descriptions vides. C'est le bon dénominateur pour « tous les effets de
+ * la carte sont automatisés » (ex. gate de résolution des Actions).
+ */
+export function printedEffects(card: Card | null): CardEffect[] {
+  if (!card) return [];
+  const effects = card.effects?.length
+    ? card.effects
+    : isHeroCard(card)
+      ? (card.recto?.effects ?? [])
+      : [];
+  return effects.filter((e) => String(e?.description ?? "").trim() && !e.kind);
+}
+
 export function arrivalEffects(card: Card | null): EffectAtom[] {
   if (!card) return [];
   const atoms: EffectAtom[] = [];
   for (const e of card.effects ?? []) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
     const compiled =
       e?.compiled ??
@@ -377,6 +400,7 @@ export function turnStartEffects(card: Card | null): EffectAtom[] {
   if (!card) return [];
   const atoms: EffectAtom[] = [];
   for (const e of card.effects ?? []) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
     const compiled =
       e?.compiled ??
@@ -394,6 +418,7 @@ export function playEffects(card: Card | null): EffectAtom[] {
   if (!card || card.mainType !== "Action") return [];
   const atoms: EffectAtom[] = [];
   for (const e of card.effects ?? []) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
     const compiled =
       e?.compiled ??
@@ -411,6 +436,7 @@ export function tapPowers(card: Card | null): EffectAtom[] {
   if (!card) return [];
   const atoms: EffectAtom[] = [];
   for (const e of card.effects ?? []) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
     const compiled =
       e?.compiled ??

@@ -393,7 +393,8 @@
       {
         "description": "Vous pouvez choisir de recycler les trois cartes. Dans ce cas, vous ne remettez pas de carte au dessus de votre Pioche.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -479,7 +480,8 @@
       {
         "description": "Cette carte possède un numéro incorrect, elle est imprimée #88 mais est en réalité la carte #86 de l'extension.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -931,7 +933,8 @@
       {
         "description": "Trait Arme remplacé par Armure.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1702,7 +1705,8 @@
       {
         "description": "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1868,7 +1872,8 @@
       {
         "description": "Le pouvoir du Crapaud Royal peut être utilisé sur un de vos Monstres n'ayant aucun pouvoir d'apparition ou un pouvoir d'apparition qui serait inactif (sur un Black Wabbit dans votre Havre Sac, par exemple). Dans ce cas, rien ne se passe ensuite.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2241,7 +2246,8 @@
       {
         "description": "Si vous choisissez de ne détruire aucun de vos Alliés lors de l'apparition du Démon X, sa Force est alors égale à 0 et le Démon X est immédiatement détruit.\nSi le Démon X est dans votre défausse, et qu'une carte cherche à savoir quelle est sa Force (comme une Blanquette Spéciale Alibert, par exemple), alors sa Force est 0.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2301,12 +2307,14 @@
       {
         "description": "Vous pouvez choisir des Équipements provenant de plusieurs porteurs différents, et les déplacer vers autant d'Alliés différents que possible ; tous les choix sont faits simultanément. Cela ne vous permet pas de déplacer des Équipements de manière illégale, comme déplacer une Coiffe du Bouftou sur un Monstre, ou déplacer une Amulette sur un Allié en portant déjà une, par exemple.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "\"Tous les nouveaux Porteurs doivent être légaux.\" a été reprécisé dans l'effet afin de coller précisément à l'effet attendu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2702,7 +2710,8 @@
       {
         "description": "Si votre adversaire doit chercher plusieurs cartes dans sa Pioche, vous ne pourrez chercher qu'une seule carte dans votre Pioche.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2824,12 +2833,14 @@
       {
         "description": "L'Épouvantail n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés à l'Épouvantail , et s'il perd ses pouvoirs avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Trait \"Monstre\" ajouté.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3124,7 +3135,8 @@
       {
         "description": "Vous annoncez vos choix en premier, puis votre adversaire. Une fois que celui-ci a annoncé ses choix, vous ne pouvez pas faire de nouveau choix, on résout l'effet de la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3350,7 +3362,8 @@
       {
         "description": "Cette carte est bannie en tournoi officiel au format Construit et Bloc depuis le 05 Mars 2011.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3743,7 +3756,8 @@
       {
         "description": "Les Dofus sont : Cawotte, Dofawa, Ebène, Emeraude, Glace, Ivoire, Kaliptus, Ocre, Pourpre, Turquoise, Vulbis.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3950,12 +3964,14 @@
       {
         "description": "Cela n'empêche pas votre adversaire de pouvoir incliner ses Équipements pour tout effet autre que produire une Ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le pouvoir du Magictateur Krokker ne choisit pas et n'inflige pas de Dommages, il n'est donc pas affecté par les Règles de Portée. Les Équipements adverses dans leur Havre Sac ne pourront donc pas non plus produire de ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4119,7 +4135,8 @@
       {
         "description": "S'il n'y a pas d'autre Équipement en jeu au moment où la Masse du Corailleur apparaît, vous devez détruire celle-ci.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4165,12 +4182,14 @@
       {
         "description": "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Trait Arme remplacé par Armure.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4220,7 +4239,8 @@
       {
         "description": "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4273,7 +4293,8 @@
       {
         "description": "Le Chi-Fu-Mi perdu est ignoré, on ne prend donc pas en compte son résultat en cas de perte.\nSi vous contrôlez plusieurs Miranda, vous pouvez utiliser leur pouvoir si vous perdez de nouveau le Chi-Fu-Mi rejoué.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4317,7 +4338,8 @@
       {
         "description": "Si vous attaquez avec Missiz Frizz et un autre Chevalier, vous regardez 1 seule carte, la mettez dans votre main, et ne recyclez pas de carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4359,7 +4381,8 @@
       {
         "description": "Si vous bénéficiez d'un bonus de PM et que vous jouez Momification, vos PM sont réduits à 0. Si vous jouez Momification puis jouez une carte qui vous donne un bonus de PM, vous avez alors autant de PM que votre bonus.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4721,12 +4744,14 @@
       {
         "description": "Trait \"Monstre\" ajouté.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le pouvoir de Papris, Roi des Flaqueux se déclenche au moment où un Monstre est mis dans votre Défausse suite à sa destruction. Papris, Roi des Flaqueux ne peut donc pas s'impacter lui même car il n'est plus dans le Monde à ce moment.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -5009,7 +5034,8 @@
       {
         "description": "Si un joueur a perdu des PA durant le tour et que vous utilisez le pouvoir de Princesse Eenca pour annuler une nouvelle perte de PA, les PA précédemment perdus ne sont pas regagnés pour autant.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5208,7 +5234,8 @@
       {
         "description": "Le pouvoir de Pym redirige tous les Dommages d'un seul paquet de Dommages. Si plusieurs paquets de Dommages sont sur le point d'être infligés, comme par exemple lors de la résolution des Dommages sur la cible, vous choisissez quel paquet est redirigé vers Pym.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5675,7 +5702,8 @@
       {
         "description": "Cela concerne aussi bien les mouvements proposés par les joueurs que ceux provoqués par l'effet d'une Action, d'un Sort ou d'un pouvoir, y compris ceux que vous contrôlez.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -5761,12 +5789,14 @@
       {
         "description": "Mot \"autres\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le Skeunk n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés au Skeunk, et si les Alliés choisis durant son pouvoir d'apparition quittent le jeu avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6060,7 +6090,8 @@
       {
         "description": "Lorsque vous échangez un Allié ou Héros attaquant ou bloqueur avec un autre Allié ou Héros hors du combat, alors ce dernier rentre en combat à sa place, tandis que ce premier revient dans le Monde en conservant son statut (incliné ou redressé).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -6224,7 +6255,8 @@
       {
         "description": "Le pouvoir du Tofu Maléfique ne se déclenche que lors de la destruction d'un Tofu autre que lui même.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6323,12 +6355,14 @@
       {
         "description": "Le Tourmenteur ne permet de copier que les pouvoirs incluant le symbole « ». Il ne copie pas les pouvoirs ne contenant pas un coût demandant d'incliner un Allié ou les pouvoirs d'apparition.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "kind": "ruling"
       },
       {
         "description": "Si le Porteur du Tourmenteur avait des pouvoirs , il les conserve et peut toujours les utiliser. Si un Allié possède plusieurs pouvoirs , son contrôleur doit choisir lequel il décide d'utiliser au moment où il incline celui-ci.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6377,7 +6411,8 @@
       {
         "description": "Un Héros ne peut pas avoir moins de 0 PM. Si le pouvoir du Tournesol Affamé devait diminuer les PM d'un Héros à moins de 0, on considère que ses PM restent à 0.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6418,7 +6453,8 @@
       {
         "description": "Si deux joueurs adverses jouent Trèfle, alors on considère qu'ils ont tous les deux gagné le prochain Chi-Fu-Mi qu'ils jouent ensemble.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6467,7 +6503,8 @@
       {
         "description": "Trait \"Monstre\" ajouté.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6518,7 +6555,8 @@
       {
         "description": "Vous pouvez utiliser ce pouvoir même si vous n'avez plus d'Allié Démon dans votre Pioche. Si c'est le cas, vous devez mélanger votre Pioche après voir cherché.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [

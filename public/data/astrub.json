@@ -237,7 +237,8 @@
       {
         "description": "Le bonus de Force de la Panoplie Abraknyde est de +1 seulement, en conformité avec les Équipements Abraknyde de l'extension Incarnam.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -376,7 +377,8 @@
       {
         "description": "Si vous ne trouvez pas de carte satisfaisant les conditions dans votre Pioche, vous ne pouvez pas prendre d'autre carte en échange, vous vous contentez de mélanger votre Pioche. Vous pouvez utiliser ce pouvoir même si vous savez qu'aucune carte de votre Pioche ne remplit les conditions. Vous n'êtes de toute façon pas obligé de trouver une carte et pouvez décidé d'échouer volontairement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -415,7 +417,8 @@
       {
         "description": "S'il n'y a pas de carte Salle dans le Havre Sac choisi, son contrôleur doit obligatoirement choisir une carte Équipement. S'il n'y a pas de carte Équipement dans le Havre Sac choisi, son contrôleur doit obligatoirement choisir une carte Salle.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -455,7 +458,8 @@
       {
         "description": "La seconde partie de l'effet à été reformulé ainsi : « Vous pouvez jouer immédiatement une autre Attaque Naturelle de votre main. »",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -957,7 +961,8 @@
       {
         "description": "Chaque joueur tient son adversaire par le menton en chantonnant « Je te tiens, tu me tiens, par la Barbouffette, le premier de nous deux qui pouffera sera un Bouftou ». Le premier joueur qui rit perd. En tournoi officiel, la résolution de Bouftou Dance I-Volution se fera en utilisant une méthode aléatoire plutôt que le petit jeu. Si les joueurs décident de jouer à Chi-Fu-Mi, ce Chi-Fu-Mi ne comptera pas pour le pouvoir de Karey Dass par exemple, car il n'est pas demandé par une carte mais par les joueurs.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1366,7 +1371,8 @@
       {
         "description": "Vous ne pouvez pas choisir d'infliger 0 dommages à un Allié ou Héros avec ce pouvoir. Chaque Allié ou Héros choisi doit se voir infliger au moins 1 Dommage.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1699,12 +1705,14 @@
       {
         "description": "L'effet d'apparition du Crapaud à Moustache est placé sur la file d'attente, mais n'a pas de conséquence.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Trait « Monstre » ajouté.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1899,7 +1907,8 @@
       {
         "description": "L'effet de Dejaded a été corrigé pour être plus lisible, « égal à son Niveau à son Porteur » devient « égal au Niveau de son Porteur ».",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1976,7 +1985,8 @@
       {
         "description": "Une cible dans le Havre Sac de son contrôleur n'est pas une cible légale pour une attaque. Pour s'affranchir de ce problème, le pouvoir de Demena n'est utilisable que lorsque Demena est dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2080,7 +2090,8 @@
       {
         "description": "Si vous décidez de chercher une carte dans la Pioche de votre adversaire, vous êtes obligé de trouver une carte si cette Pioche contient au moins une carte, vous ne pouvez pas choisir de ne rien trouver. En effet, la recherche n'a aucun critère à respecter.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2269,7 +2280,8 @@
       {
         "description": "L'effet devient « Les Dommages sur le point d'être infligés par vos Alliés ou Héros sont augmentés de 1. »",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2667,7 +2679,8 @@
         "description": "Le pouvoir d'Ewesson Smisse se déclenche à chaque fois qu'une carte est piochée. Si un joueur adverse doit piocher plusieurs cartes en une seule fois, il subit autant de Dommages que de cartes piochées, sous forme de paquets de 1 Dommage .",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2746,7 +2759,8 @@
       {
         "description": "Le personnage choisi cesse d'être attaquant ou bloqueur et quitte le combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2787,7 +2801,8 @@
       {
         "description": "Si l'Allié choisi est détruit en Réaction, il n'y a plus de choix légal, son contrôleur ne perd pas de PA.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2831,7 +2846,8 @@
       {
         "description": "Le pouvoir du Fotome empêche son porteur d'être choisi pour l'application d'un pouvoir ou d'une action. Le porteur peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3221,7 +3237,8 @@
       {
         "description": "Les types d'Armes sont : Arc, Baguette, Bâton, Dague, Épée, Hache, Marteau, Pelle, Aiguille et Cartes.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -3270,7 +3287,8 @@
       {
         "description": "La Phase de Déclaration des Bloqueurs a lieu avant la Phase d'Action. Si la Force d'un Allié attaquant ou bloqueur change pendant la Phase d'Action, cela n'influe pas sur cet effet.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3383,7 +3401,8 @@
       {
         "description": "Un Allié est considéré comme ayant été détruit par Isletate s'il a reçu des dommages de combat de celui-ci qui l'ont conduit à être placé dans la défausse, ou si une carte a permis à Isletate d'infliger des dommages à cet Allié.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3659,7 +3678,8 @@
       {
         "description": "Le pouvoir de Klara Organe signifie que l'Allié ou Héros en question pourra choisir un adversaire dans le Monde lors de l'activation de son propre pouvoir, et ce même s'il se trouve dans votre Havre Sac.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3708,7 +3728,8 @@
       {
         "description": "Le second pouvoir empêche l'Allié choisi de se redresser aussi bien durant la Phase de Redressement que grâce au pouvoir d'une carte. Comme pour Pandrista, vous pouvez choisir un Allié qui est déjà incliné, dans ce cas il n'est pas incliné de nouveau.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3878,7 +3899,8 @@
       {
         "description": "Ce pouvoir ne s'arrête pas à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4035,7 +4057,8 @@
       {
         "description": "Le pouvoir de la Larvacoiffe empêche son porteur d'être choisi pour l'application d'un pouvoir ou d'une action. Le porteur peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4183,7 +4206,8 @@
       {
         "description": "Si vous jouez Le Sain Ballotin, puis que vous jouez une Charge sur un de vos Monstres, celui-ci aura 3 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4307,7 +4331,8 @@
       {
         "description": "Ce pouvoir n'est pas limité, vous pouvez le reproduire à chaque fois que vous devez recycler une carte durant le tour, tant que Maître Pâle Jack est en jeu. Si vous devez recycler plusieurs cartes en même temps, vous pouvez choisir pour chaque carte depuis quelle défausse recycler.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4391,7 +4416,8 @@
       {
         "description": "Les types d'Armures sont : Chapeau, Cape, Ceinture et Bottes.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4524,7 +4550,8 @@
       {
         "description": "La destruction du Moskitorsh fait partie du coût d'activation du pouvoir, il n'est donc pas possible d'y répondre pour détruire le Moskitorsh (avec une Flèche d'Immolation, par exemple).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4630,7 +4657,8 @@
       {
         "description": "On vérifie que le personnage a survécu aux dommages à la résolution de chacun des effets de la carte : un Allié avec 3 ou moins en Force sera donc détruit par ce Sort avant de bénéficier du bonus en Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4879,7 +4907,8 @@
       {
         "description": "La destruction du Monstre choisi fait partie du coût d'activation du pouvoir, il n'est donc pas possible d'y répondre pour le détruire (avec une Flèche d'Immolation, par exemple).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5264,7 +5293,8 @@
       {
         "description": "Picole produit un modificateur continu défini valable \"Tant que l'Allié ou Héros reste incliné\". Si à n'importe quel instant l'Allié ou Héros se redresse, le pouvoir prend fin. Il n'est pas automatiquement recréé si l'Allié ou Héros s'incline à nouveau.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5305,7 +5335,8 @@
       {
         "description": "Le Piège Sournois ne peut pas être jouée en réaction à l'inclinaison ou le redressement d'un Allié présent dans un Havre Sac adverse : les événements qui se produisent dans un Havre Sac ne sont pas visibles pour un joueur adverse. D'autre part, vous n'auriez pas pu choisir un Allié présent dans un Havre Sac adverse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5381,7 +5412,8 @@
       {
         "description": "Les types de Ressources sont : Air, Eau, Feu, Terre, et Neutre.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5436,7 +5468,8 @@
       {
         "description": "Vous ne pouvez pas jouer Pleur Nycheuz si vous la piochez en main de départ car la partie n'a pas encore commencé à ce moment.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5475,7 +5508,8 @@
       {
         "description": "La carte annulée va dans la Défausse de son propriétaire.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5512,7 +5546,8 @@
       {
         "description": "Si vous n'avez pas de carte à bannir, vous ne pouvez pas jouer les Poubelles d'Astrub. Si la carte ne peut plus être bannie à la résolution, vous ne piochez pas.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5551,7 +5586,8 @@
       {
         "description": "Tant qu'au moins un des Alliés ou Héros choisis est toujours valide à la résolution de sort, la perte de PA s'applique. Si plus aucun des choix n'est valide, la perte de PA ne s'applique pas car le Sort est alors annulé.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5628,7 +5664,8 @@
       {
         "description": "Si l'Allié choisi est détruit en Réaction, il n'y a plus de choix légal, vous ne piochez pas.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5700,7 +5737,8 @@
       {
         "description": "Au moment où vous jouez ce Sort, il n'est déjà plus dans votre main, il ne compte donc pas dans le nombre de Dommages infligés. Si une partie des Dommages infligés au personnage choisi sont réduits en Réaction, seuls les Dommages restants sont infligés au Héros du lanceur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -5893,7 +5931,8 @@
         "description": "Vous ne pouvez pas choisir d'infliger 0 Dommages à un Allié ou à un Héros avec ce Sort. Chaque Allié ou Héros choisi doit se voir infliger au moins 1 Dommage .",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6003,12 +6042,14 @@
       {
         "description": "Si le Serpentin est dressé et choisi par une Action, et si une réaction à cette Action le fait s'incliner, alors au moment de résoudre la première Action le Serpentin est incliné et est donc un choix invalide : l'Action est annulée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le Serpentin ne peut pas être choisi pour l'application d'un pouvoir ou d'une action. Toutefois il peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6095,12 +6136,14 @@
       {
         "description": "Si Syco Fente quitte le Monde, la carte nommée peut de nouveau être jouée. Si Syco Fente quitte le jeu puis est remise en jeu ultérieurement, ce n'est plus la même carte, vous pouvez choisir de nommer une nouvelle carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le pouvoir de Syco Fente permet d'empêcher une carte d'être joué mais pas d'être mise en jeu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -6225,7 +6268,8 @@
       {
         "description": "Si vous n'avez pas de carte en main, vous ne pouvez pas recycler, vous ne piochez pas.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -6307,7 +6351,8 @@
       {
         "description": "Si plusieurs Alliés ou Héros s'inclinent simultanément, le contrôleur du Temple Sram choisit lequel subit les Dommages.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -6366,7 +6411,8 @@
       {
         "description": "Le bonus de Force du Tofu Royal ne dure pas jusqu'à la fin du tour, mais tant qu'il est en jeu dans le Monde. Si un Tofu (un Allié de Force 1) dans le Monde en même temps que le Tofu Royal subit 1 Dommage, puis que le Tofu Royal quitte le jeu, le Tofu est détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -6581,7 +6627,8 @@
       {
         "description": "Une fois le joueur choisi, la Force de Vil Smisse est recalculée en permanence en fonction du nombre de cartes dans la main de ce joueur. Si le joueur choisi possède 6 cartes en main au début de votre tour, la Force de Vil Smisse est de 3. S'il défausse une carte par la suite, la Force de Vil Smisse passe immédiatement à 4.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],

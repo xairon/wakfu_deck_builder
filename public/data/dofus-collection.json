@@ -87,7 +87,8 @@
       {
         "description": "La restriction d'utilisation ne s'applique qu'à un seul Abraknyde donné. Si vous contrôlez deux exemplaires de l'Abraknyde, vous pouvez utiliser le pouvoir de chacun une fois.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -129,12 +130,14 @@
       {
         "description": "L'effet de cette carte prend en compte tous les modificateurs qui s'appliquent à la Force de l'Allié ou Héros incliné. Si l'Allié ou Héros incliné quitte le jeu avant qu'Agression ne soit résolue, on prend alors comme référence la valeur de Force qu'il avait au moment où il a quitté le jeu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Les Règles de Portée impactent le fonctionnement d'Agression. Un Allié ou Héros dans son Havre Sac ne pouvant pas infliger de Dommages à un Allié ou Héros adverse dans le Monde, il est impossible d'incliner un Allié ou Héros dans son Havre Sac si un Allié ou Héros adverse dans le Monde a été choisi.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -321,7 +324,8 @@
       {
         "description": "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -679,12 +683,14 @@
       {
         "description": "Le pouvoir du Bouftou Royal demande de chercher une carte \"Bouftou\" sans préciser son type. Ce pouvoir s'applique à tous les types de carte de la Famille Bouftou, c'est-à-dire contenant \"Bouftou\" dans la ligne de trait.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "L'effet devient \"Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -878,12 +884,14 @@
       {
         "description": "Famille \"Armure\" manquant sur la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1060,7 +1068,8 @@
         "description": "Le pouvoir du Chacha Noir devient : \"Au début de votre tour, recyclez une carte de votre Défausse ou détruisez le Chacha Noir.\"",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1108,7 +1117,8 @@
       {
         "description": "Vous ne pouvez pas choisir d'infliger 0 dommages à un Allié ou Héros avec ce pouvoir. Chaque Allié ou Héros choisi doit se voir infliger au moins 1 Dommage.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1283,7 +1293,8 @@
       {
         "description": "Le bonus de +1 en Force s'applique également aux Monstres que vous contrôlez dans votre Havre Sac car la capacité du Chêne Mou n'est pas affectée par les Règles de Choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -1570,7 +1581,8 @@
       {
         "description": "Une fois le Coup critique joué, le bonus de Force est fixé jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1984,7 +1996,8 @@
       {
         "description": "Vous ne pouvez utiliser ce pouvoir que sur des Alliés en jeu.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2268,7 +2281,8 @@
       {
         "description": "L'effet devient \"Les Dommages sur le point d'être infligés par vos Alliés ou Héros sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2366,7 +2380,8 @@
       {
         "description": "Ce pouvoir surveille les évenements d'inclinaison. Ce pouvoir est aveugle aux évenements d'inclinaison qui se produisent dans le Havre Sac adverse. Si l'évenement d'inclinaison déclenche le pouvoir mais que l'Allié a été détruit avant la résolution du pouvoir, le pouvoir du Dragon Cochon se résout mais est sans effet.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -2417,17 +2432,20 @@
       {
         "description": "Les gains d'XP sont calculés en une seule fois à chaque résolution de phase ou d'action. Ainsi, à la fin d'un combat où plusieurs alliés adverses ont été détruits, ou à la suite d'un de vos sorts détruisant plusieurs alliés adverses, si la Dragoune Rose est en jeu, on calcule d'abord la somme d'XP gagnés avant d'y ajouter 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Un gain d'XP de 0 n'est jamais pris en compte. Votre Héros ne gagne pas 1 XP à chaque fois qu'il devrait \"gagner\" 0 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "L'effet devient \"Vos gains d'XP sont augmentés de 1.\"",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2519,12 +2537,14 @@
       {
         "description": "L'Épouvantail n'est pas détruit lorsqu'il reçoit des dommages létaux ou qu'il est choisi par une carte devant le détruire. On tient cependant compte normalement des dommages infligés à l'Épouvantail, et s'il perd ses pouvoirs avant la fin d'un tour où il a subi des dommages létaux, alors il est normalement détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Trait \"Monstre\" ajouté.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2741,7 +2761,8 @@
       {
         "description": "Les pouvoirs de Goultard le Barbare sont des pouvoirs déclenchés et ne sont, comme tous les pouvoirs déclenchés, pas considérés comme joués par le joueur. Ces pouvoirs ne peuvent donc pas être annulés par la carte Échec Critique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2841,7 +2862,8 @@
       {
         "description": "Guy Yomtella inflige des Dommages et non des blessures (terme obsolète).",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2885,7 +2907,8 @@
       {
         "description": "Jicé Aouaire ne peut pas être déclaré comme bloqueur par son contrôleur durant la Phase de Déclaration des Bloqueurs, ni être placé comme bloqueur durant la Phase d'Actions.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -2929,17 +2952,20 @@
       {
         "description": "Vous n'êtes pas obligé d'utiliser ce pouvoir. Vous ne pouvez utiliser ce pouvoir que si le Kanigrou est sur le point de recevoir des Dommages, et seulement sur le prochain paquet de Dommages que le Kanigrou devrait subir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si le Kanigrou est détruit parce que vous avez décidez de jouer son pouvoir, votre adversaire ne gagne pas d'XP car vous êtes vous-même le contrôleur du pouvoir à l'origine de la destruction du Kanigrou.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le pouvoir a été reformulé, sans impact pratique sur le fonctionnement de la carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -3185,7 +3211,8 @@
       {
         "description": "Le pouvoir du Maître Corbac est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Échec Critique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -3619,12 +3646,14 @@
       {
         "description": "Le pouvoir d'Otomaï est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Échec Critique.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Si vous choisissez de recyclez la Défausse de votre adversaire, c'est votre adversaire qui choisit l'ordre des cartes à recycler car c'est le propriétaire de la Défausse qui choisit cet ordre lorsque plusieurs cartes sont à recycler simultanément.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4085,12 +4114,14 @@
       {
         "description": "Si le Serpentin est dressé et choisi par une Action, et si une réaction à cette Action le fait s'incliner, alors au moment de résoudre la première Action le Serpentin est incliné et est donc un choix invalide : l'Action est annulée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       },
       {
         "description": "Le Serpentin ne peut pas être choisi pour l'application d'un pouvoir ou d'une action. Toutefois il peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4135,7 +4166,8 @@
       {
         "description": "Le pouvoir de Shika Ingalsse concerne un effet en File d'Attente. Le pouvoir de Shika Ingalsse peut être utilisé à partir du Havre Sac pour annuler l'effet d'un Bonus de Force qui se trouve dans la File d'Attente.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4179,7 +4211,8 @@
       {
         "description": "Le pouvoir du Tofu Maléfique ne se déclenche que lors de la destruction d'un autre Tofu que lui même.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -4234,7 +4267,8 @@
       {
         "description": "Le bonus de Force du Tofu Royal ne dure pas jusqu'à la fin du tour, mais tant qu'il est en jeu dans le Monde. Si un Tofu (un Allié de Force 1) dans le Monde en même temps que le Tofu Royal subit 1 Dommage, puis que le Tofu Royal quitte le jeu, le Tofu est détruit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [
@@ -4368,7 +4402,8 @@
       {
         "description": "Une fois le joueur choisi, la Force de Vil Smisse est recalculée en permanence en fonction du nombre de cartes dans la main de ce joueur. Si le joueur choisi possède 6 cartes en main au début de votre tour, la Force de Vil Smisse est de 3. S'il défausse une carte par la suite, la Force de Vil Smisse passe immédiatement à 4.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],

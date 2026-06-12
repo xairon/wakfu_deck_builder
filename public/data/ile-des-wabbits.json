@@ -898,7 +898,8 @@
       {
         "description": "Stratégie de groupe génère un modificateur continu défini qui affecte tous les Alliés dans le Monde. Un Allié présent dans le Monde à la résolution de Stratégie de Groupe et qui se déplace dans le Havre Sac ne bénéficie plus du bonus de Force. En revanche, un Allié qui apparaît dans le Monde après la résolution de Stratégie de groupe bénéficiera tout de même du bonus de Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -942,7 +943,8 @@
       {
         "description": "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],
@@ -1197,7 +1199,8 @@
       {
         "description": "La mention \"Détruisez le Wobot\" fait partie de sont effet et non de son coût d'activation.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "kind": "ruling"
       }
     ],
     "keywords": [],

@@ -2,9 +2,11 @@
 import {
   arrivalEffects,
   playEffects,
+  printedEffects,
   tapPowers,
   turnStartEffects,
 } from "@/game/rules";
+import { CARD_SCRIPTS } from "@/game/rules/effects/cardScripts";
 import { createMockAllyCard } from "tests/factories/card";
 
 function cardWith(name: string, ...descriptions: string[]) {
@@ -438,5 +440,54 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
     expect(croumAtoms[0]?.ops).toEqual([
       { op: "loseStatTurn", stat: "pa", n: 1 },
     ]);
+  });
+});
+
+describe("rules/effects — effets imprimés vs notes de règles (kind)", () => {
+  it("devrait exclure les rulings/erratas et les descriptions vides du comptage", () => {
+    const card = createMockAllyCard({
+      name: "Agression",
+      effects: [
+        { description: "Inclinez l'un de vos Alliés : il inflige sa Force." },
+        {
+          description: "L'effet prend en compte tous les modificateurs…",
+          kind: "ruling",
+        },
+        {
+          description: "Cette carte a reçu un errata officiel : Carte Unique.",
+          kind: "errata",
+        },
+        { description: "   " },
+      ],
+    });
+    expect(printedEffects(card)).toHaveLength(1);
+    expect(printedEffects(null)).toEqual([]);
+  });
+
+  it("devrait ignorer un effet kind même si son texte est compilable", () => {
+    const card = createMockAllyCard({
+      name: "Piège",
+      effects: [
+        {
+          description: "Au début de votre tour, piochez une carte.",
+          kind: "ruling",
+        },
+      ],
+    });
+    expect(turnStartEffects(card)).toHaveLength(0);
+    expect(arrivalEffects(card)).toHaveLength(0);
+  });
+
+  it("le registre scripte l'entretien des Forêts d'Astrub (élément + arrivée inclinée)", () => {
+    const entries = CARD_SCRIPTS["forets-d-astrub-incarnam"];
+    expect(entries[0]).toEqual({
+      trigger: "onTurnStart",
+      orElse: "destroySelf",
+      ops: [{ op: "recycleFromDiscard", n: 1, element: "Terre" }],
+    });
+    expect(entries[1]).toEqual({
+      trigger: "onArrive",
+      ops: [{ op: "tapSelf" }],
+    });
   });
 });
