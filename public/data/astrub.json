@@ -1554,7 +1554,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
@@ -1702,7 +1707,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "artists": ["Ankama"],
     "notes": [
       "L'effet d'apparition du Crapaud à Moustache est placé sur la file d'attente, mais n'a pas de conséquence.",
@@ -2019,6 +2029,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -2074,6 +2088,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Air"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -3081,7 +3099,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Nicolas Detrain (Tiko)"],
     "notes": [
@@ -5729,6 +5752,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 1,
@@ -5778,6 +5805,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -6343,6 +6374,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Air"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -6432,7 +6467,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Xu Zhifeng (XZF)"],
     "notes": [],

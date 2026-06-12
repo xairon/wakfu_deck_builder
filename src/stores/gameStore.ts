@@ -47,6 +47,7 @@ import {
   eligibleBlockers,
   eligibleTargets,
   grantXpEvents,
+  havreSacHasRoom,
   isTargetingOp,
   planCost,
   playDestination,
@@ -425,6 +426,23 @@ export const useGameStore = defineStore("game", () => {
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    // 4806 : un déplacement vers un Havre-Sac plein « n'a pas lieu »
+    if (
+      assist.value &&
+      to.zone === "havreSac" &&
+      inst.location.zone !== "havreSac"
+    ) {
+      const card = getCard(inst.cardId);
+      const counted =
+        card &&
+        (card.mainType === "Héros" ||
+          card.mainType === "Allié" ||
+          card.mainType === "Salle");
+      if (counted && !havreSacHasRoom(rulesCtx(), to.owner)) {
+        rejectMove("Le Havre-Sac est plein (Taille atteinte).");
+        return;
+      }
+    }
     const toHidden = to.zone === "pioche";
     const toPublic =
       to.zone === "monde" ||

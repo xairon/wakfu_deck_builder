@@ -4,6 +4,8 @@ import {
   eligibleAttackers,
   eligibleBlockers,
   eligibleTargets,
+  havreSacHasRoom,
+  havreSacOccupancy,
   whyCannotDeclareAttack,
   whyCannotPlay,
 } from "../legality";
@@ -14,11 +16,14 @@ import {
   bringToHand,
   bringToMonde,
   ctxOf,
+  dispatch,
   fixture,
   instId,
   makeAlly,
   setTurn,
 } from "./harness";
+import { move } from "@/game";
+import { createMockHavreSacCard } from "tests/factories/card";
 
 describe("rules/legality — jouer une carte", () => {
   function handFixture(card = makeAlly("c0", { niveau: 1, element: "Feu" })) {
@@ -73,6 +78,60 @@ describe("rules/legality — jouer une carte", () => {
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toContain(
       "Ressources",
     );
+  });
+});
+
+describe("rules/legality — Taille du Havre-Sac (2315)", () => {
+  function bagFixture() {
+    const salle = {
+      ...makeAlly("salle2", { niveau: 0 }),
+      mainType: "Salle",
+      stats: { niveau: { value: 0, element: "Neutre" } },
+    } as unknown as Card;
+    const f = fixture([makeAlly("a0"), salle], [], {
+      sacA: createMockHavreSacCard({
+        id: "sacT2",
+        stats: { taille: 2, resistance: 15 },
+      }),
+    });
+    return { f, salle };
+  }
+
+  it("initialise le compteur Résistance du Havre-Sac au setup (2303)", () => {
+    const { f } = bagFixture();
+    const s = ctxOf(f).state;
+    const sacInst = s.instances[s.seats.A.havreSacInstanceId!];
+    expect(sacInst.counters.resistance).toBe(15);
+  });
+
+  it("compte l'occupation (le Héros compte, 4781) et bloque une Salle si plein (2626)", () => {
+    const { f } = bagFixture();
+    expect(havreSacOccupancy(ctxOf(f), "A")).toBe(1); // le Héros
+    expect(havreSacHasRoom(ctxOf(f), "A")).toBe(true);
+    // un Allié rejoint le Havre-Sac → plein (2/2)
+    dispatch(
+      f,
+      move("A", {
+        instanceId: instId("A", 0),
+        from: { zone: "pioche", owner: "A" },
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: false,
+        orientationOnArrival: "upright",
+      }),
+    );
+    expect(havreSacOccupancy(ctxOf(f), "A")).toBe(2);
+    expect(havreSacHasRoom(ctxOf(f), "A")).toBe(false);
+    // jouer une Salle est refusé
+    bringToHand(f, "A", instId("A", 1));
+    setTurn(f, "A", 3);
+    expect(whyCannotPlay(ctxOf(f), "A", instId("A", 1))).toContain("plein");
+  });
+
+  it("Taille inconnue → on ne bloque jamais (mode défensif)", () => {
+    const f = fixture([]); // sac sans stats
+    expect(havreSacHasRoom(ctxOf(f), "A")).toBe(true);
   });
 });
 

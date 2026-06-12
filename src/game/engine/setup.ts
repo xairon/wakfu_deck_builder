@@ -81,6 +81,9 @@ export function buildInitialLayout(
 
     if (deck.havreSac) {
       const id = mkId();
+      // Résistance imprimée du Havre-Sac (2303) → compteur courant
+      const resistance = (deck.havreSac as { stats?: { resistance?: number } })
+        .stats?.resistance;
       add({
         instanceId: id,
         cardId: deck.havreSac.id,
@@ -89,7 +92,7 @@ export function buildInitialLayout(
         location: { zone: "monde" },
         face: "recto",
         orientation: "upright",
-        counters: {},
+        counters: typeof resistance === "number" ? { resistance } : {},
         attachments: [],
         revealedTo: ["A", "B"],
       });

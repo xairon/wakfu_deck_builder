@@ -100,12 +100,12 @@ export const SAC_B = "ci_B_002";
 export function fixture(
   cardsA: Card[],
   cardsB: Card[] = [],
-  opts: { heroA?: HeroCard; heroB?: HeroCard } = {},
+  opts: { heroA?: HeroCard; heroB?: HeroCard; sacA?: Card } = {},
 ): Fixture {
   const cards = new Map<string, Card>();
   const heroA = opts.heroA ?? makeHero("heroA", "Feu");
   const heroB = opts.heroB ?? makeHero("heroB", "Eau");
-  const sacA = createMockHavreSacCard({ id: "sacA" });
+  const sacA = opts.sacA ?? createMockHavreSacCard({ id: "sacA" });
   const sacB = createMockHavreSacCard({ id: "sacB" });
   for (const c of [heroA, heroB, sacA, sacB, ...cardsA, ...cardsB])
     cards.set(c.id, c);

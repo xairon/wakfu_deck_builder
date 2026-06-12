@@ -45,7 +45,8 @@ export function combatKeywords(
       resistances[key] = (resistances[key] ?? 0) + n;
     }
   }
-  let geant = false;
+  // Géant : mot-clé structuré (promu à la compilation) ou texte d'effet strict
+  let geant = (keywords ?? []).some((k) => k?.name === "Géant");
   for (const e of effects ?? []) {
     if (String(e?.description ?? "").trim() === "Géant") geant = true;
   }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Migration / compilation des données de cartes — `npm run compile-effects`.
  *
  * Réécrit les fichiers d'extensions de public/data/*.json :
@@ -53,6 +53,7 @@ const REAL_KEYWORDS = new Set([
   "Parade",
   "Résistance",
   "Recette",
+  "Géant",
   "Unique",
 ]);
 
@@ -153,6 +154,41 @@ function compileEffects(
   }
 }
 
+/**
+ * Havre-Sac : extrait Taille/Résistance des subTypes (« Taille 4 »,
+ * « Résistance 15 ») vers stats.taille / stats.resistance (2303/2315).
+ */
+function extractBagStats(card: RawCard): void {
+  if ((card as { mainType?: string }).mainType !== "Havre-Sac") return;
+  const subTypes = (card as { subTypes?: string[] }).subTypes ?? [];
+  for (const s of subTypes) {
+    const m = String(s).match(/^(Taille|Résistance)\s+(\d+)$/);
+    if (!m) continue;
+    card.stats = card.stats ?? {};
+    const st = card.stats as { taille?: number; resistance?: number };
+    if (m[1] === "Taille") st.taille = Number.parseInt(m[2], 10);
+    else st.resistance = Number.parseInt(m[2], 10);
+  }
+}
+
+/**
+ * Promeut les mots-clés détectés par texte d'effet en mots-clés STRUCTURÉS
+ * (idée volée à un schéma communautaire) — ex. l'effet « Géant ».
+ */
+function promoteTextKeywords(card: RawCard): void {
+  const hasGeantText = (card.effects ?? []).some(
+    (e) => String(e?.description ?? "").trim() === "Géant",
+  );
+  if (!hasGeantText) return;
+  card.keywords = card.keywords ?? [];
+  if (!card.keywords.some((k) => k?.name === "Géant")) {
+    card.keywords.push({
+      name: "Géant",
+      description: "Répartit sa Force entre tous ses bloqueurs (6135).",
+    });
+  }
+}
+
 for (const file of EXTENSION_FILES) {
   const path = join(DATA_DIR, file);
   const cards = JSON.parse(readFileSync(path, "utf8")) as RawCard[];
@@ -160,6 +196,8 @@ for (const file of EXTENSION_FILES) {
     stats.cards++;
     normalizeElements(card);
     card.keywords = cleanKeywords(card.keywords);
+    extractBagStats(card);
+    promoteTextKeywords(card);
     const name = String(card.name ?? "");
     const element = sourceElementOf(card);
     compileEffects(

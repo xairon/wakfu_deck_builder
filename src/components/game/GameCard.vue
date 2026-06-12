@@ -59,6 +59,14 @@
     >
       {{ forceMod > 0 ? `+${forceMod}` : forceMod }}
     </span>
+    <span
+      v-if="resistance !== undefined"
+      :key="`res-${resistance}`"
+      class="game-card__badge game-card__badge--res"
+      title="Résistance du Havre-Sac"
+    >
+      🛡{{ resistance }}
+    </span>
   </button>
 </template>
 
@@ -116,6 +124,7 @@ const tapped = computed(() => props.instance.orientation === "tapped");
 const damage = computed(() => props.instance.counters.damage || 0);
 const hp = computed(() => props.instance.counters.hp);
 const level = computed(() => props.instance.counters.level);
+const resistance = computed(() => props.instance.counters.resistance);
 const forceMod = computed(() => props.instance.counters.tokens?.forceMod ?? 0);
 
 const label = computed(() => props.card?.name ?? "Carte");
@@ -274,6 +283,11 @@ const ariaLabel = computed(() => {
   bottom: 3px;
   left: 6px;
   background: linear-gradient(180deg, #6cc23a, #4a8f1f);
+}
+.game-card__badge--res {
+  bottom: 3px;
+  right: 3px;
+  background: linear-gradient(180deg, #4a90c2, #2c5f8f);
 }
 @media (prefers-reduced-motion: reduce) {
   .game-card,

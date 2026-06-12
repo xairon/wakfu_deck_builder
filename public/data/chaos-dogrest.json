@@ -32,7 +32,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Ankama"],
     "notes": [],
@@ -530,7 +535,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["David Cicerone"],
     "notes": [
@@ -756,7 +766,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Enaibi"],
     "notes": [
@@ -1805,6 +1820,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -1855,6 +1874,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -1901,7 +1924,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
@@ -2176,7 +2204,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Daniel Qualizza"],
     "notes": [
@@ -2514,7 +2547,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 3,
     "artists": ["Nicolas Detrain (Tiko)"],
     "notes": [],
@@ -2600,6 +2638,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4281,6 +4323,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Air", "Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4447,7 +4493,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Nicolas Dhennin"],
     "notes": [
@@ -4776,7 +4827,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Romain Pergod (Sephy)"],
     "notes": [
@@ -5210,7 +5266,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 4,
     "artists": ["Ankama"],
     "notes": [],
@@ -6038,7 +6099,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Cuca"],
     "notes": [],
@@ -6463,7 +6529,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["François Houssin (Franho)"],
     "notes": [],

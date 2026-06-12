@@ -141,6 +141,10 @@ export interface BaseStats {
   pm?: number;
   pv?: number;
   cost?: number;
+  /** Havre-Sac : capacité d'accueil (Héros + Alliés + Salles, 2315). */
+  taille?: number;
+  /** Havre-Sac : points de Résistance imprimés (2303). */
+  resistance?: number;
 }
 
 // Interface pour les métiers
@@ -358,6 +362,7 @@ export type CardKeyword =
   | "Parade"
   | "Résistance"
   | "Recette"
+  | "Géant"
   | "Unique";
 
 export interface DeckCard {

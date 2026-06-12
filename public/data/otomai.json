@@ -240,6 +240,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Neutre", "Terre", "Air", "Feu", "Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 3,
@@ -581,7 +585,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Vincent Joubert"],
     "notes": [],
@@ -811,7 +820,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -908,7 +922,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Vincent Joubert"],
     "notes": [],
@@ -1150,6 +1169,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -1199,7 +1222,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Vincent Joubert"],
     "notes": [
@@ -1249,6 +1277,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -1294,7 +1326,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Vincent Joubert"],
     "notes": [],
@@ -3111,6 +3148,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Feu"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -3992,6 +4033,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4082,7 +4127,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Vincent Joubert"],
     "notes": [],

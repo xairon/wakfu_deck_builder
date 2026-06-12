@@ -634,7 +634,9 @@
       "niveau": {
         "value": 1,
         "element": "Eau"
-      }
+      },
+      "taille": 4,
+      "resistance": 12
     },
     "effects": [
       {

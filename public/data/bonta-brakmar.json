@@ -2795,6 +2795,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Feu"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4231,7 +4235,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Jonoo Takeshi"],
     "notes": [
@@ -4277,7 +4286,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -4367,6 +4381,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4453,6 +4471,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 1,
@@ -4842,6 +4864,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Air"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4896,6 +4922,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -7064,7 +7094,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "artists": ["Paul Mayafon"],
     "notes": [],
     "flavor": {
@@ -7454,7 +7489,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -7479,7 +7519,9 @@
       "niveau": {
         "value": 1,
         "element": "Feu"
-      }
+      },
+      "taille": 4,
+      "resistance": 12
     },
     "effects": [],
     "keywords": [
@@ -7515,7 +7557,9 @@
       "niveau": {
         "value": 1,
         "element": "Air"
-      }
+      },
+      "taille": 4,
+      "resistance": 12
     },
     "effects": [],
     "keywords": [
@@ -7551,7 +7595,9 @@
       "niveau": {
         "value": 1,
         "element": "Terre"
-      }
+      },
+      "taille": 4,
+      "resistance": 12
     },
     "effects": [],
     "keywords": [
@@ -7587,7 +7633,9 @@
       "niveau": {
         "value": 1,
         "element": "Eau"
-      }
+      },
+      "taille": 4,
+      "resistance": 12
     },
     "effects": [],
     "keywords": [
@@ -7863,7 +7911,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -8622,6 +8675,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -10553,7 +10610,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 3,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -11886,7 +11948,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 3,
     "artists": ["Ankama"],
     "notes": [
@@ -12161,6 +12228,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Feu"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -13092,7 +13163,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -13772,6 +13848,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,

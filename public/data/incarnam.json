@@ -1990,7 +1990,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Bruno Bessadi"],
     "notes": [
@@ -3141,6 +3146,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 3,
@@ -3465,7 +3474,12 @@
         }
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 1,
     "artists": ["Nicolas Detrain (Tiko)"],
     "notes": [],
@@ -3783,6 +3797,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Feu"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 3,
@@ -3918,7 +3936,12 @@
         "requiresIncline": true
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 3,
     "artists": ["Nathanaël Bronn"],
     "notes": [],
@@ -4064,6 +4087,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4118,6 +4145,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Feu"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 2,
@@ -4826,6 +4857,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 3,
@@ -6788,7 +6823,9 @@
       "niveau": {
         "value": 1,
         "element": "Terre"
-      }
+      },
+      "taille": 4,
+      "resistance": 15
     },
     "effects": [],
     "keywords": [],
@@ -6813,7 +6850,9 @@
       "niveau": {
         "value": 1,
         "element": "Feu"
-      }
+      },
+      "taille": 4,
+      "resistance": 15
     },
     "effects": [],
     "keywords": [],
@@ -6839,7 +6878,9 @@
       "niveau": {
         "value": 1,
         "element": "Air"
-      }
+      },
+      "taille": 4,
+      "resistance": 15
     },
     "effects": [],
     "keywords": [],
@@ -6864,7 +6905,9 @@
       "niveau": {
         "value": 1,
         "element": "Eau"
-      }
+      },
+      "taille": 4,
+      "resistance": 15
     },
     "effects": [],
     "keywords": [],
@@ -8747,6 +8790,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Air"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 3,
@@ -9096,6 +9143,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Feu"]
+      },
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
       }
     ],
     "experience": 3,
@@ -11495,7 +11546,12 @@
         "requiresIncline": true
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Gao Lao"],
     "notes": [],
@@ -12797,7 +12853,12 @@
         "requiresIncline": false
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      }
+    ],
     "experience": 2,
     "artists": ["Nicolas Detrain (Tiko)"],
     "notes": [],

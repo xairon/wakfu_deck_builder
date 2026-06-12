@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v11"; // v11 : recherches qualifiees (famille/niveau/incline)
+const CACHE_KEY = "wakfu-cards-cache-v12"; // v12 : Taille/Resistance Havre-Sac + Geant structure
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -94,6 +94,7 @@ function capitalizeElement(element: string): string {
 const CANONICAL_KEYWORDS = new Set([
   "Résistance",
   "Recette",
+  "Géant",
   "Fabriquer",
   "Inclinaison",
   "Portée",
