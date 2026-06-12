@@ -69,6 +69,14 @@ function parseSentence(
   if (m) return { op: "heroGainPv", n: toNumber(m[1]) };
   m = sentence.match(/^votre heros perd (\d+) (?:pv|points? de vie)$/);
   if (m) return { op: "heroLosePv", n: toNumber(m[1]) };
+  // « Perdez N PA/PM jusqu'à la fin du tour » (coûts d'entretien type Croum)
+  m = sentence.match(/^perde?z? (\d+) (pa|pm) jusqu['’]a la fin d[ue] tour$/);
+  if (m)
+    return {
+      op: "loseStatTurn",
+      stat: m[2] as "pa" | "pm",
+      n: toNumber(m[1]),
+    };
   m = sentence.match(
     /^(?:inflige[zr] (\d+) dommages? au heros adverse|le heros adverse perd (\d+) (?:pv|points? de vie))$/,
   );

@@ -42,10 +42,12 @@ import type {
 } from "@/game/rules";
 import {
   arrivalEffects,
+  combatKeywords,
   effectTargetIds,
   eligibleAttackers,
   eligibleBlockers,
   eligibleTargets,
+  equalityRescueEvents,
   grantXpEvents,
   havreSacHasRoom,
   isTargetingOp,
@@ -150,9 +152,21 @@ export const useGameStore = defineStore("game", () => {
   /**
    * Fin de partie automatique d'après l'état (PV ≤ 0 / Niveau 3, 103.2).
    * S'applique MÊME en mode libre : la mort à 0 PV est fondamentale.
+   * Égalité 103.3 : double 0 PV simultané → les deux Héros restent à 1 PV.
    */
   function checkVictory(): void {
     if (matchPhase.value !== "playing") return;
+    const rescue = equalityRescueEvents(rulesCtx());
+    if (rescue.length) {
+      dispatch(
+        ...rescue,
+        say(
+          "system",
+          "Égalité (103.3) : les deux Héros restent en jeu avec 1 PV.",
+        ),
+      );
+      return;
+    }
     const w = victoryFromState(rulesCtx());
     if (w) {
       winner.value = w;
@@ -164,8 +178,12 @@ export const useGameStore = defineStore("game", () => {
     const id = state.value.seats[seat].heroInstanceId;
     return id ? (state.value.instances[id] ?? null) : null;
   }
+  /** PA effectifs = compteur + modificateurs temporaires (paMod, fin de tour). */
   function paOf(seat: Seat): number {
-    return heroOf(seat)?.counters.pa ?? 6;
+    const hero = heroOf(seat);
+    const base = hero?.counters.pa ?? 6;
+    const mod = hero?.counters.tokens?.paMod ?? 0;
+    return Math.max(0, base + mod);
   }
 
   // ── Journal lisible ──────────────────────────────────────────────────────
@@ -905,6 +923,23 @@ export const useGameStore = defineStore("game", () => {
       } else if (op.op === "havreSacGainResistance") {
         const sacId = state.value.seats[seat].havreSacInstanceId;
         if (sacId) adjustCounter(sacId, "resistance", op.n);
+      } else if (op.op === "loseStatTurn") {
+        const heroId = state.value.seats[seat].heroInstanceId;
+        if (heroId) {
+          dispatch(
+            incCounterVerb(
+              seat,
+              heroId,
+              op.stat === "pa" ? "paMod" : "pmMod",
+              -op.n,
+              true,
+            ),
+            say(
+              seat,
+              `${players.value[seat].name} perd ${op.n} ${op.stat.toUpperCase()} jusqu'à la fin du tour.`,
+            ),
+          );
+        }
       } else if (op.op === "destroySelf") {
         const src = sourceId ? state.value.instances[sourceId] : null;
         const inPlay =
@@ -1113,11 +1148,51 @@ export const useGameStore = defineStore("game", () => {
 
   // ── Combat assisté (702–708) ─────────────────────────────────────────────
   const combat = ref<{
-    step: "attackers" | "blockers";
+    step: "attackers" | "blockers" | "strikes";
     target: CombatTarget | null;
     attackers: string[];
     blocks: Record<string, string>;
+    /** 6105 : attackerId → bloqueur choisi pour encaisser sa Force. */
+    strikes: Record<string, string>;
+    /** Attaquant dont on choisit actuellement le bloqueur frappé. */
+    strikeFor: string | null;
   } | null>(null);
+
+  /** Attaquants à duel multi-bloqueurs (sans Géant) sans frappe choisie. */
+  function pendingStrikes(c: NonNullable<typeof combat.value>): string[] {
+    const byAttacker = new Map<string, number>();
+    for (const atk of Object.values(c.blocks))
+      byAttacker.set(atk, (byAttacker.get(atk) ?? 0) + 1);
+    return c.attackers.filter((a) => {
+      if ((byAttacker.get(a) ?? 0) < 2) return false;
+      if (c.strikes[a]) return false;
+      const card = getCard(state.value.instances[a]?.cardId ?? null);
+      return !(card && combatKeywords(card).geant); // Géant répartit déjà
+    });
+  }
+
+  /** Bloqueurs candidats à la frappe de l'attaquant courant. */
+  const combatStrikeIds = computed(() => {
+    const c = combat.value;
+    if (!c || c.step !== "strikes" || !c.strikeFor) return [];
+    return Object.entries(c.blocks)
+      .filter(([, atk]) => atk === c.strikeFor)
+      .map(([blocker]) => blocker);
+  });
+
+  /** Choisit le bloqueur frappé par l'attaquant courant (6105). */
+  function combatChooseStrike(blockerId: string): void {
+    const c = combat.value;
+    if (!c || c.step !== "strikes" || !c.strikeFor) return;
+    if (!combatStrikeIds.value.includes(blockerId)) return;
+    c.strikes = { ...c.strikes, [c.strikeFor]: blockerId };
+    const next = pendingStrikes(c);
+    if (next.length) {
+      c.strikeFor = next[0];
+      return;
+    }
+    doResolveCombat();
+  }
 
   const combatAttackerIds = computed(() =>
     combat.value?.step === "attackers"
@@ -1152,6 +1227,8 @@ export const useGameStore = defineStore("game", () => {
       target: null,
       attackers: [],
       blocks: {},
+      strikes: {},
+      strikeFor: null,
     };
     if (firstAttacker) combatToggleAttacker(firstAttacker);
     return true;
@@ -1229,7 +1306,23 @@ export const useGameStore = defineStore("game", () => {
     if (least) c.blocks = { ...c.blocks, [blockerId]: least };
   }
 
+  /**
+   * Demande de résolution : si des duels multi-bloqueurs attendent le choix
+   * du bloqueur frappé (6105), ouvre l'étape « strikes » ; sinon résout.
+   */
   function combatResolve(): void {
+    const c = combat.value;
+    if (!c || !c.target) return;
+    const pending = pendingStrikes(c);
+    if (pending.length) {
+      c.step = "strikes";
+      c.strikeFor = pending[0];
+      return;
+    }
+    doResolveCombat();
+  }
+
+  function doResolveCombat(): void {
     const c = combat.value;
     if (!c || !c.target) return;
     const result = resolveCombat(rulesCtx(), {
@@ -1237,6 +1330,7 @@ export const useGameStore = defineStore("game", () => {
       target: c.target,
       attackers: c.attackers,
       blocks: c.blocks,
+      strikes: c.strikes,
     });
     dispatch(
       ...result.events,
@@ -1284,10 +1378,12 @@ export const useGameStore = defineStore("game", () => {
       }),
     ];
     for (const inst of Object.values(s.instances)) {
-      // « jusqu'à la fin du tour » : les modificateurs de Force expirent à
-      // chaque transition de tour, quel que soit le contrôleur.
-      if (inst.counters.tokens?.forceMod) {
-        drafts.push(setCounterVerb(next, inst.instanceId, "forceMod", 0, true));
+      // « jusqu'à la fin du tour » : les modificateurs temporaires (Force,
+      // PA, PM) expirent à chaque transition de tour, tout contrôleur.
+      for (const mod of ["forceMod", "paMod", "pmMod"] as const) {
+        if (inst.counters.tokens?.[mod]) {
+          drafts.push(setCounterVerb(next, inst.instanceId, mod, 0, true));
+        }
       }
       const inPlay =
         inst.location.zone === "monde" || inst.location.zone === "havreSac";
@@ -1381,6 +1477,8 @@ export const useGameStore = defineStore("game", () => {
     combatConfirmAttackers,
     combatToggleBlock,
     combatResolve,
+    combatStrikeIds,
+    combatChooseStrike,
     combatCancel,
     effectChoice,
     effectChoiceResolve,

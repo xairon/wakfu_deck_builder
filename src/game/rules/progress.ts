@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles R1 — Expérience, montée de niveau, victoire.
  * 415.1 (gain d'XP), 307.4/307.5 (verso à 6 XP, Niveau 3 à 18 XP),
  * 103.2 (défaite à 0 PV / victoire au Niveau 3).
@@ -65,8 +65,19 @@ export function grantXpEvents(
   return { events, log, leveledTo, won };
 }
 
+function heroHp(ctx: RulesCtx, seat: Seat): number | null {
+  const id = ctx.state.seats[seat].heroInstanceId;
+  const hero = id ? ctx.state.instances[id] : null;
+  return hero ? (hero.counters.hp ?? 1) : null;
+}
+
 /** Vainqueur d'après l'état : PV adverses ≤ 0 (103.2a) ou Niveau 3 (103.2b). */
 export function victoryFromState(ctx: RulesCtx): Seat | null {
+  // 103.3 : si les DEUX Héros tombent à 0 simultanément, personne ne gagne
+  // (ils restent en jeu avec 1 PV — voir equalityRescueEvents).
+  const hpA = heroHp(ctx, "A");
+  const hpB = heroHp(ctx, "B");
+  if (hpA !== null && hpB !== null && hpA <= 0 && hpB <= 0) return null;
   for (const seat of ["A", "B"] as Seat[]) {
     const id = ctx.state.seats[seat].heroInstanceId;
     const hero = id ? ctx.state.instances[id] : null;
@@ -75,4 +86,20 @@ export function victoryFromState(ctx: RulesCtx): Seat | null {
     if ((hero.counters.xp ?? 0) >= XP_LEVEL_3) return seat;
   }
   return null;
+}
+
+/**
+ * Égalité 103.3 : les deux Héros à 0 PV ou moins au même instant → les deux
+ * restent en jeu avec 1 PV. Retourne les événements de sauvetage (ou []).
+ */
+export function equalityRescueEvents(ctx: RulesCtx): DraftEvent[] {
+  const hpA = heroHp(ctx, "A");
+  const hpB = heroHp(ctx, "B");
+  if (hpA === null || hpB === null || hpA > 0 || hpB > 0) return [];
+  const events: DraftEvent[] = [];
+  for (const seat of ["A", "B"] as Seat[]) {
+    const id = ctx.state.seats[seat].heroInstanceId;
+    if (id) events.push(setCounter(seat, id, "hp", 1));
+  }
+  return events;
 }

@@ -428,5 +428,15 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
     );
     expect(turnStartEffects(direct)[0]?.ops).toEqual([{ op: "draw", n: 1 }]);
     expect(turnStartEffects(direct)[0]?.orElse).toBeUndefined();
+    // perte de PA temporaire comme coût d'entretien (Croum)
+    const croum = cardWith(
+      "Croum",
+      "Au début de votre tour, perdez 1 PA jusqu'à la fin du tour ou détruisez le Croum.",
+    );
+    const croumAtoms = turnStartEffects(croum);
+    expect(croumAtoms[0]?.orElse).toBe("destroySelf");
+    expect(croumAtoms[0]?.ops).toEqual([
+      { op: "loseStatTurn", stat: "pa", n: 1 },
+    ]);
   });
 });

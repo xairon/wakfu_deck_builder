@@ -22,6 +22,12 @@ export function resourceProducers(
   seat: Seat,
 ): ResourceProducer[] {
   const out: ResourceProducer[] = [];
+  // 2342 : au premier tour du joueur qui n'a PAS commencé, son Havre-Sac se
+  // redresse après sa première inclinaison → il vaut DEUX Ressources pour le
+  // même coût (une seule inclinaison réelle au paiement).
+  const freeUntap =
+    seat !== ctx.state.turn.firstPlayer && ctx.state.turn.number === 2;
+  const sacId = ctx.state.seats[seat].havreSacInstanceId;
   for (const inst of Object.values(ctx.state.instances)) {
     if (inst.controller !== seat) continue;
     const zone = inst.location.zone;
@@ -29,7 +35,12 @@ export function resourceProducers(
     if (inst.orientation !== "upright") continue;
     const card = ctx.getCard(inst.cardId);
     if (!card || !canProduceResource(card)) continue;
-    out.push({ instanceId: inst.instanceId, element: producedElement(card) });
+    const producer = {
+      instanceId: inst.instanceId,
+      element: producedElement(card),
+    };
+    out.push(producer);
+    if (freeUntap && inst.instanceId === sacId) out.push({ ...producer });
   }
   return out;
 }

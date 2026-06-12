@@ -22,6 +22,32 @@ function applyCombat(f: Fixture, plan: Parameters<typeof resolveCombat>[1]) {
   return { result, state: ctxOf(f).state };
 }
 
+describe("rules/combat — choix du bloqueur frappé (6105)", () => {
+  it("l'attaquant frappe le bloqueur désigné par strikes, pas le premier", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 2 })],
+      [makeAlly("b1", { force: 2 }), makeAlly("b2", { force: 2 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    bringToMonde(f, "B", instId("B", 1));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: {
+        [instId("B", 0)]: instId("A", 0),
+        [instId("B", 1)]: instId("A", 0),
+      },
+      strikes: { [instId("A", 0)]: instId("B", 1) },
+    });
+    expect(result.destroyed).toContain(instId("B", 1)); // le désigné
+    expect(result.destroyed).not.toContain(instId("B", 0));
+    expect(state.instances[instId("B", 0)].counters.damage ?? 0).toBe(0);
+  });
+});
+
 describe("rules/combat — résolution", () => {
   it("attaquant libre → dommages au Héros cible, attaquant incliné (707/708)", () => {
     const f = fixture([makeAlly("atk", { force: 3 })]);

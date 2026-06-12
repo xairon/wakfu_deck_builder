@@ -37,6 +37,11 @@ export interface CombatPlan {
   attackers: InstanceId[];
   /** blockerId → attackerId bloqué. */
   blocks: Record<InstanceId, InstanceId>;
+  /**
+   * 6105 : attackerId → bloqueur choisi pour encaisser sa Force (duels
+   * multi-bloqueurs sans Géant). Absent → premier bloqueur assigné.
+   */
+  strikes?: Record<InstanceId, InstanceId>;
 }
 
 export interface CombatResult {

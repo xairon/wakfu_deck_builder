@@ -1,5 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { grantXpEvents, victoryFromState } from "../progress";
+﻿import { describe, expect, it } from "vitest";
+import {
+  equalityRescueEvents,
+  grantXpEvents,
+  victoryFromState,
+} from "../progress";
 import { HERO_A, HERO_B, ctxOf, dispatch, fixture } from "./harness";
 import { flipLevel, setCounter } from "@/game";
 
@@ -31,6 +35,19 @@ describe("rules/progress — XP, niveaux, victoire", () => {
     const grant = grantXpEvents(ctxOf(f), "A", 1);
     expect(grant.won).toBe(true);
     expect(grant.leveledTo).toBe(3);
+  });
+
+  it("égalité 103.3 : double 0 PV → personne ne gagne, sauvetage à 1 PV", () => {
+    const f = fixture([]);
+    dispatch(f, setCounter("A", HERO_A, "hp", 0));
+    dispatch(f, setCounter("B", HERO_B, "hp", -2));
+    expect(victoryFromState(ctxOf(f))).toBeNull();
+    const rescue = equalityRescueEvents(ctxOf(f));
+    expect(rescue.length).toBe(2);
+    dispatch(f, ...rescue);
+    expect(ctxOf(f).state.instances[HERO_A].counters.hp).toBe(1);
+    expect(ctxOf(f).state.instances[HERO_B].counters.hp).toBe(1);
+    expect(victoryFromState(ctxOf(f))).toBeNull();
   });
 
   it("victoryFromState : PV ≤ 0 → l'adversaire gagne ; 18 XP → le joueur gagne", () => {

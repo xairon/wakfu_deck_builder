@@ -163,13 +163,17 @@ export function havreSacHasRoom(ctx: RulesCtx, seat: Seat): boolean {
   return havreSacOccupancy(ctx, seat) < cap;
 }
 
-/** PM courants d'un siège (plafond attaquants/bloqueurs, 703/704). */
+/** PM effectifs d'un siège (plafond attaquants/bloqueurs, 703/704) :
+ *  compteur + modificateurs temporaires (pmMod, purgés en fin de tour). */
 export function pmOf(ctx: RulesCtx, seat: Seat): number {
   const id = ctx.state.seats[seat].heroInstanceId;
   const inst = id ? ctx.state.instances[id] : null;
-  if (inst?.counters.pm !== undefined) return inst.counters.pm;
+  const mod = inst?.counters.tokens?.pmMod ?? 0;
+  if (inst?.counters.pm !== undefined)
+    return Math.max(0, inst.counters.pm + mod);
   const card = inst ? ctx.getCard(inst.cardId) : null;
-  return card
+  const base = card
     ? (heroStats(card, inst!.face === "verso" ? "verso" : "recto")?.pm ?? 3)
     : 3;
+  return Math.max(0, base + mod);
 }

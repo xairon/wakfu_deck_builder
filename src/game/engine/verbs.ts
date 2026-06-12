@@ -167,7 +167,7 @@ export function undo(actor: Seat, targetSeq: number): DraftEvent {
   return { actor, type: "UNDONE", payload: { targetSeq } };
 }
 
-export function say(actor: Seat, text: string): DraftEvent {
+export function say(actor: Seat | "system", text: string): DraftEvent {
   return { actor, type: "SAID", payload: { text } };
 }
 

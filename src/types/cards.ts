@@ -88,7 +88,9 @@ export type CompiledEffectOp =
   /** « … puis mélangez votre Pioche ». */
   | { op: "shuffleDeck" }
   /** Détruit la carte source de l'effet (branche « ou détruisez X »). */
-  | { op: "destroySelf" };
+  | { op: "destroySelf" }
+  /** « Perdez N PA/PM jusqu'à la fin du tour » — modificateur temporaire. */
+  | { op: "loseStatTurn"; stat: "pa" | "pm"; n: number };
 
 export interface CompiledEffect {
   /** onArrive : entrée en jeu ; onTap : pouvoir incliné ; onPlay : Action

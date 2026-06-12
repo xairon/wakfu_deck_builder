@@ -119,7 +119,10 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
       if (pool > 0 && unkilled.length) inflict(attacker, unkilled[0], pool);
       log.push(`Duel (Géant) : ${nameOf(ctx, attacker)} répartit sa Force.`);
     } else {
-      inflict(attacker, blockers[0], aForce);
+      // 6105 : l'attaquant choisit le bloqueur frappé (sinon le premier)
+      const chosen = plan.strikes?.[attacker];
+      const struck = chosen && blockers.includes(chosen) ? chosen : blockers[0];
+      inflict(attacker, struck, aForce);
     }
     for (const b of blockers) inflict(b, attacker, forceOf(ctx, b));
     log.push(

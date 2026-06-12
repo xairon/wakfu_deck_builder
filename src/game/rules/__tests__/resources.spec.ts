@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import type { Card } from "@/types/cards";
 import { planCost, resourceProducers } from "../resources";
 import {
@@ -10,6 +10,7 @@ import {
   fixture,
   instId,
   makeAlly,
+  setTurn,
 } from "./harness";
 import { tap } from "@/game";
 
@@ -27,6 +28,23 @@ describe("rules/resources — producteurs et coûts", () => {
     dispatch(f, tap("A", HERO_A));
     const producers = resourceProducers(ctxOf(f), "A");
     expect(producers.map((p) => p.instanceId)).toEqual([SAC_A]);
+  });
+
+  it("2342 : au 1er tour du 2ᵉ joueur, son Havre-Sac vaut DEUX Ressources", () => {
+    const f = fixture([]); // firstPlayer = A
+    setTurn(f, "B", 2); // premier tour de B
+    const sacB = ctxOf(f).state.seats.B.havreSacInstanceId!;
+    const ids = resourceProducers(ctxOf(f), "B").map((p) => p.instanceId);
+    expect(ids.filter((id) => id === sacB)).toHaveLength(2);
+    // au tour suivant de B, retour à la normale
+    setTurn(f, "B", 4);
+    const later = resourceProducers(ctxOf(f), "B").map((p) => p.instanceId);
+    expect(later.filter((id) => id === sacB)).toHaveLength(1);
+    // et jamais pour le premier joueur
+    setTurn(f, "A", 1);
+    const sacA = ctxOf(f).state.seats.A.havreSacInstanceId!;
+    const aIds = resourceProducers(ctxOf(f), "A").map((p) => p.instanceId);
+    expect(aIds.filter((id) => id === sacA)).toHaveLength(1);
   });
 
   it("exclut les Protecteurs (4261)", () => {

@@ -2114,7 +2114,18 @@
       {
         "description": "Au début de votre tour, perdez 1 PA jusqu'à la fin du tour ou détruisez le Croum.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onTurnStart",
+          "orElse": "destroySelf",
+          "ops": [
+            {
+              "op": "loseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        }
       },
       {
         "description": "Le Porteur du Croum gagne .",

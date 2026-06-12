@@ -318,7 +318,9 @@
           {{
             store.combat.step === "attackers"
               ? "⚔ Choisis tes attaquants puis une cible adverse"
-              : `🛡 ${store.players[opp].name} — déclare tes bloqueurs`
+              : store.combat.step === "strikes"
+                ? "🎯 Choisis le bloqueur qui encaisse la Force de l'attaquant en vert"
+                : `🛡 ${store.players[opp].name} — déclare tes bloqueurs`
           }}
         </span>
         <span class="gcombat__info">
@@ -594,6 +596,8 @@ function select(instanceId: string): void {
       if (store.combatTargetIds.includes(instanceId))
         store.combatChooseTarget(instanceId);
       else store.combatToggleAttacker(instanceId);
+    } else if (store.combat.step === "strikes") {
+      store.combatChooseStrike(instanceId);
     } else {
       store.combatToggleBlock(instanceId);
     }
@@ -614,9 +618,12 @@ function slotCls(instanceId: string): Record<string, boolean> {
   return {
     "gslot--atk-can":
       c.step === "attackers" && store.combatAttackerIds.includes(instanceId),
-    "gslot--atk": c.attackers.includes(instanceId),
+    "gslot--atk":
+      c.attackers.includes(instanceId) ||
+      (c.step === "strikes" && c.strikeFor === instanceId),
     "gslot--target-can":
-      c.step === "attackers" && store.combatTargetIds.includes(instanceId),
+      (c.step === "attackers" && store.combatTargetIds.includes(instanceId)) ||
+      (c.step === "strikes" && store.combatStrikeIds.includes(instanceId)),
     "gslot--target": c.target?.instanceId === instanceId,
     "gslot--blk-can":
       c.step === "blockers" && store.combatBlockerIds.includes(instanceId),
