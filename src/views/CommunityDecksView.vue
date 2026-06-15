@@ -174,6 +174,8 @@ import {
   communityDeckToText,
   type SourcedDeck,
 } from "@/services/communityDeckService";
+import { loadPublicDecks } from "@/services/publicDeckService";
+import type { CloudDeck } from "@/services/cloudSync";
 
 const router = useRouter();
 const deckStore = useDeckStore();
@@ -249,10 +251,37 @@ function onImport(deck: SourcedDeck) {
   }
 }
 
+/** Convertit un deck publié (CloudDeck, ids de cartes) en SourcedDeck pour la galerie. */
+function publicToSourced(cloud: CloudDeck): SourcedDeck {
+  const nameOf = (id: string | null) =>
+    id ? (cardStore.cards.find((c) => c.id === id)?.name ?? "") : "";
+  return {
+    id: `pub-${cloud.id}-${cloud.user_id.slice(0, 8)}`,
+    name: cloud.name,
+    source: "Communauté",
+    hero: nameOf(cloud.hero_id) || undefined,
+    havreSac: nameOf(cloud.havre_sac_id) || undefined,
+    cards: (cloud.cards ?? [])
+      .filter((c) => !c.isReserve)
+      .map((c) => ({ name: nameOf(c.cardId), quantity: c.quantity }))
+      .filter((c) => c.name),
+  };
+}
+
 onMounted(async () => {
   await cardStore.initialize();
   deckStore.initialize();
-  decks.value = await loadCommunityDecks();
+  const curated = await loadCommunityDecks();
+  // Decks publiés par les joueurs (galerie communautaire dynamique). Tolérant :
+  // si Supabase n'est pas joignable/déployé, on garde la bibliothèque curatée.
+  let published: SourcedDeck[] = [];
+  try {
+    const rows = await loadPublicDecks();
+    published = rows.map(publicToSourced).filter((d) => d.cards.length > 0);
+  } catch {
+    /* galerie publique indisponible */
+  }
+  decks.value = [...curated, ...published];
   loading.value = false;
 });
 </script>
