@@ -51,3 +51,25 @@
   (`CACHE_KEY`) à chaque recompilation des données.
 - Ce document et `docs/CDC-MODULE-JEU-ETAT.md` sont tenus à jour à chaque
   jalon franchi.
+
+## Tutoriels par mécanique (onboarding avancé)
+
+Le tutoriel actuel (`tutorialStore` / `TutorialCoach`) apprend la boucle de base
+(mulligan → jouer un Allié → attaquer). À étendre avec des **mini-tutoriels
+focalisés, déclenchables à la demande**, un par mécanique — chacun ancré sur le
+plateau réel (spotlight) et validé par l'état du jeu, comme l'existant :
+
+- **Combat** : déclarer attaquants / bloqueurs, choix du bloqueur frappé (6105),
+  Géant, Résistance, létalité, XP des Alliés détruits.
+- **Équiper un Équipement** : attacher au Porteur, bonus statiques, panoplies.
+- **Familiers / Alliés** : invocation (mal d'invocation 1821), inclinaison pour
+  produire des Ressources, redressement en début de tour.
+- **Jouer une carte & payer le coût** : Niveau = coût en Ressources, inclinaison
+  des producteurs (Héros + Havre-Sac inclus).
+- **Havre-Sac & Monde** : échange Monde↔Havre-Sac, Résistance du Havre-Sac.
+- **Montée de niveau du Héros** : 6 XP → Niveau 2 (face verso), 18 XP → victoire.
+- **Actions / Salles / Zones** : quand et comment les jouer.
+
+Cadre : réutiliser l'infra existante (étapes ancrées, `advanceWhen`, texte
+dynamique) + un sélecteur « Apprendre une mécanique » dans le lobby. À planifier
+après stabilisation de la v1 (combat + onboarding).
