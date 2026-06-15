@@ -89,6 +89,17 @@ function rndSeed(): string {
 
 export type MatchPhase = "lobby" | "mulligan" | "playing" | "finished";
 
+/**
+ * Transport du jeu EN LIGNE (modèle « clients de confiance » : le serveur
+ * diffuse l'état COMPLET, l'info cachée est respectée à l'affichage via
+ * `redactStateFor`). Injecté (gameClient en prod, mock en test) pour découpler
+ * le store de Supabase.
+ */
+export interface OnlineTransport {
+  submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
+  subscribe(gameId: string, onEvent: (e: PersistedEvent) => void): () => void;
+}
+
 export interface LogLine {
   seq: number;
   actor: Seat | "system";
@@ -107,6 +118,12 @@ export const useGameStore = defineStore("game", () => {
   // échoue sur les proxies réactifs Vue). On réassigne toujours events.value.
   const events = shallowRef<PersistedEvent[]>([]);
   const gameId = ref("local");
+  // ── Jeu en ligne (clients de confiance) ─────────────────────────────────
+  const online = ref(false);
+  const mySeat = ref<Seat>("A");
+  let onlineTransport: OnlineTransport | null = null;
+  let onlineUnsub: (() => void) | null = null;
+  let submitChain: Promise<unknown> = Promise.resolve();
 
   // ── État du match ────────────────────────────────────────────────────────
   const matchPhase = ref<MatchPhase>("lobby");
@@ -290,10 +307,57 @@ export const useGameStore = defineStore("game", () => {
   // ── Dispatch bas niveau (local : on est l'autorité) ──────────────────────
   function dispatch(...drafts: DraftEvent[]): void {
     if (!drafts.length) return;
+    // En ligne : on SOUMET les intentions au serveur, dans l'ordre, sans
+    // appliquer localement — l'état avance à la réception des echos diffusés.
+    if (online.value && onlineTransport) {
+      const t = onlineTransport;
+      const id = gameId.value;
+      for (const d of drafts) {
+        submitChain = submitChain
+          .then(() => t.submit(id, d))
+          .catch((e) => {
+            ruleError.value = `Réseau : ${String(e)}`;
+          });
+      }
+      return;
+    }
     events.value = [
       ...events.value,
       ...sequence(drafts, gameId.value, state.value.seq + 1),
     ];
+  }
+
+  /** Applique un event diffusé par le serveur (complet, modèle de confiance). */
+  function applyServerEvent(ev: PersistedEvent): void {
+    if (events.value.some((e) => e.seq === ev.seq)) return; // dédoublonnage
+    events.value = [...events.value, ev];
+  }
+
+  /** Connecte la table à une partie en ligne, au siège `seat`. */
+  function connectOnline(
+    id: string,
+    seat: Seat,
+    transport: OnlineTransport,
+  ): void {
+    disconnectOnline();
+    online.value = true;
+    assist.value = false; // jeu en ligne = résolution manuelle (Cockatrice)
+    gameId.value = id;
+    mySeat.value = seat;
+    perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
+    events.value = [];
+    matchPhase.value = "playing";
+    onlineTransport = transport;
+    submitChain = Promise.resolve();
+    onlineUnsub = transport.subscribe(id, applyServerEvent);
+  }
+
+  function disconnectOnline(): void {
+    onlineUnsub?.();
+    onlineUnsub = null;
+    onlineTransport = null;
+    online.value = false;
+    assist.value = true;
   }
 
   // ── Cycle de match ───────────────────────────────────────────────────────
@@ -1725,6 +1789,10 @@ export const useGameStore = defineStore("game", () => {
     // moteur de règles (R1)
     assist,
     assistEffects,
+    online,
+    mySeat,
+    connectOnline,
+    disconnectOnline,
     ruleError,
     clearRuleError,
     playFromHand,

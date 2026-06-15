@@ -5,10 +5,7 @@
 import { adminClient, getUserId } from "../_shared/auth.ts";
 import { json, preflight } from "../_shared/cors.ts";
 import { deriveState } from "../../../src/game/engine/reducer.ts";
-import {
-  resolveDraft,
-  redactEventForBroadcast,
-} from "../../../src/game/engine/authority.ts";
+import { resolveDraft } from "../../../src/game/engine/authority.ts";
 import type { PersistedEvent } from "../../../src/game/types/events.ts";
 
 function rowToEvent(r: Record<string, unknown>): PersistedEvent {
@@ -86,17 +83,12 @@ Deno.serve(async (req) => {
     });
     if (appendErr) return json({ error: appendErr.message }, 409); // OUT_OF_ORDER → resync client
 
-    for (const seat of ["A", "B"] as const) {
-      await db.channel(`game:${gameId}:${seat}`).send({
-        type: "broadcast",
-        event: "game_event",
-        payload: redactEventForBroadcast(ev, seat),
-      });
-    }
-    await db.channel(`game:${gameId}:spectator`).send({
+    // Modèle « clients de confiance » : diffusion de l'event COMPLET sur un
+    // canal partagé (l'info cachée est respectée à l'affichage côté client).
+    await db.channel(`game:${gameId}`).send({
       type: "broadcast",
       event: "game_event",
-      payload: redactEventForBroadcast(ev, "spectator"),
+      payload: ev,
     });
 
     return json({ seq: ev.seq });

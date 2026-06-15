@@ -78,11 +78,11 @@ export async function submitEvent(
  */
 export function subscribeToGame(
   gameId: string,
-  viewer: Seat | "spectator",
   onEvent: (event: PersistedEvent) => void,
 ): () => void {
+  // Modèle « clients de confiance » : canal partagé, events complets.
   const channel = client()
-    .channel(`game:${gameId}:${viewer}`)
+    .channel(`game:${gameId}`)
     .on("broadcast", { event: "game_event" }, (msg) => {
       onEvent(msg.payload as PersistedEvent);
     })

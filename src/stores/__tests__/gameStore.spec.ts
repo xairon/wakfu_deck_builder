@@ -1,6 +1,8 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
 import type { Card, Deck } from "@/types/cards";
+import type { DraftEvent, PersistedEvent } from "@/game";
+import { createGame } from "@/game";
 import { useGameStore } from "../gameStore";
 import { useCardStore } from "../cardStore";
 import {
@@ -341,5 +343,44 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     expect(tok()).toBe(3);
     store.nextTurn(); // tour 3 (votre tour) — expirée
     expect(tok()).toBe(0);
+  });
+});
+
+describe("gameStore — jeu en ligne (clients de confiance)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("applique les echos serveur et soumet les intentions sans application locale", async () => {
+    const submitted: DraftEvent[] = [];
+    let emit: ((e: PersistedEvent) => void) | null = null;
+    const transport = {
+      submit: async (_id: string, d: DraftEvent) => {
+        submitted.push(d);
+        return { seq: 0 };
+      },
+      subscribe: (_id: string, cb: (e: PersistedEvent) => void) => {
+        emit = cb;
+        return () => {};
+      },
+    };
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g-online",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    const store = useGameStore();
+    store.connectOnline("g-online", "A", transport);
+    expect(store.online).toBe(true);
+    // le serveur diffuse la mise en place (events COMPLETS) → l'état se construit
+    for (const ev of events) emit!(ev);
+    expect(store.state.monde.length).toBe(2); // les 2 Havre-Sac
+    // une action manuelle soumet l'intention, SANS l'appliquer localement
+    const havre = store.state.seats.A.havreSacInstanceId!;
+    store.toggleTap(havre);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(submitted).toHaveLength(1);
+    expect(submitted[0].type).toBe("SET_ORIENTATION");
+    expect(store.state.instances[havre].orientation).toBe("upright");
   });
 });
