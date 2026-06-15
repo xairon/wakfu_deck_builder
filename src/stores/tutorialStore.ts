@@ -100,7 +100,12 @@ export const useTutorialStore = defineStore("tutorial", () => {
     {
       anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
       manual: true,
-      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique ici. Ton Héros et ton Havre-Sac produisent déjà chacun une Ressource.",
+      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique ici.",
+    },
+    {
+      anchor: ".gseat:not(.gseat--opp) .ghud__mana",
+      manual: true,
+      text: "Tes Ressources (« mana ») par Élément : tes cartes en jeu (Héros, Havre-Sac, Alliés…) les produisent en s'inclinant. L'adversaire ayant commencé, tu joues en SECOND — à ton premier tour, ton Havre-Sac vaut 2 Ressources (badge « +1 » doré). C'est pour ça que tu as 3 mana et lui seulement 2.",
     },
     {
       anchor: ".gzone--play",

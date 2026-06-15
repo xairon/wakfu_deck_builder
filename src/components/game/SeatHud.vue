@@ -68,6 +68,12 @@
           />
           {{ r.count }}
         </span>
+        <span
+          v-if="bonus"
+          class="ghud__mana-bonus"
+          title="1er tour du 2e joueur : ton Havre-Sac produit 2 Ressources (règle 2342)"
+          >+1</span
+        >
       </div>
     </div>
   </div>
@@ -87,6 +93,8 @@ const props = defineProps<{
   counters: CardCounters;
   /** « Mana » disponible par Élément (producteurs redressés). */
   resources?: Record<string, number>;
+  /** Bonus du 2e joueur à son 1er tour : Havre-Sac ×2 (règle 2342). */
+  bonus?: boolean;
 }>();
 const emit = defineEmits<{
   (e: "bump", counter: string, delta: number): void;
@@ -245,6 +253,20 @@ const resourceTotal = computed(() =>
   height: 16px;
   object-fit: contain;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55));
+}
+.ghud__mana-bonus {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #14110d;
+  background: #f0a62b;
+  box-shadow: 0 0 8px rgba(240, 166, 43, 0.5);
+  cursor: help;
 }
 .ghud__stat {
   display: flex;

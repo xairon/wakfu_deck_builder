@@ -11,6 +11,7 @@
           :accent="heroAccent(opp)"
           :counters="heroCounters(opp)"
           :resources="store.resourcesOf(opp)"
+          :bonus="manaBonus(opp)"
           @bump="(c, d) => bumpHero(opp, c, d)"
         />
         <div class="ghavre" aria-label="Havre-Sac adverse et son intérieur">
@@ -177,6 +178,7 @@
           :accent="heroAccent(me)"
           :counters="heroCounters(me)"
           :resources="store.resourcesOf(me)"
+          :bonus="manaBonus(me)"
           @bump="(c, d) => bumpHero(me, c, d)"
         />
         <div class="ghavre" aria-label="Havre-Sac et son intérieur">
@@ -802,6 +804,10 @@ function heroCounters(seat: Seat): CardCounters {
 function bumpHero(seat: Seat, counter: string, delta: number): void {
   const id = view.value.seats[seat].heroInstanceId;
   if (id) store.adjustCounter(id, counter, delta);
+}
+/** Bonus du 2e joueur à son 1er tour : Havre-Sac ×2 Ressources (règle 2342). */
+function manaBonus(seat: Seat): boolean {
+  return seat !== store.firstPlayer && store.turn.number === 2;
 }
 </script>
 
