@@ -118,23 +118,11 @@ function cardStyle(i: number): CSSProperties {
   width: 100%;
   aspect-ratio: 63 / 88;
   border-radius: 5px;
-  background:
-    radial-gradient(
-      80% 60% at 50% 40%,
-      rgba(240, 78, 34, 0.16),
-      transparent 70%
-    ),
-    repeating-linear-gradient(
-      45deg,
-      #3a322a,
-      #3a322a 6px,
-      #2a241e 6px,
-      #2a241e 12px
-    );
+  background-image: url("/images/card-back.webp");
+  background-size: cover;
+  background-position: center;
   border: 1px solid rgba(0, 0, 0, 0.55);
-  box-shadow:
-    inset 0 0 0 2px rgba(246, 245, 241, 0.06),
-    0 3px 8px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
 }
 .hand-fan__empty {
   align-self: center;
