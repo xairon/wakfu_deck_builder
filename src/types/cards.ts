@@ -436,5 +436,7 @@ export interface Deck {
   createdAt: string;
   updatedAt: string;
   isOfficial?: boolean;
+  /** Publié dans la galerie communautaire (decks.is_public, migration 0003). */
+  isPublic?: boolean;
   _officialData?: OfficialDeckData;
 }

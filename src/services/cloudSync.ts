@@ -19,6 +19,8 @@ export interface CloudDeck {
   cards: Array<{ cardId: string; quantity: number; isReserve?: boolean }>;
   created_at: string;
   updated_at: string;
+  /** Publié dans la galerie communautaire (migration 0003). */
+  is_public?: boolean;
 }
 
 export async function saveCollectionToCloud(
@@ -224,5 +226,6 @@ export function cloudToDeck(
     reserve: [],
     createdAt: cloud.created_at,
     updatedAt: cloud.updated_at,
+    isPublic: cloud.is_public ?? false,
   } as Deck;
 }

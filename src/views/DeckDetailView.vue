@@ -78,6 +78,28 @@
           Partager
         </button>
         <button
+          class="btn gap-2"
+          :class="deck.isPublic ? 'btn-primary' : 'btn-ghost'"
+          @click="togglePublish"
+          :disabled="publishing"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"
+            />
+          </svg>
+          {{ deck.isPublic ? "Publié — retirer" : "Publier" }}
+        </button>
+        <button
           class="btn btn-ghost gap-2"
           @click="exportImage"
           :disabled="exportingImage"
@@ -503,6 +525,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { validateDeck } from "@/validators/deck";
 import { useToast } from "@/composables/useToast";
 import { generateShareUrl } from "@/utils/deckSharing";
+import { setDeckPublic } from "@/services/publicDeckService";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import DeckDrawSimulator from "@/components/deck/DeckDrawSimulator.vue";
 import { exportDeckImage } from "@/utils/deckImage";
@@ -687,6 +710,30 @@ async function shareDeck() {
     toast.success("Lien de partage copié !", { duration: 2500 });
   } catch {
     toast.error("Impossible de copier le lien");
+  }
+}
+
+const publishing = ref(false);
+/** Publie / retire le deck de la galerie communautaire (decks.is_public). */
+async function togglePublish() {
+  if (!deck.value || publishing.value) return;
+  const target = !deck.value.isPublic;
+  publishing.value = true;
+  try {
+    const ok = await setDeckPublic(deck.value.id, target);
+    if (ok) {
+      deck.value.isPublic = target;
+      toast.success(
+        target
+          ? "Deck publié — visible dans les decks de la communauté."
+          : "Deck retiré de la galerie communautaire.",
+        { duration: 3000 },
+      );
+    } else {
+      toast.error("Publication impossible. Connecte-toi puis réessaie.");
+    }
+  } finally {
+    publishing.value = false;
   }
 }
 
