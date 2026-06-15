@@ -102,7 +102,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     {
       anchor: ".glayout__journal",
       manual: true,
-      text: "Touché ! Tout est tracé dans le journal. Les effets des cartes s'exécutent automatiquement quand le moteur les comprend (« Règles assistées ») ; le reste se joue à la main — la table ne bloque jamais.",
+      text: "Touché ! Tout est tracé dans le journal. Les RÈGLES sont gérées pour toi (combat, coûts, PV, XP) ; les EFFETS des cartes, eux, se résolvent à la main — comme sur une vraie table. La table ne bloque jamais.",
     },
     {
       anchor: ".gendturn",
@@ -183,6 +183,9 @@ export const useTutorialStore = defineStore("tutorial", () => {
     const decks = buildDecks();
     if (!decks) return false;
     game.assist = true;
+    // v1 « Cockatrice » : règles gérées, effets de cartes résolus à la main
+    // (cohérent avec la table de jeu). Les decks du tutoriel sont sans effets.
+    game.assistEffects = false;
     game.startMatch(decks.a, decks.b, {
       nameA: "Toi",
       nameB: "L'adversaire",

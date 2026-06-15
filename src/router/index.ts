@@ -61,13 +61,17 @@ const router = createRouter({
       path: "/play",
       name: "play",
       component: () => import("@/views/GameView.vue"),
-      meta: { requiresAuth: true },
+      // Public : compagnon de table (compteurs locaux), aucune donnée cloud.
+      meta: { guest: true },
     },
     {
       path: "/play/table/:code?",
       name: "playTable",
       component: () => import("@/views/PlayTableView.vue"),
-      meta: { requiresAuth: true },
+      // Public : table locale + tutoriel jouables sans compte (essai « à la
+      // Cockatrice »). Le jeu EN LIGNE reste protégé côté Edge Function (auth
+      // serveur) ; le lobby invitera à se connecter pour créer/rejoindre.
+      meta: { guest: true },
     },
     {
       path: "/deck/share",

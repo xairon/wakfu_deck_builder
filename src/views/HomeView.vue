@@ -1,5 +1,69 @@
 <template>
   <div class="space-y-12 sm:space-y-16">
+    <!-- ── PREMIERS PAS (première visite, masquable) ── -->
+    <section
+      v-if="showWelcome"
+      class="animate-fadeIn relative border border-primary/40 bg-primary/[0.06] p-6 sm:p-8"
+    >
+      <button
+        class="btn btn-ghost btn-sm absolute right-2 top-2"
+        @click="dismissWelcome"
+        aria-label="Masquer les premiers pas"
+      >
+        ✕
+      </button>
+      <p class="eyebrow text-primary">Premiers pas</p>
+      <h2 class="mt-2 font-display text-3xl">Nouveau au Wakfu TCG ?</h2>
+      <p class="mt-2 max-w-xl text-base-content/70">
+        Pas besoin de connaître les règles par cœur : la table t'accompagne.
+        Trois façons de commencer.
+      </p>
+      <div class="mt-6 grid gap-3 sm:grid-cols-3">
+        <router-link
+          to="/play/table?tutorial=1"
+          class="group block border border-base-content/15 p-4 transition hover:border-primary hover:bg-base-100"
+        >
+          <p
+            class="font-mono text-[11px] uppercase tracking-wider text-primary"
+          >
+            ① Apprendre
+          </p>
+          <h3 class="mt-1 font-display text-lg">Tutoriel interactif</h3>
+          <p class="mt-1 text-sm text-base-content/65">
+            Une vraie partie guidée, pas à pas (~5 min).
+          </p>
+        </router-link>
+        <router-link
+          to="/decks/official"
+          class="group block border border-base-content/15 p-4 transition hover:border-primary hover:bg-base-100"
+        >
+          <p
+            class="font-mono text-[11px] uppercase tracking-wider text-primary"
+          >
+            ② S'équiper
+          </p>
+          <h3 class="mt-1 font-display text-lg">Prendre un deck starter</h3>
+          <p class="mt-1 text-sm text-base-content/65">
+            Un deck prêt à jouer, importé en un clic.
+          </p>
+        </router-link>
+        <router-link
+          to="/play/table"
+          class="group block border border-base-content/15 p-4 transition hover:border-primary hover:bg-base-100"
+        >
+          <p
+            class="font-mono text-[11px] uppercase tracking-wider text-primary"
+          >
+            ③ Jouer
+          </p>
+          <h3 class="mt-1 font-display text-lg">Ouvrir la table</h3>
+          <p class="mt-1 text-sm text-base-content/65">
+            Règles gérées, effets résolus à la main.
+          </p>
+        </router-link>
+      </div>
+    </section>
+
     <!-- ── FRONTISPICE ── -->
     <section class="grid items-start gap-8 lg:grid-cols-[1.25fr_1fr] lg:gap-12">
       <div class="animate-fadeIn">
@@ -145,7 +209,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useAuthStore } from "@/stores/authStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useDeckStore } from "@/stores/deckStore";
@@ -153,6 +217,26 @@ import { useDeckStore } from "@/stores/deckStore";
 const authStore = useAuthStore();
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
+
+// ── Premiers pas (onboarding première visite) ──
+const WELCOME_KEY = "wakfu-welcome-seen";
+const welcomeSeen = ref(true); // supposé vu jusqu'à vérification (évite le flash)
+onMounted(() => {
+  try {
+    welcomeSeen.value = localStorage.getItem(WELCOME_KEY) === "1";
+  } catch {
+    welcomeSeen.value = false;
+  }
+});
+const showWelcome = computed(() => !welcomeSeen.value);
+function dismissWelcome(): void {
+  welcomeSeen.value = true;
+  try {
+    localStorage.setItem(WELCOME_KEY, "1");
+  } catch {
+    /* stockage indisponible */
+  }
+}
 
 const totalCards = computed(() =>
   cardStore.totalCards ? cardStore.totalCards.toLocaleString("fr-FR") : "—",

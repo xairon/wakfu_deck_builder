@@ -358,7 +358,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
@@ -382,6 +382,7 @@ const deckStore = useDeckStore();
 const cardStore = useCardStore();
 const store = useGameStore();
 const tutorial = useTutorialStore();
+const route = useRoute();
 
 const toast = useToast();
 function startTutorial(): void {
@@ -501,6 +502,8 @@ onMounted(async () => {
       /* l'app charge les cartes par ailleurs */
     }
   }
+  // Onboarding : /play/table?tutorial=1 démarre directement le tutoriel.
+  if (route.query.tutorial && !store.started) startTutorial();
 });
 </script>
 
