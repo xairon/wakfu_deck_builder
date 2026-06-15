@@ -74,6 +74,7 @@ import {
   resolveDamageTarget,
   resolveDestroyTarget,
   resolveHealHeroTarget,
+  resourceProducers,
   stateBasedDestroyEvents,
   tapPowers,
   turnStartEffects,
@@ -1500,6 +1501,14 @@ export const useGameStore = defineStore("game", () => {
       ) === null,
   );
 
+  /** « Mana » disponible par Élément : producteurs redressés du siège (4261). */
+  function resourcesOf(seat: Seat): Record<string, number> {
+    const out: Record<string, number> = {};
+    for (const p of resourceProducers(rulesCtx(), seat))
+      out[p.element] = (out[p.element] ?? 0) + 1;
+    return out;
+  }
+
   /** Ouvre la déclaration d'attaque (1/tour, jamais au premier tour). */
   function beginCombat(firstAttacker?: string): boolean {
     const err = whyCannotDeclareAttack(
@@ -1831,6 +1840,7 @@ export const useGameStore = defineStore("game", () => {
     combatBlockerIds,
     eligibleAttackerIds,
     canDeclareAttack,
+    resourcesOf,
     beginCombat,
     combatToggleAttacker,
     combatChooseTarget,

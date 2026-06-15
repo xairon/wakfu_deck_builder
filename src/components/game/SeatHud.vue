@@ -47,6 +47,23 @@
           </span>
         </div>
       </div>
+      <div
+        v-if="resourceTotal"
+        class="ghud__mana"
+        aria-label="Ressources disponibles par élément"
+      >
+        <span class="ghud__mana-label">MANA</span>
+        <span
+          v-for="r in resourceList"
+          :key="r.element"
+          class="ghud__mana-pip"
+          :style="{ '--el': r.color }"
+          :title="`${r.count} Ressource(s) ${r.element}`"
+        >
+          <span class="ghud__mana-el">{{ r.label }}</span>
+          {{ r.count }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -54,6 +71,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { CardCounters } from "@/game";
+import { elementColor } from "@/config/elementColors";
 
 const props = defineProps<{
   name: string;
@@ -62,6 +80,8 @@ const props = defineProps<{
   heroName?: string | null;
   accent: string;
   counters: CardCounters;
+  /** « Mana » disponible par Élément (producteurs redressés). */
+  resources?: Record<string, number>;
 }>();
 const emit = defineEmits<{
   (e: "bump", counter: string, delta: number): void;
@@ -74,6 +94,34 @@ const stats = computed(() => [
   { key: "xp", label: "XP", value: props.counters.xp, big: false },
   { key: "level", label: "NIV", value: props.counters.level, big: false },
 ]);
+
+const ELEMENT_ORDER = ["feu", "eau", "terre", "air", "neutre"];
+const ELEMENT_INITIAL: Record<string, string> = {
+  feu: "Fe",
+  eau: "Ea",
+  terre: "Te",
+  air: "Ai",
+  neutre: "N",
+};
+/** Pastilles de mana, une par Élément disponible (count > 0), typées par couleur. */
+const resourceList = computed(() =>
+  Object.entries(props.resources ?? {})
+    .filter(([, n]) => n > 0)
+    .map(([element, count]) => ({
+      element,
+      count,
+      color: elementColor(element),
+      label: ELEMENT_INITIAL[element.toLowerCase()] ?? element.slice(0, 2),
+    }))
+    .sort(
+      (a, b) =>
+        ELEMENT_ORDER.indexOf(a.element.toLowerCase()) -
+        ELEMENT_ORDER.indexOf(b.element.toLowerCase()),
+    ),
+);
+const resourceTotal = computed(() =>
+  resourceList.value.reduce((s, r) => s + r.count, 0),
+);
 </script>
 
 <style scoped>
@@ -165,6 +213,39 @@ const stats = computed(() => [
   display: flex;
   gap: 11px;
   align-items: flex-end;
+}
+/* ── Compteur de mana (Ressources) typé par Élément ── */
+.ghud__mana {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+.ghud__mana-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(246, 245, 241, 0.5);
+  margin-right: 1px;
+}
+.ghud__mana-pip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 19px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #14110d;
+  background: var(--el, #98a1af);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+.ghud__mana-el {
+  font-size: 9px;
+  opacity: 0.72;
 }
 .ghud__stat {
   display: flex;

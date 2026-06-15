@@ -10,6 +10,7 @@
           :hero-name="heroName(opp)"
           :accent="heroAccent(opp)"
           :counters="heroCounters(opp)"
+          :resources="store.resourcesOf(opp)"
           @bump="(c, d) => bumpHero(opp, c, d)"
         />
         <div class="ghavre" aria-label="Havre-Sac adverse et son intérieur">
@@ -171,6 +172,7 @@
           :hero-name="heroName(me)"
           :accent="heroAccent(me)"
           :counters="heroCounters(me)"
+          :resources="store.resourcesOf(me)"
           @bump="(c, d) => bumpHero(me, c, d)"
         />
         <div class="ghavre" aria-label="Havre-Sac et son intérieur">
@@ -543,10 +545,15 @@ function havreCard(seat: Seat): RedactedInstance[] {
 function interiorCards(seat: Seat): RedactedInstance[] {
   return instancesOf(view.value.seats[seat].havreSac);
 }
-/** Nb de cases vides à afficher dans l'intérieur pour matérialiser l'espace. */
-const INTERIOR_MIN_SLOTS = 4;
+/** Taille (capacité) du Havre-Sac = nombre d'emplacements intérieurs (2315). */
+function havreTaille(seat: Seat): number {
+  const inst = havreCard(seat)[0];
+  const taille = resolveCard(inst?.cardId ?? null)?.stats?.taille;
+  return typeof taille === "number" && taille > 0 ? taille : 4;
+}
+/** Cases vides de l'intérieur pour matérialiser la capacité encore libre. */
 function emptyInteriorSlots(seat: Seat): number {
-  return Math.max(0, INTERIOR_MIN_SLOTS - interiorCards(seat).length);
+  return Math.max(0, havreTaille(seat) - interiorCards(seat).length);
 }
 function allies(seat: Seat): RedactedInstance[] {
   return mondeOwned(seat).filter((i) => i.instanceId !== havreId(seat));
@@ -791,6 +798,7 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
   --card-wide: clamp(70px, 5.8vw, 90px);
   --card-hand: clamp(96px, 8.6vw, 128px);
   --card-opp: clamp(54px, 4.6vw, 68px);
+  --card-havre: clamp(80px, 6.6vw, 104px);
   --pile: clamp(54px, 4.8vw, 70px);
   position: relative;
   height: 100%;
@@ -873,6 +881,10 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
 }
 .ghavre__inside .gzone__cards {
   flex-wrap: nowrap;
+}
+/* Héros + Havre-Sac + Salles/Équip. : plus grands que les cartes adverses. */
+.ghavre .gslot {
+  width: var(--card-havre);
 }
 /* case vide de l'intérieur : matérialise l'espace disponible (dépôt) */
 .gslot--ghost {
