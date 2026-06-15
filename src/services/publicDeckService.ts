@@ -45,7 +45,12 @@ export async function loadPublicDecks(limit = 60): Promise<CloudDeck[]> {
     .order("updated_at", { ascending: false })
     .limit(limit);
   if (error) {
-    console.error("Chargement des decks publics impossible:", error);
+    // Repli silencieux sur la bibliothèque curatée (cf. CommunityDecksView) :
+    // on n'effraie pas l'utilisateur, on loggue le message lisible (pas l'objet).
+    console.warn(
+      "Decks publics indisponibles — repli sur la bibliothèque curatée :",
+      error.message ?? error,
+    );
     return [];
   }
   return (data ?? []) as CloudDeck[];
