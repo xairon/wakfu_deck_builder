@@ -11,7 +11,13 @@
     @click="onClick"
   >
     <img v-if="topImg" class="gpile__img" :src="topImg" alt="" />
-    <span v-else-if="deck" class="gpile__back" aria-hidden="true"></span>
+    <img
+      v-else-if="deck && count > 0"
+      class="gpile__img"
+      src="/images/card-back.webp"
+      alt=""
+      aria-hidden="true"
+    />
     <span class="gpile__count">{{ count }}</span>
     <span class="gpile__label">{{ label }}</span>
   </button>
@@ -95,25 +101,6 @@ function onClick(): void {
   opacity: 0.45;
   box-shadow: none;
 }
-.gpile__back {
-  position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  background:
-    radial-gradient(
-      80% 60% at 50% 40%,
-      rgba(240, 78, 34, 0.14),
-      transparent 70%
-    ),
-    repeating-linear-gradient(
-      45deg,
-      #3a322a,
-      #3a322a 6px,
-      #2a241e 6px,
-      #2a241e 12px
-    );
-  box-shadow: inset 0 0 0 2px rgba(246, 245, 241, 0.05);
-}
 .gpile__img {
   position: absolute;
   inset: 0;
@@ -123,13 +110,20 @@ function onClick(): void {
   border-radius: 6px;
 }
 .gpile__count {
-  position: relative;
+  position: absolute;
   z-index: 1;
+  top: 3px;
+  right: 3px;
+  min-width: 17px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.72);
   font-family: "Space Mono", ui-monospace, monospace;
   font-weight: 700;
-  font-size: 22px;
+  font-size: 12px;
   color: #f6f5f1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 .gpile__label {
   position: absolute;
