@@ -12,7 +12,7 @@ import type {
 } from "../types/events";
 import type { GameState, TurnPhase } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
-import { permutationFromSeed } from "./rng";
+import { permutationFromSeed } from "./rng.ts";
 
 const top: Position = { at: "top" };
 const bottom: Position = { at: "bottom" };

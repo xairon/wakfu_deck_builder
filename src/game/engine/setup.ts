@@ -7,9 +7,9 @@ import type { Deck } from "@/types/cards";
 import type { CardInstance, GameState } from "../types/state";
 import type { DraftEvent, PersistedEvent } from "../types/events";
 import type { Seat } from "../types/zones";
-import { emptyState } from "./reducer";
-import { deriveState } from "./reducer";
-import { shuffle, sequence } from "./verbs";
+import { emptyState } from "./reducer.ts";
+import { deriveState } from "./reducer.ts";
+import { shuffle, sequence } from "./verbs.ts";
 
 /** Lit défensivement les PV du Héros (forme de stats variable selon les cartes). */
 function getHeroPv(hero: unknown): number | undefined {

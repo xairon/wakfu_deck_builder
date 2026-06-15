@@ -18,8 +18,8 @@ import type {
 } from "../types/events";
 import type { GameState, CardInstance } from "../types/state";
 import type { Seat, Viewer } from "../types/zones";
-import { permutationFromSeed } from "./rng";
-import { EngineError, getZoneArray } from "./reducer";
+import { permutationFromSeed } from "./rng.ts";
+import { EngineError, getZoneArray } from "./reducer.ts";
 
 export interface AuthorityContext {
   gameId: string;
