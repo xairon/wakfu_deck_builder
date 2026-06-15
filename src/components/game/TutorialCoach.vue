@@ -23,7 +23,7 @@
         <p class="tcoach__progress">
           Tutoriel · étape {{ tutorial.stepIndex + 1 }} / {{ tutorial.total }}
         </p>
-        <p class="tcoach__text">{{ tutorial.step.text }}</p>
+        <p class="tcoach__text">{{ tutorial.stepText }}</p>
         <div class="tcoach__actions">
           <button
             v-if="tutorial.step.manual"

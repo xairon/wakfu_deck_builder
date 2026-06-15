@@ -19,7 +19,8 @@ const DONE_KEY = "wakfu-tutorial-done";
 export interface TutorialStep {
   /** Sélecteur CSS de l'élément à mettre en lumière (spotlight). */
   anchor: string;
-  text: string;
+  /** Texte fixe, ou calculé à l'affichage (ex. conseil de mulligan). */
+  text: string | (() => string);
   /** Étape informative : avance via le bouton « Suivant ». */
   manual?: boolean;
   /** Étape validée par l'état du jeu. */
@@ -44,6 +45,28 @@ export const useTutorialStore = defineStore("tutorial", () => {
     ).length;
   }
 
+  /** Conseil de mulligan, calculé sur la main RÉELLEMENT tirée (étape 2). */
+  function evaluateMulligan(): string {
+    const zone = game.view.seats.A.main;
+    const insts = zone.kind === "full" ? zone.instances : [];
+    const base =
+      "Une bonne main permet d'AGIR TÔT : 1–2 Alliés bon marché (Niveau 1–2) et de quoi produire des Ressources, sans trop de cartes chères injouables d'entrée.";
+    let cheap = 0;
+    for (const inst of insts) {
+      const card = cardStore.cards.find((c) => c.id === inst.cardId);
+      const lvl = card?.stats?.niveau?.value ?? 0;
+      if (card?.mainType === "Allié" && lvl > 0 && lvl <= 2) cheap++;
+    }
+    const verdict = !insts.length
+      ? ""
+      : cheap >= 2
+        ? ` Ici : ${cheap} Alliés jouables tôt — bonne main, garde-la.`
+        : cheap === 1
+          ? " Ici : 1 seul Allié jouable tôt — gardable, mais juste."
+          : " Ici : aucun Allié jouable tôt — sur un vrai deck, tu la referais.";
+    return `${base}${verdict} Tu peux cliquer « Mulligan » pour refaire ta main (une carte de moins), ou « Garder » pour la conserver.`;
+  }
+
   // ── Parcours ───────────────────────────────────────────────────────────────
   const steps: TutorialStep[] = [
     {
@@ -57,8 +80,8 @@ export const useTutorialStore = defineStore("tutorial", () => {
         (game.mulliganSeat === "A" || game.matchPhase === "playing"),
     },
     {
-      anchor: ".overlay .btn-primary",
-      text: "Ta main de départ compte autant de cartes que tes PA (6). Tu pourrais la refaire en piochant une carte de moins (mulligan) ; pour ce tutoriel, clique « Garder ».",
+      anchor: ".overlay--mulligan",
+      text: evaluateMulligan,
       advanceWhen: () => game.matchPhase === "playing",
     },
     {
@@ -114,6 +137,11 @@ export const useTutorialStore = defineStore("tutorial", () => {
   const step = computed(() =>
     active.value ? (steps[stepIndex.value] ?? null) : null,
   );
+  /** Texte résolu de l'étape (certaines étapes calculent leur texte). */
+  const stepText = computed(() => {
+    const t = step.value?.text;
+    return typeof t === "function" ? t() : (t ?? "");
+  });
   const total = steps.length;
 
   // ── Decks du tutoriel (cartes réelles, simples, sans effets compilés) ──────
@@ -295,5 +323,15 @@ export const useTutorialStore = defineStore("tutorial", () => {
     },
   );
 
-  return { active, stepIndex, total, step, start, next, skip, isDone };
+  return {
+    active,
+    stepIndex,
+    total,
+    step,
+    stepText,
+    start,
+    next,
+    skip,
+    isDone,
+  };
 });
