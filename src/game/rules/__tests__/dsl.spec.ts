@@ -1,6 +1,7 @@
 ﻿import { describe, expect, it } from "vitest";
 import {
   arrivalEffects,
+  compileActionEffectText,
   compileStaticEffectText,
   playEffects,
   printedEffects,
@@ -576,5 +577,38 @@ describe("rules/effects — effets imprimés vs notes de règles (kind)", () => 
       trigger: "onArrive",
       ops: [{ op: "tapSelf" }],
     });
+  });
+});
+
+describe("rules/effects — grammaire des Actions (lot C : Trêve, Stratégie)", () => {
+  it("compile la Trêve en globalDamageShield (texte réel)", () => {
+    expect(
+      compileActionEffectText(
+        "Jusqu'au début de votre prochain tour, tous les Dommages sont réduits à 0.",
+        "Trêve",
+      ),
+    ).toEqual({ trigger: "onPlay", ops: [{ op: "globalDamageShield" }] });
+  });
+
+  it("compile la Stratégie de Groupe en buffForceAlliesMondeTurn (heroLevel)", () => {
+    expect(
+      compileActionEffectText(
+        "Vos Alliés dans le Monde gagnent un bonus de Force égal au Niveau de votre Héros jusqu'à la fin du tour.",
+        "Stratégie de Groupe",
+      ),
+    ).toEqual({
+      trigger: "onPlay",
+      ops: [{ op: "buffForceAlliesMondeTurn", n: "heroLevel" }],
+    });
+  });
+
+  it("grammaire d'Action STRICTE : une valeur hors forme connue → pas de compilation", () => {
+    // « réduits à 1 » (et non 0) ne correspond pas à la forme Trêve
+    expect(
+      compileActionEffectText(
+        "Jusqu'au début de votre prochain tour, tous les Dommages sont réduits à 1.",
+        "Pseudo-Trêve",
+      ),
+    ).toBeNull();
   });
 });

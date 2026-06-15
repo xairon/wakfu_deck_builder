@@ -12515,7 +12515,16 @@
       {
         "description": "Vos Alliés dans le Monde gagnent un bonus de Force égal au Niveau de votre Héros jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "buffForceAlliesMondeTurn",
+              "n": "heroLevel"
+            }
+          ]
+        }
       },
       {
         "description": "Stratégie de Groupe génère un modificateur continu défini qui affecte tous les Alliés dans le Monde. Un Allié présent dans le Monde à la résolution de Stratégie de Groupe et qui se déplace dans le Havre Sac ne bénéficie plus du bonus de Force. En revanche, un Allié qui apparaît dans le Monde après la résolution de Stratégie de Groupe bénéfiera tout de même du bonus de Force.",
@@ -13446,7 +13455,15 @@
       {
         "description": "Jusqu'au début de votre prochain tour, tous les Dommages sont réduits à 0.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "globalDamageShield"
+            }
+          ]
+        }
       },
       {
         "description": "Cette carte a reçu un errata officiel : Carte Unique.",

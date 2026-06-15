@@ -893,7 +893,16 @@
       {
         "description": "Vos Alliés dans le Monde gagnent un bonus de Force égal au Niveau de votre Héros jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "buffForceAlliesMondeTurn",
+              "n": "heroLevel"
+            }
+          ]
+        }
       },
       {
         "description": "Stratégie de groupe génère un modificateur continu défini qui affecte tous les Alliés dans le Monde. Un Allié présent dans le Monde à la résolution de Stratégie de Groupe et qui se déplace dans le Havre Sac ne bénéficie plus du bonus de Force. En revanche, un Allié qui apparaît dans le Monde après la résolution de Stratégie de groupe bénéficiera tout de même du bonus de Force.",

@@ -177,6 +177,23 @@ function parseSentence(
       zones: targetZones(m[4], m[5]),
     };
   }
+  // « Vos Alliés dans le Monde gagnent un bonus de Force égal au Niveau de
+  // votre Héros (ou +N en Force) jusqu'à la fin du tour » (Stratégie de
+  // Groupe, 812.3b) — jeton de siège `teamForceMod` sur le Héros.
+  m = sentence.match(
+    /^vos allies dans le monde gagnent (?:un bonus de force egal au niveau de votre heros|\+(\d+) en force) jusqu['’]a la fin du tour$/,
+  );
+  if (m)
+    return {
+      op: "buffForceAlliesMondeTurn",
+      n: m[1] ? toNumber(m[1]) : "heroLevel",
+    };
+  // « Jusqu'au début de votre prochain tour, tous les Dommages sont réduits
+  // à 0 » (Trêve) — bouclier global, jeton `treveUntilTurn` sur le Héros.
+  m = sentence.match(
+    /^jusqu['’]au debut de votre prochain tour\s*,?\s*tous les dommages sont reduits a 0$/,
+  );
+  if (m) return { op: "globalDamageShield" };
   return null;
 }
 
