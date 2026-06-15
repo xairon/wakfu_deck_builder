@@ -138,8 +138,15 @@ export const useGameStore = defineStore("game", () => {
 
   // ── Moteur de règles (R1) ────────────────────────────────────────────────
   const cardStore = useCardStore();
-  /** Règles assistées (coûts, légalité, combat) ; off = table libre. */
+  /** Règles assistées (coûts, légalité, combat) ; off = table 100 % libre. */
   const assist = ref(true);
+  /**
+   * Automatisation des EFFETS de cartes (file DSL : onArrive/onPlay/onTap/
+   * onTurnStart + déclencheurs). Distincte des règles : la v1 « à la
+   * Cockatrice » joue RÈGLES ON / effets résolus À LA MAIN (false). Par défaut
+   * ON (compat tests + futur mode assisté).
+   */
+  const assistEffects = ref(true);
   /** Dernier refus de coup, à afficher en toast. */
   const ruleError = ref<string | null>(null);
   /** Tour où l'attaque du joueur actif a été déclarée (1 attaque/tour). */
@@ -382,7 +389,7 @@ export const useGameStore = defineStore("game", () => {
 
   /** Déclenche les effets onTurnStart des cartes en jeu du joueur actif (602). */
   function fireTurnStartEffects(): void {
-    if (!assist.value || matchPhase.value !== "playing") return;
+    if (!assistEffects.value || matchPhase.value !== "playing") return;
     const turnNo = state.value.turn.number;
     if (turnStartFiredOn.value === turnNo) return;
     turnStartFiredOn.value = turnNo;
@@ -607,7 +614,10 @@ export const useGameStore = defineStore("game", () => {
     // défausse (302.1). Un seul effet incompris (ex. restriction de jeu
     // « Ne jouez cette carte que… ») → la carte reste jouée manuellement.
     const effectsCount = printedEffects(card).length;
-    const playAtoms = card.mainType === "Action" ? playEffects(card) : [];
+    const playAtoms =
+      assistEffects.value && card.mainType === "Action"
+        ? playEffects(card)
+        : [];
     const actionAtoms = playAtoms.length === effectsCount ? playAtoms : [];
     const dest: ZoneRef = actionAtoms.length
       ? { zone: "defausse", owner: seat }
@@ -1152,7 +1162,7 @@ export const useGameStore = defineStore("game", () => {
     card: Card | null,
     sourceId?: string,
   ): void {
-    if (!assist.value || !card) return;
+    if (!assistEffects.value || !card) return;
     for (const atom of arrivalEffects(card)) {
       if (atom.optional) {
         effectChoices.value = [
@@ -1196,7 +1206,7 @@ export const useGameStore = defineStore("game", () => {
               );
     dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
-    if (res.ruleEvents?.length)
+    if (assistEffects.value && res.ruleEvents?.length)
       enqueueTriggered(collectTriggeredEffects(rulesCtx(), res.ruleEvents));
     checkVictory();
     pumpEffects();
@@ -1207,7 +1217,7 @@ export const useGameStore = defineStore("game", () => {
    * ses ops. Retourne `false` (avec raison) si l'activation est illégale.
    */
   function activateTapPower(instanceId: string): boolean {
-    if (!assist.value) return false;
+    if (!assistEffects.value) return false;
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
     if (!inst || !card) return rejectMove("Carte inconnue.");
@@ -1487,7 +1497,8 @@ export const useGameStore = defineStore("game", () => {
       seat,
       instanceId: id,
     }));
-    enqueueTriggered(collectTriggeredEffects(rulesCtx(), declared));
+    if (assistEffects.value)
+      enqueueTriggered(collectTriggeredEffects(rulesCtx(), declared));
     return true;
   }
 
@@ -1560,7 +1571,8 @@ export const useGameStore = defineStore("game", () => {
       ...result.log.map((l) => say(turn.value.active, l)),
     );
     // 804.7 — déclenchés des Dommages infligés (après la résolution complète).
-    enqueueTriggered(collectTriggeredEffects(rulesCtx(), result.ruleEvents));
+    if (assistEffects.value)
+      enqueueTriggered(collectTriggeredEffects(rulesCtx(), result.ruleEvents));
     attackedOnTurn.value = turn.value.number;
     combat.value = null;
     if (result.winner) {
@@ -1712,6 +1724,7 @@ export const useGameStore = defineStore("game", () => {
     undoLast,
     // moteur de règles (R1)
     assist,
+    assistEffects,
     ruleError,
     clearRuleError,
     playFromHand,

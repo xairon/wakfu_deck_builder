@@ -430,8 +430,13 @@ function setPick(id: string): void {
 function launch(): void {
   const dA = decks.value.find((d) => d.id === pickA.value);
   const dB = decks.value.find((d) => d.id === pickB.value);
-  if (dA && dB)
+  if (dA && dB) {
+    // v1 « à la Cockatrice » : règles assistées (combat, coûts, légalité,
+    // limites, victoire) mais effets de cartes résolus À LA MAIN. La file
+    // d'effets DSL (Lots A–C) reste en backlog v2.
+    store.assistEffects = false;
     store.startMatch(dA, dB, { nameA: nameA.value, nameB: nameB.value });
+  }
 }
 
 // ── Aides deck ───────────────────────────────────────────────────────────────
