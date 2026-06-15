@@ -60,7 +60,12 @@
           :style="{ '--el': r.color }"
           :title="`${r.count} Ressource(s) ${r.element}`"
         >
-          <span class="ghud__mana-el">{{ r.label }}</span>
+          <img
+            class="ghud__mana-icon"
+            :src="`/images/elements/ressource-${r.key}.png`"
+            :alt="r.element"
+            draggable="false"
+          />
           {{ r.count }}
         </span>
       </div>
@@ -96,27 +101,18 @@ const stats = computed(() => [
 ]);
 
 const ELEMENT_ORDER = ["feu", "eau", "terre", "air", "neutre"];
-const ELEMENT_INITIAL: Record<string, string> = {
-  feu: "Fe",
-  eau: "Ea",
-  terre: "Te",
-  air: "Ai",
-  neutre: "N",
-};
-/** Pastilles de mana, une par Élément disponible (count > 0), typées par couleur. */
+/** Pastilles de mana, une par Élément disponible (count > 0), avec l'icône Ressource. */
 const resourceList = computed(() =>
   Object.entries(props.resources ?? {})
     .filter(([, n]) => n > 0)
     .map(([element, count]) => ({
       element,
       count,
+      key: element.toLowerCase(),
       color: elementColor(element),
-      label: ELEMENT_INITIAL[element.toLowerCase()] ?? element.slice(0, 2),
     }))
     .sort(
-      (a, b) =>
-        ELEMENT_ORDER.indexOf(a.element.toLowerCase()) -
-        ELEMENT_ORDER.indexOf(b.element.toLowerCase()),
+      (a, b) => ELEMENT_ORDER.indexOf(a.key) - ELEMENT_ORDER.indexOf(b.key),
     ),
 );
 const resourceTotal = computed(() =>
@@ -233,19 +229,22 @@ const resourceTotal = computed(() =>
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  height: 19px;
-  padding: 0 7px;
+  height: 22px;
+  padding: 0 7px 0 3px;
   border-radius: 999px;
   font-family: "Space Mono", ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  color: #14110d;
-  background: var(--el, #98a1af);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+  color: #f6f5f1;
+  background: rgba(0, 0, 0, 0.34);
+  border: 1px solid var(--el, #98a1af);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
-.ghud__mana-el {
-  font-size: 9px;
-  opacity: 0.72;
+.ghud__mana-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55));
 }
 .ghud__stat {
   display: flex;
