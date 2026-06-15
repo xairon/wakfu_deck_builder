@@ -16,7 +16,7 @@ import type {
   ShufflePayload,
   MovePayload,
 } from "../types/events";
-import type { GameState } from "../types/state";
+import type { GameState, CardInstance } from "../types/state";
 import type { Seat, Viewer } from "../types/zones";
 import { permutationFromSeed } from "./rng";
 import { EngineError, getZoneArray } from "./reducer";
@@ -97,6 +97,25 @@ export function redactEventForBroadcast(
   if (event.type === "SHUFFLE") {
     const p = event.payload as ShufflePayload;
     payload = { zone: p.zone, permutation: [] }; // ordre masqué
+  }
+
+  // GAME_STARTED transporte l'état initial COMPLET (tous les cardId). Avant
+  // diffusion, on masque le cardId des cartes non révélées au destinataire
+  // (Pioche de tous, Main/Réserve adverses) : l'instanceId et la zone restent
+  // publics — l'identité, non. Sans quoi l'adversaire connaîtrait le deck
+  // entier et donc chaque tirage (instanceId → cardId).
+  if (event.type === "GAME_STARTED") {
+    const p = event.payload as { state: GameState };
+    const instances: Record<string, CardInstance> = {};
+    for (const [id, inst] of Object.entries(p.state.instances)) {
+      const seen =
+        viewer !== "spectator" && (inst.revealedTo ?? []).includes(viewer);
+      instances[id] = seen ? inst : { ...inst, cardId: "" };
+    }
+    payload = {
+      ...(event.payload as object),
+      state: { ...p.state, instances },
+    };
   }
 
   let payloadPrivate: PersistedEvent["payloadPrivate"];

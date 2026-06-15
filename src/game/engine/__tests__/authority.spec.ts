@@ -142,4 +142,28 @@ describe("authority — redaction des events diffusés", () => {
       redactEventForBroadcast(ev, "spectator").payloadPrivate,
     ).toBeUndefined();
   });
+
+  it("GAME_STARTED : masque les cardId non révélés au destinataire", () => {
+    const started = createGame("g2", DECKS, {
+      seedA: "sa",
+      seedB: "sb",
+    }).events.find((e) => e.type === "GAME_STARTED")!;
+    const idsOf = (ev: PersistedEvent) =>
+      Object.values(
+        (
+          ev.payload as {
+            state: { instances: Record<string, { cardId: string }> };
+          }
+        ).state.instances,
+      ).map((i) => i.cardId);
+    const forB = idsOf(redactEventForBroadcast(started, "B"));
+    // B ne voit ni la Pioche de A, ni la sienne (ordre/identité secrets).
+    expect(forB).not.toContain("A-ally-0");
+    expect(forB).not.toContain("B-ally-0");
+    // mais voit les Héros (révélés à tous).
+    expect(forB).toContain("A-hero");
+    expect(forB).toContain("B-hero");
+    // l'event SOURCE reste complet (le serveur garde tout) — pas de mutation.
+    expect(idsOf(started)).toContain("A-ally-0");
+  });
 });
