@@ -536,7 +536,9 @@ function concedeClick(): void {
 }
 
 const decks = computed<Deck[]>(() => deckStore.decks ?? []);
-const showJournal = ref(true);
+// Masqué par défaut : le plateau occupe toute la largeur (cartes plus grandes).
+// Le joueur ouvre le journal à la demande via le bouton « Journal ».
+const showJournal = ref(false);
 
 // ── Lobby ────────────────────────────────────────────────────────────────────
 const lobbyStep = ref<1 | 2>(1);

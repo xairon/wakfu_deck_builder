@@ -35,7 +35,11 @@
             class="gzone ghavre__inside"
             aria-label="Intérieur du Havre-Sac adverse"
           >
-            <span class="gzone__label">Intérieur du Havre-Sac</span>
+            <span class="gzone__label"
+              >Intérieur · {{ interiorCards(opp).length }}/{{
+                havreTaille(opp)
+              }}</span
+            >
             <TransitionGroup tag="div" name="zone" class="gzone__cards">
               <div
                 v-for="inst in interiorCards(opp)"
@@ -207,7 +211,11 @@
                 )
             "
           >
-            <span class="gzone__label">Intérieur du Havre-Sac</span>
+            <span class="gzone__label"
+              >Intérieur · {{ interiorCards(me).length }}/{{
+                havreTaille(me)
+              }}</span
+            >
             <TransitionGroup tag="div" name="zone" class="gzone__cards">
               <div
                 v-for="inst in interiorCards(me)"
@@ -551,9 +559,14 @@ function havreTaille(seat: Seat): number {
   const taille = resolveCard(inst?.cardId ?? null)?.stats?.taille;
   return typeof taille === "number" && taille > 0 ? taille : 4;
 }
-/** Cases vides de l'intérieur pour matérialiser la capacité encore libre. */
+/** Une seule case « libre » visible (cible de dépôt) tant qu'il reste de la
+ * place : la capacité totale est rappelée par le compteur du label, sinon
+ * l'intérieur monopolise la largeur au détriment de la main. */
 function emptyInteriorSlots(seat: Seat): number {
-  return Math.max(0, havreTaille(seat) - interiorCards(seat).length);
+  return Math.min(
+    1,
+    Math.max(0, havreTaille(seat) - interiorCards(seat).length),
+  );
 }
 function allies(seat: Seat): RedactedInstance[] {
   return mondeOwned(seat).filter((i) => i.instanceId !== havreId(seat));
@@ -794,19 +807,19 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
 
 <style scoped>
 .gtable {
-  --card-field: clamp(78px, 6.6vw, 104px);
-  --card-wide: clamp(70px, 5.8vw, 90px);
-  --card-hand: clamp(96px, 8.6vw, 128px);
-  --card-opp: clamp(54px, 4.6vw, 68px);
-  --card-havre: clamp(80px, 6.6vw, 104px);
-  --pile: clamp(54px, 4.8vw, 70px);
+  --card-field: clamp(82px, 6.9vw, 126px);
+  --card-wide: clamp(74px, 6vw, 110px);
+  --card-hand: clamp(100px, 8.6vw, 152px);
+  --card-opp: clamp(56px, 4.6vw, 84px);
+  --card-havre: clamp(84px, 6.9vw, 126px);
+  --pile: clamp(58px, 5vw, 90px);
   position: relative;
   height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px clamp(12px, 2.5vw, 36px);
+  gap: 4px;
+  padding: 6px clamp(12px, 2.5vw, 36px);
   border-radius: 12px;
   color: #f6f5f1;
   background:
@@ -836,7 +849,7 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   flex: 1;
   min-height: 0;
 }
@@ -895,7 +908,7 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
 }
 .gzone--field {
   flex: 1;
-  min-height: calc(var(--card-field) * 88 / 63 + 30px);
+  min-height: calc(var(--card-field) * 88 / 63 + 10px);
   display: flex;
   align-items: center;
 }
