@@ -37,13 +37,18 @@ import {
 import type {
   CombatTarget,
   EffectOp,
+  RuleEvent,
   RulesCtx,
   TargetingOp,
+  TriggeredFrame,
 } from "@/game/rules";
 import type { ForceStance } from "@/game/rules";
 import {
+  activeGlobalMods,
   arrivalEffects,
+  attackPmBonus,
   cannotBlock,
+  collectTriggeredEffects,
   combatKeywords,
   effectTargetIds,
   effectiveForce,
@@ -54,7 +59,9 @@ import {
   forceValue,
   grantXpEvents,
   havreSacHasRoom,
+  heroLevel,
   isTargetingOp,
+  isTurnToken,
   planCost,
   playDestination,
   playEffects,
@@ -757,6 +764,24 @@ export const useGameStore = defineStore("game", () => {
     pumpEffects();
   }
 
+  /**
+   * Enfile les frames du bus de déclenchement (804.7) : « Quand [self]
+   * attaque » à la déclaration, déclenchés des Dommages à la résolution.
+   * L'ordre (joueur actif d'abord) est garanti par `collectTriggeredEffects`.
+   */
+  function enqueueTriggered(frames: TriggeredFrame[]): void {
+    for (const f of frames) {
+      if (f.text)
+        dispatch(say(f.seat, `Déclenché — ${f.cardName} : « ${f.text} »`));
+      enqueueEffect({
+        seat: f.seat,
+        cardName: f.cardName,
+        ops: f.ops,
+        sourceId: f.sourceId,
+      });
+    }
+  }
+
   /** Avance la file tant qu'aucune interaction n'est en attente. */
   function pumpEffects(): void {
     while (
@@ -1045,6 +1070,74 @@ export const useGameStore = defineStore("game", () => {
             say(seat, `${cardName} est détruit.`),
           );
         }
+      } else if (op.op === "combatModSelf") {
+        const src = sourceId ? state.value.instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay) {
+          // Jetons de COMBAT posés sur la source (purgés en fin de combat/tour
+          // par isTurnToken) : Force lue par effectiveForce, Géant par
+          // effectiveKeywords. Le +PM a déjà servi au plafond d'attaquants.
+          const drafts: DraftEvent[] = [];
+          if (op.force)
+            drafts.push(
+              incCounterVerb(seat, sourceId!, "forceCombatMod", op.force, true),
+            );
+          if (op.pm)
+            drafts.push(
+              incCounterVerb(seat, sourceId!, "pmCombatMod", op.pm, true),
+            );
+          if (op.geant)
+            drafts.push(
+              setCounterVerb(seat, sourceId!, "geantCombatMod", 1, true),
+            );
+          const parts = [
+            op.force ? `+${op.force} en Force` : null,
+            op.geant ? "Géant" : null,
+          ].filter(Boolean);
+          dispatch(
+            ...drafts,
+            say(
+              seat,
+              `${cardName} — pendant ce combat : ${parts.join(" et ") || "modificateur"}.`,
+            ),
+          );
+        }
+      } else if (op.op === "buffForceAlliesMondeTurn") {
+        const heroId = state.value.seats[seat].heroInstanceId;
+        if (heroId) {
+          // 812.3b — jeton de SIÈGE sur le Héros (ensemble dynamique) : tout
+          // Allié du Monde du siège en profite. "heroLevel" est figé au Niveau
+          // courant au moment de résoudre.
+          const n = op.n === "heroLevel" ? heroLevel(rulesCtx(), seat) : op.n;
+          dispatch(
+            incCounterVerb(seat, heroId, "teamForceMod", n, true),
+            say(
+              seat,
+              `Vos Alliés du Monde gagnent +${n} en Force jusqu'à la fin du tour.`,
+            ),
+          );
+        }
+      } else if (op.op === "globalDamageShield") {
+        const heroId = state.value.seats[seat].heroInstanceId;
+        if (heroId) {
+          // « jusqu'au début de votre prochain tour » : actif pendant le tour
+          // adverse, purgé à l'entrée de votre tour suivant (numéro + 2).
+          dispatch(
+            setCounterVerb(
+              seat,
+              heroId,
+              "treveUntilTurn",
+              state.value.turn.number + 2,
+              true,
+            ),
+            say(
+              seat,
+              "Trêve — tous les Dommages sont réduits à 0 jusqu'au début de votre prochain tour.",
+            ),
+          );
+        }
       }
     }
     return false;
@@ -1099,8 +1192,12 @@ export const useGameStore = defineStore("game", () => {
                 instanceId,
                 t.op.n,
                 t.op.element,
+                { mods: activeGlobalMods(rulesCtx()) },
               );
     dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+    // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
+    if (res.ruleEvents?.length)
+      enqueueTriggered(collectTriggeredEffects(rulesCtx(), res.ruleEvents));
     checkVictory();
     pumpEffects();
   }
@@ -1338,9 +1435,14 @@ export const useGameStore = defineStore("game", () => {
       }
       return;
     }
-    const pm = pmOf(rulesCtx(), perspective.value);
-    if (c.attackers.length >= pm) {
-      ruleError.value = `Maximum ${pm} attaquant(s) — limite de PM (703).`;
+    // 703 + ruling Bruss : le +1 PM d'un « Quand il attaque » s'applique AVANT
+    // la vérification de légalité de la déclaration (jetons pas encore posés).
+    const ctxNow = rulesCtx();
+    const cap =
+      pmOf(ctxNow, perspective.value) +
+      attackPmBonus(ctxNow, [...c.attackers, instanceId]);
+    if (c.attackers.length >= cap) {
+      ruleError.value = `Maximum ${cap} attaquant(s) — limite de PM (703).`;
       return;
     }
     c.attackers = [...c.attackers, instanceId];
@@ -1364,7 +1466,28 @@ export const useGameStore = defineStore("game", () => {
       );
     if (!c.attackers.length)
       return rejectMove("Déclare au moins un attaquant redressé.");
+    const seat = turn.value.active;
+    // 703 / A6 — l'inclinaison des attaquants part de la DÉCLARATION (et non
+    // de la résolution) : les jetons posés par « Quand [self] attaque »
+    // (Bruss) doivent l'être AVANT les frappes.
+    const taps: DraftEvent[] = c.attackers
+      .filter((id) => state.value.instances[id]?.orientation !== "tapped")
+      .map(
+        (id): DraftEvent => ({
+          actor: seat,
+          type: "SET_ORIENTATION",
+          payload: { instanceId: id, orientation: "tapped" },
+        }),
+      );
+    if (taps.length) dispatch(...taps);
     c.step = "blockers";
+    // 804.5 — bus de déclenchement : « Quand [self] attaque ».
+    const declared: RuleEvent[] = c.attackers.map((id) => ({
+      kind: "attackerDeclared",
+      seat,
+      instanceId: id,
+    }));
+    enqueueTriggered(collectTriggeredEffects(rulesCtx(), declared));
     return true;
   }
 
@@ -1421,17 +1544,23 @@ export const useGameStore = defineStore("game", () => {
   function doResolveCombat(): void {
     const c = combat.value;
     if (!c || !c.target) return;
-    const result = resolveCombat(rulesCtx(), {
-      attackerSeat: turn.value.active,
-      target: c.target,
-      attackers: c.attackers,
-      blocks: c.blocks,
-      strikes: c.strikes,
-    });
+    const result = resolveCombat(
+      rulesCtx(),
+      {
+        attackerSeat: turn.value.active,
+        target: c.target,
+        attackers: c.attackers,
+        blocks: c.blocks,
+        strikes: c.strikes,
+      },
+      activeGlobalMods(rulesCtx()),
+    );
     dispatch(
       ...result.events,
       ...result.log.map((l) => say(turn.value.active, l)),
     );
+    // 804.7 — déclenchés des Dommages infligés (après la résolution complète).
+    enqueueTriggered(collectTriggeredEffects(rulesCtx(), result.ruleEvents));
     attackedOnTurn.value = turn.value.number;
     combat.value = null;
     if (result.winner) {
@@ -1487,19 +1616,22 @@ export const useGameStore = defineStore("game", () => {
   function nextTurn(): void {
     const s = state.value;
     const next = otherSeat(s.turn.active);
+    const nextNumber = s.turn.number + 1;
     const drafts: DraftEvent[] = [
       setPhase(next, {
         active: next,
-        number: s.turn.number + 1,
+        number: nextNumber,
         phase: "principale",
       }),
     ];
     for (const inst of Object.values(s.instances)) {
-      // « jusqu'à la fin du tour » : les modificateurs temporaires (Force,
-      // PA, PM) expirent à chaque transition de tour, tout contrôleur.
-      for (const mod of ["forceMod", "paMod", "pmMod"] as const) {
-        if (inst.counters.tokens?.[mod]) {
-          drafts.push(setCounterVerb(next, inst.instanceId, mod, 0, true));
+      // « jusqu'à la fin du tour » : purge centralisée des jetons temporaires
+      // (Force/PA/PM, *CombatMod, Résistance posée, usages de pouvoir, Trêve
+      // expirée…) à chaque transition de tour, tout contrôleur. `isTurnToken`
+      // tranche au cas par cas (la Trêve traverse le tour adverse).
+      for (const [name, value] of Object.entries(inst.counters.tokens ?? {})) {
+        if (value && isTurnToken(name, value, nextNumber)) {
+          drafts.push(setCounterVerb(next, inst.instanceId, name, 0, true));
         }
       }
       const inPlay =

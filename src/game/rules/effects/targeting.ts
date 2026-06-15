@@ -8,11 +8,11 @@ import type { CompiledEffectOp } from "@/types/cards";
 import type { DraftEvent, InstanceId } from "../../types/events";
 import type { Seat } from "../../types/zones";
 import { otherSeat } from "../../types/zones";
-import type { RulesCtx } from "../types";
+import type { CombatStance, DamageMod, RuleEvent, RulesCtx } from "../types";
 import { discard, incCounter } from "../../engine/verbs";
 import { normWord, xpValue } from "../cardAttrs";
 import { effectiveForce } from "../stats";
-import { combatKeywords, preventDamage } from "./keywords";
+import { reduceDamage } from "./damageMods";
 import { grantXpEvents } from "../progress";
 
 export type TargetingOp = Extract<
@@ -75,6 +75,17 @@ export function resolveHealHeroTarget(
 export interface EffectResolution {
   events: DraftEvent[];
   log: string[];
+  /** Événements de règles émis par la résolution (bus de déclenchement). */
+  ruleEvents?: RuleEvent[];
+}
+
+/** Contexte optionnel d'une résolution de Dommages (passe unique A2). */
+export interface DamageOpts {
+  sourceId?: InstanceId;
+  /** Posture du combat en cours, s'il y en a un (rôles de Poum). */
+  stance?: CombatStance;
+  /** Modificateurs globaux actifs (Trêve…). */
+  mods?: DamageMod[];
 }
 
 function nameOf(ctx: RulesCtx, id: InstanceId): string {
@@ -113,35 +124,56 @@ export function resolveDamageTarget(
   targetId: InstanceId,
   n: number,
   element: string,
+  opts: DamageOpts = {},
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   const card = inst ? ctx.getCard(inst.cardId) : null;
   if (!inst || !card) return { events: [], log: [] };
-  const side = inst.face === "verso" ? "verso" : "recto";
-  const eff = preventDamage(
-    combatKeywords(card, side),
-    n,
-    element.toLowerCase(),
+  // Passe unique A2 : toute infliction de Dommages traverse reduceDamage
+  // (Résistance, puis Poum/Trêve si la posture/les mods s'appliquent — hors
+  // combat, sans posture ni mod, seule la Résistance 7469 joue).
+  const eff = reduceDamage(
+    ctx,
+    {
+      targetId,
+      amount: n,
+      element,
+      combat: false,
+      sourceId: opts.sourceId ?? null,
+    },
+    opts.mods ?? [],
+    opts.stance,
   );
   const events: DraftEvent[] = [];
   const log: string[] = [];
-  if (eff < n) log.push(`Résistance : ${n - eff} Dommage(s) prévenu(s).`);
+  if (eff < n) log.push(`Prévention : ${n - eff} Dommage(s) prévenu(s).`);
   if (eff <= 0) return { events, log };
+  // 811.4 : Dommages effectivement infligés → événement de bus (jamais à ≤ 0)
+  const ruleEvents: RuleEvent[] = [
+    {
+      kind: "damageDealt",
+      source: opts.sourceId ?? null,
+      target: targetId,
+      amount: eff,
+      element: element.toLowerCase(),
+      combat: false,
+    },
+  ];
   if (card.mainType === "Héros") {
     events.push(incCounter(actor, targetId, "hp", -eff));
     log.push(`${nameOf(ctx, targetId)} perd ${eff} PV.`);
-    return { events, log };
+    return { events, log, ruleEvents };
   }
   events.push(incCounter(actor, targetId, "damage", eff));
   log.push(`${eff} Dommage(s) sur ${nameOf(ctx, targetId)}.`);
   const total = (inst.counters.damage ?? 0) + eff;
-  const force = effectiveForce(ctx, targetId);
+  const force = effectiveForce(ctx, targetId, opts.stance);
   if (force > 0 && total >= force) {
     const destroy = resolveDestroyTarget(ctx, actor, targetId);
     events.push(...destroy.events);
     log.push(...destroy.log);
   }
-  return { events, log };
+  return { events, log, ruleEvents };
 }
 
 /** « gagne +N en Force jusqu'à la fin du tour » — token purgé en fin de tour. */

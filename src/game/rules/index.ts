@@ -15,3 +15,6 @@ export * from "./destruction";
 export * from "./effects/keywords";
 export * from "./effects/dsl";
 export * from "./effects/targeting";
+export * from "./effects/triggers";
+export * from "./effects/damageMods";
+export * from "./effects/limits";

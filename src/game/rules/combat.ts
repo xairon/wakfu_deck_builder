@@ -2,39 +2,44 @@
  * Moteur de règles R1+C — résolution de combat (702–708) avec mots-clés.
  *
  * Calcule duels et dommages en pur, puis émet la rafale de `DraftEvent`
- * correspondante (le store la dispatch telle quelle). Mots-clés automatisés :
- * Résistance (prévention par élément, 7469) et Géant (répartition de la Force
- * entre les bloqueurs, 6135 — politique auto : tuer le plus de bloqueurs).
+ * correspondante (le store la dispatch telle quelle) ET les `RuleEvent`
+ * du bus de déclenchement (`damageDealt`, jamais à ≤ 0 — 811.4).
+ * Mots-clés automatisés : Résistance (7469) et Géant (6135), lus via
+ * `effectiveKeywords` (face de l'instance + jetons, ex. `geantCombatMod`
+ * de Bruss verso). TOUTE infliction passe par la passe unique
+ * `reduceDamage` (A2 : Résistance → réductions continues → Trêve).
+ *
+ * A6 — les `tap()` des attaquants ne sont PLUS émis ici : ils partent à la
+ * DÉCLARATION (`combatConfirmAttackers` du store, 703), prérequis de
+ * l'ordre Bruss (jetons posés avant les frappes).
  * Simplifications restantes : sans Géant l'attaquant frappe son premier
- * bloqueur, pas de Réactions.
+ * bloqueur (sauf choix 6105), pas de Réactions.
  */
 import type { DraftEvent, InstanceId } from "../types/events";
 import type { Seat } from "../types/zones";
 import { otherSeat } from "../types/zones";
-import type { CombatPlan, CombatResult, RulesCtx } from "./types";
-import { discard, incCounter, tap } from "../engine/verbs";
+import type {
+  CombatPlan,
+  CombatResult,
+  CombatStance,
+  DamageMod,
+  RuleEvent,
+  RulesCtx,
+} from "./types";
+import { discard, incCounter } from "../engine/verbs";
 import { producedElement, xpValue } from "./cardAttrs";
-import type { ForceStance } from "./stats";
 import { effectiveForce } from "./stats";
 import { grantXpEvents } from "./progress";
-import { combatKeywords, preventDamage } from "./effects/keywords";
-import type { CombatKeywords } from "./effects/keywords";
+import { effectiveKeywords } from "./effects/keywords";
+import { reduceDamage } from "./effects/damageMods";
 
 function cardOf(ctx: RulesCtx, id: InstanceId) {
   const inst = ctx.state.instances[id];
   return inst ? ctx.getCard(inst.cardId) : null;
 }
 
-function sideOf(ctx: RulesCtx, id: InstanceId): "recto" | "verso" {
-  return ctx.state.instances[id]?.face === "verso" ? "verso" : "recto";
-}
-
-function forceOf(ctx: RulesCtx, id: InstanceId, stance?: ForceStance): number {
+function forceOf(ctx: RulesCtx, id: InstanceId, stance: CombatStance): number {
   return effectiveForce(ctx, id, stance);
-}
-
-function keywordsOf(ctx: RulesCtx, id: InstanceId): CombatKeywords {
-  return combatKeywords(cardOf(ctx, id), sideOf(ctx, id));
 }
 
 /** Élément des Dommages infligés par une carte = son Élément (410.1). */
@@ -53,32 +58,63 @@ function nameOf(ctx: RulesCtx, id: InstanceId): string {
   return ctx.getCard(inst?.cardId ?? null)?.name ?? "Carte";
 }
 
-export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
+/** Posture complète du combat, dérivée du plan (rôles de `reduceDamage`). */
+export function stanceOfPlan(plan: CombatPlan): CombatStance {
+  return {
+    attackers: plan.attackers,
+    blocks: plan.blocks,
+    targetId: plan.target.kind === "havreSac" ? null : plan.target.instanceId,
+  };
+}
+
+export function resolveCombat(
+  ctx: RulesCtx,
+  plan: CombatPlan,
+  mods: DamageMod[] = [],
+): CombatResult {
   const atk = plan.attackerSeat;
   const def = otherSeat(atk);
   const events: DraftEvent[] = [];
   const log: string[] = [];
   const destroyed: InstanceId[] = [];
+  const ruleEvents: RuleEvent[] = [];
+
+  // 805.1 / 702 — posture du combat : sert aux pouvoirs « Tant qu'il
+  // bloque » (Maître Bolet) ET aux rôles de la passe de Dommages (Poum).
+  const stance = stanceOfPlan(plan);
 
   // dommages accumulés pendant CE combat (en plus des compteurs existants)
   const dmg = new Map<InstanceId, number>();
   const addDmg = (id: InstanceId, n: number) =>
     dmg.set(id, (dmg.get(id) ?? 0) + n);
-  // total prévenu par Résistance (pour le journal)
+  // total prévenu (Résistance, Poum, Trêve…) pour le journal
   let prevented = 0;
-  /** Inflige `base` Dommages de `source` à `target`, Résistance déduite. */
+  /** Inflige `base` Dommages de `source` à `target` via la passe unique. */
   function inflict(source: InstanceId, target: InstanceId, base: number): void {
-    const eff = preventDamage(
-      keywordsOf(ctx, target),
-      base,
-      damageElementOf(ctx, source),
+    const eff = reduceDamage(
+      ctx,
+      {
+        targetId: target,
+        amount: base,
+        element: damageElementOf(ctx, source),
+        combat: true,
+        sourceId: source,
+      },
+      mods,
+      stance,
     );
     prevented += base - eff;
-    if (eff > 0) addDmg(target, eff);
+    if (eff <= 0) return; // 811.4 : pas de Dommages → pas d'événement
+    addDmg(target, eff);
+    ruleEvents.push({
+      kind: "damageDealt",
+      source,
+      target,
+      amount: eff,
+      element: damageElementOf(ctx, source),
+      combat: true,
+    });
   }
-
-  // 703 — les attaquants s'engagent : inclinés à la déclaration
-  for (const id of plan.attackers) events.push(tap(atk, id));
 
   // bloqueurs par attaquant
   const blockersOf = new Map<InstanceId, InstanceId[]>();
@@ -88,11 +124,6 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
     list.push(blocker);
     blockersOf.set(attacker, list);
   }
-  // 805.1 — posture du combat : les pouvoirs « Tant qu'il bloque » (Maître
-  // Bolet) valent pour les duels ET le seuil de létalité (204.4).
-  const stance: ForceStance = {
-    blockers: [...blockersOf.values()].flat(),
-  };
 
   // 706 — duels : l'attaquant frappe UN bloqueur (Géant : répartit sa Force
   // entre tous, 6135) ; tous les bloqueurs le frappent simultanément.
@@ -101,7 +132,7 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
     if (!blockers?.length) continue;
     const aForce = forceOf(ctx, attacker, stance);
     const el = damageElementOf(ctx, attacker);
-    if (keywordsOf(ctx, attacker).geant && blockers.length > 1) {
+    if (effectiveKeywords(ctx, attacker).geant && blockers.length > 1) {
       // politique auto : assigner d'abord les parts létales les moins chères
       const needRaw = (b: InstanceId) => {
         const remaining = Math.max(
@@ -109,7 +140,7 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
           forceOf(ctx, b, stance) -
             (ctx.state.instances[b]?.counters.damage ?? 0),
         );
-        return remaining + (keywordsOf(ctx, b).resistances[el] ?? 0);
+        return remaining + (effectiveKeywords(ctx, b).resistances[el] ?? 0);
       };
       let pool = aForce;
       const sorted = [...blockers].sort((x, y) => needRaw(x) - needRaw(y));
@@ -146,23 +177,36 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
   let freeDamage = 0;
   for (const id of freeAttackers) {
     const base = forceOf(ctx, id, stance);
-    if (plan.target.kind === "havreSac") {
-      freeDamage += base; // la Résistance du Havre-Sac est son compteur (306.3)
-    } else {
-      const eff = preventDamage(
-        keywordsOf(ctx, plan.target.instanceId),
-        base,
-        damageElementOf(ctx, id),
-      );
-      prevented += base - eff;
-      freeDamage += eff;
-    }
+    const eff = reduceDamage(
+      ctx,
+      {
+        targetId: plan.target.instanceId,
+        amount: base,
+        element: damageElementOf(ctx, id),
+        combat: true,
+        sourceId: id,
+      },
+      mods,
+      stance,
+    );
+    prevented += base - eff;
+    if (eff <= 0) continue;
+    freeDamage += eff;
+    ruleEvents.push({
+      kind: "damageDealt",
+      source: id,
+      target: plan.target.instanceId,
+      amount: eff,
+      element: damageElementOf(ctx, id),
+      combat: true,
+    });
   }
   if (freeDamage > 0) {
     if (plan.target.kind === "hero") {
       events.push(incCounter(atk, plan.target.instanceId, "hp", -freeDamage));
       log.push(`${freeDamage} Dommage(s) au Héros adverse.`);
     } else if (plan.target.kind === "havreSac") {
+      // 306.3 : la Résistance du Havre-Sac est son compteur
       events.push(
         incCounter(atk, plan.target.instanceId, "resistance", -freeDamage),
       );
@@ -175,7 +219,7 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
     }
   }
   if (prevented > 0)
-    log.push(`Résistance : ${prevented} Dommage(s) prévenu(s).`);
+    log.push(`Prévention : ${prevented} Dommage(s) prévenu(s).`);
 
   // 204.6 / 410.x — application des dommages : Héros → PV, Allié → damage + létalité
   let xpForAtk = 0;
@@ -233,5 +277,5 @@ export function resolveCombat(ctx: RulesCtx, plan: CombatPlan): CombatResult {
     if (loser) winner = winner ?? otherSeat(loser);
   }
 
-  return { events, log, destroyed, winner };
+  return { events, log, destroyed, winner, ruleEvents };
 }

@@ -10,7 +10,7 @@ import { isHeroCard } from "@/types/cards";
 import type { InstanceId } from "../types/events";
 import type { Seat } from "../types/zones";
 import type { RulesCtx } from "./types";
-import { compileStaticEffectText } from "./effects/dsl";
+import { compileStaticEffectText, selfAttackEffects } from "./effects/dsl";
 
 /**
  * Pouvoirs continus d'une carte (face courante pour un Héros) : forme
@@ -54,6 +54,31 @@ export function cannotBlock(ctx: RulesCtx, id: InstanceId): boolean {
   return staticAbilitiesOf(card, sideOf(ctx, id)).some(
     (s) => s.kind === "cannotBlock",
   );
+}
+
+/**
+ * Bonus de PM à VENIR d'une déclaration d'attaquants (ruling Bruss Ouilis) :
+ * « le bonus de +1 PM s'applique … avant la vérification de la légalité de
+ * la Déclaration des Attaquants ». Somme des `combatModSelf.pm` que les
+ * triggers `onSelfAttacks` des candidats poseront s'ils attaquent — lu par
+ * le plafond d'attaquants (703) AVANT que les jetons existent.
+ */
+export function attackPmBonus(
+  ctx: RulesCtx,
+  attackerIds: InstanceId[],
+): number {
+  let bonus = 0;
+  for (const id of attackerIds) {
+    const inst = ctx.state.instances[id];
+    const card = inst ? ctx.getCard(inst.cardId) : null;
+    if (!card) continue;
+    for (const atom of selfAttackEffects(card, sideOf(ctx, id))) {
+      for (const op of atom.ops) {
+        if (op.op === "combatModSelf") bonus += op.pm ?? 0;
+      }
+    }
+  }
+  return bonus;
 }
 
 /**

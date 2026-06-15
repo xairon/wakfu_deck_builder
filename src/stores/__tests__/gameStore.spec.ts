@@ -268,3 +268,78 @@ describe("gameStore — pouvoirs continus & destructions d'état (lot B)", () =>
     expect(store.ruleError).toBe("Jicé Aouaire ne peut pas bloquer.");
   });
 });
+
+describe("gameStore — combat, bus & Trêve (lot C)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  function smallDeck(cards: Card[]): Deck {
+    return {
+      id: `deck-${Math.random().toString(36).slice(2)}`,
+      name: "test",
+      hero: createMockHeroCard(),
+      havreSac: createMockHavreSacCard(),
+      cards: cards.map((card) => ({ card, quantity: 1 })),
+      createdAt: "",
+      updatedAt: "",
+    };
+  }
+
+  function instOf(store: ReturnType<typeof useGameStore>, cardId: string) {
+    return Object.values(store.state.instances).find(
+      (i) => i.cardId === cardId,
+    )!.instanceId;
+  }
+
+  it("incline les attaquants à la déclaration et applique « Quand il attaque » (A6 + bus)", () => {
+    const bruss = createMockAllyCard({
+      id: "bruss-test",
+      name: "Bruss",
+      stats: {
+        niveau: { value: 1, element: "Feu" },
+        force: { value: 2, element: "Feu" },
+      },
+      effects: [
+        {
+          description: "Quand Bruss attaque, il gagne +2 en Force.",
+          compiled: {
+            trigger: "onSelfAttacks",
+            ops: [{ op: "combatModSelf", force: 2, pm: 0 }],
+          },
+        },
+      ],
+    });
+    useCardStore().cards = [bruss];
+    const store = useGameStore();
+    store.startSandbox(smallDeck([bruss]), smallDeck([]), "A");
+    const id = instOf(store, "bruss-test");
+    store.moveTo(id, { zone: "monde" });
+    store.nextTurn(); // tour 2 (B)
+    store.nextTurn(); // tour 3 (A) — l'attaque devient légale
+    expect(store.beginCombat()).toBe(true);
+    store.combatToggleAttacker(id);
+    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    expect(store.combatConfirmAttackers()).toBe(true);
+    // A6 : incliné dès la déclaration
+    expect(store.state.instances[id].orientation).toBe("tapped");
+    // bus : « Quand il attaque » a posé +2 Force (jeton de combat)
+    expect(store.effectiveForceOf(id)).toEqual({ value: 4, delta: 2 });
+  });
+
+  it("Trêve : jeton posé (tour + 2), conservé le tour adverse, purgé à votre tour suivant", () => {
+    const store = useGameStore();
+    store.startSandbox(smallDeck([]), smallDeck([]), "A");
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "Trêve",
+      ops: [{ op: "globalDamageShield" }],
+    });
+    const heroA = store.state.seats.A.heroInstanceId!;
+    const tok = () =>
+      store.state.instances[heroA].counters.tokens?.treveUntilTurn ?? 0;
+    expect(tok()).toBe(3); // tour 1 + 2
+    store.nextTurn(); // tour 2 (adverse) — conservée
+    expect(tok()).toBe(3);
+    store.nextTurn(); // tour 3 (votre tour) — expirée
+    expect(tok()).toBe(0);
+  });
+});

@@ -49,7 +49,7 @@ describe("rules/combat — choix du bloqueur frappé (6105)", () => {
 });
 
 describe("rules/combat — résolution", () => {
-  it("attaquant libre → dommages au Héros cible, attaquant incliné (707/708)", () => {
+  it("attaquant libre → dommages au Héros cible (707) ; A6 : la résolution pure n'incline plus", () => {
     const f = fixture([makeAlly("atk", { force: 3 })]);
     setTurn(f, "A", 3);
     bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
@@ -60,7 +60,9 @@ describe("rules/combat — résolution", () => {
       blocks: {},
     });
     expect(state.instances[HERO_B].counters.hp).toBe(13); // 16 − 3
-    expect(state.instances[instId("A", 0)].orientation).toBe("tapped");
+    // A6 : l'inclinaison part de la DÉCLARATION (combatConfirmAttackers du
+    // store, 703) ; la résolution pure ne touche plus l'orientation.
+    expect(state.instances[instId("A", 0)].orientation).toBe("upright");
     expect(result.winner).toBeNull();
   });
 

@@ -95,7 +95,20 @@ export type CompiledEffectOp =
   /** « Perdez N PA/PM jusqu'à la fin du tour » — modificateur temporaire. */
   | { op: "loseStatTurn"; stat: "pa" | "pm"; n: number }
   /** Incline la carte source (« [X] apparaît incliné »). */
-  | { op: "tapSelf" };
+  | { op: "tapSelf" }
+  /** « Quand [self] attaque, il gagne +F en Force[, +PM PM][ et Géant]
+   *  jusqu'à la fin du combat » (Bruss Ouilis) — jetons `forceCombatMod` /
+   *  `pmCombatMod` / `geantCombatMod` posés sur la source, purgés à la fin
+   *  du combat (et à l'annulation, et en fin de tour). */
+  | { op: "combatModSelf"; force?: number; pm?: number; geant?: boolean }
+  /** « Vos Alliés dans le Monde gagnent +N en Force jusqu'à la fin du
+   *  tour » (Stratégie de Groupe) — jeton de SIÈGE `teamForceMod` sur le
+   *  Héros : ensemble dynamique (812.3b), valeur figée à la résolution
+   *  (`"heroLevel"` = Niveau du Héros au moment de résoudre). */
+  | { op: "buffForceAlliesMondeTurn"; n: number | "heroLevel" }
+  /** « Jusqu'au début de votre prochain tour, tous les Dommages sont
+   *  réduits à 0 » (Trêve) — jeton `treveUntilTurn` sur le Héros. */
+  | { op: "globalDamageShield" };
 
 // ── Pouvoirs continus (805 / 812.2) — couche dérivée, jamais d'événement ────
 export type StaticAbility =
@@ -109,8 +122,19 @@ export interface CompiledEffect {
   /** onArrive : entrée en jeu ; onTap : pouvoir incliné ; onPlay : Action
    *  résolue au moment où elle est jouée (puis défaussée, 302.1) ;
    *  onTurnStart : début du tour de son contrôleur (602) ;
-   *  static : pouvoir continu (couche dérivée, `static` requis, ops vides). */
-  trigger: "onArrive" | "onTap" | "onPlay" | "onTurnStart" | "static";
+   *  static : pouvoir continu (couche dérivée, `static` requis, ops vides) ;
+   *  onSelfAttacks : « Quand [self] attaque » (804.5, bus RuleEvents) ;
+   *  onDamageToBearer : riposte du Porteur (804.3) — déclaré ici, collecté
+   *  par le bus, mais DORMANT tant que le modèle Équipement (lot F) n'existe
+   *  pas (`bearerOf` absent → aucune frame). */
+  trigger:
+    | "onArrive"
+    | "onTap"
+    | "onPlay"
+    | "onTurnStart"
+    | "static"
+    | "onSelfAttacks"
+    | "onDamageToBearer";
   /** « Vous pouvez … » : le joueur confirme avant exécution. */
   optional?: boolean;
   /** « Détruisez [cette carte] : … » — le coût remplace l'inclinaison. */

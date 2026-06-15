@@ -411,6 +411,67 @@ export function compileStaticEffectText(
 }
 
 /**
+ * Compile un DÉCLENCHÉ DE COMBAT « Quand [self] attaque, il gagne +N en
+ * Force et +N PM [et Géant] jusqu'à la fin du combat. » (Bruss Ouilis,
+ * 804.5). STRICT : le sujet doit être la carte elle-même, le texte entier
+ * doit correspondre. Les jetons posés (`forceCombatMod`/`pmCombatMod`/
+ * `geantCombatMod`) sont purgés à la fin du combat.
+ */
+export function compileCombatTriggerText(
+  text: string,
+  cardName: string,
+): CompiledEffect | null {
+  const body = norm(text).replace(/\.$/, "").trim();
+  const m = body.match(
+    /^quand (.{1,60}?) attaque\s*,\s*(?:il|elle) gagne \+(\d+) en force\s*(?:,\s*|\s+et\s+)\+(\d+) pm( et geant)? jusqu['’]a la fin du combat$/,
+  );
+  if (!m || !subjectIsSelf(m[1], cardName)) return null;
+  return {
+    trigger: "onSelfAttacks",
+    ops: [
+      {
+        op: "combatModSelf",
+        force: toNumber(m[2]),
+        pm: toNumber(m[3]),
+        ...(m[4] ? { geant: true } : {}),
+      },
+    ],
+  };
+}
+
+/**
+ * Effets « Quand [self] attaque » d'une carte (face courante pour un
+ * Héros) : forme compilée des données si présente, sinon re-parsing strict
+ * du texte. Consommé par le bus (`collectTriggeredEffects`) et par
+ * `attackPmBonus` (ruling Bruss : PM compté AVANT la légalité).
+ */
+export function selfAttackEffects(
+  card: Card | null,
+  side: "recto" | "verso" = "recto",
+): EffectAtom[] {
+  if (!card) return [];
+  const face = isHeroCard(card)
+    ? side === "verso"
+      ? (card.verso ?? card.recto)
+      : card.recto
+    : null;
+  const effects: CardEffect[] = (face ? face.effects : card.effects) ?? [];
+  const atoms: EffectAtom[] = [];
+  for (const e of effects) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      (text && !e?.requiresIncline
+        ? compileCombatTriggerText(text, card.name)
+        : null);
+    if (compiled && compiled.trigger === "onSelfAttacks")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
+}
+
+/**
  * Compile l'effet d'une carte ACTION : pas de préfixe, le texte est ce qui
  * se résout quand la carte est jouée (302.1). Strict comme le reste.
  */

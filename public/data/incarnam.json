@@ -2253,7 +2253,17 @@
       {
         "description": "Quand Bruss Ouilis attaque, il gagne +1 en Force et +1 PM jusqu'à la fin du combat.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "onSelfAttacks",
+          "ops": [
+            {
+              "op": "combatModSelf",
+              "force": 1,
+              "pm": 1
+            }
+          ]
+        }
       },
       {
         "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
@@ -2290,7 +2300,17 @@
         {
           "description": "Quand Bruss Ouilis attaque, il gagne +1 en Force et +1 PM jusqu'à la fin du combat.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "compiled": {
+            "trigger": "onSelfAttacks",
+            "ops": [
+              {
+                "op": "combatModSelf",
+                "force": 1,
+                "pm": 1
+              }
+            ]
+          }
         },
         {
           "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",
@@ -2320,7 +2340,18 @@
         {
           "description": "Quand Bruss Ouilis attaque, il gagne +1 en Force, +1 PM et Géant jusqu'à la fin du combat.",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "compiled": {
+            "trigger": "onSelfAttacks",
+            "ops": [
+              {
+                "op": "combatModSelf",
+                "force": 1,
+                "pm": 1,
+                "geant": true
+              }
+            ]
+          }
         },
         {
           "description": "Le bonus de +1 PM s'applique au combat en cours où Bruss Ouiliss a été déclaré attaquant, avant la vérification de la légalité de la Déclaration des Attaquants. Il cesse d'exister des que Bruss Ouiliss cesse d'être attaquant. Une fois la vérification de légalité effectuée, une diminution des PM ne peut rendre une attaque illégale.",

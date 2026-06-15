@@ -50,4 +50,54 @@ export interface CombatResult {
   log: string[];
   destroyed: InstanceId[];
   winner: Seat | null;
+  /** Événements de RÈGLES émis par la résolution (bus de déclenchement). */
+  ruleEvents: RuleEvent[];
 }
+
+// ── Bus d'événements de règles (804.7) ──────────────────────────────────────
+// Émis par les résolutions PURES à côté de leurs DraftEvent, consommés par
+// `collectTriggeredEffects` → `store.processRuleEvents`. Jamais persistés.
+// (La variante `tapped` du Glyphe Incandescent arrive avec la fenêtre
+// d'actions de combat, lot E.)
+export type RuleEvent =
+  | {
+      kind: "damageDealt";
+      source: InstanceId | null;
+      target: InstanceId;
+      amount: number;
+      /** Élément des Dommages, normalisé minuscules (410.1). */
+      element: string;
+      /** Dommages de combat (duels/frappes) vs effet ciblé. */
+      combat: boolean;
+    } // jamais émis à ≤ 0 (811.4)
+  | { kind: "attackerDeclared"; seat: Seat; instanceId: InstanceId };
+
+/**
+ * Posture COMPLÈTE d'un combat (702–706) : qui attaque, qui bloque qui, et
+ * la cible de l'attaque. Sert aux rôles de `reduceDamage` (Poum : attaquant,
+ * bloqueur ou cible) et dérive les `blockers` de la `ForceStance` du lot B.
+ */
+export interface CombatStance {
+  attackers: InstanceId[];
+  /** blockerId → attackerId bloqué. */
+  blocks: Record<InstanceId, InstanceId>;
+  /** Cible de l'attaque — null = Havre-Sac / aucune. */
+  targetId: InstanceId | null;
+}
+
+/**
+ * Modificateurs GLOBAUX de Dommages consommés par `reduceDamage`.
+ * Seul `treve` est implémenté au lot C ; `protectCombatants` (Glyphe
+ * Revigorant) et `tapTrap` (Glyphe Incandescent) vivent dans `combat.mods`
+ * et arrivent avec la fenêtre d'actions (lot E).
+ */
+export type DamageMod =
+  | { kind: "treve" } // token treveUntilTurn du Héros
+  | { kind: "protectCombatants"; seat: Seat; n: number } // [E] combat.mods
+  | {
+      kind: "tapTrap"; // [E] combat.mods
+      seat: Seat;
+      n: number;
+      element: string;
+      sourceName: string;
+    };

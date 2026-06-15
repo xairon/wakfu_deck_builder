@@ -12,6 +12,8 @@
  */
 import type { Card } from "@/types/cards";
 import { isHeroCard } from "@/types/cards";
+import type { InstanceId } from "../../types/events";
+import type { RulesCtx } from "../types";
 import { normElement } from "../cardAttrs";
 
 export interface CombatKeywords {
@@ -55,6 +57,33 @@ export function combatKeywords(
   for (const e of effects ?? []) {
     if (String(e?.description ?? "").trim() === "Géant") geant = true;
   }
+  return { resistances, geant };
+}
+
+/**
+ * Mots-clés EFFECTIFS d'une instance en jeu : imprimés (face courante de
+ * l'instance) + jetons (`geantMod`/`geantCombatMod` → Géant, `resMod_<el>` →
+ * Résistance, posés par les effets — lots C/D). Les bonus conférés par
+ * l'équipement arrivent au lot F. C'est la SEULE lecture correcte en
+ * contexte de partie — `combatKeywords(card)` seul ignore face et jetons.
+ */
+export function effectiveKeywords(
+  ctx: RulesCtx,
+  id: InstanceId,
+): CombatKeywords {
+  const inst = ctx.state.instances[id];
+  const card = inst ? ctx.getCard(inst.cardId) : null;
+  const base = combatKeywords(card, inst?.face === "verso" ? "verso" : "recto");
+  const tokens = inst?.counters.tokens ?? {};
+  const resistances = { ...base.resistances };
+  for (const [name, value] of Object.entries(tokens)) {
+    if (!value) continue;
+    const m = name.match(/^resMod_(.+)$/);
+    if (!m) continue;
+    const el = normElement(m[1]);
+    resistances[el] = (resistances[el] ?? 0) + value;
+  }
+  const geant = base.geant || !!tokens.geantMod || !!tokens.geantCombatMod;
   return { resistances, geant };
 }
 
