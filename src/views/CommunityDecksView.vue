@@ -93,6 +93,17 @@
               >
                 {{ deck.description }}
               </p>
+              <details
+                v-if="deck.guide"
+                class="mt-2 text-sm text-base-content/70"
+              >
+                <summary
+                  class="cursor-pointer font-medium text-base-content/80"
+                >
+                  Comment jouer
+                </summary>
+                <p class="mt-1 whitespace-pre-line">{{ deck.guide }}</p>
+              </details>
 
               <dl class="mt-4 space-y-2 border-t border-base-content/15 pt-3">
                 <div class="flex items-center gap-2 text-sm">
@@ -259,11 +270,15 @@ function publicToSourced(
 ): SourcedDeck {
   const nameOf = (id: string | null) =>
     id ? (cardStore.cards.find((c) => c.id === id)?.name ?? "") : "";
+  const pub = cloud.publication ?? {};
   return {
     id: `pub-${cloud.id}-${cloud.user_id.slice(0, 8)}`,
     name: cloud.name,
     source: "Communauté",
     author: names[cloud.user_id] || undefined,
+    event: pub.source || undefined,
+    description: pub.tagline || undefined,
+    guide: pub.guide || undefined,
     hero: nameOf(cloud.hero_id) || undefined,
     havreSac: nameOf(cloud.havre_sac_id) || undefined,
     cards: (cloud.cards ?? [])

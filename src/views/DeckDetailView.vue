@@ -80,8 +80,7 @@
         <button
           class="btn gap-2"
           :class="deck.isPublic ? 'btn-primary' : 'btn-ghost'"
-          @click="togglePublish"
-          :disabled="publishing"
+          @click="openPublishModal"
         >
           <svg
             viewBox="0 0 24 24"
@@ -97,7 +96,7 @@
               d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"
             />
           </svg>
-          {{ deck.isPublic ? "Publié — retirer" : "Publier" }}
+          {{ deck.isPublic ? "Publié — gérer" : "Publier" }}
         </button>
         <button
           class="btn btn-ghost gap-2"
@@ -515,6 +514,88 @@
         <button @click="showExportModal = false">Fermer</button>
       </form>
     </dialog>
+
+    <!-- Modal publication galerie -->
+    <dialog class="modal" :open="showPublishModal">
+      <div class="modal-box border border-base-content bg-base-100">
+        <h3 class="mb-1 font-display text-xl">Publier dans la galerie</h3>
+        <p class="mb-4 text-sm text-base-content/65">
+          Ton deck apparaîtra dans « Decks de la communauté », signé de ton
+          pseudo.
+        </p>
+        <p
+          v-if="!myPseudo"
+          class="mb-4 border border-warning/40 bg-warning/10 p-3 text-sm"
+        >
+          Définis d'abord ton pseudo public dans
+          <router-link to="/profil" class="link font-medium"
+            >Mon profil</router-link
+          >
+          — c'est lui qui signe tes decks.
+        </p>
+        <p v-else class="mb-4 text-sm text-base-content/65">
+          Auteur : <span class="font-medium">{{ myPseudo }}</span>
+        </p>
+        <div class="space-y-3">
+          <label class="block">
+            <span class="eyebrow">Catégorie</span>
+            <select
+              v-model="pubSource"
+              class="select select-bordered mt-1 w-full bg-base-200"
+            >
+              <option>Création</option>
+              <option>Starter</option>
+              <option>Dofus Mag</option>
+              <option>Tournoi</option>
+              <option>Autre</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="eyebrow">Accroche</span>
+            <input
+              v-model="pubTagline"
+              maxlength="120"
+              placeholder="En une phrase…"
+              class="input input-bordered mt-1 w-full bg-base-200"
+            />
+          </label>
+          <label class="block">
+            <span class="eyebrow">Comment jouer</span>
+            <textarea
+              v-model="pubGuide"
+              rows="5"
+              placeholder="Plan de jeu, cartes clés, mulligan conseillé, forces et faiblesses…"
+              class="textarea textarea-bordered mt-1 w-full"
+            ></textarea>
+          </label>
+        </div>
+        <div class="modal-action">
+          <button
+            v-if="deck?.isPublic"
+            class="btn btn-ghost text-error"
+            :disabled="publishing"
+            @click="submitPublish(false)"
+          >
+            Retirer
+          </button>
+          <button
+            class="btn btn-primary"
+            :disabled="publishing || !myPseudo"
+            @click="submitPublish(true)"
+          >
+            {{
+              publishing ? "…" : deck?.isPublic ? "Mettre à jour" : "Publier"
+            }}
+          </button>
+          <button class="btn btn-ghost" @click="showPublishModal = false">
+            Annuler
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button @click="showPublishModal = false">Fermer</button>
+      </form>
+    </dialog>
   </div>
 </template>
 
@@ -525,7 +606,8 @@ import { useDeckStore } from "@/stores/deckStore";
 import { validateDeck } from "@/validators/deck";
 import { useToast } from "@/composables/useToast";
 import { generateShareUrl } from "@/utils/deckSharing";
-import { setDeckPublic } from "@/services/publicDeckService";
+import { publishDeck } from "@/services/publicDeckService";
+import { getMyProfile } from "@/services/profileService";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import DeckDrawSimulator from "@/components/deck/DeckDrawSimulator.vue";
 import { exportDeckImage } from "@/utils/deckImage";
@@ -713,18 +795,42 @@ async function shareDeck() {
   }
 }
 
+// ── Publication dans la galerie communautaire (fiche) ──
 const publishing = ref(false);
-/** Publie / retire le deck de la galerie communautaire (decks.is_public). */
-async function togglePublish() {
+const showPublishModal = ref(false);
+const pubSource = ref("Création");
+const pubTagline = ref("");
+const pubGuide = ref("");
+const myPseudo = ref<string | null>(null);
+
+async function openPublishModal(): Promise<void> {
+  if (!deck.value) return;
+  const p = deck.value.publication ?? {};
+  pubSource.value = p.source || "Création";
+  pubTagline.value = p.tagline || deck.value.description || "";
+  pubGuide.value = p.guide || "";
+  myPseudo.value = (await getMyProfile())?.username ?? null;
+  showPublishModal.value = true;
+}
+
+async function submitPublish(makePublic: boolean): Promise<void> {
   if (!deck.value || publishing.value) return;
-  const target = !deck.value.isPublic;
   publishing.value = true;
+  const publication = makePublic
+    ? {
+        source: pubSource.value.trim() || undefined,
+        tagline: pubTagline.value.trim() || undefined,
+        guide: pubGuide.value.trim() || undefined,
+      }
+    : undefined;
   try {
-    const ok = await setDeckPublic(deck.value.id, target);
+    const ok = await publishDeck(deck.value.id, makePublic, publication);
     if (ok) {
-      deck.value.isPublic = target;
+      deck.value.isPublic = makePublic;
+      if (publication) deck.value.publication = publication;
+      showPublishModal.value = false;
       toast.success(
-        target
+        makePublic
           ? "Deck publié — visible dans les decks de la communauté."
           : "Deck retiré de la galerie communautaire.",
         { duration: 3000 },

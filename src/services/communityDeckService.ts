@@ -23,6 +23,8 @@ export interface SourcedDeck {
   format?: string;
   rank?: string;
   description?: string;
+  /** Guide « comment jouer » (texte libre, déplié à la demande). */
+  guide?: string;
   sourceUrl?: string;
   hero?: string;
   havreSac?: string;

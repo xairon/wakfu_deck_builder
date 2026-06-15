@@ -1,6 +1,6 @@
 import { supabase } from "@/services/supabase";
 import { useAuthStore } from "@/stores/authStore";
-import type { Card, Deck, DeckCard } from "@/types/cards";
+import type { Card, Deck, DeckCard, DeckPublication } from "@/types/cards";
 
 export interface CloudCollection {
   user_id: string;
@@ -21,6 +21,8 @@ export interface CloudDeck {
   updated_at: string;
   /** Publié dans la galerie communautaire (migration 0003). */
   is_public?: boolean;
+  /** Fiche éditoriale (migration 0005). */
+  publication?: DeckPublication | null;
 }
 
 export async function saveCollectionToCloud(
@@ -227,5 +229,6 @@ export function cloudToDeck(
     createdAt: cloud.created_at,
     updatedAt: cloud.updated_at,
     isPublic: cloud.is_public ?? false,
+    publication: cloud.publication ?? undefined,
   } as Deck;
 }

@@ -424,6 +424,16 @@ export interface OfficialDeckData {
   cards: { name: string; quantity: number; type?: string }[];
 }
 
+/** Fiche éditoriale d'un deck publié dans la galerie communautaire. */
+export interface DeckPublication {
+  /** Catégorie : « Création » | « Starter » | « Dofus Mag » | « Tournoi »… */
+  source?: string;
+  /** Accroche courte (1 phrase). */
+  tagline?: string;
+  /** Guide « comment jouer » (texte libre). */
+  guide?: string;
+}
+
 export interface Deck {
   id: string;
   name: string;
@@ -438,5 +448,7 @@ export interface Deck {
   isOfficial?: boolean;
   /** Publié dans la galerie communautaire (decks.is_public, migration 0003). */
   isPublic?: boolean;
+  /** Fiche éditoriale (source, accroche, guide) — migration 0005. */
+  publication?: DeckPublication;
   _officialData?: OfficialDeckData;
 }
