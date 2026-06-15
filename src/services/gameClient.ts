@@ -44,6 +44,22 @@ export async function joinGame(
   return data as JoinGameResult;
 }
 
+/**
+ * Résout l'id de partie depuis un code de salon (`games` est lisible par tout
+ * utilisateur authentifié). Indispensable côté siège B : il faut s'abonner au
+ * flux `game:<id>:B` AVANT d'appeler joinGame, sinon on rate les events de
+ * mise en place diffusés pendant joinGame (pas encore de pull_events).
+ */
+export async function findGameByCode(code: string): Promise<string | null> {
+  const { data, error } = await client()
+    .from("games")
+    .select("id")
+    .eq("code", code)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as { id: string } | null)?.id ?? null;
+}
+
 /** Soumet une intention de coup ; le serveur tranche et renvoie le seq. */
 export async function submitEvent(
   gameId: string,
