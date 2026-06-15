@@ -28,6 +28,94 @@
     </header>
     <div class="h-px w-full bg-base-content/20"></div>
 
+    <!-- Jeu en ligne (bêta) -->
+    <section class="border border-primary/30 bg-primary/[0.04] p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="eyebrow text-primary">Jouer en ligne (bêta)</p>
+          <p class="mt-1 text-sm text-base-content/65">
+            Affronte un ami à distance — règles résolues à la main, comme sur
+            une vraie table.
+          </p>
+        </div>
+        <div
+          v-if="authStore.isAuthenticated && decks.length"
+          class="flex gap-2"
+        >
+          <button
+            class="btn btn-sm"
+            :class="onlinePanel === 'create' ? 'btn-primary' : 'btn-outline'"
+            @click="onlinePanel = 'create'"
+          >
+            Créer
+          </button>
+          <button
+            class="btn btn-sm"
+            :class="onlinePanel === 'join' ? 'btn-primary' : 'btn-outline'"
+            @click="onlinePanel = 'join'"
+          >
+            Rejoindre
+          </button>
+        </div>
+      </div>
+
+      <p v-if="!authStore.isAuthenticated" class="mt-3 text-sm">
+        <RouterLink to="/auth" class="link text-primary"
+          >Connecte-toi</RouterLink
+        >
+        pour jouer en ligne.
+      </p>
+      <p v-else-if="!decks.length" class="mt-3 text-sm text-base-content/60">
+        Construis d'abord un deck pour jouer en ligne.
+      </p>
+
+      <div v-else-if="onlinePanel" class="mt-4 flex flex-wrap items-end gap-3">
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="text-base-content/60">Ton deck</span>
+          <select
+            v-model="onlineDeckId"
+            class="select select-bordered select-sm w-56 bg-base-200"
+          >
+            <option :value="null" disabled>Choisis…</option>
+            <option v-for="d in decks" :key="d.id" :value="d.id">
+              {{ d.name }}
+            </option>
+          </select>
+        </label>
+        <label
+          v-if="onlinePanel === 'join'"
+          class="flex flex-col gap-1 text-sm"
+        >
+          <span class="text-base-content/60">Code du salon</span>
+          <input
+            v-model="joinCode"
+            maxlength="8"
+            placeholder="ABCD12"
+            class="input input-bordered input-sm w-40 uppercase"
+          />
+        </label>
+        <button
+          v-if="onlinePanel === 'create'"
+          class="btn btn-primary btn-sm"
+          :disabled="!onlineDeckId || onlineBusy"
+          @click="onlineCreate"
+        >
+          {{ onlineBusy ? "…" : "Créer la partie" }}
+        </button>
+        <button
+          v-else
+          class="btn btn-primary btn-sm"
+          :disabled="!onlineDeckId || !joinCode.trim() || onlineBusy"
+          @click="onlineJoin"
+        >
+          {{ onlineBusy ? "…" : "Rejoindre" }}
+        </button>
+        <span v-if="onlineError" class="text-sm text-error">{{
+          onlineError
+        }}</span>
+      </div>
+    </section>
+
     <p v-if="!decks.length" class="text-base-content/60">
       Aucun deck.
       <RouterLink to="/deck-builder" class="link text-primary"
@@ -196,6 +284,33 @@
     <DragLayer />
     <TurnBanner />
     <TutorialCoach />
+
+    <!-- En ligne : attente de l'adversaire (hôte) -->
+    <Transition name="ovl">
+      <div v-if="onlineWaiting" class="overlay">
+        <div class="overlay__card">
+          <p class="eyebrow text-primary">Partie en ligne</p>
+          <h2 class="mt-2 font-display text-2xl">
+            En attente de l'adversaire…
+          </h2>
+          <p v-if="createdCode" class="mt-4 text-sm text-base-content/70">
+            Partage ce code de salon :
+          </p>
+          <p
+            v-if="createdCode"
+            class="mt-2 font-mono text-4xl tracking-[0.3em] text-primary"
+          >
+            {{ createdCode }}
+          </p>
+          <button
+            class="btn btn-ghost btn-sm mt-6"
+            @click="store.disconnectOnline()"
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Écran de passation -->
     <Transition name="ovl">
@@ -377,6 +492,14 @@ import TurnBanner from "@/components/game/TurnBanner.vue";
 import TutorialCoach from "@/components/game/TutorialCoach.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { useToast } from "@/composables/useToast";
+import { useAuthStore } from "@/stores/authStore";
+import {
+  createGame as createOnlineGame,
+  joinGame,
+  findGameByCode,
+  submitEvent,
+  subscribeToGame,
+} from "@/services/gameClient";
 
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
@@ -439,6 +562,59 @@ function launch(): void {
     store.startMatch(dA, dB, { nameA: nameA.value, nameB: nameB.value });
   }
 }
+
+// ── Jeu en ligne (lobby) ──────────────────────────────────────────────────────
+const authStore = useAuthStore();
+const onlineTransport = { submit: submitEvent, subscribe: subscribeToGame };
+const onlinePanel = ref<"create" | "join" | null>(null);
+const onlineDeckId = ref<string | null>(null);
+const joinCode = ref("");
+const createdCode = ref("");
+const onlineBusy = ref(false);
+const onlineError = ref("");
+
+async function onlineCreate(): Promise<void> {
+  const deck = decks.value.find((d) => d.id === onlineDeckId.value);
+  if (!deck || onlineBusy.value) return;
+  onlineBusy.value = true;
+  onlineError.value = "";
+  try {
+    const { gameId, code } = await createOnlineGame(deck);
+    createdCode.value = code;
+    store.connectOnline(gameId, "A", onlineTransport);
+  } catch (e) {
+    onlineError.value = (e as { message?: string })?.message ?? String(e);
+  } finally {
+    onlineBusy.value = false;
+  }
+}
+
+async function onlineJoin(): Promise<void> {
+  const deck = decks.value.find((d) => d.id === onlineDeckId.value);
+  const code = joinCode.value.trim().toUpperCase();
+  if (!deck || !code || onlineBusy.value) return;
+  onlineBusy.value = true;
+  onlineError.value = "";
+  try {
+    const gameId = await findGameByCode(code);
+    if (!gameId) {
+      onlineError.value = "Partie introuvable (vérifie le code).";
+      return;
+    }
+    store.connectOnline(gameId, "B", onlineTransport); // s'abonner AVANT join
+    await joinGame(code, deck);
+  } catch (e) {
+    onlineError.value = (e as { message?: string })?.message ?? String(e);
+  } finally {
+    onlineBusy.value = false;
+  }
+}
+
+// En ligne : tant que la mise en place (GAME_STARTED) n'est pas arrivée, écran
+// d'attente avec le code de salon (l'hôte le partage à l'adversaire).
+const onlineWaiting = computed(
+  () => store.online && store.state.monde.length === 0,
+);
 
 // ── Aides deck ───────────────────────────────────────────────────────────────
 function cardCount(d: Deck): number {

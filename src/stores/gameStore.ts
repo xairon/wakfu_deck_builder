@@ -358,6 +358,9 @@ export const useGameStore = defineStore("game", () => {
     onlineTransport = null;
     online.value = false;
     assist.value = true;
+    events.value = [];
+    gameId.value = "local";
+    matchPhase.value = "lobby";
   }
 
   // ── Cycle de match ───────────────────────────────────────────────────────
