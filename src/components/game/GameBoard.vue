@@ -12,11 +12,11 @@
           :counters="heroCounters(opp)"
           @bump="(c, d) => bumpHero(opp, c, d)"
         />
-        <div class="gzone gzone--base" aria-label="Socle adverse">
-          <span class="gzone__label">Socle</span>
-          <TransitionGroup tag="div" name="zone" class="gzone__cards">
+        <div class="ghavre" aria-label="Havre-Sac adverse et son intérieur">
+          <div class="gzone ghavre__bag">
+            <span class="gzone__label">Havre-Sac</span>
             <div
-              v-for="inst in baseCards(opp)"
+              v-for="inst in havreCard(opp)"
               :key="inst.instanceId"
               class="gslot gslot--wide"
               :class="slotCls(inst.instanceId)"
@@ -29,7 +29,35 @@
                 @zoom="zoomInst(inst.instanceId)"
               />
             </div>
-          </TransitionGroup>
+          </div>
+          <div
+            class="gzone ghavre__inside"
+            aria-label="Intérieur du Havre-Sac adverse"
+          >
+            <span class="gzone__label">Intérieur du Havre-Sac</span>
+            <TransitionGroup tag="div" name="zone" class="gzone__cards">
+              <div
+                v-for="inst in interiorCards(opp)"
+                :key="inst.instanceId"
+                class="gslot gslot--small"
+                :class="slotCls(inst.instanceId)"
+              >
+                <GameCard
+                  :instance="inst"
+                  :card="resolveCard(inst.cardId)"
+                  :selected="inst.instanceId === selectedId"
+                  @select="select(inst.instanceId)"
+                  @zoom="zoomInst(inst.instanceId)"
+                />
+              </div>
+              <div
+                v-for="n in emptyInteriorSlots(opp)"
+                :key="`ghost-opp-${n}`"
+                class="gslot gslot--small gslot--ghost"
+                aria-hidden="true"
+              />
+            </TransitionGroup>
+          </div>
         </div>
         <HandFan
           class="gseat__handzone gseat__handzone--opp"
@@ -145,24 +173,11 @@
           :counters="heroCounters(me)"
           @bump="(c, d) => bumpHero(me, c, d)"
         />
-        <div
-          class="gzone gzone--base"
-          :class="zoneCls('socle')"
-          aria-label="Votre socle"
-          :ref="
-            (el) =>
-              registerZone(
-                'socle',
-                el,
-                { zone: 'havreSac', owner: me },
-                'Socle',
-              )
-          "
-        >
-          <span class="gzone__label">Socle</span>
-          <TransitionGroup tag="div" name="zone" class="gzone__cards">
+        <div class="ghavre" aria-label="Havre-Sac et son intérieur">
+          <div class="gzone ghavre__bag">
+            <span class="gzone__label">Havre-Sac</span>
             <div
-              v-for="inst in baseCards(me)"
+              v-for="inst in havreCard(me)"
               :key="inst.instanceId"
               class="gslot gslot--wide"
               :class="slotCls(inst.instanceId)"
@@ -170,13 +185,51 @@
               <GameCard
                 :instance="inst"
                 :card="resolveCard(inst.cardId)"
-                draggable
                 :selected="inst.instanceId === selectedId"
                 @select="select(inst.instanceId)"
                 @zoom="zoomInst(inst.instanceId)"
               />
             </div>
-          </TransitionGroup>
+          </div>
+          <div
+            class="gzone ghavre__inside"
+            :class="zoneCls('socle')"
+            aria-label="Intérieur du Havre-Sac"
+            :ref="
+              (el) =>
+                registerZone(
+                  'socle',
+                  el,
+                  { zone: 'havreSac', owner: me },
+                  'Intérieur du Havre-Sac',
+                )
+            "
+          >
+            <span class="gzone__label">Intérieur du Havre-Sac</span>
+            <TransitionGroup tag="div" name="zone" class="gzone__cards">
+              <div
+                v-for="inst in interiorCards(me)"
+                :key="inst.instanceId"
+                class="gslot gslot--small"
+                :class="slotCls(inst.instanceId)"
+              >
+                <GameCard
+                  :instance="inst"
+                  :card="resolveCard(inst.cardId)"
+                  draggable
+                  :selected="inst.instanceId === selectedId"
+                  @select="select(inst.instanceId)"
+                  @zoom="zoomInst(inst.instanceId)"
+                />
+              </div>
+              <div
+                v-for="n in emptyInteriorSlots(me)"
+                :key="`ghost-me-${n}`"
+                class="gslot gslot--small gslot--ghost"
+                aria-hidden="true"
+              />
+            </TransitionGroup>
+          </div>
         </div>
         <div
           class="gseat__handzone"
@@ -482,9 +535,18 @@ function mondeOwned(seat: Seat): RedactedInstance[] {
 function havreId(seat: Seat): string | undefined {
   return view.value.seats[seat].havreSacInstanceId;
 }
-function baseCards(seat: Seat): RedactedInstance[] {
-  const havre = mondeOwned(seat).filter((i) => i.instanceId === havreId(seat));
-  return [...havre, ...instancesOf(view.value.seats[seat].havreSac)];
+/** La carte Havre-Sac elle-même (vit dans le Monde, c'est le « socle » du joueur). */
+function havreCard(seat: Seat): RedactedInstance[] {
+  return mondeOwned(seat).filter((i) => i.instanceId === havreId(seat));
+}
+/** L'intérieur du Havre-Sac : Héros, Salles, Équipements… (zone `havreSac`). */
+function interiorCards(seat: Seat): RedactedInstance[] {
+  return instancesOf(view.value.seats[seat].havreSac);
+}
+/** Nb de cases vides à afficher dans l'intérieur pour matérialiser l'espace. */
+const INTERIOR_MIN_SLOTS = 4;
+function emptyInteriorSlots(seat: Seat): number {
+  return Math.max(0, INTERIOR_MIN_SLOTS - interiorCards(seat).length);
 }
 function allies(seat: Seat): RedactedInstance[] {
   return mondeOwned(seat).filter((i) => i.instanceId !== havreId(seat));
@@ -797,8 +859,27 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   padding: 18px 12px 10px;
 }
-.gzone--base {
+/* ── Havre-Sac : la carte (le socle) + son intérieur (Héros, Salles, Équip.) ── */
+.ghavre {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.ghavre__bag,
+.ghavre__inside {
   border: 1px solid rgba(240, 78, 34, 0.28);
+  display: flex;
+  align-items: center;
+}
+.ghavre__inside .gzone__cards {
+  flex-wrap: nowrap;
+}
+/* case vide de l'intérieur : matérialise l'espace disponible (dépôt) */
+.gslot--ghost {
+  aspect-ratio: 63 / 88;
+  border: 1px dashed rgba(246, 245, 241, 0.16);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.18);
 }
 .gzone--field {
   flex: 1;
