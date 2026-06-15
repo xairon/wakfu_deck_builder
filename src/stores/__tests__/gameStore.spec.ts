@@ -344,6 +344,43 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.nextTurn(); // tour 3 (votre tour) — expirée
     expect(tok()).toBe(0);
   });
+
+  it("gate « Attaquer » : eligibleAttackerIds + canDeclareAttack suivent la légalité (premier tour, mal d'invocation, Havre-Sac, 1/tour)", () => {
+    const atk = createMockAllyCard({
+      id: "ready-test",
+      name: "Prêt",
+      stats: {
+        niveau: { value: 1, element: "Feu" },
+        force: { value: 2, element: "Feu" },
+      },
+    });
+    useCardStore().cards = [atk];
+    const store = useGameStore();
+    store.startSandbox(smallDeck([atk, atk]), smallDeck([]), "A");
+    // tour 1 (A) : premier tour → aucune attaque déclarable
+    expect(store.canDeclareAttack).toBe(false);
+    const ids = Object.values(store.state.instances)
+      .filter((i) => i.controller === "A" && i.cardId === "ready-test")
+      .map((i) => i.instanceId);
+    const ready = ids[0];
+    const sick = ids[1];
+    store.moveTo(ready, { zone: "monde" }); // arrive tour 1
+    store.nextTurn(); // tour 2 (B)
+    store.nextTurn(); // tour 3 (A) — attaque légale
+    store.moveTo(sick, { zone: "monde" }); // arrive tour 3 → mal d'invocation
+    expect(store.canDeclareAttack).toBe(true);
+    expect(store.eligibleAttackerIds).toContain(ready); // prêt depuis le tour 1
+    expect(store.eligibleAttackerIds).not.toContain(sick); // arrivé ce tour
+    expect(store.eligibleAttackerIds).not.toContain(
+      store.state.seats.A.havreSacInstanceId, // pas un combattant
+    );
+    // après avoir attaqué : plus déclarable ce tour (1/tour)
+    store.beginCombat(ready);
+    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.combatConfirmAttackers();
+    store.combatResolve();
+    expect(store.canDeclareAttack).toBe(false);
+  });
 });
 
 describe("gameStore — jeu en ligne (clients de confiance)", () => {

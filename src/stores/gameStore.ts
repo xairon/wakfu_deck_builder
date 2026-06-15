@@ -412,9 +412,21 @@ export const useGameStore = defineStore("game", () => {
     players.value = { A: { name: "Joueur 1" }, B: { name: "Joueur 2" } };
     initEngine(deckA, deckB, first);
     mulliganSeat.value = null;
+    mulliganDone.value = { A: true, B: true };
     perspective.value = first;
     matchPhase.value = "playing";
     passPending.value = false;
+    // Hygiène d'état : repartir d'un combat/effets/victoire vierges, sinon une
+    // partie précédente fuit (ex. `attackedOnTurn` bloquant « 1 attaque/tour »).
+    winner.value = null;
+    combat.value = null;
+    attackedOnTurn.value = null;
+    ruleError.value = null;
+    effectChoices.value = [];
+    effectTargeting.value = null;
+    effectPicking.value = null;
+    effectQueue.value = [];
+    turnStartFiredOn.value = null;
   }
 
   /** Recycle toute la main du joueur, re-mélange, re-pioche (−1). */
@@ -1474,6 +1486,19 @@ export const useGameStore = defineStore("game", () => {
         )
       : [],
   );
+  /** Attaquants légaux du joueur actif HORS combat — gate du bouton « Attaquer ». */
+  const eligibleAttackerIds = computed(() =>
+    eligibleAttackers(rulesCtx(), turn.value.active),
+  );
+  /** Une attaque peut-elle être déclarée maintenant ? (tour, phase, 1/tour, premier tour) */
+  const canDeclareAttack = computed(
+    () =>
+      whyCannotDeclareAttack(
+        rulesCtx(),
+        turn.value.active,
+        attackedOnTurn.value,
+      ) === null,
+  );
 
   /** Ouvre la déclaration d'attaque (1/tour, jamais au premier tour). */
   function beginCombat(firstAttacker?: string): boolean {
@@ -1804,6 +1829,8 @@ export const useGameStore = defineStore("game", () => {
     combatAttackerIds,
     combatTargetIds,
     combatBlockerIds,
+    eligibleAttackerIds,
+    canDeclareAttack,
     beginCombat,
     combatToggleAttacker,
     combatChooseTarget,

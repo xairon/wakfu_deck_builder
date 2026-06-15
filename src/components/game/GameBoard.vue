@@ -632,12 +632,15 @@ function slotCls(instanceId: string): Record<string, boolean> {
 }
 const canAttackSelected = computed(() => {
   const inst = selectedInst.value;
+  // N'offrir « Attaquer » que si la carte est un attaquant LÉGAL (redressé, hors
+  // mal d'invocation, type combattant) ET qu'une attaque est déclarable ce tour
+  // (1/tour, pas au premier tour) — sinon le bouton ouvrait un combat vide + erreur.
   return (
     store.assist &&
     !store.combat &&
     !!inst &&
-    inst.controller === me.value &&
-    (inst.location.zone === "monde" || inst.location.zone === "havreSac")
+    store.canDeclareAttack &&
+    store.eligibleAttackerIds.includes(inst.instanceId)
   );
 });
 function attackWithSelected(): void {
