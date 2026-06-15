@@ -175,6 +175,7 @@ import {
   type SourcedDeck,
 } from "@/services/communityDeckService";
 import { loadPublicDecks } from "@/services/publicDeckService";
+import { getUsernames } from "@/services/profileService";
 import type { CloudDeck } from "@/services/cloudSync";
 
 const router = useRouter();
@@ -252,13 +253,17 @@ function onImport(deck: SourcedDeck) {
 }
 
 /** Convertit un deck publié (CloudDeck, ids de cartes) en SourcedDeck pour la galerie. */
-function publicToSourced(cloud: CloudDeck): SourcedDeck {
+function publicToSourced(
+  cloud: CloudDeck,
+  names: Record<string, string>,
+): SourcedDeck {
   const nameOf = (id: string | null) =>
     id ? (cardStore.cards.find((c) => c.id === id)?.name ?? "") : "";
   return {
     id: `pub-${cloud.id}-${cloud.user_id.slice(0, 8)}`,
     name: cloud.name,
     source: "Communauté",
+    author: names[cloud.user_id] || undefined,
     hero: nameOf(cloud.hero_id) || undefined,
     havreSac: nameOf(cloud.havre_sac_id) || undefined,
     cards: (cloud.cards ?? [])
@@ -277,7 +282,10 @@ onMounted(async () => {
   let published: SourcedDeck[] = [];
   try {
     const rows = await loadPublicDecks();
-    published = rows.map(publicToSourced).filter((d) => d.cards.length > 0);
+    const names = await getUsernames(rows.map((r) => r.user_id));
+    published = rows
+      .map((r) => publicToSourced(r, names))
+      .filter((d) => d.cards.length > 0);
   } catch {
     /* galerie publique indisponible */
   }
