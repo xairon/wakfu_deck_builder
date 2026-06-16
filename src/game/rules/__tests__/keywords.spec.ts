@@ -84,8 +84,10 @@ describe("rules/effects — mots-clés en combat", () => {
       attackers: [instId("A", 0)],
       blocks: {},
     });
-    expect(result.destroyed).toEqual([]);
-    expect(state.instances[instId("B", 0)].counters.damage).toBe(1); // 3 − 2
+    // la Résistance limite les Dommages à la cible (3 − 2 = 1, elle survit) ;
+    // 707.1 : elle riposte sa Force 3 → l'attaquant (F3) est détruit.
+    expect(state.instances[instId("B", 0)].counters.damage).toBe(1);
+    expect(result.destroyed).toEqual([instId("A", 0)]);
   });
 
   it("Géant répartit sa Force et détruit plusieurs bloqueurs (6135)", () => {

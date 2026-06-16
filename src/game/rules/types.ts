@@ -42,6 +42,11 @@ export interface CombatPlan {
    * multi-bloqueurs sans Géant). Absent → premier bloqueur assigné.
    */
   strikes?: Record<InstanceId, InstanceId>;
+  /**
+   * 707.1 : targetId (Cible Allié/Héros) → attaquant frappé par la riposte
+   * de la Cible. Absent → premier attaquant l'ayant frappée.
+   */
+  ripostes?: Record<InstanceId, InstanceId>;
 }
 
 export interface CombatResult {

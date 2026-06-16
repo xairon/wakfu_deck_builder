@@ -217,3 +217,104 @@ describe("rules/combat — pouvoirs continus en combat (805.1)", () => {
     expect(state.instances[HERO_B].counters.xp).toBe(1);
   });
 });
+
+describe("rules/combat — riposte de la Cible (707.1)", () => {
+  it("Cible Allié non bloquée riposte sa Force et tue l'attaquant plus faible", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 1 })],
+      [makeAlly("cible", { force: 3 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "ally", instanceId: instId("B", 0) },
+      attackers: [instId("A", 0)],
+      blocks: {},
+    });
+    // l'attaquant (F1) prend la riposte 3 ≥ 1 → détruit ; la cible prend 1 < 3 → survit
+    expect(result.destroyed).toContain(instId("A", 0));
+    expect(state.seats.B.defausse).not.toContain(instId("B", 0));
+    expect(state.instances[instId("B", 0)].counters.damage).toBe(1);
+  });
+
+  it("riposte mortelle réciproque : Cible et attaquant meurent ensemble (simultané)", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 3, xp: 1 })],
+      [makeAlly("cible", { force: 3, xp: 2 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "ally", instanceId: instId("B", 0) },
+      attackers: [instId("A", 0)],
+      blocks: {},
+    });
+    expect(result.destroyed.sort()).toEqual(
+      [instId("A", 0), instId("B", 0)].sort(),
+    );
+  });
+
+  it("riposte multi-attaquants : plan.ripostes désigne l'attaquant frappé", () => {
+    const f = fixture(
+      [makeAlly("atk1", { force: 1 }), makeAlly("atk2", { force: 1 })],
+      [makeAlly("cible", { force: 3 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "A", instId("A", 1), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "ally", instanceId: instId("B", 0) },
+      attackers: [instId("A", 0), instId("A", 1)],
+      blocks: {},
+      ripostes: { [instId("B", 0)]: instId("A", 1) },
+    });
+    // la cible (F3) frappe atk2 (F1) → atk2 détruit, atk1 intact, cible survit (2 < 3)
+    expect(result.destroyed).toEqual([instId("A", 1)]);
+  });
+});
+
+describe("rules/combat — Géant (6135)", () => {
+  it("Géant à 1 bloqueur : déborde le reliquat sur la Cible Héros", () => {
+    const f = fixture(
+      [makeAlly("colosse", { force: 4, geant: true })],
+      [makeAlly("b1", { force: 1 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    // bloqueur (F1) tué par 1, reliquat 3 déborde sur le Héros : 16 − 3 = 13
+    expect(result.destroyed).toContain(instId("B", 0));
+    expect(state.instances[HERO_B].counters.hp).toBe(13);
+  });
+});
+
+describe("rules/combat — inclinaison des bloqueurs (708.3)", () => {
+  it("un bloqueur survivant est incliné en fin de combat", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 1 })],
+      [makeAlly("blk", { force: 5 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    expect(state.instances[instId("B", 0)].orientation).toBe("tapped");
+  });
+});

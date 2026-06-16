@@ -116,6 +116,39 @@ export function resolveCombat(
     });
   }
 
+  // 707/6135 — dégâts portés à la CIBLE (attaquants libres + débordement Géant)
+  // et liste des attaquants l'ayant frappée (candidats à la riposte 707.1).
+  const targetStrikers: InstanceId[] = [];
+  let targetDamageTotal = 0;
+  function hitTarget(source: InstanceId, base: number): void {
+    const eff = reduceDamage(
+      ctx,
+      {
+        targetId: plan.target.instanceId,
+        amount: base,
+        element: damageElementOf(ctx, source),
+        combat: true,
+        sourceId: source,
+      },
+      mods,
+      stance,
+    );
+    prevented += base - eff;
+    if (eff <= 0) return;
+    targetStrikers.push(source);
+    targetDamageTotal += eff;
+    ruleEvents.push({
+      kind: "damageDealt",
+      source,
+      target: plan.target.instanceId,
+      amount: eff,
+      element: damageElementOf(ctx, source),
+      combat: true,
+    });
+    // Cible Allié : les Dommages passent par la map dmg (létalité unifiée).
+    if (plan.target.kind === "ally") addDmg(plan.target.instanceId, eff);
+  }
+
   // bloqueurs par attaquant
   const blockersOf = new Map<InstanceId, InstanceId[]>();
   for (const [blocker, attacker] of Object.entries(plan.blocks)) {
@@ -132,7 +165,7 @@ export function resolveCombat(
     if (!blockers?.length) continue;
     const aForce = forceOf(ctx, attacker, stance);
     const el = damageElementOf(ctx, attacker);
-    if (effectiveKeywords(ctx, attacker).geant && blockers.length > 1) {
+    if (effectiveKeywords(ctx, attacker).geant) {
       // politique auto : assigner d'abord les parts létales les moins chères
       const needRaw = (b: InstanceId) => {
         const remaining = Math.max(
@@ -154,7 +187,10 @@ export function resolveCombat(
           unkilled.push(b);
         }
       }
-      if (pool > 0 && unkilled.length) inflict(attacker, unkilled[0], pool);
+      if (pool > 0) {
+        if (unkilled.length) inflict(attacker, unkilled[0], pool);
+        else hitTarget(attacker, pool); // 6135 : débordement sur la Cible
+      }
       log.push(`Duel (Géant) : ${nameOf(ctx, attacker)} répartit sa Force.`);
     } else {
       // 6105 : l'attaquant choisit le bloqueur frappé (sinon le premier)
@@ -170,51 +206,46 @@ export function resolveCombat(
     );
   }
 
-  // 707 — attaquants libres → dommages sur la cible, individuellement (6179)
+  // 707 — attaquants libres → Dommages sur la cible, individuellement (6179)
   const freeAttackers = plan.attackers.filter(
     (id) => !blockersOf.get(id)?.length,
   );
-  let freeDamage = 0;
-  for (const id of freeAttackers) {
-    const base = forceOf(ctx, id, stance);
-    const eff = reduceDamage(
-      ctx,
-      {
-        targetId: plan.target.instanceId,
-        amount: base,
-        element: damageElementOf(ctx, id),
-        combat: true,
-        sourceId: id,
-      },
-      mods,
-      stance,
-    );
-    prevented += base - eff;
-    if (eff <= 0) continue;
-    freeDamage += eff;
-    ruleEvents.push({
-      kind: "damageDealt",
-      source: id,
-      target: plan.target.instanceId,
-      amount: eff,
-      element: damageElementOf(ctx, id),
-      combat: true,
-    });
+  for (const id of freeAttackers) hitTarget(id, forceOf(ctx, id, stance));
+
+  // 707.1 — la Cible (Allié/Héros) qui n'a pas frappé en duel riposte sa Force
+  // à UN attaquant l'ayant frappée (choix du défenseur via plan.ripostes,
+  // sinon le premier). Simultané : la riposte va dans dmg, létalité après.
+  if (plan.target.kind !== "havreSac" && targetStrikers.length) {
+    const tId = plan.target.instanceId;
+    const chosen = plan.ripostes?.[tId];
+    const struck =
+      chosen && targetStrikers.includes(chosen) ? chosen : targetStrikers[0];
+    inflict(tId, struck, forceOf(ctx, tId, stance));
+    log.push(`Riposte : ${nameOf(ctx, tId)} frappe ${nameOf(ctx, struck)}.`);
   }
-  if (freeDamage > 0) {
+
+  // Application du total à la Cible Héros (PV) / Havre-Sac (Résistance) ;
+  // la Cible Allié est déjà dans dmg (via hitTarget).
+  if (targetDamageTotal > 0) {
     if (plan.target.kind === "hero") {
-      events.push(incCounter(atk, plan.target.instanceId, "hp", -freeDamage));
-      log.push(`${freeDamage} Dommage(s) au Héros adverse.`);
+      events.push(
+        incCounter(atk, plan.target.instanceId, "hp", -targetDamageTotal),
+      );
+      log.push(`${targetDamageTotal} Dommage(s) au Héros adverse.`);
     } else if (plan.target.kind === "havreSac") {
       // 306.3 : la Résistance du Havre-Sac est son compteur
       events.push(
-        incCounter(atk, plan.target.instanceId, "resistance", -freeDamage),
+        incCounter(
+          atk,
+          plan.target.instanceId,
+          "resistance",
+          -targetDamageTotal,
+        ),
       );
-      log.push(`${freeDamage} Dommage(s) au Havre-Sac adverse.`);
+      log.push(`${targetDamageTotal} Dommage(s) au Havre-Sac adverse.`);
     } else {
-      addDmg(plan.target.instanceId, freeDamage);
       log.push(
-        `${freeDamage} Dommage(s) sur ${nameOf(ctx, plan.target.instanceId)}.`,
+        `${targetDamageTotal} Dommage(s) sur ${nameOf(ctx, plan.target.instanceId)}.`,
       );
     }
   }
@@ -249,12 +280,12 @@ export function resolveCombat(
       log.push(`${nameOf(ctx, id)} est détruit.`);
     }
   }
-  if (plan.target.kind === "hero" && freeDamage > 0) {
+  if (plan.target.kind === "hero" && targetDamageTotal > 0) {
     const hero = ctx.state.instances[plan.target.instanceId];
     if (hero) {
       const base =
         heroHpAfter.get(plan.target.instanceId) ?? hero.counters.hp ?? 0;
-      heroHpAfter.set(plan.target.instanceId, base - freeDamage);
+      heroHpAfter.set(plan.target.instanceId, base - targetDamageTotal);
     }
   }
 
@@ -275,6 +306,19 @@ export function resolveCombat(
     if (hp > 0) continue;
     const loser = ctx.state.instances[id]?.controller;
     if (loser) winner = winner ?? otherSeat(loser);
+  }
+
+  // 708.3 — Fin de Combat : les bloqueurs SURVIVANTS sont inclinés (les
+  // attaquants l'ont été à la déclaration, A6). Les détruits sont en défausse.
+  for (const blocker of Object.keys(plan.blocks)) {
+    if (destroyed.includes(blocker)) continue;
+    const inst = ctx.state.instances[blocker];
+    if (!inst || inst.orientation === "tapped") continue;
+    events.push({
+      actor: atk,
+      type: "SET_ORIENTATION",
+      payload: { instanceId: blocker, orientation: "tapped" },
+    });
   }
 
   return { events, log, destroyed, winner, ruleEvents };
