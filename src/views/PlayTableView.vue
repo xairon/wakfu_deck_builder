@@ -28,26 +28,6 @@
     </header>
     <div class="h-px w-full bg-base-content/20"></div>
 
-    <!-- Apprendre une mécanique -->
-    <section class="border border-base-content/15 p-5">
-      <p class="eyebrow text-primary">Apprendre une mécanique</p>
-      <p class="mt-1 text-sm text-base-content/65">
-        Des leçons courtes et guidées sur un point de règle précis.
-      </p>
-      <div class="mt-4 grid gap-3 sm:grid-cols-2">
-        <button
-          v-for="lesson in tutorial.mechanicLessons"
-          :key="lesson.id"
-          class="flex flex-col items-start gap-1 border border-base-content/15 p-3 text-left transition hover:border-primary disabled:opacity-50"
-          :disabled="!cardStore.cards.length"
-          @click="startLesson(lesson.id)"
-        >
-          <span class="font-display text-lg">{{ lesson.title }}</span>
-          <span class="text-sm text-base-content/65">{{ lesson.summary }}</span>
-        </button>
-      </div>
-    </section>
-
     <!-- Jeu en ligne (bêta) -->
     <section class="border border-primary/30 bg-primary/[0.04] p-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -541,16 +521,6 @@ function startTutorial(): void {
     toast.addToast(
       "Impossible de préparer le tutoriel (cartes indisponibles).",
       { type: "warning" },
-    );
-  }
-}
-function startLesson(id: string): void {
-  if (!tutorial.startLesson(id)) {
-    toast.addToast(
-      "Impossible de préparer cette leçon (cartes indisponibles).",
-      {
-        type: "warning",
-      },
     );
   }
 }
