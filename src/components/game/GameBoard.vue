@@ -964,31 +964,12 @@ function manaBonus(seat: Seat): boolean {
     transform 0.18s ease;
 }
 .gdrop--on {
-  box-shadow:
-    inset 0 0 0 2px rgba(240, 166, 43, 0.4),
-    0 0 14px rgba(240, 166, 43, 0.12);
-  animation: gdrop-breathe 1.6s ease-in-out infinite;
+  box-shadow: inset 0 0 0 2px rgba(240, 166, 43, 0.55);
 }
 .gdrop--over {
   background-color: rgba(240, 166, 43, 0.14);
-  box-shadow:
-    inset 0 0 0 2px #f0a62b,
-    0 0 26px rgba(240, 166, 43, 0.4);
-  animation: none;
+  box-shadow: inset 0 0 0 2px #f0a62b;
   transform: scale(1.012);
-}
-@keyframes gdrop-breathe {
-  0%,
-  100% {
-    box-shadow:
-      inset 0 0 0 2px rgba(240, 166, 43, 0.4),
-      0 0 14px rgba(240, 166, 43, 0.12);
-  }
-  50% {
-    box-shadow:
-      inset 0 0 0 2px rgba(240, 166, 43, 0.62),
-      0 0 22px rgba(240, 166, 43, 0.24);
-  }
 }
 
 /* ── Ligne médiane ── */
@@ -1115,31 +1096,8 @@ function manaBonus(seat: Seat): boolean {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    rgba(240, 166, 43, 0) 0%,
-    rgba(240, 166, 43, 0.75) 25%,
-    rgba(240, 78, 34, 0.9) 50%,
-    rgba(240, 166, 43, 0.75) 75%,
-    rgba(240, 166, 43, 0) 100%
-  );
-  -webkit-mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - 3px),
-    #000 calc(100% - 2px)
-  );
-  mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - 3px),
-    #000 calc(100% - 2px)
-  );
-  animation: gendturn-spin 4s linear infinite;
+  border: 2px solid rgba(240, 166, 43, 0.45);
   pointer-events: none;
-}
-@keyframes gendturn-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 .gendturn__txt {
   font-family: "Space Mono", ui-monospace, monospace;
@@ -1177,9 +1135,7 @@ function manaBonus(seat: Seat): boolean {
 }
 .gcombat--effect {
   border-color: rgba(240, 166, 43, 0.55);
-  box-shadow:
-    0 10px 34px rgba(0, 0, 0, 0.6),
-    0 0 24px rgba(240, 166, 43, 0.2);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6);
 }
 .gcombat__step {
   font-family: Fraunces, Georgia, serif;
@@ -1217,7 +1173,6 @@ function manaBonus(seat: Seat): boolean {
 .gslot--atk :deep(.game-card) {
   outline: 3px solid #5fb22a;
   outline-offset: 1px;
-  box-shadow: 0 0 18px rgba(95, 178, 42, 0.5);
 }
 .gslot--target-can :deep(.game-card) {
   outline: 2px dashed rgba(240, 78, 34, 0.8);
@@ -1226,17 +1181,6 @@ function manaBonus(seat: Seat): boolean {
 .gslot--target :deep(.game-card) {
   outline: 3px solid #f04e22;
   outline-offset: 1px;
-  box-shadow: 0 0 20px rgba(240, 78, 34, 0.6);
-  animation: gtarget-pulse 1.2s ease-in-out infinite;
-}
-@keyframes gtarget-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(240, 78, 34, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 32px rgba(240, 78, 34, 0.85);
-  }
 }
 .gslot--blk-can :deep(.game-card) {
   outline: 2px dashed rgba(31, 156, 236, 0.8);
