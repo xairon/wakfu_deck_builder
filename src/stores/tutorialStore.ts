@@ -294,11 +294,14 @@ export const useTutorialStore = defineStore("tutorial", () => {
       botTimer = setTimeout(() => {
         botTimer = null;
         if (!active.value || game.perspective !== "B") return;
-        if (game.passPending) {
-          game.reveal();
-        } else if (game.matchPhase === "mulligan") {
-          game.keepHand();
+        if (game.matchPhase === "mulligan") {
+          // Sécurité : le pré-jeu de B est normalement résolu dans start().
+          if (game.passPending) game.reveal();
+          else game.keepHand();
         } else if (game.matchPhase === "playing" && game.turn.active === "B") {
+          // L'adversaire (bot) finit son tour SANS révéler son plateau (pas de
+          // game.reveal()) : le joueur reste sur l'écran « L'adversaire joue… »
+          // au lieu de voir clignoter sa main puis son champ.
           game.endTurn();
         }
       }, 650);

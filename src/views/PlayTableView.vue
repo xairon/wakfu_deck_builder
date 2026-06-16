@@ -316,7 +316,9 @@
     <Transition name="ovl">
       <div v-if="store.passPending" class="overlay">
         <div class="overlay__card">
-          <p class="eyebrow text-primary">Passe l'appareil</p>
+          <p class="eyebrow text-primary">
+            {{ botTurn ? "Tour adverse" : "Passe l'appareil" }}
+          </p>
           <img
             v-if="perspectivePortrait"
             :src="perspectivePortrait"
@@ -328,12 +330,18 @@
           </h2>
           <p class="mt-3 text-base-content/70">
             {{
-              store.matchPhase === "mulligan"
-                ? "À toi de garder ou refaire ta main de départ."
-                : "C'est ton tour. Les autres, ne regardez pas !"
+              botTurn
+                ? "L'adversaire joue son tour…"
+                : store.matchPhase === "mulligan"
+                  ? "À toi de garder ou refaire ta main de départ."
+                  : "C'est ton tour. Les autres, ne regardez pas !"
             }}
           </p>
-          <button class="btn btn-primary mt-6" @click="store.reveal()">
+          <button
+            v-if="!botTurn"
+            class="btn btn-primary mt-6"
+            @click="store.reveal()"
+          >
             Je suis prêt — afficher
           </button>
         </div>
@@ -669,6 +677,11 @@ const perspectivePortrait = computed<string | null>(() => {
   if (!inst?.cardId) return null;
   return getThumbPath(`/images/cards/${inst.cardId}_recto.webp`);
 });
+
+/** Tour de l'adversaire auto-piloté (tutoriel : joueur = siège A, bot = B).
+ * On remplace la passation « passe l'appareil » par un discret « L'adversaire
+ * joue… » et le bot finit son tour sans révéler son plateau. */
+const botTurn = computed(() => tutorial.active && store.perspective === "B");
 
 onMounted(async () => {
   if (!cardStore.cards.length) {
