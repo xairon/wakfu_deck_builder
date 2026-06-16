@@ -1422,7 +1422,7 @@ export const useGameStore = defineStore("game", () => {
 
   // ── Combat assisté (702–708) ─────────────────────────────────────────────
   const combat = ref<{
-    step: "attackers" | "blockers" | "strikes";
+    step: "attackers" | "blockers" | "strikes" | "riposte";
     target: CombatTarget | null;
     attackers: string[];
     blocks: Record<string, string>;
@@ -1430,6 +1430,14 @@ export const useGameStore = defineStore("game", () => {
     strikes: Record<string, string>;
     /** Attaquant dont on choisit actuellement le bloqueur frappé. */
     strikeFor: string | null;
+    /** 707.1 : targetId → attaquant frappé par la riposte de la Cible. */
+    ripostes: Record<string, string>;
+    /** Cible en train de choisir sa riposte (étape riposte). */
+    riposteFrom: string | null;
+    /** Attaquants candidats à la riposte (≥2 → choix demandé). */
+    riposteCandidates: string[];
+    /** Bloqueur en attente d'assignation à un attaquant (≥2 attaquants). */
+    pendingBlocker: string | null;
   } | null>(null);
 
   /** Attaquants à duel multi-bloqueurs (sans Géant) sans frappe choisie. */
@@ -1453,6 +1461,18 @@ export const useGameStore = defineStore("game", () => {
       .filter(([, atk]) => atk === c.strikeFor)
       .map(([blocker]) => blocker);
   });
+
+  /** 707.1 — attaquants libres l'ayant frappée si la Cible est Allié/Héros. */
+  function riposteCandidatesOf(c: NonNullable<typeof combat.value>): string[] {
+    if (!c.target || c.target.kind === "havreSac") return [];
+    const blocked = new Set(Object.values(c.blocks));
+    return c.attackers.filter((a) => !blocked.has(a));
+  }
+
+  /** Attaquants ciblables par la riposte de la Cible (étape riposte). */
+  const combatRiposteIds = computed(() =>
+    combat.value?.step === "riposte" ? combat.value.riposteCandidates : [],
+  );
 
   /** Choisit le bloqueur frappé par l'attaquant courant (6105). */
   function combatChooseStrike(blockerId: string): void {
@@ -1524,6 +1544,10 @@ export const useGameStore = defineStore("game", () => {
       blocks: {},
       strikes: {},
       strikeFor: null,
+      ripostes: {},
+      riposteFrom: null,
+      riposteCandidates: [],
+      pendingBlocker: null,
     };
     if (firstAttacker) combatToggleAttacker(firstAttacker);
     return true;
@@ -1609,7 +1633,11 @@ export const useGameStore = defineStore("game", () => {
     return true;
   }
 
-  /** Le défenseur (même écran) assigne un bloqueur à l'attaquant le moins bloqué. */
+  /**
+   * Le défenseur (même écran) déclare un bloqueur. 1 seul attaquant → assigné
+   * d'office ; ≥2 attaquants → met le bloqueur « en attente » (pendingBlocker),
+   * le défenseur choisit ensuite l'attaquant via combatChooseBlockTarget (704).
+   */
   function combatToggleBlock(blockerId: string): void {
     const c = combat.value;
     if (!c || c.step !== "blockers" || !c.target) return;
@@ -1617,6 +1645,7 @@ export const useGameStore = defineStore("game", () => {
       const rest = { ...c.blocks };
       delete rest[blockerId];
       c.blocks = rest;
+      if (c.pendingBlocker === blockerId) c.pendingBlocker = null;
       return;
     }
     const def = otherSeat(turn.value.active);
@@ -1636,11 +1665,22 @@ export const useGameStore = defineStore("game", () => {
       ruleError.value = `Maximum ${pm} bloqueur(s) — limite de PM (704).`;
       return;
     }
-    const counts = new Map<string, number>(c.attackers.map((a) => [a, 0]));
-    for (const a of Object.values(c.blocks))
-      counts.set(a, (counts.get(a) ?? 0) + 1);
-    const least = [...counts.entries()].sort((x, y) => x[1] - y[1])[0]?.[0];
-    if (least) c.blocks = { ...c.blocks, [blockerId]: least };
+    // 704 — assignation : 1 seul attaquant → auto ; sinon le défenseur choisit
+    // (clic du bloqueur puis clic de l'attaquant via combatChooseBlockTarget).
+    if (c.attackers.length === 1) {
+      c.blocks = { ...c.blocks, [blockerId]: c.attackers[0] };
+    } else {
+      c.pendingBlocker = blockerId;
+    }
+  }
+
+  /** Le défenseur assigne le bloqueur en attente à un attaquant (704). */
+  function combatChooseBlockTarget(attackerId: string): void {
+    const c = combat.value;
+    if (!c || c.step !== "blockers" || !c.pendingBlocker) return;
+    if (!c.attackers.includes(attackerId)) return;
+    c.blocks = { ...c.blocks, [c.pendingBlocker]: attackerId };
+    c.pendingBlocker = null;
   }
 
   /**
@@ -1656,6 +1696,23 @@ export const useGameStore = defineStore("game", () => {
       c.strikeFor = pending[0];
       return;
     }
+    // 707.1 — riposte : si ≥2 attaquants libres et pas encore choisi, demander.
+    const cands = riposteCandidatesOf(c);
+    if (cands.length >= 2 && !c.ripostes[c.target.instanceId]) {
+      c.step = "riposte";
+      c.riposteFrom = c.target.instanceId;
+      c.riposteCandidates = cands;
+      return;
+    }
+    doResolveCombat();
+  }
+
+  /** Le défenseur choisit l'attaquant frappé par la riposte de la Cible (707.1). */
+  function combatChooseRiposte(attackerId: string): void {
+    const c = combat.value;
+    if (!c || c.step !== "riposte" || !c.riposteFrom) return;
+    if (!c.riposteCandidates.includes(attackerId)) return;
+    c.ripostes = { ...c.ripostes, [c.riposteFrom]: attackerId };
     doResolveCombat();
   }
 
@@ -1670,6 +1727,7 @@ export const useGameStore = defineStore("game", () => {
         attackers: c.attackers,
         blocks: c.blocks,
         strikes: c.strikes,
+        ripostes: c.ripostes,
       },
       activeGlobalMods(rulesCtx()),
     );
@@ -1869,9 +1927,12 @@ export const useGameStore = defineStore("game", () => {
     combatChooseTarget,
     combatConfirmAttackers,
     combatToggleBlock,
+    combatChooseBlockTarget,
     combatResolve,
     combatStrikeIds,
     combatChooseStrike,
+    combatRiposteIds,
+    combatChooseRiposte,
     combatCancel,
     effectiveForceOf,
     effectChoice,

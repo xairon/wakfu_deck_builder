@@ -381,6 +381,83 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.combatResolve();
     expect(store.canDeclareAttack).toBe(false);
   });
+
+  it("riposte : ≥2 attaquants libres ouvrent l'étape riposte, le défenseur choisit (707.1)", () => {
+    const mk = (id: string, force: number, el: "Feu" | "Terre") =>
+      createMockAllyCard({
+        id,
+        name: id,
+        stats: {
+          niveau: { value: 1, element: el },
+          force: { value: force, element: el },
+        },
+      });
+    const atk1 = mk("atk1", 1, "Feu");
+    const atk2 = mk("atk2", 1, "Feu");
+    const cible = mk("cible", 3, "Terre");
+    useCardStore().cards = [atk1, atk2, cible];
+    const store = useGameStore();
+    store.startSandbox(smallDeck([atk1, atk2]), smallDeck([cible]), "A");
+    const a1 = instOf(store, "atk1");
+    const a2 = instOf(store, "atk2");
+    const cb = instOf(store, "cible");
+    store.moveTo(a1, { zone: "monde" });
+    store.moveTo(a2, { zone: "monde" });
+    store.moveTo(cb, { zone: "monde" });
+    store.nextTurn();
+    store.nextTurn(); // tour 3 (A)
+    store.beginCombat(a1);
+    store.combatToggleAttacker(a2);
+    store.combatChooseTarget(cb);
+    expect(store.combatConfirmAttackers()).toBe(true);
+    store.combatResolve();
+    expect(store.combat?.step).toBe("riposte");
+    expect([...store.combatRiposteIds].sort()).toEqual([a1, a2].sort());
+    store.combatChooseRiposte(a2);
+    // la cible (F3) frappe atk2 → atk2 détruit ; atk1 et la cible survivent
+    expect(store.combat).toBeNull();
+    expect(store.state.instances[a2].location.zone).toBe("defausse");
+    expect(store.state.instances[a1].location.zone).toBe("monde");
+    expect(store.state.instances[cb].location.zone).toBe("monde");
+  });
+
+  it("multi-bloqueurs : le défenseur choisit l'attaquant gang-bloqué (704)", () => {
+    const mk = (id: string, el: "Feu" | "Terre") =>
+      createMockAllyCard({
+        id,
+        name: id,
+        stats: {
+          niveau: { value: 1, element: el },
+          force: { value: 2, element: el },
+        },
+      });
+    const atk1 = mk("ba1", "Feu");
+    const atk2 = mk("ba2", "Feu");
+    const blk = mk("blk", "Terre");
+    useCardStore().cards = [atk1, atk2, blk];
+    const store = useGameStore();
+    store.startSandbox(smallDeck([atk1, atk2]), smallDeck([blk]), "A");
+    const a1 = instOf(store, "ba1");
+    const a2 = instOf(store, "ba2");
+    const b = instOf(store, "blk");
+    store.moveTo(a1, { zone: "monde" });
+    store.moveTo(a2, { zone: "monde" });
+    store.moveTo(b, { zone: "monde" });
+    store.nextTurn();
+    store.nextTurn(); // tour 3 (A)
+    store.beginCombat(a1);
+    store.combatToggleAttacker(a2);
+    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.combatConfirmAttackers();
+    // 2 attaquants → cliquer le bloqueur l'arme sans l'assigner
+    store.combatToggleBlock(b);
+    expect(store.combat?.pendingBlocker).toBe(b);
+    expect(store.combat?.blocks[b]).toBeUndefined();
+    // le défenseur choisit l'attaquant gang-bloqué
+    store.combatChooseBlockTarget(a2);
+    expect(store.combat?.blocks[b]).toBe(a2);
+    expect(store.combat?.pendingBlocker).toBeNull();
+  });
 });
 
 describe("gameStore — jeu en ligne (clients de confiance)", () => {
