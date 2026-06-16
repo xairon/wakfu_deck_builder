@@ -150,6 +150,7 @@ const resourceTotal = computed(() =>
   border-color: rgba(240, 78, 34, 0.65);
   box-shadow:
     0 0 0 1px rgba(240, 78, 34, 0.45),
+    0 0 22px rgba(240, 78, 34, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .ghud__avatar {
@@ -173,8 +174,20 @@ const resourceTotal = computed(() =>
   position: absolute;
   inset: -5px;
   border-radius: 14px;
-  border: 2px solid rgba(240, 78, 34, 0.45);
+  border: 2px solid rgba(240, 78, 34, 0.55);
+  animation: ghud-pulse 2.2s ease-in-out infinite;
   pointer-events: none;
+}
+@keyframes ghud-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    transform: scale(1.06);
+  }
 }
 .ghud__seat {
   display: flex;
@@ -187,6 +200,7 @@ const resourceTotal = computed(() =>
   height: 9px;
   border-radius: 50%;
   background: var(--accent, #98a1af);
+  box-shadow: 0 0 8px var(--accent, #98a1af);
 }
 .ghud__name {
   font-family: Fraunces, Georgia, serif;
@@ -251,6 +265,7 @@ const resourceTotal = computed(() =>
   font-weight: 700;
   color: #14110d;
   background: #f0a62b;
+  box-shadow: 0 0 8px rgba(240, 166, 43, 0.5);
   cursor: help;
 }
 .ghud__stat {

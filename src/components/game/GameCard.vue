@@ -222,8 +222,8 @@ const ariaLabel = computed(() => {
   outline: 2px solid #f0a62b;
   outline-offset: 1px;
   box-shadow:
-    0 0 0 3px rgba(240, 166, 43, 0.25),
-    0 6px 18px rgba(0, 0, 0, 0.4);
+    0 0 0 4px rgba(240, 166, 43, 0.22),
+    0 6px 18px rgba(240, 166, 43, 0.3);
 }
 .game-card--ghost {
   opacity: 0.3;
