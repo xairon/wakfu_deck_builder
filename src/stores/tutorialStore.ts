@@ -224,6 +224,12 @@ export const useTutorialStore = defineStore("tutorial", () => {
       nameB: "L'adversaire",
       first: "B",
     });
+    // L'adversaire (B, 1er joueur) résout son pré-jeu INSTANTANÉMENT. Sans ça,
+    // le bot le jouait avec des délais de 650 ms et, au lancement, l'écran
+    // clignotait entre la passation et le mulligan adverses avant que le joueur
+    // n'arrive sur SA main. On saute directement à la passation du joueur.
+    game.reveal(); // l'adversaire révèle sa main de mulligan…
+    game.keepHand(); // … et la garde → le mulligan passe à « Toi »
     stepIndex.value = 0;
     active.value = true;
     if (tickTimer) clearInterval(tickTimer);
