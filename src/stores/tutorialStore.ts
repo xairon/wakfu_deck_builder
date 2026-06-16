@@ -234,6 +234,23 @@ export const useTutorialStore = defineStore("tutorial", () => {
     return `${base}${parts.join(", ")}. Le détail est dans le journal. Tu sais te battre !`;
   }
 
+  /** Leçon « Montée de niveau » : comme le combat, mais ton Héros démarre à
+   * 5 XP → détruire le bloqueur (+1 XP) le fait passer Niveau 2 (face verso). */
+  function setupLeveling(): boolean {
+    if (!setupCombat()) return false;
+    const heroA = game.state.seats.A.heroInstanceId;
+    if (heroA) game.adjustCounter(heroA, "xp", 5); // 5 XP → 6 après la destruction
+    return true;
+  }
+  function levelingResultText(): string {
+    const heroA = game.state.seats.A.heroInstanceId;
+    const inst = heroA ? game.state.instances[heroA] : null;
+    const leveled = (inst?.counters.level ?? 1) >= 2 || inst?.face === "verso";
+    return leveled
+      ? "BRAVO ! 6 XP atteint → ton Héros passe NIVEAU 2 : sa carte se retourne (verso) et ses stats changent (regarde « NIV » et sa carte). À 18 XP, victoire par l'Expérience !"
+      : "Tu as gagné de l'XP. À 6 XP ton Héros passe Niveau 2 (verso), à 18 tu gagnes. Continue à détruire des Alliés !";
+  }
+
   // ── Étapes ─────────────────────────────────────────────────────────────────
   const decouverteSteps: TutorialStep[] = [
     {
@@ -339,6 +356,44 @@ export const useTutorialStore = defineStore("tutorial", () => {
     },
   ];
 
+  const levelingSteps: TutorialStep[] = [
+    {
+      anchor: ".gseat:not(.gseat--opp) .ghud",
+      manual: true,
+      text: "Ton Héros a déjà 5 XP (vois « XP »). On gagne de l'XP en DÉTRUISANT des Alliés adverses ; à 6 XP, le Héros passe Niveau 2 (carte verso, stats améliorées), à 18 XP c'est la victoire ! Détruis l'Allié adverse pour décrocher ton 6ᵉ XP.",
+    },
+    {
+      anchor: ".gzone--play",
+      text: "Clique ton Allié, puis « ⚔ Attaquer ».",
+      advanceWhen: () => game.combat?.step === "attackers",
+    },
+    {
+      anchor: ".gseat--opp",
+      text: "Cible le Héros adverse (en haut).",
+      advanceWhen: () => game.combat?.target != null,
+    },
+    {
+      anchor: ".gcombat",
+      text: "Valide avec « Confirmer l'attaque ».",
+      advanceWhen: () => game.combat?.step === "blockers",
+    },
+    {
+      anchor: ".gcombat",
+      text: "L'adversaire bloque — tu vas détruire son Allié et empocher l'XP.",
+      advanceWhen: () => Object.keys(game.combat?.blocks ?? {}).length > 0,
+    },
+    {
+      anchor: ".gcombat",
+      text: "« Résoudre le combat ».",
+      advanceWhen: () => game.attackedOnTurn !== null,
+    },
+    {
+      anchor: ".gseat:not(.gseat--opp) .ghud",
+      manual: true,
+      text: levelingResultText,
+    },
+  ];
+
   // ── Registre des leçons ────────────────────────────────────────────────────
   const LESSONS: Record<string, Lesson> = {
     decouverte: {
@@ -355,6 +410,15 @@ export const useTutorialStore = defineStore("tutorial", () => {
       summary: "Attaquer, se faire bloquer, résoudre un duel (létalité, XP).",
       setup: setupCombat,
       steps: combatSteps,
+      botPolicy: { blocks: true },
+    },
+    leveling: {
+      id: "leveling",
+      title: "Monter de niveau",
+      summary:
+        "Gagner de l'XP en détruisant un Allié → passer Niveau 2 (verso).",
+      setup: setupLeveling,
+      steps: levelingSteps,
       botPolicy: { blocks: true },
     },
   };
