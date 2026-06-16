@@ -15,7 +15,7 @@ import type { DraftEvent, InstanceId } from "../types/events";
 import type { Seat } from "../types/zones";
 import { otherSeat } from "../types/zones";
 import type { RulesCtx } from "./types";
-import { discard } from "../engine/verbs";
+import { discard, move } from "../engine/verbs";
 import { xpValue } from "./cardAttrs";
 import type { ForceStance } from "./stats";
 import { effectiveForce } from "./stats";
@@ -66,6 +66,64 @@ export function stateBasedDestroyEvents(
     const grant = grantXpEvents(ctx, seat, xpBySeat[seat]);
     events.push(...grant.events);
     log.push(...grant.log.map((l) => `Le Héros de ${seat} ${l}`));
+  }
+  return { events, log, destroyed };
+}
+
+/**
+ * 410.7 — Havre-Sac à 0 Point de Résistance : il est banni (Exil), ses Salles
+ * sont détruites et le Héros (qui réside dans la zone havreSac) est expulsé au
+ * Monde en conservant ses compteurs (échange Monde↔Havre-Sac, 501.5).
+ */
+export function havreSacBanishEvents(ctx: RulesCtx): StateBasedDestruction {
+  const events: DraftEvent[] = [];
+  const log: string[] = [];
+  const destroyed: InstanceId[] = [];
+  for (const seat of ["A", "B"] as const) {
+    const sacId = ctx.state.seats[seat].havreSacInstanceId;
+    const sac = sacId ? ctx.state.instances[sacId] : null;
+    if (!sac || sac.location.zone === "exil") continue;
+    const res = sac.counters.resistance;
+    if (res === undefined || res > 0) continue;
+    // Intérieur du Havre-Sac (zone havreSac) : Héros expulsé, Salles détruites.
+    for (const inst of Object.values(ctx.state.instances)) {
+      if (inst.controller !== seat || inst.location.zone !== "havreSac")
+        continue;
+      const card = ctx.getCard(inst.cardId);
+      if (card?.mainType === "Héros") {
+        events.push(
+          move(seat, {
+            instanceId: inst.instanceId,
+            from: inst.location,
+            to: { zone: "monde" },
+            position: { at: "any" },
+            visibility: { faceDown: false, visibleTo: "all" },
+            preservesIdentity: true, // 501.5 : conserve PV/XP/Niveau
+            orientationOnArrival: inst.orientation ?? "upright",
+          }),
+        );
+        log.push(`${card.name} est expulsé au Monde (Havre-Sac banni, 410.7).`);
+      } else {
+        events.push(discard(inst.owner, inst.instanceId, inst.location));
+        destroyed.push(inst.instanceId);
+        log.push(
+          `${card?.name ?? "Une Salle"} est détruite (Havre-Sac banni, 410.7).`,
+        );
+      }
+    }
+    // Le Havre-Sac lui-même → Exil (banni).
+    events.push(
+      move(seat, {
+        instanceId: sac.instanceId,
+        from: sac.location,
+        to: { zone: "exil", owner: seat },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: false,
+      }),
+    );
+    destroyed.push(sac.instanceId);
+    log.push(`Le Havre-Sac de ${seat} est banni (0 Résistance, 410.7).`);
   }
   return { events, log, destroyed };
 }

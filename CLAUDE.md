@@ -77,7 +77,7 @@ src/
 - **Deck valide** : 1 Héros + 1 Havre-Sac + exactement 48 cartes
 - **Limite de copies** : max 3 exemplaires par carte, 1 pour les cartes "Unique"
 - **Réserve** : max 12 cartes
-- **Types requis** : au moins un Action ou Allié
+- **Types de cartes** : aucun type minimum imposé (le rulebook officiel n'exige pas d'Action/Allié ; cf. `validateDeck`)
 - **Éléments** : Air, Eau, Feu, Terre, Neutre
 - **Extensions** : Amakna, Ankama Convention 5, Astrub, Bonta-Brakmar, Chaos d'Ogrest, DOFUS Collection, Draft, Île des Wabbits, Incarnam, Otomaï, Pandala
 - **~2800+ cartes uniques**, ~1611 images

@@ -40,7 +40,14 @@ export function resourceProducers(
       element: producedElement(card),
     };
     out.push(producer);
-    if (freeUntap && inst.instanceId === sacId) out.push({ ...producer });
+    // Bonus à USAGE UNIQUE : une fois le Havre-Sac incliné ce tour (token posé
+    // par playFromHand), il ne se redouble plus, même redressé manuellement.
+    if (
+      freeUntap &&
+      inst.instanceId === sacId &&
+      !inst.counters.tokens?.sacBonusUsed
+    )
+      out.push({ ...producer });
   }
   return out;
 }

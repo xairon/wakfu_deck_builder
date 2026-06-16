@@ -71,6 +71,7 @@ import {
   normElement,
   resolveBuffForceTarget,
   resolveCombat,
+  havreSacBanishEvents,
   resolveDamageTarget,
   resolveDestroyTarget,
   resolveHealHeroTarget,
@@ -216,6 +217,10 @@ export const useGameStore = defineStore("game", () => {
         if (!sbd.destroyed.length) break;
         dispatch(...sbd.events, ...sbd.log.map((l) => say("system", l)));
       }
+      // 410.7 — Havre-Sac à 0 Résistance : banni, intérieur expulsé/détruit.
+      const hsb = havreSacBanishEvents(rulesCtx());
+      if (hsb.events.length)
+        dispatch(...hsb.events, ...hsb.log.map((l) => say("system", l)));
     }
     const rescue = equalityRescueEvents(rulesCtx());
     if (rescue.length) {
@@ -725,12 +730,27 @@ export const useGameStore = defineStore("game", () => {
       );
     }
     if (plan.producers.length) {
+      // 2342 : le Havre-Sac doublé apparaît deux fois dans plan.producers (même
+      // instanceId, tap idempotent) → compter les cartes RÉELLEMENT inclinées.
+      const tappedCount = new Set(plan.producers).size;
       drafts.push(
         say(
           seat,
-          `${players.value[seat].name} incline ${plan.producers.length} carte(s) pour payer ${card.name}.`,
+          `${players.value[seat].name} incline ${tappedCount} carte(s) pour payer ${card.name}.`,
         ),
       );
+    }
+    // 2342 : le bonus de doublement du Havre-Sac est à USAGE UNIQUE par tour —
+    // dès qu'il est incliné pour payer, on pose un jeton pour qu'il ne se
+    // redouble pas s'il est redressé à la main ensuite (RES-1).
+    const sacId = state.value.seats[seat].havreSacInstanceId;
+    if (
+      sacId &&
+      seat !== firstPlayer.value &&
+      state.value.turn.number === 2 &&
+      plan.producers.includes(sacId)
+    ) {
+      drafts.push(setCounterVerb(seat, sacId, "sacBonusUsed", 1, true));
     }
     dispatch(...drafts);
     if (actionAtoms.length) {
@@ -1595,7 +1615,11 @@ export const useGameStore = defineStore("game", () => {
     const t = eligibleTargets(rulesCtx(), perspective.value).find(
       (x) => x.instanceId === instanceId,
     );
+    // refus EXPLIQUÉ (jamais silencieux), comme l'attaque et le blocage (702.2).
     if (t) c.target = t;
+    else
+      ruleError.value =
+        "Cible illégale : vise le Héros, un Allié du Monde ou le Havre-Sac adverse (702.2).";
   }
 
   function combatConfirmAttackers(): boolean {

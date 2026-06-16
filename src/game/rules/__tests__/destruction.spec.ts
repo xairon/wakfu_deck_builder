@@ -5,13 +5,14 @@
  */
 import { describe, expect, it } from "vitest";
 import type { AllyCard, StaticAbility } from "@/types/cards";
-import { stateBasedDestroyEvents } from "@/game/rules";
-import { incCounter, move } from "@/game";
+import { havreSacBanishEvents, stateBasedDestroyEvents } from "@/game/rules";
+import { incCounter, move, setCounter } from "@/game";
 import { createMockAllyCard } from "tests/factories/card";
 import type { Fixture } from "./harness";
 import {
   HERO_A,
   HERO_B,
+  SAC_A,
   bringToHand,
   bringToMonde,
   ctxOf,
@@ -134,5 +135,30 @@ describe("rules/destruction — destructions d'état (1414 / 3019)", () => {
     bringToMonde(f, "A", instId("A", 0));
     expect(stateBasedDestroyEvents(ctxOf(f)).destroyed).toEqual([]);
     expect(fixedPoint(f)).toBe(0);
+  });
+});
+
+describe("rules/destruction — Havre-Sac banni à 0 Résistance (410.7)", () => {
+  it("bannit le Havre-Sac en Exil et expulse le Héros au Monde en gardant ses compteurs", () => {
+    const f = fixture([]);
+    dispatch(f, setCounter("A", HERO_A, "xp", 5)); // compteur à conserver
+    // Résistance du Havre-Sac A ramenée à 0
+    dispatch(f, setCounter("A", SAC_A, "resistance", 0));
+    const hsb = havreSacBanishEvents(ctxOf(f));
+    expect(hsb.destroyed).toContain(SAC_A);
+    expect(hsb.log.join(" ")).toContain("410.7");
+    dispatch(f, ...hsb.events);
+    const st = ctxOf(f).state;
+    // Havre-Sac banni, Héros expulsé au Monde, compteurs conservés (501.5)
+    expect(st.instances[SAC_A].location.zone).toBe("exil");
+    expect(st.instances[HERO_A].location.zone).toBe("monde");
+    expect(st.instances[HERO_A].counters.xp).toBe(5);
+    expect(st.instances[HERO_A].counters.hp).toBe(16);
+  });
+
+  it("ne fait rien tant que la Résistance reste positive", () => {
+    const f = fixture([]);
+    dispatch(f, setCounter("A", SAC_A, "resistance", 4));
+    expect(havreSacBanishEvents(ctxOf(f)).events).toEqual([]);
   });
 });

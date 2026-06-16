@@ -81,7 +81,11 @@ export function victoryFromState(ctx: RulesCtx): Seat | null {
   for (const seat of ["A", "B"] as Seat[]) {
     const id = ctx.state.seats[seat].heroInstanceId;
     const hero = id ? ctx.state.instances[id] : null;
-    if (!hero) continue;
+    // 103.2c — le Héros a quitté le jeu (instance disparue ou hors du Monde /
+    // Havre-Sac, sa zone d'origine) → son contrôleur perd.
+    const zone = hero?.location.zone;
+    if (!hero || (zone !== "monde" && zone !== "havreSac"))
+      return otherSeat(seat);
     if ((hero.counters.hp ?? 1) <= 0) return otherSeat(seat);
     if ((hero.counters.xp ?? 0) >= XP_LEVEL_3) return seat;
   }
