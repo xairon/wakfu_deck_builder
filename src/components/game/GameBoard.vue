@@ -385,7 +385,11 @@
               ? "⚔ Choisis tes attaquants puis une cible adverse"
               : store.combat.step === "strikes"
                 ? "🎯 Choisis le bloqueur qui encaisse la Force de l'attaquant en vert"
-                : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
+                : store.combat.step === "riposte"
+                  ? "↩ La Cible riposte : choisis l'attaquant qu'elle frappe"
+                  : store.combat.pendingBlocker
+                    ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
+                    : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
           }}
         </span>
         <span class="gcombat__info">
@@ -690,7 +694,7 @@ function select(instanceId: string): void {
     store.effectTargetChoose(instanceId);
     return;
   }
-  // combat en cours : les clics désignent attaquants / cible / bloqueurs
+  // combat en cours : les clics désignent attaquants / cible / bloqueurs / riposte
   if (store.combat) {
     if (store.combat.step === "attackers") {
       if (store.combatTargetIds.includes(instanceId))
@@ -698,8 +702,16 @@ function select(instanceId: string): void {
       else store.combatToggleAttacker(instanceId);
     } else if (store.combat.step === "strikes") {
       store.combatChooseStrike(instanceId);
+    } else if (store.combat.step === "riposte") {
+      store.combatChooseRiposte(instanceId);
     } else {
-      store.combatToggleBlock(instanceId);
+      // blockers : si un bloqueur attend, le clic sur un attaquant l'assigne
+      if (
+        store.combat.pendingBlocker &&
+        store.combat.attackers.includes(instanceId)
+      )
+        store.combatChooseBlockTarget(instanceId);
+      else store.combatToggleBlock(instanceId);
     }
     return;
   }
@@ -720,14 +732,21 @@ function slotCls(instanceId: string): Record<string, boolean> {
       c.step === "attackers" && store.combatAttackerIds.includes(instanceId),
     "gslot--atk":
       c.attackers.includes(instanceId) ||
-      (c.step === "strikes" && c.strikeFor === instanceId),
+      (c.step === "strikes" && c.strikeFor === instanceId) ||
+      (c.step === "riposte" && c.riposteFrom === instanceId),
     "gslot--target-can":
       (c.step === "attackers" && store.combatTargetIds.includes(instanceId)) ||
-      (c.step === "strikes" && store.combatStrikeIds.includes(instanceId)),
+      (c.step === "strikes" && store.combatStrikeIds.includes(instanceId)) ||
+      (c.step === "riposte" && store.combatRiposteIds.includes(instanceId)) ||
+      (c.step === "blockers" &&
+        !!c.pendingBlocker &&
+        c.attackers.includes(instanceId)),
     "gslot--target": c.target?.instanceId === instanceId,
     "gslot--blk-can":
       c.step === "blockers" && store.combatBlockerIds.includes(instanceId),
-    "gslot--blk": c.step === "blockers" && !!c.blocks[instanceId],
+    "gslot--blk":
+      (c.step === "blockers" && !!c.blocks[instanceId]) ||
+      c.pendingBlocker === instanceId,
   };
 }
 const canAttackSelected = computed(() => {

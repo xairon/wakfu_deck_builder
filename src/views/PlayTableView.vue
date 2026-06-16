@@ -499,6 +499,7 @@ import DragLayer from "@/components/game/DragLayer.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
 import TutorialCoach from "@/components/game/TutorialCoach.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
+import { validateDeck } from "@/validators/deck";
 import { useToast } from "@/composables/useToast";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -572,13 +573,19 @@ function setPick(id: string): void {
 function launch(): void {
   const dA = decks.value.find((d) => d.id === pickA.value);
   const dB = decks.value.find((d) => d.id === pickB.value);
-  if (dA && dB) {
-    // v1 « à la Cockatrice » : règles assistées (combat, coûts, légalité,
-    // limites, victoire) mais effets de cartes résolus À LA MAIN. La file
-    // d'effets DSL (Lots A–C) reste en backlog v2.
-    store.assistEffects = false;
-    store.startMatch(dA, dB, { nameA: nameA.value, nameB: nameB.value });
+  if (!dA || !dB) return;
+  // 101.x — un deck non conforme (≠48, sans Héros/Havre-Sac, copies, réserve)
+  // ne peut pas entrer en partie.
+  const errs = [...validateDeck(dA).errors, ...validateDeck(dB).errors];
+  if (errs.length) {
+    toast.addToast(`Deck invalide : ${errs.join(" · ")}`, { type: "warning" });
+    return;
   }
+  // v1 « à la Cockatrice » : règles assistées (combat, coûts, légalité,
+  // limites, victoire) mais effets de cartes résolus À LA MAIN. La file
+  // d'effets DSL (Lots A–C) reste en backlog v2.
+  store.assistEffects = false;
+  store.startMatch(dA, dB, { nameA: nameA.value, nameB: nameB.value });
 }
 
 // ── Jeu en ligne (lobby) ──────────────────────────────────────────────────────
