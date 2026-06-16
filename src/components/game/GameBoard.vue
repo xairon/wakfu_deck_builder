@@ -385,33 +385,49 @@
               ? "⚔ Choisis tes attaquants puis une cible adverse"
               : store.combat.step === "strikes"
                 ? "🎯 Choisis le bloqueur qui encaisse la Force de l'attaquant en vert"
-                : `🛡 ${store.players[opp].name} — déclare tes bloqueurs`
+                : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
           }}
         </span>
         <span class="gcombat__info">
           {{ store.combat.attackers.length }} attaquant(s)
-          <template v-if="store.combat.target"> · cible choisie</template>
-          <template v-if="store.combat.step === 'blockers'">
-            · {{ Object.keys(store.combat.blocks).length }} bloqueur(s)
+          <template v-if="store.combat.step === 'attackers'">
+            <template v-if="!store.combat.attackers.length">
+              · choisis un attaquant</template
+            >
+            <template v-else-if="!store.combat.target">
+              · cible : à choisir</template
+            >
+            <template v-else> · prêt à confirmer</template>
+          </template>
+          <template v-else>
+            <template v-if="store.combat.target"> · cible choisie</template>
+            <template v-if="store.combat.step === 'blockers'">
+              · {{ Object.keys(store.combat.blocks).length }} bloqueur(s)
+            </template>
           </template>
         </span>
         <div class="gcombat__btns">
           <button
             v-if="store.combat.step === 'attackers'"
             class="gbtn gbtn--accent"
+            :disabled="!store.combat.attackers.length || !store.combat.target"
             @click="store.combatConfirmAttackers()"
           >
             Confirmer l'attaque
           </button>
           <button
-            v-else
+            v-else-if="store.combat.step === 'blockers'"
             class="gbtn gbtn--accent"
             @click="store.combatResolve()"
           >
             Résoudre le combat
           </button>
           <button class="gbtn gbtn--ghost" @click="store.combatCancel()">
-            Annuler
+            {{
+              store.combat.step === "attackers"
+                ? "Annuler"
+                : "Annuler l'attaque"
+            }}
           </button>
         </div>
       </div>
@@ -1305,6 +1321,14 @@ function manaBonus(seat: Seat): boolean {
 }
 .gbtn:active {
   transform: translateY(0) scale(0.97);
+}
+.gbtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.gbtn:disabled:hover {
+  background: rgba(246, 245, 241, 0.1);
+  transform: none;
 }
 .gbtn--accent {
   background: rgba(240, 78, 34, 0.32);

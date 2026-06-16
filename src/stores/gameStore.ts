@@ -1562,6 +1562,12 @@ export const useGameStore = defineStore("game", () => {
   function combatChooseTarget(instanceId: string): void {
     const c = combat.value;
     if (!c || c.step !== "attackers") return;
+    // Re-cliquer la cible déjà désignée la désélectionne (même logique de bascule
+    // que pour les attaquants).
+    if (c.target?.instanceId === instanceId) {
+      c.target = null;
+      return;
+    }
     const t = eligibleTargets(rulesCtx(), perspective.value).find(
       (x) => x.instanceId === instanceId,
     );
@@ -1685,6 +1691,23 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function combatCancel(): void {
+    const c = combat.value;
+    // Annuler APRÈS la déclaration : les attaquants ont été inclinés à la
+    // déclaration (A6). On les redresse pour ne pas laisser le joueur avec des
+    // cartes tapées « pour rien » s'il renonce au combat.
+    if (c && c.step !== "attackers") {
+      const seat = turn.value.active;
+      const untaps: DraftEvent[] = c.attackers
+        .filter((id) => state.value.instances[id]?.orientation === "tapped")
+        .map(
+          (id): DraftEvent => ({
+            actor: seat,
+            type: "SET_ORIENTATION",
+            payload: { instanceId: id, orientation: "upright" },
+          }),
+        );
+      if (untaps.length) dispatch(...untaps);
+    }
     combat.value = null;
   }
 

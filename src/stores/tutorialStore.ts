@@ -279,7 +279,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     {
       anchor: ".gseat:not(.gseat--opp) .ghud",
       manual: true,
-      text: "Ton Héros : PV (à 0, c'est la défaite), PA (taille de ta main), PM (nombre maximal d'attaquants ou de bloqueurs), XP et Niveau (6 XP → Niveau 2 et face verso, 18 XP → victoire).",
+      text: "Ton Héros : PV (à 0, c'est la défaite), PA (ta taille de main MAXIMALE : en fin de tour tu repioches jusqu'à ce nombre), PM (nombre maximal d'attaquants ou de bloqueurs), XP et Niveau (6 XP → Niveau 2 et face verso, 18 XP → victoire).",
     },
     {
       anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
@@ -308,7 +308,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     },
     {
       anchor: ".gzone--play",
-      text: "Ton Allié est redressé et prêt au combat. CLIQUE-le, puis « ⚔ Attaquer » ; désigne le HÉROS adverse comme cible (en haut), « Confirmer l'attaque », puis « Résoudre le combat ».",
+      text: "Ton Allié est redressé et prêt au combat. CLIQUE-le, puis « ⚔ Attaquer » ; désigne le HÉROS adverse comme cible (en haut), puis « Confirmer l'attaque ». L'adversaire peut alors bloquer — ici il laisse passer : clique « Résoudre le combat ».",
       advanceWhen: () => game.attackedOnTurn !== null,
     },
     {
@@ -583,11 +583,15 @@ export const useTutorialStore = defineStore("tutorial", () => {
     },
   );
 
-  // quitter le match coupe le tutoriel (sans le marquer terminé)
+  // Fin de partie atteinte pendant le tuto → leçon terminée (« Apprendre à
+  // jouer » marquée vue) ; quitter en cours (lobby sans passer par finished) ne
+  // marque rien. finished précède toujours lobby, donc pas de double-stop.
   watch(
     () => game.matchPhase,
     (phase) => {
-      if (active.value && phase === "lobby") stop(false);
+      if (!active.value) return;
+      if (phase === "finished") stop(activeLesson.value?.id === "decouverte");
+      else if (phase === "lobby") stop(false);
     },
   );
 

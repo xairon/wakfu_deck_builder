@@ -480,7 +480,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
@@ -547,6 +547,14 @@ const decks = computed<Deck[]>(() => deckStore.decks ?? []);
 // Masqué par défaut : le plateau occupe toute la largeur (cartes plus grandes).
 // Le joueur ouvre le journal à la demande via le bouton « Journal ».
 const showJournal = ref(false);
+// Pendant un tutoriel, on force l'ouverture du journal : une étape le met en
+// lumière (« tout est tracé dans le journal ») et le débutant le voit se remplir.
+watch(
+  () => tutorial.active,
+  (on) => {
+    if (on) showJournal.value = true;
+  },
+);
 
 // ── Lobby ────────────────────────────────────────────────────────────────────
 const lobbyStep = ref<1 | 2>(1);
