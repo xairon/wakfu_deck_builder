@@ -4,7 +4,6 @@ import { useCardStore } from "@/stores/cardStore";
 import {
   createMockAllyCard,
   createMockActionCard,
-  createMockHeroCard,
   createMockCardSet,
 } from "tests/factories/card";
 import type { Card } from "@/types/cards";

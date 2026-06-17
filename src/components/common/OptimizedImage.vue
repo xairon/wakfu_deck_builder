@@ -66,7 +66,7 @@
  * - getThumbPath(src): converts /images/cards/foo.png -> /images/cards/thumbs/foo.webp
  */
 
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { ref, computed, onUnmounted, watch } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
 import { measure } from "../../utils/performance";
 import { METRIC_TYPES } from "../../utils/performance";
@@ -108,14 +108,6 @@ const props = withDefaults(
 // ---------------------------------------------------------------------------
 // Computed sources
 // ---------------------------------------------------------------------------
-
-/** The WebP source to use in <source srcset> */
-const resolvedWebpSrc = computed(() => {
-  if (props.thumbnail) {
-    return getThumbPath(props.src);
-  }
-  return getWebpPath(props.src);
-});
 
 /** The fallback src for the <img> tag (original format) */
 const resolvedSrc = computed(() => {

@@ -104,13 +104,13 @@ describe("reducer — frontière de zone (501.5)", () => {
   it("Monde↔Havre-Sac conserve les compteurs ; tout autre move les purge", () => {
     const heroA = buildInitialLayout(GID, DECKS).seats.A.heroInstanceId!;
     const swap = play(
-      (s) => [setCounter("A", heroA, "damage", 2)],
+      (_s) => [setCounter("A", heroA, "damage", 2)],
       () => [worldHavenSwap("A", heroA, "havreSac")], // Havre-Sac → Monde
     );
     expect(swap.state.instances[heroA].counters.damage).toBe(2);
 
     const purge = play(
-      (s) => [setCounter("A", heroA, "damage", 2)],
+      (_s) => [setCounter("A", heroA, "damage", 2)],
       () => [worldHavenSwap("A", heroA, "havreSac")],
       () => [discard("A", heroA, { zone: "monde" })], // Monde → Défausse
     );

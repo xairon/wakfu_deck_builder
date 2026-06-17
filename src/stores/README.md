@@ -33,8 +33,6 @@ interface State {
 interface Actions {
   /** Initialise la base de données des cartes */
   initializeDatabase(): Promise<void>;
-  /** Charge toutes les cartes */
-  loadCards(): Promise<void>;
   /** Ajoute une carte à la collection */
   addToCollection(card: Card, quantity: number): Promise<void>;
   /** Retire une carte de la collection */

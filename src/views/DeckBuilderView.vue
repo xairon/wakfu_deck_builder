@@ -209,6 +209,8 @@
           </div>
           <ul
             v-if="!validation.isValid && validation.errors.length"
+            role="status"
+            aria-live="polite"
             class="mt-4 space-y-1.5 text-xs text-base-content/60"
           >
             <li

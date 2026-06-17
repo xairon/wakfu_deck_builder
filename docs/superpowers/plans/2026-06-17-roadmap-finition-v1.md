@@ -106,30 +106,26 @@ au fur et à mesure.
 
 ## Phase 4 — Polish, code mort & docs (basse)
 
-- [~] **P4.1 Docs** : ✅ `CLAUDE.md` (1585 cartes / 1613 images ; tests ~617/40
-  fichiers ; E2E 26 ; gate `type-check` ; archi `parser`→`game`, `sync`/`Cards`
-  retirés) + auto-memory (276→617, [[type-check-gate]]). _Reste_ :
-  `DEPLOYMENT.md` (migrations 0003/0004/0005) ; `CDC-MODULE-JEU-ETAT.md`
-  (3 lignes périmées : 103.3, 2342, PA/PM mods) ; `AUDIT-2026-06.md` #13
-  (Otomaï image présente).
-- [~] **P4.2 Code mort / lint** : ✅ `sync.ts` (supprimé en P3.1) ; `keywords.ts`
-  (non importé) supprimé ; handlers orphelins `CollectionView`
-  (`resetFilters`/`disableHideNotOwned` + refs `selectedKeywords`/sync mortes) ;
-  imports/consts/vars morts (`cardStore`, `useTheme`, `verbs`, `props`
-  composants, factories, `starterService`). **Lint 110 → 91 warnings**, 0 erreur.
-  _Reste_ : ~25 `no-unused-vars` dispersés (surtout imports de tests) + ~70
-  `no-explicit-any` (volontaires, surtout tests) ; 5 fonctions `cardStore` non
-  câblées (API potentielle, à trancher) ; bloc d'init mort `starterService`
-  (exporté donc non signalé par le lint — suppression soignée à part).
-- [~] **P4.3 Infra polish** : ✅ `robots.txt` (pages publiques indexables, routes
-  privées `/auth`/`/profil`/`/deck-builder` exclues). _Reste_ : `vercel.json`
-  CSP + Permissions-Policy — **à valider contre le déploiement live** (Supabase,
-  images, styles/scripts inline) avant de shipper, sinon risque de casser la prod.
-  DEC-3 documente updater Tauri / conflit hors-ligne.
-- [ ] **P4.4 UX polish** : journal `ActionLog` scroll-back (historique complet) ;
-      breakpoint tablette 1025–1100px aligné ; `getCardTypeBreakdown` mémoïsé ;
-      deck builder `aria-live` sur blocages ; hint « effets à la main » discret sur la
-      table hors tutoriel ; vérifier l'affichage des 3 errata.
+- [x] **P4.1 Docs** ✅ : `CLAUDE.md` (1585 cartes / 1613 images ; tests ~617/40 ;
+      E2E 26 ; gate `type-check` ; archi corrigée) + auto-memory (276→617) ;
+      `DEPLOYMENT.md` (migrations 0001→0005 documentées) ; `CDC-MODULE-JEU-ETAT.md`
+      (103.3, 2342, PA/PM, bloqueur frappé → ✅) ; `AUDIT-2026-06.md` #13 (Otomaï
+      RÉSOLU : recto/verso/illustration présents).
+- [x] **P4.2 Code mort / lint** ✅ : `sync.ts`/`keywords.ts` supprimés ; orphelins
+      `CollectionView` ; `cardStore` (5 fonctions mortes + état mort `selectedCard`/
+      `searchQuery`/`selectedExtension`) ; **bloc d'init mort `starterService`** (~180 l.,
+      `InitializationResult` + 4 fonctions) ; `exportDeck` **câblé** (bouton export →
+      modale déjà existante) ; unused-vars (composants + tests). **Lint 110 → 69**,
+      0 erreur. Restent volontairement ~67 `no-explicit-any` + 2 args `url` de test.
+- [~] **P4.3 Infra polish** : ✅ `robots.txt` ; en-têtes de sécurité `vercel.json`
+  (+ `Permissions-Policy` ; `X-Frame-Options: DENY` conservé, plus strict que
+  SAMEORIGIN). _Reste_ : la **CSP enforce** — recommandée + documentée dans le
+  recon, mais **à activer + valider en live** (Supabase/images/inline) idéalement
+  d'abord en `Report-Only`, sinon risque prod. DEC-3 : updater Tauri / hors-ligne.
+- [~] **P4.4 UX polish** : ✅ `getCardTypeBreakdown` mémoïsé (`useMemoize`,
+  OfficialDecksView — évite un scan O(cartes) par rendu) ; `aria-live="polite"` + `role="status"` sur les blocages du deck builder. _Reste_ (vérif **live**
+  requise) : journal `ActionLog` scroll-back, breakpoint tablette 1025–1100px,
+  hint « effets à la main » hors tutoriel, vérifier l'affichage des 3 errata.
 
 ## NON-OBJECTIFS v1 (documentés, non codés — DEC-3)
 

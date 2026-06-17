@@ -55,26 +55,6 @@ function mockFetchSuccess(cardsByUrl?: Record<string, any[]>) {
   });
 }
 
-/**
- * Sets up a fetch mock that always rejects with a network error.
- */
-function mockFetchNetworkError() {
-  (global.fetch as Mock).mockImplementation(async () => {
-    throw new Error("Network error");
-  });
-}
-
-/**
- * Sets up a fetch mock that returns a non-OK response.
- */
-function mockFetchHttpError(status = 500) {
-  (global.fetch as Mock).mockImplementation(async () => ({
-    ok: false,
-    status,
-    statusText: "Internal Server Error",
-  }));
-}
-
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -192,7 +172,7 @@ describe("cardLoader", () => {
       );
       mockFetchSuccess();
 
-      const result = await loadAllCards();
+      await loadAllCards();
 
       // At exactly CACHE_EXPIRATION, now - timestamp === CACHE_EXPIRATION,
       // which is NOT < CACHE_EXPIRATION, so it should be expired

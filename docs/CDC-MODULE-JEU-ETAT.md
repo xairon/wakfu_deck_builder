@@ -1,6 +1,6 @@
 ﻿# Cahier des charges & état d'avancement — Module de jeu
 
-> Document de suivi vivant. Mis à jour : 2026-06-10. Légende : ✅ fait ·
+> Document de suivi vivant. Mis à jour : 2026-06-17. Légende : ✅ fait ·
 > 🟡 partiel · ❌ à faire. Le « comment » technique vit dans
 > `docs/GAME-MODULE-V1.md` (conception) et `docs/superpowers/specs/*`
 > (un spec par lot livré) ; le CDC formel du mode en ligne dans
@@ -27,39 +27,39 @@
 | Structure de tour : Redressement auto, Principale, Pioche auto (fin de tour jusqu'aux PA), purge des Dommages (410.8) | ✅     | phases Pioche/Fin non distinctes à l'écran (assistées)                            |
 | Fin de partie : PV ≤ 0 / Niveau 3 (103.2) **même en mode libre**                                                      | ✅     | corrigé suite retour utilisateur                                                  |
 | Abandonner la partie (concession → victoire adverse)                                                                  | ✅     | bouton topbar, confirmation 2 temps — retour utilisateur                          |
-| Égalité 103.3 (double 0 PV simultané → 1 PV chacun)                                                                   | ❌     | cas rare, non géré                                                                |
+| Égalité 103.3 (double 0 PV simultané → 1 PV chacun)                                                                   | ✅     | `equalityRescueEvents` / `victoryFromState` (src/game/rules/progress.ts)          |
 | Limite de main = PA (4873 : défausse de l'excédent, à tout instant)                                                   | ✅     | choix obligatoire (sans « Passer »), fin de tour bloquée tant que la main déborde |
 | Réserve : échange entre manches (101.4)                                                                               | 🟡     | zone gérée à la main, aucun flux « entre parties »                                |
 | Mode Scellé/Draft (30 cartes, 101.2)                                                                                  | ❌     | seul le Construit 48+2 est validé                                                 |
 
 ## 3. Règles de jeu (mode assisté)
 
-| Exigence                                                                                     | Statut | Notes                                                              |
-| -------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------ |
-| Coûts en Ressources : inclinaison auto, coût = Niveau, élément requis des Alliés (4316/4381) | ✅     | sélection automatique des producteurs                              |
-| Légalité : tour/phase/main, Monde fermé au tour 1 (4943)                                     | ✅     | refus motivés (toast)                                              |
-| Mal d'invocation (1821) : attaque interdite le tour d'arrivée                                | ✅     | token `arrivedTurn`, préservé par l'échange Monde↔Havre-Sac       |
-| Toggle « Règles assistées » → table libre (Cockatrice)                                       | ✅     | rien ne bloque jamais                                              |
-| Taille du Havre-Sac (capacité, 2315/2626/4806 — le Héros compte)                             | ✅     | extraite des données ; Salle/déplacement vers un sac plein refusés |
-| Résistance du Havre-Sac initialisée au setup (2303)                                          | ✅     | compteur + badge 🛡 sur la carte                                   |
-| Redressement gratuit du Havre-Sac du 2ᵉ joueur (2342)                                        | ❌     |                                                                    |
-| Coûts d'utilisation élémentaires des pouvoirs (« [Eau][Eau] : … », 4329)                     | ❌     | seuls inclinaison et sacrifice-self sont gérés                     |
-| Modificateurs temporaires de PA/PM (« perd 1 PA jusqu'à la fin du tour »)                    | ❌     | seuls les modificateurs de Force existent                          |
+| Exigence                                                                                     | Statut | Notes                                                                                             |
+| -------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------- |
+| Coûts en Ressources : inclinaison auto, coût = Niveau, élément requis des Alliés (4316/4381) | ✅     | sélection automatique des producteurs                                                             |
+| Légalité : tour/phase/main, Monde fermé au tour 1 (4943)                                     | ✅     | refus motivés (toast)                                                                             |
+| Mal d'invocation (1821) : attaque interdite le tour d'arrivée                                | ✅     | token `arrivedTurn`, préservé par l'échange Monde↔Havre-Sac                                      |
+| Toggle « Règles assistées » → table libre (Cockatrice)                                       | ✅     | rien ne bloque jamais                                                                             |
+| Taille du Havre-Sac (capacité, 2315/2626/4806 — le Héros compte)                             | ✅     | extraite des données ; Salle/déplacement vers un sac plein refusés                                |
+| Résistance du Havre-Sac initialisée au setup (2303)                                          | ✅     | compteur + badge 🛡 sur la carte                                                                  |
+| Redressement gratuit du Havre-Sac du 2ᵉ joueur (2342)                                        | ✅     | `freeUntap` (src/game/rules/resources.ts) — bonus à usage unique au tour 2                        |
+| Coûts d'utilisation élémentaires des pouvoirs (« [Eau][Eau] : … », 4329)                     | ❌     | seuls inclinaison et sacrifice-self sont gérés                                                    |
+| Modificateurs temporaires de PA/PM (« perd 1 PA jusqu'à la fin du tour »)                    | ✅     | op `loseStatTurn` (dsl.ts) ; tokens `paMod`/`pmMod` purgés en fin de tour (limits.ts/legality.ts) |
 
 ## 4. Combat
 
-| Exigence                                                                         | Statut | Notes                                                                       |
-| -------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------------------- |
-| 1 attaque/tour, pas au premier tour (603.2)                                      | ✅     |                                                                             |
-| Cibles légales : Héros / Allié du Monde / Havre-Sac adverses (702.2/702.3)       | ✅     |                                                                             |
-| Attaquants/bloqueurs ≤ PM, redressés, Élémentaires exclus (303.6)                | ✅     |                                                                             |
-| Duels simultanés, dommages élémentaires, létalité damage ≥ Force (204.6)         | ✅     | Force effective = imprimée + modificateurs                                  |
-| Dommages sur cible libre : PV Héros / Résistance Havre-Sac / Allié               | ✅     |                                                                             |
-| XP sur Alliés détruits, verso à 6 XP (stats ajustées), victoire à 18 (307/415)   | ✅     |                                                                             |
-| Mots-clés : Résistance (prévention par élément, 7469), Géant (répartition, 6135) | ✅     | data-driven ; Géant promu en mot-clé STRUCTURÉ dans les données (90 cartes) |
-| Choix manuel du bloqueur frappé par l'attaquant (6105)                           | ❌     | auto : premier bloqueur assigné                                             |
-| Réactions pendant le combat (Phase d'Actions, 705)                               | ❌     | voir §6 timing                                                              |
-| Tacle / Agilité / Agressivité (mots-clés de blocage)                             | ❌     | absents des données scrapées, à scripter à la main                          |
+| Exigence                                                                         | Statut | Notes                                                                           |
+| -------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| 1 attaque/tour, pas au premier tour (603.2)                                      | ✅     |                                                                                 |
+| Cibles légales : Héros / Allié du Monde / Havre-Sac adverses (702.2/702.3)       | ✅     |                                                                                 |
+| Attaquants/bloqueurs ≤ PM, redressés, Élémentaires exclus (303.6)                | ✅     |                                                                                 |
+| Duels simultanés, dommages élémentaires, létalité damage ≥ Force (204.6)         | ✅     | Force effective = imprimée + modificateurs                                      |
+| Dommages sur cible libre : PV Héros / Résistance Havre-Sac / Allié               | ✅     |                                                                                 |
+| XP sur Alliés détruits, verso à 6 XP (stats ajustées), victoire à 18 (307/415)   | ✅     |                                                                                 |
+| Mots-clés : Résistance (prévention par élément, 7469), Géant (répartition, 6135) | ✅     | data-driven ; Géant promu en mot-clé STRUCTURÉ dans les données (90 cartes)     |
+| Choix manuel du bloqueur frappé par l'attaquant (6105)                           | ✅     | `plan.strikes` honoré, repli sur le premier bloqueur (src/game/rules/combat.ts) |
+| Réactions pendant le combat (Phase d'Actions, 705)                               | ❌     | voir §6 timing                                                                  |
+| Tacle / Agilité / Agressivité (mots-clés de blocage)                             | ❌     | absents des données scrapées, à scripter à la main                              |
 
 ## 5. Effets de cartes (DSL strict, compilation hors-ligne)
 
@@ -133,7 +133,7 @@ que si TOUS ses effets compilent).
 
 1. **Finir la fiabilisation du tutoriel** (en cours) — porte d'entrée des
    nouveaux joueurs.
-2. **Petites règles à fort impact perçu** : indicateur de Ressources, choix du bloqueur frappé. (Limite de main et Taille du Havre-Sac : faites.)
+2. **Petites règles à fort impact perçu** : indicateur de Ressources. (Limite de main, Taille du Havre-Sac, égalité 103.3, redressement gratuit 2342, modificateurs PA/PM et choix du bloqueur frappé : faits.)
 3. **Trancher le grand chantier** : timing (fidélité règles) **ou** en ligne
    (produit). Recommandation : en ligne — le serveur est déjà prêt et le
    mode assisté local est largement jouable.

@@ -278,6 +278,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useMemoize } from "@vueuse/core";
 import { OFFICIAL_DECKS, type OfficialDeck } from "@/data/officialDecks";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
@@ -454,20 +455,27 @@ function getCardCount(deck: OfficialDeck): number {
 }
 
 /**
- * Calcule la repartition par type de carte
+ * Calcule la répartition par type de carte. Mémoïsé par `deck.id` : les decks
+ * officiels et la base de cartes sont statiques après initialisation
+ * (cardStore.initialize dans onMounted), donc le résultat est déterministe et
+ * peut être mis en cache — évite un scan O(cartes) à chaque rendu du v-for
+ * imbriqué (extension → deck → type).
  */
-function getCardTypeBreakdown(deck: OfficialDeck): Record<string, number> {
-  const breakdown: Record<string, number> = {};
+const getCardTypeBreakdown = useMemoize(
+  (deck: OfficialDeck): Record<string, number> => {
+    const breakdown: Record<string, number> = {};
 
-  deck.cards.forEach((card) => {
-    // Tenter de deviner le type de carte a partir du nom
-    const foundCard = deckStore.findCardByName(card.name);
-    const type = foundCard?.mainType || "Carte";
-    breakdown[type] = (breakdown[type] || 0) + card.quantity;
-  });
+    deck.cards.forEach((card) => {
+      // Tenter de deviner le type de carte à partir du nom
+      const foundCard = deckStore.findCardByName(card.name);
+      const type = foundCard?.mainType || "Carte";
+      breakdown[type] = (breakdown[type] || 0) + card.quantity;
+    });
 
-  return breakdown;
-}
+    return breakdown;
+  },
+  { getKey: (deck) => deck.id },
+);
 
 /**
  * Affiche/masque les details d'un deck

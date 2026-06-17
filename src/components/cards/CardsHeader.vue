@@ -54,7 +54,7 @@ function exportCollection() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Collection exportée avec succès");
-  } catch (error) {
+  } catch {
     toast.error("Erreur lors de l'export de la collection");
   }
 }
@@ -72,7 +72,7 @@ function importCollection() {
       const data = JSON.parse(text);
       await cardStore.importCollection(data);
       toast.success("Collection importée avec succès");
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors de l'import de la collection");
     }
   };

@@ -37,9 +37,6 @@ export const useCardStore = defineStore("cards", () => {
   const isInitializing = ref(false);
   const isInitialized = ref(false);
   const initializationAttempts = ref(0);
-  const selectedCard = ref<Card | null>(null);
-  const searchQuery = ref("");
-  const selectedExtension = ref<string | null>(null);
 
   // État de synchronisation
   const lastSync = useLocalStorage<string | null>("wakfu-last-sync", null);
@@ -310,15 +307,6 @@ export const useCardStore = defineStore("cards", () => {
     })();
   }
 
-  // Importer une collection (générique) et la sauver localement
-  function importLocalCollection(
-    collectionMap: Record<string, { normal: number; foil: number }>,
-  ) {
-    if (!collectionMap || typeof collectionMap !== "object") return;
-    collection.value = { ...collectionMap };
-    localStorageService.saveCollection(collection.value);
-  }
-
   async function addToCollection(card: Card, quantity = 1, isFoil = false) {
     if (!isInitialized.value) {
       await initialize();
@@ -400,28 +388,12 @@ export const useCardStore = defineStore("cards", () => {
     return cards.value.filter((card) => matchesSearch(card.name, name));
   }
 
-  function loadCards(newCards: Card[]) {
-    cards.value = newCards;
-  }
-
   function setCards(newCards: Card[]) {
     if (!Array.isArray(newCards)) {
       return;
     }
 
     cards.value = newCards;
-  }
-
-  function selectCard(card: Card | null) {
-    selectedCard.value = card;
-  }
-
-  function setSearchQuery(query: string) {
-    searchQuery.value = query;
-  }
-
-  function setSelectedExtension(extension: string | null) {
-    selectedExtension.value = extension;
   }
 
   // Fonction de réinitialisation du store

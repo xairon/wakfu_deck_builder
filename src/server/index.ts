@@ -80,7 +80,7 @@ async function createServer() {
       err: any,
       req: express.Request,
       res: express.Response,
-      next: express.NextFunction,
+      _next: express.NextFunction,
     ) => {
       console.error("❌ Erreur serveur:", err);
       res.status(500).json({

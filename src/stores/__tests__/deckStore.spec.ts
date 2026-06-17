@@ -7,8 +7,6 @@ import {
   createMockActionCard,
   createMockHeroCard,
   createMockHavreSacCard,
-  createMockEquipmentCard,
-  createMockDeck,
 } from "tests/factories/card";
 import type { Card } from "@/types/cards";
 

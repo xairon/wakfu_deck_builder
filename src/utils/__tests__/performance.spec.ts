@@ -6,9 +6,7 @@ import {
   measure,
   measureMethod,
   usePerformanceMonitoring,
-  usePerformanceStats,
 } from "../performance";
-import { ref } from "vue";
 
 describe("Système de monitoring des performances", () => {
   beforeEach(() => {
