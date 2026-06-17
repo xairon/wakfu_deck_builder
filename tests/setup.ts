@@ -40,7 +40,8 @@ beforeEach(() => {
 
   // Mock des APIs du navigateur
   global.ResizeObserver = ResizeObserverMock;
-  global.IntersectionObserver = IntersectionObserverMock;
+  global.IntersectionObserver =
+    IntersectionObserverMock as unknown as typeof IntersectionObserver;
 
   // Mock de localStorage
   const localStorageMock = {
@@ -59,7 +60,7 @@ beforeEach(() => {
     onload: () => void = () => {};
     onerror: () => void = () => {};
     src: string = "";
-  };
+  } as unknown as typeof Image;
 });
 
 // Nettoyage après chaque test

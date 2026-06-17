@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint & Types
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -29,6 +29,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+
+      - name: Type check (vue-tsc)
+        run: npm run type-check
 
       - name: Validate data (schémas + références)
         run: npm run validate-data

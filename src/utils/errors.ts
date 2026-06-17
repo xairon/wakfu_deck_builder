@@ -168,17 +168,20 @@ export function validate<T>(
   schema: Record<keyof T, (value: any) => boolean>,
   options: {
     throwOnError?: boolean;
-    customMessages?: Record<keyof T, string>;
+    customMessages?: Partial<Record<keyof T, string>>;
   } = {},
 ): { isValid: boolean; errors: string[] } {
-  const { throwOnError = false, customMessages = {} } = options;
+  const {
+    throwOnError = false,
+    customMessages = {} as Partial<Record<keyof T, string>>,
+  } = options;
   const errors: string[] = [];
 
-  for (const [key, validator] of Object.entries(schema)) {
-    if (!validator(data[key as keyof T])) {
+  for (const key of Object.keys(schema) as (keyof T)[]) {
+    const validator = schema[key];
+    if (!validator(data[key])) {
       const message =
-        customMessages[key as keyof T] ||
-        `Validation failed for ${String(key)}`;
+        customMessages[key] || `Validation failed for ${String(key)}`;
       errors.push(message);
     }
   }

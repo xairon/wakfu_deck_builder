@@ -45,7 +45,7 @@ export async function loadCommunityDecks(): Promise<SourcedDeck[]> {
     console.error("Chargement des decks communautaires impossible:", err);
     cache = [];
   }
-  return cache;
+  return cache ?? [];
 }
 
 /** Regroupe les decks par source. */

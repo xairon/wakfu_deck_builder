@@ -18,13 +18,13 @@ describe("Validation des decks", () => {
     mainType: "Allié",
     subTypes: [],
     extension: {
-      name: "Test",
+      name: "Astrub",
       id: "test",
     },
     rarity: "Commune",
     stats: {
-      ap: 2,
-      hp: 2,
+      pa: 2,
+      pv: 2,
     },
     artists: [],
   };
@@ -35,7 +35,7 @@ describe("Validation des decks", () => {
     mainType: "Action",
     subTypes: [],
     extension: {
-      name: "Test",
+      name: "Astrub",
       id: "test",
     },
     rarity: "Commune",
@@ -49,15 +49,15 @@ describe("Validation des decks", () => {
     mainType: "Héros",
     subTypes: [],
     extension: {
-      name: "Test",
+      name: "Astrub",
       id: "test",
     },
     rarity: "Commune",
     class: "Guerrier",
     recto: {
       stats: {
-        ap: 3,
-        hp: 3,
+        pa: 3,
+        pv: 3,
       },
       effects: [],
       keywords: [],
@@ -71,7 +71,7 @@ describe("Validation des decks", () => {
     mainType: "Havre-Sac",
     subTypes: [],
     extension: {
-      name: "Test",
+      name: "Astrub",
       id: "test",
     },
     rarity: "Commune",
@@ -87,8 +87,8 @@ describe("Validation des decks", () => {
     hero: null,
     havreSac: null,
     cards,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
 
   /**
@@ -336,7 +336,7 @@ describe("Validation des decks", () => {
 
   describe("Pas d'exigence de type (aucune règle ne l'impose)", () => {
     it("devrait accepter un deck sans Action ni Allié", () => {
-      const equip: Card = { ...mockCard, mainType: "Équipement" };
+      const equip = { ...mockCard, mainType: "Équipement" } as Card;
       const cards: Array<{ card: Card; quantity: number }> = [];
       for (let i = 1; i <= 16; i++) {
         cards.push({

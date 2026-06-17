@@ -7,7 +7,7 @@
     <div
       class="toast p-4 rounded-lg shadow-lg flex items-center gap-3 transition-all duration-300"
       :class="[
-        typeClasses[type],
+        typeClasses[type ?? 'info'],
         {
           'translate-y-0 opacity-100': isVisible,
           'translate-y-4 opacity-0': !isVisible,

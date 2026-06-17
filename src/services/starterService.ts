@@ -5,7 +5,6 @@
 import {
   OFFICIAL_DECKS,
   getCardQuantitiesForAllDecks,
-  type OfficialDeck,
 } from "@/data/officialDecks";
 import { useCardStore } from "@/stores/cardStore";
 import { useDeckStore } from "@/stores/deckStore";
@@ -228,7 +227,7 @@ export async function importDeckCardsToCollection(deckId: string): Promise<{
     try {
       // Recherche intelligente avec mapping
       const card = findCardWithMapping(
-        cardEntry.name,
+        cardEntry.name ?? "",
         cardEntry.type,
         cardStore,
       );
@@ -268,7 +267,7 @@ export async function importDeckCardsToCollection(deckId: string): Promise<{
       deck.description?.replace(
         " (Cartes à importer)",
         " (Cartes importées)",
-      ) || `${officialData.description} (Cartes importées)`;
+      ) || `${officialData.name} (Cartes importées)`;
     deck.updatedAt = new Date().toISOString();
 
     // Sauvegarder le deck avec la description mise à jour
@@ -617,178 +616,10 @@ export function isDeckCardsImported(deckId: string): boolean {
   ];
 
   return cardsToCheck.every((cardEntry) => {
-    const card = findCardWithMapping(cardEntry.name, "card", cardStore);
+    const card = findCardWithMapping(cardEntry.name ?? "", "card", cardStore);
     if (!card) return false;
 
     const currentQuantity = cardStore.getCardQuantity(card.id) || 0;
     return currentQuantity >= cardEntry.quantity;
   });
-}
-
-/**
- * Crée les decks officiels dans la liste de l'utilisateur
- */
-export async function initializeOfficialDecks(): Promise<{
-  decksCreated: number;
-  errors: string[];
-  warnings: string[];
-}> {
-  const deckStore = useDeckStore();
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  let decksCreated = 0;
-
-  for (const officialDeck of OFFICIAL_DECKS) {
-    try {
-      // Vérifier si le deck existe déjà
-      const existingDeck = deckStore.decks.find(
-        (deck) =>
-          deck.name === officialDeck.name || deck.id === officialDeck.id,
-      );
-
-      if (existingDeck) {
-        continue;
-      }
-
-      // Créer le deck
-      const newDeck = await createDeckFromOfficial(officialDeck);
-
-      if (newDeck) {
-        deckStore.decks.push(newDeck);
-        decksCreated++;
-      } else {
-        const error = `Impossible de creer le deck: ${officialDeck.name}`;
-        errors.push(error);
-        console.error(error);
-      }
-    } catch (error) {
-      const errorMsg = `Erreur lors de la creation du deck "${officialDeck.name}": ${error}`;
-      errors.push(errorMsg);
-      console.error(errorMsg);
-    }
-  }
-
-  // Sauvegarder les decks
-  try {
-    deckStore.saveDecks();
-  } catch (error) {
-    const errorMsg = `Erreur lors de la sauvegarde des decks: ${error}`;
-    errors.push(errorMsg);
-    console.error(errorMsg);
-  }
-
-  return { decksCreated, errors, warnings };
-}
-
-/**
- * Crée un deck Wakfu TCG à partir d'un deck officiel
- */
-async function createDeckFromOfficial(
-  officialDeck: OfficialDeck,
-): Promise<Deck | null> {
-  const deckStore = useDeckStore();
-
-  try {
-    // Trouver le héros
-    const hero = deckStore.findCardByName(officialDeck.hero);
-    if (!hero || hero.mainType !== "Héros") {
-      return null;
-    }
-
-    // Trouver le havre-sac
-    const havreSac = deckStore.findCardByName(officialDeck.havreSac);
-    if (!havreSac || havreSac.mainType !== "Havre-Sac") {
-      return null;
-    }
-
-    // Construire la liste des cartes
-    const cards: Record<string, number> = {};
-    let totalCards = 0;
-
-    for (const cardEntry of officialDeck.cards) {
-      if (cardEntry.type === "card") {
-        const card = deckStore.findCardByName(cardEntry.name);
-        if (card) {
-          cards[card.id] = cardEntry.quantity;
-          totalCards += cardEntry.quantity;
-        }
-      }
-    }
-
-    // Créer le deck
-    const deck: Deck = {
-      id: `official-${officialDeck.id}-${Date.now()}`,
-      name: officialDeck.name,
-      description: officialDeck.description,
-      hero: hero,
-      havreSac: havreSac,
-      cards: cards,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      isOfficial: true, // Marquer comme deck officiel
-      extension: officialDeck.extension,
-    };
-
-    return deck;
-  } catch (error) {
-    console.error(
-      `Erreur lors de la creation du deck ${officialDeck.name}:`,
-      error,
-    );
-    return null;
-  }
-}
-
-/**
- * Initialisation complète pour les nouveaux utilisateurs
- */
-export async function performFullInitialization(): Promise<InitializationResult> {
-  const result: InitializationResult = {
-    success: false,
-    cardsAdded: 0,
-    decksCreated: 0,
-    errors: [],
-    warnings: [],
-  };
-
-  try {
-    // 1. Initialiser la collection
-    const collectionResult = await initializeCollectionWithOfficialCards();
-    result.cardsAdded = collectionResult.cardsAdded;
-    result.errors.push(...collectionResult.errors);
-    result.warnings.push(...collectionResult.warnings);
-
-    // 2. Créer les decks officiels
-    const decksResult = await initializeOfficialDecks();
-    result.decksCreated = decksResult.decksCreated;
-    result.errors.push(...decksResult.errors);
-    result.warnings.push(...decksResult.warnings);
-
-    // 3. Marquer l'initialisation comme terminée
-    localStorage.setItem(
-      "wakfu-initialization-completed",
-      Date.now().toString(),
-    );
-
-    result.success = result.errors.length === 0;
-  } catch (error) {
-    result.errors.push(`Erreur critique lors de l'initialisation: ${error}`);
-    console.error("Erreur critique lors de l'initialisation:", error);
-  }
-
-  return result;
-}
-
-/**
- * Vérifie si l'initialisation a déjà été effectuée
- */
-export function isInitializationCompleted(): boolean {
-  return localStorage.getItem("wakfu-initialization-completed") !== null;
-}
-
-/**
- * Force une nouvelle initialisation (pour debug ou réinitialisation)
- */
-export function resetInitialization(): void {
-  localStorage.removeItem("wakfu-initialization-completed");
 }

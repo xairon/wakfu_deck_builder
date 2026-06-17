@@ -5,8 +5,6 @@
 // pollués, éléments en minuscules).
 const CACHE_KEY = "wakfu-cards-cache-v17"; // v17 : bus de declenchement + passe de Dommages + ops de combat (lot C)
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000;
 
 const EXTENSION_FILES = [
   "amakna",
@@ -142,64 +140,6 @@ function normalizeCardElements(card: any): void {
         return { ...kw, name };
       })
       .filter((kw: any) => kw && CANONICAL_KEYWORDS.has(kw.name));
-  }
-}
-
-function extractElement(card: Card): string | null {
-  const elements = ["Air", "Eau", "Feu", "Terre"];
-
-  // Vérifier dans les effets pour les ressources élémentaires
-  for (const effect of card.effects || []) {
-    for (const element of elements) {
-      if (effect.includes(`Ressource ${element}`)) {
-        return element;
-      }
-    }
-  }
-
-  // Vérifier dans les mots-clés pour les éléments purs (sans "Résistance")
-  for (const keyword of card.keywords || []) {
-    for (const element of elements) {
-      if (keyword === element || keyword.startsWith(`${element} :`)) {
-        return element;
-      }
-    }
-  }
-
-  return null;
-}
-
-async function loadCardsFromFile(filePath: string): Promise<Card[]> {
-  try {
-    const response = await fetch(filePath);
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-    const cards: Card[] = await response.json();
-    return cards.map((card) => {
-      const normalized = {
-        ...card,
-        mainType: normalizeCardType(card.mainType),
-        element: extractElement(card),
-      };
-      normalizeCardElements(normalized);
-      return normalized;
-    });
-  } catch (error) {
-    console.error(`Erreur lors du chargement de ${filePath}:`, error);
-    throw error;
-  }
-}
-
-async function loadFile(file: string, retryCount = 0): Promise<Card[]> {
-  try {
-    return await loadCardsFromFile(file);
-  } catch (error) {
-    if (retryCount < MAX_RETRIES) {
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
-      return loadFile(file, retryCount + 1);
-    }
-    throw error;
   }
 }
 
@@ -425,14 +365,15 @@ export async function testJsonLoading(extension: string): Promise<any> {
     } catch (parseError) {
       return {
         success: false,
-        error: parseError.message,
+        error:
+          parseError instanceof Error ? parseError.message : String(parseError),
         textSample: text.substring(0, 100),
       };
     }
   } catch (error) {
     return {
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }

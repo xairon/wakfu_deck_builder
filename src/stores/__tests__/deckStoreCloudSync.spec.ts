@@ -29,8 +29,8 @@ vi.mock("@/services/cloudSync", () => ({
   loadDecksFromCloud: (...a: any[]) => loadDecksFromCloud(...a),
   saveDecksToCloud: (...a: any[]) => saveDecksToCloud(...a),
   deleteDeckFromCloud: (...a: any[]) => deleteDeckFromCloud(...a),
-  deckToCloud: (...a: any[]) => deckToCloud(...a),
-  cloudToDeck: (...a: any[]) => cloudToDeck(...a),
+  deckToCloud: (...a: any[]) => deckToCloud(...(a as [any])),
+  cloudToDeck: (...a: any[]) => cloudToDeck(...(a as [any])),
 }));
 vi.mock("@/stores/authStore", () => ({
   useAuthStore: () => ({

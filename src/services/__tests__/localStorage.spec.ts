@@ -87,7 +87,7 @@ describe("localStorage service", () => {
       const input = [
         { safe: 1, __proto__: "bad" },
         { constructor: "bad", ok: true },
-      ];
+      ] as Record<string, unknown>[];
       const result = stripDangerousKeys(input) as Record<string, unknown>[];
       expect(result).toEqual([{ safe: 1 }, { ok: true }]);
     });

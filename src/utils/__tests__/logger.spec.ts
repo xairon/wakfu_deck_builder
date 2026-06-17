@@ -91,7 +91,7 @@ describe("Logger", () => {
     it("devrait limiter le nombre de logs", () => {
       // Générer plus de logs que la limite
       for (let i = 0; i < 1100; i++) {
-        logger.debug("test", `Log ${i}`);
+        logger.debug("ui", `Log ${i}`);
       }
 
       const allLogs = logger.getLogs();
@@ -99,7 +99,7 @@ describe("Logger", () => {
     });
 
     it("devrait vider les logs", () => {
-      logger.debug("test", "Test log");
+      logger.debug("ui", "Test log");
       expect(logger.getLogs()).toHaveLength(1);
 
       logger.clearLogs();
@@ -111,10 +111,10 @@ describe("Logger", () => {
     it("devrait calculer le taux d'erreur", () => {
       // 2 erreurs sur 10 logs = 20% de taux d'erreur
       for (let i = 0; i < 8; i++) {
-        logger.info("test", `Log ${i}`);
+        logger.info("ui", `Log ${i}`);
       }
-      logger.error("test", "Error 1");
-      logger.error("test", "Error 2");
+      logger.error("ui", "Error 1");
+      logger.error("ui", "Error 2");
 
       const errorRate = logger.getErrorRate();
       expect(errorRate).toBe(0.2);
@@ -128,7 +128,7 @@ describe("Logger", () => {
 
   describe("Export", () => {
     it("devrait exporter les logs au format JSON", () => {
-      logger.info("test", "Test log");
+      logger.info("ui", "Test log");
       const exported = logger.exportLogs();
 
       expect(exported).toBeTypeOf("string");
@@ -141,7 +141,7 @@ describe("Logger", () => {
   describe("Formatage des messages", () => {
     it("devrait inclure les données additionnelles", () => {
       const data = { key: "value" };
-      logger.info("test", "Test with data", data);
+      logger.info("ui", "Test with data", data);
 
       const logs = logger.getLogs();
       expect(logs[0].data).toEqual(data);
@@ -149,7 +149,7 @@ describe("Logger", () => {
 
     it("devrait formater correctement les erreurs", () => {
       const error = new Error("Test error");
-      logger.error("test", "Error occurred", error);
+      logger.error("ui", "Error occurred", error);
 
       const logs = logger.getLogs();
       expect(logs[0].error?.message).toBe("Test error");
@@ -181,7 +181,7 @@ describe("Logger", () => {
   describe("Timestamps", () => {
     it("devrait ajouter des timestamps précis", () => {
       const before = Date.now();
-      logger.info("test", "Test timestamp");
+      logger.info("ui", "Test timestamp");
       const after = Date.now();
 
       const logs = logger.getLogs();

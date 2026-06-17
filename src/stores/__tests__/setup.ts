@@ -6,5 +6,5 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  setActivePinia(null);
+  setActivePinia(undefined);
 });
