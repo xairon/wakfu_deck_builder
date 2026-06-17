@@ -10,6 +10,7 @@
     }"
     :style="{ '--spine': spine }"
     :aria-label="ariaLabel"
+    :data-testid="`card-${instance.instanceId}`"
     @click="onClick"
     @dblclick="emit('zoom')"
     @mouseenter="onEnter"

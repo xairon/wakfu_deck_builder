@@ -803,6 +803,21 @@ function moveSelected(
 ): void {
   const inst = selectedInst.value;
   if (!inst) return;
+  // Jouer depuis la main (clavier/clic) : même chemin que le glisser-déposer,
+  // via playFromHand (légalité + coût + inclinaison des Ressources), et non un
+  // moveTo brut qui contournerait les règles. Les autres déplacements
+  // (Monde→Main, Défausser, Pioche, ou une source hors main) restent en moveTo.
+  const toPlay = zone === "monde" || zone === "havreSac";
+  if (
+    store.assist &&
+    toPlay &&
+    inst.location.zone === "main" &&
+    inst.owner === me.value
+  ) {
+    store.playFromHand(inst.instanceId);
+    selectedId.value = null;
+    return;
+  }
   const ref =
     zone === "monde" ? { zone } : ({ zone, owner: inst.owner } as const);
   store.moveTo(inst.instanceId, ref, position);
