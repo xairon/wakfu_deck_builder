@@ -87,15 +87,23 @@ au fur et à mesure.
   avec `data-testid` sur la barre de combat (`combat-confirm`/`resolve`/…) et
   un `data-combat-role` sur les `.gslot`.
 - [ ] **P3.3** a11y automatisée : `@axe-core/playwright`, scan des pages clés
-      (`/`, `/collection`, `/deck-builder`, `/play/table`).
+      (`/`, `/collection`, `/deck-builder`, `/play/table`). **Bloqué dans cet
+      environnement** : `npm install -D @axe-core/playwright` échoue
+      (`UNABLE_TO_VERIFY_LEAF_SIGNATURE` — interception TLS du registre). À
+      installer hors sandbox, puis ajouter le spec (scan + assertions sur un jeu
+      de règles ciblé, en excluant `color-contrast` — thème néon volontaire).
 - [x] **P3.4** ✅ Les 7 fichiers `.spec.ts.disabled` (schéma carte périmé)
       supprimés (avec P3.1). Réécriture éventuelle DeckBuilder/DeckDrawSimulator
       repliée dans P3.5 (tests composants).
-- [ ] **P3.5** Tests composants jeu : `SeatHud`, `GameCard` + test store
-      `tutorialStore` (cycle decouverte : setup → avancement d'étapes).
-- [ ] **P3.6** a11y clavier : chemin pour _jouer_ une carte au clavier qui passe
-      par `playFromHand` (coût/légalité) et non `moveTo` brut (`GameBoard` barre
-      d'action « → Monde »).
+- [x] **P3.5** ✅ Tests composants Vitest + @vue/test-utils : `SeatHud`
+      (PV/NIV, siège actif, bump +/-), `GameCard` (badges dommages/niveau/PV,
+      face cachée, select/zoom) + store `tutorialStore` (découverte :
+      start/total=12/next/skip→done, échec propre sans catalogue,
+      mechanicLessons). +`data-testid="card-{instanceId}"` sur GameCard.
+- [x] **P3.6** ✅ La barre d'action « → Monde »/« → Socle » jouait une carte de
+      la main via `moveTo` brut (sans coût ni légalité). Elle passe désormais par
+      `playFromHand`, comme le glisser-déposer — le chemin clavier/clic respecte
+      les règles. Couvert par un test (`GameBoard.spec`).
 
 ## Phase 4 — Polish, code mort & docs (basse)
 
