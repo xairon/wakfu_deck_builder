@@ -64,18 +64,23 @@ au fur et à mesure.
 
 ## Phase 3 — Type-check, tests & a11y (haute/moyenne)
 
-- [ ] **P3.1** Corriger les ~20 erreurs `vue-tsc --noEmit` (CardDetailsView,
-      CardsView, CollectionView, comparaisons mortes « Havre-sac », `tests/setup.ts`,
-      `tsconfig` types Vitest/Node) ; ajouter script `type-check` + job CI.
+- [x] **P3.1** ✅ Type-check vert. Réalité : le `tsconfig` était en `NodeNext`
+      (faux pour Vite) et masquait **188** erreurs réelles (pas ~20). Corrigé en
+      `ESNext`/`Bundler`, puis 188 → 0 : purge de ~20 fichiers morts + 2 clusters
+      morts **cassés à l'exécution** (cardLoader `loadFile`/`loadCardsFromFile`/
+      `extractElement` qui traitaient effets/mots-clés comme des chaînes alors que
+      ce sont des objets — le vrai chargeur est `loadExtensionCards` ; chaîne
+      d'init `starterService`) + narrowings. Script `type-check` ajouté et **gate
+      CI** branché (étape `vue-tsc` dans le job « Lint & Types »). 603 tests, build OK.
 - [ ] **P3.2** E2E `/play/table` : parcours sandbox → poser Allié → attaque →
       blocage → résolution → vérif dégâts/leveling ; + parcours tutoriel. data-testid
       sur les éléments clés ; supprimer les `if(count>0)` masquants et `waitForTimeout`
       ; corriger la casse « Mes Decks » → « Mes decks ».
 - [ ] **P3.3** a11y automatisée : `@axe-core/playwright`, scan des pages clés
       (`/`, `/collection`, `/deck-builder`, `/play/table`).
-- [ ] **P3.4** 7 fichiers `.spec.ts.disabled` : supprimer les morts (schéma carte
-      périmé) ; réécrire 1–2 utiles (DeckBuilder, DeckDrawSimulator) sur les factories
-      actuelles.
+- [x] **P3.4** ✅ Les 7 fichiers `.spec.ts.disabled` (schéma carte périmé)
+      supprimés (avec P3.1). Réécriture éventuelle DeckBuilder/DeckDrawSimulator
+      repliée dans P3.5 (tests composants).
 - [ ] **P3.5** Tests composants jeu : `SeatHud`, `GameCard` + test store
       `tutorialStore` (cycle decouverte : setup → avancement d'étapes).
 - [ ] **P3.6** a11y clavier : chemin pour _jouer_ une carte au clavier qui passe
