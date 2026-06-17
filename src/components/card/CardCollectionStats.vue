@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import type { CollectionStats } from "@/types/collection";
 
-const props = defineProps<{
+defineProps<{
   stats: CollectionStats;
 }>();
 

@@ -579,7 +579,7 @@ import { useCardStore } from "@/stores/cardStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { isHeroCard } from "@/types/cards";
-import type { Card, HeroCard } from "@/types/cards";
+import type { Card } from "@/types/cards";
 import { useMemoize } from "@vueuse/core";
 import ElementIcon from "@/components/elements/ElementIcon.vue";
 import { ELEMENTS, type Element } from "@/services/elementService";
@@ -609,7 +609,6 @@ const minLevel = ref<number | null>(null);
 const maxLevel = ref<number | null>(null);
 const minCost = ref<number | null>(null);
 const maxCost = ref<number | null>(null);
-const selectedKeywords = ref<string[]>([]);
 const showVerso = ref(false);
 const selectedCard = ref<Card | null>(null);
 
@@ -634,11 +633,6 @@ const showQuickAdd = ref(false);
 const isModalOpen = ref(false);
 
 const isAuthenticated = computed(() => authStore.isAuthenticated);
-
-// État pour la synchronisation
-const isSyncing = ref(false);
-const syncMessage = ref("");
-const syncError = ref("");
 
 // Ajout d'une référence pour suivre les erreurs d'image
 const imageHasError = ref(false);
@@ -1123,27 +1117,6 @@ onMounted(async () => {
     });
   }
 });
-
-function resetFilters() {
-  searchQuery.value = "";
-  selectedExtension.value = "";
-  selectedMainType.value = "";
-  selectedSubType.value = "";
-  selectedRarity.value = "";
-  selectedElement.value = "";
-  minLevel.value = null;
-  maxLevel.value = null;
-  selectedSortField.value = "number";
-  isDescending.value = false;
-  hideNotOwned.value = false;
-
-  toast.info("Filtres réinitialisés");
-}
-
-function disableHideNotOwned() {
-  hideNotOwned.value = false;
-  toast.success("Affichage des cartes non possédées activé");
-}
 
 // Fonction pour gérer les erreurs d'image
 function handleImageError() {

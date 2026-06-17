@@ -1,4 +1,3 @@
-import { ref } from "vue";
 import { useStorage } from "@vueuse/core";
 
 const THEME_KEY = "wakfu-theme";

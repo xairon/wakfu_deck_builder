@@ -11,8 +11,6 @@ import type {
   CardRarity,
   ExtensionInfo,
   BaseStats,
-  CardEffect,
-  CardKeywordInfo,
 } from "@/types/cards";
 
 const defaultExtension: ExtensionInfo = {

@@ -112,10 +112,15 @@ au fur et à mesure.
   `DEPLOYMENT.md` (migrations 0003/0004/0005) ; `CDC-MODULE-JEU-ETAT.md`
   (3 lignes périmées : 103.3, 2342, PA/PM mods) ; `AUDIT-2026-06.md` #13
   (Otomaï image présente).
-- [ ] **P4.2 Code mort / lint** : retirer `src/stores/sync.ts` (non câblé) et
-      `src/data/keywords.ts` (non importé) — ou les brancher ; câbler/retirer les
-      handlers orphelins `CollectionView` (`resetFilters`, `disableHideNotOwned`) ;
-      nettoyer les `no-unused-vars` notables ; viser `--max-warnings` raisonnable.
+- [~] **P4.2 Code mort / lint** : ✅ `sync.ts` (supprimé en P3.1) ; `keywords.ts`
+  (non importé) supprimé ; handlers orphelins `CollectionView`
+  (`resetFilters`/`disableHideNotOwned` + refs `selectedKeywords`/sync mortes) ;
+  imports/consts/vars morts (`cardStore`, `useTheme`, `verbs`, `props`
+  composants, factories, `starterService`). **Lint 110 → 91 warnings**, 0 erreur.
+  _Reste_ : ~25 `no-unused-vars` dispersés (surtout imports de tests) + ~70
+  `no-explicit-any` (volontaires, surtout tests) ; 5 fonctions `cardStore` non
+  câblées (API potentielle, à trancher) ; bloc d'init mort `starterService`
+  (exporté donc non signalé par le lint — suppression soignée à part).
 - [~] **P4.3 Infra polish** : ✅ `robots.txt` (pages publiques indexables, routes
   privées `/auth`/`/profil`/`/deck-builder` exclues). _Reste_ : `vercel.json`
   CSP + Permissions-Policy — **à valider contre le déploiement live** (Supabase,

@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { useElements, type Element } from "@/services/elementService";
 
-const props = defineProps<{
+defineProps<{
   element: Element;
   size?: "sm" | "md" | "lg";
 }>();

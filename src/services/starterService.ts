@@ -8,7 +8,6 @@ import {
 } from "@/data/officialDecks";
 import { useCardStore } from "@/stores/cardStore";
 import { useDeckStore } from "@/stores/deckStore";
-import type { Deck } from "@/types/cards";
 
 export interface InitializationResult {
   success: boolean;
@@ -239,10 +238,8 @@ export async function importDeckCardsToCollection(deckId: string): Promise<{
         continue;
       }
 
-      // Ajouter TOUTES les cartes du deck à la collection (simulation cartes physiques)
-      const currentQuantity = cardStore.getCardQuantity(card.id) || 0;
-
-      // Ajouter tous les exemplaires du deck, indépendamment de ce qu'on possède déjà
+      // Ajouter TOUTES les cartes du deck à la collection (simulation cartes
+      // physiques), indépendamment de ce qu'on possède déjà.
       await cardStore.addToCollection(card, cardEntry.quantity, false);
       cardsAdded++;
     } catch (error) {

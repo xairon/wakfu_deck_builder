@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { matchesSearch } from "@/utils/text";
 import { ref, shallowRef, computed } from "vue";
-import type { Card, HeroCard } from "@/types/cards";
+import type { Card } from "@/types/cards";
 import { loadAllCards } from "@/services/cardLoader";
 import { useLocalStorage } from "@vueuse/core";
 import { localStorageService } from "@/services/localStorage";
@@ -37,7 +37,6 @@ export const useCardStore = defineStore("cards", () => {
   const isInitializing = ref(false);
   const isInitialized = ref(false);
   const initializationAttempts = ref(0);
-  const MAX_INIT_ATTEMPTS = 3;
   const selectedCard = ref<Card | null>(null);
   const searchQuery = ref("");
   const selectedExtension = ref<string | null>(null);
@@ -185,7 +184,7 @@ export const useCardStore = defineStore("cards", () => {
         }
 
         setCards(loadedCards);
-      } catch (loadError) {
+      } catch {
         // Fallback: essayer de charger depuis l'API
         const response = await fetch("/api/collection/initial");
 

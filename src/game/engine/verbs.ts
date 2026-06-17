@@ -15,7 +15,6 @@ import type { Seat, ZoneRef } from "../types/zones";
 import { permutationFromSeed } from "./rng.ts";
 
 const top: Position = { at: "top" };
-const bottom: Position = { at: "bottom" };
 const anyPos: Position = { at: "any" };
 
 export function move(
