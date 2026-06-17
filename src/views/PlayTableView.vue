@@ -29,7 +29,10 @@
     <div class="h-px w-full bg-base-content/20"></div>
 
     <!-- Jeu en ligne (bêta) -->
-    <section class="border border-primary/30 bg-primary/[0.04] p-5">
+    <section
+      v-if="ONLINE_PLAY_ENABLED"
+      class="border border-primary/30 bg-primary/[0.04] p-5"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p class="eyebrow text-primary">Jouer en ligne (bêta)</p>
@@ -591,6 +594,9 @@ function launch(): void {
 // ── Jeu en ligne (lobby) ──────────────────────────────────────────────────────
 const authStore = useAuthStore();
 const onlineTransport = { submit: submitEvent, subscribe: subscribeToGame };
+// v1 : le jeu en ligne (bêta) est masqué — les transitions de match ne sont pas
+// encore synchronisées (cf. roadmap, épopée v1.1). Code conservé derrière ce flag.
+const ONLINE_PLAY_ENABLED = false;
 const onlinePanel = ref<"create" | "join" | null>(null);
 const onlineDeckId = ref<string | null>(null);
 const joinCode = ref("");

@@ -30,23 +30,23 @@ au fur et à mesure.
 
 ## Phase 1 — Bugs visibles (haute)
 
-- [ ] **P1.1** Decks officiels : ne plus auto-injecter au démarrage (`App.vue`
-      `initializeOfficialDecksList`) ; unifier `createDeckFromOfficial` sur le format
-      `DeckCard[]` du store ; garde anti-doublon à l'import (`OfficialDecksView`).
-      _Fait quand :_ « Mes decks » vide pour un nouvel utilisateur ; réimport = pas de
-      doublon ; aucun deck au format `Record<string,number>`.
-- [ ] **P1.2** Reset mot de passe : écran de saisie du nouveau mot de passe au
-      retour du lien (event `PASSWORD_RECOVERY` / `updateUser`). _Fait quand :_ le
-      flux « Mot de passe oublié → e-mail → nouveau mdp » aboutit.
-- [ ] **P1.3** Masquer le jeu en ligne (DEC-1) : panneau « Jouer en ligne (bêta) »
-      derrière un flag désactivé par défaut. _Fait quand :_ le lobby n'expose plus
-      l'en-ligne ; le code reste compilable/testé.
-- [ ] **P1.4** Leçons par mécanique : section « Apprendre une mécanique » dans le
-      lobby itérant `tutorial.mechanicLessons` → `startLesson(id)`. _Fait quand :_ les
-      leçons combat/leveling sont lançables depuis l'UI.
-- [ ] **P1.5** Clés localStorage namespacées : `isFirstTimeUser` /
-      `isInitializationCompleted` via `storageNamespace` (par compte). _Fait quand :_
-      plus de clés en dur, flag d'init par utilisateur.
+- [x] **P1.1** Decks officiels : ne plus auto-injecter au démarrage (call retiré
+      d'`App.vue`) ; garde anti-doublon à l'import (`OfficialDecksView`).
+      `createDeckFromOfficial` (format hérité) est du **code mort** → suppression
+      en P4.2. ✅ « Mes decks » vide pour un nouvel utilisateur ; réimport = pas de
+      doublon.
+- [x] **P1.2** Reset mot de passe : écran de saisie du nouveau mot de passe au
+      retour du lien (`PASSWORD_RECOVERY` → `authStore.passwordRecovery` → formulaire
+      `updatePassword`). ✅ Le flux n'est plus une impasse.
+- [x] **P1.3** Jeu en ligne masqué (DEC-1) : panneau derrière le flag
+      `ONLINE_PLAY_ENABLED = false`. ✅ Lobby sobre ; code conservé/compilable.
+- [~] **P1.4** Leçons par mécanique : **DÉFÉRÉ** — l'utilisateur a explicitement
+  demandé de **ne pas les mettre sur la front page** (« reste sobre », commit
+  b127c83). Le code des leçons reste latent (pour une future page « École » hors
+  front page). NE PAS re-surfacer dans le lobby.
+- [~] **P1.5** → **subsumé dans P4.2** : `isFirstTimeUser`/`isInitializationCompleted`
+  (clés non namespacées) sont du **code mort** après P1.1 (aucun appelant) → la
+  faille ne se déclenche pas ; suppression du code mort en P4.2.
 
 ## Phase 2 — Règles & cohérence (moyenne)
 
