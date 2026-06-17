@@ -43,10 +43,13 @@ export interface AuthProvider {
   getSession(): Promise<AuthSession | null>;
 
   /**
-   * S'abonne aux changements d'état d'authentification.
-   * Retourne une fonction de désinscription.
+   * S'abonne aux changements d'état d'authentification. `event` reflète le
+   * type d'événement du fournisseur (ex. "PASSWORD_RECOVERY" au retour d'un
+   * lien de réinitialisation). Retourne une fonction de désinscription.
    */
-  onAuthStateChange(cb: (session: AuthSession | null) => void): () => void;
+  onAuthStateChange(
+    cb: (session: AuthSession | null, event?: string) => void,
+  ): () => void;
 
   /** Crée un compte. */
   signUp(email: string, password: string): Promise<SignUpResult>;
@@ -59,6 +62,9 @@ export interface AuthProvider {
 
   /** Envoie un e-mail de réinitialisation (cloud uniquement). */
   resetPassword(email: string): Promise<void>;
+
+  /** Définit un nouveau mot de passe pour la session courante (post-recovery). */
+  updatePassword(newPassword: string): Promise<void>;
 }
 
 /** Erreur d'authentification porteuse d'un message destiné à l'UI (en français). */

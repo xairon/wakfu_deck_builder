@@ -6,7 +6,14 @@
         <p class="eyebrow text-primary">L'Almanach des Douze</p>
         <div class="mt-4 border-t border-base-content"></div>
         <h1 class="py-5 font-display text-4xl sm:text-5xl">
-          Grimoire — {{ activeTab === "login" ? "Connexion" : "Inscription" }}
+          Grimoire —
+          {{
+            authStore.passwordRecovery
+              ? "Nouveau mot de passe"
+              : activeTab === "login"
+                ? "Connexion"
+                : "Inscription"
+          }}
         </h1>
         <div class="border-t border-base-content"></div>
         <p class="mt-4 text-base-content/65">
@@ -16,6 +23,7 @@
 
       <!-- Onglets : texte, soulignement cinabre actif (comme le masthead) -->
       <div
+        v-if="!authStore.passwordRecovery"
         class="mt-8 flex justify-center gap-8 border-b border-base-content/15 pb-px"
       >
         <button
@@ -66,9 +74,58 @@
         <p class="mt-1 text-sm text-base-content/80">{{ successMessage }}</p>
       </div>
 
+      <!-- Formulaire : nouveau mot de passe (retour du lien de réinitialisation) -->
+      <form
+        v-if="authStore.passwordRecovery"
+        @submit.prevent="handleUpdatePassword"
+        class="mt-6 space-y-5"
+      >
+        <p class="text-sm text-base-content/70">
+          Choisissez votre nouveau mot de passe pour finaliser la
+          réinitialisation.
+        </p>
+        <div class="form-control">
+          <label class="eyebrow mb-1.5 block" for="new-password">
+            Nouveau mot de passe
+          </label>
+          <input
+            id="new-password"
+            v-model="newPassword"
+            type="password"
+            placeholder="Au moins 6 caractères"
+            class="input input-bordered w-full"
+            required
+            autocomplete="new-password"
+            aria-required="true"
+          />
+        </div>
+        <div class="form-control">
+          <label class="eyebrow mb-1.5 block" for="new-password-confirm">
+            Confirmer le mot de passe
+          </label>
+          <input
+            id="new-password-confirm"
+            v-model="newPasswordConfirm"
+            type="password"
+            placeholder="Confirmez"
+            class="input input-bordered w-full"
+            required
+            autocomplete="new-password"
+            aria-required="true"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary w-full"
+          :disabled="isLoading"
+        >
+          {{ isLoading ? "…" : "Mettre à jour le mot de passe" }}
+        </button>
+      </form>
+
       <!-- Formulaire de connexion -->
       <form
-        v-if="activeTab === 'login'"
+        v-if="!authStore.passwordRecovery && activeTab === 'login'"
         @submit.prevent="handleLogin"
         class="mt-6 space-y-5"
       >
@@ -131,7 +188,7 @@
 
       <!-- Formulaire d'inscription -->
       <form
-        v-if="activeTab === 'register'"
+        v-if="!authStore.passwordRecovery && activeTab === 'register'"
         @submit.prevent="handleRegister"
         class="mt-6 space-y-5"
       >
@@ -222,6 +279,9 @@ const toast = useToast();
 const canResetPassword = true;
 
 function goAfterAuth() {
+  // En mode réinitialisation, on reste sur /auth pour saisir le nouveau mot de
+  // passe au lieu de rediriger vers la collection.
+  if (authStore.passwordRecovery) return;
   const redirect = route.query.redirect as string;
   router.push(redirect || "/collection");
 }
@@ -351,6 +411,33 @@ async function handleForgotPassword() {
   } catch (err) {
     errorMessage.value =
       err instanceof Error ? err.message : "Erreur lors de la reinitialisation";
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+// ── Définition du nouveau mot de passe (retour du lien de réinitialisation) ──
+const newPassword = ref("");
+const newPasswordConfirm = ref("");
+async function handleUpdatePassword() {
+  clearMessages();
+  if (newPassword.value.length < 6) {
+    errorMessage.value = "Le mot de passe doit faire au moins 6 caractères.";
+    return;
+  }
+  if (newPassword.value !== newPasswordConfirm.value) {
+    errorMessage.value = "Les mots de passe ne correspondent pas.";
+    return;
+  }
+  isLoading.value = true;
+  try {
+    await authStore.updatePassword(newPassword.value);
+    toast.success("Mot de passe mis à jour");
+    newPassword.value = "";
+    newPasswordConfirm.value = "";
+    goAfterAuth(); // passwordRecovery est maintenant false → redirige
+  } catch (err) {
+    errorMessage.value = friendlyAuthError(err);
   } finally {
     isLoading.value = false;
   }

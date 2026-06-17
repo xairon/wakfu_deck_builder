@@ -51,8 +51,8 @@ export function createSupabaseAuthProvider(): AuthProvider {
     },
 
     onAuthStateChange(cb): () => void {
-      const { data } = client.auth.onAuthStateChange((_event, session) => {
-        cb(mapSession(session));
+      const { data } = client.auth.onAuthStateChange((event, session) => {
+        cb(mapSession(session), event);
       });
       return () => data.subscription.unsubscribe();
     },
@@ -102,6 +102,11 @@ export function createSupabaseAuthProvider(): AuthProvider {
       const { error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo,
       });
+      if (error) throw new AuthError(error.message);
+    },
+
+    async updatePassword(newPassword: string): Promise<void> {
+      const { error } = await client.auth.updateUser({ password: newPassword });
       if (error) throw new AuthError(error.message);
     },
   };

@@ -16,6 +16,8 @@ export const useAuthStore = defineStore("auth", () => {
   const session = ref<AuthSession | null>(null);
   const loading = ref(true);
   const error = ref<string | null>(null);
+  /** Vrai au retour d'un lien de réinitialisation → afficher le formulaire mdp. */
+  const passwordRecovery = ref(false);
 
   let unsubscribe: (() => void) | null = null;
   let initPromise: Promise<void> | null = null;
@@ -88,8 +90,11 @@ export const useAuthStore = defineStore("auth", () => {
         if (existing?.user) {
           await hydrateForUser(existing.user.id);
         }
-        unsubscribe = provider.onAuthStateChange((next) => {
+        unsubscribe = provider.onAuthStateChange((next, event) => {
           setSession(next);
+          // Retour d'un lien de réinitialisation : on bascule en mode « nouveau
+          // mot de passe » (AuthView) au lieu de rediriger vers la collection.
+          if (event === "PASSWORD_RECOVERY") passwordRecovery.value = true;
           // Suit les changements (connexion via lien e-mail, refresh, logout…)
           void hydrateForUser(next?.user?.id ?? null);
         });
@@ -169,6 +174,17 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function updatePassword(newPassword: string) {
+    error.value = null;
+    try {
+      await getAuthProvider().updatePassword(newPassword);
+      passwordRecovery.value = false;
+    } catch (err) {
+      error.value = messageFrom(err, "Erreur de mise à jour du mot de passe");
+      throw err;
+    }
+  }
+
   function dispose() {
     if (unsubscribe) {
       unsubscribe();
@@ -181,6 +197,7 @@ export const useAuthStore = defineStore("auth", () => {
     session,
     loading,
     error,
+    passwordRecovery,
     isAuthenticated,
     userEmail,
     userId,
@@ -189,6 +206,7 @@ export const useAuthStore = defineStore("auth", () => {
     signIn,
     signOut,
     resetPassword,
+    updatePassword,
     dispose,
   };
 });
