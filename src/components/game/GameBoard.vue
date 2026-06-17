@@ -381,15 +381,17 @@
       >
         <span class="gcombat__step">
           {{
-            store.combat.step === "attackers"
-              ? "⚔ Choisis tes attaquants puis une cible adverse"
-              : store.combat.step === "strikes"
-                ? "🎯 Choisis le bloqueur qui encaisse la Force de l'attaquant en vert"
-                : store.combat.step === "riposte"
-                  ? "↩ La Cible riposte : choisis l'attaquant qu'elle frappe"
-                  : store.combat.pendingBlocker
-                    ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
-                    : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
+            store.combat.reactingSeat
+              ? `↩ Réaction de ${store.players[store.combat.reactingSeat].name} — joue puis « Fini de réagir »`
+              : store.combat.step === "attackers"
+                ? "⚔ Choisis tes attaquants puis une cible adverse"
+                : store.combat.step === "strikes"
+                  ? "🎯 Choisis le bloqueur qui encaisse la Force de l'attaquant en vert"
+                  : store.combat.step === "riposte"
+                    ? "↩ La Cible riposte : choisis l'attaquant qu'elle frappe"
+                    : store.combat.pendingBlocker
+                      ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
+                      : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
           }}
         </span>
         <span class="gcombat__info">
@@ -412,27 +414,40 @@
         </span>
         <div class="gcombat__btns">
           <button
-            v-if="store.combat.step === 'attackers'"
+            v-if="store.combat.reactingSeat"
             class="gbtn gbtn--accent"
-            :disabled="!store.combat.attackers.length || !store.combat.target"
-            @click="store.combatConfirmAttackers()"
+            @click="store.combatEndReaction()"
           >
-            Confirmer l'attaque
+            Fini de réagir
           </button>
-          <button
-            v-else-if="store.combat.step === 'blockers'"
-            class="gbtn gbtn--accent"
-            @click="store.combatResolve()"
-          >
-            Résoudre le combat
-          </button>
-          <button class="gbtn gbtn--ghost" @click="store.combatCancel()">
-            {{
-              store.combat.step === "attackers"
-                ? "Annuler"
-                : "Annuler l'attaque"
-            }}
-          </button>
+          <template v-else>
+            <button
+              v-if="store.combat.step === 'attackers'"
+              class="gbtn gbtn--accent"
+              :disabled="!store.combat.attackers.length || !store.combat.target"
+              @click="store.combatConfirmAttackers()"
+            >
+              Confirmer l'attaque
+            </button>
+            <template v-else-if="store.combat.step === 'blockers'">
+              <button class="gbtn gbtn--accent" @click="store.combatResolve()">
+                Résoudre le combat
+              </button>
+              <button
+                class="gbtn gbtn--ghost"
+                @click="store.combatOfferReaction()"
+              >
+                Laisser réagir l'adversaire
+              </button>
+            </template>
+            <button class="gbtn gbtn--ghost" @click="store.combatCancel()">
+              {{
+                store.combat.step === "attackers"
+                  ? "Annuler"
+                  : "Annuler l'attaque"
+              }}
+            </button>
+          </template>
         </div>
       </div>
     </Transition>
