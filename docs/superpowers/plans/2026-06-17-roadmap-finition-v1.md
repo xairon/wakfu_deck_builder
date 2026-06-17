@@ -72,10 +72,20 @@ au fur et à mesure.
       ce sont des objets — le vrai chargeur est `loadExtensionCards` ; chaîne
       d'init `starterService`) + narrowings. Script `type-check` ajouté et **gate
       CI** branché (étape `vue-tsc` dans le job « Lint & Types »). 603 tests, build OK.
-- [ ] **P3.2** E2E `/play/table` : parcours sandbox → poser Allié → attaque →
-      blocage → résolution → vérif dégâts/leveling ; + parcours tutoriel. data-testid
-      sur les éléments clés ; supprimer les `if(count>0)` masquants et `waitForTimeout`
-      ; corriger la casse « Mes Decks » → « Mes decks ».
+- [~] **P3.2** Largement fait. La suite e2e était **cassée** (texte d'accueil
+  périmé ; `/decks` & `/deck-builder` redirigés vers `/auth` en anonyme ;
+  build CI sans env Supabase → overlay « Configuration requise » masquant le
+  router-view ; assertions vacantes `if(count>0)`, `waitForTimeout`, casse
+  « Mes Decks »). **Réparée + étendue** : fixture d'auth (injection user
+  Pinia + nav SPA), de-masking complet, casse corrigée, `data-testid` (lobby,
+  passation/mulligan, plateau, coach tutoriel, thème), env Supabase factice
+  au build CI, `playwright.config` en 127.0.0.1. **Nouveaux tests** : lancement
+  sandbox lobby→plateau, lancement du tutoriel « découverte ». **25/25 verts**
+  en local (série ; CI = workers 1). _Reste_ : le test e2e du **flux de combat
+  via l'UI** (attaque→blocage→résolution→dégâts) — le plus fragile à piloter ;
+  les règles de combat sont déjà couvertes par 603 tests unitaires. À ajouter
+  avec `data-testid` sur la barre de combat (`combat-confirm`/`resolve`/…) et
+  un `data-combat-role` sur les `.gslot`.
 - [ ] **P3.3** a11y automatisée : `@axe-core/playwright`, scan des pages clés
       (`/`, `/collection`, `/deck-builder`, `/play/table`).
 - [x] **P3.4** ✅ Les 7 fichiers `.spec.ts.disabled` (schéma carte périmé)
