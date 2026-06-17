@@ -1099,7 +1099,7 @@ export const useGameStore = defineStore("game", () => {
           dispatch(
             say(
               seat,
-              `${cardName} : rien à ${op.op === "recycleFromDiscard" ? "recycler" : "défausser"}${filter ? ` (aucune carte ${op.element})` : ""}, effet passé.`,
+              `${cardName} : rien à ${op.op === "recycleFromDiscard" ? "recycler" : "défausser"}${filter ? ` (aucune carte ${filter.element})` : ""}, effet passé.`,
             ),
           );
           continue;

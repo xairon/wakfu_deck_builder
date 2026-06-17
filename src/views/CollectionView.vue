@@ -907,7 +907,7 @@ const memoizedSort = useMemoize(
           return applyDirection(compareExtensions());
 
         case "rarity": {
-          const rarityOrder = {
+          const rarityOrder: Record<string, number> = {
             Commune: 0,
             "Peu Commune": 1,
             Rare: 2,
@@ -960,8 +960,12 @@ const memoizedSort = useMemoize(
 const filteredCollection = computed(() => {
   // Borne les caches de mémoïsation : chaque combinaison de recherche/filtres
   // crée une entrée ; sans purge, la mémoire croît à chaque frappe.
-  if (memoizedFilter.cache.size > 50) memoizedFilter.clear();
-  if (memoizedSort.cache.size > 50) memoizedSort.clear();
+  // useMemoize utilise une Map par défaut, mais son type UseMemoizeCache n'expose
+  // pas `.size` → cast pour borner le cache.
+  if ((memoizedFilter.cache as Map<unknown, unknown>).size > 50)
+    memoizedFilter.clear();
+  if ((memoizedSort.cache as Map<unknown, unknown>).size > 50)
+    memoizedSort.clear();
 
   // 1. Filtrage avec mémoisation
   const filteredCards = memoizedFilter(

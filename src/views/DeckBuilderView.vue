@@ -775,7 +775,7 @@ function addToDeck(card: Card) {
     toast.success(`Héros : ${card.name}`, { duration: 1500 });
     return;
   }
-  if (card.mainType === "Havre-Sac" || card.mainType === "Havre-sac") {
+  if (card.mainType === "Havre-Sac") {
     deckStore.setHavreSac(card);
     toast.success(`Havre-sac : ${card.name}`, { duration: 1500 });
     return;

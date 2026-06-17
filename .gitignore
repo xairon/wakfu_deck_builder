@@ -74,3 +74,10 @@ _originals_cards_png/
 
 # Fichiers d'entrée temporaires (images à intégrer)
 _incoming/
+
+# Supabase CLI (temp local, ne pas committer)
+supabase/.temp/
+
+# Artefacts de diagnostic / 3D-print (hors périmètre app)
+_diag_*.stl
+image-*.png

@@ -587,8 +587,7 @@ function analyzeImportText() {
       continue;
     }
     if (card.mainType === "Héros") summary.hero = cardName;
-    else if (card.mainType === "Havre-Sac" || card.mainType === "Havre-sac")
-      summary.havreSac = cardName;
+    else if (card.mainType === "Havre-Sac") summary.havreSac = cardName;
     else totalCards += quantity;
   }
   summary.cardCount = totalCards;
