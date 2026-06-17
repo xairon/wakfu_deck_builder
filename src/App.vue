@@ -201,14 +201,9 @@ function isActive(item: (typeof navItems)[number]): boolean {
 async function initializeApp() {
   try {
     await cardStore.initialize();
-    try {
-      const { initializeOfficialDecksList } = await import(
-        "@/services/starterService"
-      );
-      await initializeOfficialDecksList();
-    } catch {
-      /* init officiels — échec silencieux */
-    }
+    // Les decks officiels NE sont PLUS auto-injectés dans « Mes decks » : ils se
+    // parcourent sur /decks/official et s'importent à la demande (sinon la liste
+    // de l'utilisateur se remplit toute seule + push cloud non sollicité).
     loadingAttempt.value = 1;
   } catch (err) {
     console.error("Erreur d'initialisation:", err);

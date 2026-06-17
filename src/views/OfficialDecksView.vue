@@ -485,6 +485,17 @@ function toggleDeckDetails(deckId: string) {
  */
 async function importOfficialDeck(officialDeck: OfficialDeck) {
   if (importingDeckIds.value.has(officialDeck.id)) return;
+  // Garde anti-doublon : un deck officiel déjà importé n'est pas recréé en N copies.
+  const existing = deckStore.decks.find(
+    (d) => d.isOfficial && d.name === officialDeck.name,
+  );
+  if (existing) {
+    toast.info(`« ${officialDeck.name} » est déjà dans tes decks.`, {
+      duration: 3000,
+    });
+    importedDeckOfficialIds.value.add(officialDeck.id);
+    return;
+  }
   importingDeckIds.value.add(officialDeck.id);
 
   try {
