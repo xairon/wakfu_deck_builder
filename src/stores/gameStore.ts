@@ -8,7 +8,7 @@
  * Table ASSISTÉE : pioche/mulligan/tours automatisés, effets joués à la main.
  */
 import { defineStore } from "pinia";
-import { computed, ref, shallowRef } from "vue";
+import { computed, ref, shallowRef, watch } from "vue";
 import type { Card, Deck } from "@/types/cards";
 import type {
   DraftEvent,
@@ -592,19 +592,32 @@ export const useGameStore = defineStore("game", () => {
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
+  /** 507.5 — Pioche vide : la Défausse est remélangée pour former une nouvelle Pioche. */
+  function reshuffleDiscardIntoDeck(seat: Seat): void {
+    const discard = [...state.value.seats[seat].defausse];
+    if (!discard.length) return;
+    for (const id of discard)
+      moveTo(id, { zone: "pioche", owner: seat }, { at: "top" });
+    shufflePioche(seat);
+    dispatch(
+      say(
+        seat,
+        `Pioche vide : la Défausse (${discard.length}) est remélangée (507.5).`,
+      ),
+    );
+  }
+
   function draw(seat: Seat = perspective.value, n = 1): void {
-    const drafts: DraftEvent[] = [];
-    let working = state.value;
     for (let i = 0; i < n; i++) {
-      if (!working.seats[seat].pioche.length) break;
-      const d = drawTop(working, seat);
-      drafts.push(d);
-      working = deriveState([
-        ...events.value,
-        ...sequence(drafts, gameId.value, state.value.seq + 1),
-      ]);
+      // 507.5 : si la Pioche est vide, remélanger la Défausse avant de piocher.
+      // (Pas de défaite par deck-out dans Wakfu : on s'arrête si tout est vide.)
+      if (!state.value.seats[seat].pioche.length) {
+        if (!state.value.seats[seat].defausse.length) break;
+        reshuffleDiscardIntoDeck(seat);
+      }
+      if (!state.value.seats[seat].pioche.length) break;
+      dispatch(drawTop(state.value, seat));
     }
-    dispatch(...drafts);
     enforceHandLimit(seat);
   }
 
@@ -1831,6 +1844,13 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
   }
 
+  // P2.6 — désactiver « Règles assistées » en plein combat laisserait un combat
+  // ouvert que plus rien ne résout (les destructions d'état sont gated sur
+  // assist). On annule proprement le combat à la bascule pour éviter l'impasse.
+  watch(assist, (on) => {
+    if (!on && combat.value) combatCancel();
+  });
+
   /**
    * Force EFFECTIVE d'une instance en jeu pour l'UI (812.2/805) :
    * base|taille de main + auras + « tant qu'il bloque » + jetons. `delta` =
@@ -1850,14 +1870,6 @@ export const useGameStore = defineStore("game", () => {
     const value = effectiveForce(rulesCtx(), instanceId, currentStance());
     const printed = forceValue(card, inst.face === "verso" ? "verso" : "recto");
     return { value, delta: value - printed };
-  }
-
-  function drawFromReserve(seat: Seat = perspective.value): void {
-    const first = state.value.seats[seat].reserve[0];
-    if (first) {
-      moveTo(first, { zone: "main", owner: seat });
-      enforceHandLimit(seat);
-    }
   }
 
   function shufflePioche(seat: Seat = perspective.value): void {
@@ -1962,7 +1974,6 @@ export const useGameStore = defineStore("game", () => {
     moveTo,
     toggleTap,
     adjustCounter,
-    drawFromReserve,
     shufflePioche,
     nextTurn,
     undoLast,

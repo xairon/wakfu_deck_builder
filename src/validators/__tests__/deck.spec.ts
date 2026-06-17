@@ -143,6 +143,20 @@ describe("Validation des decks", () => {
       expect(result.errors).toContain("Le deck doit avoir un havre-sac");
     });
 
+    it("devrait rejeter un Allié placé en case Héros (102.1)", () => {
+      const deck = {
+        ...createMockDeck(createValidDeckCards()),
+        hero: mockCard as unknown as HeroCard,
+        havreSac: mockHavreSac,
+      };
+
+      const result = validateDeck(deck);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "La carte Héros doit être de type « Héros »",
+      );
+    });
+
     it("devrait rejeter un deck avec trop peu de cartes", () => {
       const deck = {
         ...createMockDeck([{ card: mockCard, quantity: 1 }]),

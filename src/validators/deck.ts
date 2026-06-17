@@ -77,10 +77,18 @@ function validateHeroAndHavreSac(deck: Deck, errors: string[]): boolean {
   if (!deck.hero) {
     errors.push("Le deck doit avoir un héros");
     isValid = false;
+  } else if (deck.hero.mainType !== "Héros") {
+    // 102.1 — la case Héros n'accepte qu'une carte Héros (un import/lien forgé
+    // pourrait y placer un autre type).
+    errors.push("La carte Héros doit être de type « Héros »");
+    isValid = false;
   }
 
   if (!deck.havreSac) {
     errors.push("Le deck doit avoir un havre-sac");
+    isValid = false;
+  } else if (deck.havreSac.mainType !== "Havre-Sac") {
+    errors.push("La carte Havre-Sac doit être de type « Havre-Sac »");
     isValid = false;
   }
 

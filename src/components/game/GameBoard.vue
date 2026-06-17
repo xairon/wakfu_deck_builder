@@ -318,13 +318,9 @@
                 )
             "
           >
-            <PileStack
-              label="Réserve"
-              :count="reserveCount(me)"
-              deck
-              reserve
-              @act="store.drawFromReserve(me)"
-            />
+            <!-- 101.4 : la Réserve est un sideboard (entre les parties) — affichée
+                 pour info mais NON piochable en jeu. -->
+            <PileStack label="Réserve" :count="reserveCount(me)" reserve />
           </span>
         </div>
       </div>

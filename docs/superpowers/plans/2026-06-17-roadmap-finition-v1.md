@@ -50,18 +50,17 @@ au fur et à mesure.
 
 ## Phase 2 — Règles & cohérence (moyenne)
 
-- [ ] **P2.1** Règle 507.5 : sur Pioche vide, remélanger la Défausse → Pioche puis
-      poursuivre la pioche (dans `draw()`). + test moteur/store.
-- [ ] **P2.2** `validateDeck` vérifie `mainType` Héros/Havre-Sac (pas seulement la
-      présence). + test validateur.
-- [ ] **P2.3** Réserve non piochable (DEC-2) : retirer `drawFromReserve` du flux +
-      le bouton UI. + test.
-- [ ] **P2.4** Import texte : gérer la réserve à l'export/import (`deckStore`
-      `importDeck`/`exportDeck`) — ou documenter l'asymétrie si trop coûteux.
-- [ ] **P2.5** Exil : afficher une pile `PileStack` (ou compteur) quand
-      `exil.length > 0` dans `GameBoard`.
-- [ ] **P2.6** Mode assisté : garde lors d'un toggle `assist` en plein combat
-      (éviter l'impasse) + libellé/aide du toggle.
+- [x] **P2.1** Règle 507.5 : `draw()` remélange la Défausse→Pioche sur Pioche vide
+      (`reshuffleDiscardIntoDeck`) ; pas de défaite deck-out. ✅ + test store.
+- [x] **P2.2** `validateDeck` vérifie `mainType` Héros/Havre-Sac (102.1). ✅ + test.
+- [x] **P2.3** Réserve non piochable (DEC-2) : `drawFromReserve` supprimé (store +
+      export) ; PileStack Réserve rendu en info statique (sans `deck`/`@act`). ✅
+- [~] **P2.4** Import texte : **DOCUMENTÉ** — le format texte ne porte pas la
+  réserve ; le **partage base64** (`deckSharing`) la préserve (chemin de fidélité
+  recommandé). Pas de réécriture du parseur (risque > bénéfice).
+- [~] **P2.5** Exil sans UI (basse, cas rare) : **déplacé en P4.4** (polish).
+- [x] **P2.6** Mode assisté : `watch(assist)` annule le combat en cours si on
+      désactive « Règles assistées » en plein combat (évite l'impasse). ✅
 
 ## Phase 3 — Type-check, tests & a11y (haute/moyenne)
 

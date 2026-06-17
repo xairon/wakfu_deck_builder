@@ -520,6 +520,33 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     expect(store.combat?.reactingSeat).toBeNull();
     expect(store.perspective).toBe("A");
   });
+
+  it("507.5 : Pioche vide → la Défausse est remélangée pour piocher", () => {
+    const cards = ["s1", "s2", "s3"].map((id) =>
+      createMockAllyCard({
+        id,
+        name: id,
+        stats: {
+          niveau: { value: 1, element: "Feu" },
+          force: { value: 1, element: "Feu" },
+        },
+      }),
+    );
+    useCardStore().cards = cards;
+    const store = useGameStore();
+    store.startSandbox(smallDeck(cards), smallDeck(cards), "A");
+    // vider la Pioche de A vers la Défausse
+    const pioche = [...store.state.seats.A.pioche];
+    expect(pioche.length).toBe(3);
+    for (const id of pioche) store.moveTo(id, { zone: "defausse", owner: "A" });
+    expect(store.state.seats.A.pioche.length).toBe(0);
+    expect(store.state.seats.A.defausse.length).toBe(3);
+    // piocher 1 → remélange Défausse→Pioche puis pioche
+    store.draw("A", 1);
+    expect(store.state.seats.A.main.length).toBe(1);
+    expect(store.state.seats.A.defausse.length).toBe(0);
+    expect(store.state.seats.A.pioche.length).toBe(2);
+  });
 });
 
 describe("gameStore — jeu en ligne (clients de confiance)", () => {
