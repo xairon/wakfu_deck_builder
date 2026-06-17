@@ -106,16 +106,21 @@ au fur et à mesure.
 
 ## Phase 4 — Polish, code mort & docs (basse)
 
-- [ ] **P4.1 Docs** : `CLAUDE.md` (1585 cartes, 0 sans image ; tests ~424→612 ;
-      type de Havre-Sac casse) ; `MEMORY.md`/auto-memory (276→612) ; `DEPLOYMENT.md`
-      (migrations 0003/0004/0005) ; `CDC-MODULE-JEU-ETAT.md` (3 lignes périmées :
-      103.3, 2342, PA/PM mods) ; `AUDIT-2026-06.md` #13 (Otomaï image présente).
+- [~] **P4.1 Docs** : ✅ `CLAUDE.md` (1585 cartes / 1613 images ; tests ~617/40
+  fichiers ; E2E 26 ; gate `type-check` ; archi `parser`→`game`, `sync`/`Cards`
+  retirés) + auto-memory (276→617, [[type-check-gate]]). _Reste_ :
+  `DEPLOYMENT.md` (migrations 0003/0004/0005) ; `CDC-MODULE-JEU-ETAT.md`
+  (3 lignes périmées : 103.3, 2342, PA/PM mods) ; `AUDIT-2026-06.md` #13
+  (Otomaï image présente).
 - [ ] **P4.2 Code mort / lint** : retirer `src/stores/sync.ts` (non câblé) et
       `src/data/keywords.ts` (non importé) — ou les brancher ; câbler/retirer les
       handlers orphelins `CollectionView` (`resetFilters`, `disableHideNotOwned`) ;
       nettoyer les `no-unused-vars` notables ; viser `--max-warnings` raisonnable.
-- [ ] **P4.3 Infra polish** : `vercel.json` CSP + Permissions-Policy ; `robots.txt`
-      (+ note sitemap). DEC-3 documente updater Tauri / conflit hors-ligne.
+- [~] **P4.3 Infra polish** : ✅ `robots.txt` (pages publiques indexables, routes
+  privées `/auth`/`/profil`/`/deck-builder` exclues). _Reste_ : `vercel.json`
+  CSP + Permissions-Policy — **à valider contre le déploiement live** (Supabase,
+  images, styles/scripts inline) avant de shipper, sinon risque de casser la prod.
+  DEC-3 documente updater Tauri / conflit hors-ligne.
 - [ ] **P4.4 UX polish** : journal `ActionLog` scroll-back (historique complet) ;
       breakpoint tablette 1025–1100px aligné ; `getCardTypeBreakdown` mémoïsé ;
       deck builder `aria-live` sur blocages ; hint « effets à la main » discret sur la

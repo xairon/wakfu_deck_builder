@@ -1,0 +1,9 @@
+# Wakfu Deck Builder
+# Pages publiques (accueil, collection, decks officiels/communautaires, règles,
+# table de jeu) indexables. On exclut seulement les routes privées (un robot y
+# serait de toute façon redirigé vers /auth).
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /profil
+Disallow: /deck-builder

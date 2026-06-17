@@ -15,8 +15,9 @@ la collection / aux decks.
 - **Styling**: Tailwind CSS 3 + DaisyUI 4 + Headless UI
 - **Auth**: Supabase (REQUIS — application cloud-only)
 - **Desktop**: Tauri 2.7 (Rust backend)
-- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~424 tests unitaires, 13 fichiers
-- **E2E**: Playwright + Chromium — 23 tests (navigation, collection, deck builder, PWA, a11y)
+- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~617 tests unitaires, 40 fichiers
+- **Type-check**: `npm run type-check` (`vue-tsc --noEmit`) — **seul garde-fou de types** (le build esbuild ne type-check pas) ; branché en CI (job « Lint & Types »)
+- **E2E**: Playwright + Chromium — 26 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat)
 - **PWA**: vite-plugin-pwa + Workbox (cache offline, install prompt)
 - **Linting**: ESLint 9 + Prettier
 - **Déploiement web**: Vercel (SPA)
@@ -29,21 +30,22 @@ src/
 ├── composables/    # Hooks réutilisables (useTheme, useToast, useAccessibility...)
 ├── config/         # Constantes et configuration
 ├── data/           # Données statiques (decks officiels, éléments)
-├── parser/         # Parsing des données de cartes
+├── game/           # Moteur de jeu event-sourced (engine, rules, types)
 ├── router/         # Vue Router (routes lazy-loadées, guards auth)
 ├── server/         # Serveur Express (dev uniquement)
 ├── services/       # Logique métier (cardLoader, localStorage, supabase, cloudSync...)
-├── stores/         # Stores Pinia (cardStore, deckStore, authStore, sync)
+├── stores/         # Stores Pinia (cardStore, deckStore, authStore, gameStore, tutorialStore)
 ├── types/          # Types TypeScript canoniques (cards.ts = source unique)
 ├── utils/          # Utilitaires (errors, logger, performance, imagePaths, deckSharing)
 ├── validators/     # Validation (règles de deck)
-└── views/          # Pages (Home, Collection, DeckBuilder, Cards, Decks, Auth, SharedDeck, OfficialDecks)
+└── views/          # Pages (Home, Collection, DeckBuilder, Decks, Auth, SharedDeck, OfficialDecks, PlayTable, Rules)
 ```
 
 ## Commandes
 
 - `npm run dev` — Serveur de dev (port 3000)
-- `npm run build` — Build production (~4.5s)
+- `npm run build` — Build production (~10s, **ne type-check pas**)
+- `npm run type-check` — Vérif TypeScript (`vue-tsc --noEmit`) — le seul gate de types
 - `npm run test` — Tests unitaires (watch)
 - `npm run test:unit` — Tests unitaires jsdom
 - `npx vitest run` — Tests en mode CI (~424 tests)
@@ -80,7 +82,7 @@ src/
 - **Types de cartes** : aucun type minimum imposé (le rulebook officiel n'exige pas d'Action/Allié ; cf. `validateDeck`)
 - **Éléments** : Air, Eau, Feu, Terre, Neutre
 - **Extensions** : Amakna, Ankama Convention 5, Astrub, Bonta-Brakmar, Chaos d'Ogrest, DOFUS Collection, Draft, Île des Wabbits, Incarnam, Otomaï, Pandala
-- **~2800+ cartes uniques**, ~1611 images
+- **~1585 cartes uniques**, ~1613 images
 
 ## Auth & Sync
 
@@ -107,16 +109,16 @@ src/
 
 ## CI/CD
 
-- GitHub Actions CI : lint + tests + build sur push/PR (`.github/workflows/ci.yml`)
+- GitHub Actions CI : lint + type-check (vue-tsc) + tests + build + E2E sur push/PR (`.github/workflows/ci.yml`)
 - GitHub Actions Release : automatique sur tag `v*` (Windows, Node 20, Rust)
 - Génère des installeurs .exe (NSIS) et .msi (Wix) via Tauri
 - Vercel : déploiement web SPA (`vercel.json` configuré)
 
 ## E2E Tests (Playwright)
 
-- Config : `playwright.config.ts` — Chromium, `vite preview` sur port 4173
-- Tests : `e2e/app.spec.ts` — 23 tests couvrant navigation, thème, collection, decks, deck builder, partage, PWA, accessibilité
-- Lancer : `npm run build && npm run test:e2e`
+- Config : `playwright.config.ts` — Chromium, `vite preview` sur `127.0.0.1:4173`
+- Tests : `e2e/app.spec.ts` — 26 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, **table de jeu** : lobby→plateau, tutoriel, combat). Auth e2e via injection user Pinia + nav SPA ; build CI avec `VITE_SUPABASE_*` factices (sinon overlay « Configuration requise »)
+- Lancer : `npm run build && npm run test:e2e` (CI : `workers:1`)
 
 ## Aliases
 
@@ -131,4 +133,4 @@ src/
 - **Setup global** : `tests/setup.ts` (mocks localStorage, fetch, ResizeObserver, IntersectionObserver)
 - **Factories** : `tests/factories/card.ts` — `createMockAllyCard()`, `createMockActionCard()`, `createMockHeroCard()`, `createMockHavreSacCard()`, `createMockEquipmentCard()`, `createMockDeck()`
 - **Descriptions en français** : `it('devrait ...')` pattern
-- **Tests désactivés** : 7 fichiers `.spec.ts.disabled` dans `src/components/__tests__/`
+- **Tests composants** : `mount()` + @vue/test-utils — `GameBoard`, `HandFan`, `SeatHud`, `GameCard` (les anciens `.spec.ts.disabled` au schéma carte périmé ont été supprimés)
