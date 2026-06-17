@@ -291,6 +291,87 @@ test.describe("Table de jeu (/play/table)", () => {
     await page.getByTestId("tutorial-skip").click();
     await expect(progress).toBeHidden();
   });
+
+  test("devrait dérouler un combat (attaque → résolution → dégâts)", async ({
+    page,
+  }) => {
+    await page.goto("/play/table");
+    await waitForCatalog(page);
+
+    // Plateau de combat légal via la leçon « combat » (attaquant prêt avec
+    // Force + bloqueur adverse), puis skip() pour retirer coach/bot/auto-
+    // avancement et piloter le combat de façon déterministe.
+    const setup = await page.evaluate(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      const pinia = gp?.$pinia;
+      const tut = pinia?._s?.get("tutorial");
+      const game = pinia?._s?.get("game");
+      const ok = tut?.startLesson?.("combat") ?? false;
+      tut?.skip?.();
+      return { ok, atkId: game?.eligibleAttackerIds?.[0] ?? null };
+    });
+    expect(setup.ok).toBe(true);
+    expect(setup.atkId).toBeTruthy();
+
+    // 1) Sélectionner l'attaquant → barre d'action → « ⚔ Attaquer ».
+    await page.getByTestId(`card-${setup.atkId}`).click();
+    await page.getByTestId("action-attack").click();
+    // La barre de combat apparaît.
+    await expect(page.locator(".gcombat")).toBeVisible();
+
+    // 2) Cibler un Allié adverse (702.2) — il encaisse la Force sans la
+    // Résistance du Havre-Sac. Le clic sur une carte adverse est peu fiable dans
+    // le viewport de test (recouvrement par la bannière) ; on fixe la cible via
+    // le store puis on enchaîne par les boutons de la barre de combat (UI).
+    const target = await page.evaluate(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      const pinia = gp?.$pinia;
+      const game = pinia?._s?.get("game");
+      const cards = pinia?._s?.get("cards")?.cards ?? [];
+      const ids: string[] = game?.combatTargetIds ?? [];
+      const allyId =
+        ids.find((id) => {
+          const inst = game.state.instances[id];
+          return (
+            cards.find((c: any) => c.id === inst?.cardId)?.mainType === "Allié"
+          );
+        }) ?? ids[0];
+      if (allyId) game.combatChooseTarget(allyId);
+      const inst = allyId ? game.state.instances[allyId] : null;
+      return { id: allyId ?? null, dmgBefore: inst?.counters?.damage ?? 0 };
+    });
+    expect(target.id).toBeTruthy();
+
+    // 3) Confirmer puis résoudre via l'UI (pas de bloqueur → frappe directe).
+    await page.getByTestId("combat-confirm").click();
+    await page.getByTestId("combat-resolve").click();
+    // Combat résolu : la barre disparaît.
+    await expect(page.locator(".gcombat")).toBeHidden();
+
+    // 4) Le combat a eu lieu : l'attaquant est incliné (déclaration) et la cible
+    //    a pris des dégâts (ou a été détruite, donc retirée du Monde).
+    const result = await page.evaluate(
+      (arg) => {
+        const { atkId, tid } = arg as { atkId: string; tid: string };
+        const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+          ?.globalProperties;
+        const game = gp?.$pinia?._s?.get("game");
+        const atk = game?.state?.instances?.[atkId];
+        const tgt = game?.state?.instances?.[tid];
+        const inMonde = (game?.state?.seats?.B?.monde ?? []).includes(tid);
+        return {
+          tapped: atk?.orientation === "tapped",
+          dmg: tgt?.counters?.damage ?? 0,
+          inMonde,
+        };
+      },
+      { atkId: setup.atkId, tid: target.id },
+    );
+    expect(result.tapped).toBe(true);
+    expect(result.dmg > target.dmgBefore || !result.inMonde).toBe(true);
+  });
 });
 
 test.describe("PWA", () => {

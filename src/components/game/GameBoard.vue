@@ -422,12 +422,17 @@
               v-if="store.combat.step === 'attackers'"
               class="gbtn gbtn--accent"
               :disabled="!store.combat.attackers.length || !store.combat.target"
+              data-testid="combat-confirm"
               @click="store.combatConfirmAttackers()"
             >
               Confirmer l'attaque
             </button>
             <template v-else-if="store.combat.step === 'blockers'">
-              <button class="gbtn gbtn--accent" @click="store.combatResolve()">
+              <button
+                class="gbtn gbtn--accent"
+                data-testid="combat-resolve"
+                @click="store.combatResolve()"
+              >
                 Résoudre le combat
               </button>
               <button
@@ -462,6 +467,7 @@
           <button
             v-if="canAttackSelected"
             class="gbtn gbtn--accent"
+            data-testid="action-attack"
             @click="attackWithSelected"
           >
             ⚔ Attaquer

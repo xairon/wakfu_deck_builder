@@ -72,20 +72,19 @@ au fur et à mesure.
       ce sont des objets — le vrai chargeur est `loadExtensionCards` ; chaîne
       d'init `starterService`) + narrowings. Script `type-check` ajouté et **gate
       CI** branché (étape `vue-tsc` dans le job « Lint & Types »). 603 tests, build OK.
-- [~] **P3.2** Largement fait. La suite e2e était **cassée** (texte d'accueil
-  périmé ; `/decks` & `/deck-builder` redirigés vers `/auth` en anonyme ;
-  build CI sans env Supabase → overlay « Configuration requise » masquant le
-  router-view ; assertions vacantes `if(count>0)`, `waitForTimeout`, casse
-  « Mes Decks »). **Réparée + étendue** : fixture d'auth (injection user
-  Pinia + nav SPA), de-masking complet, casse corrigée, `data-testid` (lobby,
-  passation/mulligan, plateau, coach tutoriel, thème), env Supabase factice
-  au build CI, `playwright.config` en 127.0.0.1. **Nouveaux tests** : lancement
-  sandbox lobby→plateau, lancement du tutoriel « découverte ». **25/25 verts**
-  en local (série ; CI = workers 1). _Reste_ : le test e2e du **flux de combat
-  via l'UI** (attaque→blocage→résolution→dégâts) — le plus fragile à piloter ;
-  les règles de combat sont déjà couvertes par 603 tests unitaires. À ajouter
-  avec `data-testid` sur la barre de combat (`combat-confirm`/`resolve`/…) et
-  un `data-combat-role` sur les `.gslot`.
+- [x] **P3.2** ✅ La suite e2e était **cassée** (texte d'accueil
+      périmé ; `/decks` & `/deck-builder` redirigés vers `/auth` en anonyme ;
+      build CI sans env Supabase → overlay « Configuration requise » masquant le
+      router-view ; assertions vacantes `if(count>0)`, `waitForTimeout`, casse
+      « Mes Decks »). **Réparée + étendue** : fixture d'auth (injection user
+      Pinia + nav SPA), de-masking complet, casse corrigée, `data-testid` (lobby,
+      passation/mulligan, plateau, coach tutoriel, thème), env Supabase factice
+      au build CI, `playwright.config` en 127.0.0.1. **Nouveaux tests** : lancement
+      sandbox lobby→plateau, tutoriel « découverte », et **flux de combat via
+      l'UI** (sélection attaquant → « ⚔ Attaquer » → cible → « Confirmer » →
+      « Résoudre », puis vérif inclinaison + dégâts). `data-testid` sur la barre
+      de combat (`action-attack`/`combat-confirm`/`combat-resolve`) + `card-{id}`
+      sur GameCard. **26/26 verts** en local (série ; CI = workers 1).
 - [ ] **P3.3** a11y automatisée : `@axe-core/playwright`, scan des pages clés
       (`/`, `/collection`, `/deck-builder`, `/play/table`). **Bloqué dans cet
       environnement** : `npm install -D @axe-core/playwright` échoue
