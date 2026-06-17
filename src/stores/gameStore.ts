@@ -148,9 +148,15 @@ export const useGameStore = defineStore("game", () => {
     redactStateFor(state.value, perspective.value),
   );
   const turn = computed(() => state.value.turn);
-  const phaseLabel = computed(
-    () => PHASE_LABEL[state.value.turn.phase] ?? state.value.turn.phase,
-  );
+  // Libellé de la barre de tour : v1 replie les phases (redressement/pioche/fin
+  // restent du ressort de J3 — fenêtre de réaction), mais on reflète les états
+  // OBSERVABLES (mulligan, passation, fin) au lieu d'afficher toujours « Principale ».
+  const phaseLabel = computed(() => {
+    if (matchPhase.value === "mulligan") return "Mulligan";
+    if (matchPhase.value === "finished") return "Partie terminée";
+    if (passPending.value) return "Passation";
+    return PHASE_LABEL[state.value.turn.phase] ?? state.value.turn.phase;
+  });
 
   const opponent = computed<Seat>(() => otherSeat(perspective.value));
   const activeName = computed(() => players.value[turn.value.active].name);
