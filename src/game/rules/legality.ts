@@ -32,14 +32,18 @@ export function whyCannotPlay(
   ctx: RulesCtx,
   seat: Seat,
   instanceId: InstanceId,
+  reaction = false,
 ): string | null {
   const { state } = ctx;
   const inst = state.instances[instanceId];
   if (!inst) return "Carte introuvable.";
   if (inst.location.zone !== "main" || inst.owner !== seat)
     return "Cette carte n'est pas dans votre main.";
-  if (state.turn.active !== seat) return "Ce n'est pas votre tour.";
-  if (state.turn.phase !== "principale")
+  // 706 — en fenêtre de réaction on joue HORS de son tour : ces deux contrôles
+  // sont relâchés (les autres — main, coût, zone, 4943 — restent actifs).
+  if (!reaction && state.turn.active !== seat)
+    return "Ce n'est pas votre tour.";
+  if (!reaction && state.turn.phase !== "principale")
     return "On ne joue des cartes qu'en Phase Principale.";
   const card = ctx.getCard(inst.cardId);
   if (!card) return "Carte inconnue — jouez-la en mode libre.";

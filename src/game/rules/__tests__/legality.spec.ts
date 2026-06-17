@@ -38,6 +38,14 @@ describe("rules/legality — jouer une carte", () => {
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toBeNull();
   });
 
+  it("réaction : autorise à jouer hors de son tour quand reaction=true (706)", () => {
+    const f = handFixture();
+    setTurn(f, "B", 3); // tour de B → A est hors-tour
+    const id = instId("A", 0);
+    expect(whyCannotPlay(ctxOf(f), "A", id)).toBe("Ce n'est pas votre tour.");
+    expect(whyCannotPlay(ctxOf(f), "A", id, true)).toBeNull();
+  });
+
   it("interdit le Monde au premier tour de la partie (4943)", () => {
     const f = handFixture();
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toContain(
