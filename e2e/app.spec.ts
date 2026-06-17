@@ -1,27 +1,110 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+// ───────────────────────── Helpers ──────────────────────────────────────
+// L'app est cloud-only : /decks, /deck-builder sont protégés par un garde
+// `requiresAuth`. Pour tester ces pages sans backend réel, on injecte un
+// utilisateur directement dans le store Pinia (aucun appel Supabase), puis on
+// navigue côté client (router.push) pour que l'état d'auth survive (un
+// page.goto rechargerait la page et réinitialiserait Pinia).
+
+/** Injecte un utilisateur authentifié dans le store Pinia `auth`. */
+async function authenticate(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+      ?.globalProperties;
+    const auth = gp?.$pinia?._s?.get("auth");
+    if (auth) auth.user = { id: "e2e-user", email: "e2e@test.local" };
+  });
+}
+
+/** Navigation SPA (sans rechargement) — l'état Pinia injecté est conservé. */
+async function spaNavigate(page: Page, path: string): Promise<void> {
+  await page.evaluate((p) => {
+    const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+      ?.globalProperties;
+    gp?.$router?.push(p);
+  }, path);
+}
+
+/** Va sur une route protégée en tant qu'utilisateur connecté. */
+async function gotoAuthed(page: Page, path: string): Promise<void> {
+  await page.goto("/");
+  await authenticate(page);
+  await spaNavigate(page, path);
+}
+
+/** Attend que le catalogue de cartes soit chargé dans le store. */
+async function waitForCatalog(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      const cards = gp?.$pinia?._s?.get("cards")?.cards;
+      return Array.isArray(cards) && cards.length > 0;
+    },
+    { timeout: 20000 },
+  );
+}
+
+/** Construit deux decks valides depuis le catalogue et les injecte dans le store. */
+async function seedValidDecks(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+      ?.globalProperties;
+    const cards = gp?.$pinia?._s?.get("cards")?.cards ?? [];
+    const deckStore = gp?.$pinia?._s?.get("deck");
+    const clone = (x: unknown) => JSON.parse(JSON.stringify(x));
+    const hero = cards.find((c: any) => c.mainType === "Héros");
+    const havreSac = cards.find((c: any) => c.mainType === "Havre-Sac");
+    // 48 Alliés DISTINCTS en 1 exemplaire : valide même pour les cartes
+    // « Unique » (1 copie max), donc on n'a pas à filtrer le trait Unique.
+    const allies = cards
+      .filter((c: any) => c.mainType === "Allié")
+      .slice(0, 48);
+    const mk = (id: string, name: string) => ({
+      id,
+      name,
+      hero: clone(hero),
+      havreSac: clone(havreSac),
+      cards: allies.map((a: any) => ({
+        card: clone(a),
+        quantity: 1,
+        isReserve: false,
+      })),
+      reserve: [],
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+    });
+    deckStore.decks = [mk("e2e-a", "Deck E2E A"), mk("e2e-b", "Deck E2E B")];
+  });
+}
+
+// ───────────────────────── Tests ────────────────────────────────────────
 
 test.describe("Navigation principale", () => {
   test("devrait afficher la page d'accueil", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/Wakfu/);
-    await expect(page.locator("text=Wakfu Deck Builder")).toBeVisible();
+    await expect(page.getByText("Compagnon du TCG Wakfu")).toBeVisible();
   });
 
   test("devrait naviguer vers la collection", async ({ page }) => {
     await page.goto("/");
-    await page.click("text=Collection");
+    await page.getByRole("link", { name: "Collection", exact: true }).click();
     await expect(page).toHaveURL(/\/collection/);
   });
 
-  test("devrait naviguer vers les decks", async ({ page }) => {
+  test("devrait naviguer vers les decks (utilisateur connecté)", async ({
+    page,
+  }) => {
     await page.goto("/");
-    await page.click("text=Decks");
+    await authenticate(page);
+    await page.getByRole("link", { name: "Decks", exact: true }).click();
     await expect(page).toHaveURL(/\/decks/);
   });
 
   test("devrait avoir un lien de navigation au clavier", async ({ page }) => {
     await page.goto("/");
-    // Skip nav link should be first focusable element
     await page.keyboard.press("Tab");
     const skipLink = page.locator('a[href="#main-content"]');
     await expect(skipLink).toBeFocused();
@@ -34,19 +117,13 @@ test.describe("Thème", () => {
   }) => {
     await page.goto("/");
     const html = page.locator("html");
-
-    // Récupérer le thème initial
     const initialTheme = await html.getAttribute("data-theme");
 
-    // Trouver et cliquer sur le bouton de thème
-    const themeButton = page.locator(
-      '[aria-label*="thème"], [aria-label*="Thème"], button:has(svg)',
-    );
-    if ((await themeButton.count()) > 0) {
-      await themeButton.first().click();
-      const newTheme = await html.getAttribute("data-theme");
-      expect(newTheme).not.toBe(initialTheme);
-    }
+    const themeButton = page.getByTestId("theme-toggle");
+    await expect(themeButton).toBeVisible();
+    await themeButton.click();
+
+    await expect(html).not.toHaveAttribute("data-theme", initialTheme ?? "");
   });
 });
 
@@ -63,128 +140,179 @@ test.describe("Collection", () => {
     page,
   }) => {
     await page.goto("/collection");
+    // Attendre le rendu de la grille (au lieu d'un sleep arbitraire).
+    const cards = page.locator('[role="listitem"]');
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
 
-    // Attendre que les cartes soient chargées
-    await page.waitForTimeout(2000);
+    const search = page.locator('input[placeholder*="Rechercher"]');
+    // Une requête sans résultat vide la grille : le filtre texte s'applique.
+    await search.fill("zzzznoperesultat");
+    await expect(page.getByText("Aucune carte trouvée")).toBeVisible({
+      timeout: 10000,
+    });
 
-    const searchInput = page.locator('input[placeholder*="Rechercher"]');
-    await searchInput.fill("Feca");
-    await page.waitForTimeout(500);
-
-    // Les cartes affichées devraient contenir "Feca"
-    const visibleCards = page.locator("[data-card-name]");
-    if ((await visibleCards.count()) > 0) {
-      const firstName = await visibleCards
-        .first()
-        .getAttribute("data-card-name");
-      expect(firstName?.toLowerCase()).toContain("feca");
-    }
+    // En effaçant la recherche, les cartes réapparaissent.
+    await search.fill("");
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
   });
 
   test("devrait filtrer par extension", async ({ page }) => {
     await page.goto("/collection");
-    await page.waitForTimeout(2000);
-
     const extensionSelect = page.locator('select[aria-label*="extension"]');
+    await expect(extensionSelect).toBeVisible();
     const options = await extensionSelect.locator("option").allTextContents();
     expect(options.length).toBeGreaterThan(1);
   });
 
   test("devrait filtrer par rareté", async ({ page }) => {
     await page.goto("/collection");
-    const raritySelect = page.locator('select[aria-label*="rareté"]');
-    await expect(raritySelect).toBeVisible();
+    await expect(page.locator('select[aria-label*="rareté"]')).toBeVisible();
   });
 
   test("devrait filtrer par élément", async ({ page }) => {
     await page.goto("/collection");
-    const elementSelect = page.locator('select[aria-label*="élément"]');
-    await expect(elementSelect).toBeVisible();
+    await expect(page.locator('select[aria-label*="élément"]')).toBeVisible();
   });
 });
 
 test.describe("Decks", () => {
   test("devrait afficher la liste des decks", async ({ page }) => {
-    await page.goto("/decks");
-    await expect(page.locator("text=Mes Decks")).toBeVisible();
+    await gotoAuthed(page, "/decks");
+    await expect(
+      page.getByRole("heading", { name: "Mes decks" }),
+    ).toBeVisible();
   });
 
   test("devrait pouvoir créer un nouveau deck", async ({ page }) => {
-    await page.goto("/decks");
-
-    // Cliquer sur "Nouveau deck"
-    const newDeckBtn = page.locator("text=Nouveau deck");
-    if ((await newDeckBtn.count()) > 0) {
-      await newDeckBtn.click();
-      await expect(page).toHaveURL(/\/deck-builder/);
-    }
+    await gotoAuthed(page, "/decks");
+    const newDeckBtn = page.getByRole("link", { name: /Nouveau deck/i });
+    await expect(newDeckBtn).toBeVisible();
+    await newDeckBtn.click();
+    await expect(page).toHaveURL(/\/deck-builder/);
   });
 
   test("devrait afficher le lien vers les decks officiels", async ({
     page,
   }) => {
-    await page.goto("/decks");
-    const officialLink = page.locator("text=Decks officiels");
-    if ((await officialLink.count()) > 0) {
-      await officialLink.click();
-      await expect(page).toHaveURL(/\/decks\/official/);
-    }
+    await gotoAuthed(page, "/decks");
+    const officialLink = page.getByRole("link", { name: /Decks officiels/i });
+    await expect(officialLink).toBeVisible();
+    await officialLink.click();
+    await expect(page).toHaveURL(/\/decks\/official/);
   });
 });
 
 test.describe("Deck Builder", () => {
   test("devrait afficher le formulaire de construction", async ({ page }) => {
-    await page.goto("/deck-builder");
-
-    // Vérifier la présence des sections clés
+    await gotoAuthed(page, "/deck-builder");
+    // Intitulé de la section « Héros » du constructeur (libellé eyebrow,
+    // pas une <option> de filtre qui serait masquée).
     await expect(
-      page.getByRole("heading", { name: "Héros", exact: true }),
+      page.locator("span.eyebrow", { hasText: "Héros" }).first(),
     ).toBeVisible();
   });
 
   test("devrait afficher les filtres de collection", async ({ page }) => {
-    await page.goto("/deck-builder");
+    await gotoAuthed(page, "/deck-builder");
     await expect(
       page.locator('input[placeholder*="Rechercher"]'),
     ).toBeVisible();
   });
 
   test("devrait afficher le compteur de cartes", async ({ page }) => {
-    await page.goto("/deck-builder");
-    // Le compteur "Cartes (0 / 48)" devrait être visible
-    await expect(page.getByText("0 / 48")).toBeVisible();
+    await gotoAuthed(page, "/deck-builder");
+    await expect(page.getByText("0/48")).toBeVisible();
   });
 });
 
 test.describe("Partage de deck", () => {
   test("devrait gérer un lien de partage invalide", async ({ page }) => {
     await page.goto("/deck/share?deck=invalid-data");
-    // Devrait afficher un message d'erreur ou la page de partage
-    await page.waitForTimeout(1000);
-    // La page ne devrait pas crasher
-    await expect(page.locator("body")).toBeVisible();
+    // La page ne crashe pas : le contenu principal reste rendu.
+    await expect(page.locator("#main-content")).toBeVisible();
+  });
+});
+
+test.describe("Table de jeu (/play/table)", () => {
+  test("devrait lancer une partie sandbox depuis le lobby", async ({
+    page,
+  }) => {
+    await page.goto("/play/table");
+    await waitForCatalog(page);
+    await seedValidDecks(page);
+
+    // Le lobby affiche les deux decks injectés.
+    const picks = page.getByTestId("lobby-deck-pick");
+    await expect(picks).toHaveCount(2);
+
+    // Étape 1 : J1 choisit son deck → Suivant.
+    await picks.first().click();
+    await page.getByTestId("lobby-next").click();
+    // Étape 2 : J2 choisit son deck → Lancer.
+    await page.getByTestId("lobby-deck-pick").nth(1).click();
+    await page.getByTestId("lobby-launch").click();
+
+    // Hot-seat : on draine les écrans de passation + mulligan des deux joueurs
+    // jusqu'à ce que le plateau apparaisse (le bouton « Fin du tour »).
+    const endTurn = page.getByTestId("end-turn");
+    const reveal = page.getByTestId("passation-reveal");
+    const keep = page.getByTestId("mulligan-keep");
+    for (let i = 0; i < 8; i++) {
+      if (await endTurn.isVisible()) break;
+      if (await reveal.isVisible()) {
+        await reveal.click();
+      } else if (await keep.isVisible()) {
+        await keep.click();
+      } else {
+        await expect(endTurn.or(reveal).or(keep).first()).toBeVisible();
+      }
+    }
+
+    await expect(endTurn).toBeVisible();
+  });
+
+  test("devrait lancer le tutoriel interactif (découverte)", async ({
+    page,
+  }) => {
+    await page.goto("/play/table");
+    await waitForCatalog(page);
+
+    // Bouton « Apprendre à jouer » du lobby (actif une fois le catalogue prêt).
+    const startBtn = page.getByTestId("lobby-start-tutorial");
+    await expect(startBtn).toBeEnabled();
+    await startBtn.click();
+
+    // Le coach apparaît sur la 1re étape de la leçon « découverte » (12 étapes).
+    const progress = page.getByTestId("tutorial-progress");
+    await expect(progress).toBeVisible();
+    await expect(progress).toContainText("/ 12");
+
+    // On peut quitter le tutoriel via « Passer le tutoriel ».
+    await page.getByTestId("tutorial-skip").click();
+    await expect(progress).toBeHidden();
   });
 });
 
 test.describe("PWA", () => {
   test("devrait avoir un manifest web", async ({ page }) => {
     await page.goto("/");
-    const manifest = page.locator('link[rel="manifest"]');
-    await expect(manifest).toHaveCount(1);
+    await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
   });
 
   test("devrait enregistrer un service worker", async ({ page }) => {
     await page.goto("/");
-    // Attendre que le SW s'enregistre
-    await page.waitForTimeout(3000);
-
-    const swRegistered = await page.evaluate(async () => {
-      if ("serviceWorker" in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        return registrations.length > 0;
-      }
-      return false;
-    });
+    // Attendre l'enregistrement du SW de façon déterministe (au lieu d'un sleep).
+    const swRegistered = await page
+      .waitForFunction(
+        async () => {
+          if (!("serviceWorker" in navigator)) return false;
+          const regs = await navigator.serviceWorker.getRegistrations();
+          return regs.length > 0;
+        },
+        { timeout: 15000 },
+      )
+      .then(() => true)
+      .catch(() => false);
     expect(swRegistered).toBe(true);
   });
 });
@@ -192,14 +320,12 @@ test.describe("PWA", () => {
 test.describe("Accessibilité", () => {
   test('devrait avoir lang="fr" sur le html', async ({ page }) => {
     await page.goto("/");
-    const lang = await page.locator("html").getAttribute("lang");
-    expect(lang).toBe("fr");
+    await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   });
 
   test("devrait avoir des meta descriptions", async ({ page }) => {
     await page.goto("/");
-    const desc = page.locator('meta[name="description"]');
-    await expect(desc).toHaveCount(1);
+    await expect(page.locator('meta[name="description"]')).toHaveCount(1);
   });
 
   test("devrait avoir un contenu principal avec id", async ({ page }) => {
@@ -209,19 +335,19 @@ test.describe("Accessibilité", () => {
 
   test("tous les inputs doivent avoir des labels", async ({ page }) => {
     await page.goto("/collection");
-    await page.waitForTimeout(1000);
-
     const inputs = page.locator(
       'input:not([type="hidden"]):not([type="checkbox"])',
     );
-    const count = await inputs.count();
+    // Au moins un input rendu (sinon le test passerait à vide).
+    await expect(inputs.first()).toBeVisible({ timeout: 15000 });
 
+    const count = await inputs.count();
+    expect(count).toBeGreaterThan(0);
     for (let i = 0; i < Math.min(count, 10); i++) {
       const input = inputs.nth(i);
       const ariaLabel = await input.getAttribute("aria-label");
       const id = await input.getAttribute("id");
       const placeholder = await input.getAttribute("placeholder");
-      // Input should have either aria-label, associated label, or placeholder
       expect(ariaLabel || id || placeholder).toBeTruthy();
     }
   });

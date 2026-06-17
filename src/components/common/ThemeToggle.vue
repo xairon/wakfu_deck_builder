@@ -1,6 +1,7 @@
 <template>
   <button
     class="btn btn-ghost btn-circle tooltip tooltip-bottom"
+    data-testid="theme-toggle"
     @click="toggleTheme"
     :data-tip="isDark ? 'Passer en mode clair' : 'Passer en mode sombre'"
     :aria-label="isDark ? 'Passer en mode clair' : 'Passer en mode sombre'"

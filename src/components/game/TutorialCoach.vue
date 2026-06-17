@@ -20,14 +20,17 @@
         role="dialog"
         aria-label="Tutoriel"
       >
-        <p class="tcoach__progress">
+        <p class="tcoach__progress" data-testid="tutorial-progress">
           Tutoriel · étape {{ tutorial.stepIndex + 1 }} / {{ tutorial.total }}
         </p>
-        <p class="tcoach__text">{{ tutorial.stepText }}</p>
+        <p class="tcoach__text" data-testid="tutorial-step-text">
+          {{ tutorial.stepText }}
+        </p>
         <div class="tcoach__actions">
           <button
             v-if="tutorial.step.manual"
             class="tcoach__btn tcoach__btn--primary"
+            data-testid="tutorial-next"
             @click="tutorial.next()"
           >
             {{
@@ -36,6 +39,7 @@
           </button>
           <button
             class="tcoach__btn tcoach__btn--ghost"
+            data-testid="tutorial-skip"
             @click="tutorial.skip()"
           >
             Passer le tutoriel

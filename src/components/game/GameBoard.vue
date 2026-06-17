@@ -331,6 +331,7 @@
       type="button"
       class="gendturn"
       aria-label="Finir le tour"
+      data-testid="end-turn"
       @click="store.endTurn()"
     >
       <span class="gendturn__ring" aria-hidden="true"></span>

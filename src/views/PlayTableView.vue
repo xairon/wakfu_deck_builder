@@ -12,6 +12,7 @@
         <button
           class="btn btn-outline btn-sm mt-4 gap-2"
           :disabled="!cardStore.cards.length"
+          data-testid="lobby-start-tutorial"
           @click="startTutorial"
         >
           🎓 Apprendre à jouer
@@ -173,6 +174,7 @@
           class="deck-pick"
           :class="{ 'deck-pick--on': currentPick === d.id }"
           :style="{ '--spine': heroElement(d) }"
+          data-testid="lobby-deck-pick"
           @click="setPick(d.id)"
         >
           <span class="deck-pick__art">
@@ -211,6 +213,7 @@
           v-if="lobbyStep === 1"
           class="btn btn-primary"
           :disabled="!pickA"
+          data-testid="lobby-next"
           @click="lobbyStep = 2"
         >
           Suivant →
@@ -219,6 +222,7 @@
           v-else
           class="btn btn-primary"
           :disabled="!pickB"
+          data-testid="lobby-launch"
           @click="launch"
         >
           Lancer la partie
@@ -254,6 +258,7 @@
             v-model="store.assist"
             type="checkbox"
             class="gtop-toggle__box"
+            data-testid="topbar-assist-toggle"
           />
           Règles assistées
         </label>
@@ -343,6 +348,7 @@
           <button
             v-if="!botTurn"
             class="btn btn-primary mt-6"
+            data-testid="passation-reveal"
             @click="store.reveal()"
           >
             Je suis prêt — afficher
@@ -442,7 +448,11 @@
             <HandFan mine :items="mulliganItems" :resolve-card="resolveCard" />
           </div>
           <div class="mt-5 flex flex-wrap justify-center gap-3">
-            <button class="btn btn-primary" @click="store.keepHand()">
+            <button
+              class="btn btn-primary"
+              data-testid="mulligan-keep"
+              @click="store.keepHand()"
+            >
               Garder ({{ mulliganHand.length }} cartes)
             </button>
             <button

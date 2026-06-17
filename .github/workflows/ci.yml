@@ -83,7 +83,14 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Build application
+        # Valeurs factices : le build doit être « Supabase-configuré » sinon
+        # App.vue affiche l'écran « Configuration requise » qui masque le
+        # router-view (la table sandbox et le catalogue ne font aucun appel
+        # cloud réel ; les tests authentifiés injectent l'utilisateur côté client).
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://e2e.invalid
+          VITE_SUPABASE_ANON_KEY: e2e-anon-key
 
       - name: Run E2E tests
         run: npm run test:e2e
