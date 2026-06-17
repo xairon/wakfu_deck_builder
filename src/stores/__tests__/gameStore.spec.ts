@@ -458,6 +458,68 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     expect(store.combat?.blocks[b]).toBe(a2);
     expect(store.combat?.pendingBlocker).toBeNull();
   });
+
+  it("réaction (706.5) : l'attaquant cède la main, le défenseur joue hors-tour, puis retour", () => {
+    const atk = createMockAllyCard({
+      id: "ratk",
+      name: "RAtk",
+      stats: {
+        niveau: { value: 1, element: "Feu" },
+        force: { value: 2, element: "Feu" },
+      },
+    });
+    // carte de réaction NEUTRE niv 1 → payable par n'importe quelle Ressource (4398)
+    const react = createMockAllyCard({
+      id: "rcard",
+      name: "RCard",
+      stats: {
+        niveau: { value: 1, element: "Neutre" },
+        force: { value: 1, element: "Neutre" },
+      },
+    });
+    // Héros + Havre-Sac explicites dans le cardStore : sinon getCard renvoie
+    // null pour les producteurs et B n'a aucune Ressource (artefact de test).
+    const heroA = createMockHeroCard({ id: "rheroA" });
+    const sacA = createMockHavreSacCard({ id: "rsacA" });
+    const heroB = createMockHeroCard({ id: "rheroB" });
+    const sacB = createMockHavreSacCard({ id: "rsacB" });
+    useCardStore().cards = [atk, react, heroA, sacA, heroB, sacB];
+    const mk = (hero: Card, sac: Card, cards: Card[]): Deck => ({
+      id: `deck-${hero.id}`,
+      name: hero.id,
+      hero: hero as Deck["hero"],
+      havreSac: sac as Deck["havreSac"],
+      cards: cards.map((card) => ({ card, quantity: 1 })),
+      createdAt: "",
+      updatedAt: "",
+    });
+    const store = useGameStore();
+    store.startSandbox(mk(heroA, sacA, [atk]), mk(heroB, sacB, [react]), "A");
+    const a = instOf(store, "ratk");
+    const rc = instOf(store, "rcard");
+    store.moveTo(a, { zone: "monde" });
+    store.moveTo(rc, { zone: "main", owner: "B" }); // carte en main de B
+    store.nextTurn();
+    store.nextTurn(); // tour 3 (A)
+    store.beginCombat(a);
+    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.combatConfirmAttackers(); // étape blockers
+    // l'attaquant cède la main au défenseur
+    store.combatOfferReaction();
+    expect(store.combat?.reactingSeat).toBe("B");
+    expect(store.perspective).toBe("B");
+    expect(store.passPending).toBe(true);
+    store.reveal(); // hand-off réaction
+    expect(store.passPending).toBe(false);
+    // B joue sa carte HORS de son tour → acceptée (légalité de tour relâchée)
+    const ok = store.playFromHand(rc);
+    expect([ok, store.ruleError]).toEqual([true, null]);
+    expect(store.state.instances[rc].location.zone).not.toBe("main");
+    // fin de réaction → retour à l'attaquant
+    store.combatEndReaction();
+    expect(store.combat?.reactingSeat).toBeNull();
+    expect(store.perspective).toBe("A");
+  });
 });
 
 describe("gameStore — jeu en ligne (clients de confiance)", () => {

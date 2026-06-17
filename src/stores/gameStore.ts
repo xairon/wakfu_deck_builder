@@ -475,6 +475,8 @@ export const useGameStore = defineStore("game", () => {
 
   function reveal(): void {
     passPending.value = false;
+    // En réaction, le hand-off est dans le MÊME tour : fireTurnStartEffects
+    // no-ope déjà (assistEffects off en v1, et garde turnStartFiredOn).
     fireTurnStartEffects();
   }
 
@@ -688,7 +690,9 @@ export const useGameStore = defineStore("game", () => {
       return true;
     }
     const ctx = rulesCtx();
-    const reason = whyCannotPlay(ctx, seat, instanceId);
+    // 706.5 — en fenêtre de réaction, ce siège joue hors de son tour.
+    const reaction = combat.value?.reactingSeat === seat;
+    const reason = whyCannotPlay(ctx, seat, instanceId, reaction);
     if (reason) return rejectMove(reason);
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
@@ -1464,6 +1468,8 @@ export const useGameStore = defineStore("game", () => {
     riposteCandidates: string[];
     /** Bloqueur en attente d'assignation à un attaquant (≥2 attaquants). */
     pendingBlocker: string | null;
+    /** 706.5 : siège qui réagit HORS de son tour (fenêtre de réaction). */
+    reactingSeat: Seat | null;
   } | null>(null);
 
   /** Attaquants à duel multi-bloqueurs (sans Géant) sans frappe choisie. */
@@ -1574,6 +1580,7 @@ export const useGameStore = defineStore("game", () => {
       riposteFrom: null,
       riposteCandidates: [],
       pendingBlocker: null,
+      reactingSeat: null,
     };
     if (firstAttacker) combatToggleAttacker(firstAttacker);
     return true;
@@ -1720,6 +1727,12 @@ export const useGameStore = defineStore("game", () => {
   function combatResolve(): void {
     const c = combat.value;
     if (!c || !c.target) return;
+    // Sécurité : si une réaction traînait, on la clôt et on rend la main à
+    // l'attaquant avant de résoudre.
+    if (c.reactingSeat) {
+      c.reactingSeat = null;
+      perspective.value = turn.value.active;
+    }
     const pending = pendingStrikes(c);
     if (pending.length) {
       c.step = "strikes";
@@ -1735,6 +1748,25 @@ export const useGameStore = defineStore("game", () => {
       return;
     }
     doResolveCombat();
+  }
+
+  /** 706.5 — l'attaquant cède la main au défenseur pour réagir avant résolution. */
+  function combatOfferReaction(): void {
+    const c = combat.value;
+    if (!c || c.step !== "blockers") return;
+    const def = otherSeat(turn.value.active);
+    c.reactingSeat = def;
+    perspective.value = def;
+    passPending.value = true; // overlay de passation (cache l'écran)
+  }
+
+  /** Fin de la réaction du défenseur : retour à l'attaquant pour résoudre. */
+  function combatEndReaction(): void {
+    const c = combat.value;
+    if (!c) return;
+    c.reactingSeat = null;
+    perspective.value = turn.value.active;
+    passPending.value = false;
   }
 
   /** Le défenseur choisit l'attaquant frappé par la riposte de la Cible (707.1). */
@@ -1959,6 +1991,8 @@ export const useGameStore = defineStore("game", () => {
     combatToggleBlock,
     combatChooseBlockTarget,
     combatResolve,
+    combatOfferReaction,
+    combatEndReaction,
     combatStrikeIds,
     combatChooseStrike,
     combatRiposteIds,
