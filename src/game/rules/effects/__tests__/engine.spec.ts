@@ -138,4 +138,52 @@ describe("createEffectEngine — isolation (deps injectées, sans store)", () =>
     expect(engine.effectTargeting.value).toBeNull();
     expect(engine.effectPicking.value).toBeNull();
   });
+
+  it("noteManualEffects : pousse un rappel par effet non compilé (assistEffects ON)", () => {
+    const engine = createEffectEngine(mockDeps());
+    const card = {
+      name: "Carte Manuelle",
+      mainType: "Allié",
+      effects: [
+        { description: "Auto", compiled: { trigger: "onArrive", ops: [] } },
+        { description: "À jouer à la main" },
+      ],
+    } as unknown as import("@/types/cards").Card;
+    engine.noteManualEffects("A", card);
+    expect(engine.manualReminders.value).toHaveLength(1);
+    expect(engine.manualReminders.value[0]).toMatchObject({
+      seat: "A",
+      cardName: "Carte Manuelle",
+      text: "À jouer à la main",
+    });
+  });
+
+  it("noteManualEffects : ne pousse rien si assistEffects OFF", () => {
+    const engine = createEffectEngine(
+      mockDeps({ isAssistEffects: () => false }),
+    );
+    const card = {
+      name: "X",
+      mainType: "Allié",
+      effects: [{ description: "Manuel" }],
+    } as unknown as import("@/types/cards").Card;
+    engine.noteManualEffects("A", card);
+    expect(engine.manualReminders.value).toHaveLength(0);
+  });
+
+  it("dismissManualReminder retire l'entrée ; reset vide tout", () => {
+    const engine = createEffectEngine(mockDeps());
+    const card = {
+      name: "X",
+      mainType: "Allié",
+      effects: [{ description: "Manuel" }],
+    } as unknown as import("@/types/cards").Card;
+    engine.noteManualEffects("A", card);
+    const id = engine.manualReminders.value[0].id;
+    engine.dismissManualReminder(id);
+    expect(engine.manualReminders.value).toHaveLength(0);
+    engine.noteManualEffects("A", card);
+    engine.reset();
+    expect(engine.manualReminders.value).toHaveLength(0);
+  });
 });
