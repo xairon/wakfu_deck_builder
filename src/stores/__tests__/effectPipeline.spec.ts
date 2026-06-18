@@ -290,3 +290,102 @@ describe("pipeline d'effets — piles (effectPicking)", () => {
     expect(store.effectPicking).toBeNull();
   });
 });
+
+describe("pipeline d'effets — ciblage (effectTargeting)", () => {
+  it("damageTarget : ouvre le ciblage, le clic inflige des Dommages à l'Allié", () => {
+    const { store } = makeEffectSandbox({ first: "A", allAllies: true });
+    const target = placeInZone(store, otherSeat("A"), { zone: "monde" });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 1,
+          element: "Neutre",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+    expect(store.effectTargeting).not.toBeNull();
+    expect(store.effectTargetIdsList).toContain(target);
+    store.effectTargetChoose(target);
+    expect(store.effectTargeting).toBeNull();
+    expect(store.state.instances[target].counters.damage).toBe(1);
+  });
+
+  it("destroyTarget : le clic envoie l'Allié ciblé en Défausse", () => {
+    const { store } = makeEffectSandbox({ first: "A", allAllies: true });
+    const target = placeInZone(store, otherSeat("A"), { zone: "monde" });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "destroyTarget", what: "Allié", zones: ["monde"] }],
+    });
+    expect(store.effectTargeting).not.toBeNull();
+    store.effectTargetChoose(target);
+    expect(store.effectTargeting).toBeNull();
+    expect(store.state.monde).not.toContain(target);
+    expect(store.state.seats[otherSeat("A")].defausse).toContain(target);
+  });
+
+  it("healHeroTarget : le clic soigne le Héros ciblé", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    const heroId = store.state.seats.A.heroInstanceId!;
+    const base = store.state.instances[heroId].counters.hp ?? 0;
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "healHeroTarget", n: 3 }],
+    });
+    expect(store.effectTargeting).not.toBeNull();
+    expect(store.effectTargetIdsList).toContain(heroId);
+    store.effectTargetChoose(heroId);
+    expect(store.effectTargeting).toBeNull();
+    expect(store.state.instances[heroId].counters.hp).toBe(base + 3);
+  });
+
+  it("buffForceTarget : le clic pose un +Force temporaire sur l'Allié ciblé", () => {
+    const { store } = makeEffectSandbox({ first: "A", allAllies: true });
+    const target = placeInZone(store, "A", { zone: "monde" });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 2,
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+    expect(store.effectTargeting).not.toBeNull();
+    store.effectTargetChoose(target);
+    expect(store.effectTargeting).toBeNull();
+    expect(store.state.instances[target].counters.tokens?.forceMod).toBe(2);
+  });
+
+  it("ciblage sans cible légale : effet auto-passé, pas de mode ciblage", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "destroyTarget", what: "Allié", zones: ["monde"] }],
+    });
+    expect(store.effectTargeting).toBeNull();
+  });
+
+  it("effectTargetSkip : passe le ciblage en cours", () => {
+    const { store } = makeEffectSandbox({ first: "A", allAllies: true });
+    placeInZone(store, otherSeat("A"), { zone: "monde" });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "destroyTarget", what: "Allié", zones: ["monde"] }],
+    });
+    expect(store.effectTargeting).not.toBeNull();
+    store.effectTargetSkip();
+    expect(store.effectTargeting).toBeNull();
+  });
+});

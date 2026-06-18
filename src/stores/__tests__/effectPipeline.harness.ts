@@ -27,9 +27,17 @@ export function makeEffectSandbox(opts?: {
   /** Cartes supplémentaires à rendre résolvables par getCard. */
   extraCards?: Card[];
   first?: Seat;
+  /**
+   * Force TOUTES les cartes du deck à mainType "Allié" : rend `placeInZone`
+   * déterministe (la Pioche est mélangée, sinon on tire au hasard un Allié ou
+   * une Action). Les Allié factices n'ont pas de Force connue → jamais détruits
+   * d'office (cf. destruction.ts), donc stables en jeu.
+   */
+  allAllies?: boolean;
 }): { store: Store; deck: Deck; cardStore: ReturnType<typeof useCardStore> } {
   setActivePinia(createPinia());
   const deck = createMockDeck();
+  if (opts?.allAllies) for (const dc of deck.cards) dc.card.mainType = "Allié";
   const cardStore = useCardStore();
   const allCards = [
     deck.hero,
