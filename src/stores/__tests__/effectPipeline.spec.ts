@@ -303,6 +303,7 @@ describe("pipeline d'effets — ciblage (effectTargeting)", () => {
           op: "damageTarget",
           n: 1,
           element: "Neutre",
+          heroes: false,
           zones: ["monde", "havreSac"],
         },
       ],
