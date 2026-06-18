@@ -10,6 +10,7 @@ import type { Seat, DraftEvent, GameState, PersistedEvent } from "@/game";
 import {
   createGame,
   deriveState,
+  resetDeriveMemo,
   buildInitialLayout,
   redactStateFor,
   canSeeCardId,
@@ -97,6 +98,50 @@ describe("reducer — déterminisme", () => {
     expect([...perm].sort((a, b) => a - b)).toEqual(
       Array.from({ length: 48 }, (_, i) => i),
     );
+  });
+});
+
+describe("reducer — mémoïsation incrémentale du fold", () => {
+  it("le repli incrémental (append) est identique au repli complet", () => {
+    // play() appende par spread (refs d'events préservées) → chemin incrémental.
+    const { events } = play(
+      (s) => [drawTop(s, "A")],
+      (s) => [drawTop(s, "B")],
+      (s) => [drawTop(s, "A")],
+    );
+    const incremental = deriveState(events); // sert depuis le cache mémoïsé
+    resetDeriveMemo();
+    const full = deriveState(events); // repli complet, cache vide
+    expect(incremental).toEqual(full);
+  });
+
+  it("ne fuite pas d'un journal à l'autre", () => {
+    const a = createGame("game-a", DECKS, { seedA: "a1", seedB: "a2" }).events;
+    const b = createGame("game-b", DECKS, { seedA: "b1", seedB: "b2" }).events;
+    deriveState(a); // amorce le cache avec A
+    const stateB = deriveState(b); // journal différent (borne ≠) → recalcul
+    resetDeriveMemo();
+    expect(stateB).toEqual(deriveState(b));
+  });
+
+  it("un UNDONE dans la queue est géré (recalcul complet)", () => {
+    const heroA = buildInitialLayout(GID, DECKS).seats.A.heroInstanceId!;
+    const base = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" }).events;
+    const s1 = deriveState(base);
+    const withCounter = [
+      ...base,
+      ...sequence([setCounter("A", heroA, "damage", 5)], GID, s1.seq + 1),
+    ];
+    const targetSeq = withCounter[withCounter.length - 1].seq;
+    const s2 = deriveState(withCounter); // amorce le cache (préfixe = withCounter)
+    const withUndo = [
+      ...withCounter,
+      ...sequence([undo("A", targetSeq)], GID, s2.seq + 1),
+    ];
+    const memoized = deriveState(withUndo); // queue avec UNDONE → recalcul complet
+    resetDeriveMemo();
+    expect(memoized).toEqual(deriveState(withUndo));
+    expect(memoized.instances[heroA].counters.damage).toBeUndefined();
   });
 });
 

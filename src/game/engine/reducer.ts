@@ -260,10 +260,10 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
 }
 
 /**
- * Reconstruit l'état à partir du journal. Gère l'undo : un event `UNDONE`
- * { targetSeq } fait ignorer l'event ciblé au fold (journal immuable, §4.5).
+ * Repli COMPLET du journal depuis l'état vide. Gère l'undo : un event `UNDONE`
+ * { targetSeq } fait ignorer l'event ciblé (journal immuable, §4.5).
  */
-export function deriveState(events: PersistedEvent[]): GameState {
+function fullDerive(events: PersistedEvent[]): GameState {
   const undone = new Set<number>();
   for (const e of events) {
     if (e.type === "UNDONE") undone.add((e.payload as UndonePayload).targetSeq);
@@ -274,6 +274,50 @@ export function deriveState(events: PersistedEvent[]): GameState {
     if (undone.has(e.seq)) continue;
     state = applyEvent(state, e);
   }
+  return state;
+}
+
+// Mémoïsation incrémentale du repli. Le journal est append-only (l'undo AJOUTE
+// un marqueur UNDONE, il ne tronque jamais) : un appel qui prolonge EXACTEMENT
+// le préfixe mémoïsé (même event-borne, par référence) n'applique alors que la
+// nouvelle queue à l'état mémoïsé — au lieu de re-replier tout le journal à
+// chaque dispatch (coût O(N²) → O(taille de la queue)). Référentiellement
+// transparent : même journal ⇒ même état. Invalidation conservatrice (recalcul
+// complet) si l'extension n'est pas garantie, ou si la queue contient un UNDONE
+// (qui pourrait neutraliser un event déjà appliqué dans le préfixe). Sûr car
+// AUCUN consommateur ne mute l'état dérivé (toute mutation passe par un event).
+let deriveMemo: {
+  boundary: PersistedEvent;
+  len: number;
+  state: GameState;
+} | null = null;
+
+/** @internal — réinitialise le cache de `deriveState` (tests). */
+export function resetDeriveMemo(): void {
+  deriveMemo = null;
+}
+
+export function deriveState(events: PersistedEvent[]): GameState {
+  const n = events.length;
+  if (
+    deriveMemo &&
+    deriveMemo.len <= n &&
+    events[deriveMemo.len - 1] === deriveMemo.boundary
+  ) {
+    // Journal identique au préfixe mémoïsé : état déjà calculé.
+    if (deriveMemo.len === n) return deriveMemo.state;
+    // Extension append-only : on n'applique que la queue, sauf si elle contient
+    // un UNDONE (qui peut cibler un event du préfixe → recalcul complet).
+    const tail = events.slice(deriveMemo.len);
+    if (!tail.some((e) => e.type === "UNDONE")) {
+      let state = deriveMemo.state;
+      for (const e of tail) state = applyEvent(state, e);
+      deriveMemo = { boundary: events[n - 1], len: n, state };
+      return state;
+    }
+  }
+  const state = fullDerive(events);
+  deriveMemo = n > 0 ? { boundary: events[n - 1], len: n, state } : null;
   return state;
 }
 

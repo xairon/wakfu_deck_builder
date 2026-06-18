@@ -9,6 +9,7 @@ export * from "./types/state";
 export {
   applyEvent,
   deriveState,
+  resetDeriveMemo,
   emptyState,
   assertAppendable,
   EngineError,
