@@ -170,12 +170,16 @@ export function createEffectEngine(deps: EffectEngineDeps) {
 
   function noteManualEffects(seat: Seat, card: Card | null): void {
     if (!deps.isAssistEffects() || !card) return;
+    // `manualEffects` (via printedEffects) garantit une description non vide.
     for (const e of manualEffects(card)) {
-      const text = String(e.description ?? "").trim();
-      if (!text) continue;
       manualReminders.value = [
         ...manualReminders.value,
-        { id: `mr${++reminderSeq}`, seat, cardName: card.name, text },
+        {
+          id: `mr${++reminderSeq}`,
+          seat,
+          cardName: card.name,
+          text: e.description.trim(),
+        },
       ];
     }
   }
