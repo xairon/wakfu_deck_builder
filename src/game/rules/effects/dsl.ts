@@ -345,6 +345,16 @@ export function printedEffects(card: Card | null): CardEffect[] {
   return effects.filter((e) => String(e?.description ?? "").trim() && !e.kind);
 }
 
+/**
+ * Effets IMPRIMÉS non automatisés (aucune forme `compiled`) : à résoudre à la
+ * main. Même critère que l'audit des starters — un effet « couvert » porte une
+ * forme compilée, tout trigger confondu (onArrive/onPlay/onTap/onTurnStart/
+ * static/onSelfAttacks). Sert au rappel manuel non bloquant de la table.
+ */
+export function manualEffects(card: Card | null): CardEffect[] {
+  return printedEffects(card).filter((e) => !e.compiled);
+}
+
 export function arrivalEffects(card: Card | null): EffectAtom[] {
   if (!card) return [];
   const atoms: EffectAtom[] = [];

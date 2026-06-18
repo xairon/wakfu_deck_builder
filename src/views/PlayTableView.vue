@@ -302,6 +302,7 @@
     <CardPreviewLayer />
     <DragLayer />
     <TurnBanner />
+    <ManualEffectReminders />
     <TutorialCoach />
 
     <!-- En ligne : attente de l'adversaire (hôte) -->
@@ -522,6 +523,7 @@ import ActionLog from "@/components/game/ActionLog.vue";
 import CardPreviewLayer from "@/components/game/CardPreviewLayer.vue";
 import DragLayer from "@/components/game/DragLayer.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
+import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
 import TutorialCoach from "@/components/game/TutorialCoach.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { validateDeck } from "@/validators/deck";
@@ -606,10 +608,9 @@ function launch(): void {
     toast.addToast(`Deck invalide : ${errs.join(" · ")}`, { type: "warning" });
     return;
   }
-  // v1 « à la Cockatrice » : règles assistées (combat, coûts, légalité,
-  // limites, victoire) mais effets de cartes résolus À LA MAIN. La file
-  // d'effets DSL (Lots A–C) reste en backlog v2.
-  store.assistEffects = false;
+  // v2 : effets de cartes AUTOMATISÉS quand ils sont compilés ; les effets non
+  // couverts apparaissent en rappels « à résoudre à la main » (non bloquants).
+  // assistEffects reste à sa valeur par défaut (true) pour les parties locales.
   store.startMatch(dA, dB, { nameA: nameA.value, nameB: nameB.value });
 }
 

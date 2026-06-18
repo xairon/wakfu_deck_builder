@@ -30,6 +30,7 @@ import {
   grantXpEvents,
   heroLevel,
   isTargetingOp,
+  manualEffects,
   normElement,
   producedElement,
   resolveBuffForceTarget,
@@ -75,6 +76,14 @@ export function matchesPickFilter(card: Card | null, f?: PickFilter): boolean {
   )
     return false;
   return true;
+}
+
+/** Rappel non bloquant : un effet imprimé non automatisé, à jouer à la main. */
+export interface ManualReminder {
+  id: string;
+  seat: Seat;
+  cardName: string;
+  text: string;
 }
 
 /**
@@ -151,6 +160,33 @@ export function createEffectEngine(deps: EffectEngineDeps) {
    * d'Attente du jeu (503).
    */
   const effectQueue = ref<EffectFrame[]>([]);
+
+  /**
+   * Rappels d'effets NON automatisés (assistEffects ON) : la file ne les résout
+   * pas, on les signale au joueur qui les applique à la main. Non bloquant.
+   */
+  const manualReminders = ref<ManualReminder[]>([]);
+  let reminderSeq = 0;
+
+  function noteManualEffects(seat: Seat, card: Card | null): void {
+    if (!deps.isAssistEffects() || !card) return;
+    // `manualEffects` (via printedEffects) garantit une description non vide.
+    for (const e of manualEffects(card)) {
+      manualReminders.value = [
+        ...manualReminders.value,
+        {
+          id: `mr${++reminderSeq}`,
+          seat,
+          cardName: card.name,
+          text: e.description.trim(),
+        },
+      ];
+    }
+  }
+
+  function dismissManualReminder(id: string): void {
+    manualReminders.value = manualReminders.value.filter((r) => r.id !== id);
+  }
 
   /**
    * Limite de main = PA (4873) : « à n'importe quel instant », l'excédent
@@ -579,6 +615,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     sourceId?: string,
   ): void {
     if (!deps.isAssistEffects() || !card) return;
+    noteManualEffects(seat, card);
     for (const atom of arrivalEffects(card)) {
       if (atom.optional) {
         effectChoices.value = [
@@ -681,6 +718,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     effectTargeting.value = null;
     effectPicking.value = null;
     effectQueue.value = [];
+    manualReminders.value = [];
   }
 
   return {
@@ -692,11 +730,14 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     effectQueue,
     effectPickIds,
     effectTargetIdsList,
+    manualReminders,
     // entrées
     enqueueEffect,
     enqueueTriggered,
     queueArrivalEffects,
     enforceHandLimit,
+    noteManualEffects,
+    dismissManualReminder,
     // interactions joueur
     effectPick,
     effectPickSkip,
