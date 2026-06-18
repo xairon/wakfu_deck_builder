@@ -754,11 +754,14 @@ export const useGameStore = defineStore("game", () => {
     }
     dispatch(...drafts);
     if (actionAtoms.length) {
+      // actionAtoms n'est rempli que si TOUS les effets imprimés se compilent
+      // (playAtoms.length === effectsCount) : il n'y a donc aucun effet manuel
+      // à signaler ici. Une Action partielle/non couverte tombe dans le `else`
+      // → queueArrivalEffects, qui pousse les rappels.
       for (const atom of actionAtoms) {
         dispatch(say(seat, `Action résolue — ${card.name} : « ${atom.text} »`));
         engine.enqueueEffect({ seat, cardName: card.name, ops: atom.ops });
       }
-      engine.noteManualEffects(seat, card);
     } else {
       engine.queueArrivalEffects(seat, card, instanceId);
     }

@@ -22,6 +22,7 @@ const store = useGameStore();
           <strong>{{ r.cardName }}</strong> : « {{ r.text }} »
         </span>
         <button
+          type="button"
           class="manual-reminder__done"
           data-testid="manual-reminder-done"
           @click="store.dismissManualReminder(r.id)"
@@ -40,6 +41,8 @@ const store = useGameStore();
   bottom: 0.75rem;
   z-index: 30;
   max-width: 22rem;
+  max-height: 40vh;
+  overflow-y: auto;
   padding: 0.6rem 0.75rem;
   border-radius: 0.6rem;
   background: rgba(20, 16, 10, 0.92);
