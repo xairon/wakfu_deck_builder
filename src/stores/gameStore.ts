@@ -84,6 +84,10 @@ import {
   whyCannotPlay,
 } from "@/game/rules";
 import { useCardStore } from "@/stores/cardStore";
+import {
+  createEffectEngine,
+  matchesPickFilter,
+} from "@/game/rules/effects/engine";
 
 function rndSeed(): string {
   return Math.random().toString(36).slice(2);
@@ -411,10 +415,7 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
     attackedOnTurn.value = null;
     ruleError.value = null;
-    effectChoices.value = [];
-    effectTargeting.value = null;
-    effectPicking.value = null;
-    effectQueue.value = [];
+    engine.reset();
     turnStartFiredOn.value = null;
   }
 
@@ -434,10 +435,7 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
     attackedOnTurn.value = null;
     ruleError.value = null;
-    effectChoices.value = [];
-    effectTargeting.value = null;
-    effectPicking.value = null;
-    effectQueue.value = [];
+    engine.reset();
     turnStartFiredOn.value = null;
   }
 
@@ -515,7 +513,7 @@ export const useGameStore = defineStore("game", () => {
                 `${card.name} : entretien impayable (rien à recycler${first.element ? ` en ${first.element}` : ""}) — détruit (804.8).`,
               ),
             );
-            enqueueEffect({
+            engine.enqueueEffect({
               seat,
               cardName: card.name,
               ops: [{ op: "destroySelf" }],
@@ -523,8 +521,8 @@ export const useGameStore = defineStore("game", () => {
             });
             continue;
           }
-          effectChoices.value = [
-            ...effectChoices.value,
+          engine.effectChoices.value = [
+            ...engine.effectChoices.value,
             {
               seat,
               cardName: card.name,
@@ -542,7 +540,7 @@ export const useGameStore = defineStore("game", () => {
         dispatch(
           say(seat, `Effet de début de tour — ${card.name} : « ${atom.text} »`),
         );
-        enqueueEffect({
+        engine.enqueueEffect({
           seat,
           cardName: card.name,
           ops: atom.ops,
@@ -557,7 +555,7 @@ export const useGameStore = defineStore("game", () => {
     const active = state.value.turn.active;
     // 4873 : on ne passe pas la main avec un excédent — défausse d'abord
     if (assist.value && state.value.seats[active].main.length > paOf(active)) {
-      enforceHandLimit(active);
+      engine.enforceHandLimit(active);
       rejectMove("Main pleine : défausse l'excédent avant de finir le tour.");
       return;
     }
@@ -584,10 +582,7 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
     attackedOnTurn.value = null;
     ruleError.value = null;
-    effectChoices.value = [];
-    effectTargeting.value = null;
-    effectPicking.value = null;
-    effectQueue.value = [];
+    engine.reset();
     turnStartFiredOn.value = null;
   }
 
@@ -618,7 +613,7 @@ export const useGameStore = defineStore("game", () => {
       if (!state.value.seats[seat].pioche.length) break;
       dispatch(drawTop(state.value, seat));
     }
-    enforceHandLimit(seat);
+    engine.enforceHandLimit(seat);
   }
 
   function moveTo(
@@ -779,561 +774,39 @@ export const useGameStore = defineStore("game", () => {
     if (actionAtoms.length) {
       for (const atom of actionAtoms) {
         dispatch(say(seat, `Action résolue — ${card.name} : « ${atom.text} »`));
-        enqueueEffect({ seat, cardName: card.name, ops: atom.ops });
+        engine.enqueueEffect({ seat, cardName: card.name, ops: atom.ops });
       }
     } else {
-      queueArrivalEffects(seat, card, instanceId);
+      engine.queueArrivalEffects(seat, card, instanceId);
     }
     return true;
   }
 
-  /** Effets optionnels (« vous pouvez… ») en attente de confirmation. */
-  const effectChoices = ref<
-    {
-      seat: Seat;
-      cardName: string;
-      text: string;
-      ops: EffectOp[];
-      /** Branche exécutée si le joueur décline (« ou détruisez X »). */
-      declineOps?: EffectOp[];
-      sourceId?: string;
-    }[]
-  >([]);
-  const effectChoice = computed(() => effectChoices.value[0] ?? null);
-
-  /** Op à cible en attente du clic du joueur (mode ciblage du plateau). */
-  const effectTargeting = ref<{
-    seat: Seat;
-    cardName: string;
-    op: TargetingOp;
-    sourceId?: string;
-  } | null>(null);
-
-  /** Filtre de recherche dans une pile (type, famille, niveau max, élément). */
-  interface PickFilter {
-    mainType?: string;
-    sub?: string;
-    maxLevel?: number;
-    /** « une carte [Feu] » : seules les cartes de cet Élément. */
-    element?: string;
-  }
-  function normWord(s: string): string {
-    return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-  }
-  function matchesPickFilter(card: Card | null, f?: PickFilter): boolean {
-    if (!f) return true;
-    if (!card) return false;
-    if (f.mainType && card.mainType !== f.mainType) return false;
-    if (f.sub && !(card.subTypes ?? []).some((s) => normWord(s) === f.sub))
-      return false;
-    if (f.element && producedElement(card) !== normElement(f.element))
-      return false;
-    if (
-      f.maxLevel !== undefined &&
-      (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) > f.maxLevel
-    )
-      return false;
-    return true;
-  }
-
-  /** Choix de carte(s) dans une pile (recycler / défausser / chercher). */
-  const effectPicking = ref<{
-    seat: Seat;
-    cardName: string;
-    zone: "defausse" | "main" | "pioche";
-    action: "recycle" | "discard" | "toHand" | "toMonde";
-    /** Filtre de la recherche dans la Pioche. */
-    filter?: PickFilter;
-    /** « Il apparaît incliné. » — la carte mise en jeu arrive inclinée. */
-    enterTapped?: boolean;
-    /** Choix imposé par une règle (pas de bouton « Passer »). */
-    mandatory?: boolean;
-    remaining: number;
-    sourceId?: string;
-  } | null>(null);
-
   /**
-   * Limite de main = PA (4873) : « à n'importe quel instant », l'excédent
-   * doit être défaussé. Ouvre un choix OBLIGATOIRE dans la main.
+   * Moteur de résolution d'effets : possède la file et le modèle d'interaction
+   * (ciblage / pile / choix). Les dépendances couplées au store sont injectées
+   * ici ; le reste vit dans `src/game/rules/effects/engine.ts`.
    */
-  function enforceHandLimit(seat: Seat): void {
-    if (!assist.value || matchPhase.value !== "playing") return;
-    if (effectPicking.value || effectTargeting.value) return; // re-vérifié après
-    const excess = state.value.seats[seat].main.length - paOf(seat);
-    if (excess <= 0) return;
-    dispatch(
-      say(
-        seat,
-        `Main pleine (maximum ${paOf(seat)} = PA) : défausse ${excess} carte(s).`,
-      ),
-    );
-    effectPicking.value = {
-      seat,
-      cardName: "Limite de main",
-      zone: "main",
-      action: "discard",
-      mandatory: true,
-      remaining: excess,
-    };
-  }
-
-  /**
-   * FILE D'EXÉCUTION des effets : chaque effet est une « frame » d'ops.
-   * Une op interactive (cible, pile) met la frame en pause — le reste de ses
-   * ops reste en tête de file ; les effets déclenchés en cascade (carte mise
-   * en jeu par un effet) s'ajoutent en queue. C'est l'embryon de la File
-   * d'Attente du jeu (503).
-   */
-  interface EffectFrame {
-    seat: Seat;
-    cardName: string;
-    ops: EffectOp[];
-    sourceId?: string;
-  }
-  const effectQueue = ref<EffectFrame[]>([]);
-
-  function enqueueEffect(frame: EffectFrame): void {
-    effectQueue.value = [...effectQueue.value, frame];
-    pumpEffects();
-  }
-
-  /**
-   * Enfile les frames du bus de déclenchement (804.7) : « Quand [self]
-   * attaque » à la déclaration, déclenchés des Dommages à la résolution.
-   * L'ordre (joueur actif d'abord) est garanti par `collectTriggeredEffects`.
-   */
-  function enqueueTriggered(frames: TriggeredFrame[]): void {
-    for (const f of frames) {
-      if (f.text)
-        dispatch(say(f.seat, `Déclenché — ${f.cardName} : « ${f.text} »`));
-      enqueueEffect({
-        seat: f.seat,
-        cardName: f.cardName,
-        ops: f.ops,
-        sourceId: f.sourceId,
-      });
-    }
-  }
-
-  /** Avance la file tant qu'aucune interaction n'est en attente. */
-  function pumpEffects(): void {
-    while (
-      effectQueue.value.length &&
-      !effectTargeting.value &&
-      !effectPicking.value
-    ) {
-      const frame = effectQueue.value[0];
-      if (runFrame(frame)) return; // en pause — la frame reste en tête
-      effectQueue.value = effectQueue.value.slice(1);
-    }
-    // file vidée : destructions d'état (1414/3019) puis limite de main
-    // (« à n'importe quel instant »)
-    if (
-      !effectQueue.value.length &&
-      !effectTargeting.value &&
-      !effectPicking.value
-    ) {
-      checkVictory();
-      enforceHandLimit(state.value.turn.active);
-    }
-  }
-
-  /** Remplace les ops restantes de la frame en tête de file. */
-  function holdRest(frame: EffectFrame, rest: EffectOp[]): void {
-    effectQueue.value = [
-      { ...frame, ops: rest },
-      ...effectQueue.value.slice(1),
-    ];
-  }
-  const effectPickIds = computed(() => {
-    const p = effectPicking.value;
-    if (!p) return [];
-    const ids = [...state.value.seats[p.seat][p.zone]];
-    if (!p.filter) return ids;
-    return ids.filter((id) =>
-      matchesPickFilter(
-        getCard(state.value.instances[id]?.cardId ?? null),
-        p.filter,
-      ),
-    );
+  const engine = createEffectEngine({
+    getState: () => state.value,
+    rulesCtx,
+    getCard,
+    isAssist: () => assist.value,
+    isAssistEffects: () => assistEffects.value,
+    getMatchPhase: () => matchPhase.value,
+    playerName: (s) => players.value[s].name,
+    paOf,
+    dispatch,
+    moveTo,
+    shufflePioche,
+    checkVictory,
+    draw,
+    adjustCounter,
+    onMatchWon: (s) => {
+      winner.value = s;
+      matchPhase.value = "finished";
+    },
   });
-
-  /** Le joueur choisit une carte dans la pile ; continue l'effet une fois fini. */
-  function effectPick(instanceId: string): void {
-    const p = effectPicking.value;
-    if (!p || !effectPickIds.value.includes(instanceId)) return;
-    if (p.action === "recycle") {
-      moveTo(instanceId, { zone: "pioche", owner: p.seat }, { at: "bottom" });
-      dispatch(
-        say(p.seat, `${p.cardName} : une carte est recyclée sous la Pioche.`),
-      );
-    } else if (p.action === "discard") {
-      moveTo(instanceId, { zone: "defausse", owner: p.seat }, { at: "top" });
-    } else if (p.action === "toHand") {
-      moveTo(instanceId, { zone: "main", owner: p.seat });
-      dispatch(
-        say(
-          p.seat,
-          `${p.cardName} : ${getCard(state.value.instances[instanceId]?.cardId ?? null)?.name ?? "une carte"} rejoint la main.`,
-        ),
-      );
-    } else {
-      moveTo(instanceId, { zone: "monde" });
-      if (p.enterTapped) {
-        dispatch({
-          actor: p.seat,
-          type: "SET_ORIENTATION",
-          payload: { instanceId, orientation: "tapped" },
-        });
-      }
-      dispatch(
-        say(
-          p.seat,
-          `${p.cardName} : la carte cherchée entre en jeu${p.enterTapped ? " (inclinée)" : ""}.`,
-        ),
-      );
-      // la carte mise en jeu par l'effet « apparaît » : son propre effet
-      // d'apparition part en cascade (en queue de file)
-      queueArrivalEffects(
-        p.seat,
-        getCard(state.value.instances[instanceId]?.cardId ?? null),
-        instanceId,
-      );
-    }
-    const remaining = p.remaining - 1;
-    const stillHas = effectPickIds.value.length > 0;
-    if (remaining > 0 && stillHas) {
-      effectPicking.value = { ...p, remaining };
-      return;
-    }
-    effectPicking.value = null;
-    pumpEffects();
-  }
-
-  /** Passe le choix en cours (pile vide / décision du joueur). */
-  function effectPickSkip(): void {
-    const p = effectPicking.value;
-    if (!p || p.mandatory) return; // un choix imposé ne se passe pas
-    effectPicking.value = null;
-    dispatch(say(p.seat, `${p.cardName} : choix passé.`));
-    pumpEffects();
-  }
-  const effectTargetIdsList = computed(() =>
-    effectTargeting.value
-      ? effectTargetIds(rulesCtx(), effectTargeting.value.op)
-      : [],
-  );
-
-  /**
-   * Exécute les ops de la frame de tête ; retourne `true` si une op
-   * interactive met la frame en pause (le reste attend via `holdRest`).
-   */
-  function runFrame(frame: EffectFrame): boolean {
-    const { seat, cardName, sourceId } = frame;
-    const ops = frame.ops;
-    for (let i = 0; i < ops.length; i++) {
-      const op = ops[i];
-      if (isTargetingOp(op)) {
-        const eligible = effectTargetIds(rulesCtx(), op);
-        if (!eligible.length) {
-          dispatch(
-            say(seat, `${cardName} : aucune cible légale, effet passé.`),
-          );
-          continue;
-        }
-        effectTargeting.value = { seat, cardName, op, sourceId };
-        holdRest(frame, ops.slice(i + 1));
-        return true;
-      }
-      if (op.op === "shuffleDeck") {
-        shufflePioche(seat);
-        continue;
-      }
-      if (op.op === "searchDeck") {
-        const filter: PickFilter = {
-          mainType: op.what,
-          ...(op.sub ? { sub: op.sub } : {}),
-          ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
-        };
-        const hasMatch = state.value.seats[seat].pioche.some((id) =>
-          matchesPickFilter(
-            getCard(state.value.instances[id]?.cardId ?? null),
-            filter,
-          ),
-        );
-        if (!hasMatch) {
-          dispatch(
-            say(
-              seat,
-              `${cardName} : aucune carte correspondante dans la Pioche.`,
-            ),
-          );
-          continue;
-        }
-        effectPicking.value = {
-          seat,
-          cardName,
-          zone: "pioche",
-          action: op.dest === "main" ? "toHand" : "toMonde",
-          filter,
-          ...(op.tapped ? { enterTapped: true } : {}),
-          remaining: 1,
-          sourceId,
-        };
-        holdRest(frame, ops.slice(i + 1));
-        return true;
-      }
-      if (op.op === "recycleFromDiscard" || op.op === "discardFromHand") {
-        const zone = op.op === "recycleFromDiscard" ? "defausse" : "main";
-        const filter: PickFilter | undefined =
-          op.op === "recycleFromDiscard" && op.element
-            ? { element: op.element }
-            : undefined;
-        const hasMatch = state.value.seats[seat][zone].some((id) =>
-          matchesPickFilter(
-            getCard(state.value.instances[id]?.cardId ?? null),
-            filter,
-          ),
-        );
-        if (!hasMatch) {
-          dispatch(
-            say(
-              seat,
-              `${cardName} : rien à ${op.op === "recycleFromDiscard" ? "recycler" : "défausser"}${filter ? ` (aucune carte ${filter.element})` : ""}, effet passé.`,
-            ),
-          );
-          continue;
-        }
-        effectPicking.value = {
-          seat,
-          cardName,
-          zone,
-          action: op.op === "recycleFromDiscard" ? "recycle" : "discard",
-          ...(filter ? { filter } : {}),
-          remaining: op.n,
-          sourceId,
-        };
-        holdRest(frame, ops.slice(i + 1));
-        return true;
-      }
-      if (op.op === "buffForceSelf") {
-        const src = sourceId ? state.value.instances[sourceId] : null;
-        const inPlay =
-          src &&
-          (src.location.zone === "monde" || src.location.zone === "havreSac");
-        if (inPlay) {
-          dispatch(
-            incCounterVerb(seat, sourceId!, "forceMod", op.n, true),
-            say(
-              seat,
-              `${cardName} gagne +${op.n} en Force jusqu'à la fin du tour.`,
-            ),
-          );
-        }
-      } else if (op.op === "draw") {
-        draw(seat, op.n);
-      } else if (op.op === "gainXp") {
-        const grant = grantXpEvents(rulesCtx(), seat, op.n);
-        dispatch(
-          ...grant.events,
-          ...grant.log.map((l) =>
-            say(seat, `Le Héros de ${players.value[seat].name} ${l}`),
-          ),
-        );
-        if (grant.won) {
-          winner.value = seat;
-          matchPhase.value = "finished";
-        }
-      } else if (op.op === "heroGainPv") {
-        const heroId = state.value.seats[seat].heroInstanceId;
-        if (heroId) adjustCounter(heroId, "hp", op.n);
-      } else if (op.op === "heroLosePv") {
-        const heroId = state.value.seats[seat].heroInstanceId;
-        if (heroId) adjustCounter(heroId, "hp", -op.n);
-      } else if (op.op === "damageOppHero") {
-        const oppHeroId = state.value.seats[otherSeat(seat)].heroInstanceId;
-        if (oppHeroId) adjustCounter(oppHeroId, "hp", -op.n);
-      } else if (op.op === "havreSacGainResistance") {
-        const sacId = state.value.seats[seat].havreSacInstanceId;
-        if (sacId) adjustCounter(sacId, "resistance", op.n);
-      } else if (op.op === "tapSelf") {
-        const src = sourceId ? state.value.instances[sourceId] : null;
-        const inPlay =
-          src &&
-          (src.location.zone === "monde" || src.location.zone === "havreSac");
-        if (inPlay && src!.orientation === "upright") {
-          dispatch({
-            actor: seat,
-            type: "SET_ORIENTATION",
-            payload: { instanceId: sourceId!, orientation: "tapped" },
-          });
-        }
-      } else if (op.op === "loseStatTurn") {
-        const heroId = state.value.seats[seat].heroInstanceId;
-        if (heroId) {
-          dispatch(
-            incCounterVerb(
-              seat,
-              heroId,
-              op.stat === "pa" ? "paMod" : "pmMod",
-              -op.n,
-              true,
-            ),
-            say(
-              seat,
-              `${players.value[seat].name} perd ${op.n} ${op.stat.toUpperCase()} jusqu'à la fin du tour.`,
-            ),
-          );
-        }
-      } else if (op.op === "destroySelf") {
-        const src = sourceId ? state.value.instances[sourceId] : null;
-        const inPlay =
-          src &&
-          (src.location.zone === "monde" || src.location.zone === "havreSac");
-        if (inPlay) {
-          dispatch(
-            move(seat, {
-              instanceId: sourceId!,
-              from: src!.location,
-              to: { zone: "defausse", owner: src!.owner },
-              position: { at: "top" },
-              visibility: { faceDown: false, visibleTo: "all" },
-              preservesIdentity: false,
-            }),
-            say(seat, `${cardName} est détruit.`),
-          );
-        }
-      } else if (op.op === "combatModSelf") {
-        const src = sourceId ? state.value.instances[sourceId] : null;
-        const inPlay =
-          src &&
-          (src.location.zone === "monde" || src.location.zone === "havreSac");
-        if (inPlay) {
-          // Jetons de COMBAT posés sur la source (purgés en fin de combat/tour
-          // par isTurnToken) : Force lue par effectiveForce, Géant par
-          // effectiveKeywords. Le +PM a déjà servi au plafond d'attaquants.
-          const drafts: DraftEvent[] = [];
-          if (op.force)
-            drafts.push(
-              incCounterVerb(seat, sourceId!, "forceCombatMod", op.force, true),
-            );
-          if (op.pm)
-            drafts.push(
-              incCounterVerb(seat, sourceId!, "pmCombatMod", op.pm, true),
-            );
-          if (op.geant)
-            drafts.push(
-              setCounterVerb(seat, sourceId!, "geantCombatMod", 1, true),
-            );
-          const parts = [
-            op.force ? `+${op.force} en Force` : null,
-            op.geant ? "Géant" : null,
-          ].filter(Boolean);
-          dispatch(
-            ...drafts,
-            say(
-              seat,
-              `${cardName} — pendant ce combat : ${parts.join(" et ") || "modificateur"}.`,
-            ),
-          );
-        }
-      } else if (op.op === "buffForceAlliesMondeTurn") {
-        const heroId = state.value.seats[seat].heroInstanceId;
-        if (heroId) {
-          // 812.3b — jeton de SIÈGE sur le Héros (ensemble dynamique) : tout
-          // Allié du Monde du siège en profite. "heroLevel" est figé au Niveau
-          // courant au moment de résoudre.
-          const n = op.n === "heroLevel" ? heroLevel(rulesCtx(), seat) : op.n;
-          dispatch(
-            incCounterVerb(seat, heroId, "teamForceMod", n, true),
-            say(
-              seat,
-              `Vos Alliés du Monde gagnent +${n} en Force jusqu'à la fin du tour.`,
-            ),
-          );
-        }
-      } else if (op.op === "globalDamageShield") {
-        const heroId = state.value.seats[seat].heroInstanceId;
-        if (heroId) {
-          // « jusqu'au début de votre prochain tour » : actif pendant le tour
-          // adverse, purgé à l'entrée de votre tour suivant (numéro + 2).
-          dispatch(
-            setCounterVerb(
-              seat,
-              heroId,
-              "treveUntilTurn",
-              state.value.turn.number + 2,
-              true,
-            ),
-            say(
-              seat,
-              "Trêve — tous les Dommages sont réduits à 0 jusqu'au début de votre prochain tour.",
-            ),
-          );
-        }
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Met en file les effets d'apparition d'une carte qui vient d'entrer en
-   * jeu (jouée de la main ou mise en jeu par un effet).
-   */
-  function queueArrivalEffects(
-    seat: Seat,
-    card: Card | null,
-    sourceId?: string,
-  ): void {
-    if (!assistEffects.value || !card) return;
-    for (const atom of arrivalEffects(card)) {
-      if (atom.optional) {
-        effectChoices.value = [
-          ...effectChoices.value,
-          {
-            seat,
-            cardName: card.name,
-            text: atom.text,
-            ops: atom.ops,
-            sourceId,
-          },
-        ];
-        continue;
-      }
-      dispatch(
-        say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
-      );
-      enqueueEffect({ seat, cardName: card.name, ops: atom.ops, sourceId });
-    }
-  }
-
-  /** Le joueur clique une cible légale : résout l'op puis continue l'effet. */
-  function effectTargetChoose(instanceId: string): void {
-    const t = effectTargeting.value;
-    if (!t || !effectTargetIdsList.value.includes(instanceId)) return;
-    effectTargeting.value = null;
-    const res =
-      t.op.op === "destroyTarget"
-        ? resolveDestroyTarget(rulesCtx(), t.seat, instanceId)
-        : t.op.op === "healHeroTarget"
-          ? resolveHealHeroTarget(rulesCtx(), t.seat, instanceId, t.op.n)
-          : t.op.op === "buffForceTarget"
-            ? resolveBuffForceTarget(rulesCtx(), t.seat, instanceId, t.op.n)
-            : resolveDamageTarget(
-                rulesCtx(),
-                t.seat,
-                instanceId,
-                t.op.n,
-                t.op.element,
-                { mods: activeGlobalMods(rulesCtx()) },
-              );
-    dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
-    // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
-    if (assistEffects.value && res.ruleEvents?.length)
-      enqueueTriggered(collectTriggeredEffects(rulesCtx(), res.ruleEvents));
-    checkVictory();
-    pumpEffects();
-  }
 
   /**
    * Active un pouvoir à inclinaison compilé : incline la carte puis exécute
@@ -1383,7 +856,7 @@ export const useGameStore = defineStore("game", () => {
         say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`),
       );
     }
-    enqueueEffect({
+    engine.enqueueEffect({
       seat,
       cardName: card.name,
       ops: atom.ops,
@@ -1397,46 +870,6 @@ export const useGameStore = defineStore("game", () => {
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
     return !!card && tapPowers(card).length > 0;
-  }
-
-  /** Passe l'op à cible en cours (cible illégale / choix du joueur). */
-  function effectTargetSkip(): void {
-    const t = effectTargeting.value;
-    if (!t) return;
-    effectTargeting.value = null;
-    dispatch(say(t.seat, `${t.cardName} : ciblage passé.`));
-    pumpEffects();
-  }
-
-  /** Le joueur accepte (ou refuse) l'effet optionnel en tête de file. */
-  function effectChoiceResolve(accept: boolean): void {
-    const choice = effectChoices.value[0];
-    if (!choice) return;
-    effectChoices.value = effectChoices.value.slice(1);
-    if (!accept) {
-      dispatch(say(choice.seat, `Effet décliné — ${choice.cardName}.`));
-      if (choice.declineOps?.length) {
-        enqueueEffect({
-          seat: choice.seat,
-          cardName: choice.cardName,
-          ops: choice.declineOps,
-          sourceId: choice.sourceId,
-        });
-      }
-      return;
-    }
-    dispatch(
-      say(
-        choice.seat,
-        `Effet appliqué — ${choice.cardName} : « ${choice.text} »`,
-      ),
-    );
-    enqueueEffect({
-      seat: choice.seat,
-      cardName: choice.cardName,
-      ops: choice.ops,
-      sourceId: choice.sourceId,
-    });
   }
 
   function toggleTap(instanceId: string): void {
@@ -1679,7 +1112,7 @@ export const useGameStore = defineStore("game", () => {
       instanceId: id,
     }));
     if (assistEffects.value)
-      enqueueTriggered(collectTriggeredEffects(rulesCtx(), declared));
+      engine.enqueueTriggered(collectTriggeredEffects(rulesCtx(), declared));
     return true;
   }
 
@@ -1812,7 +1245,9 @@ export const useGameStore = defineStore("game", () => {
     );
     // 804.7 — déclenchés des Dommages infligés (après la résolution complète).
     if (assistEffects.value)
-      enqueueTriggered(collectTriggeredEffects(rulesCtx(), result.ruleEvents));
+      engine.enqueueTriggered(
+        collectTriggeredEffects(rulesCtx(), result.ruleEvents),
+      );
     attackedOnTurn.value = turn.value.number;
     combat.value = null;
     if (result.winner) {
@@ -2010,18 +1445,18 @@ export const useGameStore = defineStore("game", () => {
     combatChooseRiposte,
     combatCancel,
     effectiveForceOf,
-    effectChoice,
-    effectChoiceResolve,
-    effectTargeting,
-    effectTargetIdsList,
-    effectTargetChoose,
-    effectTargetSkip,
+    effectChoice: engine.effectChoice,
+    effectChoiceResolve: engine.effectChoiceResolve,
+    effectTargeting: engine.effectTargeting,
+    effectTargetIdsList: engine.effectTargetIdsList,
+    effectTargetChoose: engine.effectTargetChoose,
+    effectTargetSkip: engine.effectTargetSkip,
     activateTapPower,
     hasTapPower,
-    effectPicking,
-    effectPickIds,
-    effectPick,
-    effectPickSkip,
-    enqueueEffect,
+    effectPicking: engine.effectPicking,
+    effectPickIds: engine.effectPickIds,
+    effectPick: engine.effectPick,
+    effectPickSkip: engine.effectPickSkip,
+    enqueueEffect: engine.enqueueEffect,
   };
 });
