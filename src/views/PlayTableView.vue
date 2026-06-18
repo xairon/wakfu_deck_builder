@@ -302,6 +302,7 @@
     <CardPreviewLayer />
     <DragLayer />
     <TurnBanner />
+    <ManualEffectReminders />
     <TutorialCoach />
 
     <!-- En ligne : attente de l'adversaire (hôte) -->
@@ -522,6 +523,7 @@ import ActionLog from "@/components/game/ActionLog.vue";
 import CardPreviewLayer from "@/components/game/CardPreviewLayer.vue";
 import DragLayer from "@/components/game/DragLayer.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
+import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
 import TutorialCoach from "@/components/game/TutorialCoach.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { validateDeck } from "@/validators/deck";
