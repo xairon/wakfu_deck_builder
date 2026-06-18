@@ -490,3 +490,50 @@ describe("pipeline d'effets — orchestration de file", () => {
     expect(store.state.seats.A.main.length).toBe(handBefore);
   });
 });
+
+describe("pipeline d'effets — rappels manuels (effets non couverts)", () => {
+  it("une carte à effet non compilé entrant en jeu pousse un rappel", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    // effet imprimé NON compilé (pas de champ `compiled`) sur chaque allié
+    for (const dc of deck.cards)
+      dc.card.effects = [{ description: "Produisez une Ressource." }];
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "searchDeck", what: "Allié", dest: "monde" }],
+    });
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.manualReminders.length).toBe(1);
+    expect(store.manualReminders[0].text).toBe("Produisez une Ressource.");
+    store.dismissManualReminder(store.manualReminders[0].id);
+    expect(store.manualReminders.length).toBe(0);
+  });
+
+  it("une carte vanille (sans effet imprimé) ne pousse aucun rappel", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    for (const dc of deck.cards) dc.card.effects = [];
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "searchDeck", what: "Allié", dest: "monde" }],
+    });
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.manualReminders.length).toBe(0);
+  });
+});

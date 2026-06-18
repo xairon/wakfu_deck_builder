@@ -758,6 +758,7 @@ export const useGameStore = defineStore("game", () => {
         dispatch(say(seat, `Action résolue — ${card.name} : « ${atom.text} »`));
         engine.enqueueEffect({ seat, cardName: card.name, ops: atom.ops });
       }
+      engine.noteManualEffects(seat, card);
     } else {
       engine.queueArrivalEffects(seat, card, instanceId);
     }
@@ -1440,5 +1441,7 @@ export const useGameStore = defineStore("game", () => {
     effectPick: engine.effectPick,
     effectPickSkip: engine.effectPickSkip,
     enqueueEffect: engine.enqueueEffect,
+    manualReminders: engine.manualReminders,
+    dismissManualReminder: engine.dismissManualReminder,
   };
 });
