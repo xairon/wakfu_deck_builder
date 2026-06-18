@@ -389,3 +389,103 @@ describe("pipeline d'effets — ciblage (effectTargeting)", () => {
     expect(store.effectTargeting).toBeNull();
   });
 });
+
+describe("pipeline d'effets — orchestration de file", () => {
+  it("holdRest : une op interactive suspend la frame, le reste s'exécute après résolution", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    store.draw("A", 2);
+    const handBefore = store.state.seats.A.main.length;
+    // discardFromHand (pause) PUIS draw 1 (reste de la frame)
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [
+        { op: "discardFromHand", n: 1 },
+        { op: "draw", n: 1 },
+      ],
+    });
+    expect(store.effectPicking).not.toBeNull();
+    // le draw du reste ne s'est PAS encore produit (frame suspendue)
+    expect(store.state.seats.A.main.length).toBe(handBefore);
+    store.effectPick(store.effectPickIds[0]);
+    // pick (−1 main) puis reprise du reste : draw (+1 main) → net inchangé
+    expect(store.effectPicking).toBeNull();
+    expect(store.state.seats.A.main.length).toBe(handBefore);
+  });
+
+  it("FIFO : deux effets enfilés s'exécutent dans l'ordre d'enfilement", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "E1",
+      ops: [{ op: "draw", n: 1 }],
+    });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "E2",
+      ops: [{ op: "draw", n: 1 }],
+    });
+    expect(store.state.seats.A.main.length).toBe(2);
+  });
+
+  it("effectChoiceResolve(true) : l'effet d'arrivée OPTIONNEL ouvre un choix, accepter l'exécute", () => {
+    // Deck d'Alliés portant tous « Quand <self> apparaît, vous pouvez piocher
+    // une carte. » → recherche-mise-en-jeu → choix optionnel → accepter pioche.
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    for (const dc of deck.cards)
+      dc.card.effects = [
+        {
+          description: `Quand ${dc.card.name} apparaît, vous pouvez piocher une carte.`,
+        },
+      ];
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "searchDeck", what: "Allié", dest: "monde" }],
+    });
+    store.effectPick(store.effectPickIds[0]);
+    // la carte mise en jeu propose son effet d'arrivée optionnel
+    expect(store.effectChoice).not.toBeNull();
+    const handBefore = store.state.seats.A.main.length;
+    store.effectChoiceResolve(true);
+    expect(store.effectChoice).toBeNull();
+    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+  });
+
+  it("effectChoiceResolve(false) : décliner ne joue pas l'effet optionnel", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    for (const dc of deck.cards)
+      dc.card.effects = [
+        {
+          description: `Quand ${dc.card.name} apparaît, vous pouvez piocher une carte.`,
+        },
+      ];
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "searchDeck", what: "Allié", dest: "monde" }],
+    });
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.effectChoice).not.toBeNull();
+    const handBefore = store.state.seats.A.main.length;
+    store.effectChoiceResolve(false);
+    expect(store.effectChoice).toBeNull();
+    expect(store.state.seats.A.main.length).toBe(handBefore);
+  });
+});
