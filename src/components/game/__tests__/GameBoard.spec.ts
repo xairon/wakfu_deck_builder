@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
 import { setActivePinia, createPinia } from "pinia";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import GameBoard from "../GameBoard.vue";
@@ -61,5 +61,44 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
 
     // Le chemin clavier/clic passe par playFromHand (coût + légalité), comme le DnD.
     expect(playSpy).toHaveBeenCalledWith(handId);
+  });
+});
+
+describe("GameBoard — a11y clavier (barre d'action)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("devrait déplacer le focus vers la barre d'action à la sélection", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const wrapper = mount(GameBoard, {
+      attachTo: document.body, // requis pour document.activeElement en jsdom
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    await wrapper.find(".game-card").trigger("click");
+    await flushPromises(); // le watcher focalise après un nextTick
+
+    const firstBtn = wrapper.find(".gactionbar .gbtn").element as HTMLElement;
+    expect(firstBtn).toBeTruthy();
+    expect(document.activeElement).toBe(firstBtn);
+
+    wrapper.unmount();
+  });
+
+  it("devrait refermer la barre d'action sur Échap", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const wrapper = mount(GameBoard, {
+      attachTo: document.body,
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    await wrapper.find(".game-card").trigger("click");
+    expect(wrapper.find(".gactionbar").exists()).toBe(true);
+
+    await wrapper.find(".gactionbar").trigger("keydown", { key: "Escape" });
+    expect(wrapper.find(".gactionbar").exists()).toBe(false);
+
+    wrapper.unmount();
   });
 });

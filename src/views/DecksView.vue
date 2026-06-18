@@ -158,6 +158,7 @@
           :aria-label="`Voir le deck ${deck.name}`"
           @click="goToDeck(deck.id)"
           @keydown.enter="goToDeck(deck.id)"
+          @keydown.space.prevent="goToDeck(deck.id)"
         >
           <!-- Planche héros -->
           <div

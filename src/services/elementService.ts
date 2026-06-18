@@ -45,19 +45,21 @@ export function useElements() {
     return elementIcons[normalizeElement(element)];
   }
 
+  // Classes thématiques (var. CSS par thème, voir main.css) plutôt que des
+  // teintes Tailwind figées : lisibles en thème clair ET sombre.
   function getElementColor(element: Element): string {
     switch (normalizeElement(element)) {
       case ELEMENTS.EAU:
-        return "text-blue-500";
+        return "el-eau";
       case ELEMENTS.FEU:
-        return "text-red-500";
+        return "el-feu";
       case ELEMENTS.TERRE:
-        return "text-amber-700";
+        return "el-terre";
       case ELEMENTS.AIR:
-        return "text-emerald-500";
+        return "el-air";
       case ELEMENTS.NEUTRE:
       default:
-        return "text-gray-500";
+        return "el-neutre";
     }
   }
 

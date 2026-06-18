@@ -72,7 +72,8 @@ import { measure } from "../../utils/performance";
 import { METRIC_TYPES } from "../../utils/performance";
 
 // Path helpers imported from utility module
-import { getWebpPath, getThumbPath } from "@/utils/imagePaths";
+// (getWebpPath is unused while the WebP <source> is disabled — see template)
+import { getThumbPath } from "@/utils/imagePaths";
 
 // ---------------------------------------------------------------------------
 // Props

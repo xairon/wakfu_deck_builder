@@ -342,6 +342,7 @@
             v-if="perspectivePortrait"
             :src="perspectivePortrait"
             alt=""
+            aria-hidden="true"
             class="overlay__portrait"
           />
           <h2 class="mt-3 font-display text-4xl">

@@ -87,6 +87,7 @@
             class="shrink-0 border border-base-content/30 px-1.5 py-1 font-mono text-[10px] uppercase tracking-wider hover:border-primary hover:text-primary"
             @click="change(card, 1, true)"
             :title="`Ajouter une brillante (${ownedFoil(card.id)})`"
+            aria-label="Ajouter une brillante"
           >
             +F<span v-if="ownedFoil(card.id) > 0" class="tabular"
               >·{{ ownedFoil(card.id) }}</span

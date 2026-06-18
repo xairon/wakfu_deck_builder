@@ -78,7 +78,7 @@ src/
 
 - **Deck valide** : 1 Héros + 1 Havre-Sac + exactement 48 cartes
 - **Limite de copies** : max 3 exemplaires par carte, 1 pour les cartes "Unique"
-- **Réserve** : max 12 cartes
+- **Réserve** : exactement 0 ou 12 cartes (règle officielle 101.4 — pas un simple plafond ; cf. `validateDeck`)
 - **Types de cartes** : aucun type minimum imposé (le rulebook officiel n'exige pas d'Action/Allié ; cf. `validateDeck`)
 - **Éléments** : Air, Eau, Feu, Terre, Neutre
 - **Extensions** : Amakna, Ankama Convention 5, Astrub, Bonta-Brakmar, Chaos d'Ogrest, DOFUS Collection, Draft, Île des Wabbits, Incarnam, Otomaï, Pandala
@@ -125,8 +125,8 @@ src/
 - `@` → `src/`
 - `~` → racine du projet
 - `test` → `tests/`
-- `@images` → `public/images/`
-- `@data` → `public/data/`
+- `@images` → `data/images/` (défini dans `vite.config.ts` ; actuellement inutilisé dans `src/`)
+- `@data` → `data/` (défini dans `vite.config.ts` ; actuellement inutilisé dans `src/`)
 
 ## Tests
 

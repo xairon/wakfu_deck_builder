@@ -583,7 +583,7 @@ describe("cardLoader", () => {
 
     it('should handle response text "[]" as empty extension', async () => {
       (localStorage.getItem as Mock).mockReturnValue(null);
-      (global.fetch as Mock).mockImplementation(async (url: string) => ({
+      (global.fetch as Mock).mockImplementation(async (_url: string) => ({
         ok: true,
         status: 200,
         text: async () => "[]",
@@ -664,7 +664,7 @@ describe("cardLoader", () => {
 
   describe("loadCardById", () => {
     it("should return the correct card when found", async () => {
-      (global.fetch as Mock).mockImplementation(async (url: string) => {
+      (global.fetch as Mock).mockImplementation(async (_url: string) => {
         const cards = [
           makeRawCard({ id: "target-1", name: "Target Card" }),
           makeRawCard({ id: "other-1", name: "Other Card" }),

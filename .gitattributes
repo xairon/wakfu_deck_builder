@@ -1,0 +1,20 @@
+# Normalize line endings: store text as LF in the repo and check out LF
+# everywhere. Stops the LF<->CRLF "phantom diff" churn on Windows checkouts.
+* text=auto eol=lf
+
+# Binary assets — never touch their bytes.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.icns binary
+*.woff  binary
+*.woff2 binary
+*.ttf  binary
+*.otf  binary
+*.eot  binary
+*.exe  binary
+*.msi  binary
+*.dll  binary

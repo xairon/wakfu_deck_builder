@@ -31,6 +31,14 @@ export interface CollectionCard {
 export const useCardStore = defineStore("cards", () => {
   // État
   const cards = shallowRef<Card[]>([]);
+  // Index id→Card mémoïsé : évite des Array.find O(n) sur ~1585 cartes dans les
+  // chemins chauds (getCardById, exportCollection, résolution de decks). Recalculé
+  // seulement quand `cards` est réassigné (shallowRef).
+  const cardIndex = computed(() => {
+    const map = new Map<string, Card>();
+    for (const card of cards.value) map.set(card.id, card);
+    return map;
+  });
   const collection = ref<Record<string, { normal: number; foil: number }>>({});
   const loading = ref(false);
   const error = ref<string | null>(null);
@@ -324,10 +332,8 @@ export const useCardStore = defineStore("cards", () => {
       collection.value[card.id].normal += quantity;
     }
 
-    // Force save to localStorage
-    localStorageService.saveCollection(collection.value);
-
-    // Sync to localStorage
+    // saveToLocalStorage() écrit déjà le cache local puis pousse vers le cloud
+    // (best-effort, non bloquant) — une seule écriture, pas de double write.
     saveToLocalStorage().catch(() => {});
   }
 
@@ -366,10 +372,8 @@ export const useCardStore = defineStore("cards", () => {
       deleteCollectionEntryFromCloudIfNeeded(card.id);
     }
 
-    // Force save to localStorage
-    localStorageService.saveCollection(collection.value);
-
-    // Sync to localStorage
+    // saveToLocalStorage() écrit déjà le cache local puis pousse vers le cloud
+    // (best-effort, non bloquant) — une seule écriture, pas de double write.
     saveToLocalStorage().catch(() => {});
   }
 
@@ -377,7 +381,12 @@ export const useCardStore = defineStore("cards", () => {
     if (!isInitialized.value) {
       await initialize();
     }
-    return cards.value.find((card) => card.id === id);
+    return cardIndex.value.get(id);
+  }
+
+  /** Lookup synchrone via l'index (suppose le catalogue déjà chargé). */
+  function getCardByIdSync(id: string): Card | undefined {
+    return cardIndex.value.get(id);
   }
 
   async function findCardsByName(name: string): Promise<Card[]> {
@@ -433,7 +442,7 @@ export const useCardStore = defineStore("cards", () => {
     const exportData: CollectionCard[] = [];
 
     for (const [cardId, quantities] of Object.entries(collection.value)) {
-      const card = cards.value.find((c) => c.id === cardId);
+      const card = cardIndex.value.get(cardId);
       if (card) {
         exportData.push({
           card,
@@ -498,6 +507,7 @@ export const useCardStore = defineStore("cards", () => {
   return {
     // État
     cards,
+    cardIndex,
     collection,
     isInitializing,
     isInitialized,
@@ -524,6 +534,7 @@ export const useCardStore = defineStore("cards", () => {
     addToCollection,
     removeFromCollection,
     getCardById,
+    getCardByIdSync,
     getCardQuantity,
     getFoilCardQuantity,
     findCardsByName,

@@ -111,10 +111,12 @@ export default tseslint.config(
 
   {
     rules: {
+      // Dead variables fail the lint gate; unused args allowed only when prefixed "_".
       "@typescript-eslint/no-unused-vars": [
-        "warn",
+        "error",
         { argsIgnorePattern: "^_" },
       ],
+      // `any` stays a warning: ~56 legit cases remain at JSON-normalization boundaries.
       "@typescript-eslint/no-explicit-any": "warn",
     },
   },

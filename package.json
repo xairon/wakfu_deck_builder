@@ -2,6 +2,9 @@
   "name": "wakfu-deck-builder",
   "private": true,
   "version": "1.0.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "cross-env ts-node -r tsconfig-paths/register --project tsconfig.server.json src/server/index.ts",
     "optimize-images": "tsx scripts/optimizeImages.ts",
@@ -33,10 +36,7 @@
     "@headlessui/vue": "^1.7.23",
     "@supabase/supabase-js": "^2.45.0",
     "@vueuse/core": "^10.7.0",
-    "async-mutex": "^0.5.0",
-    "axios": "^1.6.7",
     "daisyui": "^4.4.19",
-    "p-limit": "^5.0.0",
     "pinia": "^3.0.1",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
@@ -54,7 +54,6 @@
     "@types/multer": "^1.4.12",
     "@types/node": "^20.11.16",
     "@types/pg": "^8.11.11",
-    "@types/pouchdb": "^6.4.0",
     "@types/sharp": "^0.31.1",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
@@ -64,9 +63,10 @@
     "@vue/eslint-config-typescript": "^14.5.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.5.0",
+    "async-mutex": "^0.5.0",
     "autoprefixer": "^10.4.16",
+    "axios": "^1.6.7",
     "cheerio": "^1.0.0",
-    "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "eslint": "^9.27.0",
@@ -77,6 +77,7 @@
     "globals": "^16.1.0",
     "jsdom": "^26.0.0",
     "multer": "^1.4.5-lts.1",
+    "p-limit": "^5.0.0",
     "pg": "^8.13.3",
     "postcss": "^8.4.32",
     "prettier": "^3.0.3",

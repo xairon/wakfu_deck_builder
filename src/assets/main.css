@@ -3,6 +3,43 @@
 @tailwind utilities;
 
 /* ============================================================
+   Couleurs d'éléments — lisibles (contraste AA) dans les DEUX
+   thèmes. Le plateau de jeu garde sa palette « feutre » dédiée ;
+   ces classes servent les surfaces thémées (Collection, DeckBuilder,
+   icônes d'élément). Remplace les classes Tailwind figées
+   (ex. text-amber-700) qui échouaient le contraste en thème sombre.
+   ============================================================ */
+:root {
+  --el-feu: #c8401b;
+  --el-eau: #1a7dbe;
+  --el-terre: #9a6b14;
+  --el-air: #4a8c1e;
+  --el-neutre: #6b7280;
+}
+[data-theme="dark"] {
+  --el-feu: #f0573a;
+  --el-eau: #34a6f2;
+  --el-terre: #f0b33c;
+  --el-air: #6fcf3f;
+  --el-neutre: #98a1af;
+}
+.el-feu {
+  color: var(--el-feu);
+}
+.el-eau {
+  color: var(--el-eau);
+}
+.el-terre {
+  color: var(--el-terre);
+}
+.el-air {
+  color: var(--el-air);
+}
+.el-neutre {
+  color: var(--el-neutre);
+}
+
+/* ============================================================
    GRIMOIRE — L'Almanach des Douze
    Papier + encre + cinabre. Pas de verre, pas de halo, pas de
    dégradé. Structure = filets. Nombres = monospace tabulaire.

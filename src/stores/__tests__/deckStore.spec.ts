@@ -465,6 +465,51 @@ describe("deckStore", () => {
       expect(deckStore.cardCount).toBe(47);
       expect(deckStore.isValid).toBe(false);
     });
+
+    it("devrait être invalide si la réserve n'a ni 0 ni 12 cartes (règle 101.4)", () => {
+      deckStore.createDeck("Réserve invalide");
+      deckStore.setHero(heroCard);
+      deckStore.setHavreSac(havreSacCard);
+
+      // 48 cartes principales (16 x 3)
+      for (let i = 0; i < 16; i++) {
+        const card = createMockAllyCard({ id: `res-ally-${i}` });
+        cardStore.setCards([...cardStore.cards, card]);
+        deckStore.addCard(card, 3);
+      }
+      // 5 cartes en réserve → ni 0 ni 12 → deck invalide
+      const r1 = createMockActionCard({ id: "res-extra-1" });
+      const r2 = createMockActionCard({ id: "res-extra-2" });
+      cardStore.setCards([...cardStore.cards, r1, r2]);
+      deckStore.addCard(r1, 3, true);
+      deckStore.addCard(r2, 2, true);
+
+      expect(deckStore.cardCount).toBe(48);
+      expect(deckStore.reserveCount).toBe(5);
+      expect(deckStore.isValid).toBe(false);
+    });
+
+    it("devrait être valide avec une réserve de exactement 12 cartes", () => {
+      deckStore.createDeck("Réserve 12");
+      deckStore.setHero(heroCard);
+      deckStore.setHavreSac(havreSacCard);
+
+      for (let i = 0; i < 16; i++) {
+        const card = createMockAllyCard({ id: `res12-ally-${i}` });
+        cardStore.setCards([...cardStore.cards, card]);
+        deckStore.addCard(card, 3);
+      }
+      // 12 cartes en réserve (4 x 3)
+      for (let i = 0; i < 4; i++) {
+        const card = createMockActionCard({ id: `res12-act-${i}` });
+        cardStore.setCards([...cardStore.cards, card]);
+        deckStore.addCard(card, 3, true);
+      }
+
+      expect(deckStore.cardCount).toBe(48);
+      expect(deckStore.reserveCount).toBe(12);
+      expect(deckStore.isValid).toBe(true);
+    });
   });
 
   // ---- cardCount / totalCount / uniqueCardCount ----

@@ -197,6 +197,13 @@ describe("cardStore", () => {
 
       expect(mockLocalStorage.saveCollection).toHaveBeenCalled();
     });
+
+    it("ne devrait écrire la collection qu'une seule fois par ajout", async () => {
+      vi.clearAllMocks();
+      await store.addToCollection(allyCard, 1, false);
+
+      expect(mockLocalStorage.saveCollection).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("removeFromCollection()", () => {

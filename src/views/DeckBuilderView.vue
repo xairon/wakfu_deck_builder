@@ -105,56 +105,90 @@
           >
         </div>
 
-        <div
-          class="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6"
-        >
-          <button
-            v-for="card in visiblePool"
-            :key="card.id"
-            class="group relative block text-left"
-            :title="`Ajouter ${card.name}`"
-            @click="addToDeck(card)"
-          >
-            <div class="plate-frame" :style="{ '--spine': elementColor(card) }">
-              <img
-                :src="cardImg(card)"
-                :alt="card.name"
-                loading="lazy"
-                class="aspect-[7/10] object-cover"
-                :class="{ 'opacity-40': ownedQty(card.id) === 0 }"
-                @error="onImgError"
-              />
-              <!-- Quantité dans le deck : étiquette braise carrée -->
-              <span
-                v-if="inDeckQty(card.id) > 0"
-                class="absolute left-[5px] top-[5px] z-10 bg-primary px-1.5 py-0.5 font-mono text-[11px] font-bold tabular text-primary-content"
-                >{{ inDeckQty(card.id) }}</span
-              >
-              <!-- Quantité possédée : mono tabulaire -->
-              <span
-                class="absolute right-[5px] top-[5px] z-10 bg-base-100/90 px-1 py-0.5 font-mono text-[10px] font-bold tabular"
-                :class="
-                  ownedQty(card.id) > 0
-                    ? 'text-success'
-                    : 'text-base-content/40'
-                "
-                >{{ ownedQty(card.id) }}</span
-              >
-              <!-- Bandeau d'ajout : encre plate au survol -->
-              <span
-                class="absolute inset-x-[5px] bottom-[5px] z-10 grid place-items-center bg-base-content py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-base-100 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-              >
-                + Ajouter
-              </span>
-            </div>
+        <!-- Erreur de chargement du catalogue -->
+        <div v-if="loadError" class="py-16 text-center">
+          <div class="mx-auto mb-4 h-1 w-16 bg-error"></div>
+          <p class="eyebrow mb-2 text-error">Erreur de chargement</p>
+          <p class="mb-6 text-sm text-base-content/70">
+            Impossible de charger les cartes.
+          </p>
+          <button class="btn btn-neutral btn-sm" @click="retryLoad">
+            Réessayer
           </button>
         </div>
 
-        <div v-if="pool.length > visiblePool.length" class="mt-6 text-center">
-          <button class="btn btn-outline btn-sm" @click="poolLimit += 60">
-            Afficher plus ({{ pool.length - visiblePool.length }} restantes)
-          </button>
+        <!-- Chargement en cours -->
+        <div
+          v-else-if="cardStore.isInitializing && pool.length === 0"
+          class="py-16 text-center text-base-content/60"
+        >
+          <span class="loading loading-spinner loading-md"></span>
+          <p class="mt-3 text-sm">Chargement des cartes…</p>
         </div>
+
+        <!-- Aucune carte (filtre vide) -->
+        <div
+          v-else-if="pool.length === 0"
+          class="py-16 text-center text-sm text-base-content/60"
+        >
+          Aucune carte ne correspond à votre recherche.
+        </div>
+
+        <template v-else>
+          <div
+            class="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6"
+          >
+            <button
+              v-for="card in visiblePool"
+              :key="card.id"
+              class="group relative block text-left"
+              :title="`Ajouter ${card.name}`"
+              @click="addToDeck(card)"
+            >
+              <div
+                class="plate-frame"
+                :style="{ '--spine': elementColor(card) }"
+              >
+                <img
+                  :src="cardImg(card)"
+                  :alt="card.name"
+                  loading="lazy"
+                  class="aspect-[7/10] object-cover"
+                  :class="{ 'opacity-40': ownedQty(card.id) === 0 }"
+                  @error="onImgError"
+                />
+                <!-- Quantité dans le deck : étiquette braise carrée -->
+                <span
+                  v-if="inDeckQty(card.id) > 0"
+                  class="absolute left-[5px] top-[5px] z-10 bg-primary px-1.5 py-0.5 font-mono text-[11px] font-bold tabular text-primary-content"
+                  >{{ inDeckQty(card.id) }}</span
+                >
+                <!-- Quantité possédée : mono tabulaire -->
+                <span
+                  class="absolute right-[5px] top-[5px] z-10 bg-base-100/90 px-1 py-0.5 font-mono text-[10px] font-bold tabular"
+                  :class="
+                    ownedQty(card.id) > 0
+                      ? 'text-success'
+                      : 'text-base-content/40'
+                  "
+                  >{{ ownedQty(card.id) }}</span
+                >
+                <!-- Bandeau d'ajout : encre plate au survol -->
+                <span
+                  class="absolute inset-x-[5px] bottom-[5px] z-10 grid place-items-center bg-base-content py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-base-100 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                >
+                  + Ajouter
+                </span>
+              </div>
+            </button>
+          </div>
+
+          <div v-if="pool.length > visiblePool.length" class="mt-6 text-center">
+            <button class="btn btn-outline btn-sm" @click="poolLimit += 60">
+              Afficher plus ({{ pool.length - visiblePool.length }} restantes)
+            </button>
+          </div>
+        </template>
       </section>
 
       <!-- ─────────── Panneau du deck ─────────── -->
@@ -591,6 +625,9 @@ const elementFilter = ref("");
 const rarityFilter = ref("");
 const ownedOnly = ref(false);
 const poolLimit = ref(60);
+// Vrai si l'initialisation du catalogue a échoué (réseau/hors-ligne) — bascule
+// l'affichage du pool sur un état d'erreur + bouton « Réessayer ».
+const loadError = ref(false);
 
 const elementOptions = ["Air", "Eau", "Feu", "Terre", "Neutre"];
 const rarityOptions = [
@@ -832,8 +869,18 @@ async function shareDeck() {
   }
 }
 
-onMounted(async () => {
-  await cardStore.initialize();
+async function setupDeck() {
+  loadError.value = false;
+  try {
+    await cardStore.initialize();
+  } catch (e) {
+    // Avant : l'échec n'était pas intercepté → le pool restait vide sans
+    // message ni moyen de réessayer.
+    console.error("Erreur de chargement des cartes (deck builder):", e);
+    loadError.value = true;
+    return;
+  }
+
   deckStore.initialize();
 
   const id = route.params.id as string | undefined;
@@ -847,5 +894,12 @@ onMounted(async () => {
     const newId = deckStore.createDeck("Nouveau deck");
     router.replace(`/deck-builder/${newId}`);
   }
-});
+}
+
+function retryLoad() {
+  cardStore.reset();
+  setupDeck();
+}
+
+onMounted(setupDeck);
 </script>

@@ -282,8 +282,12 @@ function goAfterAuth() {
   // En mode réinitialisation, on reste sur /auth pour saisir le nouveau mot de
   // passe au lieu de rediriger vers la collection.
   if (authStore.passwordRecovery) return;
-  const redirect = route.query.redirect as string;
-  router.push(redirect || "/collection");
+  // N'accepte qu'un chemin interne ("/...") : empêche une redirection ouverte
+  // (`//evil.com`, `https://evil.com`) injectée via le paramètre ?redirect=.
+  const raw = route.query.redirect;
+  const redirect =
+    typeof raw === "string" && /^\/(?!\/)/.test(raw) ? raw : "/collection";
+  router.push(redirect);
 }
 
 // Si l'utilisateur arrive déjà connecté, ou se connecte via un lien e-mail

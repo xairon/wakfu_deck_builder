@@ -458,9 +458,11 @@
     <Transition name="slideup">
       <div
         v-if="selectedInst"
+        ref="actionbarRef"
         class="gactionbar"
         role="toolbar"
         aria-label="Actions de la carte sélectionnée"
+        @keydown.esc.prevent="selectedId = null"
       >
         <span class="gactionbar__name">{{ selectedName }}</span>
         <div class="gactionbar__btns">
@@ -534,7 +536,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import type { ComponentPublicInstance } from "vue";
 import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
@@ -557,10 +559,15 @@ import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
 import { useToast } from "@/composables/useToast";
+import { useAccessibility } from "@/composables/useAccessibility";
 
 const store = useGameStore();
 const cardStore = useCardStore();
 const dnd = useBoardDnd();
+const { announce } = useAccessibility();
+// Barre d'actions : réf. pour piloter le focus au clavier.
+const actionbarRef = ref<HTMLElement | null>(null);
+let lastSelectedTrigger: HTMLElement | null = null;
 
 const me = computed(() => store.perspective);
 const opp = computed(() => store.opponent);
@@ -684,6 +691,8 @@ watch(
   (msg) => {
     if (msg) {
       toast.addToast(msg, { type: "warning" });
+      // Coup refusé : annonce assertive pour les lecteurs d'écran (en plus du toast visuel).
+      announce(msg, { politeness: "assertive" });
       store.clearRuleError();
     }
   },
@@ -735,6 +744,25 @@ function select(instanceId: string): void {
   }
   selectedId.value = selectedId.value === instanceId ? null : instanceId;
 }
+
+// A11y clavier : le glisser-déposer souris reste dispo, mais n'est plus la
+// SEULE façon de jouer. À la sélection (Entrée/Espace sur la carte, qui est un
+// <button>), on annonce et on déplace le focus vers la barre d'actions ;
+// au déselect on rend le focus à la carte d'origine.
+watch(selectedId, async (id) => {
+  if (id) {
+    lastSelectedTrigger =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    announce(`${selectedName.value} sélectionnée. Barre d'actions disponible.`);
+    await nextTick();
+    actionbarRef.value?.querySelector<HTMLElement>(".gbtn")?.focus();
+  } else if (lastSelectedTrigger?.isConnected) {
+    lastSelectedTrigger.focus();
+    lastSelectedTrigger = null;
+  }
+});
 
 // ── Combat assisté : surbrillances + bouton Attaquer ────────────────────────
 function slotCls(instanceId: string): Record<string, boolean> {

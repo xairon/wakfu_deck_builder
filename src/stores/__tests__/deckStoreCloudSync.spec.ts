@@ -1,23 +1,22 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { flushPromises } from "@vue/test-utils";
+import {
+  createMockHeroCard,
+  createMockHavreSacCard,
+  createMockAllyCard,
+} from "tests/factories/card";
 
 let configured = true;
 let authenticated = true;
 const loadDecksFromCloud = vi.fn();
 const saveDecksToCloud = vi.fn().mockResolvedValue(true);
 const deleteDeckFromCloud = vi.fn().mockResolvedValue(true);
-const deckToCloud = vi.fn((d: any) => ({ id: d.id, name: d.name, cards: [] }));
-const cloudToDeck = vi.fn((cd: any) => ({
-  id: cd.id,
-  name: cd.name,
-  hero: null,
-  havreSac: null,
-  cards: [],
-  reserve: [],
-  createdAt: "a",
-  updatedAt: "b",
-}));
+// Spies qui ENROBENT la vraie implémentation des convertisseurs purs (impl posée
+// dans la factory via importActual). On vérifie ainsi la vraie sérialisation
+// CloudDeck assemblée par le store, pas un stub trivial.
+const deckToCloud = vi.fn();
+const cloudToDeck = vi.fn();
 
 vi.mock("@/services/supabase", () => ({
   get supabase() {
@@ -25,13 +24,20 @@ vi.mock("@/services/supabase", () => ({
   },
   isSupabaseConfigured: () => configured,
 }));
-vi.mock("@/services/cloudSync", () => ({
-  loadDecksFromCloud: (...a: any[]) => loadDecksFromCloud(...a),
-  saveDecksToCloud: (...a: any[]) => saveDecksToCloud(...a),
-  deleteDeckFromCloud: (...a: any[]) => deleteDeckFromCloud(...a),
-  deckToCloud: (...a: any[]) => deckToCloud(...(a as [any])),
-  cloudToDeck: (...a: any[]) => cloudToDeck(...(a as [any])),
-}));
+vi.mock("@/services/cloudSync", async (importActual) => {
+  const actual = await importActual<typeof import("@/services/cloudSync")>();
+  // Seules les fonctions réseau restent stubées ; les convertisseurs exécutent
+  // la VRAIE logique (enrobée d'un spy pour pouvoir aussi compter les appels).
+  deckToCloud.mockImplementation(actual.deckToCloud);
+  cloudToDeck.mockImplementation(actual.cloudToDeck);
+  return {
+    loadDecksFromCloud: (...a: any[]) => loadDecksFromCloud(...a),
+    saveDecksToCloud: (...a: any[]) => saveDecksToCloud(...a),
+    deleteDeckFromCloud: (...a: any[]) => deleteDeckFromCloud(...a),
+    deckToCloud: (...a: any[]) => deckToCloud(...a),
+    cloudToDeck: (...a: any[]) => cloudToDeck(...a),
+  };
+});
 vi.mock("@/stores/authStore", () => ({
   useAuthStore: () => ({
     isAuthenticated: authenticated,
@@ -116,5 +122,42 @@ describe("deckStore — synchronisation cloud des decks", () => {
     await flushPromises();
 
     expect(deleteDeckFromCloud).toHaveBeenCalledWith(id);
+  });
+
+  it("saveDecks sérialise le deck via le VRAI deckToCloud (payload CloudDeck correct)", async () => {
+    vi.useFakeTimers();
+    const cardStore = useCardStore();
+    const hero = createMockHeroCard({ id: "h1", name: "Héros" });
+    const hs = createMockHavreSacCard({ id: "hs1", name: "HS" });
+    const ally = createMockAllyCard({ id: "a1", name: "Allié" });
+    cardStore.setCards([hero, hs, ally]);
+
+    const store = useDeckStore();
+    const id = store.createDeck("Deck Réel");
+    store.setHero(hero);
+    store.setHavreSac(hs);
+    store.addCard(ally, 2);
+    saveDecksToCloud.mockClear();
+
+    // Flush du push différé (debounce 1500ms)
+    await vi.advanceTimersByTimeAsync(1600);
+    vi.useRealTimers();
+
+    expect(saveDecksToCloud).toHaveBeenCalled();
+    const calls = saveDecksToCloud.mock.calls;
+    const payload = calls[calls.length - 1][0] as Array<
+      Record<string, unknown>
+    >;
+    const cloudDeck = payload.find((d) => d.id === id);
+
+    // Vrai format CloudDeck (snake_case) produit par deckToCloud, pas le stub.
+    expect(cloudDeck).toMatchObject({
+      id,
+      name: "Deck Réel",
+      hero_id: "h1",
+      havre_sac_id: "hs1",
+      user_id: "user-1",
+    });
+    expect(cloudDeck!.cards).toContainEqual({ cardId: "a1", quantity: 2 });
   });
 });

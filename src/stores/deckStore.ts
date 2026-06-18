@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import type { Card, Deck, DeckCard } from "@/types/cards";
 import { DECK_CONSTRAINTS } from "@/config/cards";
 import { isUniqueCard, maxCopiesForCard } from "@/utils/cardRules";
+import { validateDeck } from "@/validators/deck";
 import { useCardStore } from "./cardStore";
 import { namespacedKey } from "@/services/storageNamespace";
 
@@ -12,7 +13,6 @@ function decksStorageKey(): string {
   return namespacedKey("wakfu-decks");
 }
 const MAX_COPIES_PER_CARD = DECK_CONSTRAINTS.MAX_COPIES;
-const MIN_DECK_SIZE = DECK_CONSTRAINTS.MIN_CARDS;
 const MAX_DECK_SIZE = DECK_CONSTRAINTS.MAX_CARDS;
 const MAX_RESERVE = 12;
 
@@ -60,15 +60,13 @@ export const useDeckStore = defineStore("deck", () => {
   );
 
   const isValid = computed(() => {
-    // Un deck valide doit avoir:
-    // - Exactement 1 héros
-    // - Exactement 1 havre-sac
-    // - Exactement 48 cartes (hors héros et havre-sac)
-    return (
-      heroCount.value === 1 &&
-      havreSacCount.value === 1 &&
-      cardCount.value === MIN_DECK_SIZE
-    );
+    // Source unique de vérité : le validateur officiel (héros + havre-sac +
+    // exactement 48 cartes principales + limite de copies + réserve 0/12).
+    // Évite que le badge du builder diverge de la barrière de jeu/sauvegarde.
+    // Voir validators/deck.ts.
+    const deck = currentDeck.value;
+    if (!deck) return false;
+    return validateDeck(deck).isValid;
   });
 
   // Cartes du deck principal (hors réserve) — base des statistiques.
@@ -154,8 +152,8 @@ export const useDeckStore = defineStore("deck", () => {
               const migratedCards: any[] = [];
               for (const [cardId, quantity] of Object.entries(deck.cards)) {
                 if (typeof quantity === "number" && quantity > 0) {
-                  // Chercher la carte dans le store
-                  const card = cardStore.cards.find((c) => c.id === cardId);
+                  // Chercher la carte dans le store (index O(1))
+                  const card = cardStore.getCardByIdSync(cardId);
                   if (card) {
                     migratedCards.push({
                       card: card,
@@ -291,8 +289,8 @@ export const useDeckStore = defineStore("deck", () => {
       const cloud = await loadDecksFromCloud();
       // null = erreur réseau / indisponible : ne RIEN écraser.
       if (cloud === null) return;
-      const resolve = (cardId: string) =>
-        cardStore.cards.find((c) => c.id === cardId);
+      // Index O(1) au lieu d'un Array.find O(n) par carte de chaque deck.
+      const resolve = (cardId: string) => cardStore.getCardByIdSync(cardId);
 
       if (cloud.length > 0) {
         decks.value = cloud.map((cd) => cloudToDeck(cd, resolve));
