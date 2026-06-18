@@ -186,3 +186,107 @@ describe("pipeline d'effets — jetons posés sur le Héros", () => {
     );
   });
 });
+
+describe("pipeline d'effets — piles (effectPicking)", () => {
+  it("discardFromHand : ouvre un picker dans la main, le clic défausse", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    store.draw("A", 3);
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "discardFromHand", n: 1 }],
+    });
+    expect(store.effectPicking).not.toBeNull();
+    expect(store.effectPicking?.zone).toBe("main");
+    const pick = store.effectPickIds[0];
+    store.effectPick(pick);
+    expect(store.state.seats.A.defausse).toContain(pick);
+    expect(store.effectPicking).toBeNull();
+  });
+
+  it("effectPickSkip : un choix non obligatoire se passe et vide le picker", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    store.draw("A", 2);
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "discardFromHand", n: 1 }],
+    });
+    expect(store.effectPicking).not.toBeNull();
+    store.effectPickSkip();
+    expect(store.effectPicking).toBeNull();
+    expect(store.state.seats.A.defausse.length).toBe(0);
+  });
+
+  it("recycleFromDiscard n>1 : le picker reste ouvert jusqu'à épuiser remaining", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    store.draw("A", 3);
+    for (const id of [...store.state.seats.A.main])
+      store.moveTo(id, { zone: "defausse", owner: "A" });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "recycleFromDiscard", n: 2 }],
+    });
+    expect(store.effectPicking?.remaining).toBe(2);
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.effectPicking?.remaining).toBe(1);
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.effectPicking).toBeNull();
+  });
+
+  it("searchDeck dest main : trouve une carte du type demandé et la prend en main", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({ first: "A" });
+    for (const dc of deck.cards) dc.card.mainType = "Allié";
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    const handBefore = store.state.seats.A.main.length;
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "searchDeck", what: "Allié", dest: "main" }],
+    });
+    expect(store.effectPicking?.zone).toBe("pioche");
+    store.effectPick(store.effectPickIds[0]);
+    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+    expect(store.effectPicking).toBeNull();
+  });
+
+  it("searchDeck dest monde : la carte entre en jeu (zone Monde partagée)", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({ first: "A" });
+    for (const dc of deck.cards) dc.card.mainType = "Allié";
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "searchDeck", what: "Allié", dest: "monde" }],
+    });
+    const picked = store.effectPickIds[0];
+    store.effectPick(picked);
+    expect(store.state.monde).toContain(picked);
+    expect(store.effectPicking).toBeNull();
+  });
+
+  it("searchDeck sans match : effet passé, pas de picker", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({ first: "A" });
+    for (const dc of deck.cards) dc.card.mainType = "Allié";
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "searchDeck", what: "Dofus", dest: "main" }],
+    });
+    expect(store.effectPicking).toBeNull();
+  });
+});
