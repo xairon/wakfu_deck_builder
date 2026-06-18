@@ -262,6 +262,17 @@
           />
           Règles assistées
         </label>
+        <span
+          v-if="
+            store.matchPhase === 'playing' &&
+            !store.assistEffects &&
+            !tutorial.active
+          "
+          class="gtopbar__turn"
+          data-testid="topbar-effects-manual-hint"
+        >
+          · Effets de carte : à jouer à la main
+        </span>
       </div>
       <div class="gtopbar__group">
         <button class="gtop-btn" @click="showJournal = !showJournal">
@@ -1069,7 +1080,10 @@ onMounted(async () => {
     transform: translateY(0) scale(1);
   }
 }
-@media (max-width: 1100px) {
+/* Aligné sur le breakpoint d'empilement du plateau (GameBoard : 1024px) pour
+   éviter la zone 1025–1100px où la coque passait en colonne alors que le board
+   restait en mode desktop large. */
+@media (max-width: 1024px) {
   .gfull {
     overflow-y: auto;
   }

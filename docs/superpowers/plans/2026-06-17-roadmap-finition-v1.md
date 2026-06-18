@@ -85,12 +85,13 @@ au fur et à mesure.
       « Résoudre », puis vérif inclinaison + dégâts). `data-testid` sur la barre
       de combat (`action-attack`/`combat-confirm`/`combat-resolve`) + `card-{id}`
       sur GameCard. **26/26 verts** en local (série ; CI = workers 1).
-- [ ] **P3.3** a11y automatisée : `@axe-core/playwright`, scan des pages clés
-      (`/`, `/collection`, `/deck-builder`, `/play/table`). **Bloqué dans cet
-      environnement** : `npm install -D @axe-core/playwright` échoue
-      (`UNABLE_TO_VERIFY_LEAF_SIGNATURE` — interception TLS du registre). À
-      installer hors sandbox, puis ajouter le spec (scan + assertions sur un jeu
-      de règles ciblé, en excluant `color-contrast` — thème néon volontaire).
+- [~] **P3.3** a11y automatisée : **spec écrit** (`e2e/a11y.spec.ts`) — scan axe
+  des pages publiques (`/`, `/collection`, `/decks/official`, `/play/table`)
+  sur un jeu de règles ciblé (`color-contrast` exclu — thème néon volontaire).
+  Le spec **se skippe proprement** tant que la dépendance est absente (import
+  dynamique gardé) : il ne casse ni la suite ni la CI. **Activer** avec
+  `npm install -D @axe-core/playwright` (l'install échoue dans ce sandbox :
+  `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, interception TLS du registre).
 - [x] **P3.4** ✅ Les 7 fichiers `.spec.ts.disabled` (schéma carte périmé)
       supprimés (avec P3.1). Réécriture éventuelle DeckBuilder/DeckDrawSimulator
       repliée dans P3.5 (tests composants).
@@ -117,15 +118,19 @@ au fur et à mesure.
       `InitializationResult` + 4 fonctions) ; `exportDeck` **câblé** (bouton export →
       modale déjà existante) ; unused-vars (composants + tests). **Lint 110 → 69**,
       0 erreur. Restent volontairement ~67 `no-explicit-any` + 2 args `url` de test.
-- [~] **P4.3 Infra polish** : ✅ `robots.txt` ; en-têtes de sécurité `vercel.json`
-  (+ `Permissions-Policy` ; `X-Frame-Options: DENY` conservé, plus strict que
-  SAMEORIGIN). _Reste_ : la **CSP enforce** — recommandée + documentée dans le
-  recon, mais **à activer + valider en live** (Supabase/images/inline) idéalement
-  d'abord en `Report-Only`, sinon risque prod. DEC-3 : updater Tauri / hors-ligne.
-- [~] **P4.4 UX polish** : ✅ `getCardTypeBreakdown` mémoïsé (`useMemoize`,
-  OfficialDecksView — évite un scan O(cartes) par rendu) ; `aria-live="polite"` + `role="status"` sur les blocages du deck builder. _Reste_ (vérif **live**
-  requise) : journal `ActionLog` scroll-back, breakpoint tablette 1025–1100px,
-  hint « effets à la main » hors tutoriel, vérifier l'affichage des 3 errata.
+- [x] **P4.3 Infra polish** ✅ : `robots.txt` ; en-têtes de sécurité `vercel.json`
+      (`nosniff`, `X-Frame-Options: DENY`, HSTS, `Referrer-Policy`, `Permissions-Policy`)
+      ; **CSP livrée en `Content-Security-Policy-Report-Only`** (Supabase + Google
+      Fonts + `'unsafe-inline'` styles + worker/manifest) — observable en prod sans
+      rien bloquer. _Reste côté toi_ : surveiller la console en prod puis basculer en
+      `Content-Security-Policy` (enforce). DEC-3 : updater Tauri / hors-ligne.
+- [x] **P4.4 UX polish** ✅ : `getCardTypeBreakdown` mémoïsé (`useMemoize`) ;
+      `aria-live`/`role="status"` sur les blocages du deck builder ; **journal
+      `ActionLog` scroll-back** (cap `slice(-14)` retiré ; zone déjà `overflow-y:auto`) ;
+      **hint « effets à la main »** discret (badge `gtopbar`, v1 hors tutoriel) ;
+      **breakpoint** coque alignée sur 1024px (= board) pour fermer la zone morte
+      1025–1100px. Errata : **vérifié OK** (66 entrées, CollectionView + CardZoomModal).
+      _Note_ : le changement de breakpoint mérite un coup d'œil visuel (1024–1100px).
 
 ## NON-OBJECTIFS v1 (documentés, non codés — DEC-3)
 

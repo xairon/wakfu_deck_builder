@@ -23,7 +23,8 @@ import { computed } from "vue";
 import type { LogLine } from "@/stores/gameStore";
 
 const props = defineProps<{ lines: LogLine[] }>();
-const recent = computed(() => props.lines.slice(-14).reverse());
+// Tout l'historique (scroll-back) : la zone .action-log__list a overflow-y:auto.
+const recent = computed(() => props.lines.slice().reverse());
 </script>
 
 <style scoped>
