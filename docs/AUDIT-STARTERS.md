@@ -7,76 +7,75 @@
 
 **Bilan : 9 auto · 9 vanille · 0 partiel · 13 manuel.**
 
-| Carte | Type | Effets compilés | Verdict | Effets non couverts |
-| --- | --- | --- | --- | --- |
-| Poum Ondacié | Héros | 1/1 | ✅ AUTO |  |
-| Havre Sac du Prespic | Havre-Sac | 0/0 | ⬜ SANS EFFET |  |
-| Piou Rouge | Allié | 0/1 (+1 note) | ❌ MANUEL | [script manuel candidat] Produisez une Ressource . |
-| Larve Orange | Allié | 0/0 · Résistance | ⬜ SANS EFFET |  |
-| Vrombyx | Allié | 1/1 (+1 note) | ✅ AUTO |  |
-| Dragodinde Rousse Sauvage | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Bwork | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Bwork Mage | Allié | 0/1 | ❌ MANUEL | [ciblage qualifié] Défaussez une carte : Le Bwork Mage inflige 1 Dommage à l'Allié ou Héros de votre choix. N'utilisez ce pouvoir |
-| Gobelinet | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Chevaucheur Gobelin | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Léopardo | Allié | 1/1 | ✅ AUTO |  |
-| Shiffer Van Brushing | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Amal Odoua | Allié | 1/1 | ✅ AUTO |  |
-| Fofy Fafié | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Demi Finame | Allié | 1/1 | ✅ AUTO |  |
-| Amar Casto | Allié | 0/1 | ❌ MANUEL | [ciblage qualifié] Amar Casto gagne le de votre choix jusqu'à la fin du tour. |
-| Fécaline la Sage | Allié | 0/1 | ❌ MANUEL | [script manuel candidat] Gagnez 1 XP. Ne jouez ce pouvoir que lorsque vous venez de jouer une carte Quête ou Parchemin. |
-| Parchemin d'Intelligence | Action | 0/1 | ❌ MANUEL | [ciblage qualifié] Recyclez jusqu'à 3 cartes de votre Défausse : Infligez le même nombre de Dommages à l'Allié ou Héros de votre  |
-| Parchemin Blanc | Action | 1/1 | ✅ AUTO |  |
-| Défi | Action | 0/1 | ❌ MANUEL | [coût d'activation] Inclinez l'un de vos Alliés ou Héros et proposez un défi à l'Allié ou Héros de votre choix : Si le joueur adve |
-| Prospection | Action | 0/1 (+1 note) | ❌ MANUEL | [ciblage qualifié] Piochez un nombre de cartes égal à la valeur d'XP de l'Allié dans le Monde de votre choix. |
-| Glyphe Revigorant | Action | 0/1 | ❌ MANUEL | [condition de combat] Jusqu'à la fin du combat, tous les Dommages sur le point d'être infligés à vos Alliés ou Héros attaquants ou b |
-| Glyphe Incandescent | Action | 0/1 (+1 note) | ❌ MANUEL | [condition de combat] Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce  |
-| Trêve | Action | 1/1 (+1 note) | ✅ AUTO |  |
-| Mines d'Astrub | Zone | 2/2 | ✅ AUTO |  |
-| Temple Féca | Salle | 0/1 · Recette | ❌ MANUEL | [ciblage qualifié] L'Allié ou Héros de votre choix gagne dans l'élément de votre choix jusqu'à la fin du tour. |
-| Dora | Équipement | 0/1 · Recette | ❌ MANUEL | [condition de combat] Piochez une carte. N'utilisez ce pouvoir que si le Porteur de la Dora est attaquant ou bloqueur. |
-| Cape du Prespic | Équipement | 0/1 (+2 notes) · Recette | ❌ MANUEL | [déclencheur continu] Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de la cape du Prespic, la Cape du Prespic lui |
-| Ceinture du Prespic | Équipement | 0/0 · Recette | ⬜ SANS EFFET |  |
-| Anneau du Prespic | Équipement | 0/1 (+1 note) · Recette | ❌ MANUEL | [déclencheur continu] Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic l |
-| Chacha Noir | Équipement | 1/1 (+1 note) | ✅ AUTO |  |
+| Carte                     | Type       | Effets compilés          | Verdict       | Effets non couverts                                                                                                                  |
+| ------------------------- | ---------- | ------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Poum Ondacié              | Héros      | 1/1                      | ✅ AUTO       |                                                                                                                                      |
+| Havre Sac du Prespic      | Havre-Sac  | 0/0                      | ⬜ SANS EFFET |                                                                                                                                      |
+| Piou Rouge                | Allié      | 0/1 (+1 note)            | ❌ MANUEL     | [script manuel candidat] Produisez une Ressource .                                                                                   |
+| Larve Orange              | Allié      | 0/0 · Résistance         | ⬜ SANS EFFET |                                                                                                                                      |
+| Vrombyx                   | Allié      | 1/1 (+1 note)            | ✅ AUTO       |                                                                                                                                      |
+| Dragodinde Rousse Sauvage | Allié      | 0/0                      | ⬜ SANS EFFET |                                                                                                                                      |
+| Bwork                     | Allié      | 0/0                      | ⬜ SANS EFFET |                                                                                                                                      |
+| Bwork Mage                | Allié      | 0/1                      | ❌ MANUEL     | [ciblage qualifié] Défaussez une carte : Le Bwork Mage inflige 1 Dommage à l'Allié ou Héros de votre choix. N'utilisez ce pouvoir    |
+| Gobelinet                 | Allié      | 0/0                      | ⬜ SANS EFFET |                                                                                                                                      |
+| Chevaucheur Gobelin       | Allié      | 0/0                      | ⬜ SANS EFFET |                                                                                                                                      |
+| Léopardo                  | Allié      | 1/1                      | ✅ AUTO       |                                                                                                                                      |
+| Shiffer Van Brushing      | Allié      | 0/0                      | ⬜ SANS EFFET |                                                                                                                                      |
+| Amal Odoua                | Allié      | 1/1                      | ✅ AUTO       |                                                                                                                                      |
+| Fofy Fafié                | Allié      | 0/0                      | ⬜ SANS EFFET |                                                                                                                                      |
+| Demi Finame               | Allié      | 1/1                      | ✅ AUTO       |                                                                                                                                      |
+| Amar Casto                | Allié      | 0/1                      | ❌ MANUEL     | [ciblage qualifié] Amar Casto gagne le de votre choix jusqu'à la fin du tour.                                                        |
+| Fécaline la Sage          | Allié      | 0/1                      | ❌ MANUEL     | [script manuel candidat] Gagnez 1 XP. Ne jouez ce pouvoir que lorsque vous venez de jouer une carte Quête ou Parchemin.              |
+| Parchemin d'Intelligence  | Action     | 0/1                      | ❌ MANUEL     | [ciblage qualifié] Recyclez jusqu'à 3 cartes de votre Défausse : Infligez le même nombre de Dommages à l'Allié ou Héros de votre     |
+| Parchemin Blanc           | Action     | 1/1                      | ✅ AUTO       |                                                                                                                                      |
+| Défi                      | Action     | 0/1                      | ❌ MANUEL     | [coût d'activation] Inclinez l'un de vos Alliés ou Héros et proposez un défi à l'Allié ou Héros de votre choix : Si le joueur adve   |
+| Prospection               | Action     | 0/1 (+1 note)            | ❌ MANUEL     | [ciblage qualifié] Piochez un nombre de cartes égal à la valeur d'XP de l'Allié dans le Monde de votre choix.                        |
+| Glyphe Revigorant         | Action     | 0/1                      | ❌ MANUEL     | [condition de combat] Jusqu'à la fin du combat, tous les Dommages sur le point d'être infligés à vos Alliés ou Héros attaquants ou b |
+| Glyphe Incandescent       | Action     | 0/1 (+1 note)            | ❌ MANUEL     | [condition de combat] Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce  |
+| Trêve                     | Action     | 1/1 (+1 note)            | ✅ AUTO       |                                                                                                                                      |
+| Mines d'Astrub            | Zone       | 2/2                      | ✅ AUTO       |                                                                                                                                      |
+| Temple Féca               | Salle      | 0/1 · Recette            | ❌ MANUEL     | [ciblage qualifié] L'Allié ou Héros de votre choix gagne dans l'élément de votre choix jusqu'à la fin du tour.                       |
+| Dora                      | Équipement | 0/1 · Recette            | ❌ MANUEL     | [condition de combat] Piochez une carte. N'utilisez ce pouvoir que si le Porteur de la Dora est attaquant ou bloqueur.               |
+| Cape du Prespic           | Équipement | 0/1 (+2 notes) · Recette | ❌ MANUEL     | [déclencheur continu] Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de la cape du Prespic, la Cape du Prespic lui |
+| Ceinture du Prespic       | Équipement | 0/0 · Recette            | ⬜ SANS EFFET |                                                                                                                                      |
+| Anneau du Prespic         | Équipement | 0/1 (+1 note) · Recette  | ❌ MANUEL     | [déclencheur continu] Chaque fois qu'un Allié ou Héros inflige des Dommages au Porteur de l'Anneau du Prespic, l'Anneau du Prespic l |
+| Chacha Noir               | Équipement | 1/1 (+1 note)            | ✅ AUTO       |                                                                                                                                      |
 
 ## Incarnam - Iop (32 cartes uniques)
 
 **Bilan : 7 auto · 12 vanille · 1 partiel · 12 manuel.**
 
-| Carte | Type | Effets compilés | Verdict | Effets non couverts |
-| --- | --- | --- | --- | --- |
-| Bruss Ouilis | Héros | 1/1 (+1 note) | ✅ AUTO |  |
-| Havre Sac du Bouftou | Havre-Sac | 0/0 | ⬜ SANS EFFET |  |
-| Piou Vert | Allié | 0/1 (+1 note) | ❌ MANUEL | [script manuel candidat] Produisez une Ressource . |
-| Boufton Blanc | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Bouftou | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Chef de Guerre Bouftou | Allié | 1/1 | ✅ AUTO |  |
-| Bouftou Royal | Allié | 0/3 (+2 notes) · Géant | ❌ MANUEL | [script manuel candidat] Géant<br>[script manuel candidat] Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde.<br>[script manuel candidat] Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche. |
-| Larve Verte | Allié | 0/0 · Résistance | ⬜ SANS EFFET |  |
-| Craqueleur | Allié | 0/0 · Résistance | ⬜ SANS EFFET |  |
-| Maître Bolet | Allié | 1/1 | ✅ AUTO |  |
-| Berger Porkass | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Arakne | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Demi Moon | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Tomla Klass | Allié | 0/0 | ⬜ SANS EFFET |  |
-| Jicé Aouaire | Allié | 1/1 (+1 note) | ✅ AUTO |  |
-| Katsou Mee | Allié | 0/1 | ❌ MANUEL | [script manuel candidat] Katsou Mee gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de de cette façon, détruisez Katsou |
-| Parchemin de Force | Action | 0/1 | ❌ MANUEL | [ciblage qualifié] Recyclez jusqu'à 3 cartes de votre Défausse : La Force de l'Allié ou Héros de votre choix est augmentée du mêm |
-| Coup Critique | Action | 0/1 | ❌ MANUEL | [ciblage qualifié] La Force de l'Allié ou Héros de votre choix est doublée jusqu'à la fin du tour. Vous ne pouvez jouer qu'un seu |
-| Exclusion | Action | 0/1 (+1 note) | ❌ MANUEL | [ciblage qualifié] L'Allié ou Héros attaquant ou bloqueur de votre choix retourne incliné dans le Monde. |
-| Stratégie de Groupe | Action | 1/1 (+1 note) | ✅ AUTO |  |
-| Boon Attitude | Action | 0/1 | ❌ MANUEL | [ciblage qualifié] Inclinez l'Allié ou Héros qui ne porte aucun Équipement de votre choix. |
-| Agression | Action | 0/1 (+2 notes) | ❌ MANUEL | [coût d'activation] Inclinez l'un de vos Alliés ou Héros : il inflige sa Force en Dommages à l'Allié ou Héros de votre choix. |
-| Repos | Action | 0/1 | ❌ MANUEL | [script manuel candidat] Votre Héros regagne X PV. Ne jouez cette carte que si votre Héros se trouve dans son Havre Sac. |
-| Charge | Action | 0/1 | ❌ MANUEL | [ciblage qualifié] L'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour. S'il s'agit d'un Iop, il gagne en pl |
-| Bond | Action | 0/1 (+2 notes) | ❌ MANUEL | [ciblage qualifié] Placez l'un de vos Alliés ou Héros en bloqueur devant l'Allié ou Héros attaquant de votre choix. |
-| Colère de Iop | Action | 0/1 (+2 notes) | ❌ MANUEL | [ciblage qualifié] La colère de Iop inflige X Dommages répartis librement entre les Alliés ou Héros attaquants ou bloqueurs de vo |
-| Forêts d'Astrub | Zone | 2/2 | ✅ AUTO |  |
-| Temple Iop | Salle | 1/1 · Recette | ✅ AUTO |  |
-| Coiffe du Bouftou | Équipement | 0/0 · Recette | ⬜ SANS EFFET |  |
-| Marteau du Bouftou | Équipement | 0/0 · Recette | ⬜ SANS EFFET |  |
-| Scaranneau Blanc | Équipement | 0/0 · Recette, Résistance | ⬜ SANS EFFET |  |
-| Marcassin | Équipement | 1/2 | 🟡 PARTIEL | [script manuel candidat] Le Porteur du Marcassin gagne . |
-
+| Carte                  | Type       | Effets compilés           | Verdict       | Effets non couverts                                                                                                                                                                                                                                                           |
+| ---------------------- | ---------- | ------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bruss Ouilis           | Héros      | 1/1 (+1 note)             | ✅ AUTO       |                                                                                                                                                                                                                                                                               |
+| Havre Sac du Bouftou   | Havre-Sac  | 0/0                       | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Piou Vert              | Allié      | 0/1 (+1 note)             | ❌ MANUEL     | [script manuel candidat] Produisez une Ressource .                                                                                                                                                                                                                            |
+| Boufton Blanc          | Allié      | 0/0                       | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Bouftou                | Allié      | 0/0                       | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Chef de Guerre Bouftou | Allié      | 1/1                       | ✅ AUTO       |                                                                                                                                                                                                                                                                               |
+| Bouftou Royal          | Allié      | 0/3 (+2 notes) · Géant    | ❌ MANUEL     | [script manuel candidat] Géant<br>[script manuel candidat] Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde.<br>[script manuel candidat] Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche. |
+| Larve Verte            | Allié      | 0/0 · Résistance          | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Craqueleur             | Allié      | 0/0 · Résistance          | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Maître Bolet           | Allié      | 1/1                       | ✅ AUTO       |                                                                                                                                                                                                                                                                               |
+| Berger Porkass         | Allié      | 0/0                       | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Arakne                 | Allié      | 0/0                       | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Demi Moon              | Allié      | 0/0                       | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Tomla Klass            | Allié      | 0/0                       | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Jicé Aouaire           | Allié      | 1/1 (+1 note)             | ✅ AUTO       |                                                                                                                                                                                                                                                                               |
+| Katsou Mee             | Allié      | 0/1                       | ❌ MANUEL     | [script manuel candidat] Katsou Mee gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de de cette façon, détruisez Katsou                                                                                                                                       |
+| Parchemin de Force     | Action     | 0/1                       | ❌ MANUEL     | [ciblage qualifié] Recyclez jusqu'à 3 cartes de votre Défausse : La Force de l'Allié ou Héros de votre choix est augmentée du mêm                                                                                                                                             |
+| Coup Critique          | Action     | 0/1                       | ❌ MANUEL     | [ciblage qualifié] La Force de l'Allié ou Héros de votre choix est doublée jusqu'à la fin du tour. Vous ne pouvez jouer qu'un seu                                                                                                                                             |
+| Exclusion              | Action     | 0/1 (+1 note)             | ❌ MANUEL     | [ciblage qualifié] L'Allié ou Héros attaquant ou bloqueur de votre choix retourne incliné dans le Monde.                                                                                                                                                                      |
+| Stratégie de Groupe    | Action     | 1/1 (+1 note)             | ✅ AUTO       |                                                                                                                                                                                                                                                                               |
+| Boon Attitude          | Action     | 0/1                       | ❌ MANUEL     | [ciblage qualifié] Inclinez l'Allié ou Héros qui ne porte aucun Équipement de votre choix.                                                                                                                                                                                    |
+| Agression              | Action     | 0/1 (+2 notes)            | ❌ MANUEL     | [coût d'activation] Inclinez l'un de vos Alliés ou Héros : il inflige sa Force en Dommages à l'Allié ou Héros de votre choix.                                                                                                                                                 |
+| Repos                  | Action     | 0/1                       | ❌ MANUEL     | [script manuel candidat] Votre Héros regagne X PV. Ne jouez cette carte que si votre Héros se trouve dans son Havre Sac.                                                                                                                                                      |
+| Charge                 | Action     | 0/1                       | ❌ MANUEL     | [ciblage qualifié] L'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour. S'il s'agit d'un Iop, il gagne en pl                                                                                                                                             |
+| Bond                   | Action     | 0/1 (+2 notes)            | ❌ MANUEL     | [ciblage qualifié] Placez l'un de vos Alliés ou Héros en bloqueur devant l'Allié ou Héros attaquant de votre choix.                                                                                                                                                           |
+| Colère de Iop          | Action     | 0/1 (+2 notes)            | ❌ MANUEL     | [ciblage qualifié] La colère de Iop inflige X Dommages répartis librement entre les Alliés ou Héros attaquants ou bloqueurs de vo                                                                                                                                             |
+| Forêts d'Astrub        | Zone       | 2/2                       | ✅ AUTO       |                                                                                                                                                                                                                                                                               |
+| Temple Iop             | Salle      | 1/1 · Recette             | ✅ AUTO       |                                                                                                                                                                                                                                                                               |
+| Coiffe du Bouftou      | Équipement | 0/0 · Recette             | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Marteau du Bouftou     | Équipement | 0/0 · Recette             | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Scaranneau Blanc       | Équipement | 0/0 · Recette, Résistance | ⬜ SANS EFFET |                                                                                                                                                                                                                                                                               |
+| Marcassin              | Équipement | 1/2                       | 🟡 PARTIEL    | [script manuel candidat] Le Porteur du Marcassin gagne .                                                                                                                                                                                                                      |
