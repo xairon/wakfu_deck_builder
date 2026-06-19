@@ -720,7 +720,7 @@
       :card="zoomCard"
       :open="zoomOpen"
       data-testid="card-zoom"
-      @close="zoomOpen = false"
+      @close="closeModalZoom"
     >
       <template #actions>
         <div class="flex flex-wrap gap-2">
@@ -883,6 +883,16 @@ const zoomIsLeader = computed(
 function openZoom(card: Card) {
   zoomCard.value = card;
   zoomOpen.value = true;
+}
+
+/**
+ * Fermeture de la MODALE (sous xl) : on efface aussi `zoomCard` pour qu'aucun
+ * raccourci clavier (a/e/r) ne reste actif sur une carte invisible. Le panneau
+ * épinglé (xl) gère sa propre fermeture (@close="zoomCard = null").
+ */
+function closeModalZoom() {
+  zoomOpen.value = false;
+  zoomCard.value = null;
 }
 
 // Fermeture clavier (Échap) quand le zoom est ouvert.

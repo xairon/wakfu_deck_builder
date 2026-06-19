@@ -90,17 +90,6 @@ watch(
   { immediate: true },
 );
 
-// Also watch card changes for panel variant
-watch(
-  () => props.card?.id,
-  async (newId) => {
-    if (props.variant === "panel" && newId) {
-      errata.value = [];
-      errata.value = await fetchErrata(newId);
-    }
-  },
-);
-
 const displayEffects = computed(() => {
   const c = props.card;
   if (!c) return [];
