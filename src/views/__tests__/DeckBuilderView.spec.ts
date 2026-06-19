@@ -18,13 +18,17 @@ import DeckBuilderView from "../DeckBuilderView.vue";
 
 // ── Stubs & mocks globaux ──────────────────────────────────────────────────────
 
-// CardZoomModal : rendu minimaliste avec data-testid conditionnel sur `open`
+// CardZoomModal : rendu minimaliste avec data-testid passé via $attrs
+// Le variant "panel" est toujours visible (open ignoré) ; le variant "modal"
+// (défaut) ne s'affiche que si open=true. Le data-testid de l'instance vient
+// de l'attribut posé par le parent (card-zoom-panel vs card-zoom).
 vi.mock("@/components/card/CardZoomModal.vue", () => ({
   default: {
     name: "CardZoomModal",
-    props: ["card", "open"],
+    props: ["card", "open", "variant"],
     emits: ["close"],
-    template: `<div v-if="open" data-testid="card-zoom"><slot name="actions" /></div>`,
+    inheritAttrs: false,
+    template: `<div v-if="variant === 'panel' || open" v-bind="$attrs"><slot name="actions" /></div>`,
   },
 }));
 
