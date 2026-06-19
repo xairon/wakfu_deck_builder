@@ -9,10 +9,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onUnmounted } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
 
-const { card, mouseX, mouseY } = useCardPreview();
+const { card, mouseX, mouseY, hide } = useCardPreview();
+
+// Le calque démonté → on vide le singleton partagé pour qu'aucun aperçu ne
+// reste « armé » et ne réapparaisse sur une autre page (cf. CardHoverPreview).
+onUnmounted(hide);
 
 const PREVIEW_W = 320;
 const PREVIEW_H = Math.round((PREVIEW_W * 88) / 63);
