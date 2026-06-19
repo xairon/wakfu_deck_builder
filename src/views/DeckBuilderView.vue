@@ -224,6 +224,60 @@
       <aside
         class="border border-base-content/15 bg-base-100 xl:sticky xl:top-20 xl:self-start xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto"
       >
+        <!-- Panneau de lecture épinglé — visible uniquement sur xl et plus -->
+        <div class="hidden xl:block">
+          <CardZoomModal
+            variant="panel"
+            :card="zoomCard"
+            :open="true"
+            data-testid="card-zoom-panel"
+            @close="zoomCard = null"
+          >
+            <template #actions>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  class="btn btn-sm font-mono uppercase tracking-wider"
+                  :disabled="zoomCard ? !canAddCard(zoomCard) : true"
+                  :title="
+                    zoomCard && !canAddCard(zoomCard)
+                      ? addBlockReason(zoomCard)
+                      : ''
+                  "
+                  @click="zoomCard && addToDeck(zoomCard)"
+                >
+                  + Ajouter
+                </button>
+                <button
+                  v-if="!zoomIsLeader"
+                  class="btn btn-sm font-mono uppercase tracking-wider"
+                  :disabled="zoomCard ? !canAddCard(zoomCard) : true"
+                  :title="
+                    zoomCard && !canAddCard(zoomCard)
+                      ? addBlockReason(zoomCard)
+                      : ''
+                  "
+                  @click="zoomCard && addToDeckQty(zoomCard, 3)"
+                >
+                  + ×3
+                </button>
+                <button
+                  v-if="!zoomIsLeader"
+                  class="btn btn-sm font-mono uppercase tracking-wider"
+                  :disabled="zoomCard ? !canAddCard(zoomCard, true) : true"
+                  :title="
+                    zoomCard && !canAddCard(zoomCard, true)
+                      ? addBlockReason(zoomCard, true)
+                      : ''
+                  "
+                  @click="zoomCard && addToReserve(zoomCard)"
+                >
+                  + Réserve
+                </button>
+              </div>
+            </template>
+          </CardZoomModal>
+          <div class="h-px w-full bg-base-content/15"></div>
+        </div>
         <!-- Nom + validité -->
         <div class="p-4">
           <input
@@ -660,55 +714,57 @@
     </div>
   </div>
 
-  <!-- ─────────── Zoom avant ajout ─────────── -->
-  <CardZoomModal
-    :card="zoomCard"
-    :open="zoomOpen"
-    data-testid="card-zoom"
-    @close="zoomOpen = false"
-  >
-    <template #actions>
-      <div class="flex flex-wrap gap-2">
-        <!-- Ajouter 1 copie -->
-        <button
-          class="btn btn-sm font-mono uppercase tracking-wider"
-          :disabled="zoomCard ? !canAddCard(zoomCard) : true"
-          :title="
-            zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
-          "
-          @click="zoomCard && addToDeck(zoomCard)"
-        >
-          + Ajouter
-        </button>
-        <!-- Ajouter ×3 — masqué pour Héros / Havre-Sac -->
-        <button
-          v-if="!zoomIsLeader"
-          class="btn btn-sm font-mono uppercase tracking-wider"
-          :disabled="zoomCard ? !canAddCard(zoomCard) : true"
-          :title="
-            zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
-          "
-          @click="zoomCard && addToDeckQty(zoomCard, 3)"
-        >
-          + ×3
-        </button>
-        <!-- Ajouter en Réserve — masqué pour Héros / Havre-Sac -->
-        <button
-          v-if="!zoomIsLeader"
-          class="btn btn-sm font-mono uppercase tracking-wider"
-          :disabled="zoomCard ? !canAddCard(zoomCard, true) : true"
-          :title="
-            zoomCard && !canAddCard(zoomCard, true)
-              ? addBlockReason(zoomCard, true)
-              : ''
-          "
-          @click="zoomCard && addToReserve(zoomCard)"
-        >
-          + Réserve
-        </button>
-      </div>
-    </template>
-  </CardZoomModal>
+  <!-- ─────────── Zoom avant ajout (modal — <xl uniquement) ─────────── -->
+  <div class="xl:hidden">
+    <CardZoomModal
+      :card="zoomCard"
+      :open="zoomOpen"
+      data-testid="card-zoom"
+      @close="zoomOpen = false"
+    >
+      <template #actions>
+        <div class="flex flex-wrap gap-2">
+          <!-- Ajouter 1 copie -->
+          <button
+            class="btn btn-sm font-mono uppercase tracking-wider"
+            :disabled="zoomCard ? !canAddCard(zoomCard) : true"
+            :title="
+              zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
+            "
+            @click="zoomCard && addToDeck(zoomCard)"
+          >
+            + Ajouter
+          </button>
+          <!-- Ajouter ×3 — masqué pour Héros / Havre-Sac -->
+          <button
+            v-if="!zoomIsLeader"
+            class="btn btn-sm font-mono uppercase tracking-wider"
+            :disabled="zoomCard ? !canAddCard(zoomCard) : true"
+            :title="
+              zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
+            "
+            @click="zoomCard && addToDeckQty(zoomCard, 3)"
+          >
+            + ×3
+          </button>
+          <!-- Ajouter en Réserve — masqué pour Héros / Havre-Sac -->
+          <button
+            v-if="!zoomIsLeader"
+            class="btn btn-sm font-mono uppercase tracking-wider"
+            :disabled="zoomCard ? !canAddCard(zoomCard, true) : true"
+            :title="
+              zoomCard && !canAddCard(zoomCard, true)
+                ? addBlockReason(zoomCard, true)
+                : ''
+            "
+            @click="zoomCard && addToReserve(zoomCard)"
+          >
+            + Réserve
+          </button>
+        </div>
+      </template>
+    </CardZoomModal>
+  </div>
 
   <!-- Confirmation stylée (vider / supprimer le deck, remplacer héros/havre-sac) -->
   <ConfirmDialog
@@ -830,10 +886,14 @@ function openZoom(card: Card) {
 }
 
 // Fermeture clavier (Échap) quand le zoom est ouvert.
+// Sur xl : Échap efface le focus (panneau épinglé) — pas de modale à fermer.
+// Sous xl : Échap ferme la modale normalement.
 function onKeydown(e: KeyboardEvent) {
-  if (!zoomOpen.value) return;
+  const hasFocus = zoomOpen.value || zoomCard.value !== null;
+  if (!hasFocus) return;
   if (e.key === "Escape") {
     zoomOpen.value = false;
+    zoomCard.value = null;
     return;
   }
   // Ne pas déclencher les raccourcis d'ajout (a/e/r) si l'utilisateur tape dans

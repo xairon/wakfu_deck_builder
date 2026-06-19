@@ -100,3 +100,108 @@ describe("CardZoomModal — effets des Héros", () => {
     expect(wrapper.html()).not.toContain(">Effets<");
   });
 });
+
+describe("CardZoomModal — variant panel", () => {
+  it("devrait rendre le contenu inline sans <dialog> ni .modal-backdrop", async () => {
+    const ally = createMockAllyCard({
+      id: "ally-panel-1",
+      effects: [{ description: "Effet de test panneau" }],
+    });
+
+    const wrapper = mount(CardZoomModal, {
+      props: { card: ally, open: true, variant: "panel" },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    // Pas de dialog DaisyUI
+    expect(wrapper.find("dialog").exists()).toBe(false);
+    expect(wrapper.find(".modal-backdrop").exists()).toBe(false);
+
+    // Contenu de la fiche visible
+    expect(wrapper.html()).toContain("Effet de test panneau");
+    expect(wrapper.html()).toContain(ally.name);
+  });
+
+  it("devrait afficher le slot #actions dans le variant panel", async () => {
+    const ally = createMockAllyCard({ id: "ally-panel-2" });
+
+    const wrapper = mount(CardZoomModal, {
+      props: { card: ally, open: true, variant: "panel" },
+      slots: {
+        actions: '<button data-testid="action-btn">+ Ajouter</button>',
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-testid="action-btn"]').exists()).toBe(true);
+  });
+
+  it("devrait afficher un placeholder quand card est null (variant panel)", async () => {
+    const wrapper = mount(CardZoomModal, {
+      props: { card: null, open: true, variant: "panel" },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.html()).toContain("Choisissez une carte à lire");
+    expect(wrapper.find("dialog").exists()).toBe(false);
+  });
+
+  it("devrait afficher les effets d'un Héros dans le variant panel", async () => {
+    const hero = createMockHeroCard({ id: "hero-panel-1" });
+    hero.recto = {
+      stats: hero.recto.stats,
+      keywords: hero.recto.keywords,
+      effects: [{ description: "Effet recto panneau" }],
+    };
+    hero.verso = {
+      stats: hero.verso!.stats,
+      keywords: hero.verso!.keywords,
+      effects: [{ description: "Effet verso panneau" }],
+    };
+
+    const wrapper = mount(CardZoomModal, {
+      props: { card: hero, open: true, variant: "panel" },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.html()).toContain("Effet recto panneau");
+    expect(wrapper.html()).toContain("Effet verso panneau");
+    expect(wrapper.find("dialog").exists()).toBe(false);
+  });
+});
+
+describe("CardZoomModal — variant modal (défaut)", () => {
+  it("devrait rendre un <dialog> dans le variant modal", async () => {
+    const ally = createMockAllyCard({ id: "ally-modal-1" });
+
+    const wrapper = mount(CardZoomModal, {
+      props: { card: ally, open: true },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find("dialog").exists()).toBe(true);
+    expect(wrapper.html()).toContain(ally.name);
+  });
+
+  it("devrait afficher le slot #actions dans le variant modal", async () => {
+    const ally = createMockAllyCard({ id: "ally-modal-2" });
+
+    const wrapper = mount(CardZoomModal, {
+      props: { card: ally, open: true, variant: "modal" },
+      slots: {
+        actions: '<button data-testid="modal-action-btn">+ Ajouter</button>',
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-testid="modal-action-btn"]').exists()).toBe(
+      true,
+    );
+  });
+});
