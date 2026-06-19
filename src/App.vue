@@ -190,7 +190,7 @@ const navItems = [
   { to: "/", label: "Accueil", match: ["/"] },
   { to: "/collection", label: "Collection", match: ["/collection"] },
   { to: "/decks", label: "Decks", match: ["/decks", "/deck"] },
-  { to: "/play", label: "Partie", match: ["/play"] },
+  { to: "/play/table", label: "Partie", match: ["/play"] },
   { to: "/regles", label: "Règles", match: ["/regles"] },
 ];
 function isActive(item: (typeof navItems)[number]): boolean {

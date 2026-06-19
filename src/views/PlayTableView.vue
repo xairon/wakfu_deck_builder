@@ -23,9 +23,6 @@
           >
         </button>
       </div>
-      <RouterLink to="/play" class="btn btn-ghost btn-sm"
-        >← Compagnon</RouterLink
-      >
     </header>
     <div class="h-px w-full bg-base-content/20"></div>
 

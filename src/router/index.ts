@@ -64,11 +64,11 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
+      // « Partie » mène directement au module de jeu (lobby/table/tutoriel).
+      // L'ancien compagnon de table (compteurs PV + chronomètre) a été retiré.
+      // Redirection conservée pour les anciens liens /play.
       path: "/play",
-      name: "play",
-      component: () => import("@/views/GameView.vue"),
-      // Public : compagnon de table (compteurs locaux), aucune donnée cloud.
-      meta: { guest: true },
+      redirect: "/play/table",
     },
     {
       path: "/play/table/:code?",
