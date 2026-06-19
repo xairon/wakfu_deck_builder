@@ -85,6 +85,33 @@ describe("useCardFilter — filterCards", () => {
     ).toEqual(["hero"]);
   });
 
+  it("effectQuery multi-mots : retient la carte si TOUS les termes sont présents (ordre libre, insensible accents)", () => {
+    const hit = createMockAllyCard({
+      id: "hit",
+      effects: [
+        { description: "Infligez 2 Dommages à l'Allié de votre choix" },
+      ],
+    });
+    const miss = createMockAllyCard({
+      id: "miss",
+      effects: [
+        { description: "Infligez 2 Dommages à l'Allié de votre choix" },
+      ],
+    });
+    // "dommages allie" : deux mots dans le désordre, accents ignorés
+    expect(
+      filterCards([hit], { ...base, effectQuery: "dommages allie" }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(["hit"]);
+    // "dommages soin" : "soin" absent → pas de correspondance
+    expect(
+      filterCards([miss], { ...base, effectQuery: "dommages soin" }).map(
+        (c) => c.id,
+      ),
+    ).toEqual([]);
+  });
+
   it("hideNotOwned : un changement de ownedIds n'est PAS masqué par le cache mémoïsé", () => {
     // Régression : ownedIds est un Set ; la clé JSON par défaut le sérialise en
     // `{}`, donc deux appels aux mêmes critères mais ownedIds différents

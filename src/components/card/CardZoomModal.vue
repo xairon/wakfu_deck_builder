@@ -68,12 +68,12 @@
           </dl>
 
           <!-- Effets -->
-          <div v-if="card.effects?.length" class="mt-4">
+          <div v-if="displayEffects.length" class="mt-4">
             <p class="eyebrow mb-2">Effets</p>
             <ul class="space-y-2">
               <!-- eslint-disable-next-line vue/no-v-html -->
               <li
-                v-for="(e, i) in card.effects"
+                v-for="(e, i) in displayEffects"
                 :key="i"
                 class="border-l-2 border-base-content/20 pl-3 text-sm leading-relaxed"
                 v-html="highlightEffectHtml(e.description)"
@@ -152,6 +152,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { Card } from "@/types/cards";
+import { isHeroCard } from "@/types/cards";
 import { fetchErrata, type ErrataEntry } from "@/services/errataService";
 import { highlightEffectHtml } from "@/utils/effectText";
 
@@ -169,6 +170,15 @@ watch(
   },
   { immediate: true },
 );
+
+const displayEffects = computed(() => {
+  const c = props.card;
+  if (!c) return [];
+  if (isHeroCard(c)) {
+    return [...(c.recto?.effects ?? []), ...(c.verso?.effects ?? [])];
+  }
+  return c.effects ?? [];
+});
 
 const elementColors: Record<string, string> = {
   air: "#5FB22A",

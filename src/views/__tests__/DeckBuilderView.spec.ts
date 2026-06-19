@@ -201,4 +201,28 @@ describe("DeckBuilderView — pool de cartes", () => {
     await wrapper.find('[data-testid="dim-unowned-toggle"]').setValue(true);
     expect(img.classes()).toContain("opacity-40");
   });
+
+  it("« Tout vider » ouvre un dialogue stylé (pas de confirm natif) et le confirmer vide le deck", async () => {
+    const { wrapper, deckStore } = await mountView();
+    // ajouter une carte pour faire apparaître le bouton « Tout vider »
+    await wrapper.find('[data-testid="pool-add"]').trigger("click");
+    await flushPromises();
+    expect(deckStore.cardCount).toBe(1);
+
+    // dialogue présent mais fermé (attribut open absent)
+    expect(
+      wrapper.find('[data-testid="confirm-dialog"]').attributes("open"),
+    ).toBeUndefined();
+
+    await wrapper.find('[data-testid="deck-clear"]').trigger("click");
+    await flushPromises();
+    expect(
+      wrapper.find('[data-testid="confirm-dialog"]').attributes("open"),
+    ).toBeDefined();
+
+    // confirmer → deck vidé
+    await wrapper.find('[data-testid="confirm-ok"]').trigger("click");
+    await flushPromises();
+    expect(deckStore.cardCount).toBe(0);
+  });
 });
