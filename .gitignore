@@ -2,6 +2,9 @@
 node_modules/
 dist/
 
+# Superpowers brainstorm/visual-companion working files
+.superpowers/
+
 # TypeScript build output
 src/**/*.js
 src/**/*.js.map
