@@ -25,6 +25,9 @@
         v-model:max-level="maxLevel"
         v-model:min-cost="minCost"
         v-model:max-cost="maxCost"
+        v-model:min-force="minForce"
+        v-model:max-force="maxForce"
+        v-model:effect-query="effectQuery"
         :extensions="extensions"
         :main-types="mainTypes"
         :sub-types="subTypes"
@@ -574,13 +577,17 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { matchesSearch } from "@/utils/text";
 import { useCardStore } from "@/stores/cardStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { isHeroCard } from "@/types/cards";
 import type { Card } from "@/types/cards";
-import { useMemoize } from "@vueuse/core";
+import {
+  filterCards,
+  sortCards,
+  pruneFilterCaches,
+  type FilterCriteria,
+} from "@/composables/useCardFilter";
 import ElementIcon from "@/components/elements/ElementIcon.vue";
 import { ELEMENTS, type Element } from "@/services/elementService";
 import CollectionHeader from "@/components/collection/CollectionHeader.vue";
@@ -609,6 +616,9 @@ const minLevel = ref<number | null>(null);
 const maxLevel = ref<number | null>(null);
 const minCost = ref<number | null>(null);
 const maxCost = ref<number | null>(null);
+const minForce = ref<number | null>(null);
+const maxForce = ref<number | null>(null);
+const effectQuery = ref("");
 const showVerso = ref(false);
 const selectedCard = ref<Card | null>(null);
 
@@ -758,227 +768,46 @@ function stringToElement(elementStr: string): Element {
   return elementMap[elementStr.toLowerCase()] || ELEMENTS.NEUTRE;
 }
 
-// Mémoiser la fonction de filtrage pour éviter des recalculs inutiles
-const memoizedFilter = useMemoize(
-  (
-    cards: Card[],
-    query: string,
-    extension: string,
-    mainType: string,
-    subType: string,
-    rarity: string,
-    element: string,
-    minLvl: number | null,
-    maxLvl: number | null,
-    minCst: number | null,
-    maxCst: number | null,
-    hideNotOwned: boolean,
-  ): Card[] => {
-    let filtered = [...cards];
-
-    // Application des filtres en série
-    if (query) {
-      filtered = filtered.filter(
-        (card) =>
-          matchesSearch(card.name, query) ||
-          card.subTypes.some((type) => matchesSearch(type, query)),
-      );
-    }
-
-    if (extension) {
-      filtered = filtered.filter((card) => card.extension.name === extension);
-    }
-
-    if (mainType) {
-      filtered = filtered.filter((card) => card.mainType === mainType);
-    }
-
-    if (subType) {
-      filtered = filtered.filter((card) => card.subTypes.includes(subType));
-    }
-
-    if (rarity) {
-      filtered = filtered.filter((card) => card.rarity === rarity);
-    }
-
-    if (element) {
-      filtered = filtered.filter(
-        (card) =>
-          card.stats?.niveau?.element === element ||
-          card.stats?.force?.element === element,
-      );
-    }
-
-    if (minLvl !== null) {
-      filtered = filtered.filter((card) => {
-        const niveau = card.stats?.niveau?.value;
-        return niveau !== undefined ? niveau >= minLvl : false;
-      });
-    }
-
-    if (maxLvl !== null) {
-      filtered = filtered.filter((card) => {
-        const niveau = card.stats?.niveau?.value;
-        return niveau !== undefined ? niveau <= maxLvl : false;
-      });
-    }
-
-    if (minCst !== null) {
-      filtered = filtered.filter((card) => {
-        const cost = card.stats?.pa;
-        return cost !== undefined ? cost >= minCst : false;
-      });
-    }
-
-    if (maxCst !== null) {
-      filtered = filtered.filter((card) => {
-        const cost = card.stats?.pa;
-        return cost !== undefined ? cost <= maxCst : false;
-      });
-    }
-
-    if (hideNotOwned) {
-      const store = useCardStore();
-      filtered = filtered.filter(
-        (card) =>
-          store.getCardQuantity(card.id) > 0 ||
-          store.getFoilCardQuantity(card.id) > 0,
-      );
-    }
-
-    return filtered;
-  },
-);
-
-// Mémoiser la fonction de tri
-const memoizedSort = useMemoize(
-  (cards: Card[], sortField: string, isDesc: boolean): Card[] => {
-    // Copie pour éviter de modifier l'original
-    const result = [...cards];
-
-    // Fonction pour appliquer la direction du tri
-    const applyDirection = (result: number) => (isDesc ? -result : result);
-
-    result.sort((cardA, cardB) => {
-      // Fonction utilitaire pour comparer les extensions
-      const compareExtensions = () => {
-        const extensionOrder = {
-          Incarnam: 0,
-          Astrub: 1,
-          Amakna: 2,
-          "Bonta-Brakmar": 3,
-          Pandala: 4,
-          Otomaï: 5,
-          "DOFUS Collection": 6,
-          "Chaos d'Ogrest": 7,
-          "Ankama Convention 5": 8,
-          "Île des Wabbits": 9,
-          Draft: 10,
-        };
-
-        // Extraire le numéro avant le '/' pour le tri
-        const getCardNumber = (card: Card) => {
-          const match = card.extension.number?.match(/^(\d+)\//);
-          return match ? parseInt(match[1]) : 0;
-        };
-
-        // Comparer d'abord par extension
-        const extA = extensionOrder[cardA.extension.name] ?? 999;
-        const extB = extensionOrder[cardB.extension.name] ?? 999;
-
-        if (extA !== extB) {
-          return extA - extB;
-        }
-
-        // Si même extension, comparer par numéro
-        const numA = getCardNumber(cardA);
-        const numB = getCardNumber(cardB);
-        return numA - numB;
-      };
-
-      switch (sortField) {
-        case "number":
-          return applyDirection(compareExtensions());
-
-        case "rarity": {
-          const rarityOrder: Record<string, number> = {
-            Commune: 0,
-            "Peu Commune": 1,
-            Rare: 2,
-            Mythique: 3,
-            Légendaire: 4,
-          };
-          const rarityCompare =
-            (rarityOrder[cardA.rarity] || 0) - (rarityOrder[cardB.rarity] || 0);
-          if (rarityCompare !== 0) return applyDirection(rarityCompare);
-          return compareExtensions();
-        }
-
-        case "type": {
-          const typeCompare = cardA.mainType.localeCompare(cardB.mainType);
-          if (typeCompare !== 0) return applyDirection(typeCompare);
-          return compareExtensions();
-        }
-
-        case "element": {
-          const elementA =
-            cardA.stats?.niveau?.element ||
-            cardA.stats?.force?.element ||
-            "neutre";
-          const elementB =
-            cardB.stats?.niveau?.element ||
-            cardB.stats?.force?.element ||
-            "neutre";
-          const elementCompare = elementA.localeCompare(elementB);
-          if (elementCompare !== 0) return applyDirection(elementCompare);
-          return compareExtensions();
-        }
-
-        case "force": {
-          const forceA = cardA.stats?.force?.value || 0;
-          const forceB = cardB.stats?.force?.value || 0;
-          if (forceA !== forceB) return applyDirection(forceA - forceB);
-          return compareExtensions();
-        }
-
-        default:
-          return compareExtensions();
-      }
-    });
-
-    return result;
-  },
-);
-
 // Filtrage des cartes avec optimisation
 const filteredCollection = computed(() => {
-  // Borne les caches de mémoïsation : chaque combinaison de recherche/filtres
-  // crée une entrée ; sans purge, la mémoire croît à chaque frappe.
-  // useMemoize utilise une Map par défaut, mais son type UseMemoizeCache n'expose
-  // pas `.size` → cast pour borner le cache.
-  if ((memoizedFilter.cache as Map<unknown, unknown>).size > 50)
-    memoizedFilter.clear();
-  if ((memoizedSort.cache as Map<unknown, unknown>).size > 50)
-    memoizedSort.clear();
+  // Borne les caches de mémoïsation (purge quand > 50 entrées).
+  pruneFilterCaches();
 
-  // 1. Filtrage avec mémoisation
-  const filteredCards = memoizedFilter(
-    cardStore.cards,
-    searchQuery.value,
-    selectedExtension.value,
-    selectedMainType.value,
-    selectedSubType.value,
-    selectedRarity.value,
-    selectedElement.value,
-    minLevel.value,
-    maxLevel.value,
-    minCost.value,
-    maxCost.value,
-    hideNotOwned.value,
+  // Construire l'ensemble des IDs possédés (normal + foil) pour hideNotOwned
+  const ownedIds = new Set<string>(
+    cardStore.cards
+      .filter(
+        (card) =>
+          cardStore.getCardQuantity(card.id) > 0 ||
+          cardStore.getFoilCardQuantity(card.id) > 0,
+      )
+      .map((card) => card.id),
   );
 
+  const criteria: FilterCriteria = {
+    query: searchQuery.value,
+    extension: selectedExtension.value,
+    mainType: selectedMainType.value,
+    subType: selectedSubType.value,
+    rarity: selectedRarity.value,
+    // éléments stockés en minuscules — normaliser comme dans l'atelier de deck
+    element: selectedElement.value.toLowerCase(),
+    minLevel: minLevel.value,
+    maxLevel: maxLevel.value,
+    minCost: minCost.value,
+    maxCost: maxCost.value,
+    minForce: minForce.value,
+    maxForce: maxForce.value,
+    effectQuery: effectQuery.value,
+    hideNotOwned: hideNotOwned.value,
+    ownedIds,
+  };
+
+  // 1. Filtrage avec mémoisation
+  const filteredCards = filterCards(cardStore.cards, criteria);
+
   // 2. Tri avec mémoisation
-  const sortedCards = memoizedSort(
+  const sortedCards = sortCards(
     filteredCards,
     selectedSortField.value,
     isDescending.value,

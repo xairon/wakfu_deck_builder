@@ -131,6 +131,15 @@
           >
             Illustration · {{ card.artists.join(", ") }}
           </p>
+
+          <!-- Actions optionnelles (ex. ajouter au deck depuis l'atelier).
+               Vide par défaut : la modale reste sans dépendance de store. -->
+          <div
+            v-if="$slots.actions"
+            class="mt-4 border-t border-base-content/15 pt-3"
+          >
+            <slot name="actions" />
+          </div>
         </div>
       </div>
     </div>
