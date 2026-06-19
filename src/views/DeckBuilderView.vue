@@ -133,6 +133,7 @@
               <button
                 class="relative block w-full text-left"
                 :title="`Lire ${card.name}`"
+                :aria-label="`Lire ${card.name} — agrandir`"
                 data-testid="pool-tile"
                 @click="openZoom(card)"
               >
@@ -181,24 +182,6 @@
                     </svg>
                   </span>
                 </div>
-              </button>
-              <!-- Bouton loupe (accessibilité) -->
-              <button
-                class="sr-only focus:not-sr-only focus:absolute focus:inset-0 focus:z-20"
-                :aria-label="`Lire la carte ${card.name}`"
-                @click="openZoom(card)"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  aria-hidden="true"
-                >
-                  <circle cx="11" cy="11" r="7" />
-                  <path stroke-linecap="round" d="m20 20-3.5-3.5" />
-                </svg>
               </button>
               <!-- Bouton ajout express -->
               <button
@@ -771,6 +754,10 @@ function onKeydown(e: KeyboardEvent) {
     zoomOpen.value = false;
     return;
   }
+  // Ne pas déclencher les raccourcis d'ajout (a/e/r) si l'utilisateur tape dans
+  // un champ (recherche, filtres, notes) — sinon taper « arme » ajouterait la carte.
+  const tag = (document.activeElement as HTMLElement | null)?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
   const card = zoomCard.value;
   if (!card) return;
   if (e.key === "a") addToDeck(card);
