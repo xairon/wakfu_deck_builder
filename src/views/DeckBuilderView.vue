@@ -41,9 +41,50 @@
       </select>
     </header>
 
+    <!-- Onglets mobile — masqués sur xl (deux volets côte à côte) -->
+    <div
+      class="flex xl:hidden"
+      role="tablist"
+      aria-label="Vues du constructeur"
+    >
+      <button
+        role="tab"
+        :aria-pressed="mobileTab === 'pool'"
+        :class="[
+          'flex-1 border-b-2 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-colors',
+          mobileTab === 'pool'
+            ? 'border-base-content text-base-content'
+            : 'border-base-content/20 text-base-content/45 hover:text-base-content/70',
+        ]"
+        data-testid="mobile-tab-pool"
+        @click="mobileTab = 'pool'"
+      >
+        Bestiaire
+      </button>
+      <button
+        role="tab"
+        :aria-pressed="mobileTab === 'deck'"
+        :class="[
+          'flex-1 border-b-2 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-colors',
+          mobileTab === 'deck'
+            ? 'border-base-content text-base-content'
+            : 'border-base-content/20 text-base-content/45 hover:text-base-content/70',
+        ]"
+        data-testid="mobile-tab-deck"
+        @click="mobileTab = 'deck'"
+      >
+        Deck
+        <span class="ml-1 tabular">{{ cardCount }}/48</span>
+      </button>
+    </div>
+
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_370px]">
       <!-- ─────────── Vivier de cartes ─────────── -->
-      <section class="min-w-0">
+      <section
+        class="min-w-0"
+        :class="mobileTab === 'pool' ? 'block' : 'hidden xl:block'"
+        data-testid="pool-section"
+      >
         <CollectionFilters
           :extensions="filterExtensions"
           :main-types="filterMainTypes"
@@ -223,6 +264,8 @@
       <!-- ─────────── Panneau du deck ─────────── -->
       <aside
         class="border border-base-content/15 bg-base-100 xl:sticky xl:top-20 xl:self-start xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto"
+        :class="mobileTab === 'deck' ? 'block' : 'hidden xl:block'"
+        data-testid="deck-aside"
       >
         <!-- Panneau de lecture épinglé — visible uniquement sur xl et plus -->
         <div class="hidden xl:block">
@@ -808,6 +851,10 @@ const deckStore = useDeckStore();
 const cardStore = useCardStore();
 const authStore = useAuthStore();
 const toast = useToast();
+
+// ── Onglets mobile (Bestiaire / Deck) ─────────────────────────────────────────
+/** Onglet actif sous xl. Sur xl les deux volets sont toujours visibles. */
+const mobileTab = ref<"pool" | "deck">("pool");
 
 // ── Filtres (liés à <CollectionFilters>) ──────────────────────────────────────
 const filterQuery = ref("");

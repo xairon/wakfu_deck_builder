@@ -206,6 +206,57 @@ describe("DeckBuilderView — pool de cartes", () => {
     expect(img.classes()).toContain("opacity-40");
   });
 
+  it("les boutons d'onglet mobile existent et l'onglet par défaut est 'pool'", async () => {
+    const { wrapper } = await mountView();
+
+    const tabPool = wrapper.find('[data-testid="mobile-tab-pool"]');
+    const tabDeck = wrapper.find('[data-testid="mobile-tab-deck"]');
+    expect(tabPool.exists()).toBe(true);
+    expect(tabDeck.exists()).toBe(true);
+
+    // Onglet par défaut = pool → section pool visible (classe 'block'), aside deck caché (classe 'hidden')
+    const poolSection = wrapper.find('[data-testid="pool-section"]');
+    const deckAside = wrapper.find('[data-testid="deck-aside"]');
+    expect(poolSection.classes()).toContain("block");
+    expect(poolSection.classes()).not.toContain("hidden");
+    expect(deckAside.classes()).toContain("hidden");
+    expect(deckAside.classes()).not.toContain("block");
+
+    // aria-pressed cohérent
+    expect(tabPool.attributes("aria-pressed")).toBe("true");
+    expect(tabDeck.attributes("aria-pressed")).toBe("false");
+  });
+
+  it("cliquer l'onglet 'deck' affiche le panneau deck et masque le pool", async () => {
+    const { wrapper } = await mountView();
+
+    await wrapper.find('[data-testid="mobile-tab-deck"]').trigger("click");
+    await flushPromises();
+
+    const poolSection = wrapper.find('[data-testid="pool-section"]');
+    const deckAside = wrapper.find('[data-testid="deck-aside"]');
+
+    // Panneau deck : doit avoir 'block' (via :class binding) et ne pas avoir 'hidden'
+    expect(deckAside.classes()).toContain("block");
+    expect(deckAside.classes()).not.toContain("hidden");
+
+    // Section pool : doit avoir 'hidden' et ne pas avoir 'block'
+    expect(poolSection.classes()).toContain("hidden");
+    expect(poolSection.classes()).not.toContain("block");
+
+    // aria-pressed mis à jour
+    expect(
+      wrapper
+        .find('[data-testid="mobile-tab-pool"]')
+        .attributes("aria-pressed"),
+    ).toBe("false");
+    expect(
+      wrapper
+        .find('[data-testid="mobile-tab-deck"]')
+        .attributes("aria-pressed"),
+    ).toBe("true");
+  });
+
   it("« Tout vider » ouvre un dialogue stylé (pas de confirm natif) et le confirmer vide le deck", async () => {
     const { wrapper, deckStore } = await mountView();
     // ajouter une carte pour faire apparaître le bouton « Tout vider »
