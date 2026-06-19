@@ -790,7 +790,8 @@ const filteredCollection = computed(() => {
     mainType: selectedMainType.value,
     subType: selectedSubType.value,
     rarity: selectedRarity.value,
-    element: selectedElement.value,
+    // éléments stockés en minuscules — normaliser comme dans l'atelier de deck
+    element: selectedElement.value.toLowerCase(),
     minLevel: minLevel.value,
     maxLevel: maxLevel.value,
     minCost: minCost.value,
