@@ -24,9 +24,13 @@
         v-if="cardCount === 48"
         class="seal shrink-0"
         aria-label="48 cartes sur 48"
+        data-testid="deck-count"
         >48/48</span
       >
-      <span v-else class="font-mono text-2xl font-bold tabular leading-none"
+      <span
+        v-else
+        class="font-mono text-2xl font-bold tabular leading-none"
+        data-testid="deck-count"
         >{{ cardCount }}<span class="text-base-content/35">/48</span></span
       >
     </div>

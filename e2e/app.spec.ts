@@ -221,7 +221,36 @@ test.describe("Deck Builder", () => {
 
   test("devrait afficher le compteur de cartes", async ({ page }) => {
     await gotoAuthed(page, "/deck-builder");
-    await expect(page.getByText("0/48")).toBeVisible();
+    await waitForCatalog(page);
+    // Compteur du panneau de deck (testid stable : le libellé d'onglet mobile
+    // « Deck 0/48 » contient aussi « 0/48 » mais reste caché ≥ xl).
+    await expect(page.getByTestId("deck-count")).toContainText("0/48");
+  });
+
+  test("filtre par texte d'effet + zoom avant ajout (le clic n'ajoute pas)", async ({
+    page,
+  }) => {
+    await gotoAuthed(page, "/deck-builder");
+    await waitForCatalog(page);
+    await expect(page.getByTestId("deck-count")).toContainText("0/48");
+
+    // Filtre avancé « dans les effets » : présent et filtrant
+    const effectInput = page.locator('[data-testid="filter-effect-query"]');
+    await expect(effectInput).toBeVisible();
+    await effectInput.fill("invocation");
+    await expect(
+      page.locator('[data-testid="pool-tile"]').first(),
+    ).toBeVisible();
+    await effectInput.fill("");
+
+    // Cliquer une carte OUVRE la lecture (panneau épinglé ≥ xl) — plus le
+    // placeholder, la fiche affiche la carte …
+    await page.locator('[data-testid="pool-tile"]').first().click();
+    await expect(page.getByTestId("card-zoom-panel")).not.toContainText(
+      "Choisissez une carte",
+    );
+    // … mais N'AJOUTE PAS : le deck reste à 0/48 (fin du piège clic = ajout)
+    await expect(page.getByTestId("deck-count")).toContainText("0/48");
   });
 });
 
