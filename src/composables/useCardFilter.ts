@@ -216,11 +216,13 @@ export const filterCards = useMemoize(
       });
     }
 
-    // Recherche dans le texte d'effet
+    // Recherche dans le texte d'effet (multi-mots, ordre libre, AND)
     if (effectQuery) {
-      filtered = filtered.filter((card) =>
-        cardEffectTexts(card).some((text) => matchesSearch(text, effectQuery)),
-      );
+      filtered = filtered.filter((card) => {
+        const hay = cardEffectTexts(card).join(" \n ");
+        const terms = effectQuery.split(/\s+/).filter(Boolean);
+        return terms.every((t) => matchesSearch(hay, t));
+      });
     }
 
     // Masquer les cartes non possédées

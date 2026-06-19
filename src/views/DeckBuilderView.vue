@@ -640,8 +640,9 @@
         >
           + Ajouter
         </button>
-        <!-- Ajouter ×3 -->
+        <!-- Ajouter ×3 — masqué pour Héros / Havre-Sac -->
         <button
+          v-if="!zoomIsLeader"
           class="btn btn-sm font-mono uppercase tracking-wider"
           :disabled="zoomCard ? !canAddCard(zoomCard) : true"
           :title="
@@ -651,8 +652,9 @@
         >
           + ×3
         </button>
-        <!-- Ajouter en Réserve -->
+        <!-- Ajouter en Réserve — masqué pour Héros / Havre-Sac -->
         <button
+          v-if="!zoomIsLeader"
           class="btn btn-sm font-mono uppercase tracking-wider"
           :disabled="zoomCard ? !canAddCard(zoomCard, true) : true"
           :title="
@@ -672,6 +674,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { getThumbPath } from "@/utils/imagePaths";
+import {
+  elementColors,
+  elementColor as elementColorByEl,
+} from "@/config/elementColors";
 import { useRoute, useRouter } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
@@ -760,6 +766,13 @@ const filterElements = computed(() => {
 const zoomCard = ref<Card | null>(null);
 const zoomOpen = ref(false);
 
+/** Vrai si la carte zoomée est un leader (Héros ou Havre-Sac) — masque ×3 et Réserve. */
+const zoomIsLeader = computed(
+  () =>
+    zoomCard.value?.mainType === "Héros" ||
+    zoomCard.value?.mainType === "Havre-Sac",
+);
+
 function openZoom(card: Card) {
   zoomCard.value = card;
   zoomOpen.value = true;
@@ -779,8 +792,8 @@ function onKeydown(e: KeyboardEvent) {
   const card = zoomCard.value;
   if (!card) return;
   if (e.key === "a") addToDeck(card);
-  else if (e.key === "e") addToDeckQty(card, 3);
-  else if (e.key === "r") addToReserve(card);
+  else if (e.key === "e" && !zoomIsLeader.value) addToDeckQty(card, 3);
+  else if (e.key === "r" && !zoomIsLeader.value) addToReserve(card);
 }
 onMounted(() => window.addEventListener("keydown", onKeydown));
 onUnmounted(() => window.removeEventListener("keydown", onKeydown));
@@ -888,22 +901,10 @@ function updateNotes(value: string) {
 }
 const visiblePool = computed(() => pool.value.slice(0, poolLimit.value));
 
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
+/** Couleur d'élément d'une carte — délègue à @/config/elementColors. */
 function elementColor(card: Card): string {
-  const el = (
-    card.stats?.niveau?.element ||
-    card.stats?.force?.element ||
-    "neutre"
-  )
-    .toString()
-    .toLowerCase();
-  return elementColors[el] || elementColors.neutre;
+  const el = card.stats?.niveau?.element || card.stats?.force?.element || null;
+  return elementColorByEl(el?.toString());
 }
 const elementDist = computed(() => {
   const map: Record<string, number> = {};
