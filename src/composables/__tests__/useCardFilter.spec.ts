@@ -84,4 +84,28 @@ describe("useCardFilter — filterCards", () => {
       filterCards([hero], { ...base, effectQuery: "treve" }).map((c) => c.id),
     ).toEqual(["hero"]);
   });
+
+  it("hideNotOwned : un changement de ownedIds n'est PAS masqué par le cache mémoïsé", () => {
+    // Régression : ownedIds est un Set ; la clé JSON par défaut le sérialise en
+    // `{}`, donc deux appels aux mêmes critères mais ownedIds différents
+    // renverraient le résultat caché périmé. getKey(filterKey) doit l'éviter.
+    const a = createMockAllyCard({ id: "a", name: "A" });
+    const b = createMockAllyCard({ id: "b", name: "B" });
+    const cards = [a, b];
+    expect(
+      filterCards(cards, {
+        ...base,
+        hideNotOwned: true,
+        ownedIds: new Set(["a"]),
+      }).map((c) => c.id),
+    ).toEqual(["a"]);
+    // mêmes critères, ownedIds élargi → résultat FRAIS, pas le cache de ["a"]
+    expect(
+      filterCards(cards, {
+        ...base,
+        hideNotOwned: true,
+        ownedIds: new Set(["a", "b"]),
+      }).map((c) => c.id),
+    ).toEqual(["a", "b"]);
+  });
 });

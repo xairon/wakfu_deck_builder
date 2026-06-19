@@ -8,7 +8,8 @@
  */
 
 import { useMemoize } from "@vueuse/core";
-import type { Card, HeroCard } from "@/types/cards";
+import type { Card } from "@/types/cards";
+import { isHeroCard } from "@/types/cards";
 import { matchesSearch } from "@/utils/text";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -58,14 +59,42 @@ export interface FilterCriteria {
  * n'existe pas sur HeroCard).
  */
 function cardEffectTexts(card: Card): string[] {
-  if (card.mainType === "Héros") {
-    const hero = card as HeroCard;
+  if (isHeroCard(card)) {
     const texts: string[] = [];
-    for (const e of hero.recto?.effects ?? []) texts.push(e.description);
-    for (const e of hero.verso?.effects ?? []) texts.push(e.description);
+    for (const e of card.recto?.effects ?? []) texts.push(e.description);
+    for (const e of card.verso?.effects ?? []) texts.push(e.description);
     return texts;
   }
   return (card.effects ?? []).map((e) => e.description);
+}
+
+/**
+ * Clé de mémoïsation COMPACTE et CORRECTE pour le filtrage.
+ * `filterCards` reçoit toujours le catalogue complet (statique) → on l'identifie
+ * par sa taille au lieu de sérialiser ~1585 cartes à chaque appel. Surtout,
+ * `ownedIds` (un Set) se sérialise en `{}` via la clé JSON par défaut : on
+ * l'aplatit en liste triée pour que « masquer les non possédées » ne renvoie
+ * pas de résultat périmé quand la collection change.
+ */
+function filterKey(cards: Card[], c: FilterCriteria): string {
+  return JSON.stringify({
+    n: cards.length,
+    q: c.query,
+    x: c.extension,
+    mt: c.mainType,
+    st: c.subType,
+    r: c.rarity,
+    el: c.element,
+    nlv: c.minLevel,
+    xlv: c.maxLevel,
+    nc: c.minCost,
+    xc: c.maxCost,
+    nf: c.minForce,
+    xf: c.maxForce,
+    eq: c.effectQuery,
+    h: c.hideNotOwned,
+    own: c.hideNotOwned ? [...c.ownedIds].sort() : [],
+  });
 }
 
 // ── Filtrage mémoïsé ──────────────────────────────────────────────────────────
@@ -76,6 +105,7 @@ function cardEffectTexts(card: Card): string[] {
  */
 export const filterCards = useMemoize(
   (cards: Card[], criteria: FilterCriteria): Card[] => {
+    /* getKey ci-dessous : voir filterKey (Set ownedIds + perf catalogue). */
     const {
       query,
       extension,
@@ -168,19 +198,21 @@ export const filterCards = useMemoize(
 
     // Force minimum — exclut les cartes sans force si une borne est posée
     if (minForce !== null) {
-      const min = minForce;
       filtered = filtered.filter((card) => {
         const force = card.stats?.force?.value;
-        return force !== undefined && force !== null ? force >= min : false;
+        return force !== undefined && force !== null
+          ? force >= minForce
+          : false;
       });
     }
 
     // Force maximum — exclut les cartes sans force si une borne est posée
     if (maxForce !== null) {
-      const max = maxForce;
       filtered = filtered.filter((card) => {
         const force = card.stats?.force?.value;
-        return force !== undefined && force !== null ? force <= max : false;
+        return force !== undefined && force !== null
+          ? force <= maxForce
+          : false;
       });
     }
 
@@ -198,6 +230,7 @@ export const filterCards = useMemoize(
 
     return filtered;
   },
+  { getKey: filterKey },
 );
 
 // ── Tri mémoïsé ───────────────────────────────────────────────────────────────
