@@ -197,14 +197,17 @@ function goTo(page: number) {
   });
 }
 
-// Filtres modifiés → retour à la page 1 (et clamp si la page n'existe plus).
-watch(
-  () => props.filteredCards,
-  () => {
-    currentPage.value = 0;
-  },
-  { deep: true },
+// Le SET ORDONNÉ des cartes affichées (ids seuls) : ne change QUE si la
+// recherche / les filtres / le tri changent — PAS quand on ajuste la quantité
+// d'une carte (ajout/retrait). Le parent repasse un nouveau tableau à chaque
+// changement de quantité ; déclencher sur cette clé (et non sur la référence
+// ou le contenu profond) évite le retour intempestif en page 1 sur une page > 1.
+const resultKey = computed(() =>
+  validCards.value.map((item) => item.card?.id ?? "").join("|"),
 );
+watch(resultKey, () => {
+  currentPage.value = 0;
+});
 watch(totalPages, (tp) => {
   if (currentPage.value > tp - 1) currentPage.value = tp - 1;
 });
