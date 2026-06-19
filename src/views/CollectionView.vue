@@ -25,6 +25,9 @@
         v-model:max-level="maxLevel"
         v-model:min-cost="minCost"
         v-model:max-cost="maxCost"
+        v-model:min-force="minForce"
+        v-model:max-force="maxForce"
+        v-model:effect-query="effectQuery"
         :extensions="extensions"
         :main-types="mainTypes"
         :sub-types="subTypes"
@@ -613,6 +616,9 @@ const minLevel = ref<number | null>(null);
 const maxLevel = ref<number | null>(null);
 const minCost = ref<number | null>(null);
 const maxCost = ref<number | null>(null);
+const minForce = ref<number | null>(null);
+const maxForce = ref<number | null>(null);
+const effectQuery = ref("");
 const showVerso = ref(false);
 const selectedCard = ref<Card | null>(null);
 
@@ -789,9 +795,9 @@ const filteredCollection = computed(() => {
     maxLevel: maxLevel.value,
     minCost: minCost.value,
     maxCost: maxCost.value,
-    minForce: null,
-    maxForce: null,
-    effectQuery: "",
+    minForce: minForce.value,
+    maxForce: maxForce.value,
+    effectQuery: effectQuery.value,
     hideNotOwned: hideNotOwned.value,
     ownedIds,
   };

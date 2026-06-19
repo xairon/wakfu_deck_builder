@@ -181,6 +181,49 @@
           @input="emitMaxCost"
         />
       </div>
+
+      <!-- Force -->
+      <div class="flex items-center gap-2">
+        <span class="eyebrow" id="force-label">Force</span>
+        <input
+          type="number"
+          v-model.number="minForce"
+          placeholder="Min"
+          class="input input-bordered w-16 font-mono tabular"
+          min="0"
+          aria-label="Force minimum"
+          aria-describedby="force-label"
+          data-testid="filter-min-force"
+          @input="emitMinForce"
+        />
+        <span class="font-mono text-sm" aria-hidden="true">–</span>
+        <input
+          type="number"
+          v-model.number="maxForce"
+          placeholder="Max"
+          class="input input-bordered w-16 font-mono tabular"
+          min="0"
+          aria-label="Force maximum"
+          aria-describedby="force-label"
+          data-testid="filter-max-force"
+          @input="emitMaxForce"
+        />
+      </div>
+    </div>
+
+    <!-- Recherche dans les effets -->
+    <div class="flex items-center gap-2">
+      <span class="eyebrow" id="effect-label">Dans les effets</span>
+      <input
+        type="text"
+        v-model="effectQuery"
+        placeholder="Mot-clé d'effet…"
+        class="input input-bordered flex-1"
+        aria-label="Rechercher dans les effets"
+        aria-describedby="effect-label"
+        data-testid="filter-effect-query"
+        @input="emitEffectQuery"
+      />
     </div>
   </div>
 </template>
@@ -214,6 +257,9 @@ const props = defineProps<{
   maxLevel: number | null;
   minCost: number | null;
   maxCost: number | null;
+  minForce: number | null;
+  maxForce: number | null;
+  effectQuery: string;
 }>();
 
 // État local des filtres (synchronisé avec les props)
@@ -230,6 +276,9 @@ const minLevel = ref(props.minLevel);
 const maxLevel = ref(props.maxLevel);
 const minCost = ref(props.minCost);
 const maxCost = ref(props.maxCost);
+const minForce = ref(props.minForce);
+const maxForce = ref(props.maxForce);
+const effectQuery = ref(props.effectQuery);
 
 // Synchroniser les refs locales avec les props quand elles changent
 watch(
@@ -284,6 +333,18 @@ watch(
   () => props.maxCost,
   (newVal) => (maxCost.value = newVal),
 );
+watch(
+  () => props.minForce,
+  (newVal) => (minForce.value = newVal),
+);
+watch(
+  () => props.maxForce,
+  (newVal) => (maxForce.value = newVal),
+);
+watch(
+  () => props.effectQuery,
+  (newVal) => (effectQuery.value = newVal),
+);
 
 // Définition des émissions
 const emit = defineEmits<{
@@ -300,6 +361,9 @@ const emit = defineEmits<{
   "update:max-level": [value: number | null];
   "update:min-cost": [value: number | null];
   "update:max-cost": [value: number | null];
+  "update:min-force": [value: number | null];
+  "update:max-force": [value: number | null];
+  "update:effect-query": [value: string];
 }>();
 
 // Fonctions pour émettre les changements de filtres
@@ -349,6 +413,25 @@ function emitMinLevel() {
 
 function emitMaxLevel() {
   emit("update:max-level", maxLevel.value);
+}
+
+/** Normalise la valeur d'un input .number : NaN ou chaîne vide (champ vide) → null */
+function toNumberOrNull(val: unknown): number | null {
+  if (val === null || val === "" || val === undefined) return null;
+  const n = Number(val);
+  return isNaN(n) ? null : n;
+}
+
+function emitMinForce() {
+  emit("update:min-force", toNumberOrNull(minForce.value));
+}
+
+function emitMaxForce() {
+  emit("update:max-force", toNumberOrNull(maxForce.value));
+}
+
+function emitEffectQuery() {
+  emit("update:effect-query", effectQuery.value);
 }
 
 // Helper pour changer la direction de tri
