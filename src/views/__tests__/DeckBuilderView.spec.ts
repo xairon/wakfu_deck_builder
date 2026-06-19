@@ -188,4 +188,17 @@ describe("DeckBuilderView — pool de cartes", () => {
 
     expect(deckStore.cardCount).toBe(countBefore + 1);
   });
+
+  it("le toggle « Estomper les non possédées » contrôle l'opacité (off par défaut)", async () => {
+    const { wrapper } = await mountView();
+    const img = wrapper.find('[data-testid="pool-tile"] img');
+    expect(img.exists()).toBe(true);
+
+    // ally-test-1 n'est pas possédée, mais par défaut (toggle OFF) elle n'est PAS estompée
+    expect(img.classes()).not.toContain("opacity-40");
+
+    // activer le toggle → la carte non possédée est estompée
+    await wrapper.find('[data-testid="dim-unowned-toggle"]').setValue(true);
+    expect(img.classes()).toContain("opacity-40");
+  });
 });

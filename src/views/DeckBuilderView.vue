@@ -84,7 +84,16 @@
           @update:effect-query="filterEffectQuery = $event"
           class="mb-4"
         />
-        <div class="mb-2 flex justify-end">
+        <div class="mb-2 flex items-center justify-between gap-3">
+          <label class="flex cursor-pointer items-center gap-2">
+            <input
+              v-model="dimUnowned"
+              type="checkbox"
+              class="checkbox checkbox-sm checkbox-primary"
+              data-testid="dim-unowned-toggle"
+            />
+            <span class="eyebrow">Estomper les non possédées</span>
+          </label>
           <span class="font-mono text-xs tabular text-base-content/55"
             >{{ pool.length }} carte{{ pool.length > 1 ? "s" : "" }}</span
           >
@@ -146,7 +155,9 @@
                     :alt="card.name"
                     loading="lazy"
                     class="aspect-[7/10] object-cover"
-                    :class="{ 'opacity-40': ownedQty(card.id) === 0 }"
+                    :class="{
+                      'opacity-40': dimUnowned && ownedQty(card.id) === 0,
+                    }"
                     @error="onImgError"
                   />
                   <!-- Quantité dans le deck : étiquette braise carrée -->
@@ -702,6 +713,13 @@ const filterEffectQuery = ref("");
 const filterHideNotOwned = ref(false);
 const filterSortField = ref("number");
 const filterSortDesc = ref(false);
+
+/**
+ * Estompe les cartes non possédées dans le vivier. OFF par défaut : on peut
+ * construire des decks pour le jeu en ligne sans posséder les cartes, donc la
+ * possession n'est qu'une indication facultative (le badge de quantité reste).
+ */
+const dimUnowned = ref(false);
 
 const poolLimit = ref(60);
 // Vrai si l'initialisation du catalogue a échoué (réseau/hors-ligne).
