@@ -411,6 +411,7 @@
             <button
               v-if="cardCount > 0"
               class="shrink-0 font-mono text-[10px] font-bold uppercase tracking-wider text-base-content/50 hover:text-error"
+              data-testid="deck-clear"
               @click="confirmClear"
             >
               Tout vider
@@ -447,12 +448,25 @@
               </span>
               <span class="ml-1 flex shrink-0 items-center gap-1.5">
                 <button
-                  class="font-mono text-[10px] font-bold uppercase tracking-wider text-base-content/40 hover:text-primary"
+                  class="text-base-content/40 hover:text-primary"
                   @click="moveToReserve(dc.card.id)"
                   title="Déplacer en réserve"
                   aria-label="Déplacer en réserve"
                 >
-                  R→
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"
+                    />
+                  </svg>
                 </button>
                 <button
                   class="font-mono text-base font-bold leading-none text-base-content/50 hover:text-base-content"
@@ -481,9 +495,22 @@
             <span
               class="shrink-0 font-mono text-xs font-bold tabular"
               :class="
-                reserveCount === 12 ? 'text-primary' : 'text-base-content/55'
+                reserveCount === 12
+                  ? 'text-primary'
+                  : reserveCount === 0
+                    ? 'text-base-content/55'
+                    : 'text-warning'
               "
-              >{{ reserveCount }} / 12</span
+              :title="
+                reserveCount !== 0 && reserveCount !== 12
+                  ? 'La réserve doit contenir exactement 0 ou 12 cartes (règle 101.4)'
+                  : ''
+              "
+              >{{ reserveCount }} / 12<span
+                v-if="reserveCount !== 0 && reserveCount !== 12"
+                class="ml-1 lowercase text-warning"
+                >· 0 ou 12 requis</span
+              ></span
             >
           </div>
           <ul
@@ -506,12 +533,25 @@
               <span class="leader"></span>
               <span class="ml-1 flex shrink-0 items-center gap-1.5">
                 <button
-                  class="font-mono text-[10px] font-bold uppercase tracking-wider text-base-content/40 hover:text-primary"
+                  class="text-base-content/40 hover:text-primary"
                   @click="moveToMain(dc.card.id)"
                   title="Renvoyer au deck principal"
                   aria-label="Renvoyer au deck principal"
                 >
-                  →D
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 20V9m0 0-4 4m4-4 4 4M5 4h14"
+                    />
+                  </svg>
                 </button>
                 <button
                   class="font-mono text-base font-bold leading-none text-base-content/50 hover:text-error"
@@ -524,7 +564,7 @@
             </li>
           </ul>
           <p v-else class="py-3 text-xs text-base-content/40">
-            Réserve vide — déplacez des cartes du deck avec « R→ ».
+            Réserve vide — déplacez-y des cartes du deck avec le bouton ↓.
           </p>
         </div>
         <div class="h-px w-full bg-base-content/15"></div>
@@ -669,6 +709,16 @@
       </div>
     </template>
   </CardZoomModal>
+
+  <!-- Confirmation stylée (vider / supprimer le deck, remplacer héros/havre-sac) -->
+  <ConfirmDialog
+    :open="confirmState.open"
+    :title="confirmState.title"
+    :message="confirmState.message"
+    :danger="confirmState.danger"
+    @confirm="onConfirmOk"
+    @cancel="onConfirmCancel"
+  />
 </template>
 
 <script setup lang="ts">
@@ -693,6 +743,7 @@ import {
 import type { FilterCriteria } from "@/composables/useCardFilter";
 import CollectionFilters from "@/components/collection/CollectionFilters.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
+import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import type { Card, Deck } from "@/types/cards";
 
 const route = useRoute();
@@ -1001,13 +1052,11 @@ function inDeckQty(id: string): number {
 function addToDeck(card: Card) {
   if (!currentDeck.value) return;
   if (card.mainType === "Héros") {
-    deckStore.setHero(card);
-    toast.success(`Héros : ${card.name}`, { duration: 1500 });
+    requestSetHero(card);
     return;
   }
   if (card.mainType === "Havre-Sac") {
-    deckStore.setHavreSac(card);
-    toast.success(`Havre-sac : ${card.name}`, { duration: 1500 });
+    requestSetHavreSac(card);
     return;
   }
   if (!canAddCard(card)) {
@@ -1021,13 +1070,11 @@ function addToDeck(card: Card) {
 function addToDeckQty(card: Card, qty: number) {
   if (!currentDeck.value) return;
   if (card.mainType === "Héros") {
-    deckStore.setHero(card);
-    toast.success(`Héros : ${card.name}`, { duration: 1500 });
+    requestSetHero(card);
     return;
   }
   if (card.mainType === "Havre-Sac") {
-    deckStore.setHavreSac(card);
-    toast.success(`Havre-sac : ${card.name}`, { duration: 1500 });
+    requestSetHavreSac(card);
     return;
   }
   if (!canAddCard(card)) {
@@ -1056,16 +1103,97 @@ function switchDeck(id: string) {
   router.replace(`/deck-builder/${id}`);
 }
 
+// ── ConfirmDialog state ───────────────────────────────────────────────────────
+interface ConfirmState {
+  open: boolean;
+  title: string;
+  message: string;
+  danger: boolean;
+  onConfirm: () => void;
+}
+const confirmState = ref<ConfirmState>({
+  open: false,
+  title: "",
+  message: "",
+  danger: false,
+  onConfirm: () => {},
+});
+
+function openConfirm(opts: Omit<ConfirmState, "open">) {
+  confirmState.value = { open: true, ...opts };
+}
+
+function onConfirmOk() {
+  confirmState.value.onConfirm();
+  confirmState.value = { ...confirmState.value, open: false };
+}
+
+function onConfirmCancel() {
+  confirmState.value = { ...confirmState.value, open: false };
+}
+
 function confirmClear() {
-  if (confirm("Vider toutes les cartes de ce deck ?")) deckStore.clearDeck();
+  openConfirm({
+    title: "Vider toutes les cartes",
+    message:
+      "Cette action supprimera toutes les cartes du deck (y compris le héros et le havre-sac). Continuer ?",
+    danger: true,
+    onConfirm: () => deckStore.clearDeck(),
+  });
 }
 
 function confirmDelete() {
   if (!currentDeck.value) return;
-  if (confirm(`Supprimer le deck « ${currentDeck.value.name} » ?`)) {
-    deckStore.deleteDeck(currentDeck.value.id);
-    toast.success("Deck supprimé", { duration: 2000 });
-    router.push("/decks");
+  const deckName = currentDeck.value.name;
+  const deckId = currentDeck.value.id;
+  openConfirm({
+    title: `Supprimer « ${deckName} »`,
+    message:
+      "Ce deck sera définitivement supprimé. Cette action est irréversible.",
+    danger: true,
+    onConfirm: () => {
+      deckStore.deleteDeck(deckId);
+      toast.success("Deck supprimé", { duration: 2000 });
+      router.push("/decks");
+    },
+  });
+}
+
+// ── Remplacement héros / havre-sac avec confirmation ────────────────────────
+
+function requestSetHero(card: Card) {
+  const existing = currentDeck.value?.hero;
+  if (existing && existing.id !== card.id) {
+    openConfirm({
+      title: "Remplacer le héros",
+      message: `Remplacer « ${existing.name} » par « ${card.name} » ?`,
+      danger: false,
+      onConfirm: () => {
+        deckStore.setHero(card);
+        toast.success(`Héros : ${card.name}`, { duration: 1500 });
+      },
+    });
+  } else {
+    deckStore.setHero(card);
+    toast.success(`Héros : ${card.name}`, { duration: 1500 });
+  }
+}
+
+function requestSetHavreSac(card: Card) {
+  const existing = currentDeck.value?.havreSac;
+  if (existing && existing.id !== card.id) {
+    openConfirm({
+      title: "Remplacer le havre-sac",
+      message: `Remplacer « ${existing.name} » par « ${card.name} » ?`,
+      danger: false,
+      onConfirm: () => {
+        deckStore.setHavreSac(card);
+        toast.success(`Havre-sac : ${card.name}`, { duration: 1500 });
+      },
+    });
+  } else {
+    deckStore.setHavreSac(card);
+    toast.success(`Havre-sac : ${card.name}`, { duration: 1500 });
   }
 }
 
