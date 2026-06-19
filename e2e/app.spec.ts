@@ -263,6 +263,15 @@ test.describe("Partage de deck", () => {
 });
 
 test.describe("Table de jeu (/play/table)", () => {
+  test("« Partie » (/play) mène directement au module de jeu", async ({
+    page,
+  }) => {
+    // L'ancien compagnon (compteurs PV / chrono) a été retiré : /play redirige
+    // vers le lobby de la table.
+    await page.goto("/play");
+    await expect(page).toHaveURL(/\/play\/table/);
+  });
+
   test("devrait lancer une partie sandbox depuis le lobby", async ({
     page,
   }) => {
