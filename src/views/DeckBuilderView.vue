@@ -99,60 +99,6 @@
         :class="mobileTab === 'deck' ? 'block' : 'hidden xl:block'"
         data-testid="deck-aside"
       >
-        <!-- Panneau de lecture épinglé — visible uniquement sur xl et plus -->
-        <div class="hidden xl:block">
-          <CardZoomModal
-            variant="panel"
-            :card="zoomCard"
-            :open="true"
-            data-testid="card-zoom-panel"
-            @close="zoomCard = null"
-          >
-            <template #actions>
-              <div class="flex flex-wrap gap-2">
-                <button
-                  class="btn btn-sm font-mono uppercase tracking-wider"
-                  :disabled="zoomCard ? !canAddCard(zoomCard) : true"
-                  :title="
-                    zoomCard && !canAddCard(zoomCard)
-                      ? addBlockReason(zoomCard)
-                      : ''
-                  "
-                  @click="zoomCard && addToDeck(zoomCard)"
-                >
-                  + Ajouter
-                </button>
-                <button
-                  v-if="!zoomIsLeader"
-                  class="btn btn-sm font-mono uppercase tracking-wider"
-                  :disabled="zoomCard ? !canAddCard(zoomCard) : true"
-                  :title="
-                    zoomCard && !canAddCard(zoomCard)
-                      ? addBlockReason(zoomCard)
-                      : ''
-                  "
-                  @click="zoomCard && addToDeckQty(zoomCard, 3)"
-                >
-                  + ×3
-                </button>
-                <button
-                  v-if="!zoomIsLeader"
-                  class="btn btn-sm font-mono uppercase tracking-wider"
-                  :disabled="zoomCard ? !canAddCard(zoomCard, true) : true"
-                  :title="
-                    zoomCard && !canAddCard(zoomCard, true)
-                      ? addBlockReason(zoomCard, true)
-                      : ''
-                  "
-                  @click="zoomCard && addToReserve(zoomCard)"
-                >
-                  + Réserve
-                </button>
-              </div>
-            </template>
-          </CardZoomModal>
-          <div class="h-px w-full bg-base-content/15"></div>
-        </div>
         <DeckPanel
           @confirm-clear="confirmClear"
           @confirm-delete="confirmDelete"
@@ -163,57 +109,58 @@
     </div>
   </div>
 
-  <!-- ─────────── Zoom avant ajout (modal — <xl uniquement) ─────────── -->
-  <div class="xl:hidden">
-    <CardZoomModal
-      :card="zoomCard"
-      :open="zoomOpen"
-      data-testid="card-zoom"
-      @close="closeModalZoom"
-    >
-      <template #actions>
-        <div class="flex flex-wrap gap-2">
-          <!-- Ajouter 1 copie -->
-          <button
-            class="btn btn-sm font-mono uppercase tracking-wider"
-            :disabled="zoomCard ? !canAddCard(zoomCard) : true"
-            :title="
-              zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
-            "
-            @click="zoomCard && addToDeck(zoomCard)"
-          >
-            + Ajouter
-          </button>
-          <!-- Ajouter ×3 — masqué pour Héros / Havre-Sac -->
-          <button
-            v-if="!zoomIsLeader"
-            class="btn btn-sm font-mono uppercase tracking-wider"
-            :disabled="zoomCard ? !canAddCard(zoomCard) : true"
-            :title="
-              zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
-            "
-            @click="zoomCard && addToDeckQty(zoomCard, 3)"
-          >
-            + ×3
-          </button>
-          <!-- Ajouter en Réserve — masqué pour Héros / Havre-Sac -->
-          <button
-            v-if="!zoomIsLeader"
-            class="btn btn-sm font-mono uppercase tracking-wider"
-            :disabled="zoomCard ? !canAddCard(zoomCard, true) : true"
-            :title="
-              zoomCard && !canAddCard(zoomCard, true)
-                ? addBlockReason(zoomCard, true)
-                : ''
-            "
-            @click="zoomCard && addToReserve(zoomCard)"
-          >
-            + Réserve
-          </button>
-        </div>
-      </template>
-    </CardZoomModal>
-  </div>
+  <!-- ─────────── Lecture détaillée (modale, au clic) ─────────── -->
+  <CardZoomModal
+    :card="zoomCard"
+    :open="zoomOpen"
+    data-testid="card-zoom"
+    @close="closeModalZoom"
+  >
+    <template #actions>
+      <div class="flex flex-wrap gap-2">
+        <!-- Ajouter 1 copie -->
+        <button
+          class="btn btn-sm font-mono uppercase tracking-wider"
+          :disabled="zoomCard ? !canAddCard(zoomCard) : true"
+          :title="
+            zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
+          "
+          @click="zoomCard && addToDeck(zoomCard)"
+        >
+          + Ajouter
+        </button>
+        <!-- Ajouter ×3 — masqué pour Héros / Havre-Sac -->
+        <button
+          v-if="!zoomIsLeader"
+          class="btn btn-sm font-mono uppercase tracking-wider"
+          :disabled="zoomCard ? !canAddCard(zoomCard) : true"
+          :title="
+            zoomCard && !canAddCard(zoomCard) ? addBlockReason(zoomCard) : ''
+          "
+          @click="zoomCard && addToDeckQty(zoomCard, 3)"
+        >
+          + ×3
+        </button>
+        <!-- Ajouter en Réserve — masqué pour Héros / Havre-Sac -->
+        <button
+          v-if="!zoomIsLeader"
+          class="btn btn-sm font-mono uppercase tracking-wider"
+          :disabled="zoomCard ? !canAddCard(zoomCard, true) : true"
+          :title="
+            zoomCard && !canAddCard(zoomCard, true)
+              ? addBlockReason(zoomCard, true)
+              : ''
+          "
+          @click="zoomCard && addToReserve(zoomCard)"
+        >
+          + Réserve
+        </button>
+      </div>
+    </template>
+  </CardZoomModal>
+
+  <!-- Aperçu au survol : petite fenêtre flottante (carte agrandie + infos) -->
+  <CardHoverPreview />
 
   <!-- Confirmation stylée (vider / supprimer le deck, remplacer héros/havre-sac) -->
   <ConfirmDialog
@@ -234,9 +181,11 @@ import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import { generateShareUrl } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
+import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import DeckPanel from "@/components/deck/DeckPanel.vue";
 import CardPool from "@/components/deck/CardPool.vue";
+import { useCardPreview } from "@/composables/useCardPreview";
 import type { Card, Deck } from "@/types/cards";
 
 const route = useRoute();
@@ -244,6 +193,7 @@ const router = useRouter();
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
 const toast = useToast();
+const preview = useCardPreview();
 
 // ── Onglets mobile (Bestiaire / Deck) ─────────────────────────────────────────
 /** Onglet actif sous xl. Sur xl les deux volets sont toujours visibles. */
@@ -264,14 +214,16 @@ const zoomIsLeader = computed(
 );
 
 function openZoom(card: Card) {
+  // Le clic ouvre la lecture détaillée (modale) ; on masque l'aperçu de survol
+  // pour qu'il ne flotte pas par-dessus.
+  preview.hide();
   zoomCard.value = card;
   zoomOpen.value = true;
 }
 
 /**
- * Fermeture de la MODALE (sous xl) : on efface aussi `zoomCard` pour qu'aucun
- * raccourci clavier (a/e/r) ne reste actif sur une carte invisible. Le panneau
- * épinglé (xl) gère sa propre fermeture (@close="zoomCard = null").
+ * Fermeture de la modale de lecture : on efface aussi `zoomCard` pour qu'aucun
+ * raccourci clavier (a/e/r) ne reste actif sur une carte invisible.
  */
 function closeModalZoom() {
   zoomOpen.value = false;

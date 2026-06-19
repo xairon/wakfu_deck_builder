@@ -96,6 +96,10 @@
           :aria-label="`Lire ${card.name} — agrandir`"
           data-testid="pool-tile"
           @click="$emit('open-zoom', card)"
+          @mouseenter="preview.show(card)"
+          @mouseleave="preview.hide()"
+          @focus="preview.show(card)"
+          @blur="preview.hide()"
         >
           <div class="plate-frame" :style="{ '--spine': elementColor(card) }">
             <img
@@ -170,6 +174,7 @@ import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor as elementColorByEl } from "@/config/elementColors";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
+import { useCardPreview } from "@/composables/useCardPreview";
 import {
   filterCards,
   sortCards,
@@ -181,6 +186,7 @@ import type { Card } from "@/types/cards";
 
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
+const preview = useCardPreview();
 
 defineProps<{
   loadError: boolean;

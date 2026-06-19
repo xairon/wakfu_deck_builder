@@ -243,12 +243,9 @@ test.describe("Deck Builder", () => {
     ).toBeVisible();
     await effectInput.fill("");
 
-    // Cliquer une carte OUVRE la lecture (panneau épinglé ≥ xl) — plus le
-    // placeholder, la fiche affiche la carte …
+    // Cliquer une carte OUVRE la lecture détaillée (modale) …
     await page.locator('[data-testid="pool-tile"]').first().click();
-    await expect(page.getByTestId("card-zoom-panel")).not.toContainText(
-      "Choisissez une carte",
-    );
+    await expect(page.getByTestId("card-zoom")).toBeVisible();
     // … mais N'AJOUTE PAS : le deck reste à 0/48 (fin du piège clic = ajout)
     await expect(page.getByTestId("deck-count")).toContainText("0/48");
   });

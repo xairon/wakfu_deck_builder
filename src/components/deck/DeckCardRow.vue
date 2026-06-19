@@ -2,6 +2,8 @@
   <li
     class="spine flex items-center gap-2 border-b border-base-content/10 py-1.5"
     :style="{ '--spine': spineColor }"
+    @mouseenter="preview.show(dc.card)"
+    @mouseleave="preview.hide()"
   >
     <span
       class="w-5 shrink-0 font-mono text-sm font-bold tabular text-base-content/70"
@@ -20,7 +22,10 @@
     <span class="ml-1 flex shrink-0 items-center gap-1.5">
       <button
         class="text-base-content/40 hover:text-primary"
-        @click="$emit('move-to-reserve', dc.card.id)"
+        @click="
+          preview.hide();
+          $emit('move-to-reserve', dc.card.id);
+        "
         title="Déplacer en réserve"
         aria-label="Déplacer en réserve"
       >
@@ -41,7 +46,10 @@
       </button>
       <button
         class="font-mono text-base font-bold leading-none text-base-content/50 hover:text-base-content"
-        @click="$emit('remove', dc.card.id)"
+        @click="
+          preview.hide();
+          $emit('remove', dc.card.id);
+        "
         aria-label="Retirer une copie"
       >
         −
@@ -59,6 +67,9 @@
 
 <script setup lang="ts">
 import type { Card, DeckCard } from "@/types/cards";
+import { useCardPreview } from "@/composables/useCardPreview";
+
+const preview = useCardPreview();
 
 defineProps<{
   dc: DeckCard;
