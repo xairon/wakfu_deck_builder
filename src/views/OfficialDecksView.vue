@@ -54,6 +54,42 @@
             <p class="mt-1 font-mono text-3xl tabular">{{ importedCount }}</p>
           </div>
         </div>
+
+        <!-- Action groupée : importer tous les decks manquants -->
+        <div class="mt-5 flex justify-end">
+          <button
+            v-if="notImportedCount > 0"
+            class="btn btn-primary btn-sm gap-2"
+            :disabled="bulkImporting"
+            data-testid="import-all-decks"
+            @click="importAllDecks"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              class="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"
+              />
+            </svg>
+            {{
+              bulkImporting
+                ? "Import en cours…"
+                : `Tout importer (${notImportedCount})`
+            }}
+          </button>
+          <p
+            v-else
+            class="font-mono text-[11px] uppercase tracking-wider text-base-content/45"
+          >
+            Tous les decks sont importés
+          </p>
+        </div>
       </section>
 
       <!-- Groupes par extension -->
@@ -295,6 +331,7 @@ const isLoading = ref(true);
 const importingDeckIds = ref(new Set<string>());
 const expandedDeckId = ref<string | null>(null);
 const importedDeckOfficialIds = ref(new Set<string>());
+const bulkImporting = ref(false);
 
 // Donnees
 const officialDecks = computed(() => OFFICIAL_DECKS);
@@ -346,6 +383,11 @@ const extensionGroups = computed<ExtensionGroup[]>(() => {
 const importedCount = computed(() => {
   return officialDecks.value.filter((deck) => isDeckImported(deck.id)).length;
 });
+
+// Nombre de decks restant à importer (pour le bouton « Tout importer »)
+const notImportedCount = computed(
+  () => officialDecks.value.length - importedCount.value,
+);
 
 // Initialisation
 onMounted(async () => {
@@ -489,7 +531,93 @@ function toggleDeckDetails(deckId: string) {
 }
 
 /**
- * Importe un deck officiel dans les decks de l'utilisateur
+ * Résultat d'une tentative de construction/ajout d'un deck officiel.
+ */
+interface BuildResult {
+  /** Le deck existait déjà (rien créé). */
+  skipped: boolean;
+  /** Nombre de cartes résolues dans la base. */
+  cardsFound: number;
+  /** Noms de cartes introuvables. */
+  missing: string[];
+  /** Le héros n'a pas été trouvé. */
+  heroMissing: boolean;
+  /** Le Havre-Sac n'a pas été trouvé. */
+  havreMissing: boolean;
+}
+
+/**
+ * Cœur partagé : construit le deck à partir des données officielles, le pousse
+ * dans le store (sans sauvegarder ni afficher de toast) et marque l'import.
+ * Réutilisé par l'import unitaire et l'import groupé. La sauvegarde
+ * (`deckStore.saveDecks()`) est laissée à l'appelant pour n'écrire qu'une fois
+ * lors d'un import groupé.
+ */
+function buildAndAddDeck(officialDeck: OfficialDeck): BuildResult {
+  // Garde anti-doublon : un deck officiel déjà importé n'est pas recréé en N copies.
+  const existing = deckStore.decks.find(
+    (d) => d.isOfficial && d.name === officialDeck.name,
+  );
+  if (existing) {
+    importedDeckOfficialIds.value.add(officialDeck.id);
+    return {
+      skipped: true,
+      cardsFound: 0,
+      missing: [],
+      heroMissing: false,
+      havreMissing: false,
+    };
+  }
+
+  const heroCard = deckStore.findCardByName(officialDeck.hero);
+  const havreSacCard = deckStore.findCardByName(officialDeck.havreSac);
+
+  const deckCards: { card: any; quantity: number }[] = [];
+  const missing: string[] = [];
+  for (const cardEntry of officialDeck.cards) {
+    const card = deckStore.findCardByName(cardEntry.name);
+    if (card) deckCards.push({ card, quantity: cardEntry.quantity });
+    else missing.push(cardEntry.name);
+  }
+
+  const newDeck = {
+    id: `official-${officialDeck.id}-${Date.now()}`,
+    name: officialDeck.name,
+    description: officialDeck.description,
+    hero: heroCard || null,
+    havreSac: havreSacCard || null,
+    cards: deckCards,
+    reserve: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isOfficial: true,
+    extension: officialDeck.extension,
+    _officialData: {
+      name: officialDeck.name,
+      hero: officialDeck.hero,
+      havreSac: officialDeck.havreSac,
+      cards: officialDeck.cards.map((c) => ({
+        name: c.name,
+        quantity: c.quantity,
+        type: c.type,
+      })),
+    },
+  };
+
+  deckStore.decks.push(newDeck as any);
+  importedDeckOfficialIds.value.add(officialDeck.id);
+
+  return {
+    skipped: false,
+    cardsFound: deckCards.length,
+    missing,
+    heroMissing: !heroCard,
+    havreMissing: !havreSacCard,
+  };
+}
+
+/**
+ * Importe un deck officiel dans les decks de l'utilisateur (avec toasts).
  */
 async function importOfficialDeck(officialDeck: OfficialDeck) {
   if (importingDeckIds.value.has(officialDeck.id)) return;
@@ -511,89 +639,32 @@ async function importOfficialDeck(officialDeck: OfficialDeck) {
       duration: 2000,
     });
 
-    // Trouver le heros par son nom
-    const heroCard = deckStore.findCardByName(officialDeck.hero);
-    const havreSacCard = deckStore.findCardByName(officialDeck.havreSac);
-
-    // Construire la liste des cartes du deck
-    const deckCards: { card: any; quantity: number }[] = [];
-    const errors: string[] = [];
-    let cardsFound = 0;
-
-    for (const cardEntry of officialDeck.cards) {
-      const card = deckStore.findCardByName(cardEntry.name);
-      if (card) {
-        deckCards.push({
-          card: card,
-          quantity: cardEntry.quantity,
-        });
-        cardsFound++;
-      } else {
-        errors.push(cardEntry.name);
-      }
-    }
-
-    // Creer le deck
-    const newDeckId = `official-${officialDeck.id}-${Date.now()}`;
-
-    const newDeck = {
-      id: newDeckId,
-      name: officialDeck.name,
-      description: officialDeck.description,
-      hero: heroCard || null,
-      havreSac: havreSacCard || null,
-      cards: deckCards,
-      reserve: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      isOfficial: true,
-      extension: officialDeck.extension,
-      _officialData: {
-        name: officialDeck.name,
-        hero: officialDeck.hero,
-        havreSac: officialDeck.havreSac,
-        cards: officialDeck.cards.map((c) => ({
-          name: c.name,
-          quantity: c.quantity,
-          type: c.type,
-        })),
-      },
-    };
-
-    // Ajouter le deck au store
-    deckStore.decks.push(newDeck as any);
+    const result = buildAndAddDeck(officialDeck);
     deckStore.saveDecks();
 
-    // Mettre a jour le statut d'import
-    importedDeckOfficialIds.value.add(officialDeck.id);
-
     // Afficher le resultat
-    if (errors.length === 0) {
+    if (result.missing.length === 0) {
       toast.success(
-        `Deck "${officialDeck.name}" importe avec succes ! ${cardsFound} cartes trouvees.`,
+        `Deck "${officialDeck.name}" importe avec succes ! ${result.cardsFound} cartes trouvees.`,
         { title: "Import reussi", duration: 5000 },
       );
     } else {
       toast.warning(
-        `Deck "${officialDeck.name}" importe avec ${errors.length} carte(s) manquante(s) : ${errors.slice(0, 5).join(", ")}${errors.length > 5 ? "..." : ""}`,
+        `Deck "${officialDeck.name}" importe avec ${result.missing.length} carte(s) manquante(s) : ${result.missing.slice(0, 5).join(", ")}${result.missing.length > 5 ? "..." : ""}`,
         { title: "Import partiel", duration: 7000 },
       );
     }
 
-    if (!heroCard) {
+    if (result.heroMissing) {
       toast.warning(
         `Heros "${officialDeck.hero}" non trouve dans la base de cartes.`,
-        {
-          duration: 5000,
-        },
+        { duration: 5000 },
       );
     }
-    if (!havreSacCard) {
+    if (result.havreMissing) {
       toast.warning(
         `Havre-Sac "${officialDeck.havreSac}" non trouve dans la base de cartes.`,
-        {
-          duration: 5000,
-        },
+        { duration: 5000 },
       );
     }
   } catch (err) {
@@ -607,6 +678,62 @@ async function importOfficialDeck(officialDeck: OfficialDeck) {
     );
   } finally {
     importingDeckIds.value.delete(officialDeck.id);
+  }
+}
+
+/**
+ * Importe d'un coup tous les decks officiels pas encore importés. Une seule
+ * sauvegarde + un seul toast récapitulatif (au lieu d'un par deck).
+ */
+async function importAllDecks() {
+  if (bulkImporting.value) return;
+  const todo = officialDecks.value.filter((d) => !isDeckImported(d.id));
+  if (todo.length === 0) {
+    toast.info("Tous les decks officiels sont déjà importés.", {
+      duration: 3000,
+    });
+    return;
+  }
+
+  bulkImporting.value = true;
+  try {
+    let imported = 0;
+    let totalMissing = 0;
+    let decksWithMissing = 0;
+
+    for (const officialDeck of todo) {
+      const result = buildAndAddDeck(officialDeck);
+      if (result.skipped) continue;
+      imported++;
+      if (result.missing.length > 0) {
+        totalMissing += result.missing.length;
+        decksWithMissing++;
+      }
+    }
+
+    deckStore.saveDecks();
+    refreshImportedStatus();
+
+    const s = imported > 1 ? "s" : "";
+    if (totalMissing === 0) {
+      toast.success(`${imported} deck${s} importé${s} !`, {
+        title: "Import terminé",
+        duration: 5000,
+      });
+    } else {
+      toast.warning(
+        `${imported} deck${s} importé${s} — ${totalMissing} carte(s) introuvable(s) sur ${decksWithMissing} deck(s).`,
+        { title: "Import terminé", duration: 7000 },
+      );
+    }
+  } catch (err) {
+    console.error("Erreur lors de l'import groupé:", err);
+    toast.error(`Erreur lors de l'import groupé : ${err}`, {
+      title: "Erreur",
+      duration: 7000,
+    });
+  } finally {
+    bulkImporting.value = false;
   }
 }
 </script>
