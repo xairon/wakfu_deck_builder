@@ -659,9 +659,14 @@ export const useDeckStore = defineStore("deck", () => {
    * @param cardType Type de carte optionnel
    * @returns Carte trouvée ou null
    */
-  function findCardByName(cardName: string, cardType?: string): Card | null {
+  function findCardByName(
+    cardName: string,
+    cardType?: string,
+    extensionName?: string,
+  ): Card | null {
     const normalizedCardName = normalizeText(cardName);
     const normalizedCardType = cardType ? normalizeText(cardType) : null;
+    const normalizedExt = extensionName ? normalizeText(extensionName) : null;
 
     // Recherche exacte d'abord
     let matchedCards = cardStore.cards.filter((c) => {
@@ -672,6 +677,16 @@ export const useDeckStore = defineStore("deck", () => {
     });
 
     if (matchedCards.length > 0) {
+      // Si une extension est demandée, préférer la carte de CETTE extension :
+      // beaucoup de cartes sont réimprimées sous le même nom dans plusieurs
+      // extensions, et sans ce filtre on renvoie la première chargée (souvent
+      // la mauvaise extension). Repli sur la 1re correspondance si absente.
+      if (normalizedExt) {
+        const inExt = matchedCards.find(
+          (c) => normalizeText(c.extension?.name ?? "") === normalizedExt,
+        );
+        if (inExt) return inExt;
+      }
       return matchedCards[0];
     }
 
