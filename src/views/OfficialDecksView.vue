@@ -336,6 +336,17 @@ const bulkImporting = ref(false);
 // Donnees
 const officialDecks = computed(() => OFFICIAL_DECKS);
 
+// Slug d'extension (données officielles) → nom d'extension tel qu'en base de
+// cartes. Indispensable pour résoudre les cartes vers la BONNE extension : de
+// nombreuses cartes (ex. « Bwork », « Repos », « Prospection »…) sont
+// réimprimées sous le même nom dans plusieurs extensions ; sans ce pin, on
+// importe la première chargée, souvent la mauvaise. La comparaison est
+// insensible aux accents (cf. normalizeText), donc « Bonta & Brâkmar » suffit.
+const EXTENSION_NAME_BY_SLUG: Record<string, string> = {
+  incarnam: "Incarnam",
+  "bonta-brakmar": "Bonta & Brâkmar",
+};
+
 // Couleurs des éléments (encres du jeu)
 const ELEMENT_COLORS: Record<string, string> = {
   air: "#5FB22A",
@@ -506,10 +517,11 @@ function getCardCount(deck: OfficialDeck): number {
 const getCardTypeBreakdown = useMemoize(
   (deck: OfficialDeck): Record<string, number> => {
     const breakdown: Record<string, number> = {};
+    const ext = EXTENSION_NAME_BY_SLUG[deck.extension];
 
     deck.cards.forEach((card) => {
-      // Tenter de deviner le type de carte à partir du nom
-      const foundCard = deckStore.findCardByName(card.name);
+      // Tenter de deviner le type de carte à partir du nom (extension pinnée)
+      const foundCard = deckStore.findCardByName(card.name, undefined, ext);
       const type = foundCard?.mainType || "Carte";
       breakdown[type] = (breakdown[type] || 0) + card.quantity;
     });
@@ -569,13 +581,19 @@ function buildAndAddDeck(officialDeck: OfficialDeck): BuildResult {
     };
   }
 
-  const heroCard = deckStore.findCardByName(officialDeck.hero);
-  const havreSacCard = deckStore.findCardByName(officialDeck.havreSac);
+  // Résoudre chaque carte DANS l'extension du deck (cartes réimprimées).
+  const ext = EXTENSION_NAME_BY_SLUG[officialDeck.extension];
+  const heroCard = deckStore.findCardByName(officialDeck.hero, undefined, ext);
+  const havreSacCard = deckStore.findCardByName(
+    officialDeck.havreSac,
+    undefined,
+    ext,
+  );
 
   const deckCards: { card: any; quantity: number }[] = [];
   const missing: string[] = [];
   for (const cardEntry of officialDeck.cards) {
-    const card = deckStore.findCardByName(cardEntry.name);
+    const card = deckStore.findCardByName(cardEntry.name, undefined, ext);
     if (card) deckCards.push({ card, quantity: cardEntry.quantity });
     else missing.push(cardEntry.name);
   }
@@ -621,23 +639,22 @@ function buildAndAddDeck(officialDeck: OfficialDeck): BuildResult {
  */
 async function importOfficialDeck(officialDeck: OfficialDeck) {
   if (importingDeckIds.value.has(officialDeck.id)) return;
-  // Garde anti-doublon : un deck officiel déjà importé n'est pas recréé en N copies.
-  const existing = deckStore.decks.find(
-    (d) => d.isOfficial && d.name === officialDeck.name,
-  );
-  if (existing) {
-    toast.info(`« ${officialDeck.name} » est déjà dans tes decks.`, {
-      duration: 3000,
-    });
-    importedDeckOfficialIds.value.add(officialDeck.id);
-    return;
-  }
   importingDeckIds.value.add(officialDeck.id);
 
   try {
-    toast.info(`Import du deck "${officialDeck.name}" en cours...`, {
-      duration: 2000,
-    });
+    // « Réimporter » : on remplace la/les version(s) officielle(s) du même nom
+    // pour récupérer les corrections (ex. cartes résolues vers la bonne
+    // extension). buildAndAddDeck reconstruit ensuite à neuf.
+    const existing = deckStore.decks.filter(
+      (d) => d.isOfficial && d.name === officialDeck.name,
+    );
+    const isReimport = existing.length > 0;
+    for (const d of existing) if (d.id) deckStore.deleteDeck(d.id);
+
+    toast.info(
+      `${isReimport ? "Réimport" : "Import"} du deck "${officialDeck.name}" en cours...`,
+      { duration: 2000 },
+    );
 
     const result = buildAndAddDeck(officialDeck);
     deckStore.saveDecks();
