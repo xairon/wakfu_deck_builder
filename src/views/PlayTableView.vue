@@ -627,6 +627,30 @@ const createdCode = ref("");
 const onlineBusy = ref(false);
 const onlineError = ref("");
 
+/**
+ * Extrait le vrai message d'erreur d'une Edge Function. supabase-js emballe les
+ * réponses non-2xx dans une FunctionsHttpError dont `.message` est le générique
+ * « Edge Function returned a non-2xx status code » ; le corps réel ({ error })
+ * est dans `.context` (la Response). On le lit pour afficher la vraie cause.
+ */
+async function fnErrorMessage(e: unknown): Promise<string> {
+  const ctx = (e as { context?: unknown }).context;
+  if (ctx instanceof Response) {
+    try {
+      const body = (await ctx.clone().json()) as { error?: unknown };
+      if (typeof body?.error === "string") return body.error;
+    } catch {
+      try {
+        const t = await ctx.clone().text();
+        if (t) return t;
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  return (e as { message?: string })?.message ?? String(e);
+}
+
 async function onlineCreate(): Promise<void> {
   const deck = decks.value.find((d) => d.id === onlineDeckId.value);
   if (!deck || onlineBusy.value) return;
@@ -637,7 +661,7 @@ async function onlineCreate(): Promise<void> {
     createdCode.value = code;
     store.connectOnline(gameId, "A", onlineTransport);
   } catch (e) {
-    onlineError.value = (e as { message?: string })?.message ?? String(e);
+    onlineError.value = await fnErrorMessage(e);
   } finally {
     onlineBusy.value = false;
   }
@@ -658,7 +682,10 @@ async function onlineJoin(): Promise<void> {
     store.connectOnline(gameId, "B", onlineTransport); // s'abonner AVANT join
     await joinGame(code, deck);
   } catch (e) {
-    onlineError.value = (e as { message?: string })?.message ?? String(e);
+    // connectOnline a déjà basculé en « playing » (overlay d'attente) : on annule
+    // pour revenir au lobby et rendre l'erreur visible.
+    store.disconnectOnline();
+    onlineError.value = await fnErrorMessage(e);
   } finally {
     onlineBusy.value = false;
   }
