@@ -614,9 +614,12 @@ function launch(): void {
 // ── Jeu en ligne (lobby) ──────────────────────────────────────────────────────
 const authStore = useAuthStore();
 const onlineTransport = { submit: submitEvent, subscribe: subscribeToGame };
-// v1 : le jeu en ligne (bêta) est masqué — les transitions de match ne sont pas
-// encore synchronisées (cf. roadmap, épopée v1.1). Code conservé derrière ce flag.
-const ONLINE_PLAY_ENABLED = false;
+// Jeu en ligne (bêta). Backend déployé et vérifié sur le projet Supabase
+// (tables games/game_players + Edge Functions create_game/join_game/submit_event
+// répondent en prod). Le câblage front (création/abonnement Realtime avant join,
+// overlay d'attente, application des events) est conforme au contrat backend.
+// À valider en conditions réelles : test à 2 clients connectés (diffusion serveur).
+const ONLINE_PLAY_ENABLED = true;
 const onlinePanel = ref<"create" | "join" | null>(null);
 const onlineDeckId = ref<string | null>(null);
 const joinCode = ref("");
