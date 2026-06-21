@@ -1,7 +1,7 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
 import type { Card, Deck } from "@/types/cards";
-import type { DraftEvent, PersistedEvent } from "@/game";
+import type { DraftEvent, PersistedEvent, Seat } from "@/game";
 import { createGame } from "@/game";
 import { useGameStore } from "../gameStore";
 import { useCardStore } from "../cardStore";
@@ -560,7 +560,11 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
         submitted.push(d);
         return { seq: 0 };
       },
-      subscribe: (_id: string, cb: (e: PersistedEvent) => void) => {
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        cb: (e: PersistedEvent) => void,
+      ) => {
         emit = cb;
         return () => {};
       },

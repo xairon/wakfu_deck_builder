@@ -15,6 +15,7 @@ import type {
   GameState,
   PersistedEvent,
   Position,
+  RedactedEvent,
   RedactedGameState,
   Seat,
   ZoneRef,
@@ -85,7 +86,11 @@ export type MatchPhase = "lobby" | "mulligan" | "playing" | "finished";
  */
 export interface OnlineTransport {
   submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
-  subscribe(gameId: string, onEvent: (e: PersistedEvent) => void): () => void;
+  subscribe(
+    gameId: string,
+    seat: Seat,
+    onEvent: (e: RedactedEvent) => void,
+  ): () => void;
 }
 
 export interface LogLine {
@@ -347,7 +352,7 @@ export const useGameStore = defineStore("game", () => {
     matchPhase.value = "playing";
     onlineTransport = transport;
     submitChain = Promise.resolve();
-    onlineUnsub = transport.subscribe(id, applyServerEvent);
+    onlineUnsub = transport.subscribe(id, seat, applyServerEvent);
   }
 
   function disconnectOnline(): void {
