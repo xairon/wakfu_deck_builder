@@ -815,6 +815,22 @@ onMounted(async () => {
       /* l'app charge les cartes par ailleurs */
     }
   }
+  // Reprise : si l'utilisateur a une partie ACTIVE en cours, s'y reconnecter
+  // (le pull de connexion reconstruit le plateau). Évite d'abandonner sur refresh.
+  if (
+    ONLINE_PLAY_ENABLED &&
+    authStore.isAuthenticated &&
+    store.matchPhase === "lobby" &&
+    !store.online
+  ) {
+    try {
+      const active = await findMyActiveGame();
+      if (active)
+        store.connectOnline(active.gameId, active.seat, onlineTransport);
+    } catch {
+      /* pas de reprise possible — on reste au lobby */
+    }
+  }
   // Onboarding : /play/table?tutorial=1 démarre directement le tutoriel.
   if (route.query.tutorial && !store.started) startTutorial();
 });
