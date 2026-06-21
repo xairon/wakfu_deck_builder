@@ -99,6 +99,32 @@ describe("reducer — déterminisme", () => {
       Array.from({ length: 48 }, (_, i) => i),
     );
   });
+
+  it("SHUFFLE REDACTÉ (permutation vide) ⇒ no-op d'ordre, pas de BAD_PERMUTATION", () => {
+    // Un client en ligne reçoit le mélange SANS son ordre (secret). deriveState
+    // doit l'appliquer comme un no-op d'ordre — pas planter sur BAD_PERMUTATION.
+    const { events } = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" });
+    const full = deriveState(events);
+    const redacted = events.map((e) =>
+      e.type === "SHUFFLE"
+        ? ({
+            ...e,
+            payload: {
+              ...(e.payload as Record<string, unknown>),
+              permutation: [],
+            },
+          } as PersistedEvent)
+        : e,
+    );
+    resetDeriveMemo();
+    let derived: GameState | undefined;
+    expect(() => {
+      derived = deriveState(redacted);
+    }).not.toThrow();
+    // La Pioche garde les mêmes cartes (l'ordre est opaque au client).
+    expect(derived!.seats.A.pioche.length).toBe(full.seats.A.pioche.length);
+    expect(derived!.seats.B.pioche.length).toBe(full.seats.B.pioche.length);
+  });
 });
 
 describe("reducer — mémoïsation incrémentale du fold", () => {

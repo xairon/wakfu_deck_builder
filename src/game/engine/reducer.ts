@@ -136,6 +136,14 @@ function applyMove(s: GameState, p: MovePayload): void {
 
 function applyShuffle(s: GameState, p: ShufflePayload): void {
   const arr = getZoneArray(s, p.zone);
+  // Mélange REDACTÉ : diffusé/pullé sans permutation (l'ordre est SECRET pour ce
+  // viewer — cf. redactEventForBroadcast). La zone (Pioche) lui est opaque, donc
+  // on n'altère pas l'ordre local ; on invalide quand même la connaissance
+  // d'ordre (C3), exactement comme un vrai mélange.
+  if (p.permutation.length === 0 && arr.length > 0) {
+    for (const id of arr) s.instances[id].revealedTo = [];
+    return;
+  }
   if (p.permutation.length !== arr.length) {
     throw new EngineError("BAD_PERMUTATION", {
       expected: arr.length,
