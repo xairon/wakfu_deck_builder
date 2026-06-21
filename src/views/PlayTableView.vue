@@ -79,7 +79,7 @@
           >
             <option :value="null" disabled>Choisis…</option>
             <option v-for="d in decks" :key="d.id" :value="d.id">
-              {{ d.name }}
+              {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
             </option>
           </select>
         </label>
@@ -98,7 +98,7 @@
         <button
           v-if="onlinePanel === 'create'"
           class="btn btn-primary btn-sm"
-          :disabled="!onlineDeckId || onlineBusy"
+          :disabled="!onlineDeckId || onlineBusy || !onlineDeckValid"
           @click="onlineCreate"
         >
           {{ onlineBusy ? "…" : "Créer la partie" }}
@@ -106,11 +106,19 @@
         <button
           v-else
           class="btn btn-primary btn-sm"
-          :disabled="!onlineDeckId || !joinCode.trim() || onlineBusy"
+          :disabled="
+            !onlineDeckId || !joinCode.trim() || onlineBusy || !onlineDeckValid
+          "
           @click="onlineJoin"
         >
           {{ onlineBusy ? "…" : "Rejoindre" }}
         </button>
+        <p
+          v-if="onlineDeckId && !onlineDeckValid"
+          class="w-full text-sm text-warning"
+        >
+          Deck incomplet : {{ onlineDeckErrors[0] }}
+        </p>
         <span v-if="onlineError" class="text-sm text-error">{{
           onlineError
         }}</span>
@@ -627,18 +635,47 @@ const createdCode = ref("");
 const onlineBusy = ref(false);
 const onlineError = ref("");
 
+// Deck sélectionné pour le jeu en ligne + sa validité (1 Héros + 1 Havre-Sac +
+// 48 cartes, copies, réserve). Le serveur rejette les decks incomplets
+// (DECK_INVALIDE) : on bloque AVANT l'appel, avec un message clair.
+const onlineDeck = computed(
+  () => decks.value.find((d) => d.id === onlineDeckId.value) ?? null,
+);
+const onlineDeckErrors = computed(() =>
+  onlineDeck.value ? validateDeck(onlineDeck.value).errors : [],
+);
+const onlineDeckValid = computed(
+  () => !!onlineDeck.value && onlineDeckErrors.value.length === 0,
+);
+function deckIsValid(d: Deck): boolean {
+  return validateDeck(d).errors.length === 0;
+}
+
+/** Messages clairs pour les codes d'erreur des Edge Functions de jeu. */
+const FN_ERROR_FR: Record<string, string> = {
+  DECK_INVALIDE:
+    "Ce deck est incomplet : il faut un Héros, un Havre-Sac et 48 cartes.",
+  PARTIE_INTROUVABLE: "Partie introuvable (vérifie le code).",
+  PARTIE_DEJA_LANCEE: "Cette partie a déjà commencé.",
+  DEJA_SIEGE_A:
+    "Tu ne peux pas rejoindre ta propre partie (il faut un second compte).",
+  UNAUTHENTICATED: "Tu dois être connecté pour jouer en ligne.",
+};
+
 /**
  * Extrait le vrai message d'erreur d'une Edge Function. supabase-js emballe les
  * réponses non-2xx dans une FunctionsHttpError dont `.message` est le générique
  * « Edge Function returned a non-2xx status code » ; le corps réel ({ error })
- * est dans `.context` (la Response). On le lit pour afficher la vraie cause.
+ * est dans `.context` (la Response). On le lit pour afficher la vraie cause
+ * (traduite en clair si on connaît le code).
  */
 async function fnErrorMessage(e: unknown): Promise<string> {
   const ctx = (e as { context?: unknown }).context;
   if (ctx instanceof Response) {
     try {
       const body = (await ctx.clone().json()) as { error?: unknown };
-      if (typeof body?.error === "string") return body.error;
+      if (typeof body?.error === "string")
+        return FN_ERROR_FR[body.error] ?? body.error;
     } catch {
       try {
         const t = await ctx.clone().text();
@@ -652,8 +689,12 @@ async function fnErrorMessage(e: unknown): Promise<string> {
 }
 
 async function onlineCreate(): Promise<void> {
-  const deck = decks.value.find((d) => d.id === onlineDeckId.value);
+  const deck = onlineDeck.value;
   if (!deck || onlineBusy.value) return;
+  if (!onlineDeckValid.value) {
+    onlineError.value = `Deck incomplet : ${onlineDeckErrors.value[0] ?? "complète-le pour jouer en ligne."}`;
+    return;
+  }
   onlineBusy.value = true;
   onlineError.value = "";
   try {
@@ -668,9 +709,13 @@ async function onlineCreate(): Promise<void> {
 }
 
 async function onlineJoin(): Promise<void> {
-  const deck = decks.value.find((d) => d.id === onlineDeckId.value);
+  const deck = onlineDeck.value;
   const code = joinCode.value.trim().toUpperCase();
   if (!deck || !code || onlineBusy.value) return;
+  if (!onlineDeckValid.value) {
+    onlineError.value = `Deck incomplet : ${onlineDeckErrors.value[0] ?? "complète-le pour jouer en ligne."}`;
+    return;
+  }
   onlineBusy.value = true;
   onlineError.value = "";
   try {
