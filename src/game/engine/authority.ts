@@ -138,7 +138,9 @@ export function redactEventForBroadcast(
 }
 
 const ALLOWED_TYPES = new Set<EventType>([
-  "GAME_STARTED",
+  // NB: "GAME_STARTED" est SYSTEM-ONLY — émis par le serveur lors du setup
+  // (laissé passer par le early-return `actor === "system"`). Un joueur ne doit
+  // jamais pouvoir le déclencher (sinon reset parasite de la partie).
   "MOVE",
   "SHUFFLE",
   "SET_ORIENTATION",
@@ -210,6 +212,17 @@ export function authorizeDraft(state: GameState, draft: DraftEvent): void {
 
   if (!ALLOWED_TYPES.has(draft.type)) {
     throw new EngineError("BAD_EVENT_TYPE", { type: draft.type });
+  }
+
+  // SHUFFLE ne cible pas d'instanceId (sa payload porte un ZoneRef), donc la
+  // vérif `targetedIds` ne le couvre pas : on garde explicitement un joueur de
+  // mélanger une zone PRIVÉE de l'adversaire (pioche/réserve). Les zones communes
+  // (monde/fileAttente) n'ont pas d'`owner` → autorisées.
+  if (draft.type === "SHUFFLE") {
+    const payload = draft.payload as ShufflePayload;
+    if ("owner" in payload.zone && payload.zone.owner !== actor) {
+      throw new EngineError("FORBIDDEN", { reason: "shuffle-foreign-zone" });
+    }
   }
 
   const ids = targetedIds(draft);

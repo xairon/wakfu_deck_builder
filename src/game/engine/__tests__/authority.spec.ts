@@ -259,4 +259,37 @@ describe("authorizeDraft", () => {
       }),
     ).not.toThrow();
   });
+
+  it("rejette un GAME_STARTED émis par un joueur (system-only)", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "GAME_STARTED",
+        payload: {} as never,
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("rejette un SHUFFLE de la pioche adverse (zone privée de B)", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SHUFFLE",
+        payload: { zone: { zone: "pioche", owner: "B" }, permutation: [] },
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("autorise un SHUFFLE de sa propre pioche", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SHUFFLE",
+        payload: { zone: { zone: "pioche", owner: "A" }, permutation: [] },
+      }),
+    ).not.toThrow();
+  });
 });
