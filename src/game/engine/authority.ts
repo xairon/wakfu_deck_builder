@@ -20,6 +20,7 @@ import type {
   AttachPayload,
   DetachPayload,
   LookRevealPayload,
+  RedactedEvent,
 } from "../types/events";
 import type { GameState, CardInstance } from "../types/state";
 import type { Seat, Viewer } from "../types/zones";
@@ -245,4 +246,26 @@ export function authorizeDraft(state: GameState, draft: DraftEvent): void {
       }
     }
   }
+}
+
+/**
+ * Redacte un event POUR UN SIÈGE avant diffusion + joint les `reveals` :
+ * les cardId des instances qui deviennent visibles à ce siège du fait de cet
+ * event (carte piochée / jouée). `pre`/`post` = état avant/après l'event.
+ */
+export function redactEventForSeat(
+  event: PersistedEvent,
+  viewer: Seat,
+  pre: GameState,
+  post: GameState,
+): RedactedEvent {
+  const base = redactEventForBroadcast(event, viewer);
+  const reveals: Record<string, string> = {};
+  for (const [id, inst] of Object.entries(post.instances)) {
+    if (!inst.cardId) continue;
+    const wasVisible =
+      !!pre.instances[id] && canSeeCardId(pre.instances[id], viewer);
+    if (!wasVisible && canSeeCardId(inst, viewer)) reveals[id] = inst.cardId;
+  }
+  return Object.keys(reveals).length ? { ...base, reveals } : base;
 }

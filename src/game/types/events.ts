@@ -126,3 +126,9 @@ export type DraftEvent<P = unknown> = {
   payload: P;
   payloadPrivate?: Partial<Record<Seat, unknown>>;
 };
+
+/** Event diffusé à un client : event persisté redacté + identités nouvellement
+ *  visibles pour CE siège (cardId d'une carte qu'on pioche/qu'on joue). */
+export type RedactedEvent = PersistedEvent & {
+  reveals?: Record<InstanceId, string>;
+};

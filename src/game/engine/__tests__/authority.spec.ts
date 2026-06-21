@@ -12,8 +12,11 @@ import {
   resolveDraft,
   redactEventForBroadcast,
   authorizeDraft,
+  redactEventForSeat,
   type AuthorityContext,
 } from "@/game/engine/authority";
+import { deriveState, emptyState } from "@/game/engine/reducer";
+import { drawTop, playToWorld, sequence } from "@/game/engine/verbs";
 
 function deckFor(seat: Seat): Deck {
   return createMockDeck({
@@ -291,5 +294,135 @@ describe("authorizeDraft", () => {
         payload: { zone: { zone: "pioche", owner: "A" }, permutation: [] },
       }),
     ).not.toThrow();
+  });
+});
+
+describe("redactEventForSeat", () => {
+  it("GAME_STARTED redacté pour A : aucun cardId de la pioche/main/réserve de B", () => {
+    const decks = {
+      A: {
+        hero: createMockHeroCard({ id: "hA" }),
+        havreSac: createMockHavreSacCard({ id: "sA" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cA" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+      B: {
+        hero: createMockHeroCard({ id: "hB" }),
+        havreSac: createMockHavreSacCard({ id: "sB" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cB" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+    } as unknown as Record<Seat, Deck>;
+    const { events } = createGame("g2", decks, { firstPlayer: "A" });
+    const started = events.find((e) => e.type === "GAME_STARTED")!;
+    const pre = emptyState();
+    const post = deriveState([started]);
+    const red = redactEventForSeat(started, "A", pre, post);
+    const state = (
+      red.payload as {
+        state: { instances: Record<string, { cardId: string; owner: string }> };
+      }
+    ).state;
+    // Toutes les cartes de B doivent avoir cardId "" SAUF héros/havre-sac (publics)
+    for (const inst of Object.values(state.instances)) {
+      if (inst.owner === "B" && inst.cardId !== "") {
+        expect(["hB", "sB"]).toContain(inst.cardId); // seuls héros/HS de B visibles
+      }
+    }
+  });
+
+  it("piocher : reveals contient le cardId pour le pioucheur, pas pour l'adversaire", () => {
+    const decks = {
+      A: {
+        hero: createMockHeroCard({ id: "hA" }),
+        havreSac: createMockHavreSacCard({ id: "sA" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cA" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+      B: {
+        hero: createMockHeroCard({ id: "hB" }),
+        havreSac: createMockHavreSacCard({ id: "sB" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cB" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+    } as unknown as Record<Seat, Deck>;
+    const setup = createGame("g3", decks, { firstPlayer: "A" });
+    const pre = setup.state;
+    const draw = sequence([drawTop(pre, "A")], "g3", pre.seq + 1)[0];
+    const post = deriveState([...setup.events, draw]);
+    const drawnId = (draw.payload as { instanceId: string }).instanceId;
+    const forA = redactEventForSeat(draw, "A", pre, post);
+    const forB = redactEventForSeat(draw, "B", pre, post);
+    expect(forA.reveals?.[drawnId]).toBe("cA"); // A voit ce qu'il pioche
+    expect(forB.reveals?.[drawnId]).toBeUndefined(); // B ne le voit pas
+  });
+
+  it("jouer au Monde : reveals délivre le cardId aux DEUX sièges", () => {
+    const decks = {
+      A: {
+        hero: createMockHeroCard({ id: "hA" }),
+        havreSac: createMockHavreSacCard({ id: "sA" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cA" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+      B: {
+        hero: createMockHeroCard({ id: "hB" }),
+        havreSac: createMockHavreSacCard({ id: "sB" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cB" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+    } as unknown as Record<Seat, Deck>;
+    const setup = createGame("g4", decks, { firstPlayer: "A" });
+    const draw = sequence(
+      [drawTop(setup.state, "A")],
+      "g4",
+      setup.state.seq + 1,
+    )[0];
+    const afterDraw = deriveState([...setup.events, draw]);
+    const drawnId = (draw.payload as { instanceId: string }).instanceId;
+    const play = sequence(
+      [playToWorld("A", drawnId)],
+      "g4",
+      afterDraw.seq + 1,
+    )[0];
+    const post = deriveState([...setup.events, draw, play]);
+    const forB = redactEventForSeat(play, "B", afterDraw, post);
+    expect(forB.reveals?.[drawnId]).toBe("cA"); // B voit la carte jouée
   });
 });
