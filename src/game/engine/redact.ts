@@ -19,7 +19,7 @@ import type {
 } from "../types/state";
 import type { InstanceId } from "../types/events";
 import type { Seat, Viewer } from "../types/zones";
-import { ZONE_SPECS } from "../types/zones";
+import { ZONE_SPECS } from "../types/zones.ts";
 
 /** Le viewer connaît-il l'identité (cardId) de cette occurrence ? */
 export function canSeeCardId(inst: CardInstance, viewer: Viewer): boolean {

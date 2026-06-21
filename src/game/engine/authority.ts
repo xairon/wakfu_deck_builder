@@ -15,11 +15,18 @@ import type {
   PersistedEvent,
   ShufflePayload,
   MovePayload,
+  InstanceId,
+  EventType,
+  AttachPayload,
+  DetachPayload,
+  LookRevealPayload,
 } from "../types/events";
 import type { GameState, CardInstance } from "../types/state";
 import type { Seat, Viewer } from "../types/zones";
+import { ZONE_SPECS } from "../types/zones.ts"; // value import → .ts for Deno
 import { permutationFromSeed } from "./rng.ts";
 import { EngineError, getZoneArray } from "./reducer.ts";
+import { canSeeCardId } from "./redact.ts"; // value import → .ts for Deno
 
 export interface AuthorityContext {
   gameId: string;
@@ -128,4 +135,101 @@ export function redactEventForBroadcast(
   }
 
   return { ...event, payload, payloadPrivate };
+}
+
+const ALLOWED_TYPES = new Set<EventType>([
+  "GAME_STARTED",
+  "MOVE",
+  "SHUFFLE",
+  "SET_ORIENTATION",
+  "SET_LEVEL",
+  "SET_COUNTER",
+  "INC_COUNTER",
+  "ATTACH",
+  "DETACH",
+  "LOOK",
+  "REVEAL",
+  "SET_PHASE",
+  "SAID",
+  "UNDONE",
+]);
+
+/** Instances ciblées par un brouillon (pour les vérifs de propriété). */
+function targetedIds(draft: DraftEvent): InstanceId[] {
+  const p = draft.payload as Record<string, unknown>;
+  switch (draft.type) {
+    case "MOVE":
+    case "SET_ORIENTATION":
+    case "SET_LEVEL":
+    case "SET_COUNTER":
+    case "INC_COUNTER":
+      return p.instanceId ? [p.instanceId as InstanceId] : [];
+    case "ATTACH": {
+      const a = p as unknown as AttachPayload;
+      return [a.equipmentId, a.bearerId];
+    }
+    case "DETACH":
+      return [(p as unknown as DetachPayload).equipmentId];
+    case "LOOK":
+    case "REVEAL":
+      return (p as unknown as LookRevealPayload).instanceIds ?? [];
+    default:
+      return [];
+  }
+}
+
+/** Une instance est-elle dans une zone PRIVÉE de l'ADVERSAIRE de `actor` ? */
+function inOpponentPrivateZone(inst: CardInstance, actor: Seat): boolean {
+  const spec = ZONE_SPECS[inst.location.zone];
+  const owner = "owner" in inst.location ? inst.location.owner : null;
+  return !spec.public && owner !== null && owner !== actor;
+}
+
+/** Sièges à qui un brouillon prétend révéler l'identité. */
+function revealTargets(draft: DraftEvent): Seat[] {
+  if (draft.type === "MOVE") {
+    const v = (draft.payload as MovePayload).visibility.visibleTo;
+    return v === "all" ? ["A", "B"] : Array.isArray(v) ? v : [];
+  }
+  if (draft.type === "LOOK" || draft.type === "REVEAL") {
+    return (draft.payload as LookRevealPayload).to ?? [];
+  }
+  return [];
+}
+
+/**
+ * Autorise (ou rejette) une INTENTION côté serveur. Table libre : on NE valide
+ * PAS la légalité d'effet — seulement qu'un siège (1) n'émet pas un type inconnu,
+ * (2) ne touche pas une zone PRIVÉE adverse (main/pioche/réserve), (3) ne se
+ * révèle pas une carte qu'il ne possède pas et ne voit pas déjà.
+ */
+export function authorizeDraft(state: GameState, draft: DraftEvent): void {
+  assertActor(draft);
+  if (draft.actor === "system") return; // events serveur (setup)
+  const actor = draft.actor as Seat;
+
+  if (!ALLOWED_TYPES.has(draft.type)) {
+    throw new EngineError("BAD_EVENT_TYPE", { type: draft.type });
+  }
+
+  const ids = targetedIds(draft);
+  for (const id of ids) {
+    const inst = state.instances[id];
+    if (inst && inOpponentPrivateZone(inst, actor)) {
+      throw new EngineError("FORBIDDEN", { id, zone: inst.location.zone });
+    }
+  }
+
+  if (revealTargets(draft).includes(actor)) {
+    for (const id of ids) {
+      const inst = state.instances[id];
+      if (
+        inst &&
+        inst.owner !== actor &&
+        !canSeeCardId(inst, actor as Viewer)
+      ) {
+        throw new EngineError("FORBIDDEN", { id, reason: "peek" });
+      }
+    }
+  }
 }

@@ -11,6 +11,7 @@ import { createGame, EngineError } from "@/game";
 import {
   resolveDraft,
   redactEventForBroadcast,
+  authorizeDraft,
   type AuthorityContext,
 } from "@/game/engine/authority";
 
@@ -165,5 +166,97 @@ describe("authority — redaction des events diffusés", () => {
     expect(forB).toContain("B-hero");
     // l'event SOURCE reste complet (le serveur garde tout) — pas de mutation.
     expect(idsOf(started)).toContain("A-ally-0");
+  });
+});
+
+function twoSeatState() {
+  const deck = (n: string) => ({
+    hero: createMockHeroCard({ id: `hero-${n}` }),
+    havreSac: createMockHavreSacCard({ id: `hs-${n}` }),
+    cards: [
+      {
+        card: createMockAllyCard({ id: `c-${n}` }),
+        quantity: 4,
+        isReserve: false,
+      },
+    ],
+    reserve: [],
+  });
+  // @ts-expect-error minimal deck shape for the engine
+  return createGame("g1", { A: deck("a"), B: deck("b") }, { firstPlayer: "A" })
+    .state;
+}
+
+describe("authorizeDraft", () => {
+  it("rejette un type d'event inconnu", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, { actor: "A", type: "HACK" as never, payload: {} }),
+    ).toThrow(EngineError);
+  });
+
+  it("rejette une action visant une instance dans la zone privée adverse (main/pioche/réserve de B)", () => {
+    const s = twoSeatState();
+    const bPioche = s.seats.B.pioche[0]; // carte privée de B
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SET_COUNTER",
+        payload: { instanceId: bPioche, counter: "hp", value: 0 },
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("rejette un MOVE qui sort une carte de la main adverse", () => {
+    const s = twoSeatState();
+    const bPioche = s.seats.B.pioche[0];
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "MOVE",
+        payload: {
+          instanceId: bPioche,
+          from: { zone: "pioche", owner: "B" },
+          to: { zone: "monde" },
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+        },
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("autorise une action sur ses propres cartes et sur une zone publique", () => {
+    const s = twoSeatState();
+    const aReserveOrPioche = s.seats.A.pioche[0];
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SET_ORIENTATION",
+        payload: {
+          instanceId: s.seats.A.heroInstanceId!,
+          orientation: "tapped",
+        },
+      }),
+    ).not.toThrow();
+    // sa propre pioche : c'est SA zone privée → autorisé (l'auth ne bloque que l'adverse)
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SET_COUNTER",
+        payload: { instanceId: aReserveOrPioche, counter: "x", value: 1 },
+      }),
+    ).not.toThrow();
+  });
+
+  it("laisse passer les events système (setup)", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "system",
+        type: "SHUFFLE",
+        payload: {} as never,
+      }),
+    ).not.toThrow();
   });
 });
