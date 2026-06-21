@@ -114,13 +114,11 @@ appended `ev` with `preState`/`postState` in hand:
 
 ```ts
 for (const seat of ["A", "B"] as const)
-  await db
-    .channel(`game:${gameId}:${seat}`)
-    .send({
-      type: "broadcast",
-      event: "game_event",
-      payload: redactEventForSeat(ev, seat, preState, postState),
-    });
+  await db.channel(`game:${gameId}:${seat}`).send({
+    type: "broadcast",
+    event: "game_event",
+    payload: redactEventForSeat(ev, seat, preState, postState),
+  });
 ```
 
 The service-role client bypasses RLS, so server sends are always authorized.
