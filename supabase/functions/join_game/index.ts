@@ -80,11 +80,16 @@ Deno.serve(async (req) => {
       // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
       const post = deriveState(stateEvents);
       for (const seat of ["A", "B"] as const) {
-        await db.channel(`game:${game.id}:${seat}`).send({
-          type: "broadcast",
-          event: "game_event",
-          payload: redactEventForSeat(ev, seat, state, post),
-        });
+        // Canal PRIVÉ (cf. submit_event) : l'émetteur doit aussi être privé.
+        await db
+          .channel(`game:${game.id}:${seat}`, {
+            config: { private: true },
+          })
+          .send({
+            type: "broadcast",
+            event: "game_event",
+            payload: redactEventForSeat(ev, seat, state, post),
+          });
       }
     }
     await db
