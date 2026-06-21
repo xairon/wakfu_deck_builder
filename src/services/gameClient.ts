@@ -6,7 +6,7 @@
  * submitEvent, et reçoit en retour des events redactés (sa vue uniquement).
  */
 import { supabase } from "./supabase";
-import type { DraftEvent, PersistedEvent } from "@/game";
+import type { DraftEvent, RedactedEvent } from "@/game";
 import type { Seat } from "@/game";
 
 export interface CreateGameResult {
@@ -73,20 +73,28 @@ export async function submitEvent(
 }
 
 /**
- * S'abonne au flux d'events redactés de la partie pour le siège donné.
+ * S'abonne au flux REDACTÉ du siège `seat` sur un canal PRIVÉ game:<id>:<seat>.
  * Renvoie une fonction de désabonnement.
  */
 export function subscribeToGame(
   gameId: string,
-  onEvent: (event: PersistedEvent) => void,
+  seat: Seat,
+  onEvent: (event: RedactedEvent) => void,
 ): () => void {
-  // Modèle « clients de confiance » : canal partagé, events complets.
   const channel = client()
-    .channel(`game:${gameId}`)
+    .channel(`game:${gameId}:${seat}`, { config: { private: true } })
     .on("broadcast", { event: "game_event" }, (msg) => {
-      onEvent(msg.payload as PersistedEvent);
+      onEvent(msg.payload as RedactedEvent);
     })
-    .subscribe();
+    .subscribe((status) => {
+      // Canal privé refusé (mauvais siège / autorisation Realtime) ou perdu :
+      // on le signale (la reconnexion/resync complète est un lot P1).
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        console.error(
+          `[gameClient] canal Realtime ${status} : game:${gameId}:${seat}`,
+        );
+      }
+    });
   return () => {
     void client().removeChannel(channel);
   };

@@ -19,6 +19,8 @@ export { redactStateFor, omniscientView, canSeeCardId } from "./engine/redact";
 export {
   resolveDraft,
   redactEventForBroadcast,
+  authorizeDraft,
+  redactEventForSeat,
   type AuthorityContext,
 } from "./engine/authority";
 export { permutationFromSeed, makeRng } from "./engine/rng";

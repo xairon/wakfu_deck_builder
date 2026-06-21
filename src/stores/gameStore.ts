@@ -15,6 +15,7 @@ import type {
   GameState,
   PersistedEvent,
   Position,
+  RedactedEvent,
   RedactedGameState,
   Seat,
   ZoneRef,
@@ -85,7 +86,11 @@ export type MatchPhase = "lobby" | "mulligan" | "playing" | "finished";
  */
 export interface OnlineTransport {
   submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
-  subscribe(gameId: string, onEvent: (e: PersistedEvent) => void): () => void;
+  subscribe(
+    gameId: string,
+    seat: Seat,
+    onEvent: (e: RedactedEvent) => void,
+  ): () => void;
 }
 
 export interface LogLine {
@@ -105,6 +110,9 @@ export const useGameStore = defineStore("game", () => {
   // shallowRef : journal d'objets BRUTS (le reducer fait structuredClone, qui
   // échoue sur les proxies réactifs Vue). On réassigne toujours events.value.
   const events = shallowRef<PersistedEvent[]>([]);
+  // Identités révélées progressivement (pioche/jeu) — monotone, survit à la
+  // re-dérivation pure du journal redacté.
+  const revealed = ref<Record<string, string>>({});
   const gameId = ref("local");
   // ── Jeu en ligne (clients de confiance) ─────────────────────────────────
   const online = ref(false);
@@ -129,7 +137,21 @@ export const useGameStore = defineStore("game", () => {
   const winner = ref<Seat | null>(null);
 
   // ── Dérivés moteur ───────────────────────────────────────────────────────
-  const state = computed<GameState>(() => deriveState(events.value));
+  const state = computed<GameState>(() => {
+    const base = deriveState(events.value);
+    const ids = Object.keys(revealed.value);
+    if (!ids.length) return base;
+    // `deriveState` est MÉMOÏSÉ : ne pas muter `base.instances[id]` (corromprait
+    // le cache). On copie la map d'instances et on remplace les seules modifiées.
+    const instances = { ...base.instances };
+    for (const id of ids) {
+      const inst = instances[id];
+      if (inst && inst.cardId !== revealed.value[id]) {
+        instances[id] = { ...inst, cardId: revealed.value[id] };
+      }
+    }
+    return { ...base, instances };
+  });
   const view = computed<RedactedGameState>(() =>
     redactStateFor(state.value, perspective.value),
   );
@@ -325,9 +347,10 @@ export const useGameStore = defineStore("game", () => {
     ];
   }
 
-  /** Applique un event diffusé par le serveur (complet, modèle de confiance). */
-  function applyServerEvent(ev: PersistedEvent): void {
+  /** Applique un event REDACTÉ diffusé par le serveur + son patch `reveals`. */
+  function applyServerEvent(ev: RedactedEvent): void {
     if (events.value.some((e) => e.seq === ev.seq)) return; // dédoublonnage
+    if (ev.reveals) revealed.value = { ...revealed.value, ...ev.reveals };
     events.value = [...events.value, ev];
   }
 
@@ -344,10 +367,11 @@ export const useGameStore = defineStore("game", () => {
     mySeat.value = seat;
     perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
     events.value = [];
+    revealed.value = {};
     matchPhase.value = "playing";
     onlineTransport = transport;
     submitChain = Promise.resolve();
-    onlineUnsub = transport.subscribe(id, applyServerEvent);
+    onlineUnsub = transport.subscribe(id, seat, applyServerEvent);
   }
 
   function disconnectOnline(): void {
@@ -357,6 +381,7 @@ export const useGameStore = defineStore("game", () => {
     online.value = false;
     assist.value = true;
     events.value = [];
+    revealed.value = {};
     gameId.value = "local";
     matchPhase.value = "lobby";
   }
@@ -1405,6 +1430,8 @@ export const useGameStore = defineStore("game", () => {
     mySeat,
     connectOnline,
     disconnectOnline,
+    applyServerEvent,
+    revealedCardId: (id: string) => revealed.value[id] ?? null,
     ruleError,
     clearRuleError,
     playFromHand,

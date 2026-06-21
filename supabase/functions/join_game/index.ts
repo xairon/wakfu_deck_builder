@@ -4,7 +4,10 @@ import { adminClient, getUserId } from "../_shared/auth.ts";
 import { json, preflight } from "../_shared/cors.ts";
 import { setupEvents } from "../../../src/game/engine/setup.ts";
 import { sequence } from "../../../src/game/engine/verbs.ts";
-import { resolveDraft } from "../../../src/game/engine/authority.ts";
+import {
+  resolveDraft,
+  redactEventForSeat,
+} from "../../../src/game/engine/authority.ts";
 import { deriveState } from "../../../src/game/engine/reducer.ts";
 
 Deno.serve(async (req) => {
@@ -60,7 +63,7 @@ Deno.serve(async (req) => {
         ts: Date.now(),
         masterSeed: secret!.master_seed,
       });
-      await db.rpc("append_event", {
+      const { error: appendErr } = await db.rpc("append_event", {
         p_game_id: game.id,
         p_parent_seq: parent,
         p_actor: ev.actor,
@@ -68,15 +71,26 @@ Deno.serve(async (req) => {
         p_payload: ev.payload,
         p_payload_private: ev.payloadPrivate ?? null,
       });
+      // Échec d'append (ex. double-join concurrent → OUT_OF_ORDER) : on AVORTE
+      // au lieu de continuer sur un état corrompu (sinon broadcasts + status
+      // 'active' incohérents). L'atomicité fine du join reste un lot P1.
+      if (appendErr) return json({ error: appendErr.message }, 409);
       stateEvents = [...stateEvents, ev];
       parent = ev.seq;
-      // Modèle « clients de confiance » : diffusion de l'event COMPLET sur un
-      // canal partagé (l'info cachée est respectée à l'affichage côté client).
-      await db.channel(`game:${game.id}`).send({
-        type: "broadcast",
-        event: "game_event",
-        payload: ev,
-      });
+      // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
+      const post = deriveState(stateEvents);
+      for (const seat of ["A", "B"] as const) {
+        // Canal PRIVÉ (cf. submit_event) : l'émetteur doit aussi être privé.
+        await db
+          .channel(`game:${game.id}:${seat}`, {
+            config: { private: true },
+          })
+          .send({
+            type: "broadcast",
+            event: "game_event",
+            payload: redactEventForSeat(ev, seat, state, post),
+          });
+      }
     }
     await db
       .from("games")

@@ -1,7 +1,7 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
 import type { Card, Deck } from "@/types/cards";
-import type { DraftEvent, PersistedEvent } from "@/game";
+import type { DraftEvent, PersistedEvent, Seat } from "@/game";
 import { createGame } from "@/game";
 import { useGameStore } from "../gameStore";
 import { useCardStore } from "../cardStore";
@@ -560,7 +560,11 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
         submitted.push(d);
         return { seq: 0 };
       },
-      subscribe: (_id: string, cb: (e: PersistedEvent) => void) => {
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        cb: (e: PersistedEvent) => void,
+      ) => {
         emit = cb;
         return () => {};
       },
@@ -585,5 +589,24 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     expect(submitted).toHaveLength(1);
     expect(submitted[0].type).toBe("SET_ORIENTATION");
     expect(store.state.instances[havre].orientation).toBe("upright");
+  });
+
+  it("applyServerEvent applique le patch reveals au state dérivé", () => {
+    const store = useGameStore();
+    // Un event redacté qui porte uniquement un patch `reveals` : l'identité
+    // révélée est mémorisée (monotone) et exposée via revealedCardId, prête à
+    // être appliquée au state si l'instance existe.
+    store.applyServerEvent({
+      gameId: "g",
+      seq: 99,
+      parentSeq: 98,
+      actor: "A",
+      type: "SAID",
+      payload: { text: "x" },
+      ts: 0,
+      reveals: { ci_X: "real-card" },
+    } as never);
+    expect(store.revealedCardId("ci_X")).toBe("real-card");
+    expect(store.revealedCardId("ci_absent")).toBeNull();
   });
 });

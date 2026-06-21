@@ -11,8 +11,12 @@ import { createGame, EngineError } from "@/game";
 import {
   resolveDraft,
   redactEventForBroadcast,
+  authorizeDraft,
+  redactEventForSeat,
   type AuthorityContext,
 } from "@/game/engine/authority";
+import { deriveState, emptyState } from "@/game/engine/reducer";
+import { drawTop, playToWorld, sequence } from "@/game/engine/verbs";
 
 function deckFor(seat: Seat): Deck {
   return createMockDeck({
@@ -165,5 +169,260 @@ describe("authority — redaction des events diffusés", () => {
     expect(forB).toContain("B-hero");
     // l'event SOURCE reste complet (le serveur garde tout) — pas de mutation.
     expect(idsOf(started)).toContain("A-ally-0");
+  });
+});
+
+function twoSeatState() {
+  const deck = (n: string) => ({
+    hero: createMockHeroCard({ id: `hero-${n}` }),
+    havreSac: createMockHavreSacCard({ id: `hs-${n}` }),
+    cards: [
+      {
+        card: createMockAllyCard({ id: `c-${n}` }),
+        quantity: 4,
+        isReserve: false,
+      },
+    ],
+    reserve: [],
+  });
+  // @ts-expect-error minimal deck shape for the engine
+  return createGame("g1", { A: deck("a"), B: deck("b") }, { firstPlayer: "A" })
+    .state;
+}
+
+describe("authorizeDraft", () => {
+  it("rejette un type d'event inconnu", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, { actor: "A", type: "HACK" as never, payload: {} }),
+    ).toThrow(EngineError);
+  });
+
+  it("rejette une action visant une instance dans la zone privée adverse (main/pioche/réserve de B)", () => {
+    const s = twoSeatState();
+    const bPioche = s.seats.B.pioche[0]; // carte privée de B
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SET_COUNTER",
+        payload: { instanceId: bPioche, counter: "hp", value: 0 },
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("rejette un MOVE qui sort une carte de la main adverse", () => {
+    const s = twoSeatState();
+    const bPioche = s.seats.B.pioche[0];
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "MOVE",
+        payload: {
+          instanceId: bPioche,
+          from: { zone: "pioche", owner: "B" },
+          to: { zone: "monde" },
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+        },
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("autorise une action sur ses propres cartes et sur une zone publique", () => {
+    const s = twoSeatState();
+    const aReserveOrPioche = s.seats.A.pioche[0];
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SET_ORIENTATION",
+        payload: {
+          instanceId: s.seats.A.heroInstanceId!,
+          orientation: "tapped",
+        },
+      }),
+    ).not.toThrow();
+    // sa propre pioche : c'est SA zone privée → autorisé (l'auth ne bloque que l'adverse)
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SET_COUNTER",
+        payload: { instanceId: aReserveOrPioche, counter: "x", value: 1 },
+      }),
+    ).not.toThrow();
+  });
+
+  it("laisse passer les events système (setup)", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "system",
+        type: "SHUFFLE",
+        payload: {} as never,
+      }),
+    ).not.toThrow();
+  });
+
+  it("rejette un GAME_STARTED émis par un joueur (system-only)", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "GAME_STARTED",
+        payload: {} as never,
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("rejette un SHUFFLE de la pioche adverse (zone privée de B)", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SHUFFLE",
+        payload: { zone: { zone: "pioche", owner: "B" }, permutation: [] },
+      }),
+    ).toThrow(EngineError);
+  });
+
+  it("autorise un SHUFFLE de sa propre pioche", () => {
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SHUFFLE",
+        payload: { zone: { zone: "pioche", owner: "A" }, permutation: [] },
+      }),
+    ).not.toThrow();
+  });
+});
+
+describe("redactEventForSeat", () => {
+  it("GAME_STARTED redacté pour A : aucun cardId de la pioche/main/réserve de B", () => {
+    const decks = {
+      A: {
+        hero: createMockHeroCard({ id: "hA" }),
+        havreSac: createMockHavreSacCard({ id: "sA" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cA" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+      B: {
+        hero: createMockHeroCard({ id: "hB" }),
+        havreSac: createMockHavreSacCard({ id: "sB" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cB" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+    } as unknown as Record<Seat, Deck>;
+    const { events } = createGame("g2", decks, { firstPlayer: "A" });
+    const started = events.find((e) => e.type === "GAME_STARTED")!;
+    const pre = emptyState();
+    const post = deriveState([started]);
+    const red = redactEventForSeat(started, "A", pre, post);
+    const state = (
+      red.payload as {
+        state: { instances: Record<string, { cardId: string; owner: string }> };
+      }
+    ).state;
+    // Toutes les cartes de B doivent avoir cardId "" SAUF héros/havre-sac (publics)
+    for (const inst of Object.values(state.instances)) {
+      if (inst.owner === "B" && inst.cardId !== "") {
+        expect(["hB", "sB"]).toContain(inst.cardId); // seuls héros/HS de B visibles
+      }
+    }
+  });
+
+  it("piocher : reveals contient le cardId pour le pioucheur, pas pour l'adversaire", () => {
+    const decks = {
+      A: {
+        hero: createMockHeroCard({ id: "hA" }),
+        havreSac: createMockHavreSacCard({ id: "sA" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cA" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+      B: {
+        hero: createMockHeroCard({ id: "hB" }),
+        havreSac: createMockHavreSacCard({ id: "sB" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cB" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+    } as unknown as Record<Seat, Deck>;
+    const setup = createGame("g3", decks, { firstPlayer: "A" });
+    const pre = setup.state;
+    const draw = sequence([drawTop(pre, "A")], "g3", pre.seq + 1)[0];
+    const post = deriveState([...setup.events, draw]);
+    const drawnId = (draw.payload as { instanceId: string }).instanceId;
+    const forA = redactEventForSeat(draw, "A", pre, post);
+    const forB = redactEventForSeat(draw, "B", pre, post);
+    expect(forA.reveals?.[drawnId]).toBe("cA"); // A voit ce qu'il pioche
+    expect(forB.reveals?.[drawnId]).toBeUndefined(); // B ne le voit pas
+  });
+
+  it("jouer au Monde : reveals délivre le cardId aux DEUX sièges", () => {
+    const decks = {
+      A: {
+        hero: createMockHeroCard({ id: "hA" }),
+        havreSac: createMockHavreSacCard({ id: "sA" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cA" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+      B: {
+        hero: createMockHeroCard({ id: "hB" }),
+        havreSac: createMockHavreSacCard({ id: "sB" }),
+        cards: [
+          {
+            card: createMockAllyCard({ id: "cB" }),
+            quantity: 4,
+            isReserve: false,
+          },
+        ],
+        reserve: [],
+      },
+    } as unknown as Record<Seat, Deck>;
+    const setup = createGame("g4", decks, { firstPlayer: "A" });
+    const draw = sequence(
+      [drawTop(setup.state, "A")],
+      "g4",
+      setup.state.seq + 1,
+    )[0];
+    const afterDraw = deriveState([...setup.events, draw]);
+    const drawnId = (draw.payload as { instanceId: string }).instanceId;
+    const play = sequence(
+      [playToWorld("A", drawnId)],
+      "g4",
+      afterDraw.seq + 1,
+    )[0];
+    const post = deriveState([...setup.events, draw, play]);
+    const forB = redactEventForSeat(play, "B", afterDraw, post);
+    expect(forB.reveals?.[drawnId]).toBe("cA"); // B voit la carte jouée
   });
 });

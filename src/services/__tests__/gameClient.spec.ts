@@ -144,7 +144,7 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
   });
 
   // ── subscribeToGame ──────────────────────────────────────────────────────
-  it("devrait s'abonner au canal game:<id> sur l'event broadcast 'game_event'", () => {
+  it("devrait s'abonner au canal PRIVÉ game:<id>:<seat> sur l'event broadcast 'game_event'", () => {
     const subscribe = vi.fn().mockReturnValue("channel-handle");
     const on = vi.fn(
       (
@@ -159,9 +159,11 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
     supabaseStub = { channel, removeChannel };
 
     const onEvent = vi.fn();
-    const unsubscribe = subscribeToGame("g5", onEvent);
+    const unsubscribe = subscribeToGame("g5", "A", onEvent);
 
-    expect(channel).toHaveBeenCalledWith("game:g5");
+    expect(channel).toHaveBeenCalledWith("game:g5:A", {
+      config: { private: true },
+    });
     const [eventType, filter, handler] = on.mock.calls[0];
     expect(eventType).toBe("broadcast");
     expect(filter).toEqual({ event: "game_event" });

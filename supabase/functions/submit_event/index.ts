@@ -5,7 +5,11 @@
 import { adminClient, getUserId } from "../_shared/auth.ts";
 import { json, preflight } from "../_shared/cors.ts";
 import { deriveState } from "../../../src/game/engine/reducer.ts";
-import { resolveDraft } from "../../../src/game/engine/authority.ts";
+import {
+  resolveDraft,
+  authorizeDraft,
+  redactEventForSeat,
+} from "../../../src/game/engine/authority.ts";
 import type { PersistedEvent } from "../../../src/game/types/events.ts";
 
 function rowToEvent(r: Record<string, unknown>): PersistedEvent {
@@ -59,7 +63,18 @@ Deno.serve(async (req) => {
       .eq("game_id", gameId)
       .order("seq", { ascending: true });
 
-    const state = deriveState((rows ?? []).map(rowToEvent));
+    // On garde le tableau d'events mappé pour que la mémoïsation de deriveState
+    // reconnaisse `post` comme une extension de `state` (sinon re-dérivation O(N)).
+    const rowEvents = (rows ?? []).map(rowToEvent);
+    const state = deriveState(rowEvents);
+
+    // Autorisation serveur (table libre : on bloque seulement l'accès aux zones
+    // privées adverses + le peeking). L'acteur est imposé par le serveur.
+    try {
+      authorizeDraft(state, { ...draft, actor: me.seat });
+    } catch (e) {
+      return json({ error: (e as Error).message || "FORBIDDEN" }, 403);
+    }
 
     // L'acteur est FORCÉ au siège authentifié (on ne fait pas confiance au client).
     const ev = resolveDraft(
@@ -83,13 +98,21 @@ Deno.serve(async (req) => {
     });
     if (appendErr) return json({ error: appendErr.message }, 409); // OUT_OF_ORDER → resync client
 
-    // Modèle « clients de confiance » : diffusion de l'event COMPLET sur un
-    // canal partagé (l'info cachée est respectée à l'affichage côté client).
-    await db.channel(`game:${gameId}`).send({
-      type: "broadcast",
-      event: "game_event",
-      payload: ev,
-    });
+    // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
+    const post = deriveState([...rowEvents, ev]);
+    for (const seat of ["A", "B"] as const) {
+      // Canal PRIVÉ : le client s'abonne avec { private: true } ; l'émetteur doit
+      // l'être aussi, sinon le message part sur le topic public et n'est pas reçu.
+      await db
+        .channel(`game:${gameId}:${seat}`, {
+          config: { private: true },
+        })
+        .send({
+          type: "broadcast",
+          event: "game_event",
+          payload: redactEventForSeat(ev, seat, state, post),
+        });
+    }
 
     return json({ seq: ev.seq });
   } catch (e) {
