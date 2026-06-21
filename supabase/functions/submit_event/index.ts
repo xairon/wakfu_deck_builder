@@ -63,7 +63,10 @@ Deno.serve(async (req) => {
       .eq("game_id", gameId)
       .order("seq", { ascending: true });
 
-    const state = deriveState((rows ?? []).map(rowToEvent));
+    // On garde le tableau d'events mappé pour que la mémoïsation de deriveState
+    // reconnaisse `post` comme une extension de `state` (sinon re-dérivation O(N)).
+    const rowEvents = (rows ?? []).map(rowToEvent);
+    const state = deriveState(rowEvents);
 
     // Autorisation serveur (table libre : on bloque seulement l'accès aux zones
     // privées adverses + le peeking). L'acteur est imposé par le serveur.
@@ -96,7 +99,7 @@ Deno.serve(async (req) => {
     if (appendErr) return json({ error: appendErr.message }, 409); // OUT_OF_ORDER → resync client
 
     // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
-    const post = deriveState([...(rows ?? []).map(rowToEvent), ev]);
+    const post = deriveState([...rowEvents, ev]);
     for (const seat of ["A", "B"] as const) {
       await db.channel(`game:${gameId}:${seat}`).send({
         type: "broadcast",
