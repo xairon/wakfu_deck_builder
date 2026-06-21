@@ -1,7 +1,7 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
 import type { Card, Deck } from "@/types/cards";
-import type { DraftEvent, PersistedEvent, Seat } from "@/game";
+import type { DraftEvent, PersistedEvent, RedactedEvent, Seat } from "@/game";
 import { createGame } from "@/game";
 import { useGameStore } from "../gameStore";
 import { useCardStore } from "../cardStore";
@@ -568,6 +568,7 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
         emit = cb;
         return () => {};
       },
+      pull: async () => [] as RedactedEvent[],
     };
     const deck = createMockDeck();
     useCardStore().cards = deck.cards.map((dc) => dc.card);
@@ -608,5 +609,58 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     } as never);
     expect(store.revealedCardId("ci_X")).toBe("real-card");
     expect(store.revealedCardId("ci_absent")).toBeNull();
+  });
+});
+
+function ev(seq: number, reveals?: Record<string, string>): RedactedEvent {
+  return {
+    gameId: "g",
+    seq,
+    parentSeq: seq - 1,
+    actor: "A",
+    type: "SAID",
+    payload: { text: String(seq) },
+    ts: 0,
+    ...(reveals ? { reveals } : {}),
+  } as RedactedEvent;
+}
+
+describe("applyServerEvent — ordre & resync", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("applique en ordre, dédoublonne, et tient le journal contigu", () => {
+    const store = useGameStore();
+    const journal = [ev(1), ev(2), ev(3)];
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+    };
+    store.connectOnline("g", "A", transport);
+    store.applyServerEvent(journal[0]);
+    store.applyServerEvent(journal[1]);
+    store.applyServerEvent(journal[1]); // doublon ignoré
+    store.applyServerEvent(journal[2]);
+    expect(store.onlineJournalSeqs()).toEqual([1, 2, 3]);
+  });
+
+  it("met en tampon le hors-ordre et PULL pour combler le trou", async () => {
+    const store = useGameStore();
+    const full = [ev(1), ev(2), ev(3)];
+    let pullArgs: number | null = null;
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async (_g: string, since: number) => {
+        pullArgs = since;
+        return full.slice(since);
+      },
+    };
+    store.connectOnline("g", "A", transport);
+    store.applyServerEvent(ev(3)); // trou : on n'a pas 1,2 → tampon + pull(0)
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+    expect(pullArgs).toBe(0);
+    expect(store.onlineJournalSeqs()).toEqual([1, 2, 3]);
   });
 });

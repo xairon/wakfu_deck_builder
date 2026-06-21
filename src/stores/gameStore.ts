@@ -91,6 +91,7 @@ export interface OnlineTransport {
     seat: Seat,
     onEvent: (e: RedactedEvent) => void,
   ): () => void;
+  pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
 }
 
 export interface LogLine {
@@ -120,6 +121,11 @@ export const useGameStore = defineStore("game", () => {
   let onlineTransport: OnlineTransport | null = null;
   let onlineUnsub: (() => void) | null = null;
   let submitChain: Promise<unknown> = Promise.resolve();
+  // Tampon des events reçus hors-ordre (en attente de seq contigus), + verrou
+  // anti-pull-concurrent : le journal `events.value` reste STRICTEMENT contigu
+  // depuis seq 1 pour que le fold pur `deriveState` reste correct.
+  const pending = new Map<number, RedactedEvent>();
+  let pulling = false;
 
   // ── État du match ────────────────────────────────────────────────────────
   const matchPhase = ref<MatchPhase>("lobby");
@@ -347,11 +353,38 @@ export const useGameStore = defineStore("game", () => {
     ];
   }
 
-  /** Applique un event REDACTÉ diffusé par le serveur + son patch `reveals`. */
+  function lastSeq(): number {
+    return events.value.length ? events.value[events.value.length - 1].seq : 0;
+  }
+
+  /** Applique un event diffusé/pullé : contigu par seq, hors-ordre mis en tampon. */
   function applyServerEvent(ev: RedactedEvent): void {
-    if (events.value.some((e) => e.seq === ev.seq)) return; // dédoublonnage
-    if (ev.reveals) revealed.value = { ...revealed.value, ...ev.reveals };
-    events.value = [...events.value, ev];
+    if (ev.reveals) revealed.value = { ...revealed.value, ...ev.reveals }; // monotone
+    if (ev.seq <= lastSeq()) return; // doublon / déjà appliqué
+    pending.set(ev.seq, ev);
+    let next = lastSeq() + 1;
+    const toAppend: RedactedEvent[] = [];
+    while (pending.has(next)) {
+      toAppend.push(pending.get(next)!);
+      pending.delete(next);
+      next++;
+    }
+    if (toAppend.length) events.value = [...events.value, ...toAppend];
+    if (pending.size && !pulling) void resyncFrom(lastSeq()); // trou → combler
+  }
+
+  /** Retire le journal redacté depuis `sinceSeq` et l'applique (combler trous / connexion). */
+  async function resyncFrom(sinceSeq: number): Promise<void> {
+    if (!onlineTransport?.pull || pulling) return;
+    pulling = true;
+    try {
+      const evs = await onlineTransport.pull(gameId.value, sinceSeq);
+      for (const e of evs) applyServerEvent(e);
+    } catch (e) {
+      ruleError.value = `Resync : ${String(e)}`;
+    } finally {
+      pulling = false;
+    }
   }
 
   /** Connecte la table à une partie en ligne, au siège `seat`. */
@@ -371,7 +404,10 @@ export const useGameStore = defineStore("game", () => {
     matchPhase.value = "playing";
     onlineTransport = transport;
     submitChain = Promise.resolve();
+    pending.clear();
+    pulling = false;
     onlineUnsub = transport.subscribe(id, seat, applyServerEvent);
+    void resyncFrom(0); // rattrape tout event émis avant que l'abonnement soit vivant
   }
 
   function disconnectOnline(): void {
@@ -381,6 +417,8 @@ export const useGameStore = defineStore("game", () => {
     online.value = false;
     assist.value = true;
     events.value = [];
+    pending.clear();
+    pulling = false;
     revealed.value = {};
     gameId.value = "local";
     matchPhase.value = "lobby";
@@ -1431,6 +1469,7 @@ export const useGameStore = defineStore("game", () => {
     connectOnline,
     disconnectOnline,
     applyServerEvent,
+    onlineJournalSeqs: () => events.value.map((e) => e.seq),
     revealedCardId: (id: string) => revealed.value[id] ?? null,
     ruleError,
     clearRuleError,

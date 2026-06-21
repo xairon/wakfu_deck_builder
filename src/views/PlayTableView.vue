@@ -621,7 +621,14 @@ function launch(): void {
 
 // ── Jeu en ligne (lobby) ──────────────────────────────────────────────────────
 const authStore = useAuthStore();
-const onlineTransport = { submit: submitEvent, subscribe: subscribeToGame };
+const onlineTransport = {
+  submit: submitEvent,
+  subscribe: subscribeToGame,
+  // `pull` (rattrapage/resync) est câblé sur `pullEvents` en Task 2 ; stub
+  // no-op en attendant pour satisfaire l'interface OnlineTransport (resync(0)
+  // renvoie [] → comportement actuel inchangé).
+  pull: async () => [],
+};
 // Jeu en ligne (bêta). Backend déployé et vérifié sur le projet Supabase
 // (tables games/game_players + Edge Functions create_game/join_game/submit_event
 // répondent en prod). Le câblage front (création/abonnement Realtime avant join,
