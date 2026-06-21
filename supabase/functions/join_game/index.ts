@@ -4,7 +4,10 @@ import { adminClient, getUserId } from "../_shared/auth.ts";
 import { json, preflight } from "../_shared/cors.ts";
 import { setupEvents } from "../../../src/game/engine/setup.ts";
 import { sequence } from "../../../src/game/engine/verbs.ts";
-import { resolveDraft } from "../../../src/game/engine/authority.ts";
+import {
+  resolveDraft,
+  redactEventForSeat,
+} from "../../../src/game/engine/authority.ts";
 import { deriveState } from "../../../src/game/engine/reducer.ts";
 
 Deno.serve(async (req) => {
@@ -70,13 +73,15 @@ Deno.serve(async (req) => {
       });
       stateEvents = [...stateEvents, ev];
       parent = ev.seq;
-      // Modèle « clients de confiance » : diffusion de l'event COMPLET sur un
-      // canal partagé (l'info cachée est respectée à l'affichage côté client).
-      await db.channel(`game:${game.id}`).send({
-        type: "broadcast",
-        event: "game_event",
-        payload: ev,
-      });
+      // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
+      const post = deriveState(stateEvents);
+      for (const seat of ["A", "B"] as const) {
+        await db.channel(`game:${game.id}:${seat}`).send({
+          type: "broadcast",
+          event: "game_event",
+          payload: redactEventForSeat(ev, seat, state, post),
+        });
+      }
     }
     await db
       .from("games")
