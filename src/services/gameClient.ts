@@ -9,6 +9,40 @@ import { supabase } from "./supabase";
 import type { DraftEvent, RedactedEvent } from "@/game";
 import type { Seat } from "@/game";
 
+/** Retire le journal redacté du siège appelant depuis `sinceSeq` (résolu côté serveur). */
+export async function pullEvents(
+  gameId: string,
+  sinceSeq: number,
+): Promise<RedactedEvent[]> {
+  const { data, error } = await client().functions.invoke("pull_events", {
+    body: { gameId, sinceSeq },
+  });
+  if (error) throw error;
+  return (data as { events: RedactedEvent[] }).events ?? [];
+}
+
+/** Partie ACTIVE de l'utilisateur courant (pour reprise après refresh). */
+export async function findMyActiveGame(): Promise<{
+  gameId: string;
+  seat: Seat;
+} | null> {
+  const c = client();
+  const { data: auth } = await c.auth.getUser();
+  const uid = auth.user?.id;
+  if (!uid) return null;
+  const { data, error } = await c
+    .from("games")
+    .select("id, seat_a, seat_b")
+    .or(`seat_a.eq.${uid},seat_b.eq.${uid}`)
+    .eq("status", "active")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return null;
+  const row = data as { id: string; seat_a: string; seat_b: string };
+  return { gameId: row.id, seat: row.seat_a === uid ? "A" : "B" };
+}
+
 export interface CreateGameResult {
   gameId: string;
   code: string;
