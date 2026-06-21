@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
         ts: Date.now(),
         masterSeed: secret!.master_seed,
       });
-      await db.rpc("append_event", {
+      const { error: appendErr } = await db.rpc("append_event", {
         p_game_id: game.id,
         p_parent_seq: parent,
         p_actor: ev.actor,
@@ -71,6 +71,10 @@ Deno.serve(async (req) => {
         p_payload: ev.payload,
         p_payload_private: ev.payloadPrivate ?? null,
       });
+      // Échec d'append (ex. double-join concurrent → OUT_OF_ORDER) : on AVORTE
+      // au lieu de continuer sur un état corrompu (sinon broadcasts + status
+      // 'active' incohérents). L'atomicité fine du join reste un lot P1.
+      if (appendErr) return json({ error: appendErr.message }, 409);
       stateEvents = [...stateEvents, ev];
       parent = ev.seq;
       // Diffusion REDACTÉE par siège, sur des canaux privés distincts.

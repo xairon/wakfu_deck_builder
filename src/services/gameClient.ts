@@ -86,7 +86,15 @@ export function subscribeToGame(
     .on("broadcast", { event: "game_event" }, (msg) => {
       onEvent(msg.payload as RedactedEvent);
     })
-    .subscribe();
+    .subscribe((status) => {
+      // Canal privé refusé (mauvais siège / autorisation Realtime) ou perdu :
+      // on le signale (la reconnexion/resync complète est un lot P1).
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+        console.error(
+          `[gameClient] canal Realtime ${status} : game:${gameId}:${seat}`,
+        );
+      }
+    });
   return () => {
     void client().removeChannel(channel);
   };
