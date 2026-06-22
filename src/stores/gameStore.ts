@@ -170,6 +170,11 @@ export const useGameStore = defineStore("game", () => {
   const opponentPresent = ref(true);
   const canClaimVictory = ref(false);
   let graceTimer: ReturnType<typeof setTimeout> | null = null;
+  // Sécurité : n'armer la grâce QUE si la présence adverse a été observée
+  // « vraie » au moins une fois. Sinon un canal de présence qui ne se connecte
+  // jamais (mauvaise conf Realtime) ferait croire l'adversaire absent et
+  // offrirait une victoire à réclamer à tort.
+  let presenceSeen = false;
 
   function clearGraceTimer(): void {
     if (graceTimer) clearTimeout(graceTimer);
@@ -509,6 +514,7 @@ export const useGameStore = defineStore("game", () => {
     clearGraceTimer();
     opponentPresent.value = true;
     canClaimVictory.value = false;
+    presenceSeen = false;
     onlineUnsub = transport.subscribe(
       id,
       seat,
@@ -534,6 +540,7 @@ export const useGameStore = defineStore("game", () => {
     clearGraceTimer();
     opponentPresent.value = true;
     canClaimVictory.value = false;
+    presenceSeen = false;
   }
 
   // ── Cycle de match ───────────────────────────────────────────────────────
@@ -746,11 +753,13 @@ export const useGameStore = defineStore("game", () => {
   function onOpponentPresence(present: boolean): void {
     opponentPresent.value = present;
     if (present) {
+      presenceSeen = true;
       clearGraceTimer();
       canClaimVictory.value = false;
       return;
     }
     if (matchPhase.value !== "playing") return;
+    if (!presenceSeen) return; // jamais vu connecté → ne pas armer (fail-safe)
     if (graceTimer) return; // minuteur déjà armé
     graceTimer = setTimeout(() => {
       graceTimer = null;

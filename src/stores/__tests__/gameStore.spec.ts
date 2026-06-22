@@ -964,7 +964,7 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
    * Branche une partie en ligne (siège A) jusqu'en « playing » et expose le
    * callback de présence capté du transport (pour piloter sync/join/leave).
    */
-  function playingOnlineGame(): {
+  function playingOnlineGame(markPresenceSeen = true): {
     store: ReturnType<typeof useGameStore>;
     presence: (present: boolean) => void;
     claimed: { count: number };
@@ -1002,6 +1002,9 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     store.applyServerEvent(mullDone("A", ++seq));
     store.applyServerEvent(mullDone("B", ++seq));
     expect(store.matchPhase).toBe("playing");
+    // En partie réelle, l'adversaire a été vu connecté : on l'observe « présent »
+    // une fois pour armer la sécurité (la grâce ne s'arme que dans ce cas).
+    if (markPresenceSeen) onPresence!(true);
     return { store, presence: (p) => onPresence!(p), claimed };
   }
 
@@ -1042,6 +1045,13 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     expect(store.opponentPresent).toBe(true);
     expect(store.canClaimVictory).toBe(false);
     // le minuteur initial ne doit plus déclencher
+    vi.advanceTimersByTime(DISCONNECT_GRACE_MS);
+    expect(store.canClaimVictory).toBe(false);
+  });
+
+  it("présence jamais observée connectée → la grâce ne s'arme PAS (anti-faux-forfait)", () => {
+    const { store, presence } = playingOnlineGame(false); // adversaire jamais vu présent
+    presence(false);
     vi.advanceTimersByTime(DISCONNECT_GRACE_MS);
     expect(store.canClaimVictory).toBe(false);
   });

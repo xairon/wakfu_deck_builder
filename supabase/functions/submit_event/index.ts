@@ -11,7 +11,7 @@ import {
   redactEventForSeat,
 } from "../../../src/game/engine/authority.ts";
 import { drawTop, recycleToPiocheTop } from "../../../src/game/engine/verbs.ts";
-import { victoryFromState } from "../../../src/game/rules/progress.ts";
+import { victoryFromState } from "../../../src/game/rules/victory.ts";
 import { otherSeat } from "../../../src/game/types/zones.ts";
 import type {
   PersistedEvent,
