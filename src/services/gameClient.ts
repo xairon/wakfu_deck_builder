@@ -94,6 +94,18 @@ export async function findGameByCode(code: string): Promise<string | null> {
   return (data as { id: string } | null)?.id ?? null;
 }
 
+/**
+ * Demande un mulligan : le serveur recycle la main, re-mélange (RNG serveur),
+ * repioche (n-1) puis marque le siège prêt (MULLIGAN_DONE). Méta-intention
+ * expansée serveur — pas un event persisté tel quel.
+ */
+export async function requestMulligan(gameId: string): Promise<void> {
+  const { error } = await client().functions.invoke("submit_event", {
+    body: { gameId, draft: { type: "MULLIGAN" } },
+  });
+  if (error) throw error;
+}
+
 /** Soumet une intention de coup ; le serveur tranche et renvoie le seq. */
 export async function submitEvent(
   gameId: string,

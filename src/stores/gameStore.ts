@@ -1485,6 +1485,7 @@ export const useGameStore = defineStore("game", () => {
     assistEffects,
     online,
     mySeat,
+    gameId: () => gameId.value,
     connectOnline,
     disconnectOnline,
     applyServerEvent,
