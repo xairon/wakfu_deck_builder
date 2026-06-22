@@ -2,7 +2,7 @@ import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
 import type { Card, Deck } from "@/types/cards";
 import type { DraftEvent, PersistedEvent, RedactedEvent, Seat } from "@/game";
-import { createGame } from "@/game";
+import { createGame, setCounter } from "@/game";
 import { useGameStore } from "../gameStore";
 import { useCardStore } from "../cardStore";
 import {
@@ -669,13 +669,35 @@ describe("matchPhase en ligne (dérivé du journal)", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
   function started(seq: number): RedactedEvent {
+    // Layout minimal mais VALIDE : deux Héros vivants au Havre-Sac. La phase de
+    // match dérivée vérifie désormais aussi la victoire (PV ≤ 0), donc l'état
+    // doit comporter des sièges et des Héros — sinon « hors du jeu » (103.2c).
     return {
       gameId: "g",
       seq,
       parentSeq: seq - 1,
       actor: "system",
       type: "GAME_STARTED",
-      payload: { state: { instances: {} } },
+      payload: {
+        state: {
+          instances: {
+            hA: {
+              instanceId: "hA",
+              location: { zone: "havreSac", owner: "A" },
+              counters: { hp: 20, xp: 0 },
+            },
+            hB: {
+              instanceId: "hB",
+              location: { zone: "havreSac", owner: "B" },
+              counters: { hp: 20, xp: 0 },
+            },
+          },
+          seats: {
+            A: { heroInstanceId: "hA" },
+            B: { heroInstanceId: "hB" },
+          },
+        },
+      },
       ts: 0,
     } as unknown as RedactedEvent;
   }
@@ -707,5 +729,113 @@ describe("matchPhase en ligne (dérivé du journal)", () => {
     store.applyServerEvent(mullDone("B", 3));
     expect(store.matchPhase).toBe("playing");
     expect(store.mulliganDoneOnline()).toEqual({ A: true, B: true });
+  });
+});
+
+describe("victoire en ligne (dérivée de l'état partagé)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  function mullDone(seat: "A" | "B", seq: number): RedactedEvent {
+    return {
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      actor: seat,
+      type: "MULLIGAN_DONE",
+      payload: { seat },
+      ts: 0,
+    } as RedactedEvent;
+  }
+  function counterEv(
+    seat: "A" | "B",
+    instanceId: string,
+    counter: string,
+    value: number,
+    seq: number,
+  ): RedactedEvent {
+    return {
+      ...setCounter(seat, instanceId, counter, value),
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      ts: 0,
+    } as RedactedEvent;
+  }
+
+  /** Branche une partie en ligne au siège A, jusqu'en phase « playing ». */
+  function startedOnlineGame(): {
+    store: ReturnType<typeof useGameStore>;
+    nextSeq: () => number;
+  } {
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    const store = useGameStore();
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+    };
+    store.connectOnline("g", "A", transport);
+    for (const ev of events) store.applyServerEvent(ev);
+    let seq = events[events.length - 1].seq;
+    const nextSeq = () => ++seq;
+    store.applyServerEvent(mullDone("A", nextSeq()));
+    store.applyServerEvent(mullDone("B", nextSeq()));
+    expect(store.matchPhase).toBe("playing");
+    return { store, nextSeq };
+  }
+
+  it("PV d'un Héros ≤ 0 ⇒ matchPhase 'finished' + l'adversaire l'emporte", () => {
+    const { store, nextSeq } = startedOnlineGame();
+    const heroB = store.state.seats.B.heroInstanceId!;
+    // le serveur diffuse les dégâts létaux portés au Héros B (résolution
+    // manuelle : un joueur a fixé ses PV à 0) → victoire dérivée de l'état.
+    store.applyServerEvent(counterEv("B", heroB, "hp", 0, nextSeq()));
+    expect(store.matchPhase).toBe("finished");
+    expect(store.winner).toBe("A");
+  });
+
+  it("Héros blessé mais vivant ⇒ la partie continue (pas de fin prématurée)", () => {
+    const { store, nextSeq } = startedOnlineGame();
+    const heroB = store.state.seats.B.heroInstanceId!;
+    store.applyServerEvent(counterEv("B", heroB, "hp", 5, nextSeq()));
+    expect(store.matchPhase).toBe("playing");
+    expect(store.winner).toBeNull();
+  });
+
+  it("la fin est TERMINALE : un echo ultérieur ne « dé-finit » pas la partie", () => {
+    const { store, nextSeq } = startedOnlineGame();
+    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroB = store.state.seats.B.heroInstanceId!;
+    // morts SÉQUENTIELLES : A tombe le premier (B encore vivant) → B l'emporte.
+    store.applyServerEvent(counterEv("A", heroA, "hp", 0, nextSeq()));
+    expect(store.matchPhase).toBe("finished");
+    expect(store.winner).toBe("B");
+    // un event ultérieur (l'autre Héros tombe aussi, ou un simple message) NE
+    // doit PAS ramener la phase à « playing » ni changer le vainqueur.
+    store.applyServerEvent(counterEv("B", heroB, "hp", 0, nextSeq()));
+    expect(store.matchPhase).toBe("finished");
+    expect(store.winner).toBe("B");
+  });
+
+  it("double 0 PV dans la MÊME mise à jour d'état ⇒ aucun vainqueur (103.3)", () => {
+    const { store, nextSeq } = startedOnlineGame();
+    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroB = store.state.seats.B.heroInstanceId!;
+    const seqA = nextSeq();
+    const seqB = nextSeq();
+    // livraison hors-ordre : l'event B (postérieur) arrive d'abord et reste en
+    // tampon ; l'arrivée de A déclenche l'ajout des DEUX en un seul lot → un seul
+    // calcul de victoire sur un état où les deux Héros sont à 0 simultanément.
+    store.applyServerEvent(counterEv("B", heroB, "hp", 0, seqB));
+    expect(store.matchPhase).toBe("playing"); // rien d'appliqué (trou de seq)
+    store.applyServerEvent(counterEv("A", heroA, "hp", 0, seqA));
+    expect(store.matchPhase).toBe("playing"); // égalité : pas de fausse victoire
+    expect(store.winner).toBeNull();
   });
 });

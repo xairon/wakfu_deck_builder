@@ -371,6 +371,33 @@ export const useGameStore = defineStore("game", () => {
     return events.value.length ? events.value[events.value.length - 1].seq : 0;
   }
 
+  /**
+   * Issue du match EN LIGNE, dérivée du flux PARTAGÉ (donc identique sur les deux
+   * clients + reconstruite à la reconnexion). Tant que la partie n'est pas finie,
+   * la phase suit le journal (deriveMatchPhase) ; puis la mort d'un Héros
+   * (PV ≤ 0 / Niveau 3, 103.2) bascule en « finished ».
+   *
+   * Lecture SEULE : contrairement au checkVictory local (assisté), on ne dispatch
+   * RIEN — destructions d'état (1414/3019) et sauvetage d'égalité (103.3) restent
+   * manuels en ligne (« façon Cockatrice »), et auto-soumettre ferait soumettre
+   * les MÊMES events par les deux clients. On déduit donc le vainqueur du seul
+   * état partagé : pas de fausse fin tant que les PV ne sont pas tombés à 0.
+   *
+   * « finished » est TERMINAL : une fois atteint (victoire OU abandon, cf.
+   * `concede`) on ne re-dérive plus, pour ne pas « dé-finir » la partie sur un
+   * echo ultérieur (un SAID, etc. ramènerait sinon deriveMatchPhase à « playing »).
+   */
+  function deriveOnlineOutcome(): void {
+    if (matchPhase.value === "finished") return;
+    matchPhase.value = deriveMatchPhase(events.value);
+    if (matchPhase.value !== "playing") return;
+    const w = victoryFromState(rulesCtx());
+    if (w) {
+      winner.value = w;
+      matchPhase.value = "finished";
+    }
+  }
+
   /** Applique un event diffusé/pullé : contigu par seq, hors-ordre mis en tampon. */
   function applyServerEvent(ev: RedactedEvent): void {
     if (ev.reveals) revealed.value = { ...revealed.value, ...ev.reveals }; // monotone
@@ -384,9 +411,9 @@ export const useGameStore = defineStore("game", () => {
       next++;
     }
     if (toAppend.length) events.value = [...events.value, ...toAppend];
-    // En ligne, la phase de match suit le journal (main de départ → mulligan →
-    // jeu) : les deux clients la dérivent du même flux d'events.
-    if (online.value) matchPhase.value = deriveMatchPhase(events.value);
+    // En ligne, phase ET fin de partie suivent le journal (main de départ →
+    // mulligan → jeu → fin) : les deux clients les dérivent du même flux.
+    if (online.value) deriveOnlineOutcome();
     if (pending.size && !pulling) void resyncFrom(lastSeq()); // trou → combler
   }
 
