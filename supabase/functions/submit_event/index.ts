@@ -11,6 +11,8 @@ import {
   redactEventForSeat,
 } from "../../../src/game/engine/authority.ts";
 import { drawTop, recycleToPiocheTop } from "../../../src/game/engine/verbs.ts";
+import { victoryFromState } from "../../../src/game/rules/progress.ts";
+import { otherSeat } from "../../../src/game/types/zones.ts";
 import type {
   PersistedEvent,
   DraftEvent,
@@ -72,11 +74,77 @@ Deno.serve(async (req) => {
     const rowEvents = (rows ?? []).map(rowToEvent);
     const state = deriveState(rowEvents);
 
+    // Partie déjà terminée : aucun event ne peut plus être appendé. La garde
+    // `status !== 'active'` plus haut couvre le cas où `games.status` est passé à
+    // 'finished' ; ce garde-fou complémentaire bloque sur le journal lui-même.
+    if (rowEvents.some((e) => e.type === "GAME_OVER"))
+      return json({ error: "PARTIE_TERMINEE" }, 409);
+
+    // Termine la partie : append système GAME_OVER (résolu + diffusé redacté par
+    // siège, comme `appendOne`) puis bascule la ligne `games` en 'finished'.
+    // `baseEvents` = journal courant ; il inclut l'event joueur qui vient d'être
+    // appendé dans le cas auto-victoire (sinon `parentSeq` serait obsolète).
+    const finishGame = async (
+      winner: "A" | "B" | "draw",
+      reason: "concede" | "defeat" | "disconnect",
+      baseEvents: PersistedEvent[] = rowEvents,
+    ): Promise<void> => {
+      const pre = deriveState(baseEvents);
+      const draftOver: DraftEvent = {
+        actor: "system",
+        type: "GAME_OVER",
+        payload: { winner, reason },
+      };
+      const ev = resolveDraft(pre, draftOver, {
+        gameId,
+        seq: pre.seq + 1,
+        ts: Date.now(),
+        masterSeed: secret!.master_seed,
+      });
+      const { error } = await db.rpc("append_event", {
+        p_game_id: gameId,
+        p_parent_seq: pre.seq,
+        p_actor: ev.actor,
+        p_type: ev.type,
+        p_payload: ev.payload,
+        p_payload_private: ev.payloadPrivate ?? null,
+      });
+      if (error) throw new Error(error.message);
+      const post = deriveState([...baseEvents, ev]);
+      for (const s of ["A", "B"] as const) {
+        await db
+          .channel(`game:${gameId}:${s}`, { config: { private: true } })
+          .send({
+            type: "broadcast",
+            event: "game_event",
+            payload: redactEventForSeat(ev, s, pre, post),
+          });
+      }
+      await db
+        .from("games")
+        .update({ status: "finished", winner, end_reason: reason })
+        .eq("id", gameId);
+    };
+
+    // Meta-intent CONCEDE : le siège abandonne → l'adversaire gagne.
+    if ((draft as { type?: string })?.type === "CONCEDE") {
+      await finishGame(otherSeat(me.seat as "A" | "B"), "concede");
+      return json({ ok: true });
+    }
+
+    // Meta-intent CLAIM_VICTORY : réclamation après déconnexion adverse (le
+    // client gate sur la fenêtre de grâce — confiance client assumée ici).
+    if ((draft as { type?: string })?.type === "CLAIM_VICTORY") {
+      await finishGame(me.seat as "A" | "B", "disconnect");
+      return json({ ok: true });
+    }
+
     // Meta-intent MULLIGAN : recycle la main → mélange (RNG serveur) → repioche
-    // (n-1) → MULLIGAN_DONE. Expansé côté serveur en une suite d'events appendés
-    // un par un (comme la mise en place de join_game), diffusés redactés. Le
-    // MULLIGAN_DONE est émis EN DERNIER : un échec en cours laisse le siège
-    // « non prêt » (donc rejouable) — le client resync (lot fiabilité).
+    // (n-1). Expansé côté serveur en une suite d'events appendés un par un (comme
+    // la mise en place de join_game), diffusés redactés. Le mulligan est
+    // RÉPÉTABLE : il ne marque PLUS MULLIGAN_DONE (le siège valide sa main via le
+    // chemin MULLIGAN_DONE distinct). Un échec en cours est rejouable — le client
+    // resync (lot fiabilité).
     if ((draft as { type?: string })?.type === "MULLIGAN") {
       const seat = me.seat as "A" | "B";
       const already = rowEvents.some(
@@ -130,11 +198,6 @@ Deno.serve(async (req) => {
         for (let i = 0; i < redraw; i++) {
           await appendOne(drawTop(deriveState(working), seat));
         }
-        await appendOne({
-          actor: seat,
-          type: "MULLIGAN_DONE",
-          payload: { seat },
-        });
       } catch (e) {
         return json({ error: String(e) }, 409); // partiel → le client resync
       }
@@ -186,6 +249,14 @@ Deno.serve(async (req) => {
           payload: redactEventForSeat(ev, seat, state, post),
         });
     }
+
+    // Auto-victoire : si l'état post-event satisfait une condition de victoire
+    // (PV adverses ≤ 0 ou Niveau 3), on clôt automatiquement la partie. Le test
+    // `!rowEvents.some(... GAME_OVER)` est redondant avec le garde-fou d'entrée
+    // mais protège d'une éventuelle course (défense en profondeur).
+    const w = victoryFromState({ state: post } as never);
+    if (w && !rowEvents.some((e) => e.type === "GAME_OVER"))
+      await finishGame(w, "defeat", [...rowEvents, ev]);
 
     return json({ seq: ev.seq });
   } catch (e) {
