@@ -269,23 +269,24 @@ test.describe("Table de jeu (/play/table)", () => {
     await expect(page).toHaveURL(/\/play\/table/);
   });
 
-  test("devrait lancer une partie sandbox depuis le lobby", async ({
+  test("devrait dérouler une partie locale (mulligan → plateau)", async ({
     page,
   }) => {
     await page.goto("/play/table");
     await waitForCatalog(page);
     await seedValidDecks(page);
 
-    // Le lobby affiche les deux decks injectés.
-    const picks = page.getByTestId("lobby-deck-pick");
-    await expect(picks).toHaveCount(2);
-
-    // Étape 1 : J1 choisit son deck → Suivant.
-    await picks.first().click();
-    await page.getByTestId("lobby-next").click();
-    // Étape 2 : J2 choisit son deck → Lancer.
-    await page.getByTestId("lobby-deck-pick").nth(1).click();
-    await page.getByTestId("lobby-launch").click();
+    // Le hot-seat n'est plus exposé dans le lobby (« en ligne uniquement ») : on
+    // lance une partie locale directement via le store pour couvrir le plateau,
+    // le mulligan et la passation.
+    await page.evaluate(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      const deckStore = gp.$pinia._s.get("deck");
+      const game = gp.$pinia._s.get("game");
+      const [a, b] = deckStore.decks;
+      game.startMatch(a, b ?? a, { nameA: "J1", nameB: "J2" });
+    });
 
     // Hot-seat : on draine les écrans de passation + mulligan des deux joueurs
     // jusqu'à ce que le plateau apparaisse (le bouton « Fin du tour »).
@@ -304,6 +305,22 @@ test.describe("Table de jeu (/play/table)", () => {
     }
 
     await expect(endTurn).toBeVisible();
+  });
+
+  test("lobby en ligne : deck pré-sélectionné, « Créer la partie » actif", async ({
+    page,
+  }) => {
+    await gotoAuthed(page, "/play/table");
+    await waitForCatalog(page);
+    await seedValidDecks(page);
+
+    // Panneau « Créer » ouvert d'emblée + deck pré-sélectionné → le bouton doit
+    // être actif sans interaction (corrige l'ancien bouton grisé « marche pas »).
+    const creer = page.getByRole("button", { name: "Créer la partie" });
+    await expect(creer).toBeVisible();
+    await expect(creer).toBeEnabled();
+    // Le mode hot-seat local n'est plus présent dans le lobby.
+    await expect(page.getByTestId("lobby-deck-pick")).toHaveCount(0);
   });
 
   test("devrait lancer le tutoriel interactif (découverte)", async ({

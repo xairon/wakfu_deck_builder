@@ -6,8 +6,8 @@
         <p class="eyebrow text-primary">La Table des Douze</p>
         <h1 class="mt-2 font-display text-3xl sm:text-4xl">Nouvelle partie</h1>
         <p class="mt-2 max-w-lg text-base-content/70">
-          Partie locale à deux (hot-seat). Chaque joueur choisit un deck, puis
-          on passe l'appareil à tour de rôle.
+          Affronte un ami à distance : crée une partie et partage le code, ou
+          rejoins la sienne avec son code.
         </p>
         <button
           class="btn btn-outline btn-sm mt-4 gap-2"
@@ -67,7 +67,10 @@
         pour jouer en ligne.
       </p>
       <p v-else-if="!decks.length" class="mt-3 text-sm text-base-content/60">
-        Construis d'abord un deck pour jouer en ligne.
+        <RouterLink to="/deck-builder" class="link text-primary"
+          >Construis d'abord un deck</RouterLink
+        >
+        pour jouer en ligne.
       </p>
 
       <div v-else-if="onlinePanel" class="mt-4 flex flex-wrap items-end gap-3">
@@ -135,116 +138,6 @@
         <span v-if="onlineError" class="text-sm text-error">{{
           onlineError
         }}</span>
-      </div>
-    </section>
-
-    <p v-if="!decks.length" class="text-base-content/60">
-      Aucun deck.
-      <RouterLink to="/deck-builder" class="link text-primary"
-        >Construisez-en un</RouterLink
-      >
-      pour jouer.
-    </p>
-
-    <section v-else class="space-y-5">
-      <div class="flex items-center gap-3">
-        <span class="lobby-step" :class="{ 'lobby-step--on': lobbyStep === 1 }"
-          >1</span
-        >
-        <span class="h-px flex-1 bg-base-content/20"></span>
-        <span class="lobby-step" :class="{ 'lobby-step--on': lobbyStep === 2 }"
-          >2</span
-        >
-      </div>
-
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p class="section-rule eyebrow">
-            {{
-              lobbyStep === 1
-                ? "Joueur 1 — choisis ton deck"
-                : "Joueur 2 — choisis ton deck"
-            }}
-          </p>
-        </div>
-        <label class="flex items-center gap-2 text-sm">
-          <span class="text-base-content/60">Nom :</span>
-          <input
-            v-if="lobbyStep === 1"
-            v-model="nameA"
-            class="input input-bordered input-sm w-44"
-            placeholder="Joueur 1"
-          />
-          <input
-            v-else
-            v-model="nameB"
-            class="input input-bordered input-sm w-44"
-            placeholder="Joueur 2"
-          />
-        </label>
-      </div>
-
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <button
-          v-for="d in decks"
-          :key="d.id"
-          type="button"
-          class="deck-pick"
-          :class="{ 'deck-pick--on': currentPick === d.id }"
-          :style="{ '--spine': heroElement(d) }"
-          data-testid="lobby-deck-pick"
-          @click="setPick(d.id)"
-        >
-          <span class="deck-pick__art">
-            <img
-              v-if="heroImg(d)"
-              :src="heroImg(d)!"
-              :alt="d.hero?.name || ''"
-              class="deck-pick__img"
-              loading="lazy"
-              @error="onImgError"
-            />
-            <span v-else class="deck-pick__art-empty">Sans héros</span>
-            <span v-if="currentPick === d.id" class="deck-pick__check">✓</span>
-          </span>
-          <span class="deck-pick__body">
-            <span class="deck-pick__name">{{ d.name }}</span>
-            <span class="deck-pick__meta">
-              <span class="deck-pick__dot" aria-hidden="true"></span>
-              {{ d.hero?.name || "Sans héros" }}
-              <span class="deck-pick__sep">·</span>
-              {{ cardCount(d) }} cartes
-            </span>
-          </span>
-        </button>
-      </div>
-
-      <div class="flex gap-3">
-        <button
-          v-if="lobbyStep === 2"
-          class="btn btn-ghost"
-          @click="lobbyStep = 1"
-        >
-          ← Retour
-        </button>
-        <button
-          v-if="lobbyStep === 1"
-          class="btn btn-primary"
-          :disabled="!pickA"
-          data-testid="lobby-next"
-          @click="lobbyStep = 2"
-        >
-          Suivant →
-        </button>
-        <button
-          v-else
-          class="btn btn-primary"
-          :disabled="!pickB"
-          data-testid="lobby-launch"
-          @click="launch"
-        >
-          Lancer la partie
-        </button>
       </div>
     </section>
   </div>
@@ -576,7 +469,6 @@ import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
 import type { Card, Deck } from "@/types/cards";
 import type { RedactedInstance, DraftEvent } from "@/game";
-import { elementColor } from "@/config/elementColors";
 import { getThumbPath } from "@/utils/imagePaths";
 import GameBoard from "@/components/game/GameBoard.vue";
 import GameCard from "@/components/game/GameCard.vue";
@@ -653,35 +545,6 @@ watch(
 );
 
 // ── Lobby ────────────────────────────────────────────────────────────────────
-const lobbyStep = ref<1 | 2>(1);
-const nameA = ref("");
-const nameB = ref("");
-const pickA = ref<string | null>(null);
-const pickB = ref<string | null>(null);
-const currentPick = computed(() =>
-  lobbyStep.value === 1 ? pickA.value : pickB.value,
-);
-function setPick(id: string): void {
-  if (lobbyStep.value === 1) pickA.value = id;
-  else pickB.value = id;
-}
-function launch(): void {
-  const dA = decks.value.find((d) => d.id === pickA.value);
-  const dB = decks.value.find((d) => d.id === pickB.value);
-  if (!dA || !dB) return;
-  // 101.x — un deck non conforme (≠48, sans Héros/Havre-Sac, copies, réserve)
-  // ne peut pas entrer en partie.
-  const errs = [...validateDeck(dA).errors, ...validateDeck(dB).errors];
-  if (errs.length) {
-    toast.addToast(`Deck invalide : ${errs.join(" · ")}`, { type: "warning" });
-    return;
-  }
-  // v2 : effets de cartes AUTOMATISÉS quand ils sont compilés ; les effets non
-  // couverts apparaissent en rappels « à résoudre à la main » (non bloquants).
-  // assistEffects reste à sa valeur par défaut (true) pour les parties locales.
-  store.startMatch(dA, dB, { nameA: nameA.value, nameB: nameB.value });
-}
-
 // ── Jeu en ligne (lobby) ──────────────────────────────────────────────────────
 const authStore = useAuthStore();
 const onlineTransport = {
@@ -697,7 +560,10 @@ const onlineTransport = {
 // overlay d'attente, application des events) est conforme au contrat backend.
 // À valider en conditions réelles : test à 2 clients connectés (diffusion serveur).
 const ONLINE_PLAY_ENABLED = true;
-const onlinePanel = ref<"create" | "join" | null>(null);
+// Lobby « en ligne uniquement » : le panneau Créer est ouvert d'emblée (plus de
+// bascule cachée), et le deck est pré-sélectionné (cf. watcher plus bas) pour que
+// « Créer la partie » soit cliquable tout de suite.
+const onlinePanel = ref<"create" | "join">("create");
 const onlineDeckId = ref<string | null>(null);
 // Mode de règles assistées choisi par le créateur, propagé aux deux clients.
 const onlineAssisted = ref(false);
@@ -721,6 +587,19 @@ const onlineDeckValid = computed(
 function deckIsValid(d: Deck): boolean {
   return validateDeck(d).errors.length === 0;
 }
+// Pré-sélectionne le premier deck VALIDE (sinon le premier, pour faire apparaître
+// le motif « incomplet ») dès que les decks sont chargés → « Créer la partie »
+// est cliquable d'emblée au lieu de rester grisé sur « Choisis… ».
+watch(
+  decks,
+  (list) => {
+    if (onlineDeckId.value && list.some((d) => d.id === onlineDeckId.value))
+      return;
+    onlineDeckId.value =
+      list.find((d) => deckIsValid(d))?.id ?? list[0]?.id ?? null;
+  },
+  { immediate: true },
+);
 
 /** Messages clairs pour les codes d'erreur des Edge Functions de jeu. */
 const FN_ERROR_FR: Record<string, string> = {
@@ -828,23 +707,6 @@ const opponentGone = computed(
     store.matchPhase === "playing" &&
     store.opponentPresent === false,
 );
-
-// ── Aides deck ───────────────────────────────────────────────────────────────
-function cardCount(d: Deck): number {
-  return (d.cards ?? []).reduce(
-    (n, c) => n + (c.isReserve ? 0 : c.quantity),
-    0,
-  );
-}
-function heroImg(d: Deck): string | null {
-  return d.hero ? `/images/cards/${d.hero.id}_recto.webp` : null;
-}
-function heroElement(d: Deck): string {
-  return elementColor(d.hero?.stats?.niveau?.element);
-}
-function onImgError(e: Event): void {
-  (e.target as HTMLImageElement).style.visibility = "hidden";
-}
 
 // ── Main de mulligan ─────────────────────────────────────────────────────────
 const cardIndex = computed(() => {
