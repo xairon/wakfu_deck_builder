@@ -95,6 +95,19 @@
             class="input input-bordered input-sm w-40 uppercase"
           />
         </label>
+        <label
+          v-if="onlinePanel === 'create'"
+          class="flex items-center gap-2 text-sm"
+          title="Coûts en Ressources, légalité des coups, combat et victoire automatiques — partagé par les deux joueurs"
+        >
+          <input
+            v-model="onlineAssisted"
+            type="checkbox"
+            class="checkbox checkbox-sm"
+            data-testid="online-assisted-toggle"
+          />
+          <span>Règles assistées</span>
+        </label>
         <button
           v-if="onlinePanel === 'create'"
           class="btn btn-primary btn-sm"
@@ -652,6 +665,8 @@ const onlineTransport = {
 const ONLINE_PLAY_ENABLED = true;
 const onlinePanel = ref<"create" | "join" | null>(null);
 const onlineDeckId = ref<string | null>(null);
+// Mode de règles assistées choisi par le créateur, propagé aux deux clients.
+const onlineAssisted = ref(false);
 const joinCode = ref("");
 const createdCode = ref("");
 const onlineBusy = ref(false);
@@ -720,9 +735,9 @@ async function onlineCreate(): Promise<void> {
   onlineBusy.value = true;
   onlineError.value = "";
   try {
-    const { gameId, code } = await createOnlineGame(deck);
+    const { gameId, code } = await createOnlineGame(deck, onlineAssisted.value);
     createdCode.value = code;
-    store.connectOnline(gameId, "A", onlineTransport);
+    store.connectOnline(gameId, "A", onlineTransport, onlineAssisted.value);
   } catch (e) {
     onlineError.value = await fnErrorMessage(e);
   } finally {
