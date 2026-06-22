@@ -12,6 +12,7 @@ import { computed, ref, shallowRef, watch } from "vue";
 import type { Card, Deck } from "@/types/cards";
 import type {
   DraftEvent,
+  GameOverPayload,
   GameState,
   PersistedEvent,
   Position,
@@ -100,13 +101,34 @@ function deriveMatchPhase(evs: PersistedEvent[]): MatchPhase {
  */
 export interface OnlineTransport {
   submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
+  /**
+   * S'abonne au flux redacté du siège. `onPresence` (optionnel) reflète la
+   * présence de l'AUTRE siège (sync/join/leave), pour la fenêtre de grâce sur
+   * déconnexion adverse.
+   */
   subscribe(
     gameId: string,
     seat: Seat,
     onEvent: (e: RedactedEvent) => void,
+    onPresence?: (present: boolean) => void,
   ): () => void;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
+  /**
+   * Abandon : soumet l'intention CONCEDE ; le serveur écrit le GAME_OVER.
+   * Optionnel le temps que le câblage `gameClient`/PlayTableView (T3/T6) le
+   * fournisse — `concede()` route en `onlineTransport?.concede?.(…)`.
+   */
+  concede?(gameId: string): Promise<void>;
+  /**
+   * Réclamation de victoire sur déconnexion adverse : soumet l'intention
+   * CLAIM_VICTORY ; le serveur écrit le GAME_OVER (raison `disconnect`). Le
+   * client garde la fenêtre de grâce avant de l'autoriser.
+   */
+  claimVictory?(gameId: string): Promise<void>;
 }
+
+/** Fenêtre de grâce avant qu'une déconnexion adverse rende la victoire réclamable. */
+export const DISCONNECT_GRACE_MS = 5 * 60 * 1000;
 
 export interface LogLine {
   seq: number;
@@ -140,6 +162,24 @@ export const useGameStore = defineStore("game", () => {
   // depuis seq 1 pour que le fold pur `deriveState` reste correct.
   const pending = new Map<number, RedactedEvent>();
   let pulling = false;
+  // ── Présence adverse + fenêtre de grâce sur déconnexion ──────────────────
+  // `opponentPresent` reflète la présence Realtime de l'autre siège (true par
+  // défaut : on ne pénalise pas avant d'avoir une info négative). Quand elle
+  // tombe en pleine partie, on arme un minuteur ; à son terme la victoire
+  // devient réclamable. Le retour de l'adversaire (présence true) annule tout.
+  const opponentPresent = ref(true);
+  const canClaimVictory = ref(false);
+  let graceTimer: ReturnType<typeof setTimeout> | null = null;
+  // Sécurité : n'armer la grâce QUE si la présence adverse a été observée
+  // « vraie » au moins une fois. Sinon un canal de présence qui ne se connecte
+  // jamais (mauvaise conf Realtime) ferait croire l'adversaire absent et
+  // offrirait une victoire à réclamer à tort.
+  let presenceSeen = false;
+
+  function clearGraceTimer(): void {
+    if (graceTimer) clearTimeout(graceTimer);
+    graceTimer = null;
+  }
 
   // ── État du match ────────────────────────────────────────────────────────
   const matchPhase = ref<MatchPhase>("lobby");
@@ -389,6 +429,17 @@ export const useGameStore = defineStore("game", () => {
    */
   function deriveOnlineOutcome(): void {
     if (matchPhase.value === "finished") return;
+    // Fin AUTORITATIVE serveur : un GAME_OVER (concession/déconnexion/défaite,
+    // émis par submit_event) prime sur la dérivation d'état. Il porte le
+    // vainqueur (« draw » → match nul, on ne désigne personne) et fige la
+    // partie sur les DEUX clients, y compris à la reconnexion.
+    const over = events.value.find((e) => e.type === "GAME_OVER");
+    if (over) {
+      matchPhase.value = "finished";
+      const w = (over.payload as GameOverPayload).winner;
+      if (w !== "draw") winner.value = w;
+      return;
+    }
     matchPhase.value = deriveMatchPhase(events.value);
     if (matchPhase.value !== "playing") return;
     const w = victoryFromState(rulesCtx());
@@ -431,15 +482,22 @@ export const useGameStore = defineStore("game", () => {
     }
   }
 
-  /** Connecte la table à une partie en ligne, au siège `seat`. */
+  /**
+   * Connecte la table à une partie en ligne, au siège `seat`. `assisted` est le
+   * mode de règles PARTAGÉ (choisi par le créateur, plumb depuis findGameByCode/
+   * findMyActiveGame) : les deux clients tournent dans le même mode pour le
+   * match. `assistEffects` reste OFF en ligne (automatisation séparée, risque de
+   * double-soumission).
+   */
   function connectOnline(
     id: string,
     seat: Seat,
     transport: OnlineTransport,
+    assisted = false,
   ): void {
     disconnectOnline();
     online.value = true;
-    assist.value = false; // jeu en ligne = résolution manuelle (Cockatrice)
+    assist.value = assisted; // mode de règles partagé (choisi à la création)
     gameId.value = id;
     mySeat.value = seat;
     perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
@@ -452,7 +510,17 @@ export const useGameStore = defineStore("game", () => {
     submitChain = Promise.resolve();
     pending.clear();
     pulling = false;
-    onlineUnsub = transport.subscribe(id, seat, applyServerEvent);
+    // Présence : on repart d'un adversaire supposé présent, grâce désarmée.
+    clearGraceTimer();
+    opponentPresent.value = true;
+    canClaimVictory.value = false;
+    presenceSeen = false;
+    onlineUnsub = transport.subscribe(
+      id,
+      seat,
+      applyServerEvent,
+      onOpponentPresence,
+    );
     void resyncFrom(0); // rattrape tout event émis avant que l'abonnement soit vivant
   }
 
@@ -468,6 +536,11 @@ export const useGameStore = defineStore("game", () => {
     revealed.value = {};
     gameId.value = "local";
     matchPhase.value = "lobby";
+    // Présence/grâce : minuteur coupé (test-safe) + état réinitialisé.
+    clearGraceTimer();
+    opponentPresent.value = true;
+    canClaimVictory.value = false;
+    presenceSeen = false;
   }
 
   // ── Cycle de match ───────────────────────────────────────────────────────
@@ -659,12 +732,63 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function concede(seat: Seat): void {
+    // En ligne : on soumet l'intention CONCEDE ; le serveur force le perdant =
+    // siège authentifié, écrit le GAME_OVER terminal et le diffuse → la fin
+    // arrive par echo (deriveOnlineOutcome) sur les DEUX clients.
+    if (online.value) {
+      void onlineTransport?.concede?.(gameId.value);
+      return;
+    }
     dispatch(say(seat, `${players.value[seat].name} abandonne la partie.`));
     winner.value = otherSeat(seat);
     matchPhase.value = "finished";
   }
 
+  /**
+   * Réception d'un changement de présence adverse (transport Realtime). En
+   * pleine partie, la disparition de l'adversaire arme la fenêtre de grâce :
+   * au terme du minuteur, `canClaimVictory` passe à true. Son retour annule
+   * tout (minuteur + drapeau). Hors « playing », on garde juste l'état brut.
+   */
+  function onOpponentPresence(present: boolean): void {
+    opponentPresent.value = present;
+    if (present) {
+      presenceSeen = true;
+      clearGraceTimer();
+      canClaimVictory.value = false;
+      return;
+    }
+    if (matchPhase.value !== "playing") return;
+    if (!presenceSeen) return; // jamais vu connecté → ne pas armer (fail-safe)
+    if (graceTimer) return; // minuteur déjà armé
+    graceTimer = setTimeout(() => {
+      graceTimer = null;
+      // Toujours valable : l'adversaire est resté absent et la partie n'est
+      // pas finie entre-temps (concession/déco déjà résolue ailleurs).
+      if (!opponentPresent.value && matchPhase.value === "playing") {
+        canClaimVictory.value = true;
+      }
+    }, DISCONNECT_GRACE_MS);
+  }
+
+  /**
+   * Réclame la victoire après expiration de la grâce (déconnexion adverse) :
+   * soumet l'intention CLAIM_VICTORY ; le serveur écrit le GAME_OVER terminal
+   * (raison `disconnect`) qui revient par echo et fige la partie.
+   */
+  function claimVictory(): void {
+    if (!online.value || !canClaimVictory.value) return;
+    void onlineTransport?.claimVictory?.(gameId.value);
+  }
+
   function quitMatch(): void {
+    // En ligne : quitter = abandonner (forfait) puis se déconnecter proprement.
+    // La concession part au serveur ; on coupe la table ensuite.
+    if (online.value) {
+      concede(mySeat.value);
+      disconnectOnline();
+      return;
+    }
     events.value = [];
     matchPhase.value = "lobby";
     passPending.value = false;
@@ -1499,6 +1623,10 @@ export const useGameStore = defineStore("game", () => {
     endTurn,
     concede,
     quitMatch,
+    // présence adverse + fenêtre de grâce (déconnexion)
+    opponentPresent,
+    canClaimVictory,
+    claimVictory,
     // verbes
     draw,
     moveTo,

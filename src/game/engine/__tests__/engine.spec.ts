@@ -146,6 +146,27 @@ describe("reducer — déterminisme", () => {
     expect(after.instances).toEqual(before.instances);
     expect(after.seq).toBe(before.seq + 1);
   });
+
+  it("GAME_OVER est un no-op d'état (fold sans throw)", () => {
+    const { events } = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" });
+    const before = deriveState(events);
+    const withGameOver = [
+      ...events,
+      {
+        gameId: GID,
+        seq: before.seq + 1,
+        parentSeq: before.seq,
+        actor: "system",
+        type: "GAME_OVER",
+        payload: { winner: "A", reason: "concede" },
+        ts: 0,
+      } as PersistedEvent,
+    ];
+    resetDeriveMemo();
+    const after = deriveState(withGameOver);
+    expect(after.instances).toEqual(before.instances);
+    expect(after.seq).toBe(before.seq + 1);
+  });
 });
 
 describe("reducer — mémoïsation incrémentale du fold", () => {

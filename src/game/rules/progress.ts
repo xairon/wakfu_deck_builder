@@ -5,13 +5,17 @@
  */
 import type { DraftEvent } from "../types/events";
 import type { Seat } from "../types/zones";
-import { otherSeat } from "../types/zones";
 import type { RulesCtx } from "./types";
 import { flipLevel, incCounter, setCounter } from "../engine/verbs";
 import { heroStats } from "./cardAttrs";
+import { heroHp, victoryFromState, XP_LEVEL_3 } from "./victory";
+
+// La détermination du vainqueur vit dans `./victory` (module Deno-safe, sans
+// dépendance carte) pour être importable côté serveur ; on la ré-exporte ici
+// pour ne pas casser les imports existants (store, barrel @/game/rules).
+export { victoryFromState, XP_LEVEL_3 };
 
 export const XP_LEVEL_2 = 6;
-export const XP_LEVEL_3 = 18;
 
 export interface XpGrant {
   events: DraftEvent[];
@@ -63,33 +67,6 @@ export function grantXpEvents(
     log.push("atteint le Niveau 3 — victoire à l'Expérience !");
   }
   return { events, log, leveledTo, won };
-}
-
-function heroHp(ctx: RulesCtx, seat: Seat): number | null {
-  const id = ctx.state.seats[seat].heroInstanceId;
-  const hero = id ? ctx.state.instances[id] : null;
-  return hero ? (hero.counters.hp ?? 1) : null;
-}
-
-/** Vainqueur d'après l'état : PV adverses ≤ 0 (103.2a) ou Niveau 3 (103.2b). */
-export function victoryFromState(ctx: RulesCtx): Seat | null {
-  // 103.3 : si les DEUX Héros tombent à 0 simultanément, personne ne gagne
-  // (ils restent en jeu avec 1 PV — voir equalityRescueEvents).
-  const hpA = heroHp(ctx, "A");
-  const hpB = heroHp(ctx, "B");
-  if (hpA !== null && hpB !== null && hpA <= 0 && hpB <= 0) return null;
-  for (const seat of ["A", "B"] as Seat[]) {
-    const id = ctx.state.seats[seat].heroInstanceId;
-    const hero = id ? ctx.state.instances[id] : null;
-    // 103.2c — le Héros a quitté le jeu (instance disparue ou hors du Monde /
-    // Havre-Sac, sa zone d'origine) → son contrôleur perd.
-    const zone = hero?.location.zone;
-    if (!hero || (zone !== "monde" && zone !== "havreSac"))
-      return otherSeat(seat);
-    if ((hero.counters.hp ?? 1) <= 0) return otherSeat(seat);
-    if ((hero.counters.xp ?? 0) >= XP_LEVEL_3) return seat;
-  }
-  return null;
 }
 
 /**

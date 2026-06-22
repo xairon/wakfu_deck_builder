@@ -25,6 +25,7 @@ export async function pullEvents(
 export async function findMyActiveGame(): Promise<{
   gameId: string;
   seat: Seat;
+  assisted: boolean;
 } | null> {
   const c = client();
   const { data: auth } = await c.auth.getUser();
@@ -32,15 +33,24 @@ export async function findMyActiveGame(): Promise<{
   if (!uid) return null;
   const { data, error } = await c
     .from("games")
-    .select("id, seat_a, seat_b")
+    .select("id, seat_a, seat_b, assisted")
     .or(`seat_a.eq.${uid},seat_b.eq.${uid}`)
     .eq("status", "active")
     .order("updated_at", { ascending: false })
     .limit(1)
     .maybeSingle();
   if (error || !data) return null;
-  const row = data as { id: string; seat_a: string; seat_b: string };
-  return { gameId: row.id, seat: row.seat_a === uid ? "A" : "B" };
+  const row = data as {
+    id: string;
+    seat_a: string;
+    seat_b: string;
+    assisted: boolean;
+  };
+  return {
+    gameId: row.id,
+    seat: row.seat_a === uid ? "A" : "B",
+    assisted: !!row.assisted,
+  };
 }
 
 export interface CreateGameResult {
@@ -57,10 +67,17 @@ function client() {
   return supabase;
 }
 
-/** Crée un salon 1v1 avec son deck (siège A). Renvoie le code partageable. */
-export async function createGame(deck: unknown): Promise<CreateGameResult> {
+/**
+ * Crée un salon 1v1 avec son deck (siège A). Renvoie le code partageable.
+ * `assisted` propage le mode de règles assistées choisi par le créateur :
+ * stocké côté serveur et appliqué aux deux clients pour la partie.
+ */
+export async function createGame(
+  deck: unknown,
+  assisted = false,
+): Promise<CreateGameResult> {
   const { data, error } = await client().functions.invoke("create_game", {
-    body: { deck },
+    body: { deck, assisted },
   });
   if (error) throw error;
   return data as CreateGameResult;
@@ -84,14 +101,17 @@ export async function joinGame(
  * flux `game:<id>:B` AVANT d'appeler joinGame, sinon on rate les events de
  * mise en place diffusés pendant joinGame (pas encore de pull_events).
  */
-export async function findGameByCode(code: string): Promise<string | null> {
+export async function findGameByCode(
+  code: string,
+): Promise<{ id: string; assisted: boolean } | null> {
   const { data, error } = await client()
     .from("games")
-    .select("id")
+    .select("id, assisted")
     .eq("code", code)
     .maybeSingle();
   if (error) throw error;
-  return (data as { id: string } | null)?.id ?? null;
+  const row = data as { id: string; assisted: boolean } | null;
+  return row ? { id: row.id, assisted: !!row.assisted } : null;
 }
 
 /**
@@ -102,6 +122,31 @@ export async function findGameByCode(code: string): Promise<string | null> {
 export async function requestMulligan(gameId: string): Promise<void> {
   const { error } = await client().functions.invoke("submit_event", {
     body: { gameId, draft: { type: "MULLIGAN" } },
+  });
+  if (error) throw error;
+}
+
+/**
+ * Abandon : soumet la méta-intention CONCEDE. Le serveur écrit le GAME_OVER
+ * (vainqueur = l'autre siège, raison `concede`) et passe la partie en
+ * `finished` ; le résultat arrive aux deux clients via le broadcast redacté.
+ */
+export async function concede(gameId: string): Promise<void> {
+  const { error } = await client().functions.invoke("submit_event", {
+    body: { gameId, draft: { type: "CONCEDE" } },
+  });
+  if (error) throw error;
+}
+
+/**
+ * Réclamation de victoire sur déconnexion adverse : soumet la méta-intention
+ * CLAIM_VICTORY. Le serveur écrit le GAME_OVER (vainqueur = siège appelant,
+ * raison `disconnect`). Le client garde la fenêtre de grâce (modèle clients de
+ * confiance — cf. spec).
+ */
+export async function claimVictory(gameId: string): Promise<void> {
+  const { error } = await client().functions.invoke("submit_event", {
+    body: { gameId, draft: { type: "CLAIM_VICTORY" } },
   });
   if (error) throw error;
 }
@@ -121,13 +166,20 @@ export async function submitEvent(
 /**
  * S'abonne au flux REDACTÉ du siège `seat` sur un canal PRIVÉ game:<id>:<seat>.
  * Renvoie une fonction de désabonnement.
+ *
+ * Présence : chaque siège `track` sa présence sur un canal partagé
+ * `game:<id>:presence` ; `onPresence(present)` reflète si l'AUTRE siège est en
+ * ligne (sync/join/leave). Sert la fenêtre de grâce sur déconnexion adverse
+ * (cf. gameStore). Optionnel pour ne pas casser les abonnements existants.
  */
 export function subscribeToGame(
   gameId: string,
   seat: Seat,
   onEvent: (event: RedactedEvent) => void,
+  onPresence?: (present: boolean) => void,
 ): () => void {
-  const channel = client()
+  const c = client();
+  const channel = c
     .channel(`game:${gameId}:${seat}`, { config: { private: true } })
     .on("broadcast", { event: "game_event" }, (msg) => {
       onEvent(msg.payload as RedactedEvent);
@@ -141,7 +193,32 @@ export function subscribeToGame(
         );
       }
     });
+
+  // Canal de présence partagé (les deux sièges y trackent leur siège). On
+  // calcule la présence de l'AUTRE siège depuis l'état de présence agrégé.
+  const other: Seat = seat === "A" ? "B" : "A";
+  let presence: ReturnType<typeof c.channel> | null = null;
+  if (onPresence) {
+    presence = c.channel(`game:${gameId}:presence`, {
+      config: { presence: { key: seat } },
+    });
+    const computeOtherPresent = (): void => {
+      const stateMap = presence!.presenceState() as Record<string, unknown[]>;
+      onPresence(!!stateMap[other]?.length);
+    };
+    presence
+      .on("presence", { event: "sync" }, computeOtherPresent)
+      .on("presence", { event: "join" }, computeOtherPresent)
+      .on("presence", { event: "leave" }, computeOtherPresent)
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          void presence!.track({ seat });
+        }
+      });
+  }
+
   return () => {
-    void client().removeChannel(channel);
+    void c.removeChannel(channel);
+    if (presence) void c.removeChannel(presence);
   };
 }
