@@ -1,6 +1,6 @@
 ﻿<template>
   <!-- ═══════════ LOBBY : choix des decks (J1 puis J2) ═══════════ -->
-  <div v-if="store.matchPhase === 'lobby'" class="space-y-6">
+  <div v-if="store.matchPhase === 'lobby' && !store.online" class="space-y-6">
     <header class="flex flex-wrap items-end justify-between gap-4">
       <div>
         <p class="eyebrow text-primary">La Table des Douze</p>

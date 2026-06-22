@@ -321,6 +321,20 @@ test.describe("Table de jeu (/play/table)", () => {
     await expect(creer).toBeEnabled();
     // Le mode hot-seat local n'est plus présent dans le lobby.
     await expect(page.getByTestId("lobby-deck-pick")).toHaveCount(0);
+
+    // Une fois CONNECTÉ en ligne (après « Créer la partie »), le lobby cède la
+    // place à l'écran d'attente avec le code — il ne doit PAS rester bloqué sur
+    // le lobby (régression : matchPhase reste 'lobby' tant que l'adversaire n'a
+    // pas rejoint, donc le rendu doit dépendre de store.online).
+    await page.evaluate(() => {
+      const gp = (document.querySelector("#app") as any).__vue_app__.config
+        .globalProperties;
+      gp.$pinia._s.get("game").online = true;
+    });
+    await expect(
+      page.getByRole("heading", { name: "Nouvelle partie" }),
+    ).toBeHidden();
+    await expect(page.getByText("En attente de l'adversaire")).toBeVisible();
   });
 
   test("devrait lancer le tutoriel interactif (découverte)", async ({
