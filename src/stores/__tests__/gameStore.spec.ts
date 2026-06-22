@@ -664,3 +664,48 @@ describe("applyServerEvent — ordre & resync", () => {
     expect(store.onlineJournalSeqs()).toEqual([1, 2, 3]);
   });
 });
+
+describe("matchPhase en ligne (dérivé du journal)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  function started(seq: number): RedactedEvent {
+    return {
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      actor: "system",
+      type: "GAME_STARTED",
+      payload: { state: { instances: {} } },
+      ts: 0,
+    } as unknown as RedactedEvent;
+  }
+  function mullDone(seat: "A" | "B", seq: number): RedactedEvent {
+    return {
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      actor: seat,
+      type: "MULLIGAN_DONE",
+      payload: { seat },
+      ts: 0,
+    } as RedactedEvent;
+  }
+
+  it("journal vide ⇒ lobby ; GAME_STARTED ⇒ mulligan ; les deux MULLIGAN_DONE ⇒ playing", () => {
+    const store = useGameStore();
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+    };
+    store.connectOnline("g", "A", transport);
+    expect(store.matchPhase).toBe("lobby");
+    store.applyServerEvent(started(1));
+    expect(store.matchPhase).toBe("mulligan");
+    store.applyServerEvent(mullDone("A", 2));
+    expect(store.matchPhase).toBe("mulligan"); // un seul siège prêt
+    store.applyServerEvent(mullDone("B", 3));
+    expect(store.matchPhase).toBe("playing");
+    expect(store.mulliganDoneOnline()).toEqual({ A: true, B: true });
+  });
+});

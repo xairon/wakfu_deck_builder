@@ -453,10 +453,7 @@
 
     <!-- Mulligan -->
     <Transition name="ovl">
-      <div
-        v-if="!store.passPending && store.matchPhase === 'mulligan'"
-        class="overlay overlay--mulligan"
-      >
+      <div v-if="mulliganDecisionVisible" class="overlay overlay--mulligan">
         <div class="overlay__card overlay__card--wide">
           <p class="eyebrow text-primary">
             Main de départ — {{ store.players[store.perspective].name }}
@@ -469,14 +466,14 @@
             <button
               class="btn btn-primary"
               data-testid="mulligan-keep"
-              @click="store.keepHand()"
+              @click="onMulliganKeep"
             >
               Garder ({{ mulliganHand.length }} cartes)
             </button>
             <button
               class="btn btn-outline"
               :disabled="mulliganHand.length === 0"
-              @click="store.mulligan(store.perspective)"
+              @click="onMulliganReplace"
             >
               Mulligan (re-piocher
               {{ Math.max(0, mulliganHand.length - 1) }})
@@ -484,6 +481,22 @@
           </div>
           <p class="mt-3 text-xs text-base-content/50">
             Règle Wakfu : on recommence avec une carte de moins à chaque fois.
+          </p>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Mulligan en ligne : ma décision est prise, j'attends l'adversaire -->
+    <Transition name="ovl">
+      <div v-if="mulliganWaiting" class="overlay">
+        <div class="overlay__card">
+          <p class="eyebrow text-primary">Mulligan</p>
+          <h2 class="mt-2 font-display text-3xl">
+            En attente de l'adversaire…
+          </h2>
+          <p class="mt-3 text-sm text-base-content/60">
+            Ta main est validée. La partie démarre dès que l'adversaire a
+            décidé.
           </p>
         </div>
       </div>
@@ -517,7 +530,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
 import type { Card, Deck } from "@/types/cards";
-import type { RedactedInstance } from "@/game";
+import type { RedactedInstance, DraftEvent } from "@/game";
 import { elementColor } from "@/config/elementColors";
 import { getThumbPath } from "@/utils/imagePaths";
 import GameBoard from "@/components/game/GameBoard.vue";
@@ -539,6 +552,7 @@ import {
   joinGame,
   findGameByCode,
   submitEvent,
+  requestMulligan,
   subscribeToGame,
   pullEvents,
   findMyActiveGame,
@@ -781,6 +795,49 @@ const mulliganHand = computed<RedactedInstance[]>(() => {
 const mulliganItems = computed<HandItem[]>(() =>
   mulliganHand.value.map((inst) => ({ key: inst.instanceId, inst })),
 );
+
+// ── Mulligan en ligne : décision indépendante par siège (pas de passation) ─────
+const myMulliganDone = computed(
+  () => store.online && store.mulliganDoneOnline()[store.perspective],
+);
+const oppMulliganDone = computed(
+  () =>
+    store.online &&
+    store.mulliganDoneOnline()[store.perspective === "A" ? "B" : "A"],
+);
+/** Overlay de décision : en ligne tant que MON siège n'a pas tranché ; en local
+ *  hors écran de passation. */
+const mulliganDecisionVisible = computed(
+  () =>
+    store.matchPhase === "mulligan" &&
+    (store.online ? !myMulliganDone.value : !store.passPending),
+);
+/** En ligne : j'ai tranché, j'attends l'adversaire. */
+const mulliganWaiting = computed(
+  () =>
+    store.online &&
+    store.matchPhase === "mulligan" &&
+    myMulliganDone.value &&
+    !oppMulliganDone.value,
+);
+async function onMulliganKeep(): Promise<void> {
+  if (store.online) {
+    await submitEvent(store.gameId(), {
+      actor: store.perspective,
+      type: "MULLIGAN_DONE",
+      payload: { seat: store.perspective },
+    } as unknown as DraftEvent);
+  } else {
+    store.keepHand();
+  }
+}
+async function onMulliganReplace(): Promise<void> {
+  if (store.online) {
+    await requestMulligan(store.gameId());
+  } else {
+    store.mulligan(store.perspective);
+  }
+}
 
 // ── Libellé du filtre de recherche en pile ───────────────────────────────────
 const pickFilterLabel = computed(() => {

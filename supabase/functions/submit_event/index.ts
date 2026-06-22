@@ -10,7 +10,11 @@ import {
   authorizeDraft,
   redactEventForSeat,
 } from "../../../src/game/engine/authority.ts";
-import type { PersistedEvent } from "../../../src/game/types/events.ts";
+import { drawTop, recycleToPiocheTop } from "../../../src/game/engine/verbs.ts";
+import type {
+  PersistedEvent,
+  DraftEvent,
+} from "../../../src/game/types/events.ts";
 
 function rowToEvent(r: Record<string, unknown>): PersistedEvent {
   return {
@@ -67,6 +71,75 @@ Deno.serve(async (req) => {
     // reconnaisse `post` comme une extension de `state` (sinon re-dérivation O(N)).
     const rowEvents = (rows ?? []).map(rowToEvent);
     const state = deriveState(rowEvents);
+
+    // Meta-intent MULLIGAN : recycle la main → mélange (RNG serveur) → repioche
+    // (n-1) → MULLIGAN_DONE. Expansé côté serveur en une suite d'events appendés
+    // un par un (comme la mise en place de join_game), diffusés redactés. Le
+    // MULLIGAN_DONE est émis EN DERNIER : un échec en cours laisse le siège
+    // « non prêt » (donc rejouable) — le client resync (lot fiabilité).
+    if ((draft as { type?: string })?.type === "MULLIGAN") {
+      const seat = me.seat as "A" | "B";
+      const already = rowEvents.some(
+        (e) =>
+          e.type === "MULLIGAN_DONE" &&
+          (e.payload as { seat?: string }).seat === seat,
+      );
+      if (already) return json({ error: "MULLIGAN_DEJA_FAIT" }, 409);
+
+      let working = rowEvents.slice();
+      const hand = [...deriveState(working).seats[seat].main];
+
+      const appendOne = async (d: DraftEvent): Promise<void> => {
+        const pre = deriveState(working);
+        const ev = resolveDraft(pre, d, {
+          gameId,
+          seq: pre.seq + 1,
+          ts: Date.now(),
+          masterSeed: secret!.master_seed,
+        });
+        const { error } = await db.rpc("append_event", {
+          p_game_id: gameId,
+          p_parent_seq: pre.seq,
+          p_actor: ev.actor,
+          p_type: ev.type,
+          p_payload: ev.payload,
+          p_payload_private: ev.payloadPrivate ?? null,
+        });
+        if (error) throw new Error(error.message);
+        working = [...working, ev];
+        const post = deriveState(working);
+        for (const s of ["A", "B"] as const) {
+          await db
+            .channel(`game:${gameId}:${s}`, { config: { private: true } })
+            .send({
+              type: "broadcast",
+              event: "game_event",
+              payload: redactEventForSeat(ev, s, pre, post),
+            });
+        }
+      };
+
+      try {
+        for (const id of hand) await appendOne(recycleToPiocheTop(seat, id));
+        await appendOne({
+          actor: seat,
+          type: "SHUFFLE",
+          payload: { zone: { zone: "pioche", owner: seat }, permutation: [] },
+        });
+        const redraw = Math.max(0, hand.length - 1);
+        for (let i = 0; i < redraw; i++) {
+          await appendOne(drawTop(deriveState(working), seat));
+        }
+        await appendOne({
+          actor: seat,
+          type: "MULLIGAN_DONE",
+          payload: { seat },
+        });
+      } catch (e) {
+        return json({ error: String(e) }, 409); // partiel → le client resync
+      }
+      return json({ ok: true });
+    }
 
     // Autorisation serveur (table libre : on bloque seulement l'accès aux zones
     // privées adverses + le peeking). L'acteur est imposé par le serveur.

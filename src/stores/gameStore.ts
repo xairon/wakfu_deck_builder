@@ -79,6 +79,20 @@ function rndSeed(): string {
 export type MatchPhase = "lobby" | "mulligan" | "playing" | "finished";
 
 /**
+ * Phase de match DÉRIVÉE du journal (source de vérité en ligne, donc partagée
+ * par les deux clients + reconstruite à la reconnexion) : pas de GAME_STARTED →
+ * lobby ; les deux sièges ont un MULLIGAN_DONE → playing ; sinon → mulligan.
+ */
+function deriveMatchPhase(evs: PersistedEvent[]): MatchPhase {
+  if (!evs.some((e) => e.type === "GAME_STARTED")) return "lobby";
+  const done: Record<"A" | "B", boolean> = { A: false, B: false };
+  for (const e of evs)
+    if (e.type === "MULLIGAN_DONE")
+      done[(e.payload as { seat: "A" | "B" }).seat] = true;
+  return done.A && done.B ? "playing" : "mulligan";
+}
+
+/**
  * Transport du jeu EN LIGNE (modèle « clients de confiance » : le serveur
  * diffuse l'état COMPLET, l'info cachée est respectée à l'affichage via
  * `redactStateFor`). Injecté (gameClient en prod, mock en test) pour découpler
@@ -370,6 +384,9 @@ export const useGameStore = defineStore("game", () => {
       next++;
     }
     if (toAppend.length) events.value = [...events.value, ...toAppend];
+    // En ligne, la phase de match suit le journal (main de départ → mulligan →
+    // jeu) : les deux clients la dérivent du même flux d'events.
+    if (online.value) matchPhase.value = deriveMatchPhase(events.value);
     if (pending.size && !pulling) void resyncFrom(lastSeq()); // trou → combler
   }
 
@@ -401,7 +418,9 @@ export const useGameStore = defineStore("game", () => {
     perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
     events.value = [];
     revealed.value = {};
-    matchPhase.value = "playing";
+    // Dérivée du journal (vide ici → "lobby") ; le pull de connexion la fera
+    // évoluer vers mulligan/playing via applyServerEvent.
+    matchPhase.value = deriveMatchPhase(events.value);
     onlineTransport = transport;
     submitChain = Promise.resolve();
     pending.clear();
@@ -1466,10 +1485,19 @@ export const useGameStore = defineStore("game", () => {
     assistEffects,
     online,
     mySeat,
+    gameId: () => gameId.value,
     connectOnline,
     disconnectOnline,
     applyServerEvent,
     onlineJournalSeqs: () => events.value.map((e) => e.seq),
+    /** Sièges ayant validé leur décision de mulligan (dérivé du journal). */
+    mulliganDoneOnline: (): Record<"A" | "B", boolean> => {
+      const done: Record<"A" | "B", boolean> = { A: false, B: false };
+      for (const e of events.value)
+        if (e.type === "MULLIGAN_DONE")
+          done[(e.payload as { seat: "A" | "B" }).seat] = true;
+      return done;
+    },
     revealedCardId: (id: string) => revealed.value[id] ?? null,
     ruleError,
     clearRuleError,

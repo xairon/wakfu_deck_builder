@@ -295,6 +295,26 @@ describe("authorizeDraft", () => {
       }),
     ).not.toThrow();
   });
+
+  it("authorizeDraft: MULLIGAN_DONE d'un autre siège est rejeté", () => {
+    const s = deriveState(
+      createGame("g", DECKS, { seedA: "a", seedB: "b" }).events,
+    );
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "MULLIGAN_DONE",
+        payload: { seat: "B" },
+      }),
+    ).toThrow();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "MULLIGAN_DONE",
+        payload: { seat: "A" },
+      }),
+    ).not.toThrow();
+  });
 });
 
 describe("redactEventForSeat", () => {

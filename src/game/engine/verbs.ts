@@ -39,6 +39,21 @@ export function drawTop(state: GameState, seat: Seat): DraftEvent<MovePayload> {
   });
 }
 
+/** Recycle une carte de la Main vers le sommet de la Pioche (face cachée). */
+export function recycleToPiocheTop(
+  seat: Seat,
+  instanceId: InstanceId,
+): DraftEvent<MovePayload> {
+  return move(seat, {
+    instanceId,
+    from: { zone: "main", owner: seat },
+    to: { zone: "pioche", owner: seat },
+    position: top,
+    visibility: { faceDown: true, visibleTo: "none" },
+    preservesIdentity: false,
+  });
+}
+
 /** Jouer une carte de la main vers le Monde (publique). */
 export function playToWorld(
   seat: Seat,

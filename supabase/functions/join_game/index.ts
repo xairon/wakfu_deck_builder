@@ -3,7 +3,7 @@
 import { adminClient, getUserId } from "../_shared/auth.ts";
 import { json, preflight } from "../_shared/cors.ts";
 import { setupEvents } from "../../../src/game/engine/setup.ts";
-import { sequence } from "../../../src/game/engine/verbs.ts";
+import { sequence, drawTop } from "../../../src/game/engine/verbs.ts";
 import {
   resolveDraft,
   redactEventForSeat,
@@ -92,6 +92,47 @@ Deno.serve(async (req) => {
           });
       }
     }
+    // ── Main de départ : 6 cartes par siège (= pa initial du héros, cf. setup.ts).
+    // Chaque tirage est un MOVE Pioche→Main révélé au SEUL propriétaire ; la
+    // redaction par siège ne livre le cardId qu'à lui (l'adversaire voit un dos).
+    const OPENING_HAND = 6;
+    for (const seat of ["A", "B"] as const) {
+      for (let i = 0; i < OPENING_HAND; i++) {
+        const state = deriveState(stateEvents);
+        const ev = resolveDraft(
+          state,
+          { ...drawTop(state, seat), actor: "system" },
+          {
+            gameId: game.id,
+            seq: parent + 1,
+            ts: Date.now(),
+            masterSeed: secret!.master_seed,
+          },
+        );
+        const { error: appendErr } = await db.rpc("append_event", {
+          p_game_id: game.id,
+          p_parent_seq: parent,
+          p_actor: ev.actor,
+          p_type: ev.type,
+          p_payload: ev.payload,
+          p_payload_private: ev.payloadPrivate ?? null,
+        });
+        if (appendErr) return json({ error: appendErr.message }, 409);
+        stateEvents = [...stateEvents, ev];
+        parent = ev.seq;
+        const post = deriveState(stateEvents);
+        for (const s of ["A", "B"] as const) {
+          await db
+            .channel(`game:${game.id}:${s}`, { config: { private: true } })
+            .send({
+              type: "broadcast",
+              event: "game_event",
+              payload: redactEventForSeat(ev, s, state, post),
+            });
+        }
+      }
+    }
+
     await db
       .from("games")
       .update({ status: "active", first_player: first })

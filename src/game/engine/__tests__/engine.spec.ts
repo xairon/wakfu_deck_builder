@@ -125,6 +125,27 @@ describe("reducer — déterminisme", () => {
     expect(derived!.seats.A.pioche.length).toBe(full.seats.A.pioche.length);
     expect(derived!.seats.B.pioche.length).toBe(full.seats.B.pioche.length);
   });
+
+  it("MULLIGAN_DONE est un no-op d'état (fold sans throw)", () => {
+    const { events } = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" });
+    const before = deriveState(events);
+    const withDone = [
+      ...events,
+      {
+        gameId: GID,
+        seq: before.seq + 1,
+        parentSeq: before.seq,
+        actor: "A",
+        type: "MULLIGAN_DONE",
+        payload: { seat: "A" },
+        ts: 0,
+      } as PersistedEvent,
+    ];
+    resetDeriveMemo();
+    const after = deriveState(withDone);
+    expect(after.instances).toEqual(before.instances);
+    expect(after.seq).toBe(before.seq + 1);
+  });
 });
 
 describe("reducer — mémoïsation incrémentale du fold", () => {
