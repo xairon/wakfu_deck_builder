@@ -176,8 +176,13 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
     next.seq = ev.seq;
     return next;
   }
-  // UNDONE & SAID : pas de mutation d'état (gérés au fold / log).
-  if (ev.type === "UNDONE" || ev.type === "SAID") {
+  // UNDONE, SAID & MULLIGAN_DONE : pas de mutation d'état (gérés au fold / log /
+  // dérivation de matchPhase depuis le journal).
+  if (
+    ev.type === "UNDONE" ||
+    ev.type === "SAID" ||
+    ev.type === "MULLIGAN_DONE"
+  ) {
     const passthrough = structuredClone(state);
     passthrough.seq = ev.seq;
     return passthrough;

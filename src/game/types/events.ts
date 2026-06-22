@@ -87,6 +87,10 @@ export interface SaidPayload {
   text: string;
 }
 
+export interface MulliganDonePayload {
+  seat: Seat;
+}
+
 export type EventType =
   | "GAME_STARTED"
   | "MOVE"
@@ -101,6 +105,7 @@ export type EventType =
   | "REVEAL"
   | "SET_PHASE"
   | "SAID"
+  | "MULLIGAN_DONE"
   | "UNDONE";
 
 /**

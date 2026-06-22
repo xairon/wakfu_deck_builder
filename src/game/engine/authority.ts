@@ -154,6 +154,7 @@ const ALLOWED_TYPES = new Set<EventType>([
   "REVEAL",
   "SET_PHASE",
   "SAID",
+  "MULLIGAN_DONE",
   "UNDONE",
 ]);
 
@@ -223,6 +224,14 @@ export function authorizeDraft(state: GameState, draft: DraftEvent): void {
     const payload = draft.payload as ShufflePayload;
     if ("owner" in payload.zone && payload.zone.owner !== actor) {
       throw new EngineError("FORBIDDEN", { reason: "shuffle-foreign-zone" });
+    }
+  }
+
+  // MULLIGAN_DONE : un siège ne peut marquer QUE sa propre décision.
+  if (draft.type === "MULLIGAN_DONE") {
+    const p = draft.payload as { seat?: Seat };
+    if (p.seat !== actor) {
+      throw new EngineError("FORBIDDEN", { reason: "mulligan-foreign-seat" });
     }
   }
 
