@@ -91,6 +91,12 @@ export interface MulliganDonePayload {
   seat: Seat;
 }
 
+/** Fin de partie — event système/serveur (non émis par le client). */
+export interface GameOverPayload {
+  winner: Seat | "draw";
+  reason: "concede" | "defeat" | "disconnect";
+}
+
 export type EventType =
   | "GAME_STARTED"
   | "MOVE"
@@ -106,6 +112,7 @@ export type EventType =
   | "SET_PHASE"
   | "SAID"
   | "MULLIGAN_DONE"
+  | "GAME_OVER"
   | "UNDONE";
 
 /**
