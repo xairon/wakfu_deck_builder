@@ -570,6 +570,7 @@ import {
   pullEvents,
   findMyActiveGame,
   concede as concedeOnline,
+  claimVictory as claimVictoryOnline,
 } from "@/services/gameClient";
 
 const deckStore = useDeckStore();
@@ -656,6 +657,7 @@ const onlineTransport = {
   subscribe: subscribeToGame,
   pull: pullEvents,
   concede: concedeOnline,
+  claimVictory: claimVictoryOnline,
 };
 // Jeu en ligne (bêta). Backend déployé et vérifié sur le projet Supabase
 // (tables games/game_players + Edge Functions create_game/join_game/submit_event

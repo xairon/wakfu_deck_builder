@@ -166,13 +166,20 @@ export async function submitEvent(
 /**
  * S'abonne au flux REDACTÉ du siège `seat` sur un canal PRIVÉ game:<id>:<seat>.
  * Renvoie une fonction de désabonnement.
+ *
+ * Présence : chaque siège `track` sa présence sur un canal partagé
+ * `game:<id>:presence` ; `onPresence(present)` reflète si l'AUTRE siège est en
+ * ligne (sync/join/leave). Sert la fenêtre de grâce sur déconnexion adverse
+ * (cf. gameStore). Optionnel pour ne pas casser les abonnements existants.
  */
 export function subscribeToGame(
   gameId: string,
   seat: Seat,
   onEvent: (event: RedactedEvent) => void,
+  onPresence?: (present: boolean) => void,
 ): () => void {
-  const channel = client()
+  const c = client();
+  const channel = c
     .channel(`game:${gameId}:${seat}`, { config: { private: true } })
     .on("broadcast", { event: "game_event" }, (msg) => {
       onEvent(msg.payload as RedactedEvent);
@@ -186,7 +193,32 @@ export function subscribeToGame(
         );
       }
     });
+
+  // Canal de présence partagé (les deux sièges y trackent leur siège). On
+  // calcule la présence de l'AUTRE siège depuis l'état de présence agrégé.
+  const other: Seat = seat === "A" ? "B" : "A";
+  let presence: ReturnType<typeof c.channel> | null = null;
+  if (onPresence) {
+    presence = c.channel(`game:${gameId}:presence`, {
+      config: { presence: { key: seat } },
+    });
+    const computeOtherPresent = (): void => {
+      const stateMap = presence!.presenceState() as Record<string, unknown[]>;
+      onPresence(!!stateMap[other]?.length);
+    };
+    presence
+      .on("presence", { event: "sync" }, computeOtherPresent)
+      .on("presence", { event: "join" }, computeOtherPresent)
+      .on("presence", { event: "leave" }, computeOtherPresent)
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          void presence!.track({ seat });
+        }
+      });
+  }
+
   return () => {
-    void client().removeChannel(channel);
+    void c.removeChannel(channel);
+    if (presence) void c.removeChannel(presence);
   };
 }

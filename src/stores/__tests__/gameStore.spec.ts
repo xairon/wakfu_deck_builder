@@ -1,9 +1,9 @@
 import { setActivePinia, createPinia } from "pinia";
-import { beforeEach, describe, it, expect } from "vitest";
+import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import type { Card, Deck } from "@/types/cards";
 import type { DraftEvent, PersistedEvent, RedactedEvent, Seat } from "@/game";
 import { createGame, setCounter } from "@/game";
-import { useGameStore } from "../gameStore";
+import { useGameStore, DISCONNECT_GRACE_MS } from "../gameStore";
 import { useCardStore } from "../cardStore";
 import {
   createMockAllyCard,
@@ -938,5 +938,122 @@ describe("fin autoritative serveur (GAME_OVER) + mode assisté partagé", () => 
     // par défaut (omis) → règles libres
     store.connectOnline("g", "A", transport);
     expect(store.assist).toBe(false);
+  });
+});
+
+describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.useFakeTimers();
+  });
+  afterEach(() => vi.useRealTimers());
+
+  function mullDone(seat: "A" | "B", seq: number): RedactedEvent {
+    return {
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      actor: seat,
+      type: "MULLIGAN_DONE",
+      payload: { seat },
+      ts: 0,
+    } as RedactedEvent;
+  }
+
+  /**
+   * Branche une partie en ligne (siège A) jusqu'en « playing » et expose le
+   * callback de présence capté du transport (pour piloter sync/join/leave).
+   */
+  function playingOnlineGame(): {
+    store: ReturnType<typeof useGameStore>;
+    presence: (present: boolean) => void;
+    claimed: { count: number };
+  } {
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    let onPresence: ((present: boolean) => void) | null = null;
+    const claimed = { count: 0 };
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        _onEvent: (e: RedactedEvent) => void,
+        onPres?: (present: boolean) => void,
+      ) => {
+        onPresence = onPres ?? null;
+        return () => {};
+      },
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+      claimVictory: async () => {
+        claimed.count++;
+      },
+    };
+    const store = useGameStore();
+    store.connectOnline("g", "A", transport);
+    for (const ev of events) store.applyServerEvent(ev);
+    let seq = events[events.length - 1].seq;
+    store.applyServerEvent(mullDone("A", ++seq));
+    store.applyServerEvent(mullDone("B", ++seq));
+    expect(store.matchPhase).toBe("playing");
+    return { store, presence: (p) => onPresence!(p), claimed };
+  }
+
+  it("présence par défaut = présent, victoire NON réclamable", () => {
+    const { store } = playingOnlineGame();
+    expect(store.opponentPresent).toBe(true);
+    expect(store.canClaimVictory).toBe(false);
+  });
+
+  it("déconnexion adverse → minuteur armé, pas encore réclamable", () => {
+    const { store, presence } = playingOnlineGame();
+    presence(false);
+    expect(store.opponentPresent).toBe(false);
+    // juste avant l'échéance : la victoire reste NON réclamable
+    vi.advanceTimersByTime(DISCONNECT_GRACE_MS - 1);
+    expect(store.canClaimVictory).toBe(false);
+  });
+
+  it("la grâce écoulée rend la victoire réclamable ; claimVictory soumet", () => {
+    const { store, presence, claimed } = playingOnlineGame();
+    presence(false);
+    expect(store.opponentPresent).toBe(false);
+    expect(store.canClaimVictory).toBe(false); // grâce en cours
+    // avant l'échéance : réclamer ne fait rien
+    store.claimVictory();
+    expect(claimed.count).toBe(0);
+    vi.advanceTimersByTime(DISCONNECT_GRACE_MS);
+    expect(store.canClaimVictory).toBe(true);
+    store.claimVictory();
+    expect(claimed.count).toBe(1);
+  });
+
+  it("retour de l'adversaire AVANT l'échéance annule la grâce", () => {
+    const { store, presence } = playingOnlineGame();
+    presence(false);
+    vi.advanceTimersByTime(DISCONNECT_GRACE_MS / 2);
+    presence(true); // l'adversaire revient
+    expect(store.opponentPresent).toBe(true);
+    expect(store.canClaimVictory).toBe(false);
+    // le minuteur initial ne doit plus déclencher
+    vi.advanceTimersByTime(DISCONNECT_GRACE_MS);
+    expect(store.canClaimVictory).toBe(false);
+  });
+
+  it("disconnectOnline coupe le minuteur (test-safe) et réinitialise l'état", () => {
+    const { store, presence } = playingOnlineGame();
+    presence(false);
+    store.disconnectOnline();
+    expect(store.opponentPresent).toBe(true);
+    expect(store.canClaimVictory).toBe(false);
+    // minuteur coupé : l'échéance ne ressuscite pas le drapeau
+    vi.advanceTimersByTime(DISCONNECT_GRACE_MS);
+    expect(store.canClaimVictory).toBe(false);
   });
 });
