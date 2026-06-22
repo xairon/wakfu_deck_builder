@@ -259,6 +259,13 @@
           {{ store.phaseLabel }}
         </span>
         <span v-else class="gtopbar__turn">Mise en place</span>
+        <span
+          v-if="store.online && tabHidden"
+          class="gtopbar__turn"
+          data-testid="tab-hidden-hint"
+        >
+          · Onglet en arrière-plan — l'adversaire peut te voir absent
+        </span>
       </div>
       <div v-if="store.matchPhase === 'playing'" class="gtopbar__group">
         <button
@@ -308,6 +315,31 @@
           Quitter
         </button>
       </div>
+    </div>
+
+    <!-- Adversaire déconnecté : bandeau de grâce + réclamation de victoire -->
+    <div
+      v-if="opponentGone"
+      class="gdisconnect"
+      data-testid="opponent-disconnected"
+      role="status"
+    >
+      <span class="gdisconnect__text">
+        Adversaire déconnecté —
+        {{
+          store.canClaimVictory
+            ? "victoire réclamable."
+            : "victoire réclamable après un délai de grâce…"
+        }}
+      </span>
+      <button
+        v-if="store.canClaimVictory"
+        class="gtop-btn gdisconnect__claim"
+        data-testid="claim-victory"
+        @click="store.claimVictory()"
+      >
+        Réclamer la victoire
+      </button>
     </div>
 
     <div class="glayout">
@@ -537,7 +569,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
@@ -787,6 +819,16 @@ const onlineWaiting = computed(
   () => store.online && store.state.monde.length === 0,
 );
 
+// Adversaire absent en pleine partie : on affiche le bandeau de grâce. Une fois
+// `store.canClaimVictory` armé (délai de grâce écoulé), le bouton de
+// réclamation apparaît. Le retour de l'adversaire (présence) referme tout.
+const opponentGone = computed(
+  () =>
+    store.online &&
+    store.matchPhase === "playing" &&
+    store.opponentPresent === false,
+);
+
 // ── Aides deck ───────────────────────────────────────────────────────────────
 function cardCount(d: Deck): number {
   return (d.cards ?? []).reduce(
@@ -920,6 +962,28 @@ onMounted(async () => {
   }
   // Onboarding : /play/table?tutorial=1 démarre directement le tutoriel.
   if (route.query.tutorial && !store.started) startTutorial();
+});
+
+// ── Cycle de vie de l'onglet ────────────────────────────────────────────────
+// `visibilitychange` est PUREMENT cosmétique : on note discrètement que l'onglet
+// est masqué pour l'affichage, mais on ne déclenche JAMAIS de forfait ici
+// (basculer d'onglet ou verrouiller son téléphone ne doit pas faire perdre la
+// partie). La présence Realtime + la fenêtre de grâce gèrent la déconnexion.
+const tabHidden = ref(false);
+function onVisibilityChange(): void {
+  tabHidden.value = document.visibilityState === "hidden";
+}
+
+onMounted(() => {
+  document.addEventListener("visibilitychange", onVisibilityChange);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("visibilitychange", onVisibilityChange);
+  // Navigation hors de la table : on coupe proprement le transport en ligne.
+  // Ce n'est PAS un forfait — la reprise au montage (findMyActiveGame) permet de
+  // revenir dans une partie encore `active`.
+  if (store.online) store.disconnectOnline();
 });
 </script>
 
@@ -1154,6 +1218,30 @@ onMounted(async () => {
 }
 .gtop-toggle__box {
   accent-color: #f0a62b;
+}
+.gdisconnect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: rgba(240, 78, 34, 0.14);
+  border: 1px solid rgba(240, 78, 34, 0.4);
+  color: #f6f5f1;
+}
+.gdisconnect__text {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.gdisconnect__claim {
+  background: #f04e22;
+  font-weight: 700;
+}
+.gdisconnect__claim:hover {
+  background: #d8421a;
 }
 .glayout {
   display: flex;
