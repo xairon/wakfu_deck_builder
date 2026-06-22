@@ -15,6 +15,8 @@ import {
   findGameByCode,
   submitEvent,
   subscribeToGame,
+  concede,
+  claimVictory,
 } from "@/services/gameClient";
 
 describe("gameClient — appels Supabase (functions.invoke + query builder)", () => {
@@ -33,7 +35,23 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
     const res = await createGame(deck);
 
     expect(res).toEqual({ gameId: "g1", code: "ABCD" });
-    expect(invoke).toHaveBeenCalledWith("create_game", { body: { deck } });
+    expect(invoke).toHaveBeenCalledWith("create_game", {
+      body: { deck, assisted: false },
+    });
+  });
+
+  it("devrait propager le drapeau assisted à 'create_game'", async () => {
+    const invoke = vi
+      .fn()
+      .mockResolvedValue({ data: { gameId: "g1", code: "ABCD" }, error: null });
+    supabaseStub = { functions: { invoke } };
+
+    const deck = { hero: "x" };
+    await createGame(deck, true);
+
+    expect(invoke).toHaveBeenCalledWith("create_game", {
+      body: { deck, assisted: true },
+    });
   });
 
   it("devrait propager l'erreur renvoyée par 'create_game'", async () => {
@@ -70,20 +88,21 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
   });
 
   // ── findGameByCode ──────────────────────────────────────────────────────
-  it("devrait interroger games via select('id').eq('code', …).maybeSingle() et renvoyer l'id", async () => {
-    const maybeSingle = vi
-      .fn()
-      .mockResolvedValue({ data: { id: "game-42" }, error: null });
+  it("devrait interroger games via select('id, assisted').eq('code', …).maybeSingle() et renvoyer { id, assisted }", async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({
+      data: { id: "game-42", assisted: true },
+      error: null,
+    });
     const eq = vi.fn(() => ({ maybeSingle }));
     const select = vi.fn(() => ({ eq }));
     const from = vi.fn(() => ({ select }));
     supabaseStub = { from };
 
-    const id = await findGameByCode("CODE1");
+    const res = await findGameByCode("CODE1");
 
-    expect(id).toBe("game-42");
+    expect(res).toEqual({ id: "game-42", assisted: true });
     expect(from).toHaveBeenCalledWith("games");
-    expect(select).toHaveBeenCalledWith("id");
+    expect(select).toHaveBeenCalledWith("id, assisted");
     expect(eq).toHaveBeenCalledWith("code", "CODE1");
     expect(maybeSingle).toHaveBeenCalledTimes(1);
   });
@@ -94,9 +113,9 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
     const select = vi.fn(() => ({ eq }));
     supabaseStub = { from: vi.fn(() => ({ select })) };
 
-    const id = await findGameByCode("INCONNU");
+    const res = await findGameByCode("INCONNU");
 
-    expect(id).toBeNull();
+    expect(res).toBeNull();
   });
 
   it("devrait propager l'erreur de la requête findGameByCode", async () => {
@@ -129,6 +148,50 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
     supabaseStub = { functions: { invoke } };
 
     await expect(submitEvent("g9", {} as any)).rejects.toThrow("submit boom");
+  });
+
+  // ── concede ───────────────────────────────────────────────────────────────
+  it("devrait soumettre la méta-intention CONCEDE via 'submit_event'", async () => {
+    const invoke = vi
+      .fn()
+      .mockResolvedValue({ data: { ok: true }, error: null });
+    supabaseStub = { functions: { invoke } };
+
+    await concede("g42");
+
+    expect(invoke).toHaveBeenCalledWith("submit_event", {
+      body: { gameId: "g42", draft: { type: "CONCEDE" } },
+    });
+  });
+
+  it("devrait propager l'erreur renvoyée lors d'un CONCEDE", async () => {
+    const err = new Error("concede boom");
+    const invoke = vi.fn().mockResolvedValue({ data: null, error: err });
+    supabaseStub = { functions: { invoke } };
+
+    await expect(concede("g42")).rejects.toThrow("concede boom");
+  });
+
+  // ── claimVictory ────────────────────────────────────────────────────────
+  it("devrait soumettre la méta-intention CLAIM_VICTORY via 'submit_event'", async () => {
+    const invoke = vi
+      .fn()
+      .mockResolvedValue({ data: { ok: true }, error: null });
+    supabaseStub = { functions: { invoke } };
+
+    await claimVictory("g42");
+
+    expect(invoke).toHaveBeenCalledWith("submit_event", {
+      body: { gameId: "g42", draft: { type: "CLAIM_VICTORY" } },
+    });
+  });
+
+  it("devrait propager l'erreur renvoyée lors d'un CLAIM_VICTORY", async () => {
+    const err = new Error("claim boom");
+    const invoke = vi.fn().mockResolvedValue({ data: null, error: err });
+    supabaseStub = { functions: { invoke } };
+
+    await expect(claimVictory("g42")).rejects.toThrow("claim boom");
   });
 
   // ── garde « Supabase non configuré » ─────────────────────────────────────

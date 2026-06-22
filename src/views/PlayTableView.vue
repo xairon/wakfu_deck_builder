@@ -556,6 +556,7 @@ import {
   subscribeToGame,
   pullEvents,
   findMyActiveGame,
+  concede as concedeOnline,
 } from "@/services/gameClient";
 
 const deckStore = useDeckStore();
@@ -641,6 +642,7 @@ const onlineTransport = {
   submit: submitEvent,
   subscribe: subscribeToGame,
   pull: pullEvents,
+  concede: concedeOnline,
 };
 // Jeu en ligne (bêta). Backend déployé et vérifié sur le projet Supabase
 // (tables games/game_players + Edge Functions create_game/join_game/submit_event
@@ -739,12 +741,13 @@ async function onlineJoin(): Promise<void> {
   onlineBusy.value = true;
   onlineError.value = "";
   try {
-    const gameId = await findGameByCode(code);
-    if (!gameId) {
+    const g = await findGameByCode(code);
+    if (!g) {
       onlineError.value = "Partie introuvable (vérifie le code).";
       return;
     }
-    store.connectOnline(gameId, "B", onlineTransport); // s'abonner AVANT join
+    // s'abonner AVANT join ; mode de règles partagé hérité du créateur
+    store.connectOnline(g.id, "B", onlineTransport, g.assisted);
     await joinGame(code, deck);
     // joinGame vient de créer GAME_STARTED + mélanges + mains de départ. Le pull
     // de connexion a tourné sur un journal ENCORE VIDE (events créés seulement
@@ -888,7 +891,12 @@ onMounted(async () => {
     try {
       const active = await findMyActiveGame();
       if (active)
-        store.connectOnline(active.gameId, active.seat, onlineTransport);
+        store.connectOnline(
+          active.gameId,
+          active.seat,
+          onlineTransport,
+          active.assisted,
+        );
     } catch {
       /* pas de reprise possible — on reste au lobby */
     }
