@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     const uid = await getUserId(req);
     if (!uid) return json({ error: "UNAUTHENTICATED" }, 401);
 
-    const { deck } = await req.json();
+    const { deck, assisted = false } = await req.json();
     if (!deck?.hero || !deck?.havreSac)
       return json({ error: "DECK_INVALIDE" }, 400);
 
@@ -36,6 +36,7 @@ Deno.serve(async (req) => {
         status: "lobby",
         seat_a: uid,
         master_seed_hash: masterSeedHash,
+        assisted: Boolean(assisted),
       })
       .select("id, code")
       .single();
