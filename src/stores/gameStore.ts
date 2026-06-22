@@ -12,6 +12,7 @@ import { computed, ref, shallowRef, watch } from "vue";
 import type { Card, Deck } from "@/types/cards";
 import type {
   DraftEvent,
+  GameOverPayload,
   GameState,
   PersistedEvent,
   Position,
@@ -106,6 +107,12 @@ export interface OnlineTransport {
     onEvent: (e: RedactedEvent) => void,
   ): () => void;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
+  /**
+   * Abandon : soumet l'intention CONCEDE ; le serveur écrit le GAME_OVER.
+   * Optionnel le temps que le câblage `gameClient`/PlayTableView (T3/T6) le
+   * fournisse — `concede()` route en `onlineTransport?.concede?.(…)`.
+   */
+  concede?(gameId: string): Promise<void>;
 }
 
 export interface LogLine {
@@ -389,6 +396,17 @@ export const useGameStore = defineStore("game", () => {
    */
   function deriveOnlineOutcome(): void {
     if (matchPhase.value === "finished") return;
+    // Fin AUTORITATIVE serveur : un GAME_OVER (concession/déconnexion/défaite,
+    // émis par submit_event) prime sur la dérivation d'état. Il porte le
+    // vainqueur (« draw » → match nul, on ne désigne personne) et fige la
+    // partie sur les DEUX clients, y compris à la reconnexion.
+    const over = events.value.find((e) => e.type === "GAME_OVER");
+    if (over) {
+      matchPhase.value = "finished";
+      const w = (over.payload as GameOverPayload).winner;
+      if (w !== "draw") winner.value = w;
+      return;
+    }
     matchPhase.value = deriveMatchPhase(events.value);
     if (matchPhase.value !== "playing") return;
     const w = victoryFromState(rulesCtx());
@@ -431,15 +449,22 @@ export const useGameStore = defineStore("game", () => {
     }
   }
 
-  /** Connecte la table à une partie en ligne, au siège `seat`. */
+  /**
+   * Connecte la table à une partie en ligne, au siège `seat`. `assisted` est le
+   * mode de règles PARTAGÉ (choisi par le créateur, plumb depuis findGameByCode/
+   * findMyActiveGame) : les deux clients tournent dans le même mode pour le
+   * match. `assistEffects` reste OFF en ligne (automatisation séparée, risque de
+   * double-soumission).
+   */
   function connectOnline(
     id: string,
     seat: Seat,
     transport: OnlineTransport,
+    assisted = false,
   ): void {
     disconnectOnline();
     online.value = true;
-    assist.value = false; // jeu en ligne = résolution manuelle (Cockatrice)
+    assist.value = assisted; // mode de règles partagé (choisi à la création)
     gameId.value = id;
     mySeat.value = seat;
     perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
@@ -659,12 +684,26 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function concede(seat: Seat): void {
+    // En ligne : on soumet l'intention CONCEDE ; le serveur force le perdant =
+    // siège authentifié, écrit le GAME_OVER terminal et le diffuse → la fin
+    // arrive par echo (deriveOnlineOutcome) sur les DEUX clients.
+    if (online.value) {
+      void onlineTransport?.concede?.(gameId.value);
+      return;
+    }
     dispatch(say(seat, `${players.value[seat].name} abandonne la partie.`));
     winner.value = otherSeat(seat);
     matchPhase.value = "finished";
   }
 
   function quitMatch(): void {
+    // En ligne : quitter = abandonner (forfait) puis se déconnecter proprement.
+    // La concession part au serveur ; on coupe la table ensuite.
+    if (online.value) {
+      concede(mySeat.value);
+      disconnectOnline();
+      return;
+    }
     events.value = [];
     matchPhase.value = "lobby";
     passPending.value = false;

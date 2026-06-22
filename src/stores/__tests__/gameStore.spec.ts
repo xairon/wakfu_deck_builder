@@ -569,6 +569,7 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
         return () => {};
       },
       pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
     };
     const deck = createMockDeck();
     useCardStore().cards = deck.cards.map((dc) => dc.card);
@@ -635,6 +636,7 @@ describe("applyServerEvent — ordre & resync", () => {
       submit: async () => ({ seq: 0 }),
       subscribe: () => () => {},
       pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
     };
     store.connectOnline("g", "A", transport);
     store.applyServerEvent(journal[0]);
@@ -655,6 +657,7 @@ describe("applyServerEvent — ordre & resync", () => {
         pullArgs = since;
         return full.slice(since);
       },
+      concede: async () => {},
     };
     store.connectOnline("g", "A", transport);
     store.applyServerEvent(ev(3)); // trou : on n'a pas 1,2 → tampon + pull(0)
@@ -676,6 +679,7 @@ describe("resyncOnline — course connexion-avant-join", () => {
       submit: async () => ({ seq: 0 }),
       subscribe: () => () => {},
       pull: async (_g: string, since: number) => available.slice(since),
+      concede: async () => {},
     };
     store.connectOnline("g", "B", transport); // pull(0) tourne sur journal VIDE
     await new Promise((r) => setTimeout(r, 0));
@@ -740,6 +744,7 @@ describe("matchPhase en ligne (dérivé du journal)", () => {
       submit: async () => ({ seq: 0 }),
       subscribe: () => () => {},
       pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
     };
     store.connectOnline("g", "A", transport);
     expect(store.matchPhase).toBe("lobby");
@@ -800,6 +805,7 @@ describe("victoire en ligne (dérivée de l'état partagé)", () => {
       submit: async () => ({ seq: 0 }),
       subscribe: () => () => {},
       pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
     };
     store.connectOnline("g", "A", transport);
     for (const ev of events) store.applyServerEvent(ev);
@@ -858,5 +864,79 @@ describe("victoire en ligne (dérivée de l'état partagé)", () => {
     store.applyServerEvent(counterEv("A", heroA, "hp", 0, seqA));
     expect(store.matchPhase).toBe("playing"); // égalité : pas de fausse victoire
     expect(store.winner).toBeNull();
+  });
+});
+
+describe("fin autoritative serveur (GAME_OVER) + mode assisté partagé", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  function mullDone(seat: "A" | "B", seq: number): RedactedEvent {
+    return {
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      actor: seat,
+      type: "MULLIGAN_DONE",
+      payload: { seat },
+      ts: 0,
+    } as RedactedEvent;
+  }
+  function gameOver(
+    winner: "A" | "B" | "draw",
+    reason: "concede" | "defeat" | "disconnect",
+    seq: number,
+  ): RedactedEvent {
+    return {
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      actor: "system",
+      type: "GAME_OVER",
+      payload: { winner, reason },
+      ts: 0,
+    } as RedactedEvent;
+  }
+
+  it("un GAME_OVER diffusé fige la partie (finished) et désigne le vainqueur sur le client", () => {
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    const store = useGameStore();
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+    store.connectOnline("g", "B", transport); // on observe depuis le siège B
+    for (const ev of events) store.applyServerEvent(ev);
+    let seq = events[events.length - 1].seq;
+    store.applyServerEvent(mullDone("A", ++seq));
+    store.applyServerEvent(mullDone("B", ++seq));
+    expect(store.matchPhase).toBe("playing");
+    // concession de B → le serveur diffuse GAME_OVER{winner:'A', concede} :
+    // les deux clients dérivent finished + vainqueur A depuis le journal.
+    store.applyServerEvent(gameOver("A", "concede", ++seq));
+    expect(store.matchPhase).toBe("finished");
+    expect(store.winner).toBe("A");
+  });
+
+  it("connectOnline(..., assisted=true) active les règles assistées (mode partagé)", () => {
+    const store = useGameStore();
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+    store.connectOnline("g", "A", transport, true);
+    expect(store.assist).toBe(true);
+    // par défaut (omis) → règles libres
+    store.connectOnline("g", "A", transport);
+    expect(store.assist).toBe(false);
   });
 });
