@@ -31,33 +31,12 @@
       v-if="ONLINE_PLAY_ENABLED"
       class="border border-primary/30 bg-primary/[0.04] p-5"
     >
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p class="eyebrow text-primary">Jouer en ligne (bêta)</p>
-          <p class="mt-1 text-sm text-base-content/65">
-            Affronte un ami à distance — règles résolues à la main, comme sur
-            une vraie table.
-          </p>
-        </div>
-        <div
-          v-if="authStore.isAuthenticated && decks.length"
-          class="flex gap-2"
-        >
-          <button
-            class="btn btn-sm"
-            :class="onlinePanel === 'create' ? 'btn-primary' : 'btn-outline'"
-            @click="onlinePanel = 'create'"
-          >
-            Créer
-          </button>
-          <button
-            class="btn btn-sm"
-            :class="onlinePanel === 'join' ? 'btn-primary' : 'btn-outline'"
-            @click="onlinePanel = 'join'"
-          >
-            Rejoindre
-          </button>
-        </div>
+      <div>
+        <p class="eyebrow text-primary">Jouer en ligne (bêta)</p>
+        <p class="mt-1 text-sm text-base-content/65">
+          Affronte un ami à distance — règles résolues à la main, comme sur une
+          vraie table.
+        </p>
       </div>
 
       <p v-if="!authStore.isAuthenticated" class="mt-3 text-sm">
@@ -73,12 +52,13 @@
         pour jouer en ligne.
       </p>
 
-      <div v-else-if="onlinePanel" class="mt-4 flex flex-wrap items-end gap-3">
+      <div v-else class="mt-4 space-y-4">
+        <!-- Deck partagé (sert aussi bien à créer qu'à rejoindre). -->
         <label class="flex flex-col gap-1 text-sm">
           <span class="text-base-content/60">Ton deck</span>
           <select
             v-model="onlineDeckId"
-            class="select select-bordered select-sm w-56 bg-base-200"
+            class="select select-bordered select-sm w-64 bg-base-200"
           >
             <option :value="null" disabled>Choisis…</option>
             <option v-for="d in decks" :key="d.id" :value="d.id">
@@ -86,55 +66,60 @@
             </option>
           </select>
         </label>
-        <label
-          v-if="onlinePanel === 'join'"
-          class="flex flex-col gap-1 text-sm"
-        >
-          <span class="text-base-content/60">Code du salon</span>
-          <input
-            v-model="joinCode"
-            maxlength="8"
-            placeholder="ABCD12"
-            class="input input-bordered input-sm w-40 uppercase"
-          />
-        </label>
-        <label
-          v-if="onlinePanel === 'create'"
-          class="flex items-center gap-2 text-sm"
-          title="Coûts en Ressources, légalité des coups, combat et victoire automatiques — partagé par les deux joueurs"
-        >
-          <input
-            v-model="onlineAssisted"
-            type="checkbox"
-            class="checkbox checkbox-sm"
-            data-testid="online-assisted-toggle"
-          />
-          <span>Règles assistées</span>
-        </label>
-        <button
-          v-if="onlinePanel === 'create'"
-          class="btn btn-primary btn-sm"
-          :disabled="!onlineDeckId || onlineBusy || !onlineDeckValid"
-          @click="onlineCreate"
-        >
-          {{ onlineBusy ? "…" : "Créer la partie" }}
-        </button>
-        <button
-          v-else
-          class="btn btn-primary btn-sm"
-          :disabled="
-            !onlineDeckId || !joinCode.trim() || onlineBusy || !onlineDeckValid
-          "
-          @click="onlineJoin"
-        >
-          {{ onlineBusy ? "…" : "Rejoindre" }}
-        </button>
-        <p
-          v-if="onlineDeckId && !onlineDeckValid"
-          class="w-full text-sm text-warning"
-        >
+        <p v-if="onlineDeckId && !onlineDeckValid" class="text-sm text-warning">
           Deck incomplet : {{ onlineDeckErrors[0] }}
         </p>
+
+        <!-- Héberger une nouvelle partie. -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label
+            class="flex items-center gap-2 text-sm"
+            title="Coûts en Ressources, légalité des coups, combat et victoire automatiques — partagé par les deux joueurs"
+          >
+            <input
+              v-model="onlineAssisted"
+              type="checkbox"
+              class="checkbox checkbox-sm"
+              data-testid="online-assisted-toggle"
+            />
+            <span>Règles assistées</span>
+          </label>
+          <button
+            class="btn btn-primary btn-sm"
+            :disabled="!onlineDeckId || onlineBusy || !onlineDeckValid"
+            @click="onlineCreate"
+          >
+            {{ onlineBusy ? "…" : "Créer la partie" }}
+          </button>
+        </div>
+
+        <!-- …ou rejoindre celle d'un ami avec son code. -->
+        <div
+          class="flex flex-wrap items-end gap-3 border-t border-base-content/10 pt-3"
+        >
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="text-base-content/60">Rejoindre avec un code</span>
+            <input
+              v-model="joinCode"
+              maxlength="8"
+              placeholder="ABCD12"
+              class="input input-bordered input-sm w-40 uppercase"
+            />
+          </label>
+          <button
+            class="btn btn-outline btn-sm"
+            :disabled="
+              !onlineDeckId ||
+              !joinCode.trim() ||
+              onlineBusy ||
+              !onlineDeckValid
+            "
+            @click="onlineJoin"
+          >
+            {{ onlineBusy ? "…" : "Rejoindre" }}
+          </button>
+        </div>
+
         <span v-if="onlineError" class="text-sm text-error">{{
           onlineError
         }}</span>
@@ -560,10 +545,9 @@ const onlineTransport = {
 // overlay d'attente, application des events) est conforme au contrat backend.
 // À valider en conditions réelles : test à 2 clients connectés (diffusion serveur).
 const ONLINE_PLAY_ENABLED = true;
-// Lobby « en ligne uniquement » : le panneau Créer est ouvert d'emblée (plus de
-// bascule cachée), et le deck est pré-sélectionné (cf. watcher plus bas) pour que
+// Lobby « en ligne uniquement » : Créer et Rejoindre sont affichés ensemble (plus
+// de bascule), et le deck est pré-sélectionné (cf. watcher plus bas) pour que
 // « Créer la partie » soit cliquable tout de suite.
-const onlinePanel = ref<"create" | "join">("create");
 const onlineDeckId = ref<string | null>(null);
 // Mode de règles assistées choisi par le créateur, propagé aux deux clients.
 const onlineAssisted = ref(false);
