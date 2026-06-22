@@ -665,6 +665,27 @@ describe("applyServerEvent — ordre & resync", () => {
   });
 });
 
+describe("resyncOnline — course connexion-avant-join", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("rattrape un journal créé APRÈS la connexion (le joueur n'est plus bloqué)", async () => {
+    const store = useGameStore();
+    const full = [ev(1), ev(2), ev(3)];
+    let available: RedactedEvent[] = []; // serveur encore vide au connect (lobby)
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async (_g: string, since: number) => available.slice(since),
+    };
+    store.connectOnline("g", "B", transport); // pull(0) tourne sur journal VIDE
+    await new Promise((r) => setTimeout(r, 0));
+    expect(store.onlineJournalSeqs()).toEqual([]); // rien reçu → resterait bloqué
+    available = full; // joinGame vient de créer les events serveur
+    await store.resyncOnline(); // le fix : rattrapage explicite
+    expect(store.onlineJournalSeqs()).toEqual([1, 2, 3]);
+  });
+});
+
 describe("matchPhase en ligne (dérivé du journal)", () => {
   beforeEach(() => setActivePinia(createPinia()));
 

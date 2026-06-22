@@ -746,6 +746,11 @@ async function onlineJoin(): Promise<void> {
     }
     store.connectOnline(gameId, "B", onlineTransport); // s'abonner AVANT join
     await joinGame(code, deck);
+    // joinGame vient de créer GAME_STARTED + mélanges + mains de départ. Le pull
+    // de connexion a tourné sur un journal ENCORE VIDE (events créés seulement
+    // maintenant) ; on rattrape explicitement pour ne pas dépendre du seul
+    // broadcast (course connexion/diffusion qui laissait le joueur « en attente »).
+    await store.resyncOnline();
   } catch (e) {
     // connectOnline a déjà basculé en « playing » (overlay d'attente) : on annule
     // pour revenir au lobby et rendre l'erreur visible.

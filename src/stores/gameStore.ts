@@ -1516,6 +1516,10 @@ export const useGameStore = defineStore("game", () => {
     connectOnline,
     disconnectOnline,
     applyServerEvent,
+    /** Force un rattrapage du journal (pull depuis lastSeq). À appeler quand on
+     *  SAIT que des events viennent d'être créés serveur (ex. juste après
+     *  joinGame) : le pull de connexion a pu tourner sur un journal encore vide. */
+    resyncOnline: () => resyncFrom(lastSeq()),
     onlineJournalSeqs: () => events.value.map((e) => e.seq),
     /** Sièges ayant validé leur décision de mulligan (dérivé du journal). */
     mulliganDoneOnline: (): Record<"A" | "B", boolean> => {
