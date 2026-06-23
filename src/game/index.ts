@@ -6,6 +6,7 @@
 export * from "./types/zones";
 export * from "./types/events";
 export * from "./types/state";
+export type { GameIntent } from "./types/intents";
 export {
   applyEvent,
   deriveState,
@@ -43,3 +44,4 @@ export {
   sequence,
 } from "./engine/verbs";
 export { buildInitialLayout, setupEvents, createGame } from "./engine/setup";
+export { resolveIntent, type IntentResult } from "./actions/resolveIntent";

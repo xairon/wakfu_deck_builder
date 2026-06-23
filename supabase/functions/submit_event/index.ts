@@ -12,11 +12,24 @@ import {
 } from "../../../src/game/engine/authority.ts";
 import { drawTop, recycleToPiocheTop } from "../../../src/game/engine/verbs.ts";
 import { victoryFromState } from "../../../src/game/rules/victory.ts";
+import { resolveIntent } from "../../../src/game/actions/resolveIntent.ts";
+import { loadCards } from "../_shared/cards.ts";
 import { otherSeat } from "../../../src/game/types/zones.ts";
+import type { Card, Deck } from "../../../src/types/cards.ts";
 import type {
   PersistedEvent,
   DraftEvent,
 } from "../../../src/game/types/events.ts";
+
+/** Ids de cartes d'un deck (Héros + Havre-Sac + cartes) pour précharger getCard. */
+function deckCardIds(deck: Deck | null): string[] {
+  if (!deck) return [];
+  const ids: string[] = [];
+  if (deck.hero?.id) ids.push(deck.hero.id);
+  if (deck.havreSac?.id) ids.push(deck.havreSac.id);
+  for (const dc of deck.cards ?? []) if (dc?.card?.id) ids.push(dc.card.id);
+  return ids;
+}
 
 function rowToEvent(r: Record<string, unknown>): PersistedEvent {
   return {
@@ -38,7 +51,7 @@ Deno.serve(async (req) => {
     const uid = await getUserId(req);
     if (!uid) return json({ error: "UNAUTHENTICATED" }, 401);
 
-    const { gameId, draft } = await req.json();
+    const { gameId, draft, intent } = await req.json();
     const db = adminClient();
 
     // Siège de l'appelant (sécurité : l'acteur est imposé par le serveur).
@@ -198,6 +211,70 @@ Deno.serve(async (req) => {
         for (let i = 0; i < redraw; i++) {
           await appendOne(drawTop(deriveState(working), seat));
         }
+      } catch (e) {
+        return json({ error: String(e) }, 409); // partiel → le client resync
+      }
+      return json({ ok: true });
+    }
+
+    // ── Nouveau contrat : intention de HAUT NIVEAU (résolue + validée serveur).
+    // Le serveur est l'AUTORITÉ : `resolveIntent` valide tour → légalité → coût et
+    // renvoie les events autoritatifs (ou une erreur 403). On précharge les cartes
+    // des deux decks (Héros + Havre-Sac + cartes) pour `getCard`. Les events sont
+    // appendés un par un + diffusés redactés (même boucle que le MULLIGAN) ; un
+    // éventuel `draws` (END_TURN) est résolu en re-dérivant l'état entre chaque
+    // pioche (le sommet de la Pioche change à chacune).
+    if (intent) {
+      const { data: players } = await db
+        .from("game_players")
+        .select("deck")
+        .eq("game_id", gameId);
+      const ids = (players ?? []).flatMap((p) => deckCardIds(p.deck as Deck));
+      const cardMap = await loadCards(db, ids);
+      const getCard = (id: string | null): Card | null =>
+        id ? (cardMap.get(id) ?? null) : null;
+
+      const res = resolveIntent(state, getCard, intent, me.seat as "A" | "B");
+      if ("error" in res) return json({ error: res.error }, 403);
+
+      let working = rowEvents.slice();
+      const appendOne = async (d: DraftEvent): Promise<void> => {
+        const pre = deriveState(working);
+        const ev = resolveDraft(pre, d, {
+          gameId,
+          seq: pre.seq + 1,
+          ts: Date.now(),
+          masterSeed: secret!.master_seed,
+        });
+        const { error } = await db.rpc("append_event", {
+          p_game_id: gameId,
+          p_parent_seq: pre.seq,
+          p_actor: ev.actor,
+          p_type: ev.type,
+          p_payload: ev.payload,
+          p_payload_private: ev.payloadPrivate ?? null,
+        });
+        if (error) throw new Error(error.message);
+        working = [...working, ev];
+        const post = deriveState(working);
+        for (const s of ["A", "B"] as const) {
+          await db
+            .channel(`game:${gameId}:${s}`, { config: { private: true } })
+            .send({
+              type: "broadcast",
+              event: "game_event",
+              payload: redactEventForSeat(ev, s, pre, post),
+            });
+        }
+      };
+
+      try {
+        for (const d of res.events) await appendOne(d);
+        if ("draws" in res && res.draws)
+          for (let i = 0; i < res.draws; i++)
+            await appendOne(
+              drawTop(deriveState(working), me.seat as "A" | "B"),
+            );
       } catch (e) {
         return json({ error: String(e) }, 409); // partiel → le client resync
       }

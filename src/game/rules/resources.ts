@@ -14,7 +14,7 @@ import {
   levelCost,
   producedElement,
   requiredElement,
-} from "./cardAttrs";
+} from "./cardAttrs.ts";
 
 /** Cartes inclinables pour produire une Ressource (contrôlées, redressées). */
 export function resourceProducers(

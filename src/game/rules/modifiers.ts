@@ -6,11 +6,11 @@
  * sont lues selon la face courante de l'instance.
  */
 import type { Card, CardEffect, StaticAbility } from "@/types/cards";
-import { isHeroCard } from "@/types/cards";
+import { isHeroCard } from "../../types/cards.ts";
 import type { InstanceId } from "../types/events";
 import type { Seat } from "../types/zones";
 import type { RulesCtx } from "./types";
-import { compileStaticEffectText, selfAttackEffects } from "./effects/dsl";
+import { compileStaticEffectText, selfAttackEffects } from "./effects/dsl.ts";
 
 /**
  * Pouvoirs continus d'une carte (face courante pour un Héros) : forme

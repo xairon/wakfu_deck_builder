@@ -3,7 +3,7 @@
  * Les données de cartes sont hétérogènes (scraping) : tout accès passe ici.
  */
 import type { Card, BaseStats } from "@/types/cards";
-import { isHeroCard } from "@/types/cards";
+import { isHeroCard } from "../../types/cards.ts";
 
 /**
  * Élément normalisé (minuscules) : les données réelles stockent "feu"/"eau"
