@@ -250,8 +250,18 @@ export const useGameStore = defineStore("game", () => {
   const assistEffects = ref(true);
   /** Dernier refus de coup, à afficher en toast. */
   const ruleError = ref<string | null>(null);
-  /** Tour où l'attaque du joueur actif a été déclarée (1 attaque/tour). */
+  /** Tour où l'attaque du joueur actif a été déclarée (1 attaque/tour, jeu LOCAL). */
   const attackedOnTurn = ref<number | null>(null);
+  /**
+   * Tour de la dernière attaque du siège (règle 1 attaque/tour, 603). En ligne
+   * c'est le journal qui fait foi (`state.lastAttackTurn`, posé par le serveur à
+   * la résolution) ; en local on suit le ref `attackedOnTurn`.
+   */
+  function attackedThisTurn(seat: Seat): number | null {
+    return online.value
+      ? (state.value.lastAttackTurn?.[seat] ?? null)
+      : attackedOnTurn.value;
+  }
 
   const cardIndex = computed(() => {
     const m = new Map<string, Card>();
@@ -416,17 +426,13 @@ export const useGameStore = defineStore("game", () => {
   }
 
   /**
-   * Route une action EN LIGNE via une INTENTION (autorité serveur P2) au lieu de
-   * soumettre des drafts bas niveau : le serveur valide tour → légalité → coût
-   * (`resolveIntent`) et un refus revient en français → `ruleError`. Renvoie
-   * `true` si l'intention a été soumise (l'appelant s'arrête là) ; `false`
-   * hors-ligne, sans transport d'intentions, ou PENDANT un combat (le combat
-   * reste sur le chemin assisté/legacy jusqu'à son passage au journal — P3) →
-   * l'appelant retombe alors sur sa logique locale.
+   * Soumet une INTENTION au serveur (autorité). Sérialisé sur `submitChain` ;
+   * un refus revient en français → `ruleError`. Renvoie `true` si soumis
+   * (l'appelant s'arrête là), `false` hors-ligne / sans transport d'intentions.
+   * Sans garde de combat → utilisé aussi par les intentions de COMBAT (P3).
    */
-  function tryIntent(intent: GameIntent): boolean {
-    if (!online.value || combat.value || !onlineTransport?.submitIntent)
-      return false;
+  function pushIntent(intent: GameIntent): boolean {
+    if (!online.value || !onlineTransport?.submitIntent) return false;
     ruleError.value = null;
     const t = onlineTransport;
     const id = gameId.value;
@@ -436,6 +442,17 @@ export const useGameStore = defineStore("game", () => {
         ruleError.value = (e as Error)?.message ?? String(e);
       });
     return true;
+  }
+
+  /**
+   * Route une action de JEU (non-combat) en ligne via une intention (P2). Comme
+   * `pushIntent` mais NE soumet PAS pendant un combat : les manipulations de
+   * plateau hors-combat passent par là ; le combat a ses propres intentions
+   * (DECLARE_ATTACK/BLOCK/RESOLVE) soumises via `pushIntent`.
+   */
+  function tryIntent(intent: GameIntent): boolean {
+    if (combat.value) return false;
+    return pushIntent(intent);
   }
 
   function lastSeq(): number {
@@ -508,8 +525,62 @@ export const useGameStore = defineStore("game", () => {
     if (toAppend.length) events.value = [...events.value, ...toAppend];
     // En ligne, phase ET fin de partie suivent le journal (main de départ →
     // mulligan → jeu → fin) : les deux clients les dérivent du même flux.
-    if (online.value) deriveOnlineOutcome();
+    if (online.value) {
+      deriveOnlineOutcome();
+      reconcileCombat();
+    }
     if (pending.size && !pulling) void resyncFrom(lastSeq()); // trou → combler
+  }
+
+  /**
+   * Combat-au-journal (P3) : aligne le ref de combat LOCAL sur `state.combat`
+   * diffusé. Chaque siège conserve ses sélections EN COURS d'assemblage (curseurs
+   * UI), et prend du serveur ce que l'AUTRE joueur contrôle : l'attaquant reçoit
+   * les blocages/ripostes (du défenseur), le défenseur reçoit attaquants/cible.
+   * Combat clos côté serveur (`null`) → on ferme le ref local.
+   */
+  function reconcileCombat(): void {
+    if (!online.value) return;
+    const sc = state.value.combat ?? null;
+    if (!sc) {
+      if (combat.value) combat.value = null;
+      return;
+    }
+    const me = mySeat.value;
+    const local = combat.value;
+    if (!local) {
+      // Combat ouvert pour ce client (typiquement le défenseur) : pose la base.
+      combat.value = {
+        step: "blockers",
+        target: sc.target,
+        attackers: [...sc.attackers],
+        blocks: { ...sc.blocks },
+        strikes: { ...(sc.strikes ?? {}) },
+        strikeFor: null,
+        ripostes: { ...(sc.ripostes ?? {}) },
+        riposteFrom: null,
+        riposteCandidates: [],
+        pendingBlocker: null,
+        reactingSeat: sc.reactingSeat,
+      };
+      return;
+    }
+    if (me === sc.attackerSeat) {
+      // Attaquant : autorité serveur sur blocages/ripostes (choix du défenseur).
+      combat.value = {
+        ...local,
+        blocks: { ...sc.blocks },
+        ripostes: { ...(sc.ripostes ?? {}) },
+      };
+    } else {
+      // Défenseur : autorité serveur sur attaquants/cible (choix de l'attaquant).
+      combat.value = {
+        ...local,
+        target: sc.target,
+        attackers: [...sc.attackers],
+        reactingSeat: sc.reactingSeat,
+      };
+    }
   }
 
   /** Retire le journal redacté depuis `sinceSeq` et l'applique (combler trous / connexion). */
@@ -1307,9 +1378,30 @@ export const useGameStore = defineStore("game", () => {
       whyCannotDeclareAttack(
         rulesCtx(),
         turn.value.active,
-        attackedOnTurn.value,
+        attackedThisTurn(turn.value.active),
       ) === null,
   );
+
+  // ── Coordination du combat EN LIGNE (P3) — dérivée du journal `state.combat`.
+  /** L'attaquant peut résoudre : le défenseur a déclaré ses blocages (« resolve »). */
+  const combatCanResolve = computed(() => {
+    if (!combat.value) return false;
+    if (!online.value) return combat.value.step === "blockers"; // local : l'attaquant pilote
+    const sc = state.value.combat;
+    return !!sc && sc.step === "resolve" && sc.attackerSeat === mySeat.value;
+  });
+  /** Je suis le défenseur, à qui de déclarer ses blocages (fenêtre de réaction). */
+  const combatCanConfirmBlocks = computed(() => {
+    if (!online.value) return false;
+    const sc = state.value.combat;
+    return !!sc && sc.step === "blockers" && sc.attackerSeat !== mySeat.value;
+  });
+  /** Je suis l'attaquant, en attente des blocages adverses. */
+  const combatWaitingForBlocks = computed(() => {
+    if (!online.value) return false;
+    const sc = state.value.combat;
+    return !!sc && sc.step === "blockers" && sc.attackerSeat === mySeat.value;
+  });
 
   /** « Mana » disponible par Élément : producteurs redressés du siège (4261). */
   function resourcesOf(seat: Seat): Record<string, number> {
@@ -1324,7 +1416,7 @@ export const useGameStore = defineStore("game", () => {
     const err = whyCannotDeclareAttack(
       rulesCtx(),
       perspective.value,
-      attackedOnTurn.value,
+      attackedThisTurn(perspective.value),
     );
     if (err) return rejectMove(err);
     combat.value = {
@@ -1402,6 +1494,21 @@ export const useGameStore = defineStore("game", () => {
       );
     if (!c.attackers.length)
       return rejectMove("Déclare au moins un attaquant redressé.");
+    // EN LIGNE (P3) : on soumet l'intention DECLARE_ATTACK — le serveur valide,
+    // incline les attaquants et ouvre le combat (SET_COMBAT diffusé aux deux).
+    // On passe optimistement en « blockers » (attente des blocages adverses) ;
+    // l'echo réaligne via reconcileCombat.
+    if (online.value) {
+      const ok = pushIntent({
+        kind: "DECLARE_ATTACK",
+        attackers: c.attackers,
+        target: c.target,
+      });
+      if (ok) {
+        c.step = "blockers";
+        return true;
+      }
+    }
     const seat = turn.value.active;
     // 703 / A6 — l'inclinaison des attaquants part de la DÉCLARATION (et non
     // de la résolution) : les jetons posés par « Quand [self] attaque »
@@ -1485,6 +1592,14 @@ export const useGameStore = defineStore("game", () => {
   function combatResolve(): void {
     const c = combat.value;
     if (!c || !c.target) return;
+    // EN LIGNE (P3) : l'attaquant soumet RESOLVE_COMBAT (le défenseur a déjà
+    // déclaré ses blocages → state.combat.step === "resolve"). Le serveur
+    // applique resolveCombat et clôt le combat (echo). Les choix fins de frappe
+    // (6105) sont transmis ; la riposte est portée par le blocage du défenseur.
+    if (online.value) {
+      pushIntent({ kind: "RESOLVE_COMBAT", strikes: c.strikes });
+      return;
+    }
     // Sécurité : si une réaction traînait, on la clôt et on rend la main à
     // l'attaquant avant de résoudre.
     if (c.reactingSeat) {
@@ -1508,8 +1623,27 @@ export const useGameStore = defineStore("game", () => {
     doResolveCombat();
   }
 
+  /**
+   * EN LIGNE (P3) : le DÉFENSEUR confirme ses blocages (même vides = « laisser
+   * passer ») → intention DECLARE_BLOCK. Le serveur passe le combat en
+   * « resolve » : l'attaquant pourra alors résoudre. Inopérant hors-ligne (en
+   * hot-seat l'attaquant pilote tout).
+   */
+  function combatConfirmBlocks(): void {
+    const c = combat.value;
+    if (!c || !online.value) return;
+    pushIntent({
+      kind: "DECLARE_BLOCK",
+      blocks: c.blocks,
+      ripostes: c.ripostes,
+    });
+  }
+
   /** 706.5 — l'attaquant cède la main au défenseur pour réagir avant résolution. */
   function combatOfferReaction(): void {
+    // EN LIGNE, aucune passation : le défenseur agit sur SON client (le combat
+    // est au journal). La fenêtre de réaction hot-seat ne s'applique qu'en local.
+    if (online.value) return;
     const c = combat.value;
     if (!c || c.step !== "blockers") return;
     const def = otherSeat(turn.value.active);
@@ -1572,6 +1706,14 @@ export const useGameStore = defineStore("game", () => {
 
   function combatCancel(): void {
     const c = combat.value;
+    // EN LIGNE (P3) : si le combat est DÉJÀ déclaré côté serveur, on soumet
+    // CANCEL_COMBAT (le serveur redresse les attaquants + clôt). S'il n'est
+    // qu'en assemblage local (pas encore déclaré), on ferme juste le ref local.
+    if (online.value) {
+      if (state.value.combat) pushIntent({ kind: "CANCEL_COMBAT" });
+      else combat.value = null;
+      return;
+    }
     // Annuler APRÈS la déclaration : les attaquants ont été inclinés à la
     // déclaration (A6). On les redresse pour ne pas laisser le joueur avec des
     // cartes tapées « pour rien » s'il renonce au combat.
@@ -1730,6 +1872,9 @@ export const useGameStore = defineStore("game", () => {
     combatBlockerIds,
     eligibleAttackerIds,
     canDeclareAttack,
+    combatCanResolve,
+    combatCanConfirmBlocks,
+    combatWaitingForBlocks,
     resourcesOf,
     beginCombat,
     combatToggleAttacker,
@@ -1737,6 +1882,7 @@ export const useGameStore = defineStore("game", () => {
     combatConfirmAttackers,
     combatToggleBlock,
     combatChooseBlockTarget,
+    combatConfirmBlocks,
     combatResolve,
     combatOfferReaction,
     combatEndReaction,

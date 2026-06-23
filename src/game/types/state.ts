@@ -46,7 +46,8 @@ export interface CombatTargetRef {
  */
 export interface CombatState {
   attackerSeat: Seat;
-  step: "blockers" | "strikes" | "riposte";
+  /** "blockers" = le défenseur déclare ; "resolve" = blocages déclarés, l'attaquant peut résoudre. */
+  step: "blockers" | "resolve";
   target: CombatTargetRef;
   attackers: InstanceId[];
   /** blockerId → attackerId bloqué. */

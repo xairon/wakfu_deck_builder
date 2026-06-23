@@ -355,8 +355,11 @@ export function resolveIntent(
         if (!attackerSet.has(attackerId))
           return { error: "Blocage assigné à un non-attaquant." };
       }
+      // Déclaration des blocages → step "resolve" : l'attaquant peut maintenant
+      // résoudre (le défenseur a eu sa fenêtre de blocage, même s'il bloque 0).
       const next: CombatState = {
         ...c,
+        step: "resolve",
         blocks: { ...intent.blocks },
         ripostes: intent.ripostes ?? c.ripostes,
       };
@@ -368,6 +371,8 @@ export function resolveIntent(
       if (!c) return { error: "Aucun combat à résoudre." };
       if (seat !== c.attackerSeat)
         return { error: "Seul l'attaquant peut résoudre le combat." };
+      if (c.step !== "resolve")
+        return { error: "Le défenseur n'a pas encore déclaré ses blocages." };
       // resolveCombat applique les défauts (premier bloqueur frappé, première
       // riposte) si strikes/ripostes manquent → robuste même sans choix fins.
       const result = resolveCombat(

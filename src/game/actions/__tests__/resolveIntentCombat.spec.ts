@@ -126,6 +126,15 @@ describe("resolveIntent — combat (autorité serveur, P3)", () => {
 
     const hpBefore = ctxOf(f).state.instances[HERO_B].counters.hp ?? 0;
 
+    // Avant que le défenseur ait déclaré ses blocages, l'attaquant ne peut PAS
+    // résoudre (fenêtre de blocage, step "blockers").
+    const tooEarly = run(f, { kind: "RESOLVE_COMBAT" }, "A");
+    expect("error" in tooEarly).toBe(true);
+    expect("error" in tooEarly && tooEarly.error).toContain("blocages");
+
+    // Le défenseur déclare 0 blocage (laisse passer) → step "resolve".
+    apply(f, { kind: "DECLARE_BLOCK", blocks: {} }, "B");
+
     // Le défenseur ne résout pas.
     const bad = run(f, { kind: "RESOLVE_COMBAT" }, "B");
     expect("error" in bad).toBe(true);
@@ -150,6 +159,7 @@ describe("resolveIntent — combat (autorité serveur, P3)", () => {
       },
       "A",
     );
+    apply(f, { kind: "DECLARE_BLOCK", blocks: {} }, "B");
     apply(f, { kind: "RESOLVE_COMBAT" }, "A");
     // Même tour, on retente : la garde 603 (lastAttackTurn) doit refuser.
     const r = run(

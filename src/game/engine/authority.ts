@@ -138,40 +138,30 @@ export function redactEventForBroadcast(
   return { ...event, payload, payloadPrivate };
 }
 
+// P4 — le JEU (placer/déplacer/incliner/compteurs/équiper/combat/tour) passe
+// EXCLUSIVEMENT par les INTENTIONS de haut niveau (`resolveIntent`, validées
+// tour→légalité→coût→combat). Le chemin « draft » historique (table libre) est
+// retiré pour le jeu : `authorizeDraft` n'accepte plus que les opérations de
+// TABLE non sensibles aux règles — mélange de SA pioche, annulation, chat,
+// look/reveal, et le marqueur MULLIGAN_DONE. Une INTENTION de jeu forgée en
+// draft (MOVE/SET_*/ATTACH/DETACH) est désormais REFUSÉE (BAD_EVENT_TYPE).
 const ALLOWED_TYPES = new Set<EventType>([
   // NB: "GAME_STARTED" est SYSTEM-ONLY — émis par le serveur lors du setup
   // (laissé passer par le early-return `actor === "system"`). Un joueur ne doit
   // jamais pouvoir le déclencher (sinon reset parasite de la partie).
-  "MOVE",
-  "SHUFFLE",
-  "SET_ORIENTATION",
-  "SET_LEVEL",
-  "SET_COUNTER",
-  "INC_COUNTER",
-  "ATTACH",
-  "DETACH",
+  "SHUFFLE", // mélange de sa propre pioche (garde de zone ci-dessous)
   "LOOK",
   "REVEAL",
-  "SET_PHASE",
   "SAID",
   "MULLIGAN_DONE",
   "UNDONE",
 ]);
 
-// Types d'events « liés au tour » : réservés au joueur ACTIF (cf. garde de tour
-// dans authorizeDraft). On EXCLUT SET_PHASE (changement de tour lui-même),
-// LOOK/REVEAL (recherche/regard, non bloquant), SAID (chat) et les méta
-// (MULLIGAN_DONE/UNDONE) qui ont leurs propres règles.
-const TURN_BOUND_TYPES = new Set<EventType>([
-  "MOVE",
-  "SHUFFLE",
-  "SET_ORIENTATION",
-  "SET_LEVEL",
-  "SET_COUNTER",
-  "INC_COUNTER",
-  "ATTACH",
-  "DETACH",
-]);
+// Types « liés au tour » restant sur le chemin draft : seul SHUFFLE (mélange de
+// sa pioche) doit venir du joueur actif. Le JEU est passé aux intentions (P4),
+// donc MOVE/SET_*/ATTACH/DETACH ne sont plus acceptés ici (cf. ALLOWED_TYPES) ;
+// LOOK/REVEAL/SAID/MULLIGAN_DONE/UNDONE ne sont pas liés au tour.
+const TURN_BOUND_TYPES = new Set<EventType>(["SHUFFLE"]);
 
 /** Instances ciblées par un brouillon (pour les vérifs de propriété). */
 function targetedIds(draft: DraftEvent): InstanceId[] {
