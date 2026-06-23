@@ -7,11 +7,11 @@ import type { Card } from "@/types/cards";
 import type { InstanceId } from "../types/events";
 import type { CardInstance } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
-import { otherSeat } from "../types/zones";
+import { otherSeat } from "../types/zones.ts";
 import type { CombatTarget, RulesCtx } from "./types";
-import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs";
-import { cannotBlock } from "./modifiers";
-import { planCost } from "./resources";
+import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs.ts";
+import { cannotBlock } from "./modifiers.ts";
+import { planCost } from "./resources.ts";
 
 /** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
 export function playDestination(card: Card, seat: Seat): ZoneRef {

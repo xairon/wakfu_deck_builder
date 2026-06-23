@@ -1,4 +1,4 @@
-import { EXTENSION_LEVELS } from "@/config/cards";
+import { EXTENSION_LEVELS } from "../config/cards.ts";
 
 // Types de base
 export type CardRarity =

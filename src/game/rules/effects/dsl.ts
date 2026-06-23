@@ -18,7 +18,7 @@ import type {
   CompiledEffect,
   CompiledEffectOp,
 } from "@/types/cards";
-import { isHeroCard } from "@/types/cards";
+import { isHeroCard } from "../../../types/cards.ts";
 
 export type EffectOp = CompiledEffectOp;
 

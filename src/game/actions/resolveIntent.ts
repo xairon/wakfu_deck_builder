@@ -23,7 +23,7 @@ import type {
   DetachPayload,
 } from "../types/events";
 import type { Seat } from "../types/zones";
-import { otherSeat } from "../types/zones";
+import { otherSeat } from "../types/zones.ts";
 import {
   move,
   playToWorld,
@@ -34,9 +34,9 @@ import {
   incCounter,
   flipLevel,
   setPhase,
-} from "../engine/verbs";
-import { whyCannotPlay } from "../rules/legality";
-import { planCost } from "../rules/resources";
+} from "../engine/verbs.ts";
+import { whyCannotPlay } from "../rules/legality.ts";
+import { planCost } from "../rules/resources.ts";
 import type { RulesCtx } from "../rules/types";
 
 /** Résultat d'une intention : events seuls, erreur, ou events + N pioches (END_TURN). */
