@@ -1,7 +1,13 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import type { Card, Deck } from "@/types/cards";
-import type { DraftEvent, PersistedEvent, RedactedEvent, Seat } from "@/game";
+import type {
+  DraftEvent,
+  GameIntent,
+  PersistedEvent,
+  RedactedEvent,
+  Seat,
+} from "@/game";
 import { createGame, setCounter } from "@/game";
 import { useGameStore, DISCONNECT_GRACE_MS } from "../gameStore";
 import { useCardStore } from "../cardStore";
@@ -591,6 +597,80 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     expect(submitted).toHaveLength(1);
     expect(submitted[0].type).toBe("SET_ORIENTATION");
     expect(store.state.instances[havre].orientation).toBe("upright");
+  });
+
+  it("EN LIGNE (P2) : les actions de jeu soumettent des INTENTIONS, pas des drafts", async () => {
+    const intents: GameIntent[] = [];
+    let emit: ((e: PersistedEvent) => void) | null = null;
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      submitIntent: async (_id: string, i: GameIntent) => {
+        intents.push(i);
+      },
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        cb: (e: PersistedEvent) => void,
+      ) => {
+        emit = cb;
+        return () => {};
+      },
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g-online",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    const store = useGameStore();
+    store.connectOnline("g-online", "A", transport); // siège A = joueur actif
+    for (const ev of events) emit!(ev);
+
+    const havre = store.state.seats.A.havreSacInstanceId!;
+    store.toggleTap(havre); // upright → intention TAP
+    store.endTurn(); // intention END_TURN
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(intents.map((i) => i.kind)).toEqual(["TAP", "END_TURN"]);
+    // Aucune application locale : l'état suit les echos (non émis ici).
+    expect(store.state.instances[havre].orientation).toBe("upright");
+  });
+
+  it("EN LIGNE (P2) : un refus serveur d'intention alimente ruleError (raison FR)", async () => {
+    let emit: ((e: PersistedEvent) => void) | null = null;
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      submitIntent: async () => {
+        throw new Error("Ce n'est pas votre tour.");
+      },
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        cb: (e: PersistedEvent) => void,
+      ) => {
+        emit = cb;
+        return () => {};
+      },
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g-online",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    const store = useGameStore();
+    store.connectOnline("g-online", "A", transport);
+    for (const ev of events) emit!(ev);
+
+    store.toggleTap(store.state.seats.A.havreSacInstanceId!);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(store.ruleError).toBe("Ce n'est pas votre tour.");
   });
 
   it("applyServerEvent applique le patch reveals au state dérivé", () => {

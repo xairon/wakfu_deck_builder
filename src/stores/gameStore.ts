@@ -12,6 +12,7 @@ import { computed, ref, shallowRef, watch } from "vue";
 import type { Card, Deck } from "@/types/cards";
 import type {
   DraftEvent,
+  GameIntent,
   GameOverPayload,
   GameState,
   PersistedEvent,
@@ -100,6 +101,14 @@ function deriveMatchPhase(evs: PersistedEvent[]): MatchPhase {
  */
 export interface OnlineTransport {
   submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
+  /**
+   * Soumet une INTENTION de haut niveau (contrat server-authoritative P2) : le
+   * serveur valide tour → légalité → coût et applique les events. En cas de
+   * refus, la promesse rejette avec la raison française (→ ruleError). Optionnel
+   * le temps du câblage (PlayTableView) ; sans lui, on retombe sur le chemin
+   * legacy `submit` (toujours gardé en tour côté serveur).
+   */
+  submitIntent?(gameId: string, intent: GameIntent): Promise<void>;
   /**
    * S'abonne au flux redacté du siège. `onPresence` (optionnel) reflète la
    * présence de l'AUTRE siège (sync/join/leave), pour la fenêtre de grâce sur
@@ -404,6 +413,29 @@ export const useGameStore = defineStore("game", () => {
       ...events.value,
       ...sequence(drafts, gameId.value, state.value.seq + 1),
     ];
+  }
+
+  /**
+   * Route une action EN LIGNE via une INTENTION (autorité serveur P2) au lieu de
+   * soumettre des drafts bas niveau : le serveur valide tour → légalité → coût
+   * (`resolveIntent`) et un refus revient en français → `ruleError`. Renvoie
+   * `true` si l'intention a été soumise (l'appelant s'arrête là) ; `false`
+   * hors-ligne, sans transport d'intentions, ou PENDANT un combat (le combat
+   * reste sur le chemin assisté/legacy jusqu'à son passage au journal — P3) →
+   * l'appelant retombe alors sur sa logique locale.
+   */
+  function tryIntent(intent: GameIntent): boolean {
+    if (!online.value || combat.value || !onlineTransport?.submitIntent)
+      return false;
+    ruleError.value = null;
+    const t = onlineTransport;
+    const id = gameId.value;
+    submitChain = submitChain
+      .then(() => t.submitIntent!(id, intent))
+      .catch((e) => {
+        ruleError.value = (e as Error)?.message ?? String(e);
+      });
+    return true;
   }
 
   function lastSeq(): number {
@@ -748,13 +780,17 @@ export const useGameStore = defineStore("game", () => {
       return;
     }
     combat.value = null;
+    // EN LIGNE (P2) : une seule intention END_TURN — le serveur pioche jusqu'aux
+    // PA, passe la main, redresse/efface les dégâts du joueur entrant et purge
+    // les jetons de tour (resolveIntent → nextTurnEvents). On n'avance RIEN
+    // localement : l'état suit les echos diffusés.
+    if (tryIntent({ kind: "END_TURN" })) return;
     const need = paOf(active) - state.value.seats[active].main.length;
     if (need > 0) draw(active, need);
     nextTurn();
-    // En LIGNE : le changement de tour avance via l'event SET_PHASE diffusé (les
-    // deux clients le dérivent du journal) ; chaque joueur garde la vue sur SON
-    // siège et il n'y a pas de passation d'appareil. En LOCAL (hot-seat) : on
-    // bascule la perspective vers le nouveau joueur actif + écran de passation.
+    // En LOCAL (hot-seat) : on bascule la perspective vers le nouveau joueur
+    // actif + écran de passation. En ligne (repli sans transport d'intentions),
+    // le tour avance via l'echo SET_PHASE — pas de bascule de perspective.
     if (!online.value) {
       perspective.value = state.value.turn.active;
       passPending.value = true;
@@ -868,6 +904,10 @@ export const useGameStore = defineStore("game", () => {
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    // EN LIGNE (P2) : intention MOVE_CARD — le serveur impose le contrôle de tour
+    // et applique le déplacement (échange Monde↔Havre-Sac préservé, jeton
+    // d'arrivée à l'entrée en jeu). Hors combat uniquement (tryIntent l'exclut).
+    if (tryIntent({ kind: "MOVE_CARD", instanceId, to, position })) return;
     // Règles assistées : pendant la phase de jeu, seul le joueur ACTIF manipule
     // le plateau (sauf fenêtre de réaction en combat). Sans ça, n'importe quel
     // MOVE hors « main → Monde » (ex. Havre-Sac ↔ Monde) contournait le contrôle
@@ -950,6 +990,10 @@ export const useGameStore = defineStore("game", () => {
    */
   function playFromHand(instanceId: string): boolean {
     const seat = perspective.value;
+    // EN LIGNE (P2) : intention PLAY_CARD — le serveur valide tour/zone/coût et
+    // choisit la destination (Salle → Havre-Sac), incline les producteurs, pose
+    // le jeton d'arrivée. Un refus revient en français via ruleError.
+    if (tryIntent({ kind: "PLAY_CARD", instanceId })) return true;
     if (!assist.value) {
       moveTo(instanceId, { zone: "monde" });
       return true;
@@ -1136,13 +1180,18 @@ export const useGameStore = defineStore("game", () => {
   function toggleTap(instanceId: string): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    const tapped = inst.orientation === "tapped";
+    // EN LIGNE (P2) : intention TAP/UNTAP (autorité serveur, gardée en tour).
+    if (
+      tryIntent(
+        tapped ? { kind: "UNTAP", instanceId } : { kind: "TAP", instanceId },
+      )
+    )
+      return;
     dispatch({
       actor: inst.controller,
       type: "SET_ORIENTATION",
-      payload: {
-        instanceId,
-        orientation: inst.orientation === "tapped" ? "upright" : "tapped",
-      },
+      payload: { instanceId, orientation: tapped ? "upright" : "tapped" },
     });
   }
 
@@ -1153,6 +1202,8 @@ export const useGameStore = defineStore("game", () => {
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    // EN LIGNE (P2) : intention INC_COUNTER (autorité serveur, gardée en tour).
+    if (tryIntent({ kind: "INC_COUNTER", instanceId, counter, delta })) return;
     dispatch(incCounterVerb(inst.controller, instanceId, counter, delta));
     checkVictory();
   }

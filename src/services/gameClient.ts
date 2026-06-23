@@ -6,8 +6,27 @@
  * submitEvent, et reçoit en retour des events redactés (sa vue uniquement).
  */
 import { supabase } from "./supabase";
-import type { DraftEvent, RedactedEvent } from "@/game";
+import type { DraftEvent, RedactedEvent, GameIntent } from "@/game";
 import type { Seat } from "@/game";
+
+/**
+ * Extrait la raison FRANÇAISE d'un échec d'Edge Function. supabase-js range le
+ * corps de la réponse non-2xx dans `error.context` (un `Response`) : on y lit
+ * le `{ error }` renvoyé par submit_event (403 « Ce n'est pas votre tour. », « PA
+ * insuffisants »…) pour l'afficher tel quel. Repli sur le message générique.
+ */
+async function fnErrorMessage(error: unknown): Promise<string> {
+  const ctx = (error as { context?: Response }).context;
+  if (ctx && typeof ctx.clone === "function") {
+    try {
+      const body = (await ctx.clone().json()) as { error?: unknown };
+      if (body?.error) return String(body.error);
+    } catch {
+      /* corps non-JSON → message générique */
+    }
+  }
+  return (error as Error)?.message ?? "Erreur réseau";
+}
 
 /** Retire le journal redacté du siège appelant depuis `sinceSeq` (résolu côté serveur). */
 export async function pullEvents(
@@ -161,6 +180,23 @@ export async function submitEvent(
   });
   if (error) throw error;
   return data as { seq: number };
+}
+
+/**
+ * Soumet une INTENTION de HAUT NIVEAU (contrat server-authoritative P2) : le
+ * serveur valide tour → légalité → coût (`resolveIntent`) et applique les events
+ * autoritatifs, ou refuse en 403. On relève alors la raison française pour
+ * l'afficher (ruleError côté store). Le client n'applique RIEN localement :
+ * l'état avance à la réception des echos diffusés.
+ */
+export async function submitIntent(
+  gameId: string,
+  intent: GameIntent,
+): Promise<void> {
+  const { error } = await client().functions.invoke("submit_event", {
+    body: { gameId, intent },
+  });
+  if (error) throw new Error(await fnErrorMessage(error));
 }
 
 /**

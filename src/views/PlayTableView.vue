@@ -488,6 +488,7 @@ import {
   joinGame,
   findGameByCode,
   submitEvent,
+  submitIntent,
   requestMulligan,
   subscribeToGame,
   pullEvents,
@@ -548,6 +549,7 @@ watch(
 const authStore = useAuthStore();
 const onlineTransport = {
   submit: submitEvent,
+  submitIntent,
   subscribe: subscribeToGame,
   pull: pullEvents,
   concede: concedeOnline,
