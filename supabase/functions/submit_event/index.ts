@@ -278,6 +278,13 @@ Deno.serve(async (req) => {
       } catch (e) {
         return json({ error: String(e) }, 409); // partiel → le client resync
       }
+      // Auto-victoire : l'état résultant de l'intention peut satisfaire une
+      // condition de victoire (PV adverses ≤ 0 ou Niveau 3). Comme le chemin
+      // legacy, on clôt alors la partie (GAME_OVER terminal + write 'finished').
+      const postIntent = deriveState(working);
+      const wIntent = victoryFromState({ state: postIntent } as never);
+      if (wIntent && !working.some((e) => e.type === "GAME_OVER"))
+        await finishGame(wIntent, "defeat", working);
       return json({ ok: true });
     }
 
