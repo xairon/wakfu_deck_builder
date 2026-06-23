@@ -723,6 +723,12 @@ export const useGameStore = defineStore("game", () => {
   /** Finit le tour : pioche jusqu'aux PA (règle Wakfu) puis passe la main. */
   function endTurn(): void {
     const active = state.value.turn.active;
+    // En ligne, seul le joueur DONT c'est le tour peut le finir (en local
+    // hot-seat, la perspective suit le joueur actif, donc la garde est neutre).
+    if (online.value && active !== mySeat.value) {
+      rejectMove("Ce n'est pas ton tour.");
+      return;
+    }
     // 4873 : on ne passe pas la main avec un excédent — défausse d'abord
     if (assist.value && state.value.seats[active].main.length > paOf(active)) {
       engine.enforceHandLimit(active);
@@ -733,8 +739,14 @@ export const useGameStore = defineStore("game", () => {
     const need = paOf(active) - state.value.seats[active].main.length;
     if (need > 0) draw(active, need);
     nextTurn();
-    perspective.value = state.value.turn.active;
-    passPending.value = true;
+    // En LIGNE : le changement de tour avance via l'event SET_PHASE diffusé (les
+    // deux clients le dérivent du journal) ; chaque joueur garde la vue sur SON
+    // siège et il n'y a pas de passation d'appareil. En LOCAL (hot-seat) : on
+    // bascule la perspective vers le nouveau joueur actif + écran de passation.
+    if (!online.value) {
+      perspective.value = state.value.turn.active;
+      passPending.value = true;
+    }
   }
 
   function concede(seat: Seat): void {

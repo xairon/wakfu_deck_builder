@@ -327,7 +327,11 @@
     </section>
 
     <!-- ════════ Bouton Fin du tour (façon MTGA) ════════ -->
+    <!-- N'apparaît que pour le joueur DONT c'est le tour : en local hot-seat la
+         perspective suit le joueur actif (toujours visible) ; en ligne, seul le
+         joueur actif le voit. -->
     <button
+      v-show="store.turn.active === store.perspective"
       type="button"
       class="gendturn"
       aria-label="Finir le tour"
