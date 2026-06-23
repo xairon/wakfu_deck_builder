@@ -8,7 +8,7 @@ import {
 import type { Card, Deck } from "@/types/cards";
 import type { Seat } from "@/game";
 import { createGame } from "@/game";
-import { drawTop, sequence } from "@/game/engine/verbs";
+import { drawTop, sequence, setCounter, setPhase } from "@/game/engine/verbs";
 import { deriveState } from "@/game/engine/reducer";
 import { resolveIntent } from "@/game/actions/resolveIntent";
 
@@ -56,7 +56,7 @@ function playingState() {
     }
   }
   const state = deriveState(working);
-  return { state, getCard };
+  return { state, getCard, events: working };
 }
 
 describe("resolveIntent — non-combat (autorité partagée)", () => {
@@ -114,6 +114,77 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
     const r = resolveIntent(state, getCard, { kind: "END_TURN" }, "B");
     expect("error" in r).toBe(true);
     expect("error" in r && r.error).toContain("tour");
+  });
+
+  it("END_TURN redresse les cartes en jeu du joueur ENTRANT + efface leurs dégâts", () => {
+    const { events, getCard } = playingState(); // active A → entrant = B
+    const bHero = deriveState(events).seats.B.heroInstanceId!;
+    // Force le Héros de B (dans son Havre-Sac, donc en jeu) incliné + 3 dégâts.
+    const forged = sequence(
+      [
+        {
+          actor: "B",
+          type: "SET_ORIENTATION",
+          payload: { instanceId: bHero, orientation: "tapped" },
+        },
+        setCounter("B", bHero, "damage", 3),
+      ],
+      "g",
+      events.length + 1,
+    );
+    const state = deriveState([...events, ...forged]);
+    expect(state.instances[bHero].orientation).toBe("tapped");
+    expect(state.instances[bHero].counters.damage).toBe(3);
+
+    const r = resolveIntent(state, getCard, { kind: "END_TURN" }, "A");
+    if (!("events" in r)) throw new Error("attendu events");
+    const untap = r.events.find(
+      (e) =>
+        e.type === "SET_ORIENTATION" &&
+        (e.payload as { instanceId: string }).instanceId === bHero &&
+        (e.payload as { orientation: string }).orientation === "upright",
+    );
+    expect(untap).toBeDefined();
+    const clearDmg = r.events.find(
+      (e) =>
+        e.type === "SET_COUNTER" &&
+        (e.payload as { instanceId: string }).instanceId === bHero &&
+        (e.payload as { counter: string }).counter === "damage" &&
+        (e.payload as { value: number }).value === 0,
+    );
+    expect(clearDmg).toBeDefined();
+  });
+
+  it("PLAY_CARD légal (tour 2) → MOVE vers le Monde + jeton arrivedTurn", () => {
+    const { events, getCard } = playingState();
+    // Passe au tour 2 (joueur actif B, le 2e joueur — son Havre-Sac produit).
+    const toT2 = sequence(
+      [setPhase("B", { active: "B", number: 2, phase: "principale" })],
+      "g",
+      events.length + 1,
+    );
+    const state = deriveState([...events, ...toT2]);
+    const bCard = state.seats.B.main[0];
+    expect(bCard).toBeDefined();
+
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "PLAY_CARD", instanceId: bCard },
+      "B",
+    );
+    if (!("events" in r))
+      throw new Error("error" in r ? r.error : "attendu events");
+    const moveEv = r.events.find((e) => e.type === "MOVE");
+    expect(moveEv).toBeDefined();
+    expect((moveEv!.payload as { to: { zone: string } }).to.zone).toBe("monde");
+    const arrived = r.events.find(
+      (e) =>
+        e.type === "SET_COUNTER" &&
+        (e.payload as { counter: string }).counter === "arrivedTurn",
+    );
+    expect(arrived).toBeDefined();
+    expect((arrived!.payload as { value: number }).value).toBe(2);
   });
 
   it("TAP hors tour → erreur ; TAP par le joueur actif → SET_ORIENTATION", () => {

@@ -6,12 +6,10 @@
  * émet les `DraftEvent[]` autoritatifs (ou une raison d'échec en français). Aucun
  * DOM/réseau : tourne identiquement dans Deno (Edge Function) et le navigateur.
  *
- * NOTE Deno (Task 6) : ce module importe (indirectement, via `legality`/`resources`
- * → `cardAttrs`/`modifiers`) des VALEURS depuis `@/types/cards` (alias Vite) et des
- * imports relatifs sans extension `.ts`. L'Edge bundle ne résout NI l'alias `@/` ni
- * les imports sans extension : avant d'importer ce fichier dans `submit_event`, il
- * faudra rendre cette chaîne Deno-safe (extraire la lecture de `Card` côté Deno ou
- * réécrire ces imports en `.ts`/relatifs). Voir STATUS du commit Task 5.
+ * Deno-safe : toute la chaîne de VALEURS atteignable depuis ce module (verbs, turn,
+ * legality, resources → cardAttrs/modifiers/dsl → cards/config) utilise des imports
+ * relatifs en `.ts` (pas d'alias `@/` runtime, élidé pour les `import type`). Vérifié
+ * au déploiement (invoke anonyme de submit_event → 401 = le graphe Deno se charge).
  */
 import type { Card } from "@/types/cards";
 import type { GameState } from "../types/state";
@@ -23,19 +21,17 @@ import type {
   DetachPayload,
 } from "../types/events";
 import type { Seat } from "../types/zones";
-import { otherSeat } from "../types/zones.ts";
 import {
   move,
-  playToWorld,
   worldHavenSwap,
   tap,
   untap,
   setCounter,
   incCounter,
   flipLevel,
-  setPhase,
 } from "../engine/verbs.ts";
-import { whyCannotPlay } from "../rules/legality.ts";
+import { nextTurnEvents } from "../engine/turn.ts";
+import { whyCannotPlay, playDestination } from "../rules/legality.ts";
 import { planCost } from "../rules/resources.ts";
 import type { RulesCtx } from "../rules/types";
 
@@ -93,8 +89,41 @@ export function resolveIntent(
       if (!inst || !card) return { error: "Carte inconnue." };
       const plan = planCost(ctx, seat, card);
       if (!plan.ok) return { error: plan.reason };
+      // 309.1 — la zone d'arrivée dépend du type (Salle → Havre-Sac, sinon Monde).
+      const dest = playDestination(card, seat);
       const events: DraftEvent[] = plan.producers.map((id) => tap(seat, id));
-      events.push(playToWorld(seat, intent.instanceId, intent.position));
+      events.push(
+        move(seat, {
+          instanceId: intent.instanceId,
+          from: inst.location,
+          to: dest,
+          position: intent.position ?? { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+          orientationOnArrival: "upright",
+        }),
+      );
+      // Mal d'invocation (1821) : jeton du tour d'arrivée.
+      events.push(
+        setCounter(
+          seat,
+          intent.instanceId,
+          "arrivedTurn",
+          state.turn.number,
+          true,
+        ),
+      );
+      // 2342 — bonus de doublement du Havre-Sac à USAGE UNIQUE : si le Havre-Sac
+      // doublé du 2e joueur sert à payer au tour 2, on pose le jeton anti-redouble.
+      const sacId = state.seats[seat].havreSacInstanceId;
+      if (
+        sacId &&
+        seat !== state.turn.firstPlayer &&
+        state.turn.number === 2 &&
+        plan.producers.includes(sacId)
+      ) {
+        events.push(setCounter(seat, sacId, "sacBonusUsed", 1, true));
+      }
       return { events };
     }
 
@@ -139,7 +168,21 @@ export function resolveIntent(
         orientationOnArrival:
           toZone === "monde" || toZone === "havreSac" ? "upright" : null,
       };
-      return { events: [move(seat, payload)] };
+      const events: DraftEvent[] = [move(seat, payload)];
+      // Entrée en jeu (hors échange Monde↔Havre-Sac, traité plus haut) : jeton du
+      // tour d'arrivée pour le mal d'invocation (1821).
+      if (toZone === "monde" || toZone === "havreSac") {
+        events.push(
+          setCounter(
+            seat,
+            intent.instanceId,
+            "arrivedTurn",
+            state.turn.number,
+            true,
+          ),
+        );
+      }
+      return { events };
     }
 
     case "TAP":
@@ -214,14 +257,11 @@ export function resolveIntent(
         0,
         paOf(state, seat) - state.seats[seat].main.length,
       );
-      const next = otherSeat(seat);
-      const events: DraftEvent[] = [
-        setPhase(next, {
-          active: next,
-          number: state.turn.number + 1,
-          phase: "principale",
-        }),
-      ];
+      // Transition de tour COMPLÈTE (partagée avec gameStore.nextTurn) : SET_PHASE
+      // + purge des jetons de tour + redressement/effacement des dégâts du joueur
+      // entrant. Les `need` pioches du joueur SORTANT sont appliquées par
+      // `submit_event` après ces events (l'acteur des pioches reste le siège).
+      const events = nextTurnEvents(state);
       return { events, draws: need };
     }
   }

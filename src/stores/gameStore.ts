@@ -26,13 +26,13 @@ import {
   deriveState,
   drawTop,
   move,
+  nextTurnEvents,
   otherSeat,
   redactStateFor,
   say,
   sequence,
   setCounter as setCounterVerb,
   incCounter as incCounterVerb,
-  setPhase,
   shuffle as shuffleVerb,
   undo as undoVerb,
 } from "@/game";
@@ -51,7 +51,6 @@ import {
   equalityRescueEvents,
   forceValue,
   havreSacHasRoom,
-  isTurnToken,
   planCost,
   playDestination,
   playEffects,
@@ -1579,41 +1578,10 @@ export const useGameStore = defineStore("game", () => {
 
   /** Passe au joueur suivant : redresse ses cartes + retire les Dommages. */
   function nextTurn(): void {
-    const s = state.value;
-    const next = otherSeat(s.turn.active);
-    const nextNumber = s.turn.number + 1;
-    const drafts: DraftEvent[] = [
-      setPhase(next, {
-        active: next,
-        number: nextNumber,
-        phase: "principale",
-      }),
-    ];
-    for (const inst of Object.values(s.instances)) {
-      // « jusqu'à la fin du tour » : purge centralisée des jetons temporaires
-      // (Force/PA/PM, *CombatMod, Résistance posée, usages de pouvoir, Trêve
-      // expirée…) à chaque transition de tour, tout contrôleur. `isTurnToken`
-      // tranche au cas par cas (la Trêve traverse le tour adverse).
-      for (const [name, value] of Object.entries(inst.counters.tokens ?? {})) {
-        if (value && isTurnToken(name, value, nextNumber)) {
-          drafts.push(setCounterVerb(next, inst.instanceId, name, 0, true));
-        }
-      }
-      const inPlay =
-        inst.location.zone === "monde" || inst.location.zone === "havreSac";
-      if (inst.controller !== next || !inPlay) continue;
-      if (inst.orientation === "tapped") {
-        drafts.push({
-          actor: next,
-          type: "SET_ORIENTATION",
-          payload: { instanceId: inst.instanceId, orientation: "upright" },
-        });
-      }
-      if (inst.counters.damage) {
-        drafts.push(setCounterVerb(next, inst.instanceId, "damage", 0));
-      }
-    }
-    dispatch(...drafts);
+    // Transition de tour PURE et partagée (cf. `nextTurnEvents`) : SET_PHASE +
+    // purge des jetons de tour + redressement/effacement des dégâts du joueur
+    // entrant. Même chemin que l'autorité serveur (`resolveIntent` END_TURN).
+    dispatch(...nextTurnEvents(state.value));
   }
 
   function undoLast(): void {
