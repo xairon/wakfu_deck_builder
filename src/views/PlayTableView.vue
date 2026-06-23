@@ -133,8 +133,14 @@
       <div class="gtopbar__group">
         <span class="gtopbar__title">La Table des Douze</span>
         <span v-if="store.matchPhase === 'playing'" class="gtopbar__turn">
-          Tour {{ store.turn.number }} · {{ store.activeName }} ·
-          {{ store.phaseLabel }}
+          Tour {{ store.turn.number }} ·
+          <template v-if="store.online">
+            <span :class="myTurn ? 'gturn--you' : 'gturn--wait'">{{
+              myTurn ? "🟢 À toi de jouer" : "⏳ Au tour de l'adversaire"
+            }}</span>
+          </template>
+          <template v-else>{{ store.activeName }}</template>
+          · {{ store.phaseLabel }}
         </span>
         <span v-else class="gtopbar__turn">Mise en place</span>
         <span
@@ -700,6 +706,13 @@ const opponentGone = computed(
     store.opponentPresent === false,
 );
 
+// À qui de jouer (en ligne, vue figée sur SON siège) : sert au bandeau de tour
+// et à griser la main quand ce n'est pas à toi.
+const myTurn = computed(
+  () =>
+    store.matchPhase === "playing" && store.turn.active === store.perspective,
+);
+
 // ── Main de mulligan ─────────────────────────────────────────────────────────
 const cardIndex = computed(() => {
   const m = new Map<string, Card>();
@@ -1022,6 +1035,15 @@ onUnmounted(() => {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(246, 245, 241, 0.55);
+}
+/* Bandeau de tour en ligne, relatif au joueur. */
+.gturn--you {
+  color: #7ee0a6;
+  font-weight: 700;
+}
+.gturn--wait {
+  color: #f0c674;
+  font-weight: 700;
 }
 .gtop-btn {
   font-size: 12px;
