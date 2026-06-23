@@ -1356,6 +1356,13 @@ export const useGameStore = defineStore("game", () => {
       c.strikeFor = next[0];
       return;
     }
+    // EN LIGNE : toutes les frappes choisies → on quitte le sous-état local et on
+    // soumet la résolution avec les frappes. En local, on résout directement.
+    if (online.value) {
+      c.step = "blockers";
+      pushIntent({ kind: "RESOLVE_COMBAT", strikes: c.strikes });
+      return;
+    }
     doResolveCombat();
   }
 
@@ -1609,9 +1616,17 @@ export const useGameStore = defineStore("game", () => {
     if (!c || !c.target) return;
     // EN LIGNE (P3) : l'attaquant soumet RESOLVE_COMBAT (le défenseur a déjà
     // déclaré ses blocages → state.combat.step === "resolve"). Le serveur
-    // applique resolveCombat et clôt le combat (echo). Les choix fins de frappe
-    // (6105) sont transmis ; la riposte est portée par le blocage du défenseur.
+    // applique resolveCombat et clôt le combat (echo). La riposte (707.1) est
+    // portée par le blocage du défenseur (DECLARE_BLOCK).
     if (online.value) {
+      // 6105 : duels multi-bloqueurs sans Géant → l'attaquant choisit LOCALEMENT
+      // quel bloqueur encaisse la Force, puis on soumet (sinon défaut serveur).
+      const pending = pendingStrikes(c);
+      if (pending.length) {
+        c.step = "strikes";
+        c.strikeFor = pending[0];
+        return;
+      }
       pushIntent({ kind: "RESOLVE_COMBAT", strikes: c.strikes });
       return;
     }
@@ -1647,6 +1662,16 @@ export const useGameStore = defineStore("game", () => {
   function combatConfirmBlocks(): void {
     const c = combat.value;
     if (!c || !online.value) return;
+    // 707.1 : si ≥2 attaquants libres frappent une Cible Allié/Héros et qu'aucune
+    // riposte n'est encore choisie, le défenseur choisit LOCALEMENT l'attaquant
+    // riposté avant de soumettre (sinon défaut serveur = premier attaquant).
+    const cands = riposteCandidatesOf(c);
+    if (c.target && cands.length >= 2 && !c.ripostes[c.target.instanceId]) {
+      c.step = "riposte";
+      c.riposteFrom = c.target.instanceId;
+      c.riposteCandidates = cands;
+      return;
+    }
     pushIntent({
       kind: "DECLARE_BLOCK",
       blocks: c.blocks,
@@ -1682,6 +1707,17 @@ export const useGameStore = defineStore("game", () => {
     if (!c || c.step !== "riposte" || !c.riposteFrom) return;
     if (!c.riposteCandidates.includes(attackerId)) return;
     c.ripostes = { ...c.ripostes, [c.riposteFrom]: attackerId };
+    // EN LIGNE : la riposte choisie, on revient à l'état partagé et on soumet le
+    // blocage (avec la riposte). En local, on enchaîne sur la résolution.
+    if (online.value) {
+      c.step = "blockers";
+      pushIntent({
+        kind: "DECLARE_BLOCK",
+        blocks: c.blocks,
+        ripostes: c.ripostes,
+      });
+      return;
+    }
     doResolveCombat();
   }
 
