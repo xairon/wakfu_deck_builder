@@ -382,17 +382,21 @@
       >
         <span v-if="store.online" class="gcombat__step">
           {{
-            store.combat.step === "attackers"
-              ? "⚔ Choisis tes attaquants puis une cible adverse"
-              : store.combatCanConfirmBlocks
-                ? store.combat.pendingBlocker
-                  ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
-                  : "🛡 Déclare tes bloqueurs puis « Confirmer les blocages » (ou confirme à vide pour laisser passer)"
-                : store.combatWaitingForBlocks
-                  ? "⏳ En attente des blocages adverses…"
-                  : store.combatCanResolve
-                    ? "⚔ Blocages déclarés — « Résoudre le combat »"
-                    : "⏳ En attente de l'adversaire…"
+            store.combat.step === "strikes"
+              ? "🎯 Clique le bloqueur qui encaisse la Force de l'attaquant surligné (6105)"
+              : store.combat.step === "riposte"
+                ? "↩ Clique l'attaquant que la Cible riposte (707.1)"
+                : store.combat.step === "attackers"
+                  ? "⚔ Choisis tes attaquants puis une cible adverse"
+                  : store.combatCanConfirmBlocks
+                    ? store.combat.pendingBlocker
+                      ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
+                      : "🛡 Déclare tes bloqueurs puis « Confirmer les blocages » (ou confirme à vide pour laisser passer)"
+                    : store.combatWaitingForBlocks
+                      ? "⏳ En attente des blocages adverses…"
+                      : store.combatCanResolve
+                        ? "⚔ Blocages déclarés — « Résoudre le combat »"
+                        : "⏳ En attente de l'adversaire…"
           }}
         </span>
         <span v-else class="gcombat__step">
@@ -431,46 +435,67 @@
         <div class="gcombat__btns">
           <!-- EN LIGNE (P3) : combat au journal, contrôles selon le rôle -->
           <template v-if="store.online">
-            <button
-              v-if="store.combat.step === 'attackers'"
-              class="gbtn gbtn--accent"
-              :disabled="!store.combat.attackers.length || !store.combat.target"
-              data-testid="combat-confirm"
-              @click="store.combatConfirmAttackers()"
-            >
-              Confirmer l'attaque
-            </button>
-            <button
-              v-else-if="store.combatCanConfirmBlocks"
-              class="gbtn gbtn--accent"
-              data-testid="combat-confirm-blocks"
-              @click="store.combatConfirmBlocks()"
-            >
-              Confirmer les blocages
-            </button>
-            <button
-              v-else-if="store.combatCanResolve"
-              class="gbtn gbtn--accent"
-              data-testid="combat-resolve"
-              @click="store.combatResolve()"
-            >
-              Résoudre le combat
-            </button>
-            <button
+            <!-- Choix fin LOCAL (frappe 6105 / riposte 707.1) : on clique une
+                 carte (pas de bouton de confirmation). L'attaquant peut annuler. -->
+            <template
               v-if="
-                store.combat.step === 'attackers' ||
-                store.combatWaitingForBlocks ||
-                store.combatCanResolve
+                store.combat.step === 'strikes' ||
+                store.combat.step === 'riposte'
               "
-              class="gbtn gbtn--ghost"
-              @click="store.combatCancel()"
             >
-              {{
-                store.combat.step === "attackers"
-                  ? "Annuler"
-                  : "Annuler l'attaque"
-              }}
-            </button>
+              <span class="gcombat__info">Clique une carte pour choisir…</span>
+              <button
+                v-if="store.combat.step === 'strikes'"
+                class="gbtn gbtn--ghost"
+                @click="store.combatCancel()"
+              >
+                Annuler l'attaque
+              </button>
+            </template>
+            <template v-else>
+              <button
+                v-if="store.combat.step === 'attackers'"
+                class="gbtn gbtn--accent"
+                :disabled="
+                  !store.combat.attackers.length || !store.combat.target
+                "
+                data-testid="combat-confirm"
+                @click="store.combatConfirmAttackers()"
+              >
+                Confirmer l'attaque
+              </button>
+              <button
+                v-else-if="store.combatCanConfirmBlocks"
+                class="gbtn gbtn--accent"
+                data-testid="combat-confirm-blocks"
+                @click="store.combatConfirmBlocks()"
+              >
+                Confirmer les blocages
+              </button>
+              <button
+                v-else-if="store.combatCanResolve"
+                class="gbtn gbtn--accent"
+                data-testid="combat-resolve"
+                @click="store.combatResolve()"
+              >
+                Résoudre le combat
+              </button>
+              <button
+                v-if="
+                  store.combat.step === 'attackers' ||
+                  store.combatWaitingForBlocks ||
+                  store.combatCanResolve
+                "
+                class="gbtn gbtn--ghost"
+                @click="store.combatCancel()"
+              >
+                {{
+                  store.combat.step === "attackers"
+                    ? "Annuler"
+                    : "Annuler l'attaque"
+                }}
+              </button>
+            </template>
           </template>
           <!-- LOCAL (hot-seat) : pilotage à un écran, inchangé -->
           <template v-else>
