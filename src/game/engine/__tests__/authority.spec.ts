@@ -229,26 +229,44 @@ describe("authorizeDraft", () => {
     ).toThrow(EngineError);
   });
 
-  it("autorise une action sur ses propres cartes et sur une zone publique", () => {
-    const s = twoSeatState();
-    const aReserveOrPioche = s.seats.A.pioche[0];
-    expect(() =>
-      authorizeDraft(s, {
+  it("P4 : une intention de JEU forgée en draft (MOVE/SET_*/INC_COUNTER) est REFUSÉE", () => {
+    const s = twoSeatState(); // le jeu passe par resolveIntent, pas le draft libre
+    const drafts: DraftEvent[] = [
+      {
         actor: "A",
         type: "SET_ORIENTATION",
         payload: {
           instanceId: s.seats.A.heroInstanceId!,
           orientation: "tapped",
         },
-      }),
-    ).not.toThrow();
-    // sa propre pioche : c'est SA zone privée → autorisé (l'auth ne bloque que l'adverse)
-    expect(() =>
-      authorizeDraft(s, {
+      },
+      {
         actor: "A",
-        type: "SET_COUNTER",
-        payload: { instanceId: aReserveOrPioche, counter: "x", value: 1 },
-      }),
+        type: "MOVE",
+        payload: {
+          instanceId: s.seats.A.heroInstanceId!,
+          from: { zone: "havreSac", owner: "A" },
+          to: { zone: "monde" },
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+        },
+      },
+      {
+        actor: "A",
+        type: "INC_COUNTER",
+        payload: {
+          instanceId: s.seats.A.heroInstanceId!,
+          counter: "hp",
+          delta: -1,
+        },
+      },
+    ];
+    for (const d of drafts)
+      expect(() => authorizeDraft(s, d)).toThrow(EngineError);
+    // Le chat (SAID) reste permis (opération de table, non sensible aux règles).
+    expect(() =>
+      authorizeDraft(s, { actor: "A", type: "SAID", payload: { text: "gg" } }),
     ).not.toThrow();
   });
 
@@ -263,29 +281,23 @@ describe("authorizeDraft", () => {
     ).not.toThrow();
   });
 
-  it("rejette une action de JEU hors de son tour (joueur non actif)", () => {
+  it("garde de tour (P4) : seul SHUFFLE reste lié au tour ; hors tour → refusé", () => {
     const s = twoSeatState(); // firstPlayer "A" → turn.active "A"
     expect(s.turn.active).toBe("A");
-    // B (non actif) tente d'incliner son propre Héros → refusé serveur.
+    // B (non actif) mélange SA pioche → refusé (NOT_YOUR_TURN).
     expect(() =>
       authorizeDraft(s, {
         actor: "B",
-        type: "SET_ORIENTATION",
-        payload: {
-          instanceId: s.seats.B.heroInstanceId!,
-          orientation: "tapped",
-        },
+        type: "SHUFFLE",
+        payload: { zone: { zone: "pioche", owner: "B" }, permutation: [] },
       }),
     ).toThrow();
-    // A (actif) sur sa propre carte → autorisé.
+    // A (actif) mélange SA pioche → autorisé.
     expect(() =>
       authorizeDraft(s, {
         actor: "A",
-        type: "SET_ORIENTATION",
-        payload: {
-          instanceId: s.seats.A.heroInstanceId!,
-          orientation: "tapped",
-        },
+        type: "SHUFFLE",
+        payload: { zone: { zone: "pioche", owner: "A" }, permutation: [] },
       }),
     ).not.toThrow();
   });

@@ -10,7 +10,7 @@ import type {
   InstanceId,
   ShufflePayload,
 } from "../types/events";
-import type { GameState, TurnPhase } from "../types/state";
+import type { CombatState, GameState, TurnPhase } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
 import { permutationFromSeed } from "./rng.ts";
 
@@ -191,6 +191,20 @@ export function setPhase(
   turn: { active?: Seat; number?: number; phase?: TurnPhase },
 ): DraftEvent {
   return { actor, type: "SET_PHASE", payload: turn };
+}
+
+/**
+ * Pose (ou efface avec `null`) le combat en cours dans le journal (P3). Émis à
+ * la déclaration d'attaque, au blocage et à la résolution → les deux clients
+ * dérivent le même combat. `recordedAttackBy` (à la clôture après résolution)
+ * enregistre l'attaque du tour pour la règle « une attaque par tour » (603).
+ */
+export function setCombat(
+  actor: Seat | "system",
+  combat: CombatState | null,
+  recordedAttackBy?: Seat,
+): DraftEvent {
+  return { actor, type: "SET_COMBAT", payload: { combat, recordedAttackBy } };
 }
 
 /**

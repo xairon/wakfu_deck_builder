@@ -17,7 +17,7 @@
  */
 import type { DraftEvent, InstanceId } from "../types/events";
 import type { Seat } from "../types/zones";
-import { otherSeat } from "../types/zones";
+import { otherSeat } from "../types/zones.ts";
 import type {
   CombatPlan,
   CombatResult,
@@ -26,12 +26,12 @@ import type {
   RuleEvent,
   RulesCtx,
 } from "./types";
-import { discard, incCounter } from "../engine/verbs";
-import { producedElement, xpValue } from "./cardAttrs";
-import { effectiveForce } from "./stats";
-import { grantXpEvents } from "./progress";
-import { effectiveKeywords } from "./effects/keywords";
-import { reduceDamage } from "./effects/damageMods";
+import { discard, incCounter } from "../engine/verbs.ts";
+import { producedElement, xpValue } from "./cardAttrs.ts";
+import { effectiveForce } from "./stats.ts";
+import { grantXpEvents } from "./progress.ts";
+import { effectiveKeywords } from "./effects/keywords.ts";
+import { reduceDamage } from "./effects/damageMods.ts";
 
 function cardOf(ctx: RulesCtx, id: InstanceId) {
   const inst = ctx.state.instances[id];

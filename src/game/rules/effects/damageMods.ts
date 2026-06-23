@@ -15,10 +15,10 @@
  */
 import type { InstanceId } from "../../types/events";
 import type { CombatStance, DamageMod, RulesCtx } from "../types";
-import { normElement } from "../cardAttrs";
-import { staticAbilitiesOf } from "../modifiers";
-import { stanceBlockers } from "../stats";
-import { effectiveKeywords, preventDamage } from "./keywords";
+import { normElement } from "../cardAttrs.ts";
+import { staticAbilitiesOf } from "../modifiers.ts";
+import { stanceBlockers } from "../stats.ts";
+import { effectiveKeywords, preventDamage } from "./keywords.ts";
 
 /** Une infliction de Dommages sur le point d'être appliquée (811). */
 export interface DamageHit {

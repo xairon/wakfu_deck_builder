@@ -6,9 +6,9 @@
 import type { DraftEvent } from "../types/events";
 import type { Seat } from "../types/zones";
 import type { RulesCtx } from "./types";
-import { flipLevel, incCounter, setCounter } from "../engine/verbs";
-import { heroStats } from "./cardAttrs";
-import { heroHp, victoryFromState, XP_LEVEL_3 } from "./victory";
+import { flipLevel, incCounter, setCounter } from "../engine/verbs.ts";
+import { heroStats } from "./cardAttrs.ts";
+import { heroHp, victoryFromState, XP_LEVEL_3 } from "./victory.ts";
 
 // La détermination du vainqueur vit dans `./victory` (module Deno-safe, sans
 // dépendance carte) pour être importable côté serveur ; on la ré-exporte ici

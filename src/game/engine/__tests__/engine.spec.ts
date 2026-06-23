@@ -167,6 +167,46 @@ describe("reducer — déterminisme", () => {
     expect(after.instances).toEqual(before.instances);
     expect(after.seq).toBe(before.seq + 1);
   });
+
+  it("SET_COMBAT pose puis efface state.combat + enregistre l'attaque du tour", () => {
+    const { events } = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" });
+    const before = deriveState(events);
+    expect(before.combat ?? null).toBeNull();
+    const heroB = before.seats.B.heroInstanceId!;
+    const allyA = before.seats.A.havreSacInstanceId!; // une instance en jeu quelconque
+    const combat = {
+      attackerSeat: "A" as const,
+      step: "blockers" as const,
+      target: { kind: "hero" as const, instanceId: heroB },
+      attackers: [allyA],
+      blocks: {},
+      reactingSeat: "B" as const,
+    };
+    const set = (seq: number, payload: unknown, actor: Seat = "A") =>
+      ({
+        gameId: GID,
+        seq,
+        parentSeq: seq - 1,
+        actor,
+        type: "SET_COMBAT",
+        payload,
+        ts: 0,
+      }) as PersistedEvent;
+
+    resetDeriveMemo();
+    const opened = deriveState([...events, set(before.seq + 1, { combat })]);
+    expect(opened.combat).toEqual(combat);
+
+    resetDeriveMemo();
+    const closed = deriveState([
+      ...events,
+      set(before.seq + 1, { combat }),
+      set(before.seq + 2, { combat: null, recordedAttackBy: "A" }),
+    ]);
+    expect(closed.combat ?? null).toBeNull();
+    expect(closed.lastAttackTurn?.A).toBe(closed.turn.number);
+    expect(closed.lastAttackTurn?.B).toBeUndefined();
+  });
 });
 
 describe("reducer — mémoïsation incrémentale du fold", () => {

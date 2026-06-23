@@ -16,8 +16,8 @@
  */
 import type { InstanceId } from "../types/events";
 import type { CombatStance, RulesCtx } from "./types";
-import { forceValue, normWord } from "./cardAttrs";
-import { staticAbilitiesOf } from "./modifiers";
+import { forceValue, normWord } from "./cardAttrs.ts";
+import { staticAbilitiesOf } from "./modifiers.ts";
 
 /** Posture de combat minimale (805.1) : qui bloque actuellement. */
 export interface ForceStance {

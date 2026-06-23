@@ -673,6 +673,68 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     expect(store.ruleError).toBe("Ce n'est pas votre tour.");
   });
 
+  it("EN LIGNE (P3) : un SET_COMBAT diffusé ouvre le combat côté défenseur + confirme les blocages", async () => {
+    const intents: GameIntent[] = [];
+    let emit: ((e: PersistedEvent) => void) | null = null;
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      submitIntent: async (_id: string, i: GameIntent) => {
+        intents.push(i);
+      },
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        cb: (e: PersistedEvent) => void,
+      ) => {
+        emit = cb;
+        return () => {};
+      },
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g-online",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    const store = useGameStore();
+    store.connectOnline("g-online", "B", transport); // on observe le DÉFENSEUR B
+    for (const ev of events) emit!(ev);
+
+    // L'attaquant A déclare une attaque (event diffusé) sur le Héros de B.
+    const heroB = store.state.seats.B.heroInstanceId!;
+    const attacker = store.state.seats.A.havreSacInstanceId!; // une instance A quelconque
+    const lastSeq = events[events.length - 1].seq;
+    emit!({
+      gameId: "g-online",
+      seq: lastSeq + 1,
+      parentSeq: lastSeq,
+      actor: "A",
+      type: "SET_COMBAT",
+      payload: {
+        combat: {
+          attackerSeat: "A",
+          step: "blockers",
+          target: { kind: "hero", instanceId: heroB },
+          attackers: [attacker],
+          blocks: {},
+          reactingSeat: "B",
+        },
+      },
+      ts: 0,
+    } as PersistedEvent);
+
+    expect(store.combat).not.toBeNull();
+    expect(store.combatCanConfirmBlocks).toBe(true); // B est le défenseur
+    expect(store.combatCanResolve).toBe(false); // B n'est pas l'attaquant
+
+    store.combatConfirmBlocks(); // 0 blocage = laisser passer
+    await new Promise((r) => setTimeout(r, 0));
+    expect(intents.some((i) => i.kind === "DECLARE_BLOCK")).toBe(true);
+  });
+
   it("applyServerEvent applique le patch reveals au state dérivé", () => {
     const store = useGameStore();
     // Un event redacté qui porte uniquement un patch `reveals` : l'identité

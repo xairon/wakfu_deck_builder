@@ -4,6 +4,7 @@
  * mélange (SHUFFLE) est le seul point d'aléa, autoritatif serveur.
  */
 import type { Seat, ZoneRef } from "./zones";
+import type { CombatState } from "./state";
 
 export type InstanceId = string; // ex. "ci_A_007" — stable toute la partie, ≠ cardId
 
@@ -97,6 +98,17 @@ export interface GameOverPayload {
   reason: "concede" | "defeat" | "disconnect";
 }
 
+/**
+ * Snapshot du combat en cours (ou `null` pour le clore) — folé dans
+ * `state.combat`. Combat-au-journal (P3) : la déclaration/blocage/résolution
+ * passe par cet event, donc les DEUX clients voient le même combat et le
+ * serveur l'adjuge. `recordedAttackBy` enregistre l'attaque du tour (603).
+ */
+export interface SetCombatPayload {
+  combat: CombatState | null;
+  recordedAttackBy?: Seat;
+}
+
 export type EventType =
   | "GAME_STARTED"
   | "MOVE"
@@ -110,6 +122,7 @@ export type EventType =
   | "LOOK"
   | "REVEAL"
   | "SET_PHASE"
+  | "SET_COMBAT"
   | "SAID"
   | "MULLIGAN_DONE"
   | "GAME_OVER"

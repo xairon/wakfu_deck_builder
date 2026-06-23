@@ -20,6 +20,7 @@ import type {
   DetachPayload,
   LookRevealPayload,
   UndonePayload,
+  SetCombatPayload,
   Position,
   InstanceId,
 } from "../types/events";
@@ -268,6 +269,20 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
       next.turn = { ...next.turn, ...p };
       break;
     }
+    case "SET_COMBAT": {
+      // Combat-au-journal (P3) : pose/efface le combat en cours. Effacer après
+      // une résolution porte `recordedAttackBy` → enregistre l'attaque du tour
+      // (603, « une attaque par tour ») ; une simple annulation ne le pose pas.
+      const p = ev.payload as SetCombatPayload;
+      next.combat = p.combat;
+      if (p.recordedAttackBy) {
+        next.lastAttackTurn = {
+          ...next.lastAttackTurn,
+          [p.recordedAttackBy]: next.turn.number,
+        };
+      }
+      break;
+    }
   }
   next.seq = ev.seq;
   return next;
@@ -354,6 +369,8 @@ export function emptyState(): GameState {
     fileAttente: [],
     instances: {},
     turn: { active: "A", number: 0, phase: "principale", firstPlayer: "A" },
+    combat: null,
+    lastAttackTurn: {},
     rng: { masterSeedHash: "" },
     seq: 0,
   };

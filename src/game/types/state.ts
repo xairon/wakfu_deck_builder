@@ -32,6 +32,34 @@ export interface CardInstance {
 
 export type TurnPhase = "redressement" | "principale" | "pioche" | "fin";
 
+/** Cible unique d'une attaque (702.2) — structurellement = rules/types CombatTarget. */
+export interface CombatTargetRef {
+  kind: "hero" | "ally" | "havreSac";
+  instanceId: InstanceId;
+}
+
+/**
+ * Combat EN COURS, dérivé du journal (702–708). Sous-ensemble GAME-STATE de
+ * l'ancien `gameStore.combat` (les curseurs d'UI — strikeFor/pendingBlocker/… —
+ * restent côté client). Présent uniquement entre la déclaration d'attaque et la
+ * résolution ; `null` sinon. Folé par le reducer via l'event SET_COMBAT.
+ */
+export interface CombatState {
+  attackerSeat: Seat;
+  /** "blockers" = le défenseur déclare ; "resolve" = blocages déclarés, l'attaquant peut résoudre. */
+  step: "blockers" | "resolve";
+  target: CombatTargetRef;
+  attackers: InstanceId[];
+  /** blockerId → attackerId bloqué. */
+  blocks: Record<InstanceId, InstanceId>;
+  /** 6105 : attackerId → bloqueur frappé (duels multi-bloqueurs sans Géant). */
+  strikes?: Record<InstanceId, InstanceId>;
+  /** 707.1 : targetId → attaquant frappé par la riposte de la Cible. */
+  ripostes?: Record<InstanceId, InstanceId>;
+  /** 706.5 : siège réagissant HORS de son tour (le défenseur, fenêtre de blocage). */
+  reactingSeat: Seat | null;
+}
+
 export interface PlayerBoard {
   seat: Seat;
   pioche: InstanceId[];
@@ -53,6 +81,10 @@ export interface GameState {
   fileAttente: InstanceId[]; // commune, ordonnée (503)
   instances: Record<InstanceId, CardInstance>; // registre central omniscient
   turn: { active: Seat; number: number; phase: TurnPhase; firstPlayer: Seat };
+  /** Combat en cours (702–708) ou null — dérivé du journal (SET_COMBAT). */
+  combat?: CombatState | null;
+  /** Dernier tour où chaque siège a attaqué (règle 1 attaque/tour, 603). */
+  lastAttackTurn?: Partial<Record<Seat, number>>;
   rng: { masterSeedHash: string };
   seq: number; // dernier event appliqué
 }
@@ -94,5 +126,8 @@ export interface RedactedGameState {
   monde: RedactedZone;
   fileAttente: RedactedZone;
   turn: GameState["turn"];
+  /** Combat en cours (public : attaquants/bloqueurs/cible sont sur le plateau). */
+  combat?: CombatState | null;
+  lastAttackTurn?: Partial<Record<Seat, number>>;
   seq: number;
 }

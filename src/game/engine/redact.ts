@@ -100,6 +100,9 @@ export function redactStateFor(
     monde: fullZone(state, state.monde, viewer),
     fileAttente: fullZone(state, state.fileAttente, viewer),
     turn: state.turn,
+    // Combat public (attaquants/bloqueurs/cible sont sur le plateau commun).
+    combat: state.combat ?? null,
+    lastAttackTurn: state.lastAttackTurn,
     seq: state.seq,
   };
 }
@@ -147,6 +150,8 @@ export function omniscientView(state: GameState): RedactedGameState {
     monde: reveal(state.monde),
     fileAttente: reveal(state.fileAttente),
     turn: state.turn,
+    combat: state.combat ?? null,
+    lastAttackTurn: state.lastAttackTurn,
     seq: state.seq,
   };
 }
