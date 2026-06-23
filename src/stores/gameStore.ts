@@ -869,6 +869,18 @@ export const useGameStore = defineStore("game", () => {
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    // Règles assistées : pendant la phase de jeu, seul le joueur ACTIF manipule
+    // le plateau (sauf fenêtre de réaction en combat). Sans ça, n'importe quel
+    // MOVE hors « main → Monde » (ex. Havre-Sac ↔ Monde) contournait le contrôle
+    // de tour que `playFromHand` applique déjà. (Le mode manuel = table libre.)
+    if (assist.value && matchPhase.value === "playing") {
+      const actor = perspective.value;
+      const reacting = combat.value?.reactingSeat === actor;
+      if (!reacting && state.value.turn.active !== actor) {
+        rejectMove("Ce n'est pas votre tour.");
+        return;
+      }
+    }
     // 4806 : un déplacement vers un Havre-Sac plein « n'a pas lieu »
     if (
       assist.value &&
