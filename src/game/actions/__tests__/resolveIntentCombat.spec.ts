@@ -174,4 +174,44 @@ describe("resolveIntent — combat (autorité serveur, P3)", () => {
     expect("error" in r).toBe(true);
     expect("error" in r && r.error).toContain("attaque par tour");
   });
+
+  it("DECLARE_BLOCK rejette une riposte illégale (cible inattendue / non-attaquant)", () => {
+    const { f, A0 } = combatReady();
+    apply(
+      f,
+      {
+        kind: "DECLARE_ATTACK",
+        attackers: [A0],
+        target: { kind: "hero", instanceId: HERO_B },
+      },
+      "A",
+    );
+    // riposte qui vise un non-attaquant → refusée (autorité serveur, pas de
+    // correction silencieuse).
+    const r = run(
+      f,
+      { kind: "DECLARE_BLOCK", blocks: {}, ripostes: { [HERO_B]: "ci_B_999" } },
+      "B",
+    );
+    expect("error" in r).toBe(true);
+    expect("error" in r && r.error).toContain("Riposte");
+  });
+
+  it("RESOLVE_COMBAT rejette une frappe illégale (bloqueur qui ne bloque pas l'attaquant)", () => {
+    const { f, A0, B0 } = combatReady();
+    apply(
+      f,
+      {
+        kind: "DECLARE_ATTACK",
+        attackers: [A0],
+        target: { kind: "hero", instanceId: HERO_B },
+      },
+      "A",
+    );
+    apply(f, { kind: "DECLARE_BLOCK", blocks: {} }, "B"); // 0 blocage
+    // frappe désignant B0 qui ne bloque pas A0 → refusée.
+    const r = run(f, { kind: "RESOLVE_COMBAT", strikes: { [A0]: B0 } }, "A");
+    expect("error" in r).toBe(true);
+    expect("error" in r && r.error).toContain("Frappe");
+  });
 });

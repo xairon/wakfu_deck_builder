@@ -355,6 +355,17 @@ export function resolveIntent(
         if (!attackerSet.has(attackerId))
           return { error: "Blocage assigné à un non-attaquant." };
       }
+      // Ripostes (707.1) : le serveur REJETTE les choix illégaux (clé ≠ Cible,
+      // ou valeur hors des attaquants déclarés) plutôt que de les persister et
+      // laisser resolveCombat les corriger silencieusement (autorité serveur).
+      for (const [targetId, attackerId] of Object.entries(
+        intent.ripostes ?? {},
+      )) {
+        if (targetId !== c.target.instanceId)
+          return { error: "Riposte invalide (cible inattendue)." };
+        if (!attackerSet.has(attackerId))
+          return { error: "Riposte assignée à un non-attaquant." };
+      }
       // Déclaration des blocages → step "resolve" : l'attaquant peut maintenant
       // résoudre (le défenseur a eu sa fenêtre de blocage, même s'il bloque 0).
       const next: CombatState = {
@@ -373,6 +384,19 @@ export function resolveIntent(
         return { error: "Seul l'attaquant peut résoudre le combat." };
       if (c.step !== "resolve")
         return { error: "Le défenseur n'a pas encore déclaré ses blocages." };
+      // Frappes (6105) : on REJETTE les choix illégaux (attaquant non déclaré, ou
+      // bloqueur qui ne bloque pas cet attaquant) au lieu de laisser resolveCombat
+      // retomber silencieusement sur le premier bloqueur (autorité serveur).
+      for (const [attackerId, blockerId] of Object.entries(
+        intent.strikes ?? {},
+      )) {
+        if (!c.attackers.includes(attackerId))
+          return { error: "Frappe d'un non-attaquant." };
+        if (c.blocks[blockerId] !== attackerId)
+          return {
+            error: "Frappe vers un bloqueur qui ne bloque pas cet attaquant.",
+          };
+      }
       // resolveCombat applique les défauts (premier bloqueur frappé, première
       // riposte) si strikes/ripostes manquent → robuste même sans choix fins.
       const result = resolveCombat(

@@ -543,7 +543,12 @@ export const useGameStore = defineStore("game", () => {
     if (!online.value) return;
     const sc = state.value.combat ?? null;
     if (!sc) {
-      if (combat.value) combat.value = null;
+      // Combat clos côté serveur → on ferme le ref local. MAIS on NE touche PAS
+      // à un assemblage local en cours (step "attackers", pas encore déclaré) :
+      // l'attaquant prépare ses attaquants/cible avant DECLARE_ATTACK et un echo
+      // sans rapport (SAID, présence…) ne doit pas effacer sa sélection.
+      if (combat.value && combat.value.step !== "attackers")
+        combat.value = null;
       return;
     }
     const me = mySeat.value;
@@ -567,18 +572,23 @@ export const useGameStore = defineStore("game", () => {
     }
     if (me === sc.attackerSeat) {
       // Attaquant : autorité serveur sur blocages/ripostes (choix du défenseur).
+      // `pendingBlocker` (curseur du défenseur) n'a aucun sens ici → réinitialisé.
       combat.value = {
         ...local,
         blocks: { ...sc.blocks },
         ripostes: { ...(sc.ripostes ?? {}) },
+        pendingBlocker: null,
       };
     } else {
       // Défenseur : autorité serveur sur attaquants/cible (choix de l'attaquant).
+      // Si l'ensemble des attaquants change, un `pendingBlocker` en attente
+      // devient caduc → on le réinitialise (évite un curseur orphelin).
       combat.value = {
         ...local,
         target: sc.target,
         attackers: [...sc.attackers],
         reactingSeat: sc.reactingSeat,
+        pendingBlocker: null,
       };
     }
   }
@@ -1543,6 +1553,10 @@ export const useGameStore = defineStore("game", () => {
   function combatToggleBlock(blockerId: string): void {
     const c = combat.value;
     if (!c || c.step !== "blockers" || !c.target) return;
+    // EN LIGNE : seul le DÉFENSEUR (≠ joueur actif) assemble les blocages. Sans
+    // cette garde, l'attaquant (qui voit aussi l'étape « blockers ») pourrait
+    // muter ses blocages localement → désync (le serveur les rejetterait).
+    if (online.value && otherSeat(turn.value.active) !== mySeat.value) return;
     if (c.blocks[blockerId]) {
       const rest = { ...c.blocks };
       delete rest[blockerId];
@@ -1580,6 +1594,7 @@ export const useGameStore = defineStore("game", () => {
   function combatChooseBlockTarget(attackerId: string): void {
     const c = combat.value;
     if (!c || c.step !== "blockers" || !c.pendingBlocker) return;
+    if (online.value && otherSeat(turn.value.active) !== mySeat.value) return;
     if (!c.attackers.includes(attackerId)) return;
     c.blocks = { ...c.blocks, [c.pendingBlocker]: attackerId };
     c.pendingBlocker = null;
