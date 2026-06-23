@@ -382,6 +382,14 @@
             Main de départ — {{ store.players[store.perspective].name }}
           </p>
           <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
+          <p v-if="store.online" class="mt-1 text-sm text-base-content/60">
+            🎲 Tirage au sort —
+            <span class="font-semibold text-base-content/80">{{
+              store.firstPlayer === store.perspective
+                ? "tu commences"
+                : "l'adversaire commence"
+            }}</span>
+          </p>
           <div class="mulligan-fan">
             <HandFan mine :items="mulliganItems" :resolve-card="resolveCard" />
           </div>

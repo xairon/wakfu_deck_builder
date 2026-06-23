@@ -428,6 +428,19 @@ export const useGameStore = defineStore("game", () => {
    * echo ultérieur (un SAID, etc. ramènerait sinon deriveMatchPhase à « playing »).
    */
   function deriveOnlineOutcome(): void {
+    // Premier joueur = tirage serveur (coin flip dans join_game), porté par
+    // l'état initial GAME_STARTED. On le synchronise sur le ref, sinon il reste
+    // à "A" en ligne et fausse la règle « 1re activation au tour 2 ».
+    const started = events.value.find((e) => e.type === "GAME_STARTED");
+    if (started) {
+      const t = (
+        started.payload as {
+          state?: { turn?: { active?: Seat; firstPlayer?: Seat } };
+        }
+      ).state?.turn;
+      const fp = t?.firstPlayer ?? t?.active;
+      if (fp) firstPlayer.value = fp;
+    }
     if (matchPhase.value === "finished") return;
     // Fin AUTORITATIVE serveur : un GAME_OVER (concession/déconnexion/défaite,
     // émis par submit_event) prime sur la dérivation d'état. Il porte le
