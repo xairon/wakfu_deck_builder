@@ -44,3 +44,4 @@ export {
   sequence,
 } from "./engine/verbs";
 export { buildInitialLayout, setupEvents, createGame } from "./engine/setup";
+export { resolveIntent, type IntentResult } from "./actions/resolveIntent";
