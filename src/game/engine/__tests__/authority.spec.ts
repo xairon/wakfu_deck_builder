@@ -263,6 +263,33 @@ describe("authorizeDraft", () => {
     ).not.toThrow();
   });
 
+  it("rejette une action de JEU hors de son tour (joueur non actif)", () => {
+    const s = twoSeatState(); // firstPlayer "A" → turn.active "A"
+    expect(s.turn.active).toBe("A");
+    // B (non actif) tente d'incliner son propre Héros → refusé serveur.
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "B",
+        type: "SET_ORIENTATION",
+        payload: {
+          instanceId: s.seats.B.heroInstanceId!,
+          orientation: "tapped",
+        },
+      }),
+    ).toThrow();
+    // A (actif) sur sa propre carte → autorisé.
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "SET_ORIENTATION",
+        payload: {
+          instanceId: s.seats.A.heroInstanceId!,
+          orientation: "tapped",
+        },
+      }),
+    ).not.toThrow();
+  });
+
   it("rejette un GAME_STARTED émis par un joueur (system-only)", () => {
     const s = twoSeatState();
     expect(() =>

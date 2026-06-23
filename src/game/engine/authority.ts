@@ -158,6 +158,21 @@ const ALLOWED_TYPES = new Set<EventType>([
   "UNDONE",
 ]);
 
+// Types d'events « liés au tour » : réservés au joueur ACTIF (cf. garde de tour
+// dans authorizeDraft). On EXCLUT SET_PHASE (changement de tour lui-même),
+// LOOK/REVEAL (recherche/regard, non bloquant), SAID (chat) et les méta
+// (MULLIGAN_DONE/UNDONE) qui ont leurs propres règles.
+const TURN_BOUND_TYPES = new Set<EventType>([
+  "MOVE",
+  "SHUFFLE",
+  "SET_ORIENTATION",
+  "SET_LEVEL",
+  "SET_COUNTER",
+  "INC_COUNTER",
+  "ATTACH",
+  "DETACH",
+]);
+
 /** Instances ciblées par un brouillon (pour les vérifs de propriété). */
 function targetedIds(draft: DraftEvent): InstanceId[] {
   const p = draft.payload as Record<string, unknown>;
@@ -233,6 +248,18 @@ export function authorizeDraft(state: GameState, draft: DraftEvent): void {
     if (p.seat !== actor) {
       throw new EngineError("FORBIDDEN", { reason: "mulligan-foreign-seat" });
     }
+  }
+
+  // Garde de TOUR (autorité serveur) : une action de JEU ne peut venir que du
+  // joueur actif. Sans ça, un client (cache périmé, mode manuel, ou trafiqué)
+  // pouvait jouer/déplacer hors de son tour. Les types méta (MULLIGAN_DONE, etc.)
+  // ont leurs propres gardes ; le combat hors-tour (blocage/réaction) arrivera
+  // avec le combat-au-journal (Phase 3). Réf. spec server-authoritative-rules.
+  if (TURN_BOUND_TYPES.has(draft.type) && state.turn.active !== actor) {
+    throw new EngineError("NOT_YOUR_TURN", {
+      active: state.turn.active,
+      actor,
+    });
   }
 
   const ids = targetedIds(draft);
