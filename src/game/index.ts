@@ -6,6 +6,7 @@
 export * from "./types/zones";
 export * from "./types/events";
 export * from "./types/state";
+export type { GameIntent } from "./types/intents";
 export {
   applyEvent,
   deriveState,
