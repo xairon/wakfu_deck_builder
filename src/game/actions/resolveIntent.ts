@@ -1,10 +1,13 @@
 /**
- * Résolveur d'intentions PUR (non-combat) — autorité partagée serveur/navigateur.
+ * Résolveur d'intentions PUR (jeu + combat) — autorité partagée serveur/nav.
  * Réf. docs/superpowers/specs/2026-06-23-server-authoritative-rules-design.md.
  *
- * `resolveIntent(state, getCard, intent, seat)` valide tour → légalité → coût et
- * émet les `DraftEvent[]` autoritatifs (ou une raison d'échec en français). Aucun
- * DOM/réseau : tourne identiquement dans Deno (Edge Function) et le navigateur.
+ * `resolveIntent(state, getCard, intent, seat)` valide tour → légalité → coût →
+ * combat et émet les `DraftEvent[]` autoritatifs (ou une raison d'échec FR).
+ * Aucun DOM/réseau : tourne identiquement dans Deno (Edge Function) et le
+ * navigateur. Le combat (P3) vit dans le journal (state.combat via SET_COMBAT) :
+ * DECLARE_ATTACK/RESOLVE/CANCEL = l'attaquant, DECLARE_BLOCK = le défenseur
+ * (réaction HORS de son tour, donc hors garde TURN_BOUND).
  *
  * Deno-safe : toute la chaîne de VALEURS atteignable depuis ce module (verbs, turn,
  * legality, resources → cardAttrs/modifiers/dsl → cards/config) utilise des imports
@@ -12,7 +15,7 @@
  * au déploiement (invoke anonyme de submit_event → 401 = le graphe Deno se charge).
  */
 import type { Card } from "@/types/cards";
-import type { GameState } from "../types/state";
+import type { CombatState, GameState } from "../types/state";
 import type { GameIntent } from "../types/intents";
 import type {
   DraftEvent,
@@ -21,6 +24,7 @@ import type {
   DetachPayload,
 } from "../types/events";
 import type { Seat } from "../types/zones";
+import { otherSeat } from "../types/zones.ts";
 import {
   move,
   worldHavenSwap,
@@ -29,10 +33,23 @@ import {
   setCounter,
   incCounter,
   flipLevel,
+  setCombat,
+  say,
 } from "../engine/verbs.ts";
 import { nextTurnEvents } from "../engine/turn.ts";
-import { whyCannotPlay, playDestination } from "../rules/legality.ts";
+import {
+  whyCannotPlay,
+  playDestination,
+  whyCannotDeclareAttack,
+  eligibleAttackers,
+  eligibleTargets,
+  eligibleBlockers,
+  pmOf,
+} from "../rules/legality.ts";
 import { planCost } from "../rules/resources.ts";
+import { attackPmBonus } from "../rules/modifiers.ts";
+import { resolveCombat } from "../rules/combat.ts";
+import { activeGlobalMods } from "../rules/effects/damageMods.ts";
 import type { RulesCtx } from "../rules/types";
 
 /** Résultat d'une intention : events seuls, erreur, ou events + N pioches (END_TURN). */
@@ -263,6 +280,128 @@ export function resolveIntent(
       // `submit_event` après ces events (l'acteur des pioches reste le siège).
       const events = nextTurnEvents(state);
       return { events, draws: need };
+    }
+
+    // ── Combat (P3) — adjugé par le serveur. DECLARE_BLOCK vient du DÉFENSEUR
+    // HORS de son tour (réaction légitime) : ces intentions ne sont donc PAS
+    // dans TURN_BOUND ; chacune impose son propre contrôle d'autorité. ────────
+    case "DECLARE_ATTACK": {
+      if (state.combat) return { error: "Un combat est déjà en cours." };
+      if (state.turn.active !== seat)
+        return { error: "Ce n'est pas votre tour." };
+      const reason = whyCannotDeclareAttack(
+        ctx,
+        seat,
+        state.lastAttackTurn?.[seat] ?? null,
+      );
+      if (reason) return { error: reason };
+      if (!intent.attackers.length)
+        return { error: "Déclare au moins un attaquant." };
+      const eligibleA = new Set(eligibleAttackers(ctx, seat));
+      for (const a of intent.attackers) {
+        if (!eligibleA.has(a))
+          return {
+            error:
+              "Attaquant illégal (incliné, arrivé ce tour, ou non combattant).",
+          };
+      }
+      const target = eligibleTargets(ctx, seat).find(
+        (t) => t.instanceId === intent.target.instanceId,
+      );
+      if (!target)
+        return {
+          error: "Cible illégale : Héros, Allié ou Havre-Sac adverse (702.2).",
+        };
+      // 703 + ruling Bruss : le +1 PM d'un « Quand il attaque » compte AVANT la
+      // vérification de la limite (jetons pas encore posés).
+      const cap = pmOf(ctx, seat) + attackPmBonus(ctx, intent.attackers);
+      if (intent.attackers.length > cap)
+        return { error: `Maximum ${cap} attaquant(s) — limite de PM (703).` };
+      // 703/A6 : les attaquants s'inclinent dès la DÉCLARATION.
+      const events: DraftEvent[] = intent.attackers
+        .filter((id) => state.instances[id]?.orientation !== "tapped")
+        .map((id) => tap(seat, id));
+      const combat: CombatState = {
+        attackerSeat: seat,
+        step: "blockers",
+        target,
+        attackers: [...intent.attackers],
+        blocks: {},
+        strikes: {},
+        ripostes: {},
+        reactingSeat: otherSeat(seat),
+      };
+      events.push(setCombat(seat, combat));
+      return { events };
+    }
+
+    case "DECLARE_BLOCK": {
+      const c = state.combat;
+      if (!c || c.step !== "blockers")
+        return { error: "Aucun combat à bloquer." };
+      const def = otherSeat(c.attackerSeat);
+      if (seat !== def)
+        return { error: "Seul le défenseur peut déclarer des blocages." };
+      const pm = pmOf(ctx, def);
+      if (Object.keys(intent.blocks).length > pm)
+        return { error: `Maximum ${pm} bloqueur(s) — limite de PM (704).` };
+      const eligibleB = new Set(eligibleBlockers(ctx, def, c.target));
+      const attackerSet = new Set(c.attackers);
+      for (const [blockerId, attackerId] of Object.entries(intent.blocks)) {
+        if (!eligibleB.has(blockerId))
+          return {
+            error: "Bloqueur illégal (incliné, cible, ou ne peut pas bloquer).",
+          };
+        if (!attackerSet.has(attackerId))
+          return { error: "Blocage assigné à un non-attaquant." };
+      }
+      const next: CombatState = {
+        ...c,
+        blocks: { ...intent.blocks },
+        ripostes: intent.ripostes ?? c.ripostes,
+      };
+      return { events: [setCombat(seat, next)] };
+    }
+
+    case "RESOLVE_COMBAT": {
+      const c = state.combat;
+      if (!c) return { error: "Aucun combat à résoudre." };
+      if (seat !== c.attackerSeat)
+        return { error: "Seul l'attaquant peut résoudre le combat." };
+      // resolveCombat applique les défauts (premier bloqueur frappé, première
+      // riposte) si strikes/ripostes manquent → robuste même sans choix fins.
+      const result = resolveCombat(
+        ctx,
+        {
+          attackerSeat: c.attackerSeat,
+          target: c.target,
+          attackers: c.attackers,
+          blocks: c.blocks,
+          strikes: intent.strikes ?? c.strikes,
+          ripostes: c.ripostes,
+        },
+        activeGlobalMods(ctx),
+      );
+      const events: DraftEvent[] = [
+        ...result.events,
+        ...result.log.map((l) => say(seat, l)),
+        // Clôt le combat + enregistre l'attaque du tour (603). L'auto-victoire
+        // est vérifiée par submit_event sur l'état résultant (PV ≤ 0).
+        setCombat(seat, null, seat),
+      ];
+      return { events };
+    }
+
+    case "CANCEL_COMBAT": {
+      const c = state.combat;
+      if (!c) return { events: [] };
+      if (seat !== c.attackerSeat)
+        return { error: "Seul l'attaquant peut annuler le combat." };
+      // A6 : on redresse les attaquants inclinés à la déclaration (combat avorté).
+      const untaps: DraftEvent[] = c.attackers
+        .filter((id) => state.instances[id]?.orientation === "tapped")
+        .map((id) => untap(seat, id));
+      return { events: [...untaps, setCombat(seat, null)] };
     }
   }
 }

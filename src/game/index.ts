@@ -41,6 +41,7 @@ export {
   undo,
   say,
   setPhase,
+  setCombat,
   sequence,
 } from "./engine/verbs";
 export { buildInitialLayout, setupEvents, createGame } from "./engine/setup";

@@ -11,10 +11,10 @@
  * Parade) n'existent pas dans les données scrapées — rien à automatiser.
  */
 import type { Card } from "@/types/cards";
-import { isHeroCard } from "@/types/cards";
+import { isHeroCard } from "../../../types/cards.ts";
 import type { InstanceId } from "../../types/events";
 import type { RulesCtx } from "../types";
-import { normElement } from "../cardAttrs";
+import { normElement } from "../cardAttrs.ts";
 
 export interface CombatKeywords {
   /** Prévention par élément normalisé (minuscules). */
