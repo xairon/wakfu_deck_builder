@@ -476,7 +476,12 @@ export const useGameStore = defineStore("game", () => {
       const evs = await onlineTransport.pull(gameId.value, sinceSeq);
       for (const e of evs) applyServerEvent(e);
     } catch (e) {
-      ruleError.value = `Resync : ${String(e)}`;
+      // Rattrapage BEST-EFFORT : un échec n'est pas fatal et ne doit PAS alarmer
+      // l'utilisateur. Cas normal côté joueur qui rejoint : le pull de connexion
+      // part AVANT que join_game l'enregistre dans game_players → 403 « pas encore
+      // joueur ». La diffusion temps réel + les re-pulls sur trou couvrent. On
+      // loggue sans toucher `ruleError` (réservé aux refus de coup réels).
+      console.warn("[resync] pull échoué (non bloquant) :", e);
     } finally {
       pulling = false;
     }
@@ -510,6 +515,7 @@ export const useGameStore = defineStore("game", () => {
     submitChain = Promise.resolve();
     pending.clear();
     pulling = false;
+    ruleError.value = null; // repartir sans message d'erreur résiduel
     // Présence : on repart d'un adversaire supposé présent, grâce désarmée.
     clearGraceTimer();
     opponentPresent.value = true;

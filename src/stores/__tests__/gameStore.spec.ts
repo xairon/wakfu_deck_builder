@@ -688,6 +688,25 @@ describe("resyncOnline — course connexion-avant-join", () => {
     await store.resyncOnline(); // le fix : rattrapage explicite
     expect(store.onlineJournalSeqs()).toEqual([1, 2, 3]);
   });
+
+  it("un pull qui échoue NE met PAS de ruleError (rattrapage best-effort)", async () => {
+    // Cas réel : le pull de connexion part avant que join_game enregistre le
+    // joueur → 403. Ce n'est pas fatal (diffusion + re-pulls couvrent) et ne doit
+    // pas afficher de message d'erreur à l'utilisateur.
+    const store = useGameStore();
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => {
+        throw new Error("Edge Function returned a non-2xx status code");
+      },
+      concede: async () => {},
+    };
+    store.connectOnline("g", "B", transport); // déclenche resyncFrom(0) → rejette
+    await store.resyncOnline(); // re-tente → rejette aussi
+    await new Promise((r) => setTimeout(r, 0));
+    expect(store.ruleError).toBeNull();
+  });
 });
 
 describe("matchPhase en ligne (dérivé du journal)", () => {
