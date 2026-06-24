@@ -410,6 +410,33 @@
       </div>
     </Transition>
 
+    <!-- Tirage au sort ANIMÉ : qui commence ? (cosmétique, ~3 s, au-dessus du
+         mulligan qu'il révèle en disparaissant). -->
+    <Transition name="ovl">
+      <div
+        v-if="diceVisible"
+        class="overlay overlay--dice"
+        data-testid="dice-roll"
+      >
+        <div class="overlay__card dice-box">
+          <p class="eyebrow text-primary">Tirage au sort — qui commence ?</p>
+          <div
+            class="die"
+            :class="diceSettled ? 'die--settled' : 'die--rolling'"
+            aria-hidden="true"
+          >
+            <span v-for="i in 9" :key="i" class="die__cell">
+              <span v-if="dicePips.includes(i - 1)" class="die__pip"></span>
+            </span>
+          </div>
+          <p v-if="diceSettled" class="dice-result" data-testid="dice-result">
+            {{ diceIStart ? "🟢 Tu commences !" : "⏳ L'adversaire commence" }}
+          </p>
+          <p v-else class="dice-hint">Lancer du dé…</p>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Mulligan -->
     <Transition name="ovl">
       <div v-if="mulliganDecisionVisible" class="overlay overlay--mulligan">
@@ -856,6 +883,77 @@ const perspectivePortrait = computed<string | null>(() => {
  * joue… » et le bot finit son tour sans révéler son plateau. */
 const botTurn = computed(() => tutorial.active && store.perspective === "B");
 
+// ── Tirage au sort ANIMÉ : qui commence ? ────────────────────────────────────
+// Cosmétique : le premier joueur est déjà décidé CÔTÉ SERVEUR (coin flip de
+// join_game, ou pile/face local) — le dé "atterrit" simplement sur une valeur
+// COHÉRENTE (pair = je commence, impair = l'adversaire). Joué une fois à l'entrée
+// en mulligan, en ligne comme en local. Math.random ici est purement visuel
+// (≠ moteur : aucune incidence sur l'état de jeu).
+const diceVisible = ref(false);
+const diceFace = ref(1);
+const diceSettled = ref(false);
+const diceIStart = ref(false);
+let diceShownFor = "";
+let diceCycle: ReturnType<typeof setInterval> | null = null;
+let diceT1: ReturnType<typeof setTimeout> | null = null;
+let diceT2: ReturnType<typeof setTimeout> | null = null;
+
+function clearDiceTimers(): void {
+  if (diceCycle) clearInterval(diceCycle);
+  if (diceT1) clearTimeout(diceT1);
+  if (diceT2) clearTimeout(diceT2);
+  diceCycle = diceT1 = diceT2 = null;
+}
+
+function rollFirstPlayerDie(): void {
+  clearDiceTimers();
+  const iStart = store.firstPlayer === store.perspective;
+  diceIStart.value = iStart;
+  const pool = iStart ? [2, 4, 6] : [1, 3, 5]; // parité = qui commence
+  const finalFace = pool[Math.floor(Math.random() * pool.length)];
+  diceSettled.value = false;
+  diceFace.value = 1 + Math.floor(Math.random() * 6);
+  diceVisible.value = true;
+  // Roulement : faces aléatoires rapides (~1,1 s) puis pose sur la valeur finale.
+  diceCycle = setInterval(() => {
+    diceFace.value = 1 + Math.floor(Math.random() * 6);
+  }, 90);
+  diceT1 = setTimeout(() => {
+    if (diceCycle) clearInterval(diceCycle);
+    diceCycle = null;
+    diceFace.value = finalFace;
+    diceSettled.value = true;
+    // Lecture du résultat puis disparition (révèle le mulligan en dessous).
+    diceT2 = setTimeout(() => (diceVisible.value = false), 1700);
+  }, 1100);
+}
+
+// Pips de la face (grille 3×3, indices 0..8).
+const DICE_PIPS: Record<number, number[]> = {
+  1: [4],
+  2: [0, 8],
+  3: [0, 4, 8],
+  4: [0, 2, 6, 8],
+  5: [0, 2, 4, 6, 8],
+  6: [0, 2, 3, 5, 6, 8],
+};
+const dicePips = computed(() => DICE_PIPS[diceFace.value] ?? [4]);
+
+// Déclenche le dé une fois par partie, à l'entrée en mulligan (firstPlayer connu).
+watch(
+  () => store.matchPhase,
+  (now) => {
+    if (now === "lobby") {
+      diceShownFor = "";
+      return;
+    }
+    if (now === "mulligan" && diceShownFor !== store.gameId()) {
+      diceShownFor = store.gameId();
+      rollFirstPlayerDie();
+    }
+  },
+);
+
 onMounted(async () => {
   if (!cardStore.cards.length) {
     try {
@@ -901,6 +999,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener("visibilitychange", onVisibilityChange);
+  clearDiceTimers();
   // Navigation hors de la table : on coupe proprement le transport en ligne.
   // Ce n'est PAS un forfait — la reprise au montage (findMyActiveGame) permet de
   // revenir dans une partie encore `active`.
@@ -1223,6 +1322,83 @@ onUnmounted(() => {
 }
 .overlay__card--wide {
   max-width: min(96vw, 1020px);
+}
+/* ── Tirage au sort animé (qui commence) ── */
+.overlay--dice {
+  z-index: 70; /* au-dessus du mulligan (60) qu'il révèle en disparaissant */
+}
+.dice-box {
+  display: grid;
+  place-items: center;
+  gap: 1.1rem;
+  min-width: 280px;
+}
+.die {
+  width: 104px;
+  height: 104px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px;
+  padding: 14px;
+  background: linear-gradient(150deg, #fbfaf7, #e9e6dd);
+  border-radius: 18px;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 2px rgba(27, 26, 23, 0.08);
+}
+.die__cell {
+  display: grid;
+  place-items: center;
+}
+.die__pip {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #44413b, #1b1a17);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+.die--rolling {
+  animation: die-roll 0.46s ease-in-out infinite;
+}
+.die--settled {
+  animation: die-settle 0.45s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+@keyframes die-roll {
+  0% {
+    transform: rotate(-13deg) scale(1);
+  }
+  50% {
+    transform: rotate(13deg) scale(1.07);
+  }
+  100% {
+    transform: rotate(-13deg) scale(1);
+  }
+}
+@keyframes die-settle {
+  0% {
+    transform: scale(1.32) rotate(-6deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+.dice-result {
+  font-family: "Cinzel", var(--font-display, serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #1b1a17;
+}
+.dice-hint {
+  color: #6b675f;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .die--rolling,
+  .die--settled {
+    animation: none;
+  }
 }
 .overlay__portrait {
   width: 96px;
