@@ -231,6 +231,9 @@
       </div>
     </div>
 
+    <!-- Assistant de règles : coach contextuel (quoi faire / pourquoi un refus). -->
+    <RuleAssistant />
+
     <!-- Adversaire déconnecté : bandeau de grâce + réclamation de victoire -->
     <div
       v-if="opponentGone"
@@ -530,6 +533,7 @@ import ActionLog from "@/components/game/ActionLog.vue";
 import CardPreviewLayer from "@/components/game/CardPreviewLayer.vue";
 import DragLayer from "@/components/game/DragLayer.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
+import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
 import TutorialCoach from "@/components/game/TutorialCoach.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
