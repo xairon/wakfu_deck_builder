@@ -26,6 +26,36 @@
     </header>
     <div class="h-px w-full bg-base-content/20"></div>
 
+    <!-- Partie en cours détectée : on PROPOSE de reprendre ou d'abandonner
+         (plutôt que de s'y reconnecter d'office au montage). -->
+    <section
+      v-if="resumable"
+      class="border border-warning/40 bg-warning/[0.06] p-5"
+      data-testid="resume-banner"
+    >
+      <p class="eyebrow text-warning">Partie en cours</p>
+      <p class="mt-1 text-sm text-base-content/70">
+        Tu as une partie non terminée. Reprends-la ou abandonne-la pour repartir
+        d'un lobby vierge.
+      </p>
+      <div class="mt-3 flex flex-wrap gap-3">
+        <button
+          class="btn btn-primary btn-sm"
+          data-testid="resume-game"
+          @click="resumeGame"
+        >
+          Reprendre la partie
+        </button>
+        <button
+          class="btn btn-outline btn-sm"
+          data-testid="abandon-game"
+          @click="abandonResumable"
+        >
+          Abandonner
+        </button>
+      </div>
+    </section>
+
     <!-- Jeu en ligne (bêta) -->
     <section
       v-if="ONLINE_PLAY_ENABLED"
@@ -572,6 +602,34 @@ const createdCode = ref("");
 const onlineBusy = ref(false);
 const onlineError = ref("");
 
+// Partie ACTIVE détectée au montage (findMyActiveGame) : on PROPOSE de la
+// reprendre ou de l'abandonner, plutôt que de s'y reconnecter d'office.
+const resumable = ref<{
+  gameId: string;
+  seat: "A" | "B";
+  assisted: boolean;
+} | null>(null);
+
+/** Reprend la partie en cours détectée (reconnexion + reconstruction du plateau). */
+function resumeGame(): void {
+  const g = resumable.value;
+  if (!g) return;
+  resumable.value = null;
+  store.connectOnline(g.gameId, g.seat, onlineTransport, g.assisted);
+}
+
+/** Abandonne la partie en cours détectée (forfait serveur) sans s'y reconnecter. */
+async function abandonResumable(): Promise<void> {
+  const g = resumable.value;
+  if (!g) return;
+  resumable.value = null;
+  try {
+    await concedeOnline(g.gameId);
+  } catch {
+    /* best-effort : la partie sera de toute façon nettoyée (TTL serveur) */
+  }
+}
+
 // Deck sélectionné pour le jeu en ligne + sa validité (1 Héros + 1 Havre-Sac +
 // 48 cartes, copies, réserve). Le serveur rejette les decks incomplets
 // (DECK_INVALIDE) : on bloque AVANT l'appel, avec un message clair.
@@ -808,8 +866,9 @@ onMounted(async () => {
       /* l'app charge les cartes par ailleurs */
     }
   }
-  // Reprise : si l'utilisateur a une partie ACTIVE en cours, s'y reconnecter
-  // (le pull de connexion reconstruit le plateau). Évite d'abandonner sur refresh.
+  // Reprise : si l'utilisateur a une partie ACTIVE, on NE s'y reconnecte PLUS
+  // d'office (sinon une partie abandonnée la veille « piège » au montage). On la
+  // détecte et on PROPOSE le choix dans le lobby (Reprendre / Abandonner).
   if (
     ONLINE_PLAY_ENABLED &&
     authStore.isAuthenticated &&
@@ -817,16 +876,9 @@ onMounted(async () => {
     !store.online
   ) {
     try {
-      const active = await findMyActiveGame();
-      if (active)
-        store.connectOnline(
-          active.gameId,
-          active.seat,
-          onlineTransport,
-          active.assisted,
-        );
+      resumable.value = await findMyActiveGame();
     } catch {
-      /* pas de reprise possible — on reste au lobby */
+      /* pas de partie reprenable — on reste au lobby */
     }
   }
   // Onboarding : /play/table?tutorial=1 démarre directement le tutoriel.
