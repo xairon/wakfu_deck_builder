@@ -432,6 +432,31 @@
             </template>
           </template>
         </span>
+        <!-- Aperçu (dry-run) : ce que la résolution donnerait MAINTENANT. -->
+        <span
+          v-if="store.combatPreview"
+          class="gcombat__preview"
+          data-testid="combat-preview"
+        >
+          👁 Aperçu :
+          <template
+            v-if="
+              previewHpAfter(store.combat.target?.instanceId ?? '') !== null
+            "
+          >
+            cible {{ previewHpAfter(store.combat.target?.instanceId ?? "") }} PV
+          </template>
+          <template v-if="store.combatPreview.lethal.length">
+            · ☠ {{ store.combatPreview.lethal.length }} détruite(s)
+          </template>
+          <template
+            v-else-if="
+              previewHpAfter(store.combat.target?.instanceId ?? '') === null
+            "
+          >
+            aucun dégât
+          </template>
+        </span>
         <div class="gcombat__btns">
           <!-- EN LIGNE (P3) : combat au journal, contrôles selon le rôle -->
           <template v-if="store.online">
@@ -885,7 +910,14 @@ function slotCls(instanceId: string): Record<string, boolean> {
     "gslot--blk":
       (c.step === "blockers" && !!c.blocks[instanceId]) ||
       c.pendingBlocker === instanceId,
+    // Aperçu : cette carte mourra si le combat est résolu tel quel (☠ via CSS).
+    "gslot--lethal": store.combatPreview?.lethal.includes(instanceId) ?? false,
   };
+}
+/** PV/Résistance projetés d'une cible (Héros/Havre-Sac) après résolution, ou null. */
+function previewHpAfter(instanceId: string): number | null {
+  const hp = store.combatPreview?.hpAfter[instanceId];
+  return hp === undefined ? null : Math.max(0, hp);
 }
 const canAttackSelected = computed(() => {
   const inst = selectedInst.value;
@@ -1378,6 +1410,15 @@ function manaBonus(seat: Seat): boolean {
   font-size: 11px;
   color: rgba(246, 245, 241, 0.65);
 }
+.gcombat__preview {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 11px;
+  color: #f0a62b;
+  background: rgba(240, 166, 43, 0.12);
+  border: 1px solid rgba(240, 166, 43, 0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
 .gcombat__btns {
   display: flex;
   gap: 6px;
@@ -1434,6 +1475,25 @@ function manaBonus(seat: Seat): boolean {
   outline: 3px solid #1f9cec;
   outline-offset: 1px;
   box-shadow: 0 0 18px rgba(31, 156, 236, 0.55);
+}
+/* Aperçu de létalité : cette carte mourra si le combat est résolu tel quel. */
+.gslot--lethal {
+  position: relative;
+}
+.gslot--lethal :deep(.game-card) {
+  filter: grayscale(0.35) brightness(0.72);
+}
+.gslot--lethal::after {
+  content: "☠";
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  font-size: 1.5rem;
+  color: #ff5b5b;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
 }
 
 /* ── Barre d'action ── */
