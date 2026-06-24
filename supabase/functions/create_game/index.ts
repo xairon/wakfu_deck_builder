@@ -22,6 +22,13 @@ Deno.serve(async (req) => {
     const { deck, assisted = false } = await req.json();
     if (!deck?.hero || !deck?.havreSac)
       return json({ error: "DECK_INVALIDE" }, 400);
+    // La main de départ pioche 6 cartes/siège : un deck dont la Pioche compte
+    // < 6 cartes ferait planter la mise en place (cf. join_game). Le client
+    // valide 48 cartes ; ceci protège l'API.
+    const piocheCount = (
+      deck.cards as { quantity?: number; isReserve?: boolean }[] | undefined
+    )?.reduce((s, c) => s + (c?.isReserve ? 0 : (c?.quantity ?? 0)), 0);
+    if ((piocheCount ?? 0) < 6) return json({ error: "DECK_TROP_PETIT" }, 400);
 
     const db = adminClient();
     const code = makeRoomCode();
