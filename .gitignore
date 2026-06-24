@@ -87,3 +87,7 @@ supabase/.temp/
 # Artefacts de diagnostic / 3D-print (hors périmètre app)
 _diag_*.stl
 image-*.png
+
+# Photos sources Dofus Mag + copies redressees (materiel d'extraction, ~240 Mo)
+dofus_mag_decks/
+dofus_mag_decks_rotated/

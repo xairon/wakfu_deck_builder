@@ -1,0 +1,45 @@
+{
+  "name": "Deck Iop — Hilary Swinte (Deck de Florian, Champion Iop du Tournoi des Douze)",
+  "hero": "Hilary Swinte",
+  "havreSac": "Havre Sac du Craqueleur",
+  "alignment": "Brâkmar",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Dopeul Iop", "Masque du Rat Noir", "Hache Terrdala"],
+  "protector": "Jiva, Protectrice de Javian",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Atchill Brizfair", "quantity": 3, "section": "Alliés" },
+    { "name": "Fôteuz Detroub'", "quantity": 3, "section": "Alliés" },
+    { "name": "Théry Shérie", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur Ballonné", "quantity": 3, "section": "Alliés" },
+    { "name": "Dante Sion", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur d'Adamaï", "quantity": 2, "section": "Alliés" },
+    { "name": "Dopeul Iop", "quantity": 2, "section": "Alliés" },
+    { "name": "Craqueboule Poli", "quantity": 2, "section": "Alliés" },
+    { "name": "Foudroiement", "quantity": 2, "section": "Actions" },
+    { "name": "Attaque Brâkmarienne", "quantity": 2, "section": "Actions" },
+    { "name": "Alliance Feudala", "quantity": 3, "section": "Équipements" },
+    { "name": "Épée de l'Initié", "quantity": 3, "section": "Équipements" },
+    { "name": "Bottes de Poursuite", "quantity": 3, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 3, "section": "Équipements" },
+    { "name": "Anneau du Rat Noir", "quantity": 2, "section": "Équipements" },
+    { "name": "Hache Terrdala", "quantity": 2, "section": "Équipements" },
+    { "name": "Coiffe du Minotot", "quantity": 2, "section": "Équipements" },
+    { "name": "Bouclier Terrdala", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Protège-Tibias Ancestraux",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Jiva, Protectrice de Javian",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Deck de Florian (Champion Iop du Tournoi des Douze). Alliés 21, Actions 4, Équipements 22, Protecteur 1 = 48. Côté droit (Rares 10, Side 12) listé sur la page mais hors deck de 48 : Side = 3 Refus, 3 Ordre de Mission, 2 Engin Grouilleux, 2 Épée Céleste, 1 Foudroiement, 1 Az."
+}

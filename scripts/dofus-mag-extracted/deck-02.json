@@ -1,0 +1,168 @@
+{
+  "name": "Deck Ecaflip — Karey Dass",
+  "hero": "Karey Dass",
+  "havreSac": "Havre Sac du Tofu",
+  "description": "Deck Ecaflip acrobatique autour du Chi-Fu-Mi et de Karey Dass (Dofus Mag).",
+  "alignment": null,
+  "lore": "Chi… Fu… BIM ! S'il n'exploite pas à fond les effets du Chi-Fu-Mi permettant de booster son Héros Karey Dass, malgré un Kanigrou, trois Gambit et le puissant Odorat, ce deck assez acrobatique reste tout de même très Ecaflip dans l'âme ! Rapide à mettre en place, avec de nombreuses cartes capables de déstabiliser le jeu de l'adversaire, il demandera un peu de maîtrise pour contenir les attaques grâce aux capacités de ses Guy Yomtella, Kriss la Krass et autres Tofu Mutant, le temps de sortir un Moon qui fera la différence…",
+  "howToPlay": "Gambit et Odorat prendront toute leur saveur s'ils sont combinés pour booster Karey Dass en vue d'une grosse attaque à 5 ou 6 PM, dont la cible sera évidemment le Havre Sac adverse. Quant aux Réflexes, pourquoi ne pas les tester pour redresser un Moon ou un Guy Yomtella ? Ces deux cartes devraient faire des ravages, surtout si elles bénéficient en prime d'un Parchemin d'Agilité ou d'un Tiwabbit !",
+  "keyCards": [],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": "Dofus Mag 124",
+  "cards": [
+    {
+      "name": "Smare",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Merelyne Manro",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Kristie Endor",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Ekraz Lenoub",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Akoua Flesh",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Kriss la Krass",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Guy Yomtella",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Tofu Mutant",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Chauve-Souris Vampyre",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Le Bourreau des Brumes",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gros Smare",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Piou Jaune",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Kanigrou",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Moon",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gambit",
+      "quantity": 3,
+      "section": "Sorts"
+    },
+    {
+      "name": "Réflexes",
+      "quantity": 2,
+      "section": "Sorts"
+    },
+    {
+      "name": "Odorat",
+      "quantity": 1,
+      "section": "Sorts"
+    },
+    {
+      "name": "Boon Attitude",
+      "quantity": 2,
+      "section": "Actions"
+    },
+    {
+      "name": "Pandrista",
+      "quantity": 2,
+      "section": "Actions"
+    },
+    {
+      "name": "Parchemin d'Agilité",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Banni !",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Brisé !",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Répulsion",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Jeunesse d'Ogrest",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Tiwabbit",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Scaracoiffe Blanche",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Scaracape Blanche",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Scaranneau Blanc",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Queues de Chatons",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Champs d'Astrub",
+      "quantity": 3,
+      "section": "Zones"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": null
+}

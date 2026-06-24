@@ -1,0 +1,49 @@
+{
+  "name": "Le deck du 4e du Championnat de France — Trantmy Londami",
+  "hero": "Trantmy Londami",
+  "havreSac": "Havre Sac du Bouftou",
+  "alignment": "Neutre",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Île de Moon", "Craqueleur d'Adamaï", "Trantmy Londami"],
+  "protector": "Jiva, Protectrice de Javian",
+  "illustrator": null,
+  "magIssue": "Dofus Mag",
+  "cards": [
+    { "name": "Épouvantail", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur Ballonné", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur d'Adamaï", "quantity": 3, "section": "Alliés" },
+    { "name": "Black Wabbit", "quantity": 3, "section": "Alliés" },
+    { "name": "Chafer Archer", "quantity": 3, "section": "Alliés" },
+    { "name": "Demi Finame", "quantity": 3, "section": "Alliés" },
+    { "name": "Choub Nigourak", "quantity": 3, "section": "Alliés" },
+    { "name": "Gelée Menthe", "quantity": 3, "section": "Alliés" },
+    { "name": "Serpentin", "quantity": 3, "section": "Alliés" },
+    { "name": "Goultard le Barbare", "quantity": 1, "section": "Alliés" },
+    { "name": "Craqueleur Légendaire", "quantity": 1, "section": "Alliés" },
+    {
+      "name": "Filouterie au Zaap d'Astrub",
+      "quantity": 3,
+      "section": "Actions"
+    },
+    { "name": "Jeunesse d'Ogrest", "quantity": 3, "section": "Actions" },
+    { "name": "Déluge d'Ogrest", "quantity": 1, "section": "Actions" },
+    { "name": "Dernière Rasade", "quantity": 1, "section": "Actions" },
+    { "name": "Chacha Noir", "quantity": 1, "section": "Équipements" },
+    { "name": "Aiguille à Tricoter", "quantity": 1, "section": "Équipements" },
+    { "name": "Amulette du Bandit", "quantity": 3, "section": "Équipements" },
+    { "name": "Anneau du Rat Noir", "quantity": 1, "section": "Équipements" },
+    { "name": "Alliance Feudala", "quantity": 1, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 1, "section": "Équipements" },
+    { "name": "Pantoufle du Tofu", "quantity": 1, "section": "Équipements" },
+    { "name": "Île de Moon", "quantity": 1, "section": "Zones" },
+    {
+      "name": "Jiva, Protectrice de Javian",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Réserve (12 cartes, non comptée dans les 48) : 3 Potion d'Oubli de Métier, 1 Dernière Rasade, 2 Gloutovore, 3 Embuscade, 3 Feuille d'Automne. Rares : 12."
+}

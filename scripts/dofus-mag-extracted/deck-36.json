@@ -1,0 +1,50 @@
+{
+  "name": "Deck Champi — Babeth Safoueth",
+  "hero": "Babeth Safoueth",
+  "havreSac": "Havre Sac du Craqueleur",
+  "alignment": "Neutre",
+  "lore": "Dans Bonta & Brâkmar, vous aurez le droit d'assister à une vraie invasion de Champignons… Alors, quitte à se faire un deck Champi, autant ne choisir que des cartes de cette extension ! Le deck sera rapide et fonctionnera sur la venue puis la destruction des Monstres, leur apparition puis leur réapparition. Bref, les monstres vont et viennent, et au final, il y a toujours un moment où apparaît sur table le Ougah, ce Monstre légendaire. Le Ougah, c'est un peu l'Allié qu'on a tous rêvé d'avoir : il est fort, personne ne peut le toucher, et il a plein d'autres Alliés à ses côtés, parés au combat. Bref, il vous fera prendre goût à la victoire… ainsi qu'aux Champignons !",
+  "howToPlay": null,
+  "keyCards": ["Donjon Fungus", "Ougah"],
+  "protector": null,
+  "illustrator": "Roxnin",
+  "magIssue": null,
+  "cards": [
+    { "name": "Champa Vert", "quantity": 3, "section": "Alliés" },
+    { "name": "Kolérat", "quantity": 3, "section": "Alliés" },
+    { "name": "Alplaïa Vamos", "quantity": 3, "section": "Alliés" },
+    { "name": "Blop Reinette", "quantity": 2, "section": "Alliés" },
+    { "name": "Champ à Gnons", "quantity": 2, "section": "Alliés" },
+    { "name": "Champa Bleu", "quantity": 3, "section": "Alliés" },
+    { "name": "Ecumouth", "quantity": 3, "section": "Alliés" },
+    { "name": "Frye Handiz", "quantity": 3, "section": "Alliés" },
+    { "name": "Blop Indigo", "quantity": 2, "section": "Alliés" },
+    { "name": "Champmane", "quantity": 2, "section": "Alliés" },
+    { "name": "Ougah", "quantity": 1, "section": "Alliés" },
+    {
+      "name": "Anneau du Champ Champ",
+      "quantity": 3,
+      "section": "Équipements"
+    },
+    {
+      "name": "Amulette du Scarabosse Doré",
+      "quantity": 3,
+      "section": "Équipements"
+    },
+    {
+      "name": "Collier du Dragon Cochon",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    { "name": "Meuch", "quantity": 1, "section": "Équipements" },
+    { "name": "Sagesse de Silouate", "quantity": 2, "section": "Actions" },
+    { "name": "Scarattaque", "quantity": 2, "section": "Actions" },
+    { "name": "Mamaliga", "quantity": 2, "section": "Actions" },
+    { "name": "Rumeurs de comptoir", "quantity": 2, "section": "Actions" },
+    { "name": "Laisse Spirituelle", "quantity": 2, "section": "Actions" },
+    { "name": "Donjon Fungus", "quantity": 2, "section": "Zones" }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Totaux imprimés vérifiés par catégorie : Alliés 27, Équipements 9, Actions 10, Zones 2 = 48. Aucune section Sorts ni Protecteur. Cartes maîtresses : Donjon Fungus, Ougah. Rares : 3. Le héros Babeth Safoueth est de classe Osamodas (visible sur l'illustration de la carte)."
+}

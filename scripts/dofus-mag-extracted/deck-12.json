@@ -1,0 +1,42 @@
+{
+  "name": "Deck Tofus — Tirlangue Portey",
+  "hero": "Tirlangue Portey",
+  "havreSac": "Havre Sac du Wabbit",
+  "alignment": null,
+  "lore": "Qu'est-ce qui est jaune, petit, avec des plumes partout et qui mange le Héros au petit déjeuner ? Les Tofus sont de retour, pour vous jouer de mauvais tours ! Et ils ne sont pas venus seuls, puisque Tirlangue Portey, la Crâ, les accompagne, ainsi que des Pandawas et quelques Sacrieurs parmi les plus agiles d'Incarnam. S'ils descendent dans ce Donjon des Tofus rapide et redoutable, vos adversaires n'en ressortiront pas sans perdre quelques plumes !",
+  "howToPlay": "L'Agilité sera le maître mot de ce jeu, qui peut sembler bien faible, mais qui fera des ravages à distance grâce aux Tofu Mutant, Flèche Chercheuse et Flèche d'Immolation, sans compter le pouvoir du Héros. Tirlangue Portey pourra rester dans le Monde à la fin de votre tour, pour peu que vous gardiez au moins un Kriss la Krass redressé dans votre Havre Sac, qui changera de position avec votre Héros s'il est attaqué. Gardez vos Pandatak afin de créer des brèches dans la défense, redressez vos Alliés avec vos Djakky Chwan et attaquez en jouant sur le Trait Agilité pour détruire le Havre Sac adverse, puis finir le Héros !",
+  "keyCards": [
+    "Tofu Mutant",
+    "Flèche Chercheuse",
+    "Flèche d'Immolation",
+    "Kriss la Krass",
+    "Pandatak",
+    "Djakky Chwan"
+  ],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Tofu", "quantity": 3, "section": "Alliés" },
+    { "name": "Tofu Mutant", "quantity": 3, "section": "Alliés" },
+    { "name": "Polter Tofu", "quantity": 3, "section": "Alliés" },
+    { "name": "Tofu Céleste", "quantity": 3, "section": "Alliés" },
+    { "name": "Akoua Flesh", "quantity": 3, "section": "Alliés" },
+    { "name": "Ekraz Lenoub", "quantity": 3, "section": "Alliés" },
+    { "name": "Kriss la Krass", "quantity": 3, "section": "Alliés" },
+    { "name": "Bowissette", "quantity": 3, "section": "Alliés" },
+    { "name": "Djakky Chwan", "quantity": 3, "section": "Alliés" },
+    { "name": "Flèche Chercheuse", "quantity": 3, "section": "Sorts" },
+    { "name": "Flèche d'Immolation", "quantity": 3, "section": "Sorts" },
+    { "name": "Pandatak", "quantity": 2, "section": "Sorts" },
+    { "name": "Echec Critique", "quantity": 3, "section": "Actions" },
+    { "name": "Tiwabbit", "quantity": 1, "section": "Équipements" },
+    { "name": "Amulette du Tofu", "quantity": 2, "section": "Équipements" },
+    { "name": "Pantoufles du Tofu", "quantity": 2, "section": "Équipements" },
+    { "name": "Baguette du Tofu", "quantity": 2, "section": "Équipements" },
+    { "name": "Donjon des Tofus", "quantity": 3, "section": "Zones" }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Sorts: total imprimé 8. La 2e entrée (Flèche d'Immolation) était partiellement lisible; lue à 3 pour réconcilier le total imprimé Sorts:8 (3 Flèche Chercheuse + 3 Flèche d'Immolation + 2 Pandatak) et le total global de 48. Pandatak en italique/grisé = rare, lue à 2."
+}

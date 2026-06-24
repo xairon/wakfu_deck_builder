@@ -1,0 +1,58 @@
+{
+  "name": "Deck Aeron Zeklox — Jérémie Humeau (CDF)",
+  "hero": "Aeron Zeklox",
+  "havreSac": "Havre Sac du Tofu",
+  "alignment": "Brâkmar",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": [
+    "Coupure Temporelle",
+    "Filouteries au Zaap d'Astrub",
+    "Village des Katrepats"
+  ],
+  "protector": "Maimane, Protecteur d'Octofiliard",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Atchill Brizfair", "quantity": 3, "section": "Alliés" },
+    { "name": "Ekraz Lenoub", "quantity": 2, "section": "Alliés" },
+    { "name": "Grostruf", "quantity": 1, "section": "Alliés" },
+    { "name": "Phorreur Immature", "quantity": 1, "section": "Alliés" },
+    { "name": "Smarmot", "quantity": 2, "section": "Alliés" },
+    { "name": "Vener", "quantity": 3, "section": "Alliés" },
+    { "name": "Ash Tur", "quantity": 1, "section": "Alliés" },
+    { "name": "Black Wabbit", "quantity": 1, "section": "Alliés" },
+    { "name": "Syco Fente", "quantity": 2, "section": "Alliés" },
+    { "name": "Morbidon", "quantity": 1, "section": "Alliés" },
+    { "name": "Shushu Lumineux", "quantity": 2, "section": "Alliés" },
+    { "name": "Démon VI", "quantity": 1, "section": "Alliés" },
+    { "name": "Démon XVIII", "quantity": 1, "section": "Alliés" },
+    { "name": "Nomekop le Crapoteur", "quantity": 1, "section": "Alliés" },
+    { "name": "Coupure Temporelle", "quantity": 2, "section": "Actions" },
+    {
+      "name": "Filouteries au Zaap d'Astrub",
+      "quantity": 2,
+      "section": "Actions"
+    },
+    { "name": "Échec Critique", "quantity": 1, "section": "Actions" },
+    { "name": "La Dernière Rasade", "quantity": 1, "section": "Actions" },
+    { "name": "Aiguille à Tricoter", "quantity": 2, "section": "Équipements" },
+    { "name": "Amukwak de Glace", "quantity": 1, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Bébé Panda", "quantity": 1, "section": "Équipements" },
+    { "name": "Pelle Musicale", "quantity": 1, "section": "Équipements" },
+    { "name": "Masse du Corailleur", "quantity": 1, "section": "Équipements" },
+    { "name": "Collier du Rat Blanc", "quantity": 3, "section": "Équipements" },
+    { "name": "Zaap", "quantity": 1, "section": "Zones" },
+    { "name": "Incarnam", "quantity": 1, "section": "Zones" },
+    { "name": "Village des Katrepats", "quantity": 2, "section": "Zones" },
+    {
+      "name": "Maimane, Protecteur d'Octofiliard",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Réserve (12 cartes, zone séparée non comptée dans les 48) : 3 Potion d'Oubli de Métier, 1 Black Wabbit, 1 Masse du Corailleur, 1 Exclusion, 1 Morbidon, 1 Échec Critique, 2 La Feuille d'Automne, 1 Vigueur de Goultard, 1 Engin Grouilleux. Rares : 7."
+}

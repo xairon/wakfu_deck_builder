@@ -1,0 +1,64 @@
+{
+  "name": "Deck d'Anthony — Coa Gullay (Champion Sacrieur du Tournoi des Douze)",
+  "hero": "Coa Gullay",
+  "havreSac": "Havre Sac du Corbac",
+  "alignment": "Brâkmar",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": [
+    "Brûlure de Sang",
+    "Coiffe du Minotot",
+    "Protège-Tibias Ancestraux"
+  ],
+  "protector": "Jiva, Protectrice de Javian",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Craqueleur Légendaire", "quantity": 1, "section": "Alliés" },
+    { "name": "Rat Basher", "quantity": 3, "section": "Alliés" },
+    { "name": "Srammy", "quantity": 3, "section": "Alliés" },
+    { "name": "Atchill Brizfair", "quantity": 3, "section": "Alliés" },
+    { "name": "Théry Shérie", "quantity": 3, "section": "Alliés" },
+    { "name": "Festino", "quantity": 1, "section": "Alliés" },
+    { "name": "Dante Sion", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueboule Poli", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur d'Adamaï", "quantity": 2, "section": "Alliés" },
+    { "name": "Kanniboul Archer", "quantity": 2, "section": "Alliés" },
+    { "name": "Brûlure de Sang", "quantity": 3, "section": "Actions" },
+    { "name": "Bouclier en Slip", "quantity": 1, "section": "Équipements" },
+    { "name": "Épée de l'Initié", "quantity": 3, "section": "Équipements" },
+    { "name": "Alliance Feudala", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Anneau du Champ-Champ",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Anneau du Rat Noir", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Protège-Tibias Ancestraux",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    {
+      "name": "Ceinture du Rat Blanc",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    { "name": "Coiffe du Minotot", "quantity": 2, "section": "Équipements" },
+    { "name": "Gagues de Fouraille", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Amulette du Puzzle de la Griffe",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    {
+      "name": "Jiva, Protectrice de Javian",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Alliés total imprimé : 24 (1+3+3+3+3+1+3+3+2+2). Actions : 3. Équipements : 20 (1+3+1+2+2+2+2+2+2+1+2). Protecteur : 1. Total 24+3+20+1 = 48. Le Side (12 cartes) n'est pas compté dans le deck principal. 'Gagues de Fouraille' transcrit tel quel (quantité 1, pas de pluriel de comptage à singulariser)."
+}

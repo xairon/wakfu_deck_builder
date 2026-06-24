@@ -1,0 +1,47 @@
+{
+  "name": "Deck Pandawa — Mawy Blodie (Swann)",
+  "hero": "Mawy Blodie",
+  "havreSac": "Havre Sac du Corbac",
+  "alignment": "Brâkmar",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Coiffe du Minotot", "Jiva Protectrice de Javian", "Gloutovore"],
+  "protector": "Jiva, Protectrice de Javian",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Théry Shérie", "quantity": 3, "section": "Alliés" },
+    { "name": "Marty Nie", "quantity": 3, "section": "Alliés" },
+    { "name": "Srammy", "quantity": 3, "section": "Alliés" },
+    { "name": "Atchill Brizfair", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur d'Adamaï", "quantity": 3, "section": "Alliés" },
+    { "name": "Dante Sion", "quantity": 3, "section": "Alliés" },
+    { "name": "Guerrier Zoths", "quantity": 2, "section": "Alliés" },
+    { "name": "Craqueboule Poli", "quantity": 2, "section": "Alliés" },
+    { "name": "Gloutovore", "quantity": 1, "section": "Alliés" },
+    { "name": "Chamrak", "quantity": 2, "section": "Actions" },
+    { "name": "Attaque Bontarienne", "quantity": 2, "section": "Actions" },
+    { "name": "Foudroiement", "quantity": 1, "section": "Actions" },
+    { "name": "Alliance Feudala", "quantity": 3, "section": "Équipements" },
+    { "name": "Dague de Boissaille", "quantity": 3, "section": "Équipements" },
+    { "name": "Épée de l'Initié", "quantity": 3, "section": "Équipements" },
+    { "name": "Coiffe du Minotot", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Protège-Tibias Ancestraux",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    { "name": "Kralano", "quantity": 1, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Anneau du Rat Noir", "quantity": 2, "section": "Équipements" },
+    { "name": "Masque du Rat Noir", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Jiva, Protectrice de Javian",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Deck de Swann lu sur les photos 191529 et 191532. Alliés:23 (3+3+3+3+3+3+2+2+1), Actions:5 (2+2+1), Équipements:19 (3+3+3+2+2+1+2+2+1), Protecteur:1. Total 48. 'Guerriers Zoths' singularisé en 'Guerrier Zoths'. Side/Rares non inclus dans le deck principal."
+}
