@@ -15,6 +15,9 @@ sur la page existante `/decks/official`.
 ### Réalités du matériel source
 
 - Photos prises au téléphone, **pivotées ~180°** (texte à l'envers).
+- **2 photos ne sont PAS des decks** : ce sont les **règles du mode multi**. À
+  identifier lors de la passe d'indexation et **exclure** de l'extraction des
+  decks (→ ~71 photos de decks à traiter).
 - **Overlap** : une même photo montre souvent le bas d'un deck et le haut du
   suivant ; un même deck apparaît sur plusieurs photos. → étape de
   **réconciliation / dédoublonnage** nécessaire.
@@ -23,6 +26,8 @@ sur la page existante `/decks/official`.
   (Alliés / Sorts / Actions / Équipements / Zones / Protecteur…) avec quantités,
   bloc « Le conseil d'Adamaï » (comment jouer) **ou** « Cartes maîtresses », et
   parfois un crédit d'illustrateur + n° de mag.
+- **Chaque catégorie imprime son total** (« Alliés : 25 », « Actions : 9 »…) —
+  ces totaux servent de **sous-checksums** à l'extraction.
 
 ### Faisabilité (vérifiée)
 
@@ -44,9 +49,15 @@ sur la page existante `/decks/official`.
    champs optionnels.
 3. **Exécution** : **pilote** (~3 decks) pour valider le format, **puis workflow
    multi-agents** pour le run complet sur les 73 photos (parallélisé).
-4. **Légalité** : importer les decks **tels quels** (historiques), même s'ils ne
-   font pas exactement 48 cartes ou ne sont pas conformes aux règles actuelles.
-   Les avertissements du validateur de deck sont acceptés/attendus.
+4. **Invariant des 50 cartes (RÈGLE ABSOLUE d'OCR)** : chaque deck fait
+   **exactement 50 cartes = 48 cartes de deck + 1 Héros + 1 Havre-Sac**. La
+   somme des quantités des cartes (hors héros/havre-sac) **doit** valoir **48**.
+   Si un deck extrait ne réconcilie pas à 48, c'est une **erreur d'extraction à
+   corriger** (carte ratée, quantité mal lue) — **jamais** un deck à accepter en
+   l'état. Contrôle à deux niveaux : (a) les cartes listées d'une catégorie
+   somment au **total imprimé** de la catégorie ; (b) toutes les catégories
+   somment à **48**. Aucun deck n'est émis tant que les deux checksums ne passent
+   pas (ou, à défaut, il est marqué `incomplete` dans le rapport, jamais deviné).
 
 ## Architecture
 
@@ -110,12 +121,18 @@ isolément.
 ## Flux d'extraction (vision-par-Claude, deck-centric)
 
 1. **Passe d'indexation** — survol des 73 photos → manifeste _deck → photos_
-   (quelles photos couvrent quel deck). Résout l'overlap.
+   (quelles photos couvrent quel deck). Résout l'overlap **et identifie les 2
+   photos de règles multi à exclure**.
 2. **Passe d'extraction par deck** — pour chaque deck, lire **toutes** ses photos
    ensemble pour remplir le schéma (les clichés qui se chevauchent lèvent les
    flous/coupures).
-3. **Résolution + rapport** — matching des noms, génération du rapport.
-4. **Émission** — écriture de `DOFUS_MAG_DECKS` dans `src/data/dofusMagDecks.ts`.
+3. **Réconciliation des checksums (bloquant)** — pour chaque deck : vérifier que
+   chaque catégorie somme à son total imprimé **et** que l'ensemble somme à
+   **48** (+ héros + havre-sac = 50). Tant que ça ne tombe pas juste, **relire
+   les photos** pour trouver la carte/quantité manquante. Un deck irréconciliable
+   est marqué `incomplete`, jamais complété par devinette.
+4. **Résolution + rapport** — matching des noms, génération du rapport.
+5. **Émission** — écriture de `DOFUS_MAG_DECKS` dans `src/data/dofusMagDecks.ts`.
 
 ### Exécution
 
@@ -128,12 +145,14 @@ isolément.
 ## Gestion d'erreurs / cas limites
 
 - **Nom non résolu** → stocké verbatim, listé dans le rapport ; le deck reste
-  importable (carte simplement absente, déjà géré par l'import).
-- **Deck ≠ 48 cartes / non conforme** → accepté tel quel (décision 4). Pas de
-  blocage à l'import.
-- **Photo illisible / deck partiel** → si un deck ne peut être complété depuis
-  aucune de ses photos, il est listé comme **incomplet** dans le rapport plutôt
-  que deviné.
+  importable (carte simplement absente, déjà géré par l'import). N.B. : un nom
+  non résolu **ne dispense pas** du checksum — la carte est comptée dans les 48.
+- **Deck qui ne somme pas à 48** → **erreur d'extraction** (décision 4) : relire
+  les photos jusqu'à réconciliation ; à défaut, marquer `incomplete` dans le
+  rapport et **ne pas émettre** le deck. Jamais accepté en l'état.
+- **Photo illisible / deck partiel** → si un deck ne peut être complété/réconcilié
+  depuis aucune de ses photos, il est listé comme **incomplet** dans le rapport
+  plutôt que deviné.
 - **Reprints (même nom, plusieurs extensions)** → non pinné ; ambiguïté
   signalée dans le rapport pour arbitrage manuel.
 
@@ -142,6 +161,9 @@ isolément.
 - **Intégrité des données** (`tests/data/dofusMagDecks.test.ts`) : ids uniques,
   `quantity >= 1`, chaque deck a `hero` + `havreSac` + ≥1 carte, champs
   optionnels bien typés.
+- **Invariant des 48 (checksum, bloquant en CI)** : pour **chaque** deck émis,
+  `somme(quantités) === 48` (donc 50 avec héros + havre-sac). Ce test échoue la
+  CI si une extraction a raté/dupliqué une carte — garde-fou contre l'OCR sale.
 - **Résolution** : test qui signale tout deck dont hero/havreSac/cartes ne se
   résolvent pas (allowlist pour les non-résolubles connus) — garde-fou contre
   les régressions silencieuses de matching.
