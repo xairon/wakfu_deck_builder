@@ -1452,6 +1452,68 @@ export const useGameStore = defineStore("game", () => {
     return !!sc && sc.step === "blockers" && sc.attackerSeat === mySeat.value;
   });
 
+  /**
+   * Aperçu du combat AVANT résolution : simule `resolveCombat` en LECTURE (pure,
+   * aucun dispatch) pour projeter qui meurt (`lethal`) et les PV/Résistance des
+   * Héros/Havre-Sac APRÈS (`hpAfter`). Réactif aux déclarations en cours (le
+   * défenseur voit l'effet de ses blocages, l'attaquant celui de sa déclaration).
+   * `null` hors combat ou si non calculable.
+   */
+  const combatPreview = computed<{
+    lethal: string[];
+    hpAfter: Record<string, number>;
+  } | null>(() => {
+    const c = combat.value;
+    if (!c || !c.target || !c.attackers.length) return null;
+    let result;
+    try {
+      result = resolveCombat(
+        rulesCtx(),
+        {
+          attackerSeat: turn.value.active, // l'attaquant = le joueur actif
+          target: c.target,
+          attackers: c.attackers,
+          blocks: c.blocks,
+          strikes: c.strikes,
+          ripostes: c.ripostes,
+        },
+        activeGlobalMods(rulesCtx()),
+      );
+    } catch {
+      return null;
+    }
+    const hpAfter: Record<string, number> = {};
+    for (const ev of result.events) {
+      if (ev.type !== "INC_COUNTER") continue;
+      const p = ev.payload as {
+        instanceId: string;
+        counter: string;
+        delta: number;
+      };
+      if (p.counter !== "hp" && p.counter !== "resistance") continue;
+      const cur =
+        (
+          state.value.instances[p.instanceId]?.counters as Record<
+            string,
+            number
+          >
+        )?.[p.counter] ?? 0;
+      hpAfter[p.instanceId] = (hpAfter[p.instanceId] ?? cur) + p.delta;
+    }
+    const lethal = new Set(result.destroyed);
+    // Un Héros tombé à ≤ 0 PV n'est pas "détruit" (winner) mais on le marque ☠.
+    for (const [id, hp] of Object.entries(hpAfter)) {
+      const inst = state.value.instances[id];
+      if (
+        inst &&
+        state.value.seats[inst.controller]?.heroInstanceId === id &&
+        hp <= 0
+      )
+        lethal.add(id);
+    }
+    return { lethal: [...lethal], hpAfter };
+  });
+
   /** « Mana » disponible par Élément : producteurs redressés du siège (4261). */
   function resourcesOf(seat: Seat): Record<string, number> {
     const out: Record<string, number> = {};
@@ -1965,6 +2027,7 @@ export const useGameStore = defineStore("game", () => {
     combatCanResolve,
     combatCanConfirmBlocks,
     combatWaitingForBlocks,
+    combatPreview,
     resourcesOf,
     beginCombat,
     combatToggleAttacker,
