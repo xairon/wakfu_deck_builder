@@ -279,6 +279,7 @@
               v-if="expandedDeckId === deck.id"
               class="mt-4 border-t border-base-content/15 pt-4"
             >
+              <DeckMagMeta :deck="deck" class="mb-4" />
               <p class="eyebrow mb-2">Liste des cartes</p>
               <ul class="max-h-64 space-y-1 overflow-y-auto">
                 <li
@@ -316,6 +317,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useMemoize } from "@vueuse/core";
 import { OFFICIAL_DECKS, type OfficialDeck } from "@/data/officialDecks";
+import { DOFUS_MAG_DECKS } from "@/data/dofusMagDecks";
+import DeckMagMeta from "@/components/deck/DeckMagMeta.vue";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
@@ -334,7 +337,7 @@ const importedDeckOfficialIds = ref(new Set<string>());
 const bulkImporting = ref(false);
 
 // Donnees
-const officialDecks = computed(() => OFFICIAL_DECKS);
+const officialDecks = computed(() => [...OFFICIAL_DECKS, ...DOFUS_MAG_DECKS]);
 
 // Slug d'extension (données officielles) → nom d'extension tel qu'en base de
 // cartes. Indispensable pour résoudre les cartes vers la BONNE extension : de
@@ -373,7 +376,7 @@ const extensionGroups = computed<ExtensionGroup[]>(() => {
   });
 
   // Ordre des extensions
-  const extensionOrder = ["incarnam", "bonta-brakmar"];
+  const extensionOrder = ["incarnam", "bonta-brakmar", "dofus-mag"];
 
   return Object.entries(groups)
     .sort(([a], [b]) => {
@@ -491,6 +494,7 @@ function formatExtensionName(extension: string): string {
   const names: Record<string, string> = {
     incarnam: "Incarnam",
     "bonta-brakmar": "Bonta & Brakmar",
+    "dofus-mag": "Dofus Mag",
     "bonta-brakmar-2": "Bonta & Brakmar 2",
     otomai: "Otomai",
     "otomai-2": "Otomai 2",
