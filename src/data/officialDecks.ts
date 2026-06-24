@@ -7,6 +7,8 @@ export interface OfficialDeckCard {
   name: string;
   quantity: number;
   type: "hero" | "havre-sac" | "card";
+  /** Libellé de catégorie imprimé dans le magazine (ex. « Alliés »). */
+  section?: string;
 }
 
 export interface OfficialDeck {
@@ -17,6 +19,22 @@ export interface OfficialDeck {
   hero: string;
   havreSac: string;
   cards: OfficialDeckCard[];
+  /** Paragraphe d'intro narratif (Dofus Mag). */
+  lore?: string;
+  /** « Le conseil d'Adamaï » — comment jouer le deck. */
+  howToPlay?: string;
+  /** Alignement affiché (ex. « Neutre »). */
+  alignment?: string;
+  /** « Cartes maîtresses » mises en avant. */
+  keyCards?: string[];
+  /** Carte Protecteur du deck, le cas échéant. */
+  protector?: string;
+  /** Crédit d'illustration / deck. */
+  illustrator?: string;
+  /** Numéro du magazine (ex. « Dofus Mag 124 »). */
+  magIssue?: string;
+  /** Provenance du deck. */
+  source?: "dofus-mag";
 }
 
 export const OFFICIAL_DECKS: OfficialDeck[] = [
