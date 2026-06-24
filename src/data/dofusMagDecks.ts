@@ -2075,6 +2075,171 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
     ]
   },
   {
+    "id": "dofus-mag-champion-pandawa-shimay-rouch",
+    "name": "Deck du Champion Pandawa — Shimay Rouch",
+    "description": "Deck Dofus Mag — Shimay Rouch.",
+    "extension": "dofus-mag",
+    "source": "dofus-mag",
+    "hero": "Shimay Rouch",
+    "havreSac": "Havre Sac du Bouftou",
+    "keyCards": [
+      "Pandatak",
+      "Bowissette"
+    ],
+    "cards": [
+      {
+        "name": "Nomekop le Crapoteur",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Black Wabbit",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Dhavid Boivit",
+        "quantity": 3,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Narnya Totep",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Chuck Maurice",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Syco Fente",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Chevalier Ténèbres",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Bowissette",
+        "quantity": 3,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Épouvantail",
+        "quantity": 3,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Kolof Toulou",
+        "quantity": 3,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Démon VI",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Goultard le Barbare",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Amukwak de Glace",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Coiffe du Bouftou",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Aiguille à Tricoter",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Gelano",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Anneau de Bouze le Clerc",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Bâton des Rois",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Ceinture du Bandit",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Abrabottes",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Marcassin",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Pandatak",
+        "quantity": 3,
+        "type": "card",
+        "section": "Actions"
+      },
+      {
+        "name": "Échec Critique",
+        "quantity": 3,
+        "type": "card",
+        "section": "Actions"
+      },
+      {
+        "name": "Agression",
+        "quantity": 1,
+        "type": "card",
+        "section": "Actions"
+      },
+      {
+        "name": "Exclusion",
+        "quantity": 2,
+        "type": "card",
+        "section": "Actions"
+      }
+    ]
+  },
+  {
     "id": "dofus-mag-chevalier-bruss-ouilis",
     "name": "Deck Chevalier — Bruss Ouilis",
     "description": "Symboles de l'extension Amakna, les Chevaliers et leur toute nouvelle mécanique « Défense » ouvrent des perspectives aux amateurs de combat.",
@@ -5396,6 +5561,348 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "quantity": 1,
         "type": "card",
         "section": "Équipements"
+      }
+    ]
+  },
+  {
+    "id": "dofus-mag-iop-hilary-swinte-florian-champion-iop-du-tournoi-des-douze",
+    "name": "Deck Iop — Hilary Swinte (Florian, Champion Iop du Tournoi des Douze)",
+    "description": "Deck Dofus Mag — Hilary Swinte.",
+    "extension": "dofus-mag",
+    "source": "dofus-mag",
+    "hero": "Hilary Swinte",
+    "havreSac": "Havre Sac du Craqueleur",
+    "alignment": "Brâkmar",
+    "keyCards": [
+      "Dopeul Iop",
+      "Masque du Rat Noir",
+      "Hache Terrdala"
+    ],
+    "protector": "Jiva, Protectrice de Javian",
+    "cards": [
+      {
+        "name": "Atchill Brizfair",
+        "quantity": 3,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Fôteuz Detroub'",
+        "quantity": 3,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Théry Shérie",
+        "quantity": 3,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Craqueleur Ballonné",
+        "quantity": 3,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Dante Sion",
+        "quantity": 3,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Craqueleur d'Adamaï",
+        "quantity": 2,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Dopeul Iop",
+        "quantity": 2,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Craqueboule Poli",
+        "quantity": 2,
+        "type": "card",
+        "section": "Allié"
+      },
+      {
+        "name": "Foudroiement",
+        "quantity": 2,
+        "type": "card",
+        "section": "Action"
+      },
+      {
+        "name": "Attaque Brâkmarienne",
+        "quantity": 2,
+        "type": "card",
+        "section": "Action"
+      },
+      {
+        "name": "Alliance Feudala",
+        "quantity": 3,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Épée de l'Initié",
+        "quantity": 3,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Bottes de Poursuite",
+        "quantity": 3,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Venin de Scorbute",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Anneau du Rat Noir",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Hache Terrdala",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Coiffe du Minotot",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Bouclier Terrdala",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Protège-Tibias Ancestraux",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Masque du Rat Noir",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Kralano",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipement"
+      },
+      {
+        "name": "Jiva, Protectrice de Javian",
+        "quantity": 1,
+        "type": "card",
+        "section": "Protecteur"
+      }
+    ]
+  },
+  {
+    "id": "dofus-mag-jeremie-humeau-aeron-zeklox-championnat-de-france",
+    "name": "Deck de Jérémie Humeau — Aeron Zeklox (Championnat de France)",
+    "description": "Deck Dofus Mag — Aeron Zeklox.",
+    "extension": "dofus-mag",
+    "source": "dofus-mag",
+    "hero": "Aeron Zeklox",
+    "havreSac": "Havre Sac du Tofu",
+    "alignment": "Brâkmar",
+    "keyCards": [
+      "Coupure Temporelle",
+      "Filouteries au Zaap d'Astrub",
+      "Village des Katrepats"
+    ],
+    "protector": "Maimane, Protecteur d'Octolliard",
+    "cards": [
+      {
+        "name": "Atchill Brizfair",
+        "quantity": 3,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Ekraz Lenoub",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Grostruf",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Phorreur Immature",
+        "quantity": 3,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Smarmot",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Vener",
+        "quantity": 3,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Ash Tur",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Black Wabbit",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Syco Fente",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Morbidon",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Shushu Lumineux",
+        "quantity": 2,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Démon VI",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Démon XVIII",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Nomekop le Crapoteur",
+        "quantity": 1,
+        "type": "card",
+        "section": "Alliés"
+      },
+      {
+        "name": "Coupure Temporelle",
+        "quantity": 2,
+        "type": "card",
+        "section": "Actions"
+      },
+      {
+        "name": "Filouteries au Zaap d'Astrub",
+        "quantity": 2,
+        "type": "card",
+        "section": "Actions"
+      },
+      {
+        "name": "Échec Critique",
+        "quantity": 1,
+        "type": "card",
+        "section": "Actions"
+      },
+      {
+        "name": "La Dernière Rasade",
+        "quantity": 1,
+        "type": "card",
+        "section": "Actions"
+      },
+      {
+        "name": "Aiguille à Tricoter",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Amukwak de Glace",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Venin de Scorbute",
+        "quantity": 2,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Bébé Panda",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Pelle Musicale",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Masse du Corailleur",
+        "quantity": 1,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Collier du Rat Blanc",
+        "quantity": 3,
+        "type": "card",
+        "section": "Équipements"
+      },
+      {
+        "name": "Zaap",
+        "quantity": 1,
+        "type": "card",
+        "section": "Zones"
+      },
+      {
+        "name": "Incarnam",
+        "quantity": 1,
+        "type": "card",
+        "section": "Zones"
+      },
+      {
+        "name": "Village des Katrepats",
+        "quantity": 2,
+        "type": "card",
+        "section": "Zones"
+      },
+      {
+        "name": "Maimane, Protecteur d'Octolliard",
+        "quantity": 1,
+        "type": "card",
+        "section": "Protecteur"
       }
     ]
   },
@@ -8882,7 +9389,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Alliés"
       },
       {
-        "name": "YeCh'Ty",
+        "name": "YeCh'ti",
         "quantity": 1,
         "type": "card",
         "section": "Alliés"
@@ -8930,7 +9437,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Actions"
       },
       {
-        "name": "Noob",
+        "name": "noob!",
         "quantity": 1,
         "type": "card",
         "section": "Actions"

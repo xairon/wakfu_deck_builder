@@ -129,6 +129,12 @@ const NAME_FIXES: Record<string, string> = {
   "Dague de Boissaille": "Dagues de Boisaille",
   "Colère de Zaïtoshwan": "Colère de Zatoïshwan",
   "Anneau de Chance": "Petit Anneau de Chance",
+  "Atchil Brizfair": "Atchill Brizfair",
+  "YeCh'Ty": "YeCh'ti",
+  "Dahvid Boivit": "Dhavid Boivit",
+  "Fôteux Detroub'": "Fôteuz Detroub'",
+  "Gountarai le Barbare": "Goultard le Barbare",
+  Noob: "noob!",
   // Héros / havre-sac
   "Trantmy Londamy": "Trantmy Londami",
   "Luk Ylook": "Luc Ylook",

@@ -1,5 +1,5 @@
 {
-  "name": "Deck Aeron Zeklox — Jérémie Humeau (CDF)",
+  "name": "Deck de Jérémie Humeau — Aeron Zeklox (Championnat de France)",
   "hero": "Aeron Zeklox",
   "havreSac": "Havre Sac du Tofu",
   "alignment": "Brâkmar",
@@ -10,17 +10,17 @@
     "Filouteries au Zaap d'Astrub",
     "Village des Katrepats"
   ],
-  "protector": "Maimane, Protecteur d'Octofiliard",
+  "protector": "Maimane, Protecteur d'Octolliard",
   "illustrator": null,
   "magIssue": null,
   "cards": [
-    { "name": "Atchill Brizfair", "quantity": 3, "section": "Alliés" },
+    { "name": "Atchil Brizfair", "quantity": 3, "section": "Alliés" },
     { "name": "Ekraz Lenoub", "quantity": 2, "section": "Alliés" },
-    { "name": "Grostruf", "quantity": 1, "section": "Alliés" },
-    { "name": "Phorreur Immature", "quantity": 1, "section": "Alliés" },
+    { "name": "Grostruf", "quantity": 2, "section": "Alliés" },
+    { "name": "Phorreur Immature", "quantity": 3, "section": "Alliés" },
     { "name": "Smarmot", "quantity": 2, "section": "Alliés" },
     { "name": "Vener", "quantity": 3, "section": "Alliés" },
-    { "name": "Ash Tur", "quantity": 1, "section": "Alliés" },
+    { "name": "Ash Tur", "quantity": 2, "section": "Alliés" },
     { "name": "Black Wabbit", "quantity": 1, "section": "Alliés" },
     { "name": "Syco Fente", "quantity": 2, "section": "Alliés" },
     { "name": "Morbidon", "quantity": 1, "section": "Alliés" },
@@ -47,7 +47,7 @@
     { "name": "Incarnam", "quantity": 1, "section": "Zones" },
     { "name": "Village des Katrepats", "quantity": 2, "section": "Zones" },
     {
-      "name": "Maimane, Protecteur d'Octofiliard",
+      "name": "Maimane, Protecteur d'Octolliard",
       "quantity": 1,
       "section": "Protecteur"
     }
