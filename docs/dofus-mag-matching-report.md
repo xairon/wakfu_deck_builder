@@ -1,4 +1,4 @@
-> Total noms non résolus : **6**
+> Total noms non résolus : **0**
 
 # Rapport de matching — Decks Dofus Mag
 
@@ -38,17 +38,15 @@ Généré pour 63 deck(s).
 - Ambigus (reprints) : Bouftou, Boufton Blanc, Chef de Guerre Bouftou, Jicé Aouaire, Shika Ingalsse, Bouftou Royal, Coup Critique, Agression, Anneau de Bouze le Clerc, Marteau du Bouftou
 
 ## Deck Brâkmar — Mawy Blodie (`dofus-mag-brakmar-mawy-blodie`)
-- Résolus : 24
-- **Non résolus (1)** : Dague du Rat Noir
+- Résolus : 25
 - Ambigus (reprints) : Serpentin, Boufton Blanc
 
 ## Deck Champi — Babeth Safoueth (`dofus-mag-champi-babeth-safoueth`)
 - Résolus : 23
 
 ## Deck du Champion de France — Opée Tissoin (`dofus-mag-champion-de-france-opee-tissoin`)
-- Résolus : 26
-- **Non résolus (1)** : Demi Falque
-- Ambigus (reprints) : Bowissette, Zaap, Épouvantail, Serpentin, Black Wabbit, Chafer Archer, Nomekop le Crapoteur, Agression, Échec Critique, Ceinture du Prespic, Pantoufles du Tofu, Cape du Tofu
+- Résolus : 27
+- Ambigus (reprints) : Bowissette, Zaap, Épouvantail, Serpentin, Black Wabbit, Chafer Archer, Demi Finame, Nomekop le Crapoteur, Agression, Échec Critique, Ceinture du Prespic, Pantoufles du Tofu, Cape du Tofu
 
 ## Deck du Champion de France — Opée Tissoin (`dofus-mag-champion-de-france-opee-tissoin-2`)
 - Résolus : 28
@@ -166,9 +164,8 @@ Généré pour 63 deck(s).
 - Ambigus (reprints) : Prespic, Bowissette, Deyko Nexion, Nomekop le Crapoteur, Échec Critique, Kwakobottes de Glace, Ceinture du Prespic
 
 ## Deck Les Petits d'Abord — Poum Ondacié (`dofus-mag-les-petits-d-abord-poum-ondacie`)
-- Résolus : 22
-- **Non résolus (1)** : Dragoune
-- Ambigus (reprints) : Amar Casto, Otomaï, Échec Critique, Parchemin Blanc, Ceinture du Prespic, Anneau du Prespic, Cape du Prespic, Kwakobottes de Glace
+- Résolus : 23
+- Ambigus (reprints) : Amar Casto, Otomaï, Échec Critique, Parchemin Blanc, Ceinture du Prespic, Anneau du Prespic, Cape du Prespic, Kwakobottes de Glace, Dragoune Rose
 
 ## Deck Osamodas — Babeth Safoueth (`dofus-mag-osamodas-babeth-safoueth`)
 - Résolus : 23
@@ -178,13 +175,11 @@ Généré pour 63 deck(s).
 - Ambigus (reprints) : Demi Finame, Amar Casto, Gelée Fraise, Bwork Mage, Piou Rouge, Chafer, Crocabulia, Potion de Rappel, Agression, Chacha Noir
 
 ## Deck Osamodas — Trantmy Londami (Deck de Zellina) (`dofus-mag-osamodas-trantmy-londami-deck-de-zellina`)
-- Résolus : 31
-- **Non résolus (1)** : Kwacoiffe de Glace
-- Ambigus (reprints) : Gelée Fraise, Gelée Menthe, Gelée Bleue, Gelée Citron, Nomekop le Crapoteur, Black Wabbit, Black Tiwabbit, Bowissette, Demi Finame, Shika Ingalsse, Agression, Echec Critique, Kwaklame de Glace, Kwakobottes de Glace
+- Résolus : 32
+- Ambigus (reprints) : Gelée Fraise, Gelée Menthe, Gelée Bleue, Gelée Citron, Nomekop le Crapoteur, Black Wabbit, Black Tiwabbit, Bowissette, Demi Finame, Shika Ingalsse, Agression, Echec Critique, Kwaklame de Glace, Kwakobottes de Glace, Kwakoiffe de Glace
 
 ## Deck Otomaï — Otomaï l'Enchanteur (`dofus-mag-otomai-otomai-l-enchanteur`)
-- Résolus : 24
-- **Non résolus (1)** : Koléral
+- Résolus : 25
 
 ## Deck Pandawa — Mawy Blodie (Swann) (`dofus-mag-pandawa-mawy-blodie-swann`)
 - Résolus : 24
@@ -245,5 +240,4 @@ Généré pour 63 deck(s).
 - Ambigus (reprints) : Serpentin, Épouvantail, Otomaï, Dofawa, Dofus Ocre, Dofus Pourpre, Dofus Émeraude, Zaap
 
 ## Deck Xélor — Flix Flax (Deck de Mathieu) (`dofus-mag-xelor-flix-flax-deck-de-mathieu`)
-- Résolus : 26
-- **Non résolus (1)** : Bouclier en Slip du Bwork
+- Résolus : 27

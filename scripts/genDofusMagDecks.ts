@@ -135,6 +135,12 @@ const NAME_FIXES: Record<string, string> = {
   "Fôteux Detroub'": "Fôteuz Detroub'",
   "Gountarai le Barbare": "Goultard le Barbare",
   Noob: "noob!",
+  "Bouclier en Slip du Bwork": "Bouclier en Slip",
+  "Dague du Rat Noir": "Dagues du Rat Noir",
+  "Demi Falque": "Demi Finame",
+  Dragoune: "Dragoune Rose",
+  Koléral: "Kolérat",
+  "Kwacoiffe de Glace": "Kwakoiffe de Glace",
   // Héros / havre-sac
   "Trantmy Londamy": "Trantmy Londami",
   "Luk Ylook": "Luc Ylook",

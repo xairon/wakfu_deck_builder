@@ -1577,7 +1577,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Équipements"
       },
       {
-        "name": "Dague du Rat Noir",
+        "name": "Dagues du Rat Noir",
         "quantity": 2,
         "type": "card",
         "section": "Équipements"
@@ -1809,7 +1809,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Alliés"
       },
       {
-        "name": "Demi Falque",
+        "name": "Demi Finame",
         "quantity": 2,
         "type": "card",
         "section": "Alliés"
@@ -6748,7 +6748,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Équipements"
       },
       {
-        "name": "Dragoune",
+        "name": "Dragoune Rose",
         "quantity": 1,
         "type": "card",
         "section": "Équipements"
@@ -7299,7 +7299,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Équipements"
       },
       {
-        "name": "Kwacoiffe de Glace",
+        "name": "Kwakoiffe de Glace",
         "quantity": 1,
         "type": "card",
         "section": "Équipements"
@@ -7337,7 +7337,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Alliés"
       },
       {
-        "name": "Koléral",
+        "name": "Kolérat",
         "quantity": 3,
         "type": "card",
         "section": "Alliés"
@@ -10037,7 +10037,7 @@ export const DOFUS_MAG_DECKS: OfficialDeck[] = [
         "section": "Équipements"
       },
       {
-        "name": "Bouclier en Slip du Bwork",
+        "name": "Bouclier en Slip",
         "quantity": 2,
         "type": "card",
         "section": "Équipements"
