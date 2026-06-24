@@ -23,8 +23,8 @@ import type {
   AttachPayload,
   DetachPayload,
 } from "../types/events";
-import type { Seat } from "../types/zones";
-import { otherSeat } from "../types/zones.ts";
+import type { Seat, ZoneRef } from "../types/zones";
+import { otherSeat, ZONE_SPECS, zoneOwner } from "../types/zones.ts";
 import {
   move,
   worldHavenSwap,
@@ -32,7 +32,6 @@ import {
   untap,
   setCounter,
   incCounter,
-  flipLevel,
   setCombat,
   say,
 } from "../engine/verbs.ts";
@@ -81,6 +80,48 @@ function paOf(state: GameState, seat: Seat): number {
   const hero = heroId ? state.instances[heroId] : null;
   const mod = hero?.counters.tokens?.paMod ?? 0;
   return Math.max(0, (hero?.counters.pa ?? 6) + mod);
+}
+
+// ── Garde-fous d'AUTORITÉ pour les intentions de mutation bas niveau ─────────
+// Sur le chemin EN LIGNE, `resolveIntent` est l'UNIQUE autorité : être le joueur
+// actif (TURN_BOUND) ne suffit PAS à légitimer une mutation. Sans ces gardes, un
+// client trafiqué pouvait, pendant son tour, forger une victoire (xp/level/hp),
+// s'octroyer des ressources (pa/pm), ou voler/détruire/déplacer une carte adverse.
+
+/** Compteurs dont la valeur DÉRIVE du jeu (combat/progression/tour) : le client
+ *  ne doit JAMAIS les écrire via une intention. xp/level → victoire forgée ;
+ *  hp → kill ; pa/pm → ressources infinies ; resistance/damage → combat faussé. */
+const PROTECTED_COUNTERS = new Set([
+  "hp",
+  "xp",
+  "level",
+  "pa",
+  "pm",
+  "resistance",
+  "damage",
+]);
+/** Jetons protégés (dans `counters.tokens`) : paMod alimente paOf (PA effective). */
+const PROTECTED_TOKENS = new Set(["paMod"]);
+function counterIsProtected(counter: string, token?: boolean): boolean {
+  return token
+    ? PROTECTED_TOKENS.has(counter)
+    : PROTECTED_COUNTERS.has(counter);
+}
+
+/** L'instance existe ET est contrôlée par le siège ? (raison FR sinon). Empêche
+ *  toute mutation d'une carte de l'adversaire (vol / destruction / kill). */
+function controlError(state: GameState, seat: Seat, id: string): string | null {
+  const inst = state.instances[id];
+  if (!inst) return "Carte inconnue.";
+  if (inst.controller !== seat) return "Tu ne contrôles pas cette carte.";
+  return null;
+}
+
+/** La destination est-elle une zone PRIVÉE de l'adversaire ? (interdit d'y
+ *  déposer une carte : main / pioche / réserve adverse). */
+function destIsForbidden(to: ZoneRef, seat: Seat): boolean {
+  const owner = zoneOwner(to);
+  return !ZONE_SPECS[to.zone].public && owner !== null && owner !== seat;
 }
 
 /**
@@ -151,6 +192,12 @@ export function resolveIntent(
     case "MOVE_CARD": {
       const inst = state.instances[intent.instanceId];
       if (!inst) return { error: "Carte inconnue." };
+      // Autorité : on ne déplace QUE ses propres cartes, et jamais vers une zone
+      // privée adverse (sinon vol/destruction/exil du Héros adverse = défaite).
+      if (inst.controller !== seat)
+        return { error: "Tu ne contrôles pas cette carte." };
+      if (destIsForbidden(intent.to, seat))
+        return { error: "Destination interdite (zone privée adverse)." };
       const fromZone = inst.location.zone;
       const toZone = intent.to.zone;
       // Monde↔Havre-Sac conserve l'identité (501.5) — worldHavenSwap.
@@ -206,13 +253,26 @@ export function resolveIntent(
       return { events };
     }
 
-    case "TAP":
+    case "TAP": {
+      const err = controlError(state, seat, intent.instanceId);
+      if (err) return { error: err };
       return { events: [tap(seat, intent.instanceId)] };
+    }
 
-    case "UNTAP":
+    case "UNTAP": {
+      const err = controlError(state, seat, intent.instanceId);
+      if (err) return { error: err };
       return { events: [untap(seat, intent.instanceId)] };
+    }
 
-    case "SET_COUNTER":
+    case "SET_COUNTER": {
+      const err = controlError(state, seat, intent.instanceId);
+      if (err) return { error: err };
+      if (counterIsProtected(intent.counter, intent.token))
+        return {
+          error:
+            "Compteur protégé : il dérive du jeu (combat/progression), non modifiable manuellement en ligne.",
+        };
       return {
         events: [
           setCounter(
@@ -224,8 +284,16 @@ export function resolveIntent(
           ),
         ],
       };
+    }
 
-    case "INC_COUNTER":
+    case "INC_COUNTER": {
+      const err = controlError(state, seat, intent.instanceId);
+      if (err) return { error: err };
+      if (counterIsProtected(intent.counter, intent.token))
+        return {
+          error:
+            "Compteur protégé : il dérive du jeu (combat/progression), non modifiable manuellement en ligne.",
+        };
       return {
         events: [
           incCounter(
@@ -237,21 +305,22 @@ export function resolveIntent(
           ),
         ],
       };
+    }
 
+    // Le Niveau/XP dérivent EXCLUSIVEMENT de la progression (combat →
+    // grantXpEvents, côté serveur). Un SET_LEVEL client serait une victoire
+    // forgée (level/xp = condition de victoire) → refusé en ligne.
     case "SET_LEVEL":
       return {
-        events: [
-          flipLevel(
-            seat,
-            intent.instanceId,
-            intent.face,
-            intent.level,
-            intent.xp,
-          ),
-        ],
+        error:
+          "Le niveau dérive de la progression (combat), non modifiable manuellement en ligne.",
       };
 
     case "ATTACH": {
+      const e1 = controlError(state, seat, intent.equipmentId);
+      if (e1) return { error: e1 };
+      const e2 = controlError(state, seat, intent.bearerId);
+      if (e2) return { error: e2 };
       const payload: AttachPayload = {
         equipmentId: intent.equipmentId,
         bearerId: intent.bearerId,
@@ -260,6 +329,10 @@ export function resolveIntent(
     }
 
     case "DETACH": {
+      const err = controlError(state, seat, intent.equipmentId);
+      if (err) return { error: err };
+      if (destIsForbidden(intent.to, seat))
+        return { error: "Destination interdite (zone privée adverse)." };
       const payload: DetachPayload = {
         equipmentId: intent.equipmentId,
         to: intent.to,

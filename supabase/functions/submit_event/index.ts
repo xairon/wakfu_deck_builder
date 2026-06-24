@@ -364,6 +364,7 @@ Deno.serve(async (req) => {
 
     return json({ seq: ev.seq });
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    console.error("submit_event", e);
+    return json({ error: "ERREUR_SERVEUR" }, 500);
   }
 });

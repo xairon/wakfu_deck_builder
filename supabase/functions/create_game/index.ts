@@ -25,10 +25,21 @@ Deno.serve(async (req) => {
     // La main de départ pioche 6 cartes/siège : un deck dont la Pioche compte
     // < 6 cartes ferait planter la mise en place (cf. join_game). Le client
     // valide 48 cartes ; ceci protège l'API.
-    const piocheCount = (
-      deck.cards as { quantity?: number; isReserve?: boolean }[] | undefined
-    )?.reduce((s, c) => s + (c?.isReserve ? 0 : (c?.quantity ?? 0)), 0);
-    if ((piocheCount ?? 0) < 6) return json({ error: "DECK_TROP_PETIT" }, 400);
+    const entries =
+      (deck.cards as
+        | { quantity?: number; isReserve?: boolean }[]
+        | undefined) ?? [];
+    const piocheCount = entries.reduce(
+      (s, c) => s + (c?.isReserve ? 0 : (c?.quantity ?? 0)),
+      0,
+    );
+    if (piocheCount < 6) return json({ error: "DECK_TROP_PETIT" }, 400);
+    // Borne HAUTE (anti-DoS) : un deck trafiqué géant (100k cartes) gonflerait le
+    // jsonb persisté et la mise en place (une instance par exemplaire). Le format
+    // officiel = 48 + Réserve 12 sur ~50 entrées ; 120/200 est très large.
+    const totalQty = entries.reduce((s, c) => s + (c?.quantity ?? 0), 0);
+    if (entries.length > 120 || totalQty > 200)
+      return json({ error: "DECK_TROP_GROS" }, 400);
 
     const db = adminClient();
     const code = makeRoomCode();
@@ -47,17 +58,27 @@ Deno.serve(async (req) => {
       })
       .select("id, code")
       .single();
-    if (error) return json({ error: error.message }, 400);
+    if (error || !game) {
+      console.error("create_game insert games", error);
+      return json({ error: "ERREUR_CREATION" }, 500);
+    }
 
-    await db
+    const { error: gpErr } = await db
       .from("game_players")
       .insert({ game_id: game.id, seat: "A", user_id: uid, deck });
-    await db
+    const { error: gsErr } = await db
       .from("game_secrets")
       .insert({ game_id: game.id, master_seed: masterSeed });
+    if (gpErr || gsErr) {
+      console.error("create_game insert players/secret", gpErr, gsErr);
+      // Nettoie le salon orphelin (sinon partie inutilisable sans joueur/secret).
+      await db.from("games").delete().eq("id", game.id);
+      return json({ error: "ERREUR_CREATION" }, 500);
+    }
 
     return json({ gameId: game.id, code: game.code });
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    console.error("create_game", e);
+    return json({ error: "ERREUR_SERVEUR" }, 500);
   }
 });

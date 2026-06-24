@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
     }
     return json({ events: out });
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    console.error("pull_events", e);
+    return json({ error: "ERREUR_SERVEUR" }, 500);
   }
 });
