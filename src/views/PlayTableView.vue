@@ -446,12 +446,8 @@
           </p>
           <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
           <p v-if="store.online" class="mt-1 text-sm text-base-content/60">
-            🎲 Tirage au sort —
-            <span class="font-semibold text-base-content/80">{{
-              store.firstPlayer === store.perspective
-                ? "tu commences"
-                : "l'adversaire commence"
-            }}</span>
+            🎲 Le tirage au sort du premier joueur a lieu après le choix des
+            mains.
           </p>
           <div class="mulligan-fan">
             <HandFan mine :items="mulliganItems" :resolve-card="resolveCard" />
@@ -884,11 +880,13 @@ const perspectivePortrait = computed<string | null>(() => {
 const botTurn = computed(() => tutorial.active && store.perspective === "B");
 
 // ── Tirage au sort ANIMÉ : qui commence ? ────────────────────────────────────
-// Cosmétique : le premier joueur est déjà décidé CÔTÉ SERVEUR (coin flip de
-// join_game, ou pile/face local) — le dé "atterrit" simplement sur une valeur
-// COHÉRENTE (pair = je commence, impair = l'adversaire). Joué une fois à l'entrée
-// en mulligan, en ligne comme en local. Math.random ici est purement visuel
-// (≠ moteur : aucune incidence sur l'état de jeu).
+// Le premier joueur est décidé CÔTÉ SERVEUR (coin flip de join_game, ou pile/face
+// local). Le dé est joué APRÈS le mulligan (transition mulligan → jeu) : les deux
+// clients atteignent "playing" au même instant (2e MULLIGAN_DONE diffusé), donc le
+// tirage est SYNCHRONE et visible des deux côtés. La face FINALE est DÉTERMINISTE
+// (dérivée de gameId + siège qui commence) → le MÊME dé s'affiche chez les deux
+// joueurs ; seul le texte est relatif à la perspective. (Le roulement utilise
+// Math.random localement : purement visuel, sans incidence sur l'état.)
 const diceVisible = ref(false);
 const diceFace = ref(1);
 const diceSettled = ref(false);
@@ -907,10 +905,13 @@ function clearDiceTimers(): void {
 
 function rollFirstPlayerDie(): void {
   clearDiceTimers();
-  const iStart = store.firstPlayer === store.perspective;
-  diceIStart.value = iStart;
-  const pool = iStart ? [2, 4, 6] : [1, 3, 5]; // parité = qui commence
-  const finalFace = pool[Math.floor(Math.random() * pool.length)];
+  const fp = store.firstPlayer; // siège qui commence (partagé via le journal)
+  diceIStart.value = fp === store.perspective;
+  // Face FINALE déterministe + PARTAGÉE : parité = siège (pair → A, impair → B),
+  // valeur dérivée du gameId → identique sur les deux clients.
+  const pool = fp === "A" ? [2, 4, 6] : [1, 3, 5];
+  const seed = [...store.gameId()].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const finalFace = pool[seed % pool.length];
   diceSettled.value = false;
   diceFace.value = 1 + Math.floor(Math.random() * 6);
   diceVisible.value = true;
@@ -923,8 +924,8 @@ function rollFirstPlayerDie(): void {
     diceCycle = null;
     diceFace.value = finalFace;
     diceSettled.value = true;
-    // Lecture du résultat puis disparition (révèle le mulligan en dessous).
-    diceT2 = setTimeout(() => (diceVisible.value = false), 1700);
+    // Lecture du résultat puis disparition (révèle le plateau en dessous).
+    diceT2 = setTimeout(() => (diceVisible.value = false), 1900);
   }, 1100);
 }
 
@@ -939,15 +940,22 @@ const DICE_PIPS: Record<number, number[]> = {
 };
 const dicePips = computed(() => DICE_PIPS[diceFace.value] ?? [4]);
 
-// Déclenche le dé une fois par partie, à l'entrée en mulligan (firstPlayer connu).
+// Déclenche le dé une fois par partie, APRÈS le mulligan (transition mulligan →
+// jeu). Les deux clients franchissent ce cap au même moment (2e MULLIGAN_DONE
+// diffusé) → tirage synchrone des deux côtés. Garde `prev === "mulligan"` : on ne
+// le joue PAS sur un saut direct lobby → jeu (sandbox/repriseéventuelle).
 watch(
   () => store.matchPhase,
-  (now) => {
+  (now, prev) => {
     if (now === "lobby") {
       diceShownFor = "";
       return;
     }
-    if (now === "mulligan" && diceShownFor !== store.gameId()) {
+    if (
+      now === "playing" &&
+      prev === "mulligan" &&
+      diceShownFor !== store.gameId()
+    ) {
       diceShownFor = store.gameId();
       rollFirstPlayerDie();
     }
