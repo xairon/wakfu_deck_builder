@@ -170,6 +170,11 @@ export const useGameStore = defineStore("game", () => {
   // depuis seq 1 pour que le fold pur `deriveState` reste correct.
   const pending = new Map<number, RedactedEvent>();
   let pulling = false;
+  // Resync à RÉESSAI (backoff) : le broadcast Realtime n'est ni garanti livré ni
+  // ordonné. Si un pull échoue/ne comble pas le trou, on reprogramme un resync
+  // (sinon plateau figé jusqu'au prochain broadcast). Annulé dès le trou comblé.
+  let resyncTimer: ReturnType<typeof setTimeout> | null = null;
+  let resyncAttempts = 0;
   // ── Présence adverse + fenêtre de grâce sur déconnexion ──────────────────
   // `opponentPresent` reflète la présence Realtime de l'autre siège (true par
   // défaut : on ne pénalise pas avant d'avoir une info négative). Quand elle
@@ -192,6 +197,28 @@ export const useGameStore = defineStore("game", () => {
   function clearGraceTimer(): void {
     if (graceTimer) clearTimeout(graceTimer);
     graceTimer = null;
+  }
+
+  /** Annule un resync différé en attente (trou comblé / déconnexion). */
+  function clearResyncTimer(): void {
+    if (resyncTimer) clearTimeout(resyncTimer);
+    resyncTimer = null;
+    resyncAttempts = 0;
+  }
+  /** Reprogramme un resync avec backoff exponentiel (400ms→8s), une seule fois. */
+  function scheduleResync(): void {
+    if (resyncTimer || !online.value) return;
+    const delay = Math.min(8000, 400 * 2 ** resyncAttempts);
+    resyncAttempts++;
+    resyncTimer = setTimeout(() => {
+      resyncTimer = null;
+      void resyncFrom(lastSeq());
+    }, delay);
+  }
+  /** Au retour de l'onglet au premier plan : rattrape les events manqués. */
+  function onVisibility(): void {
+    if (document.visibilityState === "visible" && online.value)
+      void resyncFrom(lastSeq());
   }
 
   // ── État du match ────────────────────────────────────────────────────────
@@ -426,6 +453,7 @@ export const useGameStore = defineStore("game", () => {
           .then(() => t.submit(id, d))
           .catch((e) => {
             ruleError.value = `Réseau : ${String(e)}`;
+            void resyncFrom(lastSeq());
           });
       }
       return;
@@ -451,6 +479,9 @@ export const useGameStore = defineStore("game", () => {
       .then(() => t.submitIntent!(id, intent))
       .catch((e) => {
         ruleError.value = (e as Error)?.message ?? String(e);
+        // Le refus peut être un conflit d'ordre (409) ou un échec partiel : on
+        // resynchronise sur l'état autoritaire plutôt que de rester divergent.
+        void resyncFrom(lastSeq());
       });
     return true;
   }
@@ -634,6 +665,10 @@ export const useGameStore = defineStore("game", () => {
       console.warn("[resync] pull échoué (non bloquant) :", e);
     } finally {
       pulling = false;
+      // Trou non comblé (pull échoué/partiel) → on REPROGRAMME (backoff) au lieu
+      // d'attendre un hypothétique prochain broadcast. Comblé → on réinitialise.
+      if (pending.size > 0) scheduleResync();
+      else clearResyncTimer();
     }
   }
 
@@ -665,6 +700,8 @@ export const useGameStore = defineStore("game", () => {
     submitChain = Promise.resolve();
     pending.clear();
     pulling = false;
+    clearResyncTimer();
+    document.addEventListener("visibilitychange", onVisibility);
     ruleError.value = null; // repartir sans message d'erreur résiduel
     // Présence : on repart d'un adversaire supposé présent, grâce désarmée.
     clearGraceTimer();
@@ -691,6 +728,8 @@ export const useGameStore = defineStore("game", () => {
     events.value = [];
     pending.clear();
     pulling = false;
+    clearResyncTimer();
+    document.removeEventListener("visibilitychange", onVisibility);
     revealed.value = {};
     gameId.value = "local";
     matchPhase.value = "lobby";
@@ -932,6 +971,9 @@ export const useGameStore = defineStore("game", () => {
       presenceSeen = true;
       clearGraceTimer();
       canClaimVictory.value = false;
+      // L'adversaire (re)apparaît : on rattrape les events qu'on aurait manqués
+      // pendant son absence (broadcast non garanti livré).
+      void resyncFrom(lastSeq());
       return;
     }
     if (matchPhase.value !== "playing") return;
@@ -1479,7 +1521,10 @@ export const useGameStore = defineStore("game", () => {
         },
         activeGlobalMods(rulesCtx()),
       );
-    } catch {
+    } catch (e) {
+      // Le dry-run ne doit jamais casser l'UI, mais une exception ici cache un
+      // vrai bug de résolution : on la trace (sans la propager).
+      console.warn("[combatPreview] résolution à blanc échouée :", e);
       return null;
     }
     const hpAfter: Record<string, number> = {};

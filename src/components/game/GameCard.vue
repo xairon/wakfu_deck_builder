@@ -140,6 +140,21 @@ const force = computed(() => game.effectiveForceOf(props.instance.instanceId));
 const label = computed(() => props.card?.name ?? "Carte");
 const spine = computed(() => elementColor(props.card?.stats?.niveau?.element));
 
+/** Rôle de combat de cette carte (pour l'a11y : sinon porté par la couleur seule,
+ *  échec WCAG 1.4.1 — invisible au lecteur d'écran/daltonien). */
+const combatRole = computed<string | null>(() => {
+  const c = game.combat;
+  if (!c) return null;
+  const id = props.instance.instanceId;
+  if (c.attackers.includes(id)) return "attaquant";
+  if (c.target?.instanceId === id) return "cible";
+  if (id in c.blocks) return "bloqueur";
+  return null;
+});
+const willDie = computed(
+  () => game.combatPreview?.lethal.includes(props.instance.instanceId) ?? false,
+);
+
 const imgSrc = computed(() => {
   if (hidden.value) return "/images/card-back.webp";
   const id = props.instance.cardId as string;
@@ -155,6 +170,8 @@ const ariaLabel = computed(() => {
   const parts = [label.value];
   if (tapped.value) parts.push("inclinée");
   if (damage.value) parts.push(`${damage.value} dommage(s)`);
+  if (combatRole.value) parts.push(combatRole.value);
+  if (willDie.value) parts.push("sera détruite si le combat est résolu");
   return parts.join(", ");
 });
 </script>

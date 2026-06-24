@@ -918,8 +918,19 @@ function rollFirstPlayerDie(): void {
   const seed = [...store.gameId()].reduce((a, c) => a + c.charCodeAt(0), 0);
   const finalFace = pool[seed % pool.length];
   diceSettled.value = false;
-  diceFace.value = 1 + Math.floor(Math.random() * 6);
   diceVisible.value = true;
+  // prefers-reduced-motion : pas de clignotement de pips (mouvement de contenu
+  // non couvert par la garde CSS) — on pose directement la face finale.
+  const reduceMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion) {
+    diceFace.value = finalFace;
+    diceSettled.value = true;
+    diceT2 = setTimeout(() => (diceVisible.value = false), 1900);
+    return;
+  }
+  diceFace.value = 1 + Math.floor(Math.random() * 6);
   // Roulement : faces aléatoires rapides (~1,1 s) puis pose sur la valeur finale.
   diceCycle = setInterval(() => {
     diceFace.value = 1 + Math.floor(Math.random() * 6);

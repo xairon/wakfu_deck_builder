@@ -78,6 +78,9 @@ _originals_cards_png/
 # Fichiers d'entrée temporaires (images à intégrer)
 _incoming/
 
+# Photos de decks à scanner (fichiers de travail locaux, hors dépôt)
+dofus_mag_decks/
+
 # Supabase CLI (temp local, ne pas committer)
 supabase/.temp/
 
