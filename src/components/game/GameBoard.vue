@@ -453,7 +453,8 @@
               previewHpAfter(store.combat.target?.instanceId ?? '') !== null
             "
           >
-            cible {{ previewHpAfter(store.combat.target?.instanceId ?? "") }} PV
+            cible {{ previewHpAfter(store.combat.target?.instanceId ?? "") }}
+            {{ targetVitalLabel() }}
           </template>
           <template v-if="store.combatPreview.lethal.length">
             · ☠ {{ store.combatPreview.lethal.length }} détruite(s)
@@ -466,6 +467,13 @@
             aucun dégât
           </template>
         </span>
+        <!-- Annonce a11y : le ☠/grisage des cartes vouées à mourir n'est pas
+             perceptible au lecteur d'écran ; on le verbalise ici. -->
+        <p v-if="lethalCardNames().length" class="sr-only" role="status">
+          Si le combat est résolu maintenant,
+          {{ lethalCardNames().length }} carte(s) seront détruite(s) :
+          {{ lethalCardNames().join(", ") }}.
+        </p>
         <div class="gcombat__btns">
           <!-- EN LIGNE (P3) : combat au journal, contrôles selon le rôle -->
           <template v-if="store.online">
@@ -928,6 +936,18 @@ function slotCls(instanceId: string): Record<string, boolean> {
 function previewHpAfter(instanceId: string): number | null {
   const hp = store.combatPreview?.hpAfter[instanceId];
   return hp === undefined ? null : Math.max(0, hp);
+}
+/** Libellé de la jauge ciblée : « PV » (Héros/Allié) ou « Rés. » (Havre-Sac, 306.3). */
+function targetVitalLabel(): string {
+  return store.combat?.target?.kind === "havreSac" ? "Rés." : "PV";
+}
+/** Noms des cartes qui seront détruites si le combat est résolu (pour l'a11y). */
+function lethalCardNames(): string[] {
+  const ids = store.combatPreview?.lethal ?? [];
+  return ids.map((id) => {
+    const inst = store.state.instances[id];
+    return resolveCard(inst?.cardId ?? null)?.name ?? "carte";
+  });
 }
 const canAttackSelected = computed(() => {
   const inst = selectedInst.value;

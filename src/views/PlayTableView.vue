@@ -231,8 +231,9 @@
       </div>
     </div>
 
-    <!-- Assistant de règles : coach contextuel (quoi faire / pourquoi un refus). -->
-    <RuleAssistant />
+    <!-- Assistant de règles : coach contextuel (quoi faire / pourquoi un refus).
+         Masqué pendant le tutoriel : le TutorialCoach est alors le seul guide. -->
+    <RuleAssistant v-if="!tutorial.active" />
 
     <!-- Adversaire déconnecté : bandeau de grâce + réclamation de victoire -->
     <div
