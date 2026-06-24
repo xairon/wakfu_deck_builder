@@ -1,4 +1,4 @@
-import type { OfficialDeck } from "@/data/officialDecks";
+import type { OfficialDeck } from "../../src/data/officialDecks";
 
 export interface IndexedCard {
   name: string;
@@ -10,7 +10,7 @@ export function norm(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
