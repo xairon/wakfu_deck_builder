@@ -385,11 +385,19 @@
     <Transition name="slidedown">
       <div
         v-if="store.combat"
+        ref="combatBar"
+        tabindex="-1"
         class="gcombat"
         role="toolbar"
         aria-label="Combat en cours"
+        @keydown.esc.prevent="store.combatCancel()"
       >
-        <span v-if="store.online" class="gcombat__step">
+        <span
+          v-if="store.online"
+          class="gcombat__step"
+          role="status"
+          aria-live="polite"
+        >
           {{
             store.combat.step === "strikes"
               ? "🎯 Clique le bloqueur qui encaisse la Force de l'attaquant surligné (6105)"
@@ -408,7 +416,7 @@
                         : "⏳ En attente de l'adversaire…"
           }}
         </span>
-        <span v-else class="gcombat__step">
+        <span v-else class="gcombat__step" role="status" aria-live="polite">
           {{
             store.combat.reactingSeat
               ? `↩ Réaction de ${store.players[store.combat.reactingSeat].name} — joue puis « Fini de réagir »`
@@ -798,6 +806,13 @@ function zoneCls(id: string): Record<string, boolean> {
 }
 onMounted(() => {
   dnd.setDropHandler((instanceId, spec) => {
+    // EN LIGNE pendant un COMBAT : tryIntent refuse les MOVE/PLAY (combat en
+    // cours), et le drop retomberait sur une mutation LOCALE non soumise au
+    // serveur → désync. On refuse explicitement (le combat se joue via le HUD).
+    if (store.online && store.combat) {
+      store.ruleError = "Termine le combat avant de déplacer une carte.";
+      return;
+    }
     // règles assistées : un drop main → table passe par le moteur de règles
     // (légalité + inclinaison automatique des Ressources)
     const inst = store.state.instances[instanceId];
@@ -898,6 +913,22 @@ watch(selectedId, async (id) => {
     lastSelectedTrigger = null;
   }
 });
+
+// A11y combat : à l'OUVERTURE du combat, déplacer le focus sur le bandeau (sinon
+// il retombe sur <body> quand la barre d'action démonte) + annonce. Le bandeau
+// gère @keydown.esc → combatCancel. À la fermeture, le focus suit le plateau.
+const combatBar = ref<HTMLElement | null>(null);
+watch(
+  () => !!store.combat,
+  async (on) => {
+    if (!on) return;
+    await nextTick();
+    combatBar.value?.focus();
+    announce(
+      "Combat. Utilise le bandeau pour déclarer, bloquer ou résoudre ; Échap pour annuler.",
+    );
+  },
+);
 
 // ── Combat assisté : surbrillances + bouton Attaquer ────────────────────────
 function slotCls(instanceId: string): Record<string, boolean> {

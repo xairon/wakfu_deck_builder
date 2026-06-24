@@ -68,7 +68,9 @@ export function whyCannotDeclareAttack(
   if (turn.active !== seat) return "Ce n'est pas votre tour.";
   if (turn.phase !== "principale")
     return "On déclare une attaque en Phase Principale.";
-  if (turn.number <= 2 && turn.active === seat)
+  // 603.2 — turn.number<=2 couvre le 1er tour de CHAQUE joueur (tour 1 =
+  // firstPlayer, tour 2 = 2nd joueur). turn.active===seat est déjà garanti l.68.
+  if (turn.number <= 2)
     return "Pas d'attaque possible durant votre premier tour.";
   if (attackedOnTurn === turn.number) return "Une seule attaque par tour.";
   return null;
