@@ -22,6 +22,18 @@ function getHeroPv(hero: unknown): number | undefined {
   return typeof pv === "number" ? pv : undefined;
 }
 
+/** Lit défensivement une stat imprimée du recto du Héros (pa/pm…), repli undefined.
+ *  Évite de figer PA=6/PM=3 : la main de départ (4873) et le plafond d'attaquants
+ *  (703) en dépendent — un Héros N1 non standard recevait sinon de mauvaises valeurs. */
+function getHeroStat(hero: unknown, key: string): number | undefined {
+  const h = hero as {
+    recto?: { stats?: Record<string, unknown> };
+    stats?: Record<string, unknown>;
+  };
+  const v = (h?.recto?.stats ?? h?.stats)?.[key] as unknown;
+  return typeof v === "number" ? v : undefined;
+}
+
 export interface SetupOptions {
   firstPlayer?: Seat;
   masterSeedHash?: string;
@@ -68,8 +80,9 @@ export function buildInitialLayout(
         counters: {
           level: 1,
           xp: 0,
-          pa: 6,
-          pm: 3,
+          // PA/PM imprimés du Héros (repli 6/3 si absents) — pas de valeur figée.
+          pa: getHeroStat(deck.hero, "pa") ?? 6,
+          pm: getHeroStat(deck.hero, "pm") ?? 3,
           ...(pv !== undefined ? { hp: pv } : {}),
         },
         attachments: [],

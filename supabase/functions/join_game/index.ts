@@ -22,10 +22,19 @@ Deno.serve(async (req) => {
     // Garde-fou : la main de départ pioche 6 cartes par siège ; un deck dont la
     // Pioche (cartes hors Réserve) compte < 6 cartes ferait planter setup
     // (PIOCHE_VIDE). Le client valide déjà 48 cartes ; ceci protège l'API.
-    const piocheCount = (
-      deck.cards as { quantity?: number; isReserve?: boolean }[] | undefined
-    )?.reduce((s, c) => s + (c?.isReserve ? 0 : (c?.quantity ?? 0)), 0);
-    if ((piocheCount ?? 0) < 6) return json({ error: "DECK_TROP_PETIT" }, 400);
+    const entries =
+      (deck.cards as
+        | { quantity?: number; isReserve?: boolean }[]
+        | undefined) ?? [];
+    const piocheCount = entries.reduce(
+      (s, c) => s + (c?.isReserve ? 0 : (c?.quantity ?? 0)),
+      0,
+    );
+    if (piocheCount < 6) return json({ error: "DECK_TROP_PETIT" }, 400);
+    // Borne HAUTE (anti-DoS), cf. create_game.
+    const totalQty = entries.reduce((s, c) => s + (c?.quantity ?? 0), 0);
+    if (entries.length > 120 || totalQty > 200)
+      return json({ error: "DECK_TROP_GROS" }, 400);
 
     const db = adminClient();
     const { data: game } = await db
@@ -38,10 +47,29 @@ Deno.serve(async (req) => {
       return json({ error: "PARTIE_DEJA_LANCEE" }, 409);
     if (game.seat_a === uid) return json({ error: "DEJA_SIEGE_A" }, 409);
 
-    await db
+    // Prise de siège ATOMIQUE (anti-course double-join) : un UPDATE conditionnel
+    // (status='lobby' ET seat_b NULL) — un seul appel concurrent gagne la ligne ;
+    // les autres voient 0 ligne → 409. Remplace l'ancien insert-puis-update non
+    // transactionnel (deux joins simultanés passaient tous deux les pré-checks).
+    const { data: claimed } = await db
+      .from("games")
+      .update({ seat_b: uid })
+      .eq("id", game.id)
+      .eq("status", "lobby")
+      .is("seat_b", null)
+      .select("id")
+      .maybeSingle();
+    if (!claimed) return json({ error: "PARTIE_DEJA_LANCEE" }, 409);
+
+    // Le gagnant de la prise est l'unique siège B → l'insert ne peut pas entrer
+    // en conflit de PK (game_id,'B'). On vérifie quand même l'erreur.
+    const { error: gpErr } = await db
       .from("game_players")
       .insert({ game_id: game.id, seat: "B", user_id: uid, deck });
-    await db.from("games").update({ seat_b: uid }).eq("id", game.id);
+    if (gpErr) {
+      console.error("join_game insert game_players", gpErr);
+      return json({ error: "PLACE_DEJA_PRISE" }, 409);
+    }
 
     // ── Mise en place autoritative : tirage du premier joueur + GAME_STARTED + mélanges.
     const { data: players } = await db
@@ -99,12 +127,17 @@ Deno.serve(async (req) => {
           });
       }
     }
-    // ── Main de départ : 6 cartes par siège (= pa initial du héros, cf. setup.ts).
-    // Chaque tirage est un MOVE Pioche→Main révélé au SEUL propriétaire ; la
-    // redaction par siège ne livre le cardId qu'à lui (l'adversaire voit un dos).
-    const OPENING_HAND = 6;
+    // ── Main de départ : PA initiale du Héros par siège (4873 ; = paOf côté
+    // client). On la DÉRIVE du compteur pa réel (setup lit la PA imprimée du
+    // Héros) plutôt qu'une constante 6, pour rester en parité avec le jeu local
+    // et tout Héros non standard. Chaque tirage est un MOVE Pioche→Main révélé au
+    // SEUL propriétaire (la redaction par siège masque le cardId à l'autre).
     for (const seat of ["A", "B"] as const) {
-      for (let i = 0; i < OPENING_HAND; i++) {
+      const setupState = deriveState(stateEvents);
+      const heroId = setupState.seats[seat].heroInstanceId;
+      const hero = heroId ? setupState.instances[heroId] : null;
+      const openingHand = Math.max(0, hero?.counters.pa ?? 6);
+      for (let i = 0; i < openingHand; i++) {
         const state = deriveState(stateEvents);
         const ev = resolveDraft(
           state,
@@ -147,6 +180,7 @@ Deno.serve(async (req) => {
 
     return json({ gameId: game.id, firstPlayer: first });
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    console.error("join_game", e);
+    return json({ error: "ERREUR_SERVEUR" }, 500);
   }
 });

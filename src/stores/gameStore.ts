@@ -1841,12 +1841,12 @@ export const useGameStore = defineStore("game", () => {
       );
     attackedOnTurn.value = turn.value.number;
     combat.value = null;
-    if (result.winner) {
-      winner.value = result.winner;
-      matchPhase.value = "finished";
-    } else {
-      checkVictory();
-    }
+    // Fin de partie : on délègue TOUJOURS à checkVictory (sauvetage d'égalité
+    // 103.3 + victoryFromState), JAMAIS à result.winner. Sur un double-KO
+    // simultané (Héros↔Héros mutuellement létal, ex. riposte 707.1), result.winner
+    // désignait un vainqueur arbitraire (ordre de Map) au lieu d'appliquer
+    // l'égalité — divergence avec le serveur, qui n'utilise que victoryFromState.
+    checkVictory();
   }
 
   function combatCancel(): void {
