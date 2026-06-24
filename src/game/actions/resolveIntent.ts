@@ -72,11 +72,15 @@ const TURN_BOUND = new Set<GameIntent["kind"]>([
   "END_TURN",
 ]);
 
-/** PA du Héros du siège (suivi de table) ; repli 6 si Héros/compteur absent. */
+/**
+ * PA du Héros du siège = compteur de table + modificateur temporaire `paMod`
+ * (miroir du `paOf` client + du `pmOf` de legality) ; repli 6 si absent.
+ */
 function paOf(state: GameState, seat: Seat): number {
   const heroId = state.seats[seat].heroInstanceId;
   const hero = heroId ? state.instances[heroId] : null;
-  return hero?.counters.pa ?? 6;
+  const mod = hero?.counters.tokens?.paMod ?? 0;
+  return Math.max(0, (hero?.counters.pa ?? 6) + mod);
 }
 
 /**
@@ -265,6 +269,12 @@ export function resolveIntent(
     }
 
     case "END_TURN": {
+      // 4873 — on ne passe pas la main avec un excédent : il faut défausser
+      // l'excédent d'abord (le client gate déjà ; le serveur fait autorité).
+      if (state.seats[seat].main.length > paOf(state, seat))
+        return {
+          error: "Main pleine : défausse l'excédent avant de finir le tour.",
+        };
       // Pioche jusqu'aux PA puis passe la main. On NE génère PAS N drawTop ici :
       // chaque pioche dépend de l'état COURANT (sommet de la Pioche), donc émettre
       // N drawTop depuis le MÊME pré-état pointerait toutes la même carte. On
@@ -432,5 +442,13 @@ export function resolveIntent(
         .map((id) => untap(seat, id));
       return { events: [...untaps, setCombat(seat, null)] };
     }
+
+    // Garde défensive : une intention malformée (kind inconnu venu du réseau)
+    // est REJETÉE proprement plutôt que de retomber sur `undefined` (qui ferait
+    // planter submit_event). `intent` est `never` ici pour le type-checker.
+    default:
+      return {
+        error: `Intention inconnue : ${String((intent as { kind?: string }).kind)}`,
+      };
   }
 }

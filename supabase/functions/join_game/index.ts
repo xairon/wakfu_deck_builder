@@ -19,6 +19,13 @@ Deno.serve(async (req) => {
     const { code, deck } = await req.json();
     if (!deck?.hero || !deck?.havreSac)
       return json({ error: "DECK_INVALIDE" }, 400);
+    // Garde-fou : la main de départ pioche 6 cartes par siège ; un deck dont la
+    // Pioche (cartes hors Réserve) compte < 6 cartes ferait planter setup
+    // (PIOCHE_VIDE). Le client valide déjà 48 cartes ; ceci protège l'API.
+    const piocheCount = (
+      deck.cards as { quantity?: number; isReserve?: boolean }[] | undefined
+    )?.reduce((s, c) => s + (c?.isReserve ? 0 : (c?.quantity ?? 0)), 0);
+    if ((piocheCount ?? 0) < 6) return json({ error: "DECK_TROP_PETIT" }, 400);
 
     const db = adminClient();
     const { data: game } = await db

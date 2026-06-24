@@ -183,6 +183,11 @@ export const useGameStore = defineStore("game", () => {
   // jamais (mauvaise conf Realtime) ferait croire l'adversaire absent et
   // offrirait une victoire à réclamer à tort.
   let presenceSeen = false;
+  // Combat-au-journal : a-t-on déjà vu un combat JOURNALISÉ (state.combat ≠ null) ?
+  // Sert à `reconcileCombat` pour ne fermer le ref local QUE quand un vrai combat
+  // se clôt (résolu/annulé) — et JAMAIS pendant l'assemblage local de l'attaquant
+  // ou l'attente de confirmation de DECLARE_ATTACK (où state.combat est encore null).
+  let hadJournaledCombat = false;
 
   function clearGraceTimer(): void {
     if (graceTimer) clearTimeout(graceTimer);
@@ -299,6 +304,12 @@ export const useGameStore = defineStore("game", () => {
    */
   function checkVictory(): void {
     if (matchPhase.value !== "playing") return;
+    // EN LIGNE : la victoire est LECTURE SEULE (deriveOnlineOutcome dérive l'issue
+    // du journal partagé ; le serveur applique les destructions d'état / le
+    // sauvetage d'égalité / l'auto-victoire). checkVictory ne doit RIEN dispatcher
+    // ici — sinon il émettrait des drafts MOVE/INC_COUNTER refusés par l'autorité
+    // (P4) et désynchroniserait. Garde-fou défensif (les appelants gardent déjà).
+    if (online.value) return;
     // 1414 / 3019 — destructions d'état en point fixe (≤ 32 passes) AVANT
     // l'égalité et la victoire : Allié à Force effective 0 ou Dommages
     // létaux (la perte d'une aura peut tuer en cascade). Mode assisté
@@ -499,6 +510,10 @@ export const useGameStore = defineStore("game", () => {
       matchPhase.value = "finished";
       const w = (over.payload as GameOverPayload).winner;
       if (w !== "draw") winner.value = w;
+      // Partie finie → la fenêtre de réclamation de victoire n'a plus lieu d'être
+      // (évite qu'un minuteur de grâce armé déclenche un canClaimVictory tardif).
+      clearGraceTimer();
+      canClaimVictory.value = false;
       return;
     }
     matchPhase.value = deriveMatchPhase(events.value);
@@ -507,6 +522,8 @@ export const useGameStore = defineStore("game", () => {
     if (w) {
       winner.value = w;
       matchPhase.value = "finished";
+      clearGraceTimer();
+      canClaimVictory.value = false;
     }
   }
 
@@ -543,14 +560,18 @@ export const useGameStore = defineStore("game", () => {
     if (!online.value) return;
     const sc = state.value.combat ?? null;
     if (!sc) {
-      // Combat clos côté serveur → on ferme le ref local. MAIS on NE touche PAS
-      // à un assemblage local en cours (step "attackers", pas encore déclaré) :
-      // l'attaquant prépare ses attaquants/cible avant DECLARE_ATTACK et un echo
-      // sans rapport (SAID, présence…) ne doit pas effacer sa sélection.
-      if (combat.value && combat.value.step !== "attackers")
+      // On ne ferme le ref local QUE si un combat avait été JOURNALISÉ (donc
+      // résolu/annulé côté serveur). Pendant l'assemblage local de l'attaquant OU
+      // l'attente de confirmation de DECLARE_ATTACK (state.combat encore null), on
+      // préserve la sélection : un echo sans rapport (SAID/présence) ou une course
+      // ne doit pas l'effacer (sinon perte de la déclaration en cours).
+      if (hadJournaledCombat) {
         combat.value = null;
+        hadJournaledCombat = false;
+      }
       return;
     }
+    hadJournaledCombat = true;
     const me = mySeat.value;
     const local = combat.value;
     if (!local) {
@@ -581,14 +602,18 @@ export const useGameStore = defineStore("game", () => {
       };
     } else {
       // Défenseur : autorité serveur sur attaquants/cible (choix de l'attaquant).
-      // Si l'ensemble des attaquants change, un `pendingBlocker` en attente
-      // devient caduc → on le réinitialise (évite un curseur orphelin).
+      // On ne réinitialise `pendingBlocker` que si l'ensemble des attaquants a
+      // RÉELLEMENT changé (curseur devenu caduc) — sinon on préserve l'assemblage
+      // en cours du défenseur (un echo sans rapport ne doit pas le vider).
+      const attackersChanged =
+        local.attackers.length !== sc.attackers.length ||
+        local.attackers.some((a, i) => a !== sc.attackers[i]);
       combat.value = {
         ...local,
         target: sc.target,
         attackers: [...sc.attackers],
         reactingSeat: sc.reactingSeat,
-        pendingBlocker: null,
+        pendingBlocker: attackersChanged ? null : local.pendingBlocker,
       };
     }
   }
@@ -646,6 +671,8 @@ export const useGameStore = defineStore("game", () => {
     opponentPresent.value = true;
     canClaimVictory.value = false;
     presenceSeen = false;
+    hadJournaledCombat = false;
+    combat.value = null;
     onlineUnsub = transport.subscribe(
       id,
       seat,
@@ -672,6 +699,8 @@ export const useGameStore = defineStore("game", () => {
     opponentPresent.value = true;
     canClaimVictory.value = false;
     presenceSeen = false;
+    hadJournaledCombat = false;
+    combat.value = null;
   }
 
   // ── Cycle de match ───────────────────────────────────────────────────────
@@ -924,7 +953,10 @@ export const useGameStore = defineStore("game", () => {
    * (raison `disconnect`) qui revient par echo et fige la partie.
    */
   function claimVictory(): void {
+    // Garde matchPhase : ne jamais réclamer sur une partie déjà finie (course
+    // entre l'expiration de la grâce et un GAME_OVER reçu juste après).
     if (!online.value || !canClaimVictory.value) return;
+    if (matchPhase.value !== "playing") return;
     void onlineTransport?.claimVictory?.(gameId.value);
   }
 
@@ -1829,6 +1861,13 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function undoLast(): void {
+    // L'annulation est une commodité LOCALE (hot-seat). En ligne, annuler un
+    // event du journal partagé est non-standard (et l'event ciblé peut être
+    // l'adversaire) → on la désactive ; le jeu passe par les intentions.
+    if (online.value) {
+      rejectMove("L'annulation n'est pas disponible en ligne.");
+      return;
+    }
     for (let i = events.value.length - 1; i >= 0; i--) {
       const e = events.value[i];
       if (

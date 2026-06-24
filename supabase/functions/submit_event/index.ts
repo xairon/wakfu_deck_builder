@@ -12,6 +12,7 @@ import {
 } from "../../../src/game/engine/authority.ts";
 import { drawTop, recycleToPiocheTop } from "../../../src/game/engine/verbs.ts";
 import { victoryFromState } from "../../../src/game/rules/victory.ts";
+import { equalityRescueEvents } from "../../../src/game/rules/progress.ts";
 import { resolveIntent } from "../../../src/game/actions/resolveIntent.ts";
 import { loadCards } from "../_shared/cards.ts";
 import { otherSeat } from "../../../src/game/types/zones.ts";
@@ -65,7 +66,7 @@ Deno.serve(async (req) => {
 
     const { data: game } = await db
       .from("games")
-      .select("last_seq, status")
+      .select("last_seq, status, updated_at")
       .eq("id", gameId)
       .single();
     if (!game || game.status !== "active")
@@ -145,9 +146,19 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
 
-    // Meta-intent CLAIM_VICTORY : réclamation après déconnexion adverse (le
-    // client gate sur la fenêtre de grâce — confiance client assumée ici).
+    // Meta-intent CLAIM_VICTORY : réclamation après déconnexion adverse. Garde
+    // SERVEUR (proxy de présence) : on n'autorise la réclamation que si la partie
+    // est INACTIVE depuis ≥ la fenêtre de grâce — `games.updated_at` est posé par
+    // append_event à chaque coup, donc un event récent = quelqu'un a agi → refus.
+    // Le gate client seul (fenêtre de grâce) ne suffit pas : un client trafiqué
+    // pourrait forger une victoire instantanée. Combiné, c'est robuste.
     if ((draft as { type?: string })?.type === "CLAIM_VICTORY") {
+      const CLAIM_IDLE_MS = 5 * 60 * 1000;
+      const lastTs = Date.parse(
+        (game as { updated_at?: string }).updated_at ?? "",
+      );
+      if (!Number.isNaN(lastTs) && Date.now() - lastTs < CLAIM_IDLE_MS)
+        return json({ error: "ADVERSAIRE_ENCORE_ACTIF" }, 409);
       await finishGame(me.seat as "A" | "B", "disconnect");
       return json({ ok: true });
     }
@@ -275,6 +286,15 @@ Deno.serve(async (req) => {
             await appendOne(
               drawTop(deriveState(working), me.seat as "A" | "B"),
             );
+        // 103.3 — sauvetage d'égalité : si l'état résultant (typiquement après un
+        // RESOLVE_COMBAT) a les DEUX Héros à ≤ 0 PV (K.O. simultané), on les
+        // ramène à 1 PV via des events JOURNALISÉS, AVANT de tester la victoire.
+        // Le serveur fait autorité (le client ne dispatch plus rien en ligne).
+        const rescue = equalityRescueEvents({
+          state: deriveState(working),
+          getCard,
+        });
+        for (const d of rescue) await appendOne(d);
       } catch (e) {
         return json({ error: String(e) }, 409); // partiel → le client resync
       }

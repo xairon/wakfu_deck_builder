@@ -187,6 +187,37 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
     expect((arrived!.payload as { value: number }).value).toBe(2);
   });
 
+  it("END_TURN avec une main pleine (> PA) est rejeté (4873)", () => {
+    const { events, getCard } = playingState(); // A a 3 cartes, PA 6
+    // Pioche 4 cartes de plus pour A → 7 cartes en main (> PA 6).
+    let working = events.slice();
+    for (let i = 0; i < 4; i++) {
+      const [p] = sequence(
+        [drawTop(deriveState(working), "A")],
+        "g",
+        working.length + 1,
+      );
+      working = [...working, p];
+    }
+    const state = deriveState(working);
+    expect(state.seats.A.main.length).toBeGreaterThan(6);
+    const r = resolveIntent(state, getCard, { kind: "END_TURN" }, "A");
+    expect("error" in r).toBe(true);
+    expect("error" in r && r.error).toContain("Main pleine");
+  });
+
+  it("une intention malformée (kind inconnu) est rejetée proprement", () => {
+    const { state, getCard } = playingState();
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "HACK_MOVE" } as unknown as Parameters<typeof resolveIntent>[2],
+      "A",
+    );
+    expect("error" in r).toBe(true);
+    expect("error" in r && r.error).toContain("inconnue");
+  });
+
   it("TAP hors tour → erreur ; TAP par le joueur actif → SET_ORIENTATION", () => {
     const { state, getCard } = playingState(); // active A
     const aHavre = state.seats.A.havreSac[0];
