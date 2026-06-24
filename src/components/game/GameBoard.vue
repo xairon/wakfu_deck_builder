@@ -1,5 +1,8 @@
 <template>
   <div class="gtable" :class="{ 'gtable--dragging': dnd.isDragging.value }">
+    <!-- Liaisons de combat (attaquant→cible, bloqueur→attaquant) par-dessus tout. -->
+    <CombatLinks />
+
     <!-- ════════ ADVERSAIRE : bande (HUD · socle · main · piles) puis champ ════════ -->
     <section class="gseat gseat--opp">
       <div class="gseat__strip">
@@ -22,6 +25,7 @@
               :key="inst.instanceId"
               class="gslot gslot--wide"
               :class="slotCls(inst.instanceId)"
+              :data-iid="inst.instanceId"
             >
               <GameCard
                 :instance="inst"
@@ -47,6 +51,7 @@
                 :key="inst.instanceId"
                 class="gslot gslot--small"
                 :class="slotCls(inst.instanceId)"
+                :data-iid="inst.instanceId"
               >
                 <GameCard
                   :instance="inst"
@@ -95,6 +100,7 @@
             :key="inst.instanceId"
             class="gslot"
             :class="slotCls(inst.instanceId)"
+            :data-iid="inst.instanceId"
           >
             <GameCard
               :instance="inst"
@@ -157,6 +163,7 @@
             :key="inst.instanceId"
             class="gslot"
             :class="slotCls(inst.instanceId)"
+            :data-iid="inst.instanceId"
           >
             <GameCard
               :instance="inst"
@@ -189,6 +196,7 @@
               :key="inst.instanceId"
               class="gslot gslot--wide"
               :class="slotCls(inst.instanceId)"
+              :data-iid="inst.instanceId"
             >
               <GameCard
                 :instance="inst"
@@ -224,6 +232,7 @@
                 :key="inst.instanceId"
                 class="gslot gslot--small"
                 :class="slotCls(inst.instanceId)"
+                :data-iid="inst.instanceId"
               >
                 <GameCard
                   :instance="inst"
@@ -671,6 +680,7 @@ import HandFan from "./HandFan.vue";
 import type { HandItem } from "./HandFan.vue";
 import SeatHud from "./SeatHud.vue";
 import PileStack from "./PileStack.vue";
+import CombatLinks from "./CombatLinks.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
