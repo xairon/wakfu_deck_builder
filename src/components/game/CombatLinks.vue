@@ -21,15 +21,33 @@ type Link = {
 };
 const links = ref<Link[]>([]);
 
-/** Centre d'une carte (par instanceId) relatif au coin haut-gauche du calque. */
+/** Centre (arrondi au pixel) d'une carte par instanceId, relatif au calque. */
 function center(iid: string, origin: DOMRect): { x: number; y: number } | null {
   const el = document.querySelector(`[data-iid="${iid}"]`);
   if (!el) return null;
   const r = el.getBoundingClientRect();
   return {
-    x: r.left + r.width / 2 - origin.left,
-    y: r.top + r.height / 2 - origin.top,
+    x: Math.round(r.left + r.width / 2 - origin.left),
+    y: Math.round(r.top + r.height / 2 - origin.top),
   };
+}
+
+/** Deux jeux de liaisons sont-ils identiques (évite un re-render à chaque frame) ? */
+function sameLinks(a: Link[], b: Link[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    const p = a[i];
+    const q = b[i];
+    if (
+      p.kind !== q.kind ||
+      p.x1 !== q.x1 ||
+      p.y1 !== q.y1 ||
+      p.x2 !== q.x2 ||
+      p.y2 !== q.y2
+    )
+      return false;
+  }
+  return true;
 }
 
 function recompute(): void {
@@ -56,7 +74,10 @@ function recompute(): void {
     const a = center(attackerId, origin);
     if (b && a) out.push({ x1: b.x, y1: b.y, x2: a.x, y2: a.y, kind: "blk" });
   }
-  links.value = out;
+  // La boucle rAF appelle ceci ~60fps pendant tout le combat (état souvent
+  // statique en attente de l'adversaire) : on ne réaffecte le ref QUE si les
+  // liaisons ont réellement bougé, pour éviter un re-render permanent + GC.
+  if (!sameLinks(out, links.value)) links.value = out;
 }
 
 // Source de vérité du rafraîchissement : un watch RÉACTIF profond sur le combat
