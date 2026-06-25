@@ -7,7 +7,7 @@ const fire = {
   id: "x",
   name: "X",
   mainType: "Action",
-  stats: { pa: 3, niveau: { value: 1, element: "feu" } },
+  stats: { pa: 3, niveau: { value: 1, element: "Feu" } },
 } as Card;
 const neutral = { id: "y", name: "Y", mainType: "Action" } as Card;
 
