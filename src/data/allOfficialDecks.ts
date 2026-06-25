@@ -32,17 +32,21 @@ export interface ResolvedDeckGroup {
   entries: ResolvedDeckEntry[];
 }
 
+// Ordre d'affichage des catégories. Inclut les formes plurielles (sections
+// imprimées Dofus Mag) ET singulières (mainType des starters, repli).
 const SECTION_ORDER = [
   "Alliés",
+  "Allié",
   "Allié Élémentaire",
   "Sorts",
   "Actions",
+  "Action",
   "Équipements",
   "Équipement",
   "Zones",
   "Zone",
-  "Salle",
   "Salles",
+  "Salle",
   "Protecteur",
   "Dofus",
 ];
