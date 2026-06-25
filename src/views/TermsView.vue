@@ -6,17 +6,14 @@
         Conditions générales d'utilisation
       </h1>
       <p class="mt-4 text-base-content/70">
-        Dernière mise à jour&nbsp;: [DATE].
+        Dernière mise à jour&nbsp;: 25 juin 2026.
       </p>
     </header>
 
-    <div
-      class="border-l-4 border-warning bg-warning/10 p-4 text-sm text-base-content/80"
-      role="note"
-    >
-      <strong>Modèle à compléter.</strong> Adaptez les champs entre crochets. Ce
-      texte ne constitue pas un conseil juridique.
-    </div>
+    <p class="text-sm italic text-base-content/55">
+      Projet de fan non-officiel à but non lucratif. Ces conditions sont
+      fournies de bonne foi et ne constituent pas un conseil juridique.
+    </p>
 
     <section v-for="(s, i) in sections" :key="s.title" class="space-y-3">
       <h2 class="font-display text-2xl">{{ i + 1 }}. {{ s.title }}</h2>

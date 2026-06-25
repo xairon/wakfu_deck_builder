@@ -7,23 +7,23 @@
       </h1>
     </header>
 
-    <div
-      class="border-l-4 border-warning bg-warning/10 p-4 text-sm text-base-content/80"
-      role="note"
-    >
-      <strong>Modèle à compléter.</strong> Remplacez les champs entre crochets
-      par vos informations. Ce texte est un point de départ et ne constitue pas
-      un conseil juridique&nbsp;; faites-le relire si nécessaire.
-    </div>
+    <p class="text-sm italic text-base-content/55">
+      Projet de fan non-officiel à but non lucratif. Ces informations sont
+      fournies de bonne foi et ne constituent pas un conseil juridique.
+    </p>
 
     <section class="space-y-3">
       <h2 class="font-display text-2xl">Éditeur du site</h2>
       <p class="leading-relaxed text-base-content/80">
-        Ce site est édité par <strong>[VOTRE NOM / PSEUDO]</strong>, à titre
-        personnel et non commercial.<br />
-        Contact&nbsp;: <strong>[EMAIL DE CONTACT]</strong>.<br />
-        Directeur de la publication&nbsp;:
-        <strong>[VOTRE NOM / PSEUDO]</strong>.
+        Ce site est édité par <strong>Xairon</strong>, à titre personnel et non
+        commercial.<br />
+        Contact&nbsp;:
+        <a
+          href="mailto:ringuetnicolas2@gmail.com"
+          class="font-semibold text-primary hover:underline"
+          >ringuetnicolas2@gmail.com</a
+        >.<br />
+        Directeur de la publication&nbsp;: <strong>Xairon</strong>.
       </p>
     </section>
 
