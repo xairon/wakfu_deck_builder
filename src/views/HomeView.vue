@@ -201,7 +201,12 @@ const stats = computed(() => {
       value: ready.value ? distinctExtensionCount(cardStore.cards) : "…",
     },
     { label: "Decks officiels", value: ALL_OFFICIAL_DECKS.length },
-    { label: "Éléments", value: 5 },
+    {
+      label: "Héros",
+      value: ready.value
+        ? cardStore.cards.filter((c) => c.mainType === "Héros").length
+        : "…",
+    },
   ];
   if (!authStore.isAuthenticated) return base;
   const valid = deckStore.decks.filter(
