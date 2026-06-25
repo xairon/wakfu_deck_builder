@@ -1,126 +1,57 @@
 <template>
-  <div class="space-y-12 sm:space-y-16">
-    <!-- ── PREMIERS PAS (première visite, masquable) ── -->
-    <section
-      v-if="showWelcome"
-      class="animate-fadeIn relative border border-primary/40 bg-primary/[0.06] p-6 sm:p-8"
-    >
-      <button
-        class="btn btn-ghost btn-sm absolute right-2 top-2"
-        @click="dismissWelcome"
-        aria-label="Masquer les premiers pas"
-      >
-        ✕
-      </button>
-      <p class="eyebrow text-primary">Premiers pas</p>
-      <h2 class="mt-2 font-display text-3xl">Nouveau au Wakfu TCG ?</h2>
-      <p class="mt-2 max-w-xl text-base-content/70">
-        Pas besoin de connaître les règles par cœur : la table t'accompagne.
-        Trois façons de commencer.
-      </p>
-      <div class="mt-6 grid gap-3 sm:grid-cols-3">
-        <router-link
-          to="/play/table?tutorial=1"
-          class="group block border border-base-content/15 p-4 transition hover:border-primary hover:bg-base-100"
-        >
-          <p
-            class="font-mono text-[11px] uppercase tracking-wider text-primary"
-          >
-            ① Apprendre
-          </p>
-          <h3 class="mt-1 font-display text-lg">Tutoriel interactif</h3>
-          <p class="mt-1 text-sm text-base-content/65">
-            Une vraie partie guidée, pas à pas (~5 min).
-          </p>
-        </router-link>
-        <router-link
-          to="/decks/official"
-          class="group block border border-base-content/15 p-4 transition hover:border-primary hover:bg-base-100"
-        >
-          <p
-            class="font-mono text-[11px] uppercase tracking-wider text-primary"
-          >
-            ② S'équiper
-          </p>
-          <h3 class="mt-1 font-display text-lg">Prendre un deck starter</h3>
-          <p class="mt-1 text-sm text-base-content/65">
-            Un deck prêt à jouer, importé en un clic.
-          </p>
-        </router-link>
-        <router-link
-          to="/play/table"
-          class="group block border border-base-content/15 p-4 transition hover:border-primary hover:bg-base-100"
-        >
-          <p
-            class="font-mono text-[11px] uppercase tracking-wider text-primary"
-          >
-            ③ Jouer
-          </p>
-          <h3 class="mt-1 font-display text-lg">Ouvrir la table</h3>
-          <p class="mt-1 text-sm text-base-content/65">
-            Règles gérées, effets résolus à la main.
-          </p>
-        </router-link>
-      </div>
-    </section>
-
-    <!-- ── FRONTISPICE ── -->
-    <section class="grid items-start gap-8 lg:grid-cols-[1.25fr_1fr] lg:gap-12">
+  <div class="space-y-14 sm:space-y-20">
+    <!-- ── HERO ── -->
+    <section class="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
       <div class="animate-fadeIn">
         <p class="eyebrow text-primary">Compagnon du TCG Wakfu</p>
         <h1 class="mt-4 font-display text-5xl leading-[1.04] sm:text-6xl">
           L'Almanach<br />des Douze
         </h1>
-        <p class="mt-6 max-w-md text-lg leading-relaxed text-base-content/75">
-          <template v-if="authStore.isAuthenticated">
-            Content de vous revoir. Votre collection et vos decks vous
-            attendent, consignés et synchronisés.
-          </template>
-          <template v-else>
-            Tenez le registre de votre collection, composez des decks valides au
-            millimètre, et conservez-les dans le cloud. Un grimoire pour toutes
-            vos cartes.
-          </template>
-        </p>
 
-        <div class="mt-8 flex flex-wrap gap-3">
-          <template v-if="authStore.isAuthenticated">
-            <router-link to="/collection" class="btn btn-neutral"
-              >→ Ma collection</router-link
+        <template v-if="authStore.isAuthenticated">
+          <p class="mt-6 max-w-md text-lg leading-relaxed text-base-content/75">
+            Content de vous revoir. Votre collection et vos decks vous
+            attendent.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <router-link to="/collection" class="btn btn-primary"
+              >Ma collection</router-link
             >
             <router-link to="/decks" class="btn btn-outline"
               >Mes decks</router-link
             >
-          </template>
-          <template v-else>
-            <router-link to="/auth" class="btn btn-primary"
-              >→ Créer un compte</router-link
+            <router-link to="/play/table" class="btn btn-outline"
+              >Ouvrir la table</router-link
             >
-            <router-link to="/collection" class="btn btn-outline"
+          </div>
+        </template>
+        <template v-else>
+          <p class="mt-6 max-w-md text-lg leading-relaxed text-base-content/75">
+            Constituez votre collection, composez des decks valides au
+            millimètre, et jouez en ligne — règles gérées, prêt à jouer sans
+            tout connaître.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <router-link to="/auth" class="btn btn-primary"
+              >Créer un compte</router-link
+            >
+            <router-link to="/play/table?tutorial=1" class="btn btn-outline"
+              >Essayer la table</router-link
+            >
+            <router-link to="/collection" class="btn btn-ghost"
               >Parcourir les cartes</router-link
             >
-          </template>
-        </div>
+          </div>
+        </template>
 
-        <!-- Légende des encres élémentaires -->
-        <div class="mt-10 flex flex-wrap gap-x-5 gap-y-2">
-          <span
-            v-for="el in elements"
-            :key="el.name"
-            class="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-base-content/60"
-          >
-            <span
-              class="h-2.5 w-2.5"
-              :style="{ backgroundColor: el.color }"
-            ></span>
-            {{ el.name }}
-          </span>
+        <div class="mt-10">
+          <ElementShowcase />
         </div>
       </div>
 
-      <!-- Mur de planches -->
+      <!-- Mur de planches héros -->
       <div class="grid grid-cols-3 gap-3 sm:gap-4">
-        <figure v-for="(p, i) in plates" :key="p.id" class="group">
+        <figure v-for="(p, i) in heroPlates" :key="p.id">
           <div
             class="plate-frame"
             :class="{ 'mt-6': i === 1 }"
@@ -134,76 +65,63 @@
               @error="onImgError"
             />
           </div>
-          <figcaption class="plate-caption">
-            {{ p.name }} · {{ p.elem }}
+          <figcaption class="plate-caption text-center">
+            {{ p.name }}
           </figcaption>
         </figure>
       </div>
     </section>
 
-    <!-- ── REGISTRE (tableau de bord) ── -->
-    <section class="border-y border-base-content/80 py-5">
-      <div class="grid grid-cols-2 gap-6 sm:grid-cols-4">
-        <div>
-          <p class="eyebrow">Au catalogue</p>
-          <p class="mt-1 font-mono text-3xl tabular">{{ totalCards }}</p>
-        </div>
-        <div>
-          <p class="eyebrow">Possédées</p>
-          <p class="mt-1 font-mono text-3xl tabular">
-            {{ authStore.isAuthenticated ? collectionCount : "—" }}
-          </p>
-        </div>
-        <div>
-          <p class="eyebrow">Decks</p>
-          <p class="mt-1 font-mono text-3xl tabular">
-            {{ authStore.isAuthenticated ? decksCount : "—" }}
-          </p>
-        </div>
-        <div>
-          <p class="eyebrow">Prêts à jouer</p>
-          <p class="mt-1 font-mono text-3xl tabular">
-            {{ authStore.isAuthenticated ? validDecks : "—" }}
-          </p>
-        </div>
-      </div>
+    <!-- ── STATS (réelles) ── -->
+    <section class="border-y border-base-content/80 py-6">
+      <HomeStatsBar :items="stats" />
     </section>
 
-    <!-- ── LISTE ÉDITORIALE ── -->
+    <!-- ── CE QUE FAIT L'APP ── -->
     <section>
-      <p class="section-rule eyebrow">Le grimoire</p>
-      <div class="mt-2 border-t border-base-content/15">
-        <article
-          v-for="(f, i) in features"
+      <p class="section-rule eyebrow">Tout pour le TCG Wakfu</p>
+      <div class="mt-5 grid gap-px bg-base-content/15 sm:grid-cols-2">
+        <router-link
+          v-for="f in features"
           :key="f.title"
-          class="grid grid-cols-[auto_1fr] items-baseline gap-5 border-b border-base-content/15 py-6 sm:gap-8"
+          :to="f.to"
+          class="group bg-base-100 p-6 transition hover:bg-primary/[0.06]"
         >
-          <span class="font-mono text-2xl tabular text-base-content/35"
-            >0{{ i + 1 }}</span
+          <p
+            class="font-mono text-[11px] uppercase tracking-wider text-primary"
           >
-          <div>
-            <h3 class="font-display text-2xl">{{ f.title }}</h3>
-            <p class="mt-1.5 max-w-2xl text-base-content/70">
-              {{ f.desc }}
-            </p>
-          </div>
-        </article>
+            {{ f.eyebrow }}
+          </p>
+          <h3 class="mt-1 font-display text-2xl">{{ f.title }}</h3>
+          <p class="mt-1.5 max-w-md text-base-content/70">{{ f.desc }}</p>
+        </router-link>
       </div>
     </section>
 
-    <!-- ── DECKS OFFICIELS ── -->
+    <!-- ── DECKS OFFICIELS EN VEDETTE ── -->
+    <section>
+      <div class="flex items-end justify-between gap-4">
+        <p class="section-rule eyebrow flex-1">Decks officiels en vedette</p>
+        <router-link to="/decks/official" class="btn btn-ghost btn-sm shrink-0">
+          Tout voir →
+        </router-link>
+      </div>
+      <div class="mt-5">
+        <FeaturedDecks :items="featured" />
+      </div>
+    </section>
+
+    <!-- ── CTA FINAL ── -->
     <section
+      v-if="!authStore.isAuthenticated"
       class="flex flex-wrap items-center justify-between gap-4 border-y border-base-content/80 py-8"
     >
-      <div>
-        <p class="eyebrow text-primary">Decks officiels</p>
-        <h2 class="mt-1 font-display text-2xl sm:text-3xl">
-          Pas d'idée ? Partez d'un deck starter.
-        </h2>
-      </div>
-      <router-link to="/decks/official" class="btn btn-neutral shrink-0">
-        → Parcourir les decks officiels
-      </router-link>
+      <h2 class="font-display text-2xl sm:text-3xl">
+        Prêt à tenir le registre des Douze ?
+      </h2>
+      <router-link to="/auth" class="btn btn-primary shrink-0"
+        >Commencer</router-link
+      >
     </section>
   </div>
 </template>
@@ -213,109 +131,148 @@ import { computed, onMounted, ref } from "vue";
 import { useAuthStore } from "@/stores/authStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useDeckStore } from "@/stores/deckStore";
+import type { HeroCard } from "@/types/cards";
+import {
+  ALL_OFFICIAL_DECKS,
+  EXTENSION_NAME_BY_SLUG,
+} from "@/data/allOfficialDecks";
+import { distinctExtensionCount, pickFeaturedDecks } from "@/utils/homeStats";
+import ElementShowcase from "@/components/home/ElementShowcase.vue";
+import HomeStatsBar from "@/components/home/HomeStatsBar.vue";
+import FeaturedDecks, {
+  type FeaturedItem,
+} from "@/components/home/FeaturedDecks.vue";
 
 const authStore = useAuthStore();
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
 
-// ── Premiers pas (onboarding première visite) ──
-const WELCOME_KEY = "wakfu-welcome-seen";
-const welcomeSeen = ref(true); // supposé vu jusqu'à vérification (évite le flash)
-onMounted(() => {
-  try {
-    welcomeSeen.value = localStorage.getItem(WELCOME_KEY) === "1";
-  } catch {
-    welcomeSeen.value = false;
-  }
-});
-const showWelcome = computed(() => !welcomeSeen.value);
-function dismissWelcome(): void {
-  welcomeSeen.value = true;
-  try {
-    localStorage.setItem(WELCOME_KEY, "1");
-  } catch {
-    /* stockage indisponible */
-  }
-}
+const ready = ref(false);
 
-const totalCards = computed(() =>
-  cardStore.totalCards ? cardStore.totalCards.toLocaleString("fr-FR") : "—",
-);
-const collectionCount = computed(() =>
-  Object.keys(cardStore.collection || {}).length.toString(),
-);
-const decksCount = computed(() => deckStore.decks.length.toString());
-const validDecks = computed(() =>
-  deckStore.decks
-    .filter(
-      (d) =>
-        d.hero &&
-        d.havreSac &&
-        d.cards
-          .filter((c) => !c.isReserve)
-          .reduce((a, c) => a + c.quantity, 0) === 48,
-    )
-    .length.toString(),
-);
-
-const elements = [
-  { name: "Air", color: "#5FB22A" },
-  { name: "Eau", color: "#1F9CEC" },
-  { name: "Feu", color: "#F04E22" },
-  { name: "Terre", color: "#F0A62B" },
-  { name: "Neutre", color: "#98A1AF" },
-];
-
-// Couleurs d'encre par élément (vif, identité du jeu).
-const elementColors: Record<string, string> = {
+const ELEMENT_COLORS: Record<string, string> = {
   air: "#5FB22A",
   eau: "#1F9CEC",
   feu: "#F04E22",
   terre: "#F0A62B",
   neutre: "#98A1AF",
 };
-const plateIds = [
-  "poum-ondacie-incarnam",
-  "trantmy-londami-incarnam",
-  "karey-dass-incarnam",
-];
-// L'élément et le nom sont résolus depuis les vraies données (plus de devinette).
-const plates = computed(() =>
-  plateIds.map((id) => {
-    const card = cardStore.cards.find((c) => c.id === id);
-    const elKey = (
-      card?.stats?.niveau?.element ||
-      card?.stats?.force?.element ||
-      "neutre"
-    )
-      .toString()
-      .toLowerCase();
+
+// Résout l'art (id image) + la couleur élémentaire du héros d'un deck. Pour les
+// cartes Héros, les stats sont sous `recto` (cf. OfficialDecksView.getHeroColor).
+function heroArt(
+  name: string,
+  ext?: string,
+): { id: string; color: string } | null {
+  const c = deckStore.findCardByName(name, undefined, ext);
+  if (!c) return null;
+  const stats = c.mainType === "Héros" ? (c as HeroCard).recto?.stats : c.stats;
+  const el = (stats?.niveau?.element || stats?.force?.element || "neutre")
+    .toString()
+    .toLowerCase();
+  return { id: c.id, color: ELEMENT_COLORS[el] || ELEMENT_COLORS.neutre };
+}
+
+// Planches héros du hero (decks reconnaissables, résolues live).
+const heroPlates = computed(() => {
+  return ALL_OFFICIAL_DECKS.slice(0, 3).map((d) => {
+    const art = ready.value
+      ? heroArt(d.hero, EXTENSION_NAME_BY_SLUG[d.extension])
+      : null;
     return {
-      id,
-      name: card?.name || "",
-      elem: elKey.charAt(0).toUpperCase() + elKey.slice(1),
-      color: elementColors[elKey] || elementColors.neutre,
-      img: `/images/cards/${id}_recto.webp`,
+      id: d.id,
+      name: d.hero,
+      color: art?.color || ELEMENT_COLORS.neutre,
+      img: art
+        ? `/images/cards/${art.id}_recto.webp`
+        : "/images/card-back.webp",
+    };
+  });
+});
+
+// Stats réelles (live). Repli « … » tant que le cardStore charge.
+const stats = computed(() => {
+  const base = [
+    {
+      label: "Au catalogue",
+      value: ready.value ? cardStore.totalCards.toLocaleString("fr-FR") : "…",
+    },
+    {
+      label: "Extensions",
+      value: ready.value ? distinctExtensionCount(cardStore.cards) : "…",
+    },
+    { label: "Decks officiels", value: ALL_OFFICIAL_DECKS.length },
+    { label: "Éléments", value: 5 },
+  ];
+  if (!authStore.isAuthenticated) return base;
+  const valid = deckStore.decks.filter(
+    (d) =>
+      d.hero &&
+      d.havreSac &&
+      d.cards
+        .filter((c) => !c.isReserve)
+        .reduce((a, c) => a + c.quantity, 0) === 48,
+  ).length;
+  return [
+    base[0],
+    {
+      label: "Possédées",
+      value: Object.keys(cardStore.collection || {}).length,
+    },
+    { label: "Mes decks", value: deckStore.decks.length },
+    { label: "Decks prêts", value: valid },
+  ];
+});
+
+const featured = computed<FeaturedItem[]>(() =>
+  pickFeaturedDecks(ALL_OFFICIAL_DECKS, 6).map((d) => {
+    const art = ready.value
+      ? heroArt(d.hero, EXTENSION_NAME_BY_SLUG[d.extension])
+      : null;
+    return {
+      id: d.id,
+      name: d.name,
+      hero: d.hero,
+      img: art
+        ? `/images/cards/${art.id}_recto.webp`
+        : "/images/card-back.webp",
     };
   }),
 );
 
 const features = [
   {
+    eyebrow: "Catalogue",
     title: "Le registre des cartes",
-    desc: "Consignez chaque carte possédée, normale ou brillante. Le catalogue se lit comme un almanach ; votre progression, comme un grand-livre.",
+    desc: "Parcourez ~1485 cartes, consignez votre collection, normales et brillantes.",
+    to: "/collection",
   },
   {
-    title: "L'atelier de deck",
-    desc: "48 cartes, héros, havre-sac, limites de copies, cartes uniques : les règles sont vérifiées en continu, et le sceau tombe quand le deck est prêt.",
+    eyebrow: "Atelier",
+    title: "Construisez des decks",
+    desc: "48 cartes, héros, havre-sac, limites : les règles vérifiées en continu.",
+    to: "/deck-builder",
   },
   {
-    title: "La synchronisation",
-    desc: "Vos données sont conservées dans le cloud et vous suivent d'un appareil à l'autre, prêtes pour la prochaine partie.",
+    eyebrow: "Table de jeu",
+    title: "Jouez en ligne",
+    desc: "Règles gérées, effets résolus. Un tutoriel guidé pour démarrer en 5 min.",
+    to: "/play/table",
+  },
+  {
+    eyebrow: "Prêts à jouer",
+    title: "73 decks officiels",
+    desc: "Starters et idées de deck du Dofus Mag, importables en un clic.",
+    to: "/decks/official",
   },
 ];
 
 function onImgError(e: Event) {
   (e.target as HTMLImageElement).src = "/images/card-back.webp";
 }
+
+onMounted(async () => {
+  if (!cardStore.isInitialized) await cardStore.initialize();
+  deckStore.initialize();
+  ready.value = true;
+});
 </script>
