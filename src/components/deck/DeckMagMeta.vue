@@ -1,5 +1,25 @@
 <template>
   <div v-if="hasMeta" class="space-y-3" data-testid="deck-mag-meta">
+    <div
+      v-if="deck.formatNote"
+      class="flex items-start gap-2 border-l-2 border-warning/70 bg-warning/10 px-3 py-2"
+      data-testid="deck-format-note"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        class="mt-0.5 h-4 w-4 shrink-0 text-warning"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"
+        />
+      </svg>
+      <p class="text-sm text-base-content/80">{{ deck.formatNote }}</p>
+    </div>
     <div v-if="deck.alignment">
       <p class="eyebrow mb-1">Alignement</p>
       <p class="text-sm text-base-content/80">{{ deck.alignment }}</p>
@@ -43,7 +63,8 @@ const props = defineProps<{ deck: OfficialDeck }>();
 
 const hasMeta = computed(() =>
   Boolean(
-    props.deck.lore ||
+    props.deck.formatNote ||
+      props.deck.lore ||
       props.deck.howToPlay ||
       props.deck.alignment ||
       (props.deck.keyCards && props.deck.keyCards.length) ||

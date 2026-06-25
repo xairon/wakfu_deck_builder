@@ -25,9 +25,24 @@ describe("DOFUS_MAG_DECKS — intégrité & invariant 48", () => {
   });
 
   it("INVARIANT: somme des quantités === 48 (50 avec héros + havre-sac)", () => {
+    // Les decks marqués `formatNote` sont des incohérences d'impression du
+    // magazine (en-tête ≠ liste) volontairement ≠ 48 ; ils sont exemptés.
     for (const d of DOFUS_MAG_DECKS) {
+      if (d.formatNote) continue;
       const total = d.cards.reduce((s, c) => s + c.quantity, 0);
       expect(total, `${d.id}: attendu 48, obtenu ${total}`).toBe(48);
+    }
+  });
+
+  it("les decks exemptés portent bien une formatNote (et inversement = 48)", () => {
+    for (const d of DOFUS_MAG_DECKS) {
+      const total = d.cards.reduce((s, c) => s + c.quantity, 0);
+      if (total !== 48) {
+        expect(
+          d.formatNote,
+          `${d.id}: somme ${total} ≠ 48 sans formatNote`,
+        ).toBeTruthy();
+      }
     }
   });
 });

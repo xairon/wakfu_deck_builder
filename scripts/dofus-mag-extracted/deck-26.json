@@ -32,6 +32,7 @@
     { "name": "Ceinture du Prespic", "quantity": 2, "section": "Équipements" }
   ],
   "checksum": 51,
+  "magInconsistent": true,
   "incomplete": true,
   "notes": "Incohérence interne du magazine sur la catégorie Alliés. Les totaux imprimés sont Alliés : 32, Actions : 11, Équipements : 5 (somme = 48, deck légal). Mais les lignes Alliés lisibles somment à 35 (10 cartes en 3 ex. = 30, + 2 Merelyne Manro, + 3 cartes en or 1 ex. : Démon XVIII, Prespic Royal, Otomaï). Le total imprimé 32 correspond exactement à tout SAUF les 3 Alliés en or (Démon XVIII, Prespic Royal, Otomaï). Probablement le total 32 a été calculé avant l'ajout de ces 3 cartes spéciales, ou ces 3 cartes sont des ajouts non comptés. Les quantités relues plusieurs fois à fort zoom sont certaines (aucun mauvais déchiffrage). Checksum réel des lignes = 51, et non 48. Aucune carte inventée."
 }

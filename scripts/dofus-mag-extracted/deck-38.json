@@ -37,6 +37,7 @@
     { "name": "Enclos de Dragodinde", "quantity": 3, "section": "Zones" }
   ],
   "checksum": 47,
+  "magInconsistent": true,
   "incomplete": true,
   "notes": "Catégorie Alliés incohérente dans le magazine : le total imprimé indique « Alliés : 32 », mais les 13 lignes listées (3 Azraoul, 3 Serpentin, 3 Chauve-Souris Vampyre, 3 Épouvantail, 3 Ash Tur, 2 Bébé Dragodinde, 2 Do, 2 Kriss, 3 Dragodinde Orchidée, 1 Dragodinde Ebène, 2 Pym, 2 Jeram, 2 Dragodinde Squelette) ne somment qu'à 31. Toutes les quantités et tous les noms ont été vérifiés à fort grossissement et sont nets/sans ambiguïté ; aucune ligne n'est masquée par les cartes en surimpression. Les autres catégories collent parfaitement à leur total imprimé (Salle 1, Actions 6, Équipements 6, Zones 3). Il manque donc 1 Allié pour atteindre 48 ; impossible de déterminer lequel sans inventer (somme atteinte = 47)."
 }

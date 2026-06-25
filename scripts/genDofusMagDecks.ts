@@ -29,6 +29,8 @@ interface Raw {
   magIssue?: string | null;
   cards: RawCard[];
   incomplete?: boolean;
+  /** Le magazine source est lui-même incohérent (en-tête ≠ liste) : inclure ≠48. */
+  magInconsistent?: boolean;
   notes?: string | null;
 }
 
@@ -141,9 +143,14 @@ const NAME_FIXES: Record<string, string> = {
   Dragoune: "Dragoune Rose",
   Koléral: "Kolérat",
   "Kwacoiffe de Glace": "Kwakoiffe de Glace",
+  "Baton Bah'Pik": "Bâton Bah'Pik'",
+  "Enclos de Dragodinde": "Enclos de Dragodindes",
+  Kriss: "Kriss la Krass",
+  "Retraite Anticipé": "Retraite Anticipée",
   // Héros / havre-sac
   "Trantmy Londamy": "Trantmy Londami",
   "Luk Ylook": "Luc Ylook",
+  "Hylary Swinte": "Hilary Swinte",
 };
 function fixName(n: string): string {
   return NAME_FIXES[n] ?? n;
@@ -166,7 +173,10 @@ for (const f of files) {
     continue;
   }
   const sum = (raw.cards ?? []).reduce((s, c) => s + (c.quantity || 0), 0);
-  if (raw.incomplete || sum !== 48) {
+  // Inclure les decks à 48, OU ceux marqués « incohérence magazine » (le mag
+  // source est lui-même incohérent : en-tête ≠ liste → volontairement ≠ 48).
+  // Sinon, skip (deck réellement incomplet / illisible).
+  if (sum !== 48 && !raw.magInconsistent) {
     skipped.push(
       `${f}: « ${raw.name ?? "?"} » somme=${sum}, incomplete=${!!raw.incomplete}`,
     );
@@ -201,6 +211,8 @@ for (const f of files) {
   if (raw.protector) deck.protector = fixName(raw.protector);
   if (raw.illustrator) deck.illustrator = raw.illustrator;
   if (raw.magIssue) deck.magIssue = raw.magIssue;
+  if (raw.magInconsistent)
+    deck.formatNote = `Format historique : incohérence d'impression du magazine (${sum} cartes — total d'en-tête ≠ liste imprimée).`;
   deck.cards = raw.cards.map((c) => {
     const card: Record<string, unknown> = {
       name: fixName(c.name),

@@ -146,6 +146,15 @@
                   {{ deck.description }}
                 </p>
 
+                <!-- Badge incohérence magazine (deck ≠ 48, format historique) -->
+                <span
+                  v-if="deck.formatNote"
+                  class="mt-2 inline-flex items-center gap-1 border border-warning/50 bg-warning/10 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-warning"
+                  :title="deck.formatNote"
+                >
+                  ⚠ Incohérence magazine
+                </span>
+
                 <!-- Infos du deck -->
                 <dl class="mt-4 space-y-2 border-t border-base-content/15 pt-3">
                   <div class="flex items-center gap-2 text-sm">

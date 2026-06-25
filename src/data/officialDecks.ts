@@ -35,6 +35,12 @@ export interface OfficialDeck {
   magIssue?: string;
   /** Provenance du deck. */
   source?: "dofus-mag";
+  /**
+   * Note de format affichée en badge. Renseignée pour les decks dont le
+   * magazine source est lui-même incohérent (total d'en-tête ≠ liste imprimée),
+   * donc volontairement ≠ 48 cartes. Exempte le deck de l'invariant 48.
+   */
+  formatNote?: string;
 }
 
 export const OFFICIAL_DECKS: OfficialDeck[] = [

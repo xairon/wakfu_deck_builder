@@ -39,6 +39,7 @@
     { "name": "Tiwabbit", "quantity": 1, "section": "Équipements" }
   ],
   "checksum": 47,
+  "magInconsistent": true,
   "incomplete": true,
   "notes": "Catégorie Équipements incomplète : l'en-tête imprimé indique « Équipements : 11 » mais seules 6 lignes sont listées et lisibles (2 Aiguille à Tricoter, 2 Cape du Tofu, 2 Amulette du Bandit, 2 Dagues du Bandit, 1 Écureuil Chenapan, 1 Tiwabbit = 10). Les autres catégories sont cohérentes avec leurs totaux imprimés (Alliés : 30, Actions : 6, Zone : 1). Total atteint = 47/48 ; il manque 1 Équipement (quantité ou carte non lisible/non imprimée dans la liste). Aucune invention. Métadonnées non présentes sur la page : alignement, conseil d'Adamaï, protecteur, crédit illustrateur. Pied de page : « 2 Dofus Mag »."
 }

@@ -36,4 +36,14 @@ describe("DeckMagMeta", () => {
     const w = mount(DeckMagMeta, { props: { deck: base } });
     expect(w.text().trim()).toBe("");
   });
+
+  it("affiche l'avertissement d'incohérence magazine (formatNote)", () => {
+    const w = mount(DeckMagMeta, {
+      props: {
+        deck: { ...base, formatNote: "Format historique : 47 cartes." },
+      },
+    });
+    expect(w.find('[data-testid="deck-format-note"]').exists()).toBe(true);
+    expect(w.text()).toContain("Format historique : 47 cartes.");
+  });
 });
