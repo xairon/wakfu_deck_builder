@@ -132,7 +132,11 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-3">
                   <h3 class="font-display text-xl leading-tight">
-                    {{ deck.name }}
+                    <router-link
+                      :to="`/decks/official/${deck.id}`"
+                      class="hover:text-primary"
+                      >{{ deck.name }}</router-link
+                    >
                   </h3>
                   <span
                     v-if="isDeckImported(deck.id)"
@@ -258,9 +262,9 @@
                 }}
               </button>
 
-              <button
+              <router-link
+                :to="`/decks/official/${deck.id}`"
                 class="btn btn-ghost btn-sm gap-2"
-                @click="toggleDeckDetails(deck.id)"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -272,37 +276,11 @@
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    :d="
-                      expandedDeckId === deck.id
-                        ? 'M18 15l-6-6-6 6'
-                        : 'M6 9l6 6 6-6'
-                    "
+                    d="M9 5l7 7-7 7"
                   />
                 </svg>
-                Détails
-              </button>
-            </div>
-
-            <!-- Détails expandables -->
-            <div
-              v-if="expandedDeckId === deck.id"
-              class="mt-4 border-t border-base-content/15 pt-4"
-            >
-              <DeckMagMeta :deck="deck" class="mb-4" />
-              <p class="eyebrow mb-2">Liste des cartes</p>
-              <ul class="max-h-64 space-y-1 overflow-y-auto">
-                <li
-                  v-for="card in deck.cards"
-                  :key="card.name"
-                  class="flex items-baseline text-sm"
-                >
-                  <span class="text-base-content/80">{{ card.name }}</span>
-                  <span class="leader"></span>
-                  <span class="font-mono tabular text-base-content/70"
-                    >×{{ card.quantity }}</span
-                  >
-                </li>
-              </ul>
+                Voir le deck
+              </router-link>
             </div>
           </article>
         </div>
@@ -325,9 +303,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useMemoize } from "@vueuse/core";
-import { OFFICIAL_DECKS, type OfficialDeck } from "@/data/officialDecks";
-import { DOFUS_MAG_DECKS } from "@/data/dofusMagDecks";
-import DeckMagMeta from "@/components/deck/DeckMagMeta.vue";
+import { type OfficialDeck } from "@/data/officialDecks";
+import {
+  ALL_OFFICIAL_DECKS,
+  EXTENSION_NAME_BY_SLUG,
+} from "@/data/allOfficialDecks";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
@@ -341,23 +321,11 @@ const toast = useToast();
 // Etat local
 const isLoading = ref(true);
 const importingDeckIds = ref(new Set<string>());
-const expandedDeckId = ref<string | null>(null);
 const importedDeckOfficialIds = ref(new Set<string>());
 const bulkImporting = ref(false);
 
-// Donnees
-const officialDecks = computed(() => [...OFFICIAL_DECKS, ...DOFUS_MAG_DECKS]);
-
-// Slug d'extension (données officielles) → nom d'extension tel qu'en base de
-// cartes. Indispensable pour résoudre les cartes vers la BONNE extension : de
-// nombreuses cartes (ex. « Bwork », « Repos », « Prospection »…) sont
-// réimprimées sous le même nom dans plusieurs extensions ; sans ce pin, on
-// importe la première chargée, souvent la mauvaise. La comparaison est
-// insensible aux accents (cf. normalizeText), donc « Bonta & Brâkmar » suffit.
-const EXTENSION_NAME_BY_SLUG: Record<string, string> = {
-  incarnam: "Incarnam",
-  "bonta-brakmar": "Bonta & Brâkmar",
-};
+// Donnees — decks officiels (starters + Dofus Mag), source unique partagée.
+const officialDecks = computed(() => ALL_OFFICIAL_DECKS);
 
 // Couleurs des éléments (encres du jeu)
 const ELEMENT_COLORS: Record<string, string> = {
@@ -543,17 +511,6 @@ const getCardTypeBreakdown = useMemoize(
   },
   { getKey: (deck) => deck.id },
 );
-
-/**
- * Affiche/masque les details d'un deck
- */
-function toggleDeckDetails(deckId: string) {
-  if (expandedDeckId.value === deckId) {
-    expandedDeckId.value = null;
-  } else {
-    expandedDeckId.value = deckId;
-  }
-}
 
 /**
  * Résultat d'une tentative de construction/ajout d'un deck officiel.
