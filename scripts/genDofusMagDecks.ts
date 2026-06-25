@@ -2,7 +2,7 @@
  * Génère `src/data/dofusMagDecks.ts` à partir des JSON bruts d'extraction dans
  * `scripts/dofus-mag-extracted/`. Valide l'invariant 48, dédoublonne les ids,
  * et SKIP tout deck incomplet ou dont la somme ≠ 48 (loggé, jamais émis).
- * Lancer : `npx tsx scripts/genDofusMagDecks.ts`
+ * Lancer : `npm run gen-dofus-mag` (génère puis formate via prettier).
  */
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, join } from "node:path";
