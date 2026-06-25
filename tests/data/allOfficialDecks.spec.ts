@@ -5,6 +5,7 @@ import {
   resolveDeckCardGroups,
 } from "@/data/allOfficialDecks";
 import type { Card } from "@/types/cards";
+import type { OfficialDeck } from "@/data/officialDecks";
 
 describe("allOfficialDecks", () => {
   it("fusionne starters + dofus-mag", () => {
@@ -24,7 +25,7 @@ describe("allOfficialDecks", () => {
       name === "Carte A"
         ? ({ id: "a", name, mainType: "Allié" } as Card)
         : null;
-    const deck = {
+    const deck: OfficialDeck = {
       id: "x",
       name: "X",
       description: "",
@@ -36,7 +37,7 @@ describe("allOfficialDecks", () => {
         { name: "Carte A", quantity: 3, type: "card", section: "Alliés" },
         { name: "Carte B", quantity: 2, type: "card", section: "Alliés" },
       ],
-    } as const;
+    };
     const groups = resolveDeckCardGroups(deck, fakeResolve);
     expect(groups.map((g) => g.section)).toEqual(["Alliés", "Zones"]);
     expect(groups[0].total).toBe(5);
