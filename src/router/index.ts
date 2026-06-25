@@ -70,6 +70,36 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
+      path: "/regles/apprendre",
+      name: "firstSteps",
+      component: () => import("@/views/FirstStepsView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/a-propos",
+      name: "about",
+      component: () => import("@/views/AboutView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/credits",
+      name: "credits",
+      component: () => import("@/views/CreditsView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/mentions-legales",
+      name: "legalNotice",
+      component: () => import("@/views/LegalNoticeView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/cgu",
+      name: "terms",
+      component: () => import("@/views/TermsView.vue"),
+      meta: { guest: true },
+    },
+    {
       // « Partie » mène directement au module de jeu (lobby/table/tutoriel).
       // L'ancien compagnon de table (compteurs PV + chronomètre) a été retiré.
       // Redirection conservée pour les anciens liens /play.

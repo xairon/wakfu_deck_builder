@@ -9,6 +9,12 @@
       <p class="mt-5 max-w-2xl text-lg leading-relaxed text-base-content/75">
         {{ rulesIntro }}
       </p>
+      <router-link
+        to="/regles/apprendre"
+        class="btn btn-primary btn-sm mt-5 gap-2"
+      >
+        ▶ Nouveau&nbsp;? Commencer par «&nbsp;Premiers pas&nbsp;»
+      </router-link>
     </header>
 
     <div class="h-px w-full bg-base-content/80"></div>

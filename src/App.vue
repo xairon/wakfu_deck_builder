@@ -136,6 +136,8 @@
       <router-view />
     </main>
 
+    <SiteFooter v-if="!isLoading && !error && !isBackendMissing" />
+
     <ToastContainer />
     <PWAInstallPrompt />
   </div>
@@ -148,6 +150,7 @@ import ToastContainer from "./components/ui/ToastContainer.vue";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt.vue";
 import ThemeToggle from "./components/common/ThemeToggle.vue";
 import UserMenu from "./components/auth/UserMenu.vue";
+import SiteFooter from "./components/layout/SiteFooter.vue";
 import { useTheme } from "./composables/useTheme";
 import { useCardStore } from "./stores/cardStore";
 import { useDeckStore } from "./stores/deckStore";
