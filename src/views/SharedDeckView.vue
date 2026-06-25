@@ -381,6 +381,8 @@ import { decodeDeck } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import type { DecodedDeckData } from "@/utils/deckSharing";
 import type { Card } from "@/types/cards";
+import { cardElement } from "@/utils/cardDisplay";
+import { elementColors } from "@/config/elementColors";
 
 const route = useRoute();
 const router = useRouter();
@@ -404,20 +406,6 @@ function openZoom(card: Card) {
 }
 
 // Encres élémentaires (épines / filets / swatches)
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
-function cardElement(card: Card): string {
-  return (
-    card.stats?.niveau?.element ||
-    card.stats?.force?.element ||
-    "Neutre"
-  ).toLowerCase();
-}
 function cardColor(card: Card): string {
   return elementColors[cardElement(card)] || elementColors.neutre;
 }

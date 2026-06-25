@@ -5,18 +5,13 @@
  */
 import type { Deck } from "@/types/cards";
 import { getIllustrationPath } from "@/utils/imagePaths";
+import { cardElement } from "@/utils/cardDisplay";
+import { elementColors } from "@/config/elementColors";
 
 const PAPER = "#F6F5F1";
 const INK = "#1B1A17";
 const MUTED = "#6B6862";
 const EMBER = "#F04E22";
-const ELEMENT_COLORS: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
 
 const W = 1080;
 const H = 1350;
@@ -52,14 +47,6 @@ function drawCover(
     sy = (img.height - sh) / 2;
   }
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
-}
-
-function cardElement(card: {
-  stats?: { niveau?: { element?: string }; force?: { element?: string } };
-}): string {
-  return (card.stats?.niveau?.element || card.stats?.force?.element || "neutre")
-    .toString()
-    .toLowerCase();
 }
 
 export async function exportDeckImage(deck: Deck): Promise<void> {
@@ -146,7 +133,7 @@ export async function exportDeckImage(deck: Deck): Promise<void> {
   ctx.fillRect(bx, barY, barW, 8);
   for (const [el, count] of distEntries) {
     const segW = (count / Math.max(1, totalMain)) * barW;
-    ctx.fillStyle = ELEMENT_COLORS[el] || ELEMENT_COLORS.neutre;
+    ctx.fillStyle = elementColors[el] || elementColors.neutre;
     ctx.fillRect(cx, barY, segW, 8);
     cx += segW;
   }
@@ -155,7 +142,7 @@ export async function exportDeckImage(deck: Deck): Promise<void> {
   let lx = bx;
   for (const [el, count] of distEntries) {
     const label = `${el.charAt(0).toUpperCase() + el.slice(1)} ${count}`;
-    ctx.fillStyle = ELEMENT_COLORS[el] || ELEMENT_COLORS.neutre;
+    ctx.fillStyle = elementColors[el] || elementColors.neutre;
     ctx.fillRect(lx, barY + 26, 14, 14);
     ctx.fillStyle = INK;
     ctx.fillText(label, lx + 22, barY + 38);

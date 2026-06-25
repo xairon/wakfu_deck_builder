@@ -146,6 +146,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import type { Card, Deck } from "@/types/cards";
+import { cardElement } from "@/utils/cardDisplay";
+import { elementColors } from "@/config/elementColors";
 
 const props = defineProps<{ deck: Deck }>();
 
@@ -216,22 +218,6 @@ function drawOne() {
 }
 
 // ── Couleurs d'encre élémentaire + chemins d'images ──
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
-
-function cardElement(card: Card): string {
-  return (
-    card.stats?.niveau?.element ||
-    card.stats?.force?.element ||
-    "Neutre"
-  ).toLowerCase();
-}
-
 function cardColor(card: Card): string {
   return elementColors[cardElement(card)] || elementColors.neutre;
 }
