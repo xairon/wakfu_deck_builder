@@ -26,9 +26,11 @@
           v-for="e in g.entries"
           :key="e.name"
           class="relative"
+          :class="e.card ? 'cursor-pointer' : ''"
           :data-testid="e.card ? `card-tile-${e.card.id}` : undefined"
           @mouseenter="e.card && preview.show(e.card)"
           @mouseleave="preview.hide()"
+          @click="e.card && emit('select', e.card)"
         >
           <div class="aspect-[7/10] overflow-hidden bg-base-200">
             <img
@@ -59,8 +61,10 @@
           v-for="e in g.entries"
           :key="e.name"
           class="flex items-baseline text-sm"
+          :class="e.card ? 'cursor-pointer hover:text-primary' : ''"
           @mouseenter="e.card && preview.show(e.card)"
           @mouseleave="preview.hide()"
+          @click="e.card && emit('select', e.card)"
         >
           <span :class="e.card ? 'text-base-content/85' : 'text-warning'">{{
             e.name
@@ -83,6 +87,7 @@ import { getThumbPath } from "@/utils/imagePaths";
 import { useCardPreview } from "@/composables/useCardPreview";
 
 defineProps<{ groups: ResolvedDeckGroup[] }>();
+const emit = defineEmits<{ (e: "select", card: Card): void }>();
 
 const view = ref<"grid" | "list">("grid");
 const preview = useCardPreview();

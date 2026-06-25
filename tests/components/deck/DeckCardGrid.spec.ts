@@ -58,4 +58,10 @@ describe("DeckCardGrid", () => {
     await w.get('[data-testid="card-tile-a"]').trigger("mouseenter");
     expect(show).toHaveBeenCalledTimes(1);
   });
+
+  it("émet `select` au clic sur une carte résolue", async () => {
+    const w = mount(DeckCardGrid, { props: { groups } });
+    await w.get('[data-testid="card-tile-a"]').trigger("click");
+    expect(w.emitted("select")?.[0]?.[0]).toMatchObject({ id: "a" });
+  });
 });

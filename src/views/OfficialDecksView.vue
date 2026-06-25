@@ -44,9 +44,9 @@
             </p>
           </div>
           <div>
-            <p class="eyebrow">Extensions</p>
+            <p class="eyebrow">Catégories</p>
             <p class="mt-1 font-mono text-3xl tabular">
-              {{ extensionGroups.length }}
+              {{ categoryGroups.length }}
             </p>
           </div>
           <div>
@@ -92,15 +92,16 @@
         </div>
       </section>
 
-      <!-- Groupes par extension -->
+      <!-- Groupes par catégorie (starter vs Dofus Mag), pas par extension -->
       <section
-        v-for="group in extensionGroups"
-        :key="group.extension"
+        v-for="group in categoryGroups"
+        :key="group.key"
         class="space-y-5"
       >
         <p class="section-rule eyebrow">
-          {{ formatExtensionName(group.extension) }} ·
-          {{ group.decks.length }} deck{{ group.decks.length > 1 ? "s" : "" }}
+          {{ group.title }} · {{ group.decks.length }} deck{{
+            group.decks.length > 1 ? "s" : ""
+          }}
         </p>
 
         <!-- Grille de decks pour cette extension -->
@@ -336,38 +337,42 @@ const ELEMENT_COLORS: Record<string, string> = {
   neutre: "#98A1AF",
 };
 
-// Groupes par extension
-interface ExtensionGroup {
-  extension: string;
+// Catégories de decks officiels. Les decks ne sont PAS rangés par « extension » :
+// seuls les starters appartiennent à une extension (Incarnam, Bonta & Brâkmar) ;
+// les decks Dofus Mag proviennent du magazine (leurs cartes couvrent plusieurs
+// extensions), ce ne sont donc pas une extension à part entière.
+interface DeckCategory {
+  key: string;
+  title: string;
   decks: OfficialDeck[];
 }
 
-const extensionGroups = computed<ExtensionGroup[]>(() => {
+const CATEGORY_META: Record<string, { title: string; order: number }> = {
+  starter: { title: "Decks starter · Incarnam & Bonta-Brâkmar", order: 0 },
+  "dofus-mag": { title: "Decks Dofus Mag", order: 1 },
+};
+
+function deckCategoryKey(deck: OfficialDeck): string {
+  return deck.extension === "dofus-mag" ? "dofus-mag" : "starter";
+}
+
+const categoryGroups = computed<DeckCategory[]>(() => {
   const groups: Record<string, OfficialDeck[]> = {};
-
   officialDecks.value.forEach((deck) => {
-    if (!groups[deck.extension]) {
-      groups[deck.extension] = [];
-    }
-    groups[deck.extension].push(deck);
+    const key = deckCategoryKey(deck);
+    (groups[key] ??= []).push(deck);
   });
-
-  // Ordre des extensions
-  const extensionOrder = ["incarnam", "bonta-brakmar", "dofus-mag"];
-
   return Object.entries(groups)
-    .sort(([a], [b]) => {
-      const indexA = extensionOrder.indexOf(a);
-      const indexB = extensionOrder.indexOf(b);
-      if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-      return indexA - indexB;
-    })
-    .map(([extension, decks]) => ({
-      extension,
+    .map(([key, decks]) => ({
+      key,
+      title: CATEGORY_META[key]?.title ?? key,
       decks,
-    }));
+    }))
+    .sort(
+      (a, b) =>
+        (CATEGORY_META[a.key]?.order ?? 99) -
+        (CATEGORY_META[b.key]?.order ?? 99),
+    );
 });
 
 // Nombre de decks importes
@@ -462,23 +467,6 @@ function refreshImportedStatus() {
  */
 function isDeckImported(officialDeckId: string): boolean {
   return importedDeckOfficialIds.value.has(officialDeckId);
-}
-
-/**
- * Formate le nom d'une extension pour l'affichage
- */
-function formatExtensionName(extension: string): string {
-  const names: Record<string, string> = {
-    incarnam: "Incarnam",
-    "bonta-brakmar": "Bonta & Brakmar",
-    "dofus-mag": "Dofus Mag",
-    "bonta-brakmar-2": "Bonta & Brakmar 2",
-    otomai: "Otomai",
-    "otomai-2": "Otomai 2",
-  };
-  return (
-    names[extension] || extension.charAt(0).toUpperCase() + extension.slice(1)
-  );
 }
 
 /**
