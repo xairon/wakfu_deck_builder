@@ -519,6 +519,7 @@ import DeckDrawSimulator from "@/components/deck/DeckDrawSimulator.vue";
 import DeckCardGrid from "@/components/deck/DeckCardGrid.vue";
 import {
   buildGalleryGroups,
+  toEntry,
   type DeckGalleryGroup,
 } from "@/components/deck/deckGallery";
 import { cardElement, cardSpineColor } from "@/utils/cardDisplay";
@@ -608,11 +609,7 @@ const galleryGroups = computed<DeckGalleryGroup[]>(() =>
 
 const reserveGroups = computed<DeckGalleryGroup[]>(() => {
   if (!reserveCards.value.length) return [];
-  const entries = reserveCards.value.map((c) => ({
-    name: c.card.name,
-    quantity: c.quantity,
-    card: c.card,
-  }));
+  const entries = reserveCards.value.map(toEntry);
   return [
     {
       section: "Réserve",

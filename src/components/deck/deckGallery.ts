@@ -19,7 +19,8 @@ export interface DeckGalleryGroup {
 
 const FLAT_SECTION = "Cartes du deck";
 
-const toEntry = (c: DeckCard): DeckGalleryEntry => ({
+/** Projette une carte de deck (résolue) en entrée d'affichage de la galerie. */
+export const toEntry = (c: DeckCard): DeckGalleryEntry => ({
   name: c.card.name,
   quantity: c.quantity,
   card: c.card,
