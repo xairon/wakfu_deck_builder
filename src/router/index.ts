@@ -46,6 +46,12 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
+      path: "/decks/official/:id",
+      name: "officialDeckDetail",
+      component: () => import("@/views/OfficialDeckDetailView.vue"),
+      meta: { guest: true },
+    },
+    {
       path: "/decks/community",
       name: "communityDecks",
       component: () => import("@/views/CommunityDecksView.vue"),
