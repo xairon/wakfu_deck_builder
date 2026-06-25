@@ -61,7 +61,8 @@
           v-for="e in g.entries"
           :key="e.name"
           class="flex items-baseline text-sm"
-          :class="e.card ? 'cursor-pointer hover:text-primary' : ''"
+          :class="e.card ? 'spine cursor-pointer hover:text-primary' : ''"
+          :style="e.card ? { '--spine': cardSpineColor(e.card) } : undefined"
           @mouseenter="e.card && preview.show(e.card)"
           @mouseleave="preview.hide()"
           @click="e.card && emit('select', e.card)"
@@ -70,7 +71,12 @@
             e.name
           }}</span>
           <span class="leader"></span>
-          <span class="font-mono tabular text-base-content/70"
+          <span
+            v-if="e.card"
+            class="shrink-0 font-mono text-[11px] uppercase tracking-wide text-base-content/55"
+            >{{ cardPaLabel(e.card) }}</span
+          >
+          <span class="ml-3 shrink-0 font-mono tabular text-base-content/70"
             >×{{ e.quantity }}</span
           >
         </li>
@@ -82,11 +88,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { Card } from "@/types/cards";
-import type { ResolvedDeckGroup } from "@/data/allOfficialDecks";
+import type { DeckGalleryGroup } from "./deckGallery";
+import { cardSpineColor, cardPaLabel } from "@/utils/cardDisplay";
 import { getThumbPath } from "@/utils/imagePaths";
 import { useCardPreview } from "@/composables/useCardPreview";
 
-defineProps<{ groups: ResolvedDeckGroup[] }>();
+defineProps<{ groups: DeckGalleryGroup[] }>();
 const emit = defineEmits<{ (e: "select", card: Card): void }>();
 
 const view = ref<"grid" | "list">("grid");
