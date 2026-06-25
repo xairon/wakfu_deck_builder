@@ -1,0 +1,39 @@
+{
+  "name": "Deck Bouftous — Bruss Ouilis",
+  "hero": "Bruss Ouilis",
+  "havreSac": "Havre Sac du Bouftou",
+  "alignment": null,
+  "lore": "Quoi de plus efficace (et de plus doux) qu'une armée de Bouftous enragés et survitaminés ? Emmenée par Bruss Ouilis dans un deck 100 % Terre et laine naturelle, c'est une horde infernale qui va se déverser sur les tables, bien décidée à faire brouter des Pissenlits Diaboliques par la racine aux plus endurcis des Sadidas. Un jeu simple à construire et à utiliser, mais diablement rapide et d'une très grande puissance !",
+  "howToPlay": "Jouez les Équipements de la Panoplie Bouftou sur vos Alliés Iops ou sur votre Héros. Le jeu étant rapide, vous devriez rapidement réussir à en compléter une afin de bénéficier de son Bonus de Panoplie en Force. Le moindre Chef de Guerre Bouftou transformera vos Bouftous en de solides bloqueurs ou en de redoutables attaquants, surtout avec le Trait Géant donné par le Donjon des Bouftous. Gardez Colère de Iop et Agression pour faire un peu de ménage dans les rangs des bloqueurs, achevez votre adversaire à l'aide d'un Coup Critique judicieusement placé, et ne négligez pas le pouvoir de ce cher Bouftou Royal pour chercher un Chef de Guerre Bouftou ou un Équipement manquant de la Panoplie Bouftou !",
+  "keyCards": [],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Bouftou", "quantity": 3, "section": "Alliés" },
+    { "name": "Boufton Blanc", "quantity": 3, "section": "Alliés" },
+    { "name": "Chef de Guerre Bouftou", "quantity": 3, "section": "Alliés" },
+    { "name": "Polter Bouftou", "quantity": 3, "section": "Alliés" },
+    { "name": "Tomla Klass", "quantity": 3, "section": "Alliés" },
+    { "name": "Jicé Aouaire", "quantity": 3, "section": "Alliés" },
+    { "name": "Shika Ingalss", "quantity": 3, "section": "Alliés" },
+    { "name": "Bouftou Royal", "quantity": 1, "section": "Alliés" },
+    { "name": "Colère de Iop", "quantity": 3, "section": "Sorts" },
+    { "name": "Charge", "quantity": 3, "section": "Sorts" },
+    { "name": "Coup Critique", "quantity": 3, "section": "Actions" },
+    { "name": "Agression", "quantity": 2, "section": "Actions" },
+    {
+      "name": "Anneau de Bouze le Clerc",
+      "quantity": 3,
+      "section": "Équipements"
+    },
+    { "name": "Marteau du Bouftou", "quantity": 3, "section": "Équipements" },
+    { "name": "Coiffe du Bouftou", "quantity": 3, "section": "Équipements" },
+    { "name": "Marcassin", "quantity": 1, "section": "Équipements" },
+    { "name": "Donjon des Bouftous", "quantity": 3, "section": "Zones" },
+    { "name": "Temple Iop", "quantity": 2, "section": "Salles" }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Stat block imprimé : Niveau Débutant, Puissance 7/10, Rares 7. Deck annoncé « 100 % Terre » dans le lore (pas de champ alignment explicite imprimé). Aucune ligne Protecteur, Cartes maîtresses, crédit illustrateur ni numéro de page visibles sur le cliché. Totaux par catégorie : Alliés 22, Sorts 6, Actions 5, Équipements 10, Zones 3, Salles 2 = 48."
+}

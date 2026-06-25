@@ -1,0 +1,50 @@
+{
+  "name": "Deck du Champion de France — Opée Tissoin",
+  "hero": "Opée Tissoin",
+  "havreSac": "Havre Sac du Wabbit",
+  "alignment": null,
+  "lore": "Imaginaicheun, 22 ans, étudiant en fac depuis quelques années déjà, gros joueur de Magic à la base : « Je me suis mis à Wakfu peu après la sortie du jeu en magasin, ça m'a tout de suite plu, aussi bien par la mécanique que par l'univers rafraîchissant et drôle (je commençais à avoir une overdose d'elfes et de gobelins !) Après plusieurs tournois et pas mal de victoires, j'ai commencé à m'y mettre un peu plus activement, jusqu'à ma qualification pour le Championnat de France. J'ai ensuite fait une petite pause jusqu'au dit Championnat, que j'ai remporté avec une bonne dose de talent et de chance ! Le deck que je vous présente ici est une version mise à jour de celui du CDF, les principaux changements sont le départ de Potion d'Oubli de Métier et de Mystification d'Hécate. En effet, maintenant que le format a changé et les Équipements sont presque entièrement disparus des decks, à l'exception de Iop. De plus, les « gros » des decks, eux aussi ne sont plus joués donc Mystification d'Hécate perdait de son intérêt. Le principe du jeu est toujours le même : ralentir l'adversaire avec nos Black Wabbit et autres Chafer Archer, Filouteries, tandis que nos Alliés Agilité cassent tranquillement le Sac puis la tête adverse. Les Équipements sont là pour se développer plus rapidement, et parfois aller attaquer avec le Héros ! Et toujours, notre ami Nomekop pour finir le travail, protégé conjointement par les Filouteries et le Démon VI. »",
+  "howToPlay": null,
+  "keyCards": ["Black Wabbit", "Démon VI"],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Bowissette", "quantity": 3, "section": "Alliés" },
+    { "name": "Zaap", "quantity": 3, "section": "Alliés" },
+    { "name": "Épouvantail", "quantity": 3, "section": "Alliés" },
+    { "name": "Serpentin", "quantity": 3, "section": "Alliés" },
+    { "name": "Liroye Merline", "quantity": 2, "section": "Alliés" },
+    { "name": "Choub Nigourak", "quantity": 2, "section": "Alliés" },
+    { "name": "Mot d'Amitié", "quantity": 2, "section": "Alliés" },
+    { "name": "Black Wabbit", "quantity": 3, "section": "Alliés" },
+    { "name": "Chafer Archer", "quantity": 3, "section": "Alliés" },
+    { "name": "Djakky Chwan", "quantity": 3, "section": "Alliés" },
+    { "name": "Demi Falque", "quantity": 2, "section": "Alliés" },
+    { "name": "Démon VI", "quantity": 1, "section": "Alliés" },
+    { "name": "Démone IV", "quantity": 1, "section": "Alliés" },
+    { "name": "Nomekop le Crapoteur", "quantity": 1, "section": "Alliés" },
+    {
+      "name": "Filouterie au Zaap d'Astrub",
+      "quantity": 3,
+      "section": "Actions"
+    },
+    { "name": "Pandatak", "quantity": 2, "section": "Actions" },
+    { "name": "Agression", "quantity": 2, "section": "Actions" },
+    { "name": "Échec Critique", "quantity": 2, "section": "Actions" },
+    { "name": "Amulette du Bandit", "quantity": 1, "section": "Équipements" },
+    { "name": "Ceinture du Prespic", "quantity": 1, "section": "Équipements" },
+    { "name": "Amukwak de Glace", "quantity": 1, "section": "Équipements" },
+    { "name": "Bottes du Craqueleur", "quantity": 1, "section": "Équipements" },
+    { "name": "Pantoufles du Tofu", "quantity": 1, "section": "Équipements" },
+    { "name": "Cape du Tofu", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Épée du Petit Chevalier",
+      "quantity": 1,
+      "section": "Équipements"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Type de deck : Agression/Contrôle. Rares : 5. Cartes maîtresses : Black Wabbit, Démon VI."
+}

@@ -1,0 +1,173 @@
+{
+  "name": "Deck Sadida — Klore Ofil",
+  "hero": "Klore Ofil",
+  "havreSac": "Havre Sac du Bouftou",
+  "description": "Deck Sadida Terre/PM autour de Klore Ofil et Sylvine Folherbe (Dofus Mag).",
+  "alignment": null,
+  "lore": "Promenons-nous dans les bois, pendant que le Milimulou n'y est pas ! Doté d'Alliés Terre particulièrement agressifs (Jicé Aouaire, Gelée Menthe, Milimulou, Katsou Mee) et d'Équipements tout en finesse (Panoplie Mulou, Razielle, Marcassin), ce deck Sadida gagne à exploiter à fond l'avantage de PM conféré par la capacité de son Héros Klore Ofil et de ses Sylvine Folherbe, qui se feront un plaisir de réduire les PM de l'adversaire pour l'empêcher de se défendre ou de trop vous chatouiller…",
+  "howToPlay": "Gardez Sylvine Folherbe dans votre Havre Sac et utilisez-la pour réduire les PM de l'adversaire en attaque, le temps de préparer une bonne ligne d'Alliés, si possible équipés en Mulou, puis combinez le pouvoir d'une ou deux Sylvine à celui de Klore Ofil pour lancer une attaque à défense très réduite sur le Havre Sac. Face à un seul Allié, une Exclusion suffit pour vous ouvrir la voie et pulvériser le Sac !",
+  "keyCards": [],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": "Dofus Mag 124",
+  "cards": [
+    {
+      "name": "Boufton Blanc",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Shika Ingalsse",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Sylvine Folherbe",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Tomla Klass",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Jicé Aouaire",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Larve Verte",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Menthe",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Goule",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Milimulou",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Lâme Ourduvis",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Katsou Mee",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Selk Ator",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Piou Vert",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Abraknyde",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Eratz Le Revendicateur",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Ronce",
+      "quantity": 3,
+      "section": "Sorts"
+    },
+    {
+      "name": "La Folle",
+      "quantity": 2,
+      "section": "Sorts"
+    },
+    {
+      "name": "La Sacrifiée",
+      "quantity": 1,
+      "section": "Sorts"
+    },
+    {
+      "name": "Pandrista",
+      "quantity": 2,
+      "section": "Actions"
+    },
+    {
+      "name": "Exclusion",
+      "quantity": 2,
+      "section": "Actions"
+    },
+    {
+      "name": "Parchemin de Force",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Coup Critique",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Banni !",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Brisé !",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Bonne Affaire !",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Marcassin",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Cape du Mulou",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Hache du Mulou",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "String du Mulou",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Razielle",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    {
+      "name": "Forêts d'Astrub",
+      "quantity": 3,
+      "section": "Zones"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": null
+}

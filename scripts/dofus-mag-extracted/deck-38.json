@@ -1,0 +1,43 @@
+{
+  "name": "Deck Montures (Agressif) — Hylary Swinte",
+  "hero": "Hylary Swinte",
+  "havreSac": "Havre Sac du Bwork",
+  "alignment": "Bonta",
+  "lore": "Éleveuse de talent, Hilary n'hésite pas quand il faut défendre sa cité à utiliser le fruit de son travail. Ainsi, ses Alliés comme Pym ou encore Jeram, peuvent compter sur de solides montures pour gagner en agressivité. Les enclos d'Hilary lui permettent d'ailleurs d'avoir souvent accès à des Dragondindes à moindre coût, et c'est chevauchant la Squelette et armée de son Bâton des Rois qu'elle peut ainsi mener une attaque dévastatrice en direction de ses ennemis !",
+  "howToPlay": null,
+  "keyCards": [
+    "Dragodinde Squelette",
+    "Enclos de Dragodinde",
+    "Filet de Capture"
+  ],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Azraoul", "quantity": 3, "section": "Alliés" },
+    { "name": "Serpentin", "quantity": 3, "section": "Alliés" },
+    { "name": "Chauve-Souris Vampyre", "quantity": 3, "section": "Alliés" },
+    { "name": "Épouvantail", "quantity": 3, "section": "Alliés" },
+    { "name": "Ash Tur", "quantity": 3, "section": "Alliés" },
+    { "name": "Bébé Dragodinde", "quantity": 2, "section": "Alliés" },
+    { "name": "Do", "quantity": 2, "section": "Alliés" },
+    { "name": "Kriss", "quantity": 2, "section": "Alliés" },
+    { "name": "Dragodinde Orchidée", "quantity": 3, "section": "Alliés" },
+    { "name": "Dragodinde Ebène", "quantity": 1, "section": "Alliés" },
+    { "name": "Pym", "quantity": 2, "section": "Alliés" },
+    { "name": "Jeram", "quantity": 2, "section": "Alliés" },
+    { "name": "Dragodinde Squelette", "quantity": 2, "section": "Alliés" },
+    { "name": "Bibliothèque de Barbok", "quantity": 1, "section": "Salle" },
+    { "name": "Embuscade", "quantity": 2, "section": "Actions" },
+    { "name": "Échec Critique", "quantity": 2, "section": "Actions" },
+    { "name": "Droiture d'Amayiro", "quantity": 2, "section": "Actions" },
+    { "name": "Pantoufle du Tofu", "quantity": 2, "section": "Équipements" },
+    { "name": "Filet de Capture", "quantity": 2, "section": "Équipements" },
+    { "name": "Bâton des Rois", "quantity": 2, "section": "Équipements" },
+    { "name": "Enclos de Dragodinde", "quantity": 3, "section": "Zones" }
+  ],
+  "checksum": 47,
+  "magInconsistent": true,
+  "incomplete": true,
+  "notes": "Catégorie Alliés incohérente dans le magazine : le total imprimé indique « Alliés : 32 », mais les 13 lignes listées (3 Azraoul, 3 Serpentin, 3 Chauve-Souris Vampyre, 3 Épouvantail, 3 Ash Tur, 2 Bébé Dragodinde, 2 Do, 2 Kriss, 3 Dragodinde Orchidée, 1 Dragodinde Ebène, 2 Pym, 2 Jeram, 2 Dragodinde Squelette) ne somment qu'à 31. Toutes les quantités et tous les noms ont été vérifiés à fort grossissement et sont nets/sans ambiguïté ; aucune ligne n'est masquée par les cartes en surimpression. Les autres catégories collent parfaitement à leur total imprimé (Salle 1, Actions 6, Équipements 6, Zones 3). Il manque donc 1 Allié pour atteindre 48 ; impossible de déterminer lequel sans inventer (somme atteinte = 47)."
+}

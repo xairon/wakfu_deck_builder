@@ -1,0 +1,41 @@
+{
+  "name": "Deck de Jess — Bruss Ouilis",
+  "hero": "Bruss Ouilis",
+  "havreSac": "Havre Sac du Wabbit",
+  "alignment": null,
+  "lore": "Jess, 33 ans, Directeur Artistique en édition, après avoir été illustrateur pendant quelque temps : « J'ai découvert Wakfu TCG à l'époque de la version Alpha et j'ai rejoint les équipes de test lors de l'élaboration de la dernière version. Je suis un fan inconditionnel du style graphique d'Ankama, même si je n'ai jamais joué au jeu online. Dans l'équipe de devs, je suis plutôt « monsieur Casual ». N'ayant pas le niveau de compétiteur de haut vol des autres Crapauds, je préfère me pencher sur les cartes qui vont faire rêver les joueurs et inspirer les deckbuilders. Ma carte préférée : Vil Smisse. Typiquement le genre de cartes qui me donne envie de réfléchir à de nouveaux decks ! Mes jeux préférés sont soit de purs decks « contrôle » lents, soit des jeux « agro » où c'est la synergie entre les cartes qui prime. Le but est de vider sa main très rapidement dans les deux premiers tours grâce au grand nombre d'Équipements. En milieu de partie, Jane Moroz est là pour le jeter à la tête de l'adversaire. Je compte généralement sur les Alliés Agilité suréquipés pour casser le Sac adverse, et sur les cartes de soutien comme Pandatak, Aiguille à Tricoter ou Black Wabbit pour forcer le passage. Les Vener servent soit en prévision des Rouilles de Stasis adverses, soit pour récupérer les Aiguilles à Tricoter détruites. Une fois le Havre Sac cassé, l'Épée du Bandit Fine-Lame fait un excellent finisher ! »",
+  "howToPlay": null,
+  "keyCards": ["Aiguille à Tricoter", "Jane Moroz"],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Narnya Totep", "quantity": 3, "section": "Alliés" },
+    { "name": "Jane Moroz", "quantity": 3, "section": "Alliés" },
+    { "name": "Boufton Blanc", "quantity": 2, "section": "Alliés" },
+    { "name": "Bowissette", "quantity": 3, "section": "Alliés" },
+    { "name": "Dhavid Boivit", "quantity": 3, "section": "Alliés" },
+    { "name": "Vener", "quantity": 2, "section": "Alliés" },
+    { "name": "Gelée Menthe", "quantity": 3, "section": "Alliés" },
+    { "name": "Black Wabbit", "quantity": 3, "section": "Alliés" },
+    { "name": "Djakky Chwan", "quantity": 3, "section": "Alliés" },
+    { "name": "Nomekop le Crapoteur", "quantity": 1, "section": "Alliés" },
+    { "name": "Échec Critique", "quantity": 3, "section": "Actions" },
+    { "name": "Pandatak", "quantity": 3, "section": "Actions" },
+    { "name": "Colère de Iop", "quantity": 3, "section": "Actions" },
+    { "name": "Aiguille à Tricoter", "quantity": 3, "section": "Équipements" },
+    { "name": "Marteau du Bouftou", "quantity": 2, "section": "Équipements" },
+    { "name": "Abrabottes", "quantity": 2, "section": "Équipements" },
+    { "name": "Kwakobottes de Glace", "quantity": 2, "section": "Équipements" },
+    { "name": "Marcassin", "quantity": 1, "section": "Équipements" },
+    { "name": "Coiffe du Bouftou", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Épée du Bandit Fine-Lame",
+      "quantity": 1,
+      "section": "Équipements"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": null
+}

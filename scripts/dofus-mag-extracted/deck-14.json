@@ -1,0 +1,39 @@
+{
+  "name": "Deck Chi-Fu-Mi — Karey Dass",
+  "hero": "Karey Dass",
+  "havreSac": "Havre Sac du Wabbit",
+  "alignment": null,
+  "lore": "Tous les jeux demandent d'avoir un peu de chance pour gagner, mais celui-ci… encore plus ! Basé sur le Chi-Fu-Mi, les prises de risque et les rebondissements, ce deck très agressif dans la pure tradition Ecaflip s'appuie sur une armée d'Alliés Agilité et de boosts aléatoires, capables de transformer le Héros Karey Dass en un vrai char d'assaut bardé de Force et de PM. De l'Air, de l'Eau, des cartes : voici le deck Chi-Fu-Mi !",
+  "howToPlay": "Aléatoire par excellence, ce jeu tire sa puissance de l'accumulation de bonus sur Karey Dass à chaque Chi-Fu-Mi gagné. Il est donc conseillé de bien stabiliser ses Ressources et sa défense avant de faire tourner la roue pour une attaque massive, car la chance tourne vite. Expérience d'Otomaï vous aidera à piocher rapidement de nouveaux Alliés, que vous prendrez soin de poser au même tour. Ensuite, privilégiez l'attaque avec Agilité pour entamer le Sac, que vous pourrez finir pendant la phase d'action à l'aide d'Havrasacadabra. Une succession de Gambit, Odorat, Dames de Bouffe et Auberge du Bouftou Croustillant réussie devrait amener Karey Dass à 6 ou 7 PM dans la plupart des cas !",
+  "keyCards": [],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Tofu", "quantity": 3, "section": "Alliés" },
+    { "name": "Smare", "quantity": 3, "section": "Alliés" },
+    { "name": "Kanigrou", "quantity": 3, "section": "Alliés" },
+    { "name": "Ekraz Lenoub", "quantity": 3, "section": "Alliés" },
+    { "name": "Kriss la Krass", "quantity": 3, "section": "Alliés" },
+    { "name": "Belgodass", "quantity": 3, "section": "Alliés" },
+    { "name": "Montrakristo", "quantity": 3, "section": "Alliés" },
+    { "name": "Bowissette", "quantity": 3, "section": "Alliés" },
+    { "name": "Djakky Chwan", "quantity": 3, "section": "Alliés" },
+    { "name": "Gambit", "quantity": 3, "section": "Sorts" },
+    { "name": "Odorat", "quantity": 2, "section": "Sorts" },
+    { "name": "Stratégie de groupe", "quantity": 3, "section": "Actions" },
+    { "name": "Havrasacadabra", "quantity": 2, "section": "Actions" },
+    { "name": "Expérience d'Otomaï", "quantity": 2, "section": "Actions" },
+    { "name": "Dames de Bouffe", "quantity": 3, "section": "Équipements" },
+    { "name": "Pantoufles du Tofu", "quantity": 2, "section": "Équipements" },
+    { "name": "Bashers", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Auberge du Bouftou Croustillant",
+      "quantity": 2,
+      "section": "Salles"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": null
+}

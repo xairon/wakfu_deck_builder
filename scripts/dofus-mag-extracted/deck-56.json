@@ -1,0 +1,49 @@
+{
+  "name": "Deck du Déluge — Hilary Swinte",
+  "hero": "Hilary Swinte",
+  "havreSac": "Havre Sac du Prespic",
+  "alignment": "Neutre",
+  "lore": "La nuit. Hilary entend gronder au loin. Il commence à pleuvoir. En sortant voir ce qui se passe, elle est terrifiée ! Un monstre gigantesque apparaît au loin, et le chaos semble descendre sur le Monde… Hilary ne se laisse pas abattre, et part tenter de dompter ce qui se dessine là-bas ! Avec sa Panoplie de Champion, elle se fraie un chemin parmi les tourments. Croisant Krokilles et autres Épouvantails, elle finit enfin par rencontrer le monstre : un Ogre énorme ! Regardant la bête qui semble lui envoyer un ultimatum, Hilary comprend qu'elle ne fera pas de vieux os ici, et court se cacher dans son Havre Sac du Prespic encore intact. Le tonnerre gronde. La terre tremble. Assurément, cette nuit va être longue pour Hilary…",
+  "howToPlay": null,
+  "keyCards": [
+    "Jeune Ogrest",
+    "Ogrest",
+    "Ultimatum d'Ogrest",
+    "Ogrest au Zinit"
+  ],
+  "protector": "Jiva, Protectrice de Javian",
+  "illustrator": "Roxnin",
+  "magIssue": null,
+  "cards": [
+    { "name": "Serpentin", "quantity": 3, "section": "Alliés" },
+    { "name": "Choub Nigourak", "quantity": 3, "section": "Alliés" },
+    { "name": "Épouvantail", "quantity": 3, "section": "Alliés" },
+    { "name": "Grostruf", "quantity": 3, "section": "Alliés" },
+    { "name": "Ash Tur", "quantity": 3, "section": "Alliés" },
+    { "name": "Soda Moza", "quantity": 3, "section": "Alliés" },
+    { "name": "Krokille Mature Sèche", "quantity": 2, "section": "Alliés" },
+    { "name": "Chafer Archer", "quantity": 3, "section": "Alliés" },
+    { "name": "Gzenah la Guerrière", "quantity": 3, "section": "Alliés" },
+    { "name": "Globule la Crapule", "quantity": 2, "section": "Alliés" },
+    { "name": "Jeune Ogrest", "quantity": 1, "section": "Alliés" },
+    { "name": "Ogrest", "quantity": 1, "section": "Alliés" },
+    { "name": "Agression", "quantity": 2, "section": "Actions" },
+    { "name": "Ogrest au Zinit", "quantity": 1, "section": "Actions" },
+    { "name": "Déluge d'Ogrest", "quantity": 1, "section": "Actions" },
+    { "name": "Ultimatum d'Ogrest", "quantity": 1, "section": "Actions" },
+    { "name": "Aiguille à Tricoter", "quantity": 2, "section": "Équipements" },
+    { "name": "Anneaux du Rat Noir", "quantity": 2, "section": "Équipements" },
+    { "name": "Bottes du Champion", "quantity": 2, "section": "Équipements" },
+    { "name": "Ceinture du Champion", "quantity": 2, "section": "Équipements" },
+    { "name": "Coiffe du Champion", "quantity": 2, "section": "Équipements" },
+    { "name": "Cape du Champion", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Jiva, Protectrice de Javian",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Cartes maîtresses imprimées : Jeune Ogrest, Ogrest, Ultimatum d'Ogrest, Ogrest au Zinit. Mention « Rares : 16 ». Pied de page (numéro Dofus Mag) non visible sur la photo."
+}

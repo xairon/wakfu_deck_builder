@@ -1,0 +1,50 @@
+{
+  "name": "Deck Xélor — Flix Flax (Deck de Mathieu)",
+  "hero": "Flix Flax",
+  "havreSac": "Havre Sac du Bwork",
+  "alignment": "Bonta",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Mise à Sac", "Srammy", "Sournoiserie"],
+  "protector": "Maimane, Protecteur d'Octolliard",
+  "illustrator": null,
+  "magIssue": "Dofus Mag",
+  "cards": [
+    { "name": "Klara Vane", "quantity": 2, "section": "Alliés" },
+    { "name": "Puzie Lanym", "quantity": 2, "section": "Alliés" },
+    { "name": "Srammy", "quantity": 3, "section": "Alliés" },
+    { "name": "Festino", "quantity": 1, "section": "Alliés" },
+    { "name": "Azraoul", "quantity": 3, "section": "Alliés" },
+    { "name": "Champa Marron", "quantity": 2, "section": "Alliés" },
+    { "name": "Kira Shak", "quantity": 3, "section": "Alliés" },
+    { "name": "Bobby Lapinte", "quantity": 3, "section": "Alliés" },
+    { "name": "Cybwork", "quantity": 2, "section": "Alliés" },
+    { "name": "Arnold Ovouarcraf", "quantity": 3, "section": "Alliés" },
+    { "name": "Démon III", "quantity": 1, "section": "Alliés" },
+    { "name": "Craqueleur Légendaire", "quantity": 1, "section": "Alliés" },
+    { "name": "Mise à Sac", "quantity": 3, "section": "Actions" },
+    { "name": "Sournoiserie", "quantity": 2, "section": "Actions" },
+    { "name": "Fée d'Artifice", "quantity": 1, "section": "Actions" },
+    { "name": "Attaque Mortelle", "quantity": 1, "section": "Actions" },
+    { "name": "Dagues de Flapegel", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Bouclier en Slip du Bwork",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    { "name": "Marteau du Boufcoul", "quantity": 2, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Anneau du Rat Noir", "quantity": 2, "section": "Équipements" },
+    { "name": "Bâton du Fetusoli", "quantity": 2, "section": "Équipements" },
+    { "name": "Ceinture du Boufcoul", "quantity": 2, "section": "Équipements" },
+    { "name": "Baguette Ouratagou", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Maimane, Protecteur d'Octolliard",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Side (réserve) de 12 cartes non comptabilisé dans les 48: 1 Klara Vane, 1 Sournoiserie, 1 Attaque Bontarienne, 1 Craqueleur d'Adamaï, 2 Seul sur le Sable, 2 La Feuille d'Automne, 2 Annolamour, 2 Danathor. Deck à cheval sur les deux photos; le second cliché (20260624_191619.jpg) montre l'intégralité du deck de Mathieu (Héros Flix Flax)."
+}

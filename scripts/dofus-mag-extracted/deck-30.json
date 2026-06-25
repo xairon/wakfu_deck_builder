@@ -1,0 +1,40 @@
+{
+  "name": "Deck du Vice-Champion de France — Trantmy Londami",
+  "hero": "Trantmy Londami",
+  "havreSac": "Havre Sac du Wabbit",
+  "alignment": null,
+  "lore": "Rahma, AKA Vésuvian, 28 ans, vice-champion de France et vilain 2e : « Je suis concepteur à la formation et ambassadeur de marque pour une corporation. Je suis célibataire (oui oui mesdemoiselles !) et je vis à Argenteuil. Je joue aux jeux de cartes à collectionner depuis mes quatorze ans. J'ai commencé avec Magic, mais je me suis rapidement tourné vers d'autres jeux (Babylon 5, L5R, Pokémon, 7 Sea, LOTR, Middle Earth) pour finalement rester scotché à Vampire the Eternal Struggle. Pendant un certain temps, je n'ai plus joué aux TCG. Presque aucun ne m'attirait et j'ai vendu mes collections tellement je m'ennuyais. Mais un jour, j'ai découvert Wakfu TCG au Festival du Jeu Vidéo. J'ai testé (j'ai même roulé sur le démonstrateur c'était marrant.) et j'ai bien accroché ! Lors du Championnat de France, en finale face à Alexandre, je jouais un Deck Osamodas très agressif, mais je l'ai modifié, car avec Amakna et l'environnement compétitif qu'il y a en ce moment, il faut éviter les Équipements au maximum ! Je me suis donc redirigé vers des Ressources très solides comme des Zones ou encore l'Épouvantail d'Amakna, qui ne peut ni attaquer, ni bloquer, ni être détruit. En plus, il peut faire combo avec le Déluge d'Ogrest ! Avec des Serpentins et des Zaap, ça me fait neuf Ressources très difficilement cassables. Niveau Alliés j'ai ajouté trois Magictateur et Le Crapaud Royal qui marche bien avec le Black Wabbit et le Chafer Archer. En Niveau 1 j'ai mis trois Black Tiwabbit à la place des Bowisettes, car elles me servaient très peu. Enfin, côté Actions j'ai ajouté deux Cervelle de Iop… »",
+  "howToPlay": null,
+  "keyCards": ["Magictateur Krokker", "Crapaud Royal"],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": "Dofus Mag 22",
+  "cards": [
+    { "name": "Gelée Menthe", "quantity": 3, "section": "Alliés" },
+    { "name": "Épouvantail", "quantity": 3, "section": "Alliés" },
+    { "name": "Demi Finame", "quantity": 3, "section": "Alliés" },
+    { "name": "Crapaud Royal", "quantity": 1, "section": "Alliés" },
+    { "name": "Choub Nigourak", "quantity": 2, "section": "Alliés" },
+    { "name": "Black Tiwabbit", "quantity": 3, "section": "Alliés" },
+    { "name": "Syco Fente", "quantity": 3, "section": "Alliés" },
+    { "name": "Chafer Archer", "quantity": 3, "section": "Alliés" },
+    { "name": "Black Wabbit", "quantity": 3, "section": "Alliés" },
+    { "name": "Liroye Merline", "quantity": 3, "section": "Alliés" },
+    { "name": "Serpentin", "quantity": 3, "section": "Alliés" },
+    { "name": "Magictateur Krokker", "quantity": 3, "section": "Alliés" },
+    {
+      "name": "Filouterie au Zaap d'Astrub",
+      "quantity": 3,
+      "section": "Actions"
+    },
+    { "name": "Agression", "quantity": 2, "section": "Actions" },
+    { "name": "Cervelle de Iop", "quantity": 2, "section": "Actions" },
+    { "name": "Déluge d'Ogrest", "quantity": 1, "section": "Actions" },
+    { "name": "Jeunesse d'Ogrest", "quantity": 2, "section": "Actions" },
+    { "name": "Amulette du Bandit", "quantity": 2, "section": "Équipements" },
+    { "name": "Zaap", "quantity": 3, "section": "Zones" }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Type de deck imprimé : Agressif. Rares : 7. Le texte de la liste imprime « Crapaud royal » (minuscule) mais l'illustration de la carte et les cartes maîtresses affichent « Crapaud Royal » — orthographe de la carte retenue. « Filouterie au Zaap d'Astrub » est tronqué à droite dans la photo (« Filouterie au Zaap d'Astru[b] ») mais reconstitué d'après le deck du Champion sur la même double-page. La catégorie Actions imprime « 10 » et est répartie sur deux colonnes : les 4 premières entrées (8 cartes) en colonne centrale, plus « 2 Jeunesse d'Ogrest » en haut de la colonne de droite, juste au-dessus de « Équipements ». Total réconcilié à 48 (Alliés 33 + Actions 10 + Équipements 2 + Zones 3)."
+}

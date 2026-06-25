@@ -1,0 +1,48 @@
+{
+  "name": "Deck de Dimitri — Luk Ylook (Champion Crâ du Tournoi des Douze)",
+  "hero": "Luk Ylook",
+  "havreSac": "Havre Sac du Corbac",
+  "alignment": "Brâkmar",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Igôle", "Coup de Poing", "Flèche de Dispersion"],
+  "protector": "Maimane, Protecteur d'Octolliard",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Arnold Ovouarcraf", "quantity": 2, "section": "Alliés" },
+    { "name": "Atchill Brizfair", "quantity": 3, "section": "Alliés" },
+    { "name": "Rat Basher", "quantity": 3, "section": "Alliés" },
+    { "name": "Bobby Lapinte", "quantity": 3, "section": "Alliés" },
+    { "name": "Puzie Lanym", "quantity": 3, "section": "Alliés" },
+    { "name": "Morbidon", "quantity": 2, "section": "Alliés" },
+    { "name": "Festino", "quantity": 2, "section": "Alliés" },
+    { "name": "Jèms Blond", "quantity": 3, "section": "Alliés" },
+    { "name": "Engin Grouilleux", "quantity": 1, "section": "Alliés" },
+    { "name": "Klara Vane", "quantity": 2, "section": "Alliés" },
+    { "name": "Igôle", "quantity": 1, "section": "Alliés" },
+    { "name": "Coup de Poing", "quantity": 2, "section": "Actions" },
+    { "name": "Flèche de Dispersion", "quantity": 3, "section": "Actions" },
+    {
+      "name": "Faveur de la Déesse Pandawa",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    { "name": "Bottes de Poursuite", "quantity": 2, "section": "Équipements" },
+    { "name": "Ceinture du Boufcoul", "quantity": 2, "section": "Équipements" },
+    { "name": "Annolamour", "quantity": 2, "section": "Équipements" },
+    { "name": "Alliance Feudala", "quantity": 1, "section": "Équipements" },
+    { "name": "Collier du Rat Blanc", "quantity": 2, "section": "Équipements" },
+    { "name": "Pelle Musicale", "quantity": 3, "section": "Équipements" },
+    { "name": "Bâton du Fetusoli", "quantity": 2, "section": "Équipements" },
+    { "name": "Venin du Scorbute", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Maimane, Protecteur d'Octolliard",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Side (réserve) : 12 cartes — 1 Cape du Petit Chapon Rouge, 1 Faveur de la Déesse Pandawa, 2 Seul sur le Sable, 2 Flèche d'Expiation, 2 Flèche Aveuglante, 2 Chef Mécanox, 1 Démon III, 1 Vigueur de Goultard. Catégories à cheval sur deux colonnes : les Alliés se poursuivent en haut de la 2e colonne (Klara Vane, Igôle) ; les Équipements se poursuivent en haut de la 3e colonne (Bâton du Fetusoli, Venin du Scorbute). Totaux imprimés vérifiés : Alliés 25, Actions 6, Équipements 16, Protecteur 1 = 48."
+}

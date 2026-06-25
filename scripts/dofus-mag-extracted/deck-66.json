@@ -1,0 +1,42 @@
+{
+  "name": "Deck Osamodas — Babeth Safoueth",
+  "hero": "Babeth Safoueth",
+  "havreSac": "Havre Sac du Bwork",
+  "alignment": "Bonta",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Fiole de Pandapils", "Fiole de Pandaburg", "Danathor"],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Moe Pioussin", "quantity": 3, "section": "Alliés" },
+    { "name": "Champa Rouge", "quantity": 1, "section": "Alliés" },
+    { "name": "Champa Bleu", "quantity": 1, "section": "Alliés" },
+    { "name": "Myko", "quantity": 3, "section": "Alliés" },
+    { "name": "Chauchane", "quantity": 3, "section": "Alliés" },
+    { "name": "Bworkzone", "quantity": 3, "section": "Alliés" },
+    { "name": "Grine Piz", "quantity": 3, "section": "Alliés" },
+    { "name": "Aude Kolon", "quantity": 3, "section": "Alliés" },
+    { "name": "Daïe Guérie", "quantity": 3, "section": "Alliés" },
+    { "name": "Danathor", "quantity": 3, "section": "Alliés" },
+    { "name": "Shushu Lumineux", "quantity": 1, "section": "Alliés" },
+    { "name": "Fiole de Pandapils", "quantity": 3, "section": "Actions" },
+    { "name": "Fiole de Pandaburg", "quantity": 3, "section": "Actions" },
+    { "name": "Anneau de Chance", "quantity": 2, "section": "Équipements" },
+    { "name": "Alliance Feudala", "quantity": 2, "section": "Équipements" },
+    { "name": "Amulette des Abimes", "quantity": 1, "section": "Équipements" },
+    { "name": "Pelle Musicale", "quantity": 3, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Annolamour", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Petit Anneau d'Intelligence",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    { "name": "Donjon Bwork", "quantity": 3, "section": "Zones et Salles" }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Réserve (Side : 12, hors deck principal) lisible mais non incluse dans les 48 : 1 Fiole de Pandneken, 1 Wabbitud le Constant, 2 Annolamour, 1 Bouclier du Captain Amakna, 1 Vigueur de Goultard, 2 Prisme de Conquête, 2 Kanniboul Jav, 1 Expérience Ratée, 1 Glyphe de Silence Divin. Pas de Protecteur. Orthographe magazine du héros : 'Babeth Safoueth'."
+}

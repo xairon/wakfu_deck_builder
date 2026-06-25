@@ -1,0 +1,42 @@
+{
+  "name": "Deck Fourberie — Aeron Zeklox",
+  "hero": "Aeron Zeklox",
+  "havreSac": "Havre Sac du Prespic",
+  "alignment": "Neutre",
+  "lore": "Redouté pour sa maîtrise du temps et sa fâcheuse tendance à voler les PA de ses adversaires, Aeron Zeklox semble bien décidé à prouver qu'il n'est pas qu'un vil manipulateur… Il sait aussi s'énerver ! Pour fêter dignement la sortie de la première extension, le Héros Xélor dévoile une nouvelle stratégie de jeu Agro Défausse : l'attaque couplée à la réduction de PA !",
+  "howToPlay": "Le conseil d'Adamaï : Dépourvu de carte passive telle que Baguette Larvesque ou Temple Xélor, la perte de PA est majoritairement assurée par les Alliés capables d'attaquer, comme le petit Prespic ou le Géant Roissingue qui apportent au Xélor une excellente force de frappe. Seule Coupure Temporelle est spécifiquement dédiée à la perte de PA, en plus du pouvoir de Aeron Zeklox, naturellement. Le but n'est donc pas de réduire les PA de l'adversaire à zéro pour l'empêcher de jouer, mais de le ralentir au maximum le temps de prendre l'avantage. Les autres Alliés sont choisis pour fonctionner en synergie avec cette stratégie. Chafer Archer et Choub Nigourak agissent en complément de la Poussière Temporelle pour mettre à mal les Alliés de Niveau 1 de l'adversaire et saper sa production de Ressources, tandis que le Black Wabbit débarrasse la table des plus grosses menaces. Djakky Chwan sert non seulement d'Allié agressif avec Agilité, mais permet aussi d'utiliser une seconde fois un Roissingue ou un Prespic le tour où ils apparaissent ! Et si jamais l'adversaire commençait à prendre le dessus, Incarnam le freinerait le temps de rétablir l'équilibre…",
+  "keyCards": [
+    "Baguette Larvesque",
+    "Temple Xélor",
+    "Prespic",
+    "Géant Roissingue",
+    "Coupure Temporelle"
+  ],
+  "protector": null,
+  "illustrator": null,
+  "magIssue": "Dofus Mag",
+  "cards": [
+    { "name": "Bowissette", "quantity": 3, "section": "Alliés" },
+    { "name": "Prespicot", "quantity": 3, "section": "Alliés" },
+    { "name": "Kolof Toulou", "quantity": 3, "section": "Alliés" },
+    { "name": "Choub Nigourak", "quantity": 3, "section": "Alliés" },
+    { "name": "Liroye Merline", "quantity": 3, "section": "Alliés" },
+    { "name": "Amar Casto", "quantity": 3, "section": "Alliés" },
+    { "name": "Prespic", "quantity": 3, "section": "Alliés" },
+    { "name": "Black Wabbit", "quantity": 3, "section": "Alliés" },
+    { "name": "Chafer Archer", "quantity": 3, "section": "Alliés" },
+    { "name": "Djakky Chwan", "quantity": 3, "section": "Alliés" },
+    { "name": "Roissingue", "quantity": 3, "section": "Alliés" },
+    { "name": "Nomekop le Crapoteur", "quantity": 1, "section": "Alliés" },
+    { "name": "Coupure Temporelle", "quantity": 3, "section": "Sorts" },
+    { "name": "Pandatak", "quantity": 2, "section": "Sorts" },
+    { "name": "Poussière Temporelle", "quantity": 1, "section": "Sorts" },
+    { "name": "Échec Critique", "quantity": 3, "section": "Actions" },
+    { "name": "Kwakobottes de Glace", "quantity": 2, "section": "Équipements" },
+    { "name": "Pelle Mech'ba", "quantity": 2, "section": "Équipements" },
+    { "name": "Incarnam", "quantity": 1, "section": "Zones" }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": null
+}

@@ -11,6 +11,7 @@
     "clean-cards": "node scripts/generateCleanCards.js",
     "extract-illustrations": "tsx scripts/extractIllustrations.ts",
     "validate-data": "tsx scripts/validateData.ts",
+    "dofus-mag-report": "tsx scripts/dofusMagMatchingReport.ts",
     "compile-effects": "tsx scripts/compileEffects.ts && prettier --write \"public/data/*.json\"",
     "build": "vite build",
     "type-check": "vue-tsc --noEmit",

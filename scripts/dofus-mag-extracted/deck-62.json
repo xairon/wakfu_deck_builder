@@ -1,0 +1,60 @@
+{
+  "name": "Deck Féca — Justine Broudi (Deck de Jérémie, Tournoi des Douze)",
+  "hero": "Justine Broudi",
+  "havreSac": "Havre Sac du Corbac",
+  "alignment": "Brâkmar",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Mise en Garde", "Craqueleur d'Adamaï", "YeCh'ti"],
+  "protector": "Maimane, Protecteur d'Octolliard",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Craqueleur Légendaire", "quantity": 1, "section": "Alliés" },
+    { "name": "Rat Basher", "quantity": 3, "section": "Alliés" },
+    { "name": "Moe Pioussin", "quantity": 3, "section": "Alliés" },
+    { "name": "Achill Brizfair", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur d'Adamaï", "quantity": 2, "section": "Alliés" },
+    { "name": "Engin Grouilleux", "quantity": 2, "section": "Alliés" },
+    { "name": "Shushu Lumineux", "quantity": 2, "section": "Alliés" },
+    { "name": "Rex Presso", "quantity": 1, "section": "Alliés" },
+    { "name": "Niko La Flamèche", "quantity": 2, "section": "Alliés" },
+    { "name": "Arnold Ovouarcraf", "quantity": 2, "section": "Alliés" },
+    { "name": "Morbidon", "quantity": 1, "section": "Alliés" },
+    { "name": "Ecumouth", "quantity": 1, "section": "Alliés" },
+    { "name": "Macrobio", "quantity": 1, "section": "Alliés" },
+    { "name": "YeCh'ti", "quantity": 1, "section": "Alliés" },
+    { "name": "Akwafiole", "quantity": 1, "section": "Actions" },
+    { "name": "Mise en Garde", "quantity": 2, "section": "Actions" },
+    { "name": "Bouclier Féca", "quantity": 2, "section": "Actions" },
+    {
+      "name": "Espièglerie de la Démone IV",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Petit Anneau de Force",
+      "quantity": 2,
+      "section": "Équipements"
+    },
+    { "name": "Amulette du Koalak", "quantity": 3, "section": "Équipements" },
+    { "name": "Annolamour", "quantity": 3, "section": "Équipements" },
+    { "name": "Collier du Rat Blanc", "quantity": 2, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Pelle du Neloma", "quantity": 2, "section": "Équipements" },
+    { "name": "Bâton du Fetusoli", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Cabinet d'Aisances",
+      "quantity": 1,
+      "section": "Zones et Salles"
+    },
+    {
+      "name": "Maimane, Protecteur d'Octolliard",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Le pavé 'Side : 12' est un sideboard (Glyphe de Silence Divin, Akwafiole, Vigueur de Goultard, 2 Seul sur le Sable, Oups !, Espièglerie de la Démone IV, Rex Presso, Morbidon, Dagues de Flapegel, Démon III, Bouclier du Captain Amakna) — exclu des 48. Le titre de catégorie 'Zones et Salles : 3' semble être une coquille du magazine : une seule carte est imprimée (1 Cabinet d'Aisances) et la somme des lignes visibles fait exactement 48 (ajouter 2 cartes Zone fantômes donnerait 50). Aucun encadré 'conseil d'Adamaï', lore, illustrateur ou numéro de page n'est visible sur ce cliché."
+}

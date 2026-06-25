@@ -1,0 +1,143 @@
+{
+  "name": "Deck Gelées Royales — Trantmy Londami",
+  "hero": "Trantmy Londami",
+  "havreSac": "Havre Sac du Tofu",
+  "description": "Deck Gelées Neutre construit autour des Gelées Royales et de Trantmy Londami (Dofus Mag).",
+  "alignment": "Neutre",
+  "lore": "Cela faisait longtemps que les Gelées s'ennuyaient sur leur péninsule, abandonnées de tous… Mais un jour, Trantmy Londami revint d'un voyage lointain dans la Gelaxième Dimension, et leur rapporta une petite surprise. Et quelle surprise ! Il s'agissait ni plus ni moins que des quatre Gelées Royales que les Gelées admiraient par dessus tout ! Elles les aideraient à venir plus vite sur les champs de bataille, les renforceraient, leur donneraient force, puissance et grandeur ! Les Gelées étaient ravivées, et avec leurs nouvelles copines, elles étaient bien décidées à revenir dans le Monde des Douze, plus fortes et plus nombreuses !",
+  "howToPlay": null,
+  "keyCards": ["Roi Gelax", "Gelaxième Dimension", "les Gelées"],
+  "protector": "Jiva, Protectrice de Javian",
+  "illustrator": "Roxnin",
+  "magIssue": null,
+  "cards": [
+    {
+      "name": "Serpentin",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Choub Nigourak",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Ash Tur",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Moskitorsh",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Chauve-Souris Vampyre",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Piou de Baradaize",
+      "quantity": 2,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Verte",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Bleue",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Citron",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Fraise",
+      "quantity": 3,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Royale Menthe",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Royale Citron",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Royale Bleue",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Gelée Royale Fraise",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Roi Gelax",
+      "quantity": 1,
+      "section": "Alliés"
+    },
+    {
+      "name": "Filouteries au Zaap d'Astrub",
+      "quantity": 2,
+      "section": "Actions"
+    },
+    {
+      "name": "Agression",
+      "quantity": 2,
+      "section": "Actions"
+    },
+    {
+      "name": "La Dernière Rasade",
+      "quantity": 1,
+      "section": "Actions"
+    },
+    {
+      "name": "Zaap",
+      "quantity": 1,
+      "section": "Zone"
+    },
+    {
+      "name": "Île de Moon",
+      "quantity": 1,
+      "section": "Zone"
+    },
+    {
+      "name": "Gelaxième Dimension",
+      "quantity": 2,
+      "section": "Zone"
+    },
+    {
+      "name": "Venin de Scorbute",
+      "quantity": 2,
+      "section": "Équipement"
+    },
+    {
+      "name": "Aiguille à Tricoter",
+      "quantity": 2,
+      "section": "Équipement"
+    },
+    {
+      "name": "Amulette du Bandit",
+      "quantity": 2,
+      "section": "Équipement"
+    },
+    {
+      "name": "Jiva, Protectrice de Javian",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": null
+}

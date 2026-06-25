@@ -1,0 +1,59 @@
+{
+  "name": "Deck d'Alexandre — Bôm d'Utygr (Champion Eniripsa, Tournoi des Douze)",
+  "hero": "Bôm d'Utygr",
+  "havreSac": "Havre Sac du Corbac",
+  "alignment": "Bonta",
+  "lore": "WAKFU TCG ne sera plus produit, certes ; mais le jeu continue ! Des tournois seront organisés pour le 1er trimestre 2012, et les parties entre amis n'ont pas encore dit leur dernier mot. Le souci, c'est que pour jouer, il faut un deck… et si possible un bon ! C'est pourquoi nous vous proposons de découvrir les decks des Champions du Tournoi des Douze. En espérant que cela vous donnera de l'inspiration !",
+  "howToPlay": null,
+  "keyCards": [
+    "Tentacule Secondaire",
+    "Annolamour",
+    "Maimane, Protecteur d'Octolliard"
+  ],
+  "protector": "Maimane, Protecteur d'Octolliard",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Moe Pioussin", "quantity": 2, "section": "Alliés" },
+    { "name": "Chauchane", "quantity": 3, "section": "Alliés" },
+    { "name": "Myko", "quantity": 3, "section": "Alliés" },
+    { "name": "Daïe Guérie", "quantity": 3, "section": "Alliés" },
+    { "name": "Craqueleur Vaporeux", "quantity": 1, "section": "Alliés" },
+    { "name": "Scarabosse Doré", "quantity": 1, "section": "Alliés" },
+    { "name": "Festino", "quantity": 3, "section": "Alliés" },
+    { "name": "Gloutovore", "quantity": 1, "section": "Alliés" },
+    { "name": "Bworkasse le Dégoûtant", "quantity": 1, "section": "Alliés" },
+    { "name": "Srammy", "quantity": 3, "section": "Alliés" },
+    { "name": "Engin Grouilleux", "quantity": 2, "section": "Alliés" },
+    { "name": "Boufdégou le Refoulant", "quantity": 1, "section": "Alliés" },
+    { "name": "Craqueleur Légendaire", "quantity": 1, "section": "Alliés" },
+    { "name": "Azraoul", "quantity": 2, "section": "Alliés" },
+    { "name": "Champa Bleu", "quantity": 1, "section": "Alliés" },
+    { "name": "Tentacule Secondaire", "quantity": 1, "section": "Alliés" },
+    { "name": "Akwafiole", "quantity": 1, "section": "Actions" },
+    { "name": "Sournoiserie", "quantity": 2, "section": "Actions" },
+    { "name": "Pelle Musicale", "quantity": 3, "section": "Équipements" },
+    { "name": "Dagues de Flapegel", "quantity": 1, "section": "Équipements" },
+    { "name": "Pelle du Neloma", "quantity": 1, "section": "Équipements" },
+    { "name": "Bâton de Fetusoli", "quantity": 1, "section": "Équipements" },
+    { "name": "El Scarador", "quantity": 1, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Anneau Ancestral", "quantity": 2, "section": "Équipements" },
+    { "name": "Meuch", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Anneau du Champ-Champ",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    { "name": "Alliance Feudala", "quantity": 1, "section": "Équipements" },
+    { "name": "Annolamour", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Maimane, Protecteur d'Octolliard",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Réconcilié à 48 = Alliés 29 + Actions 3 + Équipements 15 + Protecteur 1. La catégorie Équipements s'étend sur deux colonnes : 9 lignes en colonne centrale (13 ex.) puis 'Alliance Feudala' et 'Annolamour' en haut de la colonne de droite (2 ex.), total 15 conforme à l'en-tête imprimé. Rares : 7 (mentionné dans l'en-tête). Le 'Side' (réserve, 12 cartes, NON inclus dans le deck de 48) est : 1 Sournoiserie, 1 Démon III, 1 Percimol Héros Flaqueux, 1 Fée d'Artifice, 2 Mot de Rédemption, 1 Cybwork, 1 Oups!, 1 Minotot, 1 Glyphe de Silence Divin, 1 Potion de Camouflage!, 1 Engin Grouilleux."
+}

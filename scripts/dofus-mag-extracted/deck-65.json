@@ -1,0 +1,58 @@
+{
+  "name": "Deck de Quentin — Oscar Nak (Champion Sram du Tournoi des Douze)",
+  "hero": "Oscar Nak",
+  "havreSac": "Havre Sac du Crocodaille",
+  "alignment": "Brâkmar",
+  "lore": null,
+  "howToPlay": null,
+  "keyCards": ["Sournoiserie", "Griffe Rose", "Engin Grouilleux"],
+  "protector": "Maimane, Protecteur d'Octolliard",
+  "illustrator": null,
+  "magIssue": null,
+  "cards": [
+    { "name": "Srammy", "quantity": 3, "section": "Alliés" },
+    { "name": "Niko la Flamèche", "quantity": 3, "section": "Alliés" },
+    { "name": "Atchill Brizfäir", "quantity": 3, "section": "Alliés" },
+    { "name": "Champa Marron", "quantity": 2, "section": "Alliés" },
+    { "name": "Moe Pioussin", "quantity": 3, "section": "Alliés" },
+    { "name": "Festino", "quantity": 2, "section": "Alliés" },
+    { "name": "Cybwork", "quantity": 1, "section": "Alliés" },
+    { "name": "Craqueleur Légendaire", "quantity": 1, "section": "Alliés" },
+    { "name": "Craqueleur d'Adamaï", "quantity": 3, "section": "Alliés" },
+    { "name": "Engin Grouilleux", "quantity": 2, "section": "Alliés" },
+    { "name": "Rex Presso", "quantity": 2, "section": "Alliés" },
+    { "name": "Glyphe de Silence Divin", "quantity": 1, "section": "Actions" },
+    { "name": "Sournoiserie", "quantity": 3, "section": "Actions" },
+    { "name": "Bâton de Fetusoli", "quantity": 1, "section": "Équipements" },
+    { "name": "Baguette Ouratagou", "quantity": 1, "section": "Équipements" },
+    { "name": "Dagues de Flapegel", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Protège-tibias Ancestraux",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    { "name": "Masque du Rat Noir", "quantity": 1, "section": "Équipements" },
+    { "name": "Griffe Rose", "quantity": 1, "section": "Équipements" },
+    { "name": "Kralano", "quantity": 1, "section": "Équipements" },
+    { "name": "Amulette du Koalak", "quantity": 1, "section": "Équipements" },
+    { "name": "Ceinture du Boufcoul", "quantity": 1, "section": "Équipements" },
+    { "name": "Bardiche du Milicien", "quantity": 1, "section": "Équipements" },
+    { "name": "Venin de Scorbute", "quantity": 2, "section": "Équipements" },
+    { "name": "Annolamour", "quantity": 2, "section": "Équipements" },
+    { "name": "Le Floude", "quantity": 1, "section": "Équipements" },
+    {
+      "name": "Amulette du Puzzle de la Griffe",
+      "quantity": 1,
+      "section": "Équipements"
+    },
+    { "name": "Alliance Feudala", "quantity": 2, "section": "Équipements" },
+    {
+      "name": "Maimane, Protecteur d'Octolliard",
+      "quantity": 1,
+      "section": "Protecteur"
+    }
+  ],
+  "checksum": 48,
+  "incomplete": false,
+  "notes": "Side : 12 (sideboard) non comptabilisé dans les 48 : 1 Bague d'Ombrage, 1 Démon III, 2 Oups !, 1 Dopeul Sram, 3 Donjon des Bworks, 2 Akwafiole, 1 Foudroiement, 1 Fée d'Artifice. Rares : 11 indiqué dans l'en-tête."
+}
