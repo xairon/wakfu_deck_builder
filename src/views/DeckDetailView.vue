@@ -364,126 +364,31 @@
           </div>
 
           <div
-            v-if="!deck.cards.length"
+            v-if="!galleryGroups.length"
             class="mt-8 border-y border-base-content/15 py-12 text-center font-mono text-[12px] uppercase text-base-content/45"
           >
             Aucune carte dans ce deck.
           </div>
-
-          <!-- Grouped par type -->
-          <template v-else-if="cardSortMode === 'type'">
-            <section
-              v-for="group in cardsByType"
-              :key="group.type"
-              class="mt-7"
-            >
-              <p class="section-rule eyebrow">
-                {{ group.type }} · {{ group.count }}
-              </p>
-              <ul class="mt-2 border-t border-base-content/15">
-                <li
-                  v-for="c in group.cards"
-                  :key="c.card.id"
-                  class="spine border-b border-base-content/15"
-                  :style="{ '--spine': cardColor(c.card) }"
-                >
-                  <button
-                    type="button"
-                    class="flex w-full items-baseline gap-3 py-2 text-left hover:bg-base-200"
-                    @click="openZoom(c.card)"
-                  >
-                    <span
-                      class="w-8 shrink-0 font-mono text-sm tabular text-base-content/55"
-                      >{{ c.quantity }}×</span
-                    >
-                    <span class="truncate font-display text-[15px]">{{
-                      c.card.name
-                    }}</span>
-                    <span class="leader"></span>
-                    <span
-                      class="shrink-0 font-mono text-[11px] uppercase tracking-wide text-base-content/55"
-                    >
-                      {{ paLabel(c.card) }}
-                    </span>
-                  </button>
-                </li>
-              </ul>
-            </section>
-          </template>
-
-          <!-- Plat (PA / nom) -->
-          <template v-else>
-            <section class="mt-7">
-              <ul class="border-t border-base-content/15">
-                <li
-                  v-for="c in flatSortedCards"
-                  :key="c.card.id"
-                  class="spine border-b border-base-content/15"
-                  :style="{ '--spine': cardColor(c.card) }"
-                >
-                  <button
-                    type="button"
-                    class="flex w-full items-baseline gap-3 py-2 text-left hover:bg-base-200"
-                    @click="openZoom(c.card)"
-                  >
-                    <span
-                      class="w-8 shrink-0 font-mono text-sm tabular text-base-content/55"
-                      >{{ c.quantity }}×</span
-                    >
-                    <span class="truncate font-display text-[15px]">{{
-                      c.card.name
-                    }}</span>
-                    <span class="leader"></span>
-                    <span
-                      class="shrink-0 font-mono text-[11px] uppercase tracking-wide text-base-content/55"
-                    >
-                      {{ paLabel(c.card) }}
-                    </span>
-                  </button>
-                </li>
-              </ul>
-            </section>
-          </template>
+          <DeckCardGrid
+            v-else
+            :groups="galleryGroups"
+            class="mt-7"
+            @select="openZoom"
+          />
         </div>
       </div>
 
       <!-- Réserve -->
-      <section v-if="reserveCards.length">
-        <p class="section-rule eyebrow">
-          Réserve · {{ reserveCardCount }} / 12
-        </p>
-        <ul class="mt-3 max-w-2xl">
-          <li
-            v-for="c in reserveCards"
-            :key="'r-' + c.card.id"
-            class="spine border-b border-base-content/10"
-            :style="{ '--spine': cardColor(c.card) }"
-          >
-            <button
-              type="button"
-              class="flex w-full items-baseline gap-3 py-2 text-left hover:bg-base-200"
-              @click="openZoom(c.card)"
-            >
-              <span
-                class="w-8 shrink-0 font-mono text-sm tabular text-base-content/55"
-                >{{ c.quantity }}×</span
-              >
-              <span class="truncate font-display text-[15px]">{{
-                c.card.name
-              }}</span>
-              <span class="leader"></span>
-              <span
-                class="shrink-0 font-mono text-[11px] uppercase tracking-wide text-base-content/55"
-                >{{ paLabel(c.card) }}</span
-              >
-            </button>
-          </li>
-        </ul>
+      <section v-if="reserveGroups.length">
+        <DeckCardGrid :groups="reserveGroups" @select="openZoom" />
       </section>
 
       <!-- Simulateur de pioche (goldfishing) -->
       <DeckDrawSimulator :deck="deck" />
     </template>
+
+    <!-- Aperçu flottant au survol -->
+    <CardHoverPreview />
 
     <!-- Modal détail carte -->
     <CardZoomModal
@@ -609,9 +514,17 @@ import { generateShareUrl } from "@/utils/deckSharing";
 import { publishDeck } from "@/services/publicDeckService";
 import { getMyProfile } from "@/services/profileService";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
+import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
 import DeckDrawSimulator from "@/components/deck/DeckDrawSimulator.vue";
+import DeckCardGrid from "@/components/deck/DeckCardGrid.vue";
+import {
+  buildGalleryGroups,
+  type DeckGalleryGroup,
+} from "@/components/deck/deckGallery";
+import { cardElement, cardSpineColor } from "@/utils/cardDisplay";
+import { elementColor } from "@/config/elementColors";
 import { exportDeckImage } from "@/utils/deckImage";
-import type { Card, DeckCard, Deck } from "@/types/cards";
+import type { Card, Deck } from "@/types/cards";
 
 const deckStore = useDeckStore();
 const toast = useToast();
@@ -651,41 +564,13 @@ const reserveCards = computed(() =>
 const totalCardCount = computed(() =>
   mainCards.value.reduce((a, c) => a + c.quantity, 0),
 );
-const reserveCardCount = computed(() =>
-  reserveCards.value.reduce((a, c) => a + c.quantity, 0),
-);
 const isDeckValid = computed(() =>
   deck.value ? validateDeck(deck.value).isValid : false,
 );
 
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
-function cardElement(card: Card): string {
-  return (
-    card.stats?.niveau?.element ||
-    card.stats?.force?.element ||
-    "Neutre"
-  ).toLowerCase();
-}
-function cardColor(card: Card): string {
-  return elementColors[cardElement(card)] || elementColors.neutre;
-}
 const heroColor = computed(() =>
-  deck.value?.hero ? cardColor(deck.value.hero) : elementColors.neutre,
+  deck.value?.hero ? cardSpineColor(deck.value.hero) : elementColor("neutre"),
 );
-
-function paLabel(card: Card): string {
-  const pa = card.stats?.pa;
-  const el = cardElement(card);
-  const elName = el.charAt(0).toUpperCase() + el.slice(1);
-  if (pa === undefined) return elName;
-  return `${pa} PA · ${elName}`;
-}
 
 const elementDist = computed(() => {
   const map: Record<string, number> = {};
@@ -697,7 +582,7 @@ const elementDist = computed(() => {
     .map(([name, count]) => ({
       name: name.charAt(0).toUpperCase() + name.slice(1),
       count,
-      color: elementColors[name] || elementColors.neutre,
+      color: elementColor(name),
     }))
     .sort((a, b) => b.count - a.count);
 });
@@ -717,32 +602,24 @@ const maxCostCount = computed(() =>
   Math.max(1, ...costCurve.value.map((c) => c.count)),
 );
 
-const cardsByType = computed(() => {
-  const map: Record<string, { count: number; cards: DeckCard[] }> = {};
-  for (const dc of mainCards.value) {
-    const t = dc.card.mainType;
-    if (!map[t]) map[t] = { count: 0, cards: [] };
-    map[t].cards.push(dc);
-    map[t].count += dc.quantity;
-  }
-  return Object.entries(map)
-    .map(([type, d]) => ({
-      type,
-      count: d.count,
-      cards: d.cards.sort(
-        (a, b) => (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0),
-      ),
-    }))
-    .sort((a, b) => b.count - a.count);
-});
+const galleryGroups = computed<DeckGalleryGroup[]>(() =>
+  buildGalleryGroups(mainCards.value, cardSortMode.value),
+);
 
-const flatSortedCards = computed(() => {
-  const cards = [...mainCards.value];
-  if (cardSortMode.value === "cost")
-    return cards.sort(
-      (a, b) => (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0),
-    );
-  return cards.sort((a, b) => a.card.name.localeCompare(b.card.name));
+const reserveGroups = computed<DeckGalleryGroup[]>(() => {
+  if (!reserveCards.value.length) return [];
+  const entries = reserveCards.value.map((c) => ({
+    name: c.card.name,
+    quantity: c.quantity,
+    card: c.card,
+  }));
+  return [
+    {
+      section: "Réserve",
+      total: entries.reduce((s, e) => s + e.quantity, 0),
+      entries,
+    },
+  ];
 });
 
 onMounted(() => {
