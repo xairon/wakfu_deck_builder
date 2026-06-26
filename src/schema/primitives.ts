@@ -40,6 +40,14 @@ export const cardKeywordSchema = z.enum([
   "Recette",
   "Géant",
   "Unique",
+  "Agilité",
+  "Agressivité",
+  "Tacle",
+  "Renfort",
+  "Défense",
+  "Fantôme",
+  "Capture",
+  "Éthérée",
 ]);
 
 export const elementalCostSchema = z.object({
