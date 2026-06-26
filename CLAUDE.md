@@ -77,7 +77,7 @@ src/
 ## Règles métier TCG
 
 - **Deck valide** : 1 Héros + 1 Havre-Sac + exactement 48 cartes
-- **Limite de copies** : max 3 exemplaires par carte, 1 pour les cartes "Unique"
+- **Limite de copies** : max 3 exemplaires par carte, 1 pour les cartes "Unique". Comptée par **carte canonique** (nom), pas par impression : les réimpressions d'un même nom dans des extensions différentes (~119 noms) partagent la limite. Identité canonique via `src/utils/cardIdentity.ts` (`canonicalKey` = nom normalisé) ; comptage centralisé dans `getCardCopies` (`validateDeck`). L'identité d'une _entrée_ de deck reste par `card.id` (deux éditions = deux lignes).
 - **Réserve** : exactement 0 ou 12 cartes (règle officielle 101.4 — pas un simple plafond ; cf. `validateDeck`)
 - **Types de cartes** : aucun type minimum imposé (le rulebook officiel n'exige pas d'Action/Allié ; cf. `validateDeck`)
 - **Éléments** : Air, Eau, Feu, Terre, Neutre
@@ -101,6 +101,7 @@ src/
 
 ## Fonctionnalités
 
+- **Interopérabilité des réimpressions** : limite de copies canonique (par nom, toutes éditions) + sélecteur d'édition sur chaque ligne de deck (`DeckCardRow`/`ReserveRow`, affiché si >1 impression) pilotant `deckStore.setEntryEdition` (permute l'art en gardant la quantité, fusionne si l'édition cible existe déjà). Collection et partage base64 inchangés (stockent l'impression concrète).
 - **Partage de deck** : URL avec deck encodé en base64 (`/deck/share?deck=...`)
 - **Decks officiels** : Page de parcours et import de decks starter par extension (`/decks/official`)
 - **PWA** : Installation native, cache offline via Workbox, prompt d'installation

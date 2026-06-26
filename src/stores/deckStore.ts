@@ -3,7 +3,8 @@ import { ref, computed } from "vue";
 import type { Card, Deck, DeckCard } from "@/types/cards";
 import { DECK_CONSTRAINTS } from "@/config/cards";
 import { isUniqueCard, maxCopiesForCard } from "@/utils/cardRules";
-import { validateDeck } from "@/validators/deck";
+import { sameCanonicalCard } from "@/utils/cardIdentity";
+import { validateDeck, getCardCopies } from "@/validators/deck";
 import { useCardStore } from "./cardStore";
 import { namespacedKey } from "@/services/storageNamespace";
 
@@ -508,9 +509,7 @@ export const useDeckStore = defineStore("deck", () => {
     // Règle TCG : 1 exemplaire pour les cartes "Unique", sinon 3.
     // La limite de copies s'applique au TOTAL (deck principal + réserve).
     const maxCopies = isUniqueCard(card) ? 1 : MAX_COPIES_PER_CARD;
-    const totalCopies = currentDeck.value.cards
-      .filter((c) => c.card.id === card.id)
-      .reduce((a, c) => a + c.quantity, 0);
+    const totalCopies = getCardCopies(currentDeck.value, card);
     let room = maxCopies - totalCopies;
     // Capacité de zone (48 principal / 12 réserve).
     if (isReserve) room = Math.min(room, MAX_RESERVE - reserveCount.value);
@@ -598,6 +597,42 @@ export const useDeckStore = defineStore("deck", () => {
       const entry: DeckCard = { card: movedCard, quantity: qty };
       if (toReserve) entry.isReserve = true;
       currentDeck.value.cards.push(entry);
+    }
+
+    currentDeck.value.updatedAt = new Date().toISOString();
+    saveDecks();
+  }
+
+  /**
+   * Permute l'édition (impression) d'une entrée de deck en gardant la quantité.
+   * Si une entrée de l'édition cible existe déjà dans la MÊME zone, on fusionne
+   * les quantités (l'entrée source disparaît). La carte cible doit être une
+   * réimpression de la carte source (même nom canonique) — non vérifié ici, la
+   * garantie vient de l'UI qui ne propose que `printingsOf`.
+   */
+  function setEntryEdition(
+    cardId: string,
+    isReserve: boolean,
+    newPrinting: Card,
+  ) {
+    if (!currentDeck.value) return;
+    if (newPrinting.id === cardId) return;
+
+    const src = currentDeck.value.cards.find(
+      (c) => c.card.id === cardId && !!c.isReserve === isReserve,
+    );
+    if (!src) return;
+    if (!sameCanonicalCard(src.card, newPrinting)) return;
+
+    const existing = currentDeck.value.cards.find(
+      (c) => c.card.id === newPrinting.id && !!c.isReserve === isReserve,
+    );
+
+    if (existing) {
+      existing.quantity += src.quantity;
+      currentDeck.value.cards.splice(currentDeck.value.cards.indexOf(src), 1);
+    } else {
+      src.card = prepareCardForDeck(newPrinting);
     }
 
     currentDeck.value.updatedAt = new Date().toISOString();
@@ -992,6 +1027,7 @@ export const useDeckStore = defineStore("deck", () => {
     addCard,
     removeCard,
     moveCardZone,
+    setEntryEdition,
     removeHero,
     removeHavreSac,
     clearDeck,

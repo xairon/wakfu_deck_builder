@@ -1,6 +1,7 @@
 import type { Deck, Card } from "@/types/cards";
 import { ValidationError } from "@/utils/errors";
 import { isUniqueCard } from "@/utils/cardRules";
+import { canonicalKey } from "@/utils/cardIdentity";
 
 // Règles officielles du Wakfu TCG (paquet construit) — wtcg-return.fr/regles/completes.
 // 101.1 : 50 cartes au total = 1 Héros + 1 Havre-Sac + 48 autres.
@@ -40,11 +41,13 @@ export function getReserveCards(deck: Deck): number {
 }
 
 /**
- * Compte le nombre de copies d'une carte dans le deck
+ * Compte les copies d'une carte dans le deck, TOUTES ÉDITIONS confondues
+ * (regroupement canonique par nom). Inclut la réserve (pas de filtre isReserve).
  */
 export function getCardCopies(deck: Deck, card: Card): number {
+  const key = canonicalKey(card);
   return deck.cards
-    .filter((c) => c.card.id === card.id)
+    .filter((c) => canonicalKey(c.card) === key)
     .reduce((total, c) => total + c.quantity, 0);
 }
 
@@ -125,8 +128,9 @@ function validateCardCopies(deck: Deck, errors: string[]): boolean {
   let valid = true;
   const seen = new Set<string>();
   for (const deckCard of deck.cards) {
-    if (seen.has(deckCard.card.id)) continue; // une carte = une violation max
-    seen.add(deckCard.card.id);
+    const key = canonicalKey(deckCard.card);
+    if (seen.has(key)) continue; // une carte canonique = une violation max
+    seen.add(key);
     const copies = getCardCopies(deck, deckCard.card);
     const unique = isUniqueCard(deckCard.card);
     const maxCopies = unique ? 1 : DECK_RULES.MAX_COPIES;

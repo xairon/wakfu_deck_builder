@@ -329,6 +329,90 @@ describe("deckStore", () => {
 
       expect(() => deckStore.addCard(allyCard)).not.toThrow();
     });
+
+    it("addCard devrait refuser une 4ᵉ copie répartie sur deux éditions", () => {
+      const incarnam = createMockAllyCard({
+        id: "tofu-incarnam",
+        name: "Tofu",
+      });
+      const dofus = createMockAllyCard({
+        id: "tofu-dofus-collection",
+        name: "Tofu",
+      });
+
+      deckStore.addCard(incarnam, 3);
+      deckStore.addCard(dofus, 1); // doit être bloqué (déjà 3 Tofu)
+
+      const total = deckStore
+        .currentDeck!.cards.filter(
+          (c) => c.card.name.trim().toLowerCase() === "tofu",
+        )
+        .reduce((a, c) => a + c.quantity, 0);
+      expect(total).toBe(3);
+    });
+  });
+
+  // ---- setEntryEdition ----
+
+  describe("setEntryEdition()", () => {
+    beforeEach(() => {
+      deckStore.createDeck("Test");
+    });
+
+    it("setEntryEdition devrait permuter l'édition en gardant la quantité", () => {
+      const incarnam = createMockAllyCard({
+        id: "tofu-incarnam",
+        name: "Tofu",
+      });
+      const dofus = createMockAllyCard({
+        id: "tofu-dofus-collection",
+        name: "Tofu",
+      });
+      deckStore.addCard(incarnam, 2);
+
+      deckStore.setEntryEdition("tofu-incarnam", false, dofus);
+
+      const entries = deckStore.currentDeck!.cards;
+      expect(entries.length).toBe(1);
+      expect(entries[0].card.id).toBe("tofu-dofus-collection");
+      expect(entries[0].quantity).toBe(2);
+    });
+
+    it("setEntryEdition devrait fusionner si l'édition cible existe déjà (même zone)", () => {
+      const incarnam = createMockAllyCard({
+        id: "tofu-incarnam",
+        name: "Tofu",
+      });
+      const dofus = createMockAllyCard({
+        id: "tofu-dofus-collection",
+        name: "Tofu",
+      });
+      deckStore.addCard(incarnam, 2);
+      deckStore.addCard(dofus, 1);
+
+      deckStore.setEntryEdition("tofu-incarnam", false, dofus);
+
+      const entries = deckStore.currentDeck!.cards;
+      expect(entries.length).toBe(1);
+      expect(entries[0].card.id).toBe("tofu-dofus-collection");
+      expect(entries[0].quantity).toBe(3);
+    });
+
+    it("setEntryEdition devrait ignorer une cible qui n'est pas une réimpression", () => {
+      const tofu = createMockAllyCard({ id: "tofu-incarnam", name: "Tofu" });
+      const bouftou = createMockAllyCard({
+        id: "bouftou-amakna",
+        name: "Bouftou",
+      });
+      deckStore.addCard(tofu, 2);
+
+      deckStore.setEntryEdition("tofu-incarnam", false, bouftou);
+
+      const entries = deckStore.currentDeck!.cards;
+      expect(entries.length).toBe(1);
+      expect(entries[0].card.id).toBe("tofu-incarnam");
+      expect(entries[0].quantity).toBe(2);
+    });
   });
 
   // ---- removeCard ----
@@ -392,7 +476,10 @@ describe("deckStore", () => {
 
       // Ajouter 48 cartes
       for (let i = 0; i < 16; i++) {
-        const card = createMockAllyCard({ id: `v-ally-${i}` });
+        const card = createMockAllyCard({
+          id: `v-ally-${i}`,
+          name: `V Ally ${i}`,
+        });
         cardStore.setCards([...cardStore.cards, card]);
         deckStore.addCard(card, 3);
       }
@@ -406,7 +493,10 @@ describe("deckStore", () => {
       deckStore.setHero(heroCard);
 
       for (let i = 0; i < 16; i++) {
-        const card = createMockAllyCard({ id: `v-ally-${i}` });
+        const card = createMockAllyCard({
+          id: `v-ally-${i}`,
+          name: `V Ally ${i}`,
+        });
         cardStore.setCards([...cardStore.cards, card]);
         deckStore.addCard(card, 3);
       }
@@ -453,12 +543,18 @@ describe("deckStore", () => {
       deckStore.setHavreSac(havreSacCard);
 
       for (let i = 0; i < 15; i++) {
-        const card = createMockAllyCard({ id: `size-ally-${i}` });
+        const card = createMockAllyCard({
+          id: `size-ally-${i}`,
+          name: `Size Ally ${i}`,
+        });
         cardStore.setCards([...cardStore.cards, card]);
         deckStore.addCard(card, 3);
       }
       // 15 * 3 = 45, ajoutons 2 de plus
-      const extraCard = createMockAllyCard({ id: "size-extra" });
+      const extraCard = createMockAllyCard({
+        id: "size-extra",
+        name: "Size Extra",
+      });
       cardStore.setCards([...cardStore.cards, extraCard]);
       deckStore.addCard(extraCard, 2);
 
@@ -473,13 +569,22 @@ describe("deckStore", () => {
 
       // 48 cartes principales (16 x 3)
       for (let i = 0; i < 16; i++) {
-        const card = createMockAllyCard({ id: `res-ally-${i}` });
+        const card = createMockAllyCard({
+          id: `res-ally-${i}`,
+          name: `Res Ally ${i}`,
+        });
         cardStore.setCards([...cardStore.cards, card]);
         deckStore.addCard(card, 3);
       }
       // 5 cartes en réserve → ni 0 ni 12 → deck invalide
-      const r1 = createMockActionCard({ id: "res-extra-1" });
-      const r2 = createMockActionCard({ id: "res-extra-2" });
+      const r1 = createMockActionCard({
+        id: "res-extra-1",
+        name: "Res Extra 1",
+      });
+      const r2 = createMockActionCard({
+        id: "res-extra-2",
+        name: "Res Extra 2",
+      });
       cardStore.setCards([...cardStore.cards, r1, r2]);
       deckStore.addCard(r1, 3, true);
       deckStore.addCard(r2, 2, true);
@@ -495,13 +600,19 @@ describe("deckStore", () => {
       deckStore.setHavreSac(havreSacCard);
 
       for (let i = 0; i < 16; i++) {
-        const card = createMockAllyCard({ id: `res12-ally-${i}` });
+        const card = createMockAllyCard({
+          id: `res12-ally-${i}`,
+          name: `Res12 Ally ${i}`,
+        });
         cardStore.setCards([...cardStore.cards, card]);
         deckStore.addCard(card, 3);
       }
       // 12 cartes en réserve (4 x 3)
       for (let i = 0; i < 4; i++) {
-        const card = createMockActionCard({ id: `res12-act-${i}` });
+        const card = createMockActionCard({
+          id: `res12-act-${i}`,
+          name: `Res12 Action ${i}`,
+        });
         cardStore.setCards([...cardStore.cards, card]);
         deckStore.addCard(card, 3, true);
       }

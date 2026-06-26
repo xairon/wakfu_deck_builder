@@ -401,6 +401,47 @@ describe("Validation des decks", () => {
     });
   });
 
+  describe("règle des copies — réimpressions (canonique)", () => {
+    const incarnam: Card = { ...mockCard, id: "tofu-incarnam", name: "Tofu" };
+    const dofus: Card = {
+      ...mockCard,
+      id: "tofu-dofus-collection",
+      name: "Tofu",
+    };
+
+    it("getCardCopies devrait additionner les copies de toutes les éditions", () => {
+      const deck = createMockDeck([
+        { card: incarnam, quantity: 2 },
+        { card: dofus, quantity: 1 },
+      ]);
+      expect(getCardCopies(deck, incarnam)).toBe(3);
+      expect(getCardCopies(deck, dofus)).toBe(3);
+    });
+
+    it("validateDeck devrait refuser 4 copies réparties sur 2 éditions", () => {
+      const deck = {
+        ...createMockDeck([
+          { card: incarnam, quantity: 2 },
+          { card: dofus, quantity: 2 },
+        ]),
+        hero: mockHero,
+        havreSac: mockHavreSac,
+      };
+      const result = validateDeck(deck);
+      expect(result.errors.some((e) => e.includes("Tofu"))).toBe(true);
+    });
+
+    it("ne devrait émettre qu'UNE violation par carte canonique", () => {
+      const deck = createMockDeck([
+        { card: incarnam, quantity: 2 },
+        { card: dofus, quantity: 2 },
+      ]);
+      const result = validateDeck(deck);
+      const tofuErrors = result.errors.filter((e) => e.includes("Tofu"));
+      expect(tofuErrors.length).toBe(1);
+    });
+  });
+
   describe("validateDeckForSave", () => {
     it("devrait lancer une erreur pour un deck invalide", () => {
       const deck = createMockDeck([

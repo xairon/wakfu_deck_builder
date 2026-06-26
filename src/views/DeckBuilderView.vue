@@ -186,6 +186,8 @@ import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import DeckPanel from "@/components/deck/DeckPanel.vue";
 import CardPool from "@/components/deck/CardPool.vue";
 import { useCardPreview } from "@/composables/useCardPreview";
+import { getCardCopies } from "@/validators/deck";
+import { maxCopiesForCard } from "@/utils/cardRules";
 import type { Card, Deck } from "@/types/cards";
 
 const route = useRoute();
@@ -258,10 +260,10 @@ const cardCount = computed(() => deckStore.cardCount);
 
 // ── Guard d'ajout ────────────────────────────────────────────────────────────
 
-function inDeckQty(id: string): number {
-  return (currentDeck.value?.cards ?? [])
-    .filter((c) => c.card.id === id)
-    .reduce((a, c) => a + c.quantity, 0);
+function inDeckQty(card: Card): number {
+  const deck = currentDeck.value;
+  if (!deck) return 0;
+  return getCardCopies(deck, card);
 }
 
 /**
@@ -271,9 +273,7 @@ function inDeckQty(id: string): number {
 function canAddCard(card: Card, reserve = false): boolean {
   if (!currentDeck.value) return false;
   if (card.mainType === "Héros" || card.mainType === "Havre-Sac") return true;
-  const isUnique = card.keywords?.some((k) => k.name === "Unique");
-  const max = isUnique ? 1 : 3;
-  if (inDeckQty(card.id) >= max) return false;
+  if (inDeckQty(card) >= maxCopiesForCard(card)) return false;
   if (reserve) return deckStore.reserveCount < 12;
   return cardCount.value < 48;
 }
@@ -282,10 +282,9 @@ function canAddCard(card: Card, reserve = false): boolean {
 function addBlockReason(card: Card, reserve = false): string {
   if (!currentDeck.value) return "Aucun deck actif";
   if (card.mainType === "Héros" || card.mainType === "Havre-Sac") return "";
-  const isUnique = card.keywords?.some((k) => k.name === "Unique");
-  const max = isUnique ? 1 : 3;
-  if (inDeckQty(card.id) >= max)
-    return isUnique
+  const max = maxCopiesForCard(card);
+  if (inDeckQty(card) >= max)
+    return max === 1
       ? `${card.name} est unique (1 exemplaire max)`
       : `Maximum ${max} exemplaires de ${card.name}`;
   if (reserve) return "La réserve est pleine (12 cartes max)";

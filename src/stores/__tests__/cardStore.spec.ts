@@ -460,6 +460,30 @@ describe("cardStore", () => {
     });
   });
 
+  describe("printingsOf()", () => {
+    it("printingsOf devrait retourner toutes les impressions d'un même nom", () => {
+      const incarnam = createMockAllyCard({
+        id: "tofu-incarnam",
+        name: "Tofu",
+      });
+      const dofus = createMockAllyCard({
+        id: "tofu-dofus-collection",
+        name: "Tofu",
+      });
+      const other = createMockAllyCard({
+        id: "bouftou-amakna",
+        name: "Bouftou",
+      });
+      store.setCards([incarnam, dofus, other]);
+
+      const printings = store.printingsOf(incarnam);
+      expect(printings.map((c) => c.id).sort()).toEqual([
+        "tofu-dofus-collection",
+        "tofu-incarnam",
+      ]);
+    });
+  });
+
   describe("updateCollection()", () => {
     it("devrait mettre à jour la collection avec des données valides", () => {
       const validPayload = {

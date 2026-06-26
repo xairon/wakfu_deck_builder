@@ -114,9 +114,9 @@
             />
             <!-- Quantité dans le deck : étiquette braise carrée -->
             <span
-              v-if="inDeckQty(card.id) > 0"
+              v-if="inDeckQty(card) > 0"
               class="absolute left-[5px] top-[5px] z-10 bg-primary px-1.5 py-0.5 font-mono text-[11px] font-bold tabular text-primary-content"
-              >{{ inDeckQty(card.id) }}</span
+              >{{ inDeckQty(card) }}</span
             >
             <!-- Quantité possédée : mono tabulaire -->
             <span
@@ -182,6 +182,8 @@ import {
 } from "@/composables/useCardFilter";
 import type { FilterCriteria } from "@/composables/useCardFilter";
 import CollectionFilters from "@/components/collection/CollectionFilters.vue";
+import { getCardCopies } from "@/validators/deck";
+import { maxCopiesForCard } from "@/utils/cardRules";
 import type { Card } from "@/types/cards";
 
 const cardStore = useCardStore();
@@ -289,28 +291,25 @@ const pool = computed(() => {
 const visiblePool = computed(() => pool.value.slice(0, poolLimit.value));
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function inDeckQty(id: string): number {
-  return (deckStore.currentDeck?.cards ?? [])
-    .filter((c) => c.card.id === id)
-    .reduce((a, c) => a + c.quantity, 0);
+function inDeckQty(card: Card): number {
+  const deck = deckStore.currentDeck;
+  if (!deck) return 0;
+  return getCardCopies(deck, card);
 }
 
 function canAddCard(card: Card): boolean {
   if (!deckStore.currentDeck) return false;
   if (card.mainType === "Héros" || card.mainType === "Havre-Sac") return true;
-  const isUnique = card.keywords?.some((k) => k.name === "Unique");
-  const max = isUnique ? 1 : 3;
-  if (inDeckQty(card.id) >= max) return false;
+  if (inDeckQty(card) >= maxCopiesForCard(card)) return false;
   return deckStore.cardCount < 48;
 }
 
 function addBlockReason(card: Card): string {
   if (!deckStore.currentDeck) return "Aucun deck actif";
   if (card.mainType === "Héros" || card.mainType === "Havre-Sac") return "";
-  const isUnique = card.keywords?.some((k) => k.name === "Unique");
-  const max = isUnique ? 1 : 3;
-  if (inDeckQty(card.id) >= max)
-    return isUnique
+  const max = maxCopiesForCard(card);
+  if (inDeckQty(card) >= max)
+    return max === 1
       ? `${card.name} est unique (1 exemplaire max)`
       : `Maximum ${max} exemplaires de ${card.name}`;
   return "Le deck contient déjà 48 cartes";
