@@ -4,6 +4,7 @@ import {
   cardElementSchema,
   cardMainTypeSchema,
   cardRaritySchema,
+  elementalStatSchema,
   extensionInfoSchema,
   requirementsSchema,
 } from "./primitives";
@@ -85,7 +86,9 @@ export const dofusCardSchema = baseCardSchema.extend({
 export const heroCardSchema = baseCardSchema.extend({
   mainType: z.literal("Héros"),
   class: z.string(),
-  level: z.number().optional(),
+  // Donnée réelle : `level` est un stat élémentaire {value, element} (25/26
+  // Héros), parfois un simple nombre (1 carte) — accepter les deux formes.
+  level: z.union([z.number(), elementalStatSchema]).optional(),
   recto: heroFaceSchema,
   verso: heroFaceSchema.optional(),
 });
@@ -107,9 +110,11 @@ export const elementalAllyCardSchema = baseCardSchema.extend({
   mainType: z.literal("Allié Élémentaire"),
   stats: baseStatsSchema,
   elements: z.array(cardElementSchema),
+  // Donnée réelle : `elementalAffinity` est présent mais vide ({}) pour les
+  // Alliés Élémentaires de Draft — `primary` doit donc être optionnel.
   elementalAffinity: z
     .object({
-      primary: cardElementSchema,
+      primary: cardElementSchema.optional(),
       secondary: cardElementSchema.optional(),
     })
     .optional(),
