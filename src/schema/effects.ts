@@ -98,6 +98,7 @@ export const effectCoverageSchema = z.enum([
   "uncovered",
   "ruling",
   "keyword",
+  "trait",
 ]);
 
 export const cardEffectSchema = z.object({

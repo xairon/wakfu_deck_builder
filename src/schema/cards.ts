@@ -22,6 +22,7 @@ export const baseCardSchema = z.object({
   effects: z.array(cardEffectSchema).optional(),
   keywords: z.array(cardKeywordInfoSchema).optional(),
   experience: z.number().optional(),
+  metier: z.enum(["Bricoleur", "Forgeron", "Bijoutier", "Armurier"]).optional(),
   artists: z.array(z.string()),
   notes: z.array(z.string()).optional(),
   flavor: z
