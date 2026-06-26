@@ -25,12 +25,14 @@
       {
         "description": "L’Aero ne peut ni attaquer, ni bloquer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L’Aero ne peut pas porter d’Équipement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -64,12 +66,14 @@
       {
         "description": "L’Akwa ne peut ni attaquer, ni bloquer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L’Akwa ne peut pas porter d’Équipement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -103,12 +107,14 @@
       {
         "description": "Le Pyro ne peut ni attaquer, ni bloquer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Pyro ne peut pas porter d’Équipement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -142,12 +148,14 @@
       {
         "description": "Le Terra ne peut ni attaquer, ni bloquer.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Terra ne peut pas porter d’Équipement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],

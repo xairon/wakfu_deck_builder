@@ -20,7 +20,8 @@
       {
         "description": "Ne jouez le Dofus des Glaces que si c'est votre seule carte en main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand le Dofus des Glaces apparaît, gagnez 2 XP.",
@@ -34,12 +35,15 @@
               "n": 2
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["gain-xp"]
       },
       {
         "description": "Tant que vous contrôlez le Dofus des Glaces, les Alliés ou Héros attaquants ou bloqueurs ne se redressent pas lors de la prochaine phase de redressement de leur contrôleur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],

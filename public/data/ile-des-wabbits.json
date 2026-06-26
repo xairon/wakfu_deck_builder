@@ -21,7 +21,8 @@
         "description": "Jusqu'à la fin du tour, chaque fois qu'un Allié Wabbit apparaît dans le Monde, il inflige 1 Dommage à l'Allié ou Héros de votre choix.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -52,13 +53,15 @@
       {
         "description": "Le Bandeau du Black Tiwabbit ne peux peut être joué que sur un Allié Wabbit et ne peux pas être fabriqué.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Porteur du Bandeau du Black Tiwabbit inflige un nombre de Dommages égal à sa Force à l'Allié ou Héros de votre choix, puis détruisez-le.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -91,7 +94,8 @@
       {
         "description": "Le Bâton du Wa Wabbit ne peut pas être fabriqué.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -130,13 +134,15 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Dites \"WABEHAMEHA !\" : Le Black Tiwabbit inflige 1 Dommage à l'Allié ou Héros de votre choix, puis détruisez-le.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -174,12 +180,14 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand le Black Wabbit apparaît dans le Monde, vous pouvez l'incliner. Si vous le faites, l'Allié de votre choix retourne dans la main de son propriétaire.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -248,7 +256,8 @@
       {
         "description": "Au début du tour de chaque joueur, vous pouvez redressez Bowissette.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -278,7 +287,8 @@
       {
         "description": "La Cape du Wa Wabbit ne peut pas être fabriquée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -313,7 +323,8 @@
       {
         "description": "Mettez la Cawotte en jeu dans le Monde comme une Zone.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Détruisez la Cawotte : Le Héros de votre choix regagne 3 PV.",
@@ -328,7 +339,9 @@
               "n": 3
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["heal-hero-target"]
       }
     ],
     "keywords": [],
@@ -360,7 +373,8 @@
       {
         "description": "Chaque fois qu'un Allié Wabbit apparait dans le Monde, vous pouvez piocher une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -395,7 +409,8 @@
       {
         "description": "Quand le Coffre Malveillant est détruit, chaque joueur peut piocher une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -425,7 +440,8 @@
       {
         "description": "La Couronne du Wa Wabbit ne peut pas être fabriquée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -461,12 +477,14 @@
       {
         "description": "Annulez les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Échec critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être . Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement et ne sont pas considérés comme joués. Échec critique ne permet donc pas de les annuler.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -508,12 +526,15 @@
               "n": 5
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["hero-gain-pv"]
       },
       {
         "description": "Ne jouez cette carte que si votre Héros est incliné dans le Monde quand vous déclarez la fin de votre tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -550,7 +571,8 @@
         "description": "Si le Flaqueux se trouve dans votre Défausse, vous pouvez payer pour le recycler. Votre Héros regagne 2 PV.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -588,7 +610,8 @@
       {
         "description": "Quand un Allié Wabbit apparaît dans le Monde, vous pouvez redresser le Grand Pa Wabbit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Grand Pa Wabbit inflige 1 Dommage à l'Allié ou Héros de votre choix.",
@@ -606,7 +629,9 @@
               "zones": ["monde", "havreSac"]
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [],
@@ -642,7 +667,8 @@
       {
         "description": "Quand le Havre Sac du Wa Wabbit devient la cible d'une attaque, vous pouvez redresser un de vos Alliés Wabbits de votre choix dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -673,7 +699,8 @@
       {
         "description": "L'Île des Wabbits apparaît inclinée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez l'Île des Wabbits.",
@@ -689,12 +716,15 @@
               "n": 1
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["recycle-from-discard"]
       },
       {
         "description": "Détruisez l'Île des Wabbits : Cherchez un Allié Wabbit dans votre Défausse et prenez-le en main.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -725,7 +755,8 @@
       {
         "description": "Détruisez l'Allié de votre choix qui ne porte aucun Équipement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -760,7 +791,8 @@
       {
         "description": "Quand le Petit Flaqueux est détruit, vous pouvez regarder la première carte de la Pioche du joueur de votre choix. Vous pouvez recyclez cette carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -797,7 +829,8 @@
       {
         "description": "Détruisez le Phorreur Immature : Cherchez une carte Équipement de Niveau 1 dans votre Défausse et prenez-la en main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -830,7 +863,8 @@
       {
         "description": "Réduisez à 0 les Dommages sur le point d'être infligés à un de vos Alliés et reprenez-le en main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -862,7 +896,8 @@
       {
         "description": "Détruisez la Salle du Trône du Wa Wabbit : L'Allié attaquant de votre choix dans le Monde retourne dans la main de son propriétaire.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -902,13 +937,16 @@
               "n": "heroLevel"
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-allies-monde"]
       },
       {
         "description": "Stratégie de groupe génère un modificateur continu défini qui affecte tous les Alliés dans le Monde. Un Allié présent dans le Monde à la résolution de Stratégie de Groupe et qui se déplace dans le Havre Sac ne bénéficie plus du bonus de Force. En revanche, un Allié qui apparaît dans le Monde après la résolution de Stratégie de groupe bénéficiera tout de même du bonus de Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -947,13 +985,15 @@
         "description": "Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros attaquant ou bloqueur s'incline dans ce combat, le Tiwabbit Kiafin lui inflige 1 Dommage .",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Ce pouvoir ne s'applique pas aux Alliés ou Héros inclinés par la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -993,7 +1033,8 @@
       {
         "description": "Quand Vener apparaît, vous pouvez reprendre en main une carte Équipement de votre Défausse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1034,12 +1075,14 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Mettez en jeu un Allié Wabbit de Niveau 1 ou 2 gratuitement de votre main dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1068,12 +1111,14 @@
         {
           "description": "Agilité",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "coverage": "uncovered"
         },
         {
           "description": "Mettez en jeu un Allié Wabbit de Niveau 1 ou 2 gratuitement de votre main dans le Monde.",
           "isOncePerTurn": false,
-          "requiresIncline": true
+          "requiresIncline": true,
+          "coverage": "uncovered"
         }
       ],
       "keywords": [],
@@ -1097,12 +1142,14 @@
         {
           "description": "Agilité",
           "isOncePerTurn": false,
-          "requiresIncline": false
+          "requiresIncline": false,
+          "coverage": "uncovered"
         },
         {
           "description": "Mettez en jeu un Allié Wabbit de Niveau inférieur ou égal à 3 gratuitement de votre main dans le Monde.",
           "isOncePerTurn": false,
-          "requiresIncline": true
+          "requiresIncline": true,
+          "coverage": "uncovered"
         }
       ],
       "keywords": [],
@@ -1165,7 +1212,8 @@
       {
         "description": "Quand le Wo Wabbit apparaît dans le Monde, vous pouvez l'incliner. Si vous le faites, mettez en jeu un Allié Wabbit de Niveau 1 ou 2 gratuitement de votre main incliné dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1203,13 +1251,15 @@
       {
         "description": "Détruisez l'Allié de votre choix qui bloque ou est bloqué par le Wobot, puis détruisez le Wobot.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "La mention \"Détruisez le Wobot\" fait partie de sont effet et non de son coût d'activation.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],

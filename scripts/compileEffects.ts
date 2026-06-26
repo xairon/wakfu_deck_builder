@@ -24,6 +24,7 @@ import {
   compileTurnStartEffectText,
 } from "../src/game/rules/effects/dsl";
 import { CARD_SCRIPTS } from "../src/game/rules/effects/cardScripts";
+import { OP_TO_MECHANIC } from "../src/data/mechanics";
 
 const DATA_DIR = join(__dirname, "..", "public", "data");
 const EXTENSION_FILES = [
@@ -89,6 +90,8 @@ interface RawEffect {
   compiled?: unknown;
   requiresIncline?: boolean;
   kind?: "ruling" | "errata";
+  coverage?: "auto" | "manual" | "uncovered" | "ruling";
+  mechanics?: string[];
 }
 interface RawStats {
   niveau?: { element?: string };
@@ -240,6 +243,34 @@ function promoteTextKeywords(card: RawCard): void {
   }
 }
 
+/**
+ * Passe finale : pose un statut de couverture EXPLICITE sur chaque effet et
+ * dérive ses mécaniques depuis les ops compilées. `manual` est déjà posé par
+ * la boucle d'overrides ; le reste est dérivé de l'état final (kind/compiled).
+ */
+function assignCoverageAndMechanics(card: RawCard): void {
+  const visit = (effects: RawEffect[] | undefined) => {
+    for (const e of effects ?? []) {
+      if (e.coverage !== "manual") {
+        e.coverage = e.kind ? "ruling" : e.compiled ? "auto" : "uncovered";
+      }
+      const ops = (e.compiled as { ops?: { op: string }[] } | undefined)?.ops;
+      if (ops && ops.length) {
+        e.mechanics = [
+          ...new Set(
+            ops.map((o) => OP_TO_MECHANIC[o.op as keyof typeof OP_TO_MECHANIC]),
+          ),
+        ];
+      } else {
+        delete e.mechanics;
+      }
+    }
+  };
+  visit(card.effects);
+  visit(card.recto?.effects);
+  visit(card.verso?.effects);
+}
+
 for (const file of EXTENSION_FILES) {
   const path = join(DATA_DIR, file);
   const cards = JSON.parse(readFileSync(path, "utf8")) as RawCard[];
@@ -286,9 +317,11 @@ for (const file of EXTENSION_FILES) {
         if (!eff.compiled) stats.compiled++;
         delete eff.kind;
         eff.compiled = entry;
+        eff.coverage = "manual";
         stats.scripted++;
       }
     }
+    assignCoverageAndMechanics(card);
   }
   writeFileSync(path, JSON.stringify(cards, null, 2) + "\n", "utf8");
   console.log(`✓ ${file} (${cards.length} cartes)`);

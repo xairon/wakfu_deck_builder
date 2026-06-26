@@ -21,7 +21,8 @@
         "description": "Détruisez l'Aiguille à Tricoter : Elle inflige 1 Dommage à l'Allié ou Héros de votre choix.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -64,7 +65,8 @@
         "description": "Le Porteur de l'Amukwak de Flammes gagne .",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -111,7 +113,8 @@
       {
         "description": "Quand un joueur déclare une attaque, vous pouvez redresser le Porteur de l'Amulette du Bandit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -155,7 +158,8 @@
         "description": "Le Porteur de l'Anneau Rigami gagne jusqu'à la fin du tour.",
         "elements": ["Air", "Terre", "Feu", "Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -201,7 +205,8 @@
       {
         "description": "Quand un joueur déclare une attaque, choisissez un Allié ou Héros. Jusqu'à la fin du tour, cet Allié ou Héros ne peut pas être déclaré comme attaquant ou bloqueur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -232,13 +237,15 @@
       {
         "description": "Jusqu'à la fin du tour, le Araknamu peut utiliser ses pouvoirs depuis son Havre Sac comme s'il était dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Le bonus de Force de la Panoplie Abraknyde est de +1 seulement, en conformité avec les Équipements Abraknyde de l'extension Incarnam.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -287,18 +294,21 @@
       {
         "description": "L'Arc du Bandit Archer ne peut pas être fabriqué.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Porteur de l'Arc du Bandit Archer perd sa Classe et sa Famille et devient un Bandit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Choisissez jusqu'à trois Alliés ou Héros attaquants ou bloqueurs. L'Arc du Bandit Archer leur inflige 1 Dommage .",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -339,7 +349,8 @@
         "description": "Recyclez Ash Tur depuis le Monde ou votre Havre Sac : Redressez l'Allié ou Héros de votre choix.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -372,13 +383,15 @@
         "description": "Cherchez dans votre Pioche un Allié Bandit, Artisan ou Marchand de Niveau X et mettez le en jeu, puis mélangez votre Pioche.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Si vous ne trouvez pas de carte satisfaisant les conditions dans votre Pioche, vous ne pouvez pas prendre d'autre carte en échange, vous vous contentez de mélanger votre Pioche. Vous pouvez utiliser ce pouvoir même si vous savez qu'aucune carte de votre Pioche ne remplit les conditions. Vous n'êtes de toute façon pas obligé de trouver une carte et pouvez décidé d'échouer volontairement.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -412,13 +425,15 @@
       {
         "description": "Le joueur de votre choix détruit une carte Salle ou Équipement de son choix présente dans son Havre Sac.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "S'il n'y a pas de carte Salle dans le Havre Sac choisi, son contrôleur doit obligatoirement choisir une carte Équipement. S'il n'y a pas de carte Équipement dans le Havre Sac choisi, son contrôleur doit obligatoirement choisir une carte Salle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -453,13 +468,15 @@
         "description": "L'Attaque Naturelle inflige 2 Dommages à l'Allié ou Héros attaquant ou bloqueur de votre choix. Vous pouvez jouer immédiatement une autre Attaque Naturelle de votre main.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "La seconde partie de l'effet à été reformulé ainsi : « Vous pouvez jouer immédiatement une autre Attaque Naturelle de votre main. »",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -493,7 +510,8 @@
       {
         "description": "Déplacez dans le Monde l'Allié ou Héros incliné de votre choix présent dans son Havre Sac.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -525,7 +543,8 @@
       {
         "description": "Détruisez l'Auberge d'Astrub : Le Héros de votre choix regagne 2 PV.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -571,12 +590,15 @@
               "n": 2
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       },
       {
         "description": "Ne jouez cette carte que lorsque vous venez de détruire un Allié Bandit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -605,17 +627,20 @@
       {
         "description": "La Baguette du Bandit Ensorceleur ne peut pas être fabriquée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Porteur de la Baguette du Bandit Ensorceleur perd sa Classe et sa Famille et devient un Bandit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L'Allié ou Héros de votre choix gagne ou jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -655,13 +680,15 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L'Allié Tofu de votre choix gagne jusqu'à la fin du tour.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -692,17 +719,20 @@
       {
         "description": "Le Bâton du Bandit Baroudeur ne peut pas être fabriqué.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Porteur du Bâton du Bandit Baroudeur perd sa Classe et sa Famille et devient un Bandit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Jouez immédiatement une nouvelle action. Aucune ne peut être jouée en réponse à cette nouvelle action.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -775,7 +805,8 @@
         "description": "Betty Pèdje inflige 2 Dommages à l'Allié attaquant ou bloqueur de votre choix.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -808,7 +839,8 @@
       {
         "description": "Réduisez à 0 les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -843,12 +875,14 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand le Black Wabbit apparaît dans le Monde, vous pouvez l'incliner. Si vous le faites, l'Allié de votre choix retourne dans la main de son propriétaire.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -922,7 +956,8 @@
       {
         "description": "Le Boufrog ne peut pas être incliné pour produire une Ressource.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -956,13 +991,15 @@
       {
         "description": "Jouez à « Je te tiens, tu me tiens, par la Barboufette » avec un autre joueur. Le vainqueur gagne 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Chaque joueur tient son adversaire par le menton en chantonnant « Je te tiens, tu me tiens, par la Barbouffette, le premier de nous deux qui pouffera sera un Bouftou ». Le premier joueur qui rit perd. En tournoi officiel, la résolution de Bouftou Dance I-Volution se fera en utilisant une méthode aléatoire plutôt que le petit jeu. Si les joueurs décident de jouer à Chi-Fu-Mi, ce Chi-Fu-Mi ne comptera pas pour le pouvoir de Karey Dass par exemple, car il n'est pas demandé par une carte mais par les joueurs.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -999,12 +1036,14 @@
       {
         "description": "Chaque fois qu'un joueur adverse se défausse d'une ou plusieurs cartes de sa main, Brutas, Fondateur d'Astrub gagne +1 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tous vos Alliés Bandits gagnent jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -1060,13 +1099,16 @@
               "n": 1
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["recycle-from-discard"]
       },
       {
         "description": "Tous vos Alliés et Héros attaquants ou bloqueurs gagnent +1 en Force jusqu'à la fin du combat.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1108,12 +1150,15 @@
               "n": 1
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["recycle-from-discard"]
       },
       {
         "description": "Quand un Allié adverse apparaît, redressez un de vos Alliés Bandits de Niveau inférieur ou égal au Niveau de cet Allié.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1144,7 +1189,8 @@
       {
         "description": "Le Porteur de la Cape du Tofu gagne .",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -1198,13 +1244,16 @@
               "n": 1
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["recycle-from-discard"]
       },
       {
         "description": "Quand un Allié Marchand apparaît sous votre contrôle, cherchez une carte Potion ou Parchemin dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1235,12 +1284,14 @@
       {
         "description": "La Carte du Grav'Mar'Av' ne peut pas être fabriquée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Bannissez la Carte du Grav'Mar'Av' : Cherchez une carte Zone dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1276,12 +1327,14 @@
       {
         "description": "Les Cartes Seiz ne peuvent être jouées que sur un Allié.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Détruisez les Cartes Seiz : Quand le Porteur des Cartes Seiz est sur le point d'être détruit, reprenez-le en main à la place.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -1320,7 +1373,8 @@
       {
         "description": "Le Porteur de la Ceinture du Bandit gagne .",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -1366,13 +1420,15 @@
         "description": "Quand le Chafer Archer apparaît, il peut infliger 2 Dommages répartis comme vous le souhaitez entre n'importe quel nombre d'Alliés ou Héros de votre choix.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Vous ne pouvez pas choisir d'infliger 0 dommages à un Allié ou Héros avec ce pouvoir. Chaque Allié ou Héros choisi doit se voir infliger au moins 1 Dommage.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -1414,7 +1470,8 @@
         "description": "Quand le Champ Champ est détruit, vous pouvez payer pour piocher une carte.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1447,7 +1504,8 @@
       {
         "description": "Mettez la première carte de votre Pioche dans votre Défausse. S'il s'agit d'un Équipement, piochez deux cartes.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1479,7 +1537,8 @@
       {
         "description": "Jusqu'au début de votre prochain tour, chaque fois qu'un joueur fabrique un Équipement ou une Salle, il gagne 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1516,7 +1575,8 @@
         "description": "Recyclez Choub Nigourak depuis le Monde ou votre Havre Sac : Infligez 1 Dommage à l'Allié ou Héros de votre choix.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1552,12 +1612,14 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand Chuck Maurice attaque, vous pouvez incliner l'Allié de votre choix que contrôle le joueur défenseur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -1596,7 +1658,8 @@
         "description": "Recyclez jusqu'à 3 Monstres de votre Défausse : Mettez en jeu le même nombre de jetons « Monstre — Vampyre » de Force 1 inclinés dans le Monde.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1659,7 +1722,8 @@
         "description": "Jusqu'à la fin du tour, chaque fois qu'un Allié ou Héros inflige des Dommages à l'Allié ou Héros de votre choix, le Contre lui inflige 1 Dommages .",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1695,24 +1759,28 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand le Crapaud à Moustache apparaît, il ne se passe rien.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L'effet d'apparition du Crapaud à Moustache est placé sur la file d'attente, mais n'a pas de conséquence.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       },
       {
         "description": "Trait « Monstre » ajouté.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -1753,7 +1821,8 @@
       {
         "description": "L'Allié ou Héros de votre choix gagne +1 en Force jusqu'à la fin du tour. S'il s'agit d'un Monstre, il gagne +2 en Force à la place.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1785,7 +1854,8 @@
       {
         "description": "Le joueur de votre choix gagne 1 PA jusqu'au début de votre prochain tour. Piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1820,7 +1890,8 @@
       {
         "description": "Chaque fois que le Crustorail Passaoh inflige des Dommages à un Allié ou Héros, vous pouvez détruire l'Équipement de votre choix que porte cet Allié ou Héros.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1855,7 +1926,8 @@
       {
         "description": "Chaque fois que le Porteur des Dagues du Bandit inflige un ou plusieurs Dommages à un Héros, le contrôleur de ce Héros se défausse d'une carte de sa main au hasard.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -1902,13 +1974,15 @@
         "description": "Détruisez Dejaded : Détruisez l'Équipement de Niveau inférieur ou égal à 2 de votre choix. Cet Équipement inflige un nombre de Dommages égal au Niveau de son Porteur.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "L'effet de Dejaded a été corrigé pour être plus lisible, « égal à son Niveau à son Porteur » devient « égal au Niveau de son Porteur ».",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -1944,7 +2018,8 @@
       {
         "description": "Toutes les cartes dans le Monde et dans les Havres Sacs sont détruites, exceptées les Héros et les Havre Sacs. Vous ne gagnez pas d'XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -1980,13 +2055,15 @@
       {
         "description": "Quand un de vos Alliés ou Héros est désigné comme la cible d'une attaque, Demena devient la cible de l'attaque à la place. N'utilisez ce pouvoir que si Demena est dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Une cible dans le Havre Sac de son contrôleur n'est pas une cible légale pour une attaque. Pour s'affranchir de ce problème, le pouvoir de Demena n'est utilisable que lorsque Demena est dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -2026,12 +2103,14 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand Démon XII apparaît dans le Monde, tous vos Alliés et Héros gagnent jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -2080,18 +2159,21 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand Démon XVIII apparaît dans le Monde, vous pouvez chercher une carte dans la Pioche du joueur de votre choix et la bannir. Si vous le faites, mélangez ensuite sa Pioche.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si vous décidez de chercher une carte dans la Pioche de votre adversaire, vous êtes obligé de trouver une carte si cette Pioche contient au moins une carte, vous ne pouvez pas choisir de ne rien trouver. En effet, la recherche n'a aucun critère à respecter.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -2141,12 +2223,14 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand un joueur adverse déclare une attaque, vous pouvez redresser Dhavid Boivit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2179,7 +2263,8 @@
       {
         "description": "L'Allié ou Héros de votre choix gagne ou jusqu'à la fin du tour. Piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2208,7 +2293,8 @@
       {
         "description": "Ne jouez le Dofus Ocre que si vous aviez au moins trois Monstres Uniques dans votre Défausse au début de votre tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand le Dofus Ocre apparaît, gagnez 2 XP.",
@@ -2222,7 +2308,9 @@
               "n": 2
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["gain-xp"]
       }
     ],
     "keywords": [],
@@ -2256,7 +2344,8 @@
       {
         "description": "Ne jouez le Dofus Pourpre que si vous contrôliez le Minotoror dans le Monde au début de votre tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand le Dofus Pourpre apparaît, gagnez 2 XP.",
@@ -2270,18 +2359,22 @@
               "n": 2
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["gain-xp"]
       },
       {
         "description": "Les Dommages sur le point d'être infligés par vos Alliés ou Héros sont augmentés de 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L'effet devient « Les Dommages sur le point d'être infligés par vos Alliés ou Héros sont augmentés de 1. »",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -2316,7 +2409,8 @@
       {
         "description": "Ne jouez le Dofus Vulbis que si vous contrôliez le Crocabulia dans le Monde au début de votre tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand le Dofus Vulbis apparaît, gagnez 2 XP.",
@@ -2330,7 +2424,9 @@
               "n": 2
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["gain-xp"]
       }
     ],
     "keywords": [],
@@ -2374,12 +2470,15 @@
               "n": 2
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["hero-lose-pv"]
       },
       {
         "description": "Tant qu'ils sont dressés, vos Alliés Prespic ne peuvent pas être choisis par un joueur adverse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2414,7 +2513,8 @@
       {
         "description": "Donky L. Bouffy peut effectuer un mouvement même s'il est incliné.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -2457,12 +2557,14 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Recyclez une carte de votre Défausse. Dryana Karamboul inflige 1 Dommage de l'élément de la carte recyclée à l'Allié ou Héros de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2496,7 +2598,8 @@
       {
         "description": "Au début de la phase d'action, chaque joueur peut nommer une action de sa main ou de l'une de ses cartes en jeu. À la fin de la phase d'action, s'il a effectué uniquement l'action qu'il a nommée et aucune autre, ce joueur gagne 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2538,12 +2641,15 @@
               "n": 1
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["discard-from-hand"]
       },
       {
         "description": "Le joueur de votre choix se défausse d'une carte de sa main au hasard.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2584,7 +2690,8 @@
         "description": "Inclinez l'Allié ou Héros de Force inférieure ou égale à X de votre choix.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2616,18 +2723,21 @@
       {
         "description": "L'Épée du Bandit Fine-Lame ne peut pas être fabriquée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Porteur de l'Épée du Bandit Fine-Lame perd sa Classe et sa Famille et devient un Bandit.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L'Épée du Bandit Fine-Lame inflige un nombre de Dommages égal à la Force de son Porteur à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2668,19 +2778,22 @@
         "description": "Tant qu'Ewesson Smisse est dans le Monde, chaque fois qu'un joueur adverse pioche une carte pendant sa Phase principale, son Héros subit 1 Dommage .",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tous les joueurs piochent une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Le pouvoir d'Ewesson Smisse se déclenche à chaque fois qu'une carte est piochée. Si un joueur adverse doit piocher plusieurs cartes en une seule fois, il subit autant de Dommages que de cartes piochées, sous forme de paquets de 1 Dommage .",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -2722,7 +2835,8 @@
       {
         "description": "Regardez la main du joueur de votre choix et choisissez-y une carte Action ou Équipement. Ce joueur recycle cette carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2754,13 +2868,15 @@
         "description": "La Flèche de Recul inflige 2 Dommages à l'Allié ou Héros attaquant ou bloqueur de votre choix. Cet Allié ou Héros retourne incliné dans le Monde.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le personnage choisi cesse d'être attaquant ou bloqueur et quitte le combat.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -2796,13 +2912,15 @@
         "description": "La Flèche Glacée inflige 1 Dommage à l'Allié ou Héros de votre choix. Son contrôleur perd 1 PA jusqu'à la fin du tour.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si l'Allié choisi est détruit en Réaction, il n'y a plus de choix légal, son contrôleur ne perd pas de PA.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -2836,18 +2954,21 @@
       {
         "description": "Quand le Porteur du Fotome est détruit, vous pouvez reprendre le Fotome dans votre main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tant qu'il n'est pas attaquant ou bloqueur, le Porteur du Fotome ne peut pas être choisi par une Action ou un pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le pouvoir du Fotome empêche son porteur d'être choisi pour l'application d'un pouvoir ou d'une action. Le porteur peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -2885,7 +3006,8 @@
       {
         "description": "Détruisez le Monstre non Unique de votre choix qui vient d'apparaître dans le Monde ou dans un Havre Sac. Vous ne gagnez pas d'XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2921,7 +3043,8 @@
       {
         "description": "Quand Frakacia Leukocityne apparaît dans le Monde, vous pouvez l'incliner. Si vous le faites, détruisez l'Équipement ou la Zone de Niveau inférieur ou égal à 2 de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -2986,12 +3109,14 @@
       {
         "description": "Les Geôles d'Astrub ne peuvent pas être fabriquées.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Bannissez les Geôles d'Astrub : Bannissez l'Allié de votre choix dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3023,7 +3148,8 @@
       {
         "description": "Quand un joueur déclare une attaque, vous gagnez 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -3065,7 +3191,8 @@
       {
         "description": "Chaque fois qu'un joueur adverse effectue une action dans ce combat, il perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3101,18 +3228,21 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tant que vous contrôlez au moins un autre Allié d'élément , , ou dans le Monde, Gourlo le Terrible gagne dans l'élément correspondant.",
         "elements": ["Air", "Terre", "Feu", "Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le texte a été reformulé sans incidence sur l'effet de la carte, « a » devient « gagne ».",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -3158,7 +3288,8 @@
       {
         "description": "Quand Grostruf apparaît, jouez à Chi-Fu-Mi. Si vous gagnez, piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3194,7 +3325,8 @@
       {
         "description": "Mettez en jeu un Monstre de Niveau 1 de votre main.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3226,19 +3358,22 @@
       {
         "description": "Le Porteur de la Hache du Shodanwa gagne .",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Détruisez l'Arme de votre choix.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Les types d'Armes sont : Arc, Baguette, Bâton, Dague, Épée, Hache, Marteau, Pelle, Aiguille et Cartes.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -3282,13 +3417,15 @@
       {
         "description": "Jusqu'à la fin du tour, vos Alliés ou Héros attaquants ne peuvent être bloqués que par des Alliés ou Héros de Force supérieure ou égale à la leur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "La Phase de Déclaration des Bloqueurs a lieu avant la Phase d'Action. Si la Force d'un Allié attaquant ou bloqueur change pendant la Phase d'Action, cela n'influe pas sur cet effet.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -3326,7 +3463,8 @@
         "description": "Herdegrize le Mystique peut être recyclé comme une carte , , ou .",
         "elements": ["Air", "Terre", "Feu", "Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3359,7 +3497,8 @@
       {
         "description": "Jusqu'au début de votre prochain tour, l'Allié ou Héros de votre choix ne peut pas être choisi par une Action ou un pouvoir. Vous gagnez 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3396,13 +3535,15 @@
         "description": "Chaque fois qu'Isletate le Vampyre détruit un Allié, vous pouvez payer pour mettre en jeu un jeton « Monstre — Vampyre » de Force 1 dans le Monde.",
         "elements": ["Neutre", "Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Un Allié est considéré comme ayant été détruit par Isletate s'il a reçu des dommages de combat de celui-ci qui l'ont conduit à être placé dans la défausse, ou si une carte a permis à Isletate d'infliger des dommages à cet Allié.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -3455,7 +3596,9 @@
               "zones": ["monde", "havreSac"]
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [],
@@ -3522,7 +3665,8 @@
         "description": "Prenez le contrôle de l'Allié adverse de Force X de votre choix jusqu'à la fin du tour. Si cet Allié est détruit, il va dans la Défausse de son propriétaire.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3592,7 +3736,8 @@
       {
         "description": "L'Allié ou Héros de votre choix perd jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3629,12 +3774,14 @@
       {
         "description": "Chaque fois que le Kimbo subit des Dommages, inclinez-le s'il est dressé. Sinon, redressez-le.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Immédiatement avant votre phase de redressement, si le Kimbo est dans le Monde, détruisez tous les autres Alliés dans le Monde qui sont dans le même état dressé ou incliné que le Kimbo. Vous ne gagnez pas XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3673,13 +3820,15 @@
         "description": "Jusqu'à la fin du tour, l'Allié ou Héros de votre choix présent dans votre Havre Sac peut utiliser ses pouvoirs comme s'il était dans le Monde.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Le pouvoir de Klara Organe signifie que l'Allié ou Héros en question pourra choisir un adversaire dans le Monde lors de l'activation de son propre pouvoir, et ce même s'il se trouve dans votre Havre Sac.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -3718,18 +3867,21 @@
       {
         "description": "Le joueur de votre choix perd 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Inclinez l'Allié de votre choix. Jusqu'au début de votre prochain tour, cet Allié ne peut pas se redresser.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Le second pouvoir empêche l'Allié choisi de se redresser aussi bien durant la Phase de Redressement que grâce au pouvoir d'une carte. Comme pour Pandrista, vous pouvez choisir un Allié qui est déjà incliné, dans ce cas il n'est pas incliné de nouveau.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -3771,7 +3923,8 @@
         "description": "Recyclez Kolof Toulou depuis le Monde ou votre Havre Sac : Piochez une carte.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3805,7 +3958,8 @@
         "description": "Le Porteur de la Kwakature de Flammes gagne .",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -3894,13 +4048,15 @@
         "description": "Choisissez un Allié ou Héros incliné. La prochaine fois que cet Allié ou Héros se redresse, il subit 2 Dommages .",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Ce pouvoir ne s'arrête pas à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -3934,7 +4090,8 @@
       {
         "description": "Jusqu'à la fin du tour, tous les Alliés ou Héros attaquants gagnent +1 en Force et .",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -3971,12 +4128,14 @@
         "description": "Mettez La Bloqueuse en jeu dans le Monde comme un Monstre de Force 4 .",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Les Dommages que devrait infliger La Bloqueuse sont réduits à 0.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4012,12 +4171,14 @@
       {
         "description": "Quand La-Haine apparaît, vous pouvez choisir un Monstre de Niveau inférieur ou égal à 3 dans votre Défausse et le mettre en jeu. Ce Monstre gagne .",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "L'Allié de votre choix gagne ou +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4052,13 +4213,15 @@
       {
         "description": "Tant qu'il est dréssé, le Porteur de la Larvacoiffe ne peut pas être choisi par par une Action ou un pouvoir.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le pouvoir de la Larvacoiffe empêche son porteur d'être choisi pour l'application d'un pouvoir ou d'une action. Le porteur peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -4112,7 +4275,8 @@
       {
         "description": "Quand la Larve Rubis est choisie par un pouvoir d'un Allié de Niveau inférieur ou égal à 2, choisissez un autre Allié que pourrait choisir ce pouvoir à la place.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -4156,18 +4320,21 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Chaque fois que Le Corbeau Noir se redresse dans le Monde, le joueur de votre choix se défausse d'une carte de sa main au hasard.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Corbeau Noir inflige 2 Dommages à l'Allié ou Héros incliné de votre choix.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4201,13 +4368,15 @@
       {
         "description": "Jusqu'au début de votre prochain tour, tous les Monstres dans le Monde ont 1 de Force. Chaque fois qu'un joueur détruit un Monstre, son Héros perd un nombre de PV égal à la valeur d'XP de ce Monstre.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si vous jouez Le Sain Ballotin, puis que vous jouez une Charge sur un de vos Monstres, celui-ci aura 3 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -4237,17 +4406,20 @@
       {
         "description": "Si vous êtes attaquant, échangez la position de X Alliés ou Héros bloqueurs de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si vous êtes défenseur, échangez la position de X Alliés ou Héros attaquants de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Lorsque vous procédez à un échange, celui-ci doit rester légal. Un Allié ou Héros ne possédant pas ne peut pas être réaffecté comme bloqueur d'un Allié ou Héros adverse possédant .",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4285,7 +4457,8 @@
       {
         "description": "Réduisez de 1 les Dommages sur le point d'être infligés à l'Allié de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4321,18 +4494,21 @@
       {
         "description": "Bricoleur",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Chaque fois que vous devez recycler une carte, vous pouvez recyclez une carte dans la Défausse du joueur de votre choix sous sa Pioche comme si elle était dans votre propre Défausse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Ce pouvoir n'est pas limité, vous pouvez le reproduire à chaque fois que vous devez recycler une carte durant le tour, tant que Maître Pâle Jack est en jeu. Si vous devez recycler plusieurs cartes en même temps, vous pouvez choisir pour chaque carte depuis quelle défausse recycler.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -4372,7 +4548,8 @@
       {
         "description": "Malory Natouf gagne dans l'élément de votre choix jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4405,19 +4582,22 @@
       {
         "description": "Le Porteur du Marteau Outar gagne .",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Détruisez l'Armure de votre choix.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Les types d'Armures sont : Chapeau, Cape, Ceinture et Bottes.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -4493,7 +4673,8 @@
       {
         "description": "Quand Monik Bellush apparaît, choisissez un Allié ou Héros. Jusqu'à la fin du tour, les Dommages que devraient infliger cet Allié ou Héros sont réduits à 0.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4545,13 +4726,16 @@
               "zones": ["monde", "havreSac"]
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       },
       {
         "description": "La destruction du Moskitorsh fait partie du coût d'activation du pouvoir, il n'est donc pas possible d'y répondre pour détruire le Moskitorsh (avec une Flèche d'Immolation, par exemple).",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -4587,7 +4771,8 @@
         "description": "Le Mot Blessant inflige 1 Dommage à l'Allié ou Héros de votre choix. Immédiatement après l'avoir joué, vous pouvez vous défaussez de deux cartes de votre main pour garder le Mot Blessant en main au lieu de le mettre dans votre Défausse.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4619,7 +4804,8 @@
       {
         "description": "Jusqu'à la fin du tour, tous les Dommages sur le point d'être infligés aux Alliés ou Héros contrôlés par le joueur de votre choix sont réduits de 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4652,13 +4838,15 @@
         "description": "La Mutilation inflige 3 Dommages à un de vos Alliés ou Héros de votre choix. Cet Allié ou Héros gagne +3 en Force jusqu'à la fin du tour.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "On vérifie que le personnage a survécu aux dommages à la résolution de chacun des effets de la carte : un Allié avec 3 ou moins en Force sera donc détruit par ce Sort avant de bénéficier du bonus en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -4723,7 +4911,8 @@
       {
         "description": "L'Allié sur le point d'apparaître retourne dans la main de son propriétaire sans apparaître à la place. Gagnez un nombre d'XP égal à la valeur d'XP de cet Allié.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4759,7 +4948,8 @@
         "description": "Recyclez Narnya Totep depuis le Monde ou votre Havre Sac : La Force de l'Allié ou Héros de votre choix est augmentée de 1 jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4796,7 +4986,8 @@
       {
         "description": "Quand Nervoes Brakdoun attaque, le joueur défenseur perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4829,7 +5020,8 @@
       {
         "description": "Détruisez l'Allié de votre choix qui ne porte aucun Équipement.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4864,7 +5056,8 @@
       {
         "description": "Le Héros de votre choix dans le Monde ou dans son Havre Sac perd 1 PV. Son contrôleur se défausse d'une carte de sa main. N'utilisez ce pouvoir que si Ogivol Scalarcin est dans le Monde.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4902,13 +5095,15 @@
       {
         "description": "Détruisez un de vos Monstres : Le Héros de votre choix regagne un nombre de PV égal au Niveau de ce Monstre.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "La destruction du Monstre choisi fait partie du coût d'activation du pouvoir, il n'est donc pas possible d'y répondre pour le détruire (avec une Flèche d'Immolation, par exemple).",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -4947,7 +5142,8 @@
         "description": "Le joueur de votre choix gagne 1 PM jusqu'à la fin du tour. N'utilisez ce pouvoir qu'une seule fois par tour.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -4984,12 +5180,14 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Au début de votre tour, Pandhravan, Pandawushu Novice perd et gagne jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -5028,7 +5226,8 @@
       {
         "description": "Recyclez jusqu'à 3 Monstres de votre Défausse : Le Héros de votre choix regagne 2 PV par carte recyclée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5061,7 +5260,8 @@
         "description": "La Pelle Fantomatique inflige 1 Dommage à l'Allié ou Héros de votre choix. Annulez tous les bonus de Force et les pouvoirs qui durent jusqu'à la fin du tour gagnés par cet Allié ou Héros.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5094,7 +5294,8 @@
         "description": "La Pelle Ikan inflige 2 Dommages au Monstre de votre choix.",
         "elements": ["Air"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -5136,17 +5337,20 @@
       {
         "description": "La Peluche de Pleur Nicheuz ne peut pas être fabriquée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Au début de votre tour, si le Porteur de la Peluche de Pleur Nicheuz est dans le Monde, gagnez 1 XP.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tant que la Peluche de Pleur Nicheuz est dans votre Défausse, vos gains d'XP sont réduits à 0.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5182,7 +5386,8 @@
       {
         "description": "Regardez la main du joueur de votre choix et choisissez-y une carte Action ou Sort. Jusqu'au début de votre prochain tour, ce joueur ne peut pas jouer de carte portant le même nom que la carte choisie.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5218,7 +5423,8 @@
       {
         "description": "Quand le Petit Flaqueux est détruit, vous pouvez regarder la première carte de la Pioche du joueur de votre choix. Vous pouvez recyclez cette carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5255,7 +5461,8 @@
       {
         "description": "Détruisez le Phorreur Immature : Cherchez une carte Équipement de Niveau 1 dans votre Défausse et prenez-la en main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5288,13 +5495,15 @@
       {
         "description": "Inclinez l'Allé ou Héros dressé de votre choix. Tant que cet Allié ou Héros reste incliné, il gagne +1 en Force et les Dommages sur le point de lui être infligés sont réduits de 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Picole produit un modificateur continu défini valable \"Tant que l'Allié ou Héros reste incliné\". Si à n'importe quel instant l'Allié ou Héros se redresse, le pouvoir prend fin. Il n'est pas automatiquement recréé si l'Allié ou Héros s'incline à nouveau.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5330,13 +5539,15 @@
         "description": "Le Piège Sournois inflige 3 Dommages à l'Allié ou au Héros de votre choix qui vient de s'incliner ou de se redresser.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Piège Sournois ne peut pas être jouée en réaction à l'inclinaison ou le redressement d'un Allié présent dans un Havre Sac adverse : les événements qui se produisent dans un Havre Sac ne sont pas visibles pour un joueur adverse. D'autre part, vous n'auriez pas pu choisir un Allié présent dans un Havre Sac adverse.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5371,7 +5582,8 @@
         "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, Pile ou Face inflige 2 Dommages à l'Allié ou Héros de votre choix. Si vous perdez, Pile ou Face lui inflige 1 Dommage .",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5407,13 +5619,15 @@
       {
         "description": "Produisez une Ressource de l'élément de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Les types de Ressources sont : Air, Eau, Feu, Terre, et Neutre.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5458,18 +5672,22 @@
               "n": 1
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["gain-xp"]
       },
       {
         "description": "Ne jouez cette carte que quand vous venez de piocher Pleur Nycheuz. Révélez-la, puis bannissez-la.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Vous ne pouvez pas jouer Pleur Nycheuz si vous la piochez en main de départ car la partie n'a pas encore commencé à ce moment.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5503,13 +5721,15 @@
       {
         "description": "Annulez la carte Arme, Armure, Bijou, Objet ou Salle qui vient d'être jouée. Jusqu'à la fin du tour, aucune carte du même type que la carte annulée ne peut être jouée.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "La carte annulée va dans la Défausse de son propriétaire.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5541,13 +5761,15 @@
       {
         "description": "Bannissez la carte de votre choix de la Défausse d'un adversaire. Piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si vous n'avez pas de carte à bannir, vous ne pouvez pas jouer les Poubelles d'Astrub. Si la carte ne peut plus être bannie à la résolution, vous ne piochez pas.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5581,13 +5803,15 @@
         "description": "Choisissez jusqu'à deux Alliés ou Héros contrôlés par le même joueur. La Poussière Temporelle leur inflige 1 Dommage . Leur contrôleur perd 2 PA jusqu'à la fin du tour.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tant qu'au moins un des Alliés ou Héros choisis est toujours valide à la résolution de sort, la perte de PA s'applique. Si plus aucun des choix n'est valide, la perte de PA ne s'applique pas car le Sort est alors annulé.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5625,7 +5849,8 @@
       {
         "description": "Détruisez le Prespicot : Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5659,13 +5884,15 @@
         "description": "La Pression inflige 1 Dommage à l'Allié ou Héros attaquant ou bloqueur de votre choix. Piochez une carte.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si l'Allié choisi est détruit en Réaction, il n'y a plus de choix légal, vous ne piochez pas.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5700,7 +5927,8 @@
         "description": "Inclinez X Alliés que vous contrôlez : Infligez X Dommages à l'Allié de votre choix.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -5732,13 +5960,15 @@
         "description": "La Punition inflige un nombre de Dommages égal au nombre de vos cartes en main à l'Allié ou Héros de votre choix. Votre Héros perd simultanément le même nombre de PV.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Au moment où vous jouez ce Sort, il n'est déjà plus dans votre main, il ne compte donc pas dans le nombre de Dommages infligés. Si une partie des Dommages infligés au personnage choisi sont réduits en Réaction, seuls les Dommages restants sont infligés au Héros du lanceur.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5776,13 +6006,15 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand Qil Bil apparaît, il peut infliger 3 Dommages à l'Allié ou Héros incliné de votre choix.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -5830,12 +6062,14 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour. Puis, si ce joueur n'a plus de carte en main, il perd également 1 PM.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -5883,7 +6117,8 @@
       {
         "description": "Quand Rok Gnorok apparaît, le joueur de votre choix perd 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -5925,14 +6160,16 @@
         "description": "Les Ronces Multiples infligent 4 Dommages répartis comme vous le souhaitez entre n'importe quel nombre d'Alliés ou Héros de votre choix.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Vous ne pouvez pas choisir d'infliger 0 Dommages à un Allié ou à un Héros avec ce Sort. Chaque Allié ou Héros choisi doit se voir infliger au moins 1 Dommage .",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5966,7 +6203,8 @@
       {
         "description": "Tous les Équipements de Niveau inférieur ou égal à 2 dans le Monde et les Havres Sacs sont détruits.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -6032,24 +6270,28 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tant qu'il est incliné, le Serpentin ne peut pas être choisi par un joueur adverse.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si le Serpentin est dressé et choisi par une Action, et si une réaction à cette Action le fait s'incliner, alors au moment de résoudre la première Action le Serpentin est incliné et est donc un choix invalide : l'Action est annulée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       },
       {
         "description": "Le Serpentin ne peut pas être choisi pour l'application d'un pouvoir ou d'une action. Toutefois il peut toujours être désigné comme cible d'une attaque, il ne s'agit pas là d'un choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -6089,12 +6331,14 @@
       {
         "description": "Tacle",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tant qu'il est le seul bloqueur, Silas, le Loup Errant gagne +2 en Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -6131,19 +6375,22 @@
       {
         "description": "Quand Syco Fente apparaît, vous pouvez nommer une carte. Tant que Syco Fente est dans le Monde, aucun joueur ne peut jouer de carte portant ce nom.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Si Syco Fente quitte le Monde, la carte nommée peut de nouveau être jouée. Si Syco Fente quitte le jeu puis est remise en jeu ultérieurement, ce n'est plus la même carte, vous pouvez choisir de nommer une nouvelle carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       },
       {
         "description": "Le pouvoir de Syco Fente permet d'empêcher une carte d'être joué mais pas d'être mise en jeu.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -6190,12 +6437,15 @@
               "n": 1
             }
           ]
-        }
+        },
+        "coverage": "auto",
+        "mechanics": ["recycle-from-discard"]
       },
       {
         "description": "L'Allié Bouftou qui vient d'apparaître dans le Monde gagne +1 en Force et jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -6226,7 +6476,8 @@
       {
         "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, piochez deux cartes, puis défaussez-vous d'une carte de votre main. Sinon, tous les joueurs piochent une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -6263,13 +6514,15 @@
       {
         "description": "Recyclez une carte de votre main, puis piochez une carte.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Si vous n'avez pas de carte en main, vous ne pouvez pas recycler, vous ne piochez pas.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -6308,7 +6561,8 @@
       {
         "description": "Le Monstre de votre choix gagne ou +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -6346,13 +6600,15 @@
         "description": "Jusqu'au début de votre prochain tour, le prochain Allié ou Héros qui s'incline dans le Monde subit 2 Dommages .",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Si plusieurs Alliés ou Héros s'inclinent simultanément, le contrôleur du Temple Sram choisit lequel subit les Dommages.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -6396,23 +6652,27 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Tant que le Tofu Royal est dans le Monde, tous vos autres Alliés Tofu dans le Monde ont +1 en Force.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Cherchez une carte Tofu de Niveau inférieur ou égal à 2 dans votre Pioche et mettez-la en jeu inclinée, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       },
       {
         "description": "Le bonus de Force du Tofu Royal ne dure pas jusqu'à la fin du tour, mais tant qu'il est en jeu dans le Monde. Si un Tofu (un Allié de Force 1) dans le Monde en même temps que le Tofu Royal subit 1 Dommage, puis que le Tofu Royal quitte le jeu, le Tofu est détruit.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -6500,17 +6760,20 @@
       {
         "description": "Géant",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Agressivité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Le Trooll doit attaquer ou bloquer seul.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [
@@ -6551,7 +6814,8 @@
         "description": "Produisez une Ressource de l'élément de votre choix.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
-        "requiresIncline": true
+        "requiresIncline": true,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -6582,7 +6846,8 @@
       {
         "description": "Inclinez un de vos Alliés Marchands : Le joueur de votre choix pioche deux cartes, puis se défausse d'une carte de sa main.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -6617,18 +6882,21 @@
       {
         "description": "Agilité",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Quand Vil Smisse apparaît, puis au début de chacun de vos tours, choisissez un joueur adverse. La Force de Vil Smisse est réduite de 1 pour chaque carte dans la main de ce joueur.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       },
       {
         "description": "Une fois le joueur choisi, la Force de Vil Smisse est recalculée en permanence en fonction du nombre de cartes dans la main de ce joueur. Si le joueur choisi possède 6 cartes en main au début de votre tour, la Force de Vil Smisse est de 3. S'il défausse une carte par la suite, la Force de Vil Smisse passe immédiatement à 4.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "ruling"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -6664,7 +6932,8 @@
       {
         "description": "Regardez les trois cartes du dessus de la Pioche du joueur de votre choix. Mettez l'une de ces cartes dans la Défausse de ce joueur et remettez-les deux autres sur le dessus de sa Pioche dans l'ordre de votre choix.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
@@ -6696,7 +6965,8 @@
       {
         "description": "Nommez un élément et choisissez un Allié ou Héros. Jusqu'à la fin du tour, tous les Dommages de l'élément nommé sur le point d'être infligés à cet Allié ou Héros sont augmentés de 1.",
         "isOncePerTurn": false,
-        "requiresIncline": false
+        "requiresIncline": false,
+        "coverage": "uncovered"
       }
     ],
     "keywords": [],
