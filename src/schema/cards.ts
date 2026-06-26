@@ -1,0 +1,129 @@
+import { z } from "zod";
+import {
+  baseStatsSchema,
+  cardElementSchema,
+  cardMainTypeSchema,
+  cardRaritySchema,
+  extensionInfoSchema,
+  requirementsSchema,
+} from "./primitives";
+import { cardEffectSchema, cardKeywordInfoSchema } from "./effects";
+
+// Champs partagés par toutes les cartes (mainType redéfini par chaque sous-type).
+export const baseCardSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  mainType: cardMainTypeSchema,
+  subTypes: z.array(z.string()),
+  extension: extensionInfoSchema,
+  rarity: cardRaritySchema,
+  stats: baseStatsSchema.optional(),
+  effects: z.array(cardEffectSchema).optional(),
+  keywords: z.array(cardKeywordInfoSchema).optional(),
+  experience: z.number().optional(),
+  artists: z.array(z.string()),
+  notes: z.array(z.string()).optional(),
+  flavor: z
+    .object({ text: z.string(), attribution: z.string().optional() })
+    .optional(),
+  imageUrl: z.string().optional(),
+  url: z.string().optional(),
+});
+
+const heroFaceSchema = z.object({
+  stats: baseStatsSchema,
+  effects: z.array(cardEffectSchema),
+  keywords: z.array(cardKeywordInfoSchema),
+});
+
+export const allyCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Allié"),
+  stats: baseStatsSchema,
+  race: z.string().optional(),
+  tribe: z.string().optional(),
+});
+
+export const actionCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Action"),
+  effects: z.array(cardEffectSchema),
+  spellSchool: z.string().optional(),
+});
+
+export const equipmentCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Équipement"),
+  equipmentType: z.enum([
+    "Arme",
+    "Armure",
+    "Bijou",
+    "Bouclier",
+    "Dofus",
+    "Familier",
+    "Objet",
+  ]),
+  durability: z.number().optional(),
+  requirements: requirementsSchema.optional(),
+});
+
+export const zoneCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Zone"),
+  effects: z.array(cardEffectSchema),
+  zoneType: z.string().optional(),
+});
+
+export const roomCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Salle"),
+  effects: z.array(cardEffectSchema),
+  roomType: z.string().optional(),
+});
+
+export const dofusCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Dofus"),
+  effects: z.array(cardEffectSchema),
+  requirements: requirementsSchema.optional(),
+});
+
+export const heroCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Héros"),
+  class: z.string(),
+  level: z.number().optional(),
+  recto: heroFaceSchema,
+  verso: heroFaceSchema.optional(),
+});
+
+export const protectorCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Protecteur"),
+  stats: baseStatsSchema,
+  effects: z.array(cardEffectSchema),
+  guardianType: z.string().optional(),
+});
+
+export const havenBagCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Havre-Sac"),
+  effects: z.array(cardEffectSchema),
+  capacity: z.number().optional(),
+});
+
+export const elementalAllyCardSchema = baseCardSchema.extend({
+  mainType: z.literal("Allié Élémentaire"),
+  stats: baseStatsSchema,
+  elements: z.array(cardElementSchema),
+  elementalAffinity: z
+    .object({
+      primary: cardElementSchema,
+      secondary: cardElementSchema.optional(),
+    })
+    .optional(),
+});
+
+export const cardSchema = z.discriminatedUnion("mainType", [
+  allyCardSchema,
+  actionCardSchema,
+  equipmentCardSchema,
+  zoneCardSchema,
+  roomCardSchema,
+  dofusCardSchema,
+  heroCardSchema,
+  protectorCardSchema,
+  havenBagCardSchema,
+  elementalAllyCardSchema,
+]);
