@@ -397,6 +397,22 @@ describe("deckStore", () => {
       expect(entries[0].card.id).toBe("tofu-dofus-collection");
       expect(entries[0].quantity).toBe(3);
     });
+
+    it("setEntryEdition devrait ignorer une cible qui n'est pas une réimpression", () => {
+      const tofu = createMockAllyCard({ id: "tofu-incarnam", name: "Tofu" });
+      const bouftou = createMockAllyCard({
+        id: "bouftou-amakna",
+        name: "Bouftou",
+      });
+      deckStore.addCard(tofu, 2);
+
+      deckStore.setEntryEdition("tofu-incarnam", false, bouftou);
+
+      const entries = deckStore.currentDeck!.cards;
+      expect(entries.length).toBe(1);
+      expect(entries[0].card.id).toBe("tofu-incarnam");
+      expect(entries[0].quantity).toBe(2);
+    });
   });
 
   // ---- removeCard ----

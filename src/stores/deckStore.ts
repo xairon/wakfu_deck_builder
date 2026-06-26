@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import type { Card, Deck, DeckCard } from "@/types/cards";
 import { DECK_CONSTRAINTS } from "@/config/cards";
 import { isUniqueCard, maxCopiesForCard } from "@/utils/cardRules";
+import { sameCanonicalCard } from "@/utils/cardIdentity";
 import { validateDeck, getCardCopies } from "@/validators/deck";
 import { useCardStore } from "./cardStore";
 import { namespacedKey } from "@/services/storageNamespace";
@@ -621,8 +622,8 @@ export const useDeckStore = defineStore("deck", () => {
       (c) => c.card.id === cardId && !!c.isReserve === isReserve,
     );
     if (!src) return;
+    if (!sameCanonicalCard(src.card, newPrinting)) return;
 
-    const prepared = prepareCardForDeck(newPrinting);
     const existing = currentDeck.value.cards.find(
       (c) => c.card.id === newPrinting.id && !!c.isReserve === isReserve,
     );
@@ -631,7 +632,7 @@ export const useDeckStore = defineStore("deck", () => {
       existing.quantity += src.quantity;
       currentDeck.value.cards.splice(currentDeck.value.cards.indexOf(src), 1);
     } else {
-      src.card = prepared;
+      src.card = prepareCardForDeck(newPrinting);
     }
 
     currentDeck.value.updatedAt = new Date().toISOString();
