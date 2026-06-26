@@ -641,7 +641,18 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "returnToHand",
+              "controller": "opponent",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["return-to-hand"]
       },
       {
         "description": "L'Allié ou Héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
@@ -688,7 +699,18 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "returnToHand",
+              "controller": "opponent",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["return-to-hand"]
       },
       {
         "description": "L'Allié ou héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
@@ -895,7 +917,18 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "returnToHand",
+              "controller": "opponent",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["return-to-hand"]
       }
     ],
     "keywords": [],
@@ -7135,7 +7168,19 @@
         "description": "Inclinez l'Allié ou Héros adverse de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "tapTarget",
+              "heroes": true,
+              "controller": "opponent",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-target"]
       }
     ],
     "keywords": [],

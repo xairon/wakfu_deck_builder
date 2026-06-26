@@ -142,6 +142,24 @@ export const MECHANICS: Mechanic[] = [
     category: "contrôle",
     glossary: "Réduit tous les Dommages à 0 temporairement.",
   },
+  {
+    id: "tap-target",
+    label: "Inclinaison (cible)",
+    category: "tempo",
+    glossary: "Incline un Allié (ou Héros) ciblé.",
+  },
+  {
+    id: "untap-target",
+    label: "Redressement (cible)",
+    category: "tempo",
+    glossary: "Redresse un Allié (ou Héros) ciblé.",
+  },
+  {
+    id: "return-to-hand",
+    label: "Renvoi en main (cible)",
+    category: "contrôle",
+    glossary: "Renvoie un Allié ciblé dans la main de son propriétaire.",
+  },
 ];
 
 /** op compilée → mécanique (déterministe, 1:1). */
@@ -167,6 +185,9 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   combatModSelf: "combat-mod-self",
   buffForceAlliesMondeTurn: "buff-force-allies-monde",
   globalDamageShield: "global-damage-shield",
+  tapTarget: "tap-target",
+  untapTarget: "untap-target",
+  returnToHand: "return-to-hand",
 };
 
 /** Tags uniques dérivés d'une liste d'ops, dans l'ordre d'apparition. */

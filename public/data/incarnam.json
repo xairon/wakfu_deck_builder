@@ -13278,7 +13278,18 @@
         "description": "Redressez l'Allié ou Héros de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "untapTarget",
+              "heroes": true,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["untap-target"]
       }
     ],
     "keywords": [

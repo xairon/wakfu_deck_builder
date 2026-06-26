@@ -8490,7 +8490,18 @@
         "description": "Quand Jan Khess apparaît, vous pouvez incliner l'Allié de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "tapTarget",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-target"]
       },
       {
         "description": "Tant que Jan Khess est dans le Monde, cet Allié ne peut pas se redresser.",

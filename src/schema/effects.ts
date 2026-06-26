@@ -3,6 +3,7 @@ import { cardElementSchema, cardKeywordSchema } from "./primitives";
 import { mechanicTagSchema } from "./mechanics";
 
 const zonesSchema = z.array(z.enum(["monde", "havreSac"]));
+const controllerSchema = z.enum(["self", "opponent"]);
 
 export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("gainXp"), n: z.number() }),
@@ -65,6 +66,24 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     n: z.union([z.number(), z.literal("heroLevel")]),
   }),
   z.object({ op: z.literal("globalDamageShield") }),
+  z.object({
+    op: z.literal("tapTarget"),
+    heroes: z.boolean().optional(),
+    controller: controllerSchema.optional(),
+    zones: zonesSchema,
+  }),
+  z.object({
+    op: z.literal("untapTarget"),
+    heroes: z.boolean().optional(),
+    controller: controllerSchema.optional(),
+    zones: zonesSchema,
+  }),
+  z.object({
+    op: z.literal("returnToHand"),
+    heroes: z.boolean().optional(),
+    controller: controllerSchema.optional(),
+    zones: zonesSchema,
+  }),
 ]);
 
 export const staticAbilitySchema = z.discriminatedUnion("kind", [

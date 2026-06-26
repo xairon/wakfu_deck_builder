@@ -370,7 +370,13 @@
                       ? "la Zone"
                       : "l'Équipement"
                 } à détruire`
-              : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+              : store.effectTargeting.op.op === "tapTarget"
+                ? "choisis la cible à incliner"
+                : store.effectTargeting.op.op === "untapTarget"
+                  ? "choisis la cible à redresser"
+                  : store.effectTargeting.op.op === "returnToHand"
+                    ? "choisis la cible à renvoyer en main"
+                    : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

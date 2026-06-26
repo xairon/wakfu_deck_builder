@@ -22,6 +22,9 @@ export const mechanicTagSchema = z.enum([
   "combat-mod-self",
   "buff-force-allies-monde",
   "global-damage-shield",
+  "tap-target",
+  "untap-target",
+  "return-to-hand",
 ]);
 
 export const mechanicCategorySchema = z.enum([

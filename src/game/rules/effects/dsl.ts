@@ -190,6 +190,50 @@ function parseSentence(
       : ["monde"];
     return { op: "destroyTarget", what, zones };
   }
+  // « Inclinez / Redressez l'Allié (ou Héros) [adverse] de votre choix
+  //   [dans le Monde][ ou dans un Havre-Sac] » → tapTarget / untapTarget.
+  // « adverse » → contrôleur opponent ; sinon n'importe quel contrôleur. La
+  // TOTALITÉ de la phrase doit correspondre (le `$` rejette toute condition
+  // résiduelle : « de Force ≤ 3 », « qui vient d'apparaître », « attaquant »…).
+  m = sentence.match(
+    /^(incline|redresse)[zr] l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m)
+    return {
+      op: m[1] === "incline" ? "tapTarget" : "untapTarget",
+      ...(m[2] ? { heroes: true } : {}),
+      ...(m[3] ? { controller: "opponent" } : {}),
+      // sans clause Havre-Sac, la cible inclinable est dans le Monde (comme
+      // destroyTarget) — pas le défaut « tout le jeu » de targetZones.
+      zones: m[5] ? ["monde", "havreSac"] : ["monde"],
+    };
+  // « Inclinez / Redressez un de vos Alliés (ou Héros) [dans le Monde] … »
+  // → tapTarget / untapTarget contrôleur self. Pas de famille ni de condition
+  // (« un de vos Alliés Sram », « : effet » sont hors champ — rejetés par `$`
+  // et par l'absence de `:`).
+  m = sentence.match(
+    /^(incline|redresse)[zr] un de vos allies( ou heros)?( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m)
+    return {
+      op: m[1] === "incline" ? "tapTarget" : "untapTarget",
+      ...(m[2] ? { heroes: true } : {}),
+      controller: "self",
+      zones: m[4] ? ["monde", "havreSac"] : ["monde"],
+    };
+  // « Renvoyez l'Allié (ou Héros) [adverse] de votre choix dans la main de son
+  //   propriétaire » → returnToHand. « adverse » → opponent. La cible retourne
+  //   dans la main de SON propriétaire (résolution dans targeting.ts).
+  m = sentence.match(
+    /^renvoyez l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix dans la main de son proprietaire$/,
+  );
+  if (m)
+    return {
+      op: "returnToHand",
+      ...(m[1] ? { heroes: true } : {}),
+      ...(m[2] ? { controller: "opponent" } : {}),
+      zones: ["monde", "havreSac"],
+    };
   // « Infligez N Dommages à l'Allié de votre choix » (impératif) ou
   // « [La carte] inflige N Dommages à l'Allié ou Héros de votre choix … »
   m = sentence.match(

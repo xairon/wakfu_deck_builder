@@ -9,7 +9,7 @@ import type { DraftEvent, InstanceId } from "../../types/events";
 import type { Seat } from "../../types/zones";
 import { otherSeat } from "../../types/zones";
 import type { CombatStance, DamageMod, RuleEvent, RulesCtx } from "../types";
-import { discard, incCounter } from "../../engine/verbs";
+import { discard, incCounter, move, tap, untap } from "../../engine/verbs";
 import { normWord, xpValue } from "../cardAttrs";
 import { effectiveForce } from "../stats";
 import { reduceDamage } from "./damageMods";
@@ -21,6 +21,9 @@ export type TargetingOp = Extract<
   | { op: "damageTarget" }
   | { op: "healHeroTarget" }
   | { op: "buffForceTarget" }
+  | { op: "tapTarget" }
+  | { op: "untapTarget" }
+  | { op: "returnToHand" }
 >;
 
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
@@ -28,14 +31,30 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "destroyTarget" ||
     op.op === "damageTarget" ||
     op.op === "healHeroTarget" ||
-    op.op === "buffForceTarget"
+    op.op === "buffForceTarget" ||
+    op.op === "tapTarget" ||
+    op.op === "untapTarget" ||
+    op.op === "returnToHand"
   );
 }
 
-/** Cibles légales d'une op (n'importe quel contrôleur). */
-export function effectTargetIds(ctx: RulesCtx, op: TargetingOp): InstanceId[] {
+/**
+ * Cibles légales d'une op. `actor` (le siège qui résout) sert au filtre de
+ * contrôleur des ops « un de vos … » (self) / « … adverse » (opponent) ;
+ * omis, aucun filtre de contrôleur n'est appliqué (rétro-compatible).
+ */
+export function effectTargetIds(
+  ctx: RulesCtx,
+  op: TargetingOp,
+  actor?: Seat,
+): InstanceId[] {
   const zones: ("monde" | "havreSac")[] =
     op.op === "healHeroTarget" ? ["monde", "havreSac"] : op.zones;
+  // ops à filtre de contrôleur (« vos » / « adverse »)
+  const controller =
+    op.op === "tapTarget" || op.op === "untapTarget" || op.op === "returnToHand"
+      ? op.controller
+      : undefined;
   const out: InstanceId[] = [];
   for (const inst of Object.values(ctx.state.instances)) {
     if (!zones.includes(inst.location.zone as "monde" | "havreSac")) continue;
@@ -51,6 +70,11 @@ export function effectTargetIds(ctx: RulesCtx, op: TargetingOp): InstanceId[] {
     // famille requise (« le Monstre de votre choix »)
     if (ok && op.op === "buffForceTarget" && op.sub) {
       ok = (card.subTypes ?? []).some((s) => normWord(s) === op.sub);
+    }
+    // filtre de contrôleur (« un de vos … » / « … adverse »)
+    if (ok && controller && actor !== undefined) {
+      const want = controller === "self" ? actor : otherSeat(actor);
+      ok = inst.controller === want;
     }
     if (ok) out.push(inst.instanceId);
   }
@@ -174,6 +198,80 @@ export function resolveDamageTarget(
     log.push(...destroy.log);
   }
   return { events, log, ruleEvents };
+}
+
+/**
+ * « Inclinez l'Allié (ou Héros) de votre choix » : incline la cible
+ * (SET_ORIENTATION tapped). No-op si déjà inclinée (« Incliner » du glossaire
+ * = passer d'une carte dressée à inclinée ; sans effet sur une carte inclinée).
+ */
+export function resolveTapTarget(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  if (inst.orientation !== "upright")
+    return {
+      events: [],
+      log: [`${nameOf(ctx, targetId)} est déjà incliné.`],
+    };
+  return {
+    events: [tap(actor, targetId)],
+    log: [`${nameOf(ctx, targetId)} est incliné.`],
+  };
+}
+
+/**
+ * « Redressez l'Allié (ou Héros) de votre choix » : redresse la cible
+ * (SET_ORIENTATION upright). No-op si déjà dressée.
+ */
+export function resolveUntapTarget(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  if (inst.orientation !== "tapped")
+    return {
+      events: [],
+      log: [`${nameOf(ctx, targetId)} est déjà dressé.`],
+    };
+  return {
+    events: [untap(actor, targetId)],
+    log: [`${nameOf(ctx, targetId)} est redressé.`],
+  };
+}
+
+/**
+ * « Renvoyez l'Allié de votre choix dans la main de son propriétaire » : la
+ * cible retourne dans la MAIN DE SON PROPRIÉTAIRE (inst.owner), pas du
+ * contrôleur (502 / 501.2).
+ */
+export function resolveReturnToHand(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  return {
+    events: [
+      move(actor, {
+        instanceId: targetId,
+        from: inst.location,
+        to: { zone: "main", owner: inst.owner },
+        position: { at: "top" },
+        visibility: { faceDown: false, visibleTo: [inst.owner] },
+        preservesIdentity: false,
+      }),
+    ],
+    log: [
+      `${nameOf(ctx, targetId)} retourne dans la main de son propriétaire.`,
+    ],
+  };
 }
 
 /** « gagne +N en Force jusqu'à la fin du tour » — token purgé en fin de tour. */
