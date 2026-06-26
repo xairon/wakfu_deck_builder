@@ -93,8 +93,30 @@ function parseSentence(
     /^recycle[zr] (une|deux|trois|\d+) cartes?( de votre defausse)?$/,
   );
   if (m) return { op: "recycleFromDiscard", n: toNumber(m[1]) };
+  // « Recyclez jusqu'à N carte(s) [Élément] [de votre Défausse] » : l'interaction
+  // de pioche est annulable (0..N), donc fidèle à l'op exacte. Le mot d'Élément
+  // (feu/eau/terre/air/neutre) est stocké capitalisé, comme les autres Éléments.
+  m = sentence.match(
+    /^recycle[zr] jusqu['’]a (une|deux|trois|\d+) cartes?(?: \((feu|eau|terre|air|neutre)\))?( de votre defausse)?$/,
+  );
+  if (m) {
+    const element = m[2]
+      ? m[2].charAt(0).toUpperCase() + m[2].slice(1)
+      : undefined;
+    return {
+      op: "recycleFromDiscard",
+      n: toNumber(m[1]),
+      ...(element ? { element } : {}),
+    };
+  }
   m = sentence.match(
     /^defaussez[- ]vous d['’ ]?\s?(une|deux|trois|\d+) cartes?(?: de votre main)?$/,
+  );
+  if (m) return { op: "discardFromHand", n: toNumber(m[1]) };
+  // « Défaussez-vous de jusqu'à N carte(s) » : défausse annulable (0..N) →
+  // fidèle à discardFromHand exact.
+  m = sentence.match(
+    /^defaussez[- ]vous de jusqu['’]a (une|deux|trois|\d+) cartes?(?: de votre main)?$/,
   );
   if (m) return { op: "discardFromHand", n: toNumber(m[1]) };
   // « Cherchez un [type] [Famille] [de Niveau ≤ N] dans votre Pioche,
