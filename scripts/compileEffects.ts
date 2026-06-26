@@ -148,6 +148,7 @@ function classifyKinds(card: RawCard): void {
   const notes = new Set((card.notes ?? []).map(normText).filter(Boolean));
   const visit = (effects: RawEffect[] | undefined) => {
     for (const e of effects ?? []) {
+      delete e.coverage; // efface toute couverture persistée : seule la boucle d'overrides de CE run pourra reposer "manual"
       const t = normText(e?.description);
       if (!t) continue;
       if (notes.has(t) || ERRATA_RE.test(t)) {
@@ -245,8 +246,10 @@ function promoteTextKeywords(card: RawCard): void {
 
 /**
  * Passe finale : pose un statut de couverture EXPLICITE sur chaque effet et
- * dérive ses mécaniques depuis les ops compilées. `manual` est déjà posé par
- * la boucle d'overrides ; le reste est dérivé de l'état final (kind/compiled).
+ * dérive ses mécaniques depuis les ops compilées. La couverture persistée est
+ * effacée en amont dans `classifyKinds`, donc le seul `manual` présent ici est
+ * celui que la boucle d'overrides a posé durant CE run ; le reste est dérivé de
+ * l'état final (kind/compiled).
  */
 function assignCoverageAndMechanics(card: RawCard): void {
   const visit = (effects: RawEffect[] | undefined) => {
