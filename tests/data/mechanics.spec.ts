@@ -1,37 +1,28 @@
 import { describe, it, expect } from "vitest";
 import { MECHANICS, OP_TO_MECHANIC, mechanicsForOps } from "@/data/mechanics";
-import type { CompiledEffectOp, MechanicTag } from "@/types/cards";
+import { compiledEffectOpSchema } from "@/schema";
+import type { MechanicTag } from "@/types/cards";
 
-// Les 21 ops du DSL (CompiledEffectOp). Toute nouvelle op DOIT être ajoutée ici
-// ET dans OP_TO_MECHANIC (ce test échoue sinon).
-const ALL_OPS: CompiledEffectOp["op"][] = [
-  "gainXp",
-  "draw",
-  "heroGainPv",
-  "heroLosePv",
-  "damageOppHero",
-  "havreSacGainResistance",
-  "destroyTarget",
-  "damageTarget",
-  "healHeroTarget",
-  "buffForceTarget",
-  "buffForceSelf",
-  "recycleFromDiscard",
-  "discardFromHand",
-  "searchDeck",
-  "shuffleDeck",
-  "destroySelf",
-  "loseStatTurn",
-  "tapSelf",
-  "combatModSelf",
-  "buffForceAlliesMondeTurn",
-  "globalDamageShield",
-];
+// Ensemble AUTORITAIRE des ops du DSL, dérivé du schéma (source de vérité) :
+// chaque option de l'union discriminée est un z.object dont la valeur littérale
+// `op` est lisible via `opt.shape.op.value` (Zod v4). Ainsi, ajouter une op au
+// schéma sans l'ajouter à OP_TO_MECHANIC (ou l'inverse) FAIT échouer le test
+// d'égalité ci-dessous — la garantie d'exhaustivité est réelle, pas un sous-set.
+const ALL_OPS: string[] = compiledEffectOpSchema.options.map(
+  (opt) => opt.shape.op.value,
+);
 
 describe("registre de mécaniques", () => {
+  it("devrait mapper exactement les ops du schéma (exhaustivité)", () => {
+    expect(Object.keys(OP_TO_MECHANIC).sort()).toEqual([...ALL_OPS].sort());
+  });
+
   it("devrait mapper chaque op du DSL vers une mécanique", () => {
     for (const op of ALL_OPS) {
-      expect(OP_TO_MECHANIC[op], `op ${op}`).toBeTruthy();
+      expect(
+        OP_TO_MECHANIC[op as keyof typeof OP_TO_MECHANIC],
+        `op ${op}`,
+      ).toBeTruthy();
     }
   });
 
