@@ -93,7 +93,7 @@ interface RawEffect {
   compiled?: unknown;
   requiresIncline?: boolean;
   kind?: "ruling" | "errata";
-  coverage?: "auto" | "manual" | "uncovered" | "ruling" | "keyword";
+  coverage?: "auto" | "manual" | "uncovered" | "ruling" | "keyword" | "trait";
   mechanics?: string[];
 }
 interface RawStats {
