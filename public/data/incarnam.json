@@ -2055,7 +2055,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde.",
@@ -3317,7 +3317,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que le Chêne Mou est dans le Monde, vos autres Monstres ont +1 en Force.",
@@ -3668,7 +3668,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Corailleur apparaît, vous pouvez détruire l'Équipement de votre choix.",
@@ -4011,7 +4011,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois qu'un Allié ou Héros inflige des Dommages au Crocabulia, le Crocabulia lui inflige 3 Dommages .",
@@ -4144,7 +4144,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Au début de votre tour, votre Héros perd 3 PV ou détruisez le Dark Vlad.",
@@ -4325,7 +4325,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Démon VI apparaît, le joueur de votre choix vous révèle les cartes de sa main et défausse deux cartes de votre choix.",
@@ -4380,7 +4380,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand la Démone XXIV apparaît, vous pouvez détruire l'Allié de Force inférieure ou égale à 5 de votre choix.",
@@ -4563,7 +4563,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Djakky Chwan apparaît, chaque joueur peut redresser un Allié de son choix.",
@@ -4579,7 +4579,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Xavier Houssin (Xa)"],
     "notes": [
@@ -5131,7 +5136,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le prochain Allié ou Héros qui s'incline subit 4 Dommages",
@@ -8218,7 +8223,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Échangez la position de Kriss la Krass avec celle de votre Héros ou d'un autre de vos Alliés.",
@@ -8255,7 +8260,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [
@@ -8449,7 +8459,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Inclinez l'Allié de Force intérieure ou égale à 3 de votre choix.",
@@ -8458,7 +8468,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Souillon (Maliki)"],
     "notes": [],
@@ -8992,7 +9007,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Les Dommages infligés au Bourreau des Brumes sont réduits de 2 lorsqu'il est dréssé.",
@@ -9001,7 +9016,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Souillon (Maliki)"],
     "notes": [],
@@ -9036,7 +9056,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois qu'un autre joueur joue une carte Équipement, vous pouvez piocher une carte.",
@@ -9045,7 +9065,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Souillon (Maliki)"],
     "notes": [],
@@ -9298,7 +9323,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Maître Corbac apparaît, le joueur de votre choix perd 4 PA jusqu'à la fin du tour.",
@@ -9683,7 +9708,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Minotoror ne peut pas être bloqué par des Alliés ou Héros de Force inférieure ou égale à 4.",
@@ -9840,7 +9865,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Moon inflige 3 Dommages à l'Allié ou Héros de votre choix.",
@@ -9868,6 +9893,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "experience": 2,
@@ -12225,7 +12254,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "La Force du Roi Gélax est toujours égale au nombre d'Alliés Gelées que vous contrôlez.",
@@ -12281,7 +12310,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Rolac le Bandit est détruit lorsqu'il est attaquant ou bloqueur, il inflige sa Force en Dommages à l'Allié attaquant ou Bloqueur de votre choix.",
@@ -12291,7 +12320,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Souillon (Maliki)"],
     "notes": [],
@@ -13607,7 +13641,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand un de vos Tofus est détruit, vous pouvez payer pour mettre en jeu le Tofu Céleste de votre main. Il apparaît incliné.",

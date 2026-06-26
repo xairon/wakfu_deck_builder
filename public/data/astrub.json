@@ -681,7 +681,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "L'Allié Tofu de votre choix gagne jusqu'à la fin du tour.",
@@ -691,7 +691,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Wuye"],
     "notes": [],
@@ -876,7 +881,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Black Wabbit apparaît dans le Monde, vous pouvez l'incliner. Si vous le faites, l'Allié de votre choix retourne dans la main de son propriétaire.",
@@ -885,7 +890,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Aimé Jalon"],
     "notes": [],
@@ -1613,7 +1623,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Chuck Maurice attaque, vous pouvez incliner l'Allié de votre choix que contrôle le joueur défenseur.",
@@ -1760,7 +1770,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Crapaud à Moustache apparaît, il ne se passe rien.",
@@ -2104,7 +2114,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Démon XII apparaît dans le Monde, tous vos Alliés et Héros gagnent jusqu'à la fin du tour.",
@@ -2160,7 +2170,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Démon XVIII apparaît dans le Monde, vous pouvez chercher une carte dans la Pioche du joueur de votre choix et la bannir. Si vous le faites, mélangez ensuite sa Pioche.",
@@ -2224,7 +2234,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand un joueur adverse déclare une attaque, vous pouvez redresser Dhavid Boivit.",
@@ -2233,7 +2243,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
@@ -2558,7 +2573,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Recyclez une carte de votre Défausse. Dryana Karamboul inflige 1 Dommage de l'élément de la carte recyclée à l'Allié ou Héros de votre choix.",
@@ -2567,7 +2582,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Vincent Joubert"],
     "notes": [],
@@ -3229,7 +3249,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que vous contrôlez au moins un autre Allié d'élément , , ou dans le Monde, Gourlo le Terrible gagne dans l'élément correspondant.",
@@ -4321,7 +4341,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois que Le Corbeau Noir se redresse dans le Monde, le joueur de votre choix se défausse d'une carte de sa main au hasard.",
@@ -4337,7 +4357,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 3,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -5181,7 +5206,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Au début de votre tour, Pandhravan, Pandawushu Novice perd et gagne jusqu'à la fin du tour.",
@@ -5195,6 +5220,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Feu"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "experience": 1,
@@ -6007,7 +6036,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Qil Bil apparaît, il peut infliger 3 Dommages à l'Allié ou Héros incliné de votre choix.",
@@ -6063,7 +6092,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour. Puis, si ce joueur n'a plus de carte en main, il perd également 1 PM.",
@@ -6271,7 +6300,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'il est incliné, le Serpentin ne peut pas être choisi par un joueur adverse.",
@@ -6294,7 +6323,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "artists": ["Ankama"],
     "notes": [
       "Si le Serpentin est dressé et choisi par une Action, et si une réaction à cette Action le fait s'incliner, alors au moment de résoudre la première Action le Serpentin est incliné et est donc un choix invalide : l'Action est annulée.",
@@ -6332,7 +6366,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'il est le seul bloqueur, Silas, le Loup Errant gagne +2 en Force.",
@@ -6341,7 +6375,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Grégory Charlet"],
     "notes": [],
@@ -6653,7 +6692,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que le Tofu Royal est dans le Monde, tous vos autres Alliés Tofu dans le Monde ont +1 en Force.",
@@ -6761,13 +6800,13 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Trooll doit attaquer ou bloquer seul.",
@@ -6780,6 +6819,10 @@
       {
         "name": "Géant",
         "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      },
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
       }
     ],
     "experience": 2,
@@ -6883,7 +6926,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Vil Smisse apparaît, puis au début de chacun de vos tours, choisissez un joueur adverse. La Force de Vil Smisse est réduite de 1 pour chaque carte dans la main de ce joueur.",
@@ -6899,7 +6942,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 3,
     "artists": ["Aimé Jalon"],
     "notes": [

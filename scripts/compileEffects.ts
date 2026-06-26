@@ -25,6 +25,7 @@ import {
 } from "../src/game/rules/effects/dsl";
 import { CARD_SCRIPTS } from "../src/game/rules/effects/cardScripts";
 import { OP_TO_MECHANIC } from "../src/data/mechanics";
+import { GLOSSARY } from "../src/data/glossary";
 import { cardSchema } from "../src/schema";
 
 const DATA_DIR = join(__dirname, "..", "public", "data");
@@ -84,6 +85,7 @@ function normalizeElements(node: unknown): void {
 interface RawKeyword {
   name?: string;
   description?: string;
+  value?: number;
   elements?: unknown[];
 }
 interface RawEffect {
@@ -91,7 +93,7 @@ interface RawEffect {
   compiled?: unknown;
   requiresIncline?: boolean;
   kind?: "ruling" | "errata";
-  coverage?: "auto" | "manual" | "uncovered" | "ruling";
+  coverage?: "auto" | "manual" | "uncovered" | "ruling" | "keyword";
   mechanics?: string[];
 }
 interface RawStats {
@@ -231,22 +233,73 @@ function extractBagStats(card: RawCard): void {
   }
 }
 
+/** Définition officielle d'un terme du glossaire (clé normalisée). */
+const GLOSSARY_BY_TERM = new Map(
+  GLOSSARY.map((g) => [normText(g.term), g.definition]),
+);
+
 /**
- * Promeut les mots-clés détectés par texte d'effet en mots-clés STRUCTURÉS
- * (idée volée à un schéma communautaire) — ex. l'effet « Géant ».
+ * Tokens mots-clés déversés dans `effects[]` par le scrape. Clé = description
+ * normalisée (normText). `valued` : le token porte un nombre (« Capture : N »,
+ * « Éthérée N »). `glossaryTerm` : terme à chercher dans GLOSSARY (normalisé) ;
+ * absent → pas de définition connue (ex. Éthérée).
  */
-function promoteTextKeywords(card: RawCard): void {
-  const hasGeantText = (card.effects ?? []).some(
-    (e) => String(e?.description ?? "").trim() === "Géant",
-  );
-  if (!hasGeantText) return;
-  card.keywords = card.keywords ?? [];
-  if (!card.keywords.some((k) => k?.name === "Géant")) {
-    card.keywords.push({
-      name: "Géant",
-      description: "Répartit sa Force entre tous ses bloqueurs (6135).",
-    });
-  }
+const KEYWORD_TOKENS: Record<
+  string,
+  { name: string; glossaryTerm?: string; valued?: boolean }
+> = {
+  geant: { name: "Géant", glossaryTerm: "geant" },
+  agilite: { name: "Agilité", glossaryTerm: "agilite" },
+  agressivite: { name: "Agressivité", glossaryTerm: "agressivite" },
+  tacle: { name: "Tacle", glossaryTerm: "tacle" },
+  renfort: { name: "Renfort", glossaryTerm: "renfort" },
+  defense: { name: "Défense", glossaryTerm: "defense" },
+  fantome: { name: "Fantôme", glossaryTerm: "fantome" },
+  capture: { name: "Capture", glossaryTerm: "capture", valued: true },
+  // Éthérée : absent du glossaire snapshot → pas de définition (à récupérer).
+  etheree: { name: "Éthérée", valued: true },
+};
+
+/**
+ * Promeut les tokens mots-clés (description = un mot-clé seul, ou « Mot : N » /
+ * « Mot N » pour les valués) en mots-clés STRUCTURÉS dans `keywords[]`, avec
+ * leur valeur éventuelle et leur définition glossaire, et marque l'effet source
+ * `coverage:"keyword"`. L'entrée d'effet reste (indices stables → CARD_SCRIPTS).
+ * Dédup par nom → idempotent. Doit tourner APRÈS classifyKinds (qui efface
+ * coverage) et avant assignCoverageAndMechanics (qui préserve "keyword").
+ */
+function promoteKeywords(card: RawCard): void {
+  const visit = (effects: RawEffect[] | undefined) => {
+    for (const e of effects ?? []) {
+      if (e.kind) continue; // ruling/errata : pas un token mot-clé
+      const t = normText(e?.description);
+      if (!t) continue;
+      // Match : mot seul, ou « mot : N » / « mot N » pour les valués.
+      let token = KEYWORD_TOKENS[t];
+      let value: number | undefined;
+      if (!token) {
+        const m = t.match(/^([a-zéèêàùûôîç]+)\s*:?\s*(\d+)$/);
+        if (m && KEYWORD_TOKENS[m[1]]?.valued) {
+          token = KEYWORD_TOKENS[m[1]];
+          value = Number.parseInt(m[2], 10);
+        }
+      }
+      if (!token) continue;
+      card.keywords = card.keywords ?? [];
+      if (!card.keywords.some((k) => k?.name === token!.name)) {
+        const description = token.glossaryTerm
+          ? (GLOSSARY_BY_TERM.get(token.glossaryTerm) ?? "")
+          : "";
+        const kw: RawKeyword = { name: token.name, description };
+        if (value !== undefined) kw.value = value;
+        card.keywords.push(kw);
+      }
+      e.coverage = "keyword";
+    }
+  };
+  visit(card.effects);
+  visit(card.recto?.effects);
+  visit(card.verso?.effects);
 }
 
 /**
@@ -259,7 +312,7 @@ function promoteTextKeywords(card: RawCard): void {
 function assignCoverageAndMechanics(card: RawCard): void {
   const visit = (effects: RawEffect[] | undefined) => {
     for (const e of effects ?? []) {
-      if (e.coverage !== "manual") {
+      if (e.coverage !== "manual" && e.coverage !== "keyword") {
         e.coverage = e.kind ? "ruling" : e.compiled ? "auto" : "uncovered";
       }
       const ops = (e.compiled as { ops?: { op: string }[] } | undefined)?.ops;
@@ -295,8 +348,8 @@ for (const file of EXTENSION_FILES) {
     normalizeElements(card);
     card.keywords = cleanKeywords(card.keywords);
     extractBagStats(card);
-    promoteTextKeywords(card);
     classifyKinds(card);
+    promoteKeywords(card);
     const name = String(card.name ?? "");
     const element = sourceElementOf(card);
     compileEffects(

@@ -25,7 +25,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que l'Abraknyde Ancestral est dans le Monde, tous vos autres Alliés et Héros gagnent +1 en Force et la Force de tous les Alliés et Héros adverses est réduite de 1, jusqu'à un minimun de 1.",
@@ -75,7 +75,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Aermyne Scalptaras apparaît dans le Monde, l'adversaire de votre choix perd 1 PA jusqu'à la fin du tour.",
@@ -84,7 +84,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
@@ -148,7 +153,7 @@
         "description": "Ethérée 3",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Retirez un Ether de l'Amulette Cristaline : Ajoutez un Ether sur l'Équipement Ethérée de votre choix.",
@@ -163,7 +168,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Éthérée",
+        "description": "",
+        "value": 3
+      }
+    ],
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
@@ -197,7 +208,7 @@
         "description": "Ethérée 3",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Retirez un Ether de l'Anneau Cristalin : Produisez une Ressource de l'élément de votre chiox.",
@@ -212,7 +223,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Éthérée",
+        "description": "",
+        "value": 3
+      }
+    ],
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
@@ -545,7 +562,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Choisissez un Allié ou Héros adverse en dehors du combat contrôlé par le joueur défenseur et placez-le comme bloqueur devant Blak Mambo. N'utilisez ce pouvoir que si Blak Mambo est attaquant.",
@@ -791,7 +808,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand un de vos Blops apparaît dans le Monde, il peut infliger un nombre de Dommages de son élément égal au nombre d'éléments parmi les Blops que vous contrôlez à l'Allié ou Héros de votre choix.",
@@ -1566,7 +1583,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Détruisez le Démon de votre choix.",
@@ -1581,7 +1598,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -1660,7 +1682,7 @@
         "description": "Ethérée 2",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Retirez un Ether de la Coiffe Cristaline : Redressez le Forgemage de votre choix.",
@@ -1675,7 +1697,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Éthérée",
+        "description": "",
+        "value": 2
+      }
+    ],
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
@@ -1879,7 +1907,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Démon XXII apparaît, vous pouvez choisir jusqu'à trois cartes non Héros, non Havre Sac contrôlées par le même joueur. Pour chaque carte choisir de cette façon, vous pouvez payer pour la renvoyer dans la main de son propriétaire.",
@@ -1936,7 +1964,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand la Démone XX apparaît dans le Monde, inclinez tous les Alliés et Héros adverses de Force inférieure ou égale à 5.",
@@ -1992,7 +2020,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Inclinez une Arme portée par Dharm Métreu : Dharm Métreu inflige un nombre de Dommages égal au bonus de Force de cette Arme à l'Allié ou Héros de votre choix.",
@@ -2044,7 +2072,7 @@
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "La Force du Disciple Zoth ne peut pas être augmentée.",
@@ -2060,7 +2088,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
     "experience": 1,
     "artists": ["Santiago Montiel"],
     "notes": [
@@ -2145,7 +2178,7 @@
         "description": "Renfort",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Donatella apparaît en , l'Allié ou Héros attaquant de votre choix ne peut pas être choisi par un adversaire jusqu'à la fin du tour.",
@@ -2154,7 +2187,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Renfort",
+        "description": "Un Allié possédant Renfort peut être joué pendant la phase d'actions d'un combat où son propriétaire est le joueur attaquant, et que son Héros est attaquant dans ce combat."
+      }
+    ],
     "experience": 1,
     "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
@@ -2191,7 +2229,7 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur du Dragouf gagne +2 en Force.",
@@ -2206,7 +2244,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 2
+      }
+    ],
     "experience": 1,
     "artists": ["Charlène Le Scanff"],
     "notes": [],
@@ -2281,7 +2325,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Emmet Steïn apparaît, piochez trois cartes. Pour chaque carte piochée de cette façon, payez ou recyclez une carte de votre main.",
@@ -2342,7 +2386,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tous les Dommages sur le point d'être infligés par Emmy Wanahouse ne peuvent pas être réduits ou redirigés.",
@@ -2351,7 +2395,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Edouard Guiton", "Nespouik"],
     "notes": [],
@@ -2541,7 +2590,7 @@
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Fantômayte perd tous ses pouvoirs excepté celui-ci, puis gagne tous les pouvoirs d'un autre Allié de votre choix jusqu'à la fin de la partie.",
@@ -2557,7 +2606,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 2,
     "artists": ["Ankama"],
     "notes": [
@@ -2595,7 +2649,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Redressez votre Héros. N'utilisez ce pouvoir qu'une seule fois par tour après un combat dans lequel votre Héros a été attaquant.",
@@ -2605,7 +2659,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Guillaume Achard"],
     "notes": [],
@@ -2641,7 +2700,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Grasmera apparaît dans le Monde, vous pouvez détruire l'Allié de votre choix.",
@@ -2735,7 +2794,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Grozilla attaque, vous pouvez payer X . Si vous le faites, Grozilla inflige X Dommages à l'Allié de votre choix.",
@@ -2914,7 +2973,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "A la fin de votre tour, si Jeune Ogrest est dréssé dans le Monde et qu'il peut attaquer, vous pouvez déclarer une attaque. Jeune Ogrest doit être déclaré comme attaquant si possible, et lui seul peut l'être.",
@@ -2930,7 +2989,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 3,
     "artists": ["Romain Pergod (Sephy)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [
@@ -2969,7 +3033,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Jhär Jhär Bing inflige un ou plusieurs Dommages de combat à un Héros adverse, vous pouvez piocher une carte.",
@@ -2985,7 +3049,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [
@@ -3656,7 +3725,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Kwakwa ne peut pas être bloqué si le joueur défenseur contrôle une Zone.",
@@ -3665,7 +3734,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -4136,7 +4210,7 @@
         "description": "Renfort",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Leonardawa apparaît en , choisissez un Allié ou Héros adverse. Jusqu'à la fin du tour, les Dommages que devrait infliger cet Allié ou Héros sont réduits à 0.",
@@ -4145,7 +4219,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Renfort",
+        "description": "Un Allié possédant Renfort peut être joué pendant la phase d'actions d'un combat où son propriétaire est le joueur attaquant, et que son Héros est attaquant dans ce combat."
+      }
+    ],
     "experience": 1,
     "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
@@ -4365,7 +4444,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Inclinez un de vos Alliés ou Héros Sadida : Inclinez l'Allié ou Héros adverse de votre choix.",
@@ -4374,7 +4453,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Edouard Guiton", "Nespouik"],
     "notes": [],
@@ -4488,7 +4572,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Manitou Zoth apparaît dans le Monde, prenez le contrôle de l'Allié adverse de votre choix jusqu'à la fin du tour. Vous pouvez redressez cet Allié.",
@@ -4543,7 +4627,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "A la fin de chaque combat dans lequel Maria Boo a été attaquante, vous pouvez la redressez. Si vous le faites, piochez une carte.",
@@ -4552,7 +4636,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 2,
     "artists": ["Mathieu Delaruelle (Asid)"],
     "notes": [],
@@ -4669,7 +4758,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Méga Craqueleur ne peut être détruit pas un joueur adverse que par des Dommages de combat.",
@@ -5015,7 +5104,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Meulou attaque, vous gagnez +1 PM jusqu'à la fin du combat.",
@@ -5108,7 +5197,7 @@
         "description": "Renfort",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Michelangela apparaît en , choisissez un Allié ou Héros adverse en dehors du combat contrôlé par le joueur défenseur. Si vous le faites, placez Michelangela comme attaquante dans ce combat et l'Allié ou Héros choisi comme bloqueur devant Michelangela.",
@@ -5117,7 +5206,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Renfort",
+        "description": "Un Allié possédant Renfort peut être joué pendant la phase d'actions d'un combat où son propriétaire est le joueur attaquant, et que son Héros est attaquant dans ce combat."
+      }
+    ],
     "experience": 1,
     "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
@@ -5310,7 +5404,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Nami Félabel attaque, vous pouvez regarder la carte du dessus de la Pioche du joueur défenseur. Vous pouvez recycler cette carte.",
@@ -5319,7 +5413,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
@@ -5470,7 +5569,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'Ogrest est dans le Monde, aucun adversaire ne peut incliner de cartes pendant votre tour.",
@@ -5978,7 +6077,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Poulpy apparaît, vous pouvez détruire l'Équipement de votre choix.",
@@ -5999,7 +6098,12 @@
         "mechanics": ["destroy-target"]
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
@@ -6035,7 +6139,7 @@
         "description": "Renfort",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Raphaela apparaît en , regardez la main du joueur défenseur et choisissez-y une carte Action. Ce joueur recycle cette carte.",
@@ -6044,7 +6148,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Renfort",
+        "description": "Un Allié possédant Renfort peut être joué pendant la phase d'actions d'un combat où son propriétaire est le joueur attaquant, et que son Héros est attaquant dans ce combat."
+      }
+    ],
     "experience": 1,
     "artists": ["Aymeric Kevin (Aymrc)"],
     "notes": [],
@@ -6112,7 +6221,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'il est dréssé, le Ratou ne peut pas être désigné comme cible d'une attaque.",
@@ -6121,7 +6230,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -6336,7 +6450,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "A la fin de votre tour, nommez Allié, Équipement, Zone ou Salle. Chaque joueur détruit une carte du type nommé qu'il contrôle.",
@@ -6741,7 +6855,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Révélez la première carte de votre Pioche. S'il s'agit d'un Monstre, Tomy Bokeur gagne +1 en Force jusqu'à la fin du tour.",
@@ -6750,7 +6864,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Edouard Guiton", "Ocarian"],
     "notes": [],
@@ -6785,7 +6904,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "La Tourbassingue ne peut pas être bloquée par un Allié ou un Héros sans .",

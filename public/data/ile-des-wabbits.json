@@ -135,7 +135,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Dites \"WABEHAMEHA !\" : Le Black Tiwabbit inflige 1 Dommage à l'Allié ou Héros de votre choix, puis détruisez-le.",
@@ -145,7 +145,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
@@ -181,7 +186,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Black Wabbit apparaît dans le Monde, vous pouvez l'incliner. Si vous le faites, l'Allié de votre choix retourne dans la main de son propriétaire.",
@@ -190,7 +195,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Aimé Jalon"],
     "notes": [],
@@ -1076,7 +1086,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Mettez en jeu un Allié Wabbit de Niveau 1 ou 2 gratuitement de votre main dans le Monde.",
@@ -1085,7 +1095,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "class": "Wabbit",
@@ -1112,7 +1127,7 @@
           "description": "Agilité",
           "isOncePerTurn": false,
           "requiresIncline": false,
-          "coverage": "uncovered"
+          "coverage": "keyword"
         },
         {
           "description": "Mettez en jeu un Allié Wabbit de Niveau 1 ou 2 gratuitement de votre main dans le Monde.",
@@ -1143,7 +1158,7 @@
           "description": "Agilité",
           "isOncePerTurn": false,
           "requiresIncline": false,
-          "coverage": "uncovered"
+          "coverage": "keyword"
         },
         {
           "description": "Mettez en jeu un Allié Wabbit de Niveau inférieur ou égal à 3 gratuitement de votre main dans le Monde.",

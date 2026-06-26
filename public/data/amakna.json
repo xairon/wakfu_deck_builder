@@ -278,7 +278,7 @@
         "description": "Défense",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'Allister, Roi d'Amakna est dans le Monde, tous les Dommages sur le point d'être infligés à votre Héros sont réduits à 0.",
@@ -287,7 +287,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Défense",
+        "description": "Un Allié jouable durant la Phase d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme bloqueur."
+      }
+    ],
     "experience": 3,
     "artists": ["Farhad Chams"],
     "notes": [],
@@ -804,7 +809,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Dites « WABEHAMEHA ! » : Le Black Tiwabbit inflige 1 Dommage à l'Allié ou Héros de votre choix, puis détruisez-le.",
@@ -814,7 +819,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
@@ -894,7 +904,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'elle est dressée, Bony Parcœur ne peut pas être choisie par un joueur adverse.",
@@ -903,7 +913,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Souillon (Maliki)"],
     "notes": [],
@@ -1593,7 +1608,7 @@
         "description": "Défense",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Les Dommages infligés par le Chevalier Ténèbres ne peuvent pas être réduits.",
@@ -1627,6 +1642,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Neutre"]
+      },
+      {
+        "name": "Défense",
+        "description": "Un Allié jouable durant la Phase d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme bloqueur."
       }
     ],
     "experience": 1,
@@ -1922,7 +1941,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Déclenchez l'effet d'apparition d'un de vos Monstres de Niveau inférieur ou égal à 3 de votre choix.",
@@ -1938,7 +1957,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 2,
     "artists": ["Ankama"],
     "notes": [
@@ -2059,7 +2083,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Craqueleur des Plaines apparaît, le joueur de votre choix perd 2 PA jusqu'à la fin du tour. Ce joueur peut incliner jusqu'à deux Alliés qu'il contrôle dans le Monde pour réduire cette perte de 1 PA par Allié incliné.",
@@ -2310,7 +2334,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Démon X apparaît, détruisez jusqu'à trois de vos Alliés. Tant que le Démon X est en jeu, sa Force est égale à la Force cumulée des Alliés détruits de cette façon.",
@@ -2374,7 +2398,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand la Démone IV apparaît, vous pouvez choisir un ou plusieurs Équipements contrôlés par un autre joueur dans le Monde ou dans son Havre Sac et les déplacer de leur Porteur actuel vers un autre Porteur contrôlé par le même joueur. Tous les nouveaux Porteurs doivent être légaux.",
@@ -4578,7 +4602,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Au début du tour de chaque joueur, si le Monstre Pain est dans le Monde, ce joueur peut payer pour détruire le Monstre Pain.",
@@ -4903,7 +4927,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que Papris, Roi des Flaqueux est dans le Monde, chaque fois qu'un de vos Monstres est détruit, vous pouvez le mettre sur le dessus de votre Pioche au lieu de le mettre dans votre Défausse.",
@@ -4931,6 +4955,10 @@
         "name": "Résistance",
         "description": "2",
         "elements": ["Eau"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "experience": 2,
@@ -5404,13 +5432,13 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Redirigez vers Pym tous les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
@@ -5426,7 +5454,16 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      },
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Matthieu Marcq (Ottami)"],
     "notes": [
@@ -5895,7 +5932,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que Sheran Sharm, Roi Sadida est dans le Monde, aucun Allié ou Héros adverse ne peut effectuer de mouvement vers son Havre Sac.",
@@ -6049,7 +6086,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Détruisez le Smarmot : Piochez une carte, puis défaussez-vous d'une carte.",
@@ -6073,7 +6110,12 @@
         "mechanics": ["draw", "discard-from-hand"]
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "artists": ["Kosal Sok"],
     "notes": [],
     "flavor": {
@@ -6178,7 +6220,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Stiveun Cigalle peut bloquer même s'il est incliné.",
@@ -6187,7 +6229,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Xavier Houssin (Xa)"],
     "notes": [],
@@ -6788,7 +6835,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Au début de votre tour, si Uk'Not'Allag est dans le Monde, vous pouvez chercher un Allié Démon dans votre Pioche et le prendre en main. Si vous le faites, mélangez votre Pioche.",

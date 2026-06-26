@@ -78,7 +78,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois que l'Abraknyde Perchoir inflige un ou plusieurs Dommages, votre Héros perd le même nombre de PV.",
@@ -430,7 +430,7 @@
         "description": "Ethérée 2",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Retirez X éthers de la Baguette Ouratagou : L'Allié ou Héros de votre choix gagne +X en Force jusqu'à la fin du tour.",
@@ -445,7 +445,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Éthérée",
+        "description": "",
+        "value": 2
+      }
+    ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
@@ -516,7 +522,7 @@
         "description": "Ethérée 2",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Retirez X éthers du Bâton du Fetusoli : Il inflige X Dommages à l'Allié ou Héros de votre choix.",
@@ -532,7 +538,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Éthérée",
+        "description": "",
+        "value": 2
+      }
+    ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
@@ -608,7 +620,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois qu'une Potion est jouée, Boing gagne +1 en Force jusqu'à la fin du tour.",
@@ -822,7 +834,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Il est possible de mettre le Bouclier en jeu lors de la Résolution d'un Duel impliquant le futur Porteur du Bouclier et un Allié ou Héros adverse. Les Dommages que va infliger votre Allié ou Héros ont déjà été calculés à ce moment, et ne seront par conséquent pas modifiés par le +1 en Force du Bouclier. En revanche, ce bonus peut empêcher un de vos Alliés d'être détruit.",
@@ -837,6 +849,10 @@
         "name": "Recette",
         "description": ": Bricoleur 2",
         "elements": ["Air"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -1247,7 +1263,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Les pioches de carte multiples sont traitées individuellement comme des événements distincts de pioche d'une carte. Pour chaque événement de pioche d'une carte, vous devrez donc payer ou annulez cette pioche. Vous pouvez choisir de payer ou non pour chaque événement de pioche, et non pour la globalité du pouvoir qui génère les pioches : si vous devez piochez 3 cartes, vous pouvez choisir de payer puis pour piocher 2 cartes seulement, la dernière pioche étant annulée.",
@@ -1268,6 +1284,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Terre", "Air"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "artists": ["François Houssin (Franho)", "Jonathan Dhenry (Jonat)"],
@@ -1653,7 +1673,7 @@
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Chafer d'élite apparaît, vous ne gagnez pas 18 XP.",
@@ -1662,7 +1682,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
     "experience": 1,
     "artists": ["Augustin Bonne (Roxnin)"],
     "notes": [],
@@ -1702,7 +1727,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       }
     ],
     "keywords": [
@@ -1710,6 +1735,10 @@
         "name": "Recette",
         "description": ": Armurier 2",
         "elements": ["Air"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
@@ -1815,7 +1844,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'elle est dressée, la Cooleuvre ne peut pas être choisie par un joueur adverse.",
@@ -1824,7 +1853,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -2001,7 +2035,7 @@
         "description": "Ethérée 2",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Retirez X éthers des Dagues de Flapegel : Détruisez l'Équipement de Niveau X de votre choix.",
@@ -2016,7 +2050,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Éthérée",
+        "description": "",
+        "value": 2
+      }
+    ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
@@ -2138,7 +2178,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Démon III apparaît, vous pouvez détruire jusqu'à trois Équipements de votre choix.",
@@ -2193,7 +2233,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Démon IX et Démone XXI apparaissent depuis votre main, vous pouvez déclarer une attaque supplémentaire contre un Havre Sac ou un Héros adverse et redresser tous vos Alliés ou Héros qui ont été attaquants ce tour. Ces Alliés ou Héros doivent être déclarés comme attaquants si possible, et eux seuls peuvent l'être.",
@@ -2392,7 +2432,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Si votre Héros est Pandawa, le coût du Dopeul Pandawa est réduit de .",
@@ -2408,7 +2448,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -2493,14 +2538,14 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Capture : 1",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde ébène et Orchidée gagne +1 en Force et .",
@@ -2515,7 +2560,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 1
+      }
+    ],
     "experience": 1,
     "artists": ["Vincent Joubert"],
     "notes": [],
@@ -2552,14 +2603,14 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Capture : 1",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde ébène et Pourpre gagne +1 en Force et .",
@@ -2574,7 +2625,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 1
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -2611,14 +2668,14 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Capture : 1",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde Indigo et Orchidée gagne +1 en Force et .",
@@ -2633,7 +2690,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 1
+      }
+    ],
     "experience": 1,
     "artists": ["Vincent Joubert"],
     "notes": [
@@ -2672,14 +2735,14 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Capture : 1",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde Indigo et Pourpre gagne +1 en Force et .",
@@ -2694,7 +2757,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 1
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -2959,7 +3028,7 @@
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Détruisez le Fantôme Apéro : Renvoyez le Monstre adverse de votre choix dans la main de son propriétaire.",
@@ -2969,7 +3038,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 1,
     "artists": ["Charlène Le Scanff"],
     "notes": [],
@@ -3005,7 +3079,7 @@
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Détruisez le Fantôme Ardent : Chaque joueur peut redresser son Héros.",
@@ -3015,7 +3089,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -3051,7 +3130,7 @@
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Détruisez le Fantôme Arrogant : L'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour.",
@@ -3073,7 +3152,12 @@
         "mechanics": ["buff-force-target"]
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 1,
     "artists": ["Didier Chrispeels (Crisse)", "Fred Besson"],
     "notes": [],
@@ -3109,7 +3193,7 @@
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Détruisez le Fantôme Brave : Le Fantôme Brave inflige 2 Dommages à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
@@ -3119,7 +3203,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -3155,13 +3244,13 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Fantôme Maho Firefoux inflige 3 Dommages à l'Allié ou Héros de votre choix qui le bloque.",
@@ -3175,6 +3264,10 @@
       {
         "name": "Géant",
         "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      },
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
       }
     ],
     "experience": 2,
@@ -3212,13 +3305,13 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "A la fin de chaque combat, vous pouvez redresser tous vos Fantômes qui ont été attaquants dans ce combat.",
@@ -3240,7 +3333,16 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      },
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 2,
     "artists": ["Cédric Plaisant (Aisk)"],
     "notes": [
@@ -3279,7 +3381,7 @@
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Fantôme Pandule apparaît, vous pouvez jouer gratuitement une Action de votre Défausse comme si elle était dans votre main. Si vous le faites, bannissez-la.",
@@ -3288,7 +3390,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 2,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -3324,7 +3431,7 @@
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que le Fantôme Soryo Firefoux est dans le Monde, chaque fois qu'un joueur joue une Action, son Héros perd 2 PV.",
@@ -3340,7 +3447,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
+      }
+    ],
     "experience": 2,
     "artists": ["Amélie Flechais"],
     "notes": [
@@ -3378,13 +3490,13 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Fantôme",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que le Fantôme Tanukouï San est dans le Monde, au début du tour de chaque adversaire, vous pouvez redresser tous vos Alliés dans le Monde.",
@@ -3397,6 +3509,10 @@
       {
         "name": "Géant",
         "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      },
+      {
+        "name": "Fantôme",
+        "description": "Le mot-clef « Fantôme » représente un pouvoir continu qui est actif quand la carte qui le possède est dans une Défausse et qui signifie « Si cette carte est dans votre Défausse, vous pouvez payer un nombre de Ressources (Neutre) égal à son Niveau plus 1 pour la remettre en jeu dans le Monde »."
       }
     ],
     "experience": 2,
@@ -3762,7 +3878,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Au début de votre tour, vous pouvez détruire la Zone de votre choix.",
@@ -3783,7 +3899,12 @@
         "mechanics": ["destroy-target"]
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Laurent Carlot (Lorko)"],
     "notes": [],
@@ -4166,7 +4287,7 @@
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Igôle apparaît dans le Monde et ne peut pas effectuer de mouvement.",
@@ -4188,7 +4309,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [
@@ -4809,7 +4935,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que Katar est dans le Monde, chaque fois qu'un Allié ou Héros adverse inflige un ou plusieurs Dommages de combat à votre Héros, le contrôleur de cet Allié ou Héros détruit un Allié de son choix qu'il contrôle.",
@@ -4818,7 +4944,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 2,
     "artists": ["Ankama"],
     "notes": [],
@@ -4854,7 +4985,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le pouvoir de Kira Shak choisit un joueur et non un Havre Sac : vous pouvez donc choisir un joueur adverse qui ne contrôle plus de Havre Sac. Dans ce cas, le pouvoir de Kira Shak ne fera rien.",
@@ -4864,7 +4995,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [
@@ -4988,7 +5124,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que Le Chouque est dans le Monde, tous vos Pirates gagnent : \"Chaque fois que ce Pirate inflige un ou plusieurs Dommages de combat à un Héros adverse, vous pouvez piocher une carte.\"",
@@ -5308,7 +5444,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Au début de votre tour, si le Maître Pandore est dans le Monde, vous pouvez chercher un Fantôme dans votre Pioche et le mettre en jeu gratuitement. Si vous le faites, mélangez votre Pioche.",
@@ -5363,7 +5499,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois que Mandhal inflige un ou plusieurs Dommages à un Havre Sac, il peut infliger 2 Dommages au Héros de votre choix dans ce Havre Sac.",
@@ -5753,7 +5889,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Péki Péki est détruit, vous pouvez le placer sur votre Héros. Si vous le faites, le Péki Péki devient un \"Équipement - Familier\" et donne un Bonus de PV égal à 7 à son Porteur.",
@@ -5804,7 +5940,7 @@
         "description": "Ethérée 2",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Retirez X éthers de la Pelle du Neloma : Mettez en jeu un Allié de Niveau X depuis votre Défausse.",
@@ -5819,7 +5955,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Éthérée",
+        "description": "",
+        "value": 2
+      }
+    ],
     "artists": ["Romain Pergod (Sephy)", "Jonathan Dhenry (Jonat)"],
     "notes": [],
     "flavor": {
@@ -6112,7 +6254,7 @@
         "description": "Défense",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Ranger Bleu apparaît en Défense, le contrôleur de l'Allié ou Héros qu'il bloque détruit un équipement de son choix Porté par cet Allié ou Héros.",
@@ -6127,7 +6269,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Défense",
+        "description": "Un Allié jouable durant la Phase d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme bloqueur."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
@@ -6164,7 +6311,7 @@
         "description": "Défense",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir . Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
@@ -6173,7 +6320,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Défense",
+        "description": "Un Allié jouable durant la Phase d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme bloqueur."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
@@ -6210,7 +6362,7 @@
         "description": "Défense",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Ranger Vert apparaît en , l'Allié ou Héros qu'il bloque perd tous ses pouvoirs jusqu'à la fin du tour.",
@@ -6225,7 +6377,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Défense",
+        "description": "Un Allié jouable durant la Phase d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme bloqueur."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
@@ -6262,7 +6419,7 @@
         "description": "Défense",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir . Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
@@ -6271,7 +6428,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Défense",
+        "description": "Un Allié jouable durant la Phase d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme bloqueur."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonathan Dhenry (Jonat)"],
     "notes": [
@@ -6827,7 +6989,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Tom Shausseur attaque, vous pouvez choisir un Allié dressé contrôlé par le joueur défenseur. Cet Allié doit bloquer Tom Shausseur si possible.",
@@ -6843,7 +7005,12 @@
         "coverage": "ruling"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Jérôme Brulin (Vliir)"],
     "notes": [

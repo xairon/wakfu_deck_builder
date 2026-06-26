@@ -470,7 +470,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "L'Arakne Majeure inflige 1 Dommage à l'Allié ou Héros incliné de votre choix.",
@@ -480,7 +480,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Karine Le Logeais (Kness)"],
     "notes": [],
@@ -1183,7 +1188,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'il est incliné dans le Monde, Az ne peut pas être choisi par une Action ou un pouvoir adverse.",
@@ -1198,7 +1203,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -1883,10 +1893,15 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "artists": ["François Houssin (Franho)", "Fabrice Nzinzi (Ntamak)"],
     "notes": [],
     "flavor": {
@@ -1925,7 +1940,7 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur du Bébé Dragodinde gagne +1 en Force.",
@@ -1934,7 +1949,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 1
+      }
+    ],
     "artists": ["Vincent Joubert"],
     "notes": [],
     "flavor": {
@@ -2571,7 +2592,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Boufcoul peut être placé en bloqueur devant un Allié ou Héros avec .",
@@ -2580,7 +2601,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Valérie Ménard"],
     "notes": [],
@@ -2903,7 +2929,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Bworker inflige 4 Dommages à l'Allié ou Héros de votre choix et 1 Dommages à tous vos Alliés dans le Monde.",
@@ -3096,7 +3122,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       }
     ],
     "keywords": [
@@ -3109,6 +3135,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Terre", "Air"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "artists": ["Sandrine Vanneste (Alhera)"],
@@ -3663,7 +3693,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'il est attaquant ou bloqueur, le Chef Crocodaille ne peut pas être choisi par une Action ou un pouvoir adverse.",
@@ -3672,7 +3702,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -3708,7 +3743,7 @@
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Chevaucheur Koalak ne peut pas être bloqué par des Alliés de Niveau 1.",
@@ -3717,7 +3752,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
     "experience": 1,
     "artists": ["Claire Larnaudie"],
     "notes": [],
@@ -3881,7 +3921,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que Clustus, Roi de Bonta est dans le Monde, tous les Monstres de votre main ont .",
@@ -3897,7 +3937,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 2,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -4393,7 +4438,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que le Craqueleur Légendaire est dans le Monde, tous les Alliés adverses perdent tous leurs pouvoirs.",
@@ -4460,7 +4505,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Craqueleur Vaporeux apparaît, vous pouvez renvoyer l'Allié de votre choix au dessus de la Pioche de son propriétaire.",
@@ -4541,7 +4586,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'un joueur adverse contrôle au moins une Zone, le Crocoburio a .",
@@ -4646,7 +4691,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Cybwork apparaît, détruisez tous les Alliés de Niveau 1 inclinés dans le Monde.",
@@ -5052,7 +5097,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Démon I apparaît, chaque joueur qui contrôle plus d'Équipements que vous détruit ses Équipements de son choix jusqu'à ce qu'il en contrôle autant que vous.",
@@ -5107,7 +5152,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Démon XIX apparaît, il gagne tous les pouvoirs de l'Allié ou Héros de votre choix jusqu'à la fin de la partie.",
@@ -5249,7 +5294,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand vous déclarez une attaque, vous pouvez redresser Do si elle est inclinée dans le Monde et qu'elle peut attaquer. Si vous le faites, Do doit être placée en attaquante dans ce combat.",
@@ -5258,7 +5303,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
@@ -5502,7 +5552,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Si votre Héros est Sacrieur, le coût de Dopeul Sacrieur est réduit de .",
@@ -5518,7 +5568,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Valérie Ménard"],
     "notes": [],
@@ -5554,7 +5609,7 @@
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Si votre Héros est Sadida, le coût du Dopeul Sadida est réduit de .",
@@ -5571,7 +5626,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
     "experience": 1,
     "artists": ["Ashvey"],
     "notes": [],
@@ -5607,7 +5667,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Si votre Héros est Sram, le coût du Dopeul Sram est réduit de .",
@@ -5623,7 +5683,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Laurence Guermond"],
     "notes": [],
@@ -5699,7 +5764,7 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde Ébène gagne +1 en Force et .",
@@ -5708,7 +5773,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 2
+      }
+    ],
     "artists": ["Kosal Sok"],
     "notes": [],
     "flavor": {
@@ -5744,7 +5815,7 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde Indigo gagne +1 en Force et .",
@@ -5753,7 +5824,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 2
+      }
+    ],
     "experience": 1,
     "artists": ["Floriane Grivillers (Foya)"],
     "notes": [],
@@ -5790,7 +5867,7 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde Orchidée gagne +1 en Force et .",
@@ -5799,7 +5876,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 2
+      }
+    ],
     "experience": 1,
     "artists": ["Anaïs Chevillard"],
     "notes": [],
@@ -5836,7 +5919,7 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde Pourpre gagne +1 en Force et .",
@@ -5845,7 +5928,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 2
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -5882,7 +5971,7 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le Porteur de la Dragodinde Squelette gagne +2 en Force et ne peut pas être choisi par un joueur adverse. Vous gagnez 1 PM.",
@@ -5891,7 +5980,13 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Capture",
+        "description": "Une Dragodinde transformée en Équipement et montée par un Allié ou un Héros.",
+        "value": 3
+      }
+    ],
     "experience": 1,
     "artists": ["Jonoo Takeshi"],
     "notes": [],
@@ -7387,7 +7482,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Grand Shushu Craquelé apparaît, il inflige 2 Dommages à l'Allié de votre choix.",
@@ -7811,7 +7906,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Guerrier Koalak inflige un ou plusieurs Dommages à un Allié ou Héros, inclinez cet Allié ou Héros. Il ne peut pas se redresser jusqu'au début de votre prochain tour.",
@@ -8248,7 +8343,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que Hyrkul le Tendancieux est dans le Monde, tous vos autres Alliés ou Héros ont +1 en Force et .",
@@ -8381,7 +8476,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Jan Khess apparaît, vous pouvez incliner l'Allié de votre choix.",
@@ -8396,7 +8491,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Fabrice Nzinzi (Ntamak)"],
     "notes": [],
@@ -8432,7 +8532,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Jeram apparaît, si vous contrôlez moins d'Alliés que l’adversaire de votre choix, vous pouvez redressez jusqu'à deux de vos Alliés.",
@@ -8441,7 +8541,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Ankama"],
     "notes": [],
@@ -8871,7 +8976,7 @@
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Klara Vane attaque, elle inflige 1 Dommage à l'Allié de votre choix.",
@@ -8881,7 +8986,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
     "experience": 1,
     "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
@@ -9032,7 +9142,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "L'Allié non Monstre de votre choix perd ses pouvoirs et devient un « Monstre — Boufcool » de Force 2 jusqu'à la fin du tour.",
@@ -9369,7 +9479,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       }
     ],
     "keywords": [
@@ -9382,6 +9492,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Terre", "Air"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "artists": ["Jonathan Dhenry (Jonat)"],
@@ -9877,13 +9991,13 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Défense",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'il bloque, Maître Joris gagne +2 en Force si votre Héros est la cible de l'attaque.",
@@ -9892,7 +10006,16 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      },
+      {
+        "name": "Défense",
+        "description": "Un Allié jouable durant la Phase d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme bloqueur."
+      }
+    ],
     "experience": 2,
     "artists": ["Ankama"],
     "notes": [],
@@ -10766,7 +10889,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Nébuline la Câline apparaît, vous pouvez l'incliner. Si vous le faites, vous pouvez chercher un Monstre de Niveau inférieur ou égal à 2 dans votre Pioche et le mettre en jeu gratuitement, puis mélangez votre Pioche.",
@@ -10775,7 +10898,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "experience": 1,
     "artists": ["Romain Pergod (Sephy)"],
     "notes": [],
@@ -11076,7 +11204,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant que vous contrôlez au moins un autre Champignon, le Ougah ne peut pas être choisi.",
@@ -12137,7 +12265,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tous vos autres Rats gagnent +1 en Force et jusqu'à la fin du tour.",
@@ -12146,7 +12274,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Claire Larnaudie"],
     "notes": [],
@@ -12182,7 +12315,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois que le Rat Blanc inflige un ou plusieurs Dommages, votre Héros regagne 2 PV.",
@@ -12209,6 +12342,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Air"]
+      },
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
       }
     ],
     "experience": 2,
@@ -12316,7 +12453,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Chaque fois que le Rat Noir inflige un ou plusieurs Dommages à un Héros ou Allié, le Héros de votre choix dans le Monde ou dans son Havre Sac perd 2 PV.",
@@ -12343,6 +12480,10 @@
         "name": "Résistance",
         "description": "1",
         "elements": ["Terre"]
+      },
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
       }
     ],
     "experience": 2,
@@ -12457,7 +12598,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Razortemps inflige un ou plusieurs Dommages de combat à une carte, détruisez cette carte.",
@@ -12752,7 +12893,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand Rubilax apparaît, détruisez l'Équipement de votre choix ou détruisez Rubilax.",
@@ -13430,7 +13571,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand votre Héros attaque seul, vous pouvez redressez Sellor Noob.",
@@ -13439,7 +13580,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "artists": ["Anaïs Chevillard"],
     "notes": [],
     "flavor": {
@@ -13473,7 +13619,7 @@
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Détruisez un Équipement que vous contrôlez : Détruisez le Shushu Grillé. Chaque joueur peut utiliser ce pouvoir.",
@@ -13482,7 +13628,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
     "artists": ["Sylvain Trabut"],
     "notes": [],
     "flavor": {
@@ -13517,7 +13668,7 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand le Shushu Lumineux apparaît, vous pouvez renvoyer l'Équipement de votre choix dans la main de son Propriétaire.",
@@ -13532,7 +13683,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      }
+    ],
     "artists": ["Sylvain Trabut"],
     "notes": [],
     "flavor": {
@@ -13649,13 +13805,13 @@
         "description": "Agilité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'un joueur adverse contrôle au moins un Allié d'élément , , ou dans le Monde, Sphincter Celle a dans l'élément correspondant.",
@@ -13665,7 +13821,16 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Agilité",
+        "description": "Agilité est un mot-clef représentant un pouvoir continu. Ce pouvoir signifie : « Ce Héros ou cet Allié ne peut pas être bloqué par un Allié ou un Héros qui ne possède pas Agilité »."
+      },
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 2,
     "artists": ["Vincent Joubert"],
     "notes": [],
@@ -13740,13 +13905,13 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Agressivité",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Quand une Action est jouée, détruisez le Taure.",
@@ -13759,6 +13924,10 @@
       {
         "name": "Géant",
         "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      },
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
       }
     ],
     "experience": 1,
@@ -14263,7 +14432,7 @@
         "description": "Tacle",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Tant qu'elle est la seule attaquante, Vola Latir a +1 en Force.",
@@ -14278,7 +14447,12 @@
         "coverage": "uncovered"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "Tacle",
+        "description": "Le mot-clef « Tacle » représente un pouvoir continu qui intervient durant la Phase d'Actions. Ce pouvoir signifie : « Jusqu'à la fin du combat, les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant Tacle ne peuvent pas s'incliner »."
+      }
+    ],
     "experience": 1,
     "artists": ["Kim Ettinoff (Tcho)"],
     "notes": [],
@@ -14451,7 +14625,7 @@
         "description": "Géant",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "keyword"
       },
       {
         "description": "Le YeCh'ti inflige 3 Dommages à l'Allié de votre choix. Si cet Allié est détruit, son contrôleur perd 1 PA jusqu'à la fin du tour.",
