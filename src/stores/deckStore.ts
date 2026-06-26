@@ -603,6 +603,42 @@ export const useDeckStore = defineStore("deck", () => {
   }
 
   /**
+   * Permute l'édition (impression) d'une entrée de deck en gardant la quantité.
+   * Si une entrée de l'édition cible existe déjà dans la MÊME zone, on fusionne
+   * les quantités (l'entrée source disparaît). La carte cible doit être une
+   * réimpression de la carte source (même nom canonique) — non vérifié ici, la
+   * garantie vient de l'UI qui ne propose que `printingsOf`.
+   */
+  function setEntryEdition(
+    cardId: string,
+    isReserve: boolean,
+    newPrinting: Card,
+  ) {
+    if (!currentDeck.value) return;
+    if (newPrinting.id === cardId) return;
+
+    const src = currentDeck.value.cards.find(
+      (c) => c.card.id === cardId && !!c.isReserve === isReserve,
+    );
+    if (!src) return;
+
+    const prepared = prepareCardForDeck(newPrinting);
+    const existing = currentDeck.value.cards.find(
+      (c) => c.card.id === newPrinting.id && !!c.isReserve === isReserve,
+    );
+
+    if (existing) {
+      existing.quantity += src.quantity;
+      currentDeck.value.cards.splice(currentDeck.value.cards.indexOf(src), 1);
+    } else {
+      src.card = prepared;
+    }
+
+    currentDeck.value.updatedAt = new Date().toISOString();
+    saveDecks();
+  }
+
+  /**
    * Retire le héros du deck actif
    */
   function removeHero() {
@@ -990,6 +1026,7 @@ export const useDeckStore = defineStore("deck", () => {
     addCard,
     removeCard,
     moveCardZone,
+    setEntryEdition,
     removeHero,
     removeHavreSac,
     clearDeck,

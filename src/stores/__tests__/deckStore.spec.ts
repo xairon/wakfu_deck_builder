@@ -352,6 +352,53 @@ describe("deckStore", () => {
     });
   });
 
+  // ---- setEntryEdition ----
+
+  describe("setEntryEdition()", () => {
+    beforeEach(() => {
+      deckStore.createDeck("Test");
+    });
+
+    it("setEntryEdition devrait permuter l'édition en gardant la quantité", () => {
+      const incarnam = createMockAllyCard({
+        id: "tofu-incarnam",
+        name: "Tofu",
+      });
+      const dofus = createMockAllyCard({
+        id: "tofu-dofus-collection",
+        name: "Tofu",
+      });
+      deckStore.addCard(incarnam, 2);
+
+      deckStore.setEntryEdition("tofu-incarnam", false, dofus);
+
+      const entries = deckStore.currentDeck!.cards;
+      expect(entries.length).toBe(1);
+      expect(entries[0].card.id).toBe("tofu-dofus-collection");
+      expect(entries[0].quantity).toBe(2);
+    });
+
+    it("setEntryEdition devrait fusionner si l'édition cible existe déjà (même zone)", () => {
+      const incarnam = createMockAllyCard({
+        id: "tofu-incarnam",
+        name: "Tofu",
+      });
+      const dofus = createMockAllyCard({
+        id: "tofu-dofus-collection",
+        name: "Tofu",
+      });
+      deckStore.addCard(incarnam, 2);
+      deckStore.addCard(dofus, 1);
+
+      deckStore.setEntryEdition("tofu-incarnam", false, dofus);
+
+      const entries = deckStore.currentDeck!.cards;
+      expect(entries.length).toBe(1);
+      expect(entries[0].card.id).toBe("tofu-dofus-collection");
+      expect(entries[0].quantity).toBe(3);
+    });
+  });
+
   // ---- removeCard ----
 
   describe("removeCard()", () => {
