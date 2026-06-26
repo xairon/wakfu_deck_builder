@@ -14,6 +14,7 @@
     "dofus-mag-report": "tsx scripts/dofusMagMatchingReport.ts",
     "gen-dofus-mag": "tsx scripts/genDofusMagDecks.ts && prettier --write src/data/dofusMagDecks.ts",
     "compile-effects": "tsx scripts/compileEffects.ts && prettier --write \"public/data/*.json\"",
+    "report-coverage": "tsx scripts/reportCoverage.ts",
     "build": "vite build",
     "type-check": "vue-tsc --noEmit",
     "serve": "vite preview",
