@@ -193,6 +193,9 @@
         @move-to-reserve="moveToReserve"
         @remove="(id) => deckStore.removeCard(id, 1)"
         @add="(card) => $emit('add-to-deck', card)"
+        @set-edition="
+          (id, printing) => deckStore.setEntryEdition(id, false, printing)
+        "
       />
     </ul>
   </div>
@@ -231,6 +234,9 @@
         :spine-color="elementColor(dc.card)"
         @move-to-main="moveToMain"
         @remove="(id) => deckStore.removeCard(id, 1, true)"
+        @set-edition="
+          (id, printing) => deckStore.setEntryEdition(id, true, printing)
+        "
       />
     </ul>
     <p v-else class="py-3 text-xs text-base-content/40">
