@@ -10308,7 +10308,17 @@
         "description": "Au début de votre tour, Opée Tissoin regagne 1 PV.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTurnStart",
+          "ops": [
+            {
+              "op": "heroGainPv",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["hero-gain-pv"]
       },
       {
         "description": "Réduisez de 2 les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
@@ -10353,7 +10363,17 @@
           "description": "Au début de votre tour, Opée Tissoin regagne 1 PV.",
           "isOncePerTurn": false,
           "requiresIncline": false,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTurnStart",
+            "ops": [
+              {
+                "op": "heroGainPv",
+                "n": 1
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["hero-gain-pv"]
         },
         {
           "description": "Réaction. : Réduisez de 2 les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",
@@ -10391,7 +10411,17 @@
           "description": "Au début de votre tour, Opée Tissoin regagne 1 PV.",
           "isOncePerTurn": false,
           "requiresIncline": false,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTurnStart",
+            "ops": [
+              {
+                "op": "heroGainPv",
+                "n": 1
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["hero-gain-pv"]
         },
         {
           "description": "Réaction. : Réduisez à 0 les Dommages sur le point d'être infligés à l'Allié ou Héros de votre choix.",

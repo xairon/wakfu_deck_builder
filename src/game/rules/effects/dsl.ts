@@ -134,6 +134,12 @@ function parseSentence(
     /^le heros de votre choix regagne (\d+) (?:pv|points? de vie)$/,
   );
   if (m) return { op: "healHeroTarget", n: toNumber(m[1]) };
+  // « [Ce Héros] regagne N PV » : le sujet est la carte elle-même (un Héros) →
+  // soin du Héros contrôleur (op existante heroGainPv). Placé APRÈS les formes
+  // « votre Héros » / « le Héros de votre choix » pour ne pas les capter.
+  m = sentence.match(/^(.{1,50}?) regagne (\d+) (?:pv|points? de vie)$/);
+  if (m && subjectIsSelf(m[1], cardName))
+    return { op: "heroGainPv", n: toNumber(m[2]) };
   // « L'Allié (ou Héros) de votre choix gagne +N en Force jusqu'à la fin du tour »
   m = sentence.match(
     /^l['’ ]?\s?allie( ou heros)? de votre choix gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/,
