@@ -41,7 +41,8 @@
     "daisyui": "^4.4.19",
     "pinia": "^3.0.1",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@pinia/testing": "^1.0.0",
