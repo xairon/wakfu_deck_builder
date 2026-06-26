@@ -5879,7 +5879,7 @@
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, piochez une carte et gagnez 1 XP. Sinon, piochez une carte.",
@@ -5904,7 +5904,8 @@
       "text": "Ici, c'est moi qui tire les ficelles ! Misérables pantins ! — Shak Shaka, Roi des Robomates."
     },
     "race": "Roi",
-    "tribe": "Xélor"
+    "tribe": "Xélor",
+    "metier": "Bricoleur"
   },
   {
     "id": "sheran-sharm-roi-sadida-amakna",

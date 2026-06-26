@@ -7031,13 +7031,13 @@
         "description": "Forgeron",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       }
     ],
     "keywords": [],
@@ -7047,7 +7047,8 @@
     "flavor": {
       "text": "S'il considère son ancêtre Elya comme une mauviette, c'est qu'il préfère manier l'épée que la baguette !"
     },
-    "race": "Eniripsa"
+    "race": "Eniripsa",
+    "metier": "Forgeron"
   },
   {
     "id": "guma-bobeule-incarnam",
@@ -7939,7 +7940,7 @@
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Vous pouvez utiliser ce pouvoir même si Keyss Aouti est dans votre Havre Sac. Dans ce cas, vous ne pourrez que choisir votre propre Havre Sac.",
@@ -7958,7 +7959,8 @@
     "flavor": {
       "text": "Keyss Aouti s'entendait très bien avec son amie Molette, jusqu'au jour où il vola sa clef."
     },
-    "race": "Pandawa"
+    "race": "Pandawa",
+    "metier": "Bricoleur"
   },
   {
     "id": "klore-ofil-incarnam",
@@ -9565,7 +9567,7 @@
         "description": "Forgeron",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "X : Détruisez l'Équipement de Niveau X de votre choix.",
@@ -9582,7 +9584,8 @@
     "flavor": {
       "text": "Les hommes préfèrent les rousses. Et ce n'est pas Merelyne qui va s'en plaindre."
     },
-    "race": "Sacrieur"
+    "race": "Sacrieur",
+    "metier": "Forgeron"
   },
   {
     "id": "milimulou-incarnam",
@@ -12707,7 +12710,7 @@
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Reprenez Selk Ator dans votre main : Renvoyez l'Équipement ou la Salle de votre choix dans la main de son propriétaire.",
@@ -12722,7 +12725,8 @@
     "flavor": {
       "text": "Botaniste de talent, Selk Ator est si ambitieuse qu'elle n'hésitera pas à vous couper l'herbe sous le pied !"
     },
-    "race": "Sadida"
+    "race": "Sadida",
+    "metier": "Bricoleur"
   },
   {
     "id": "shiffer-van-brushing-incarnam",

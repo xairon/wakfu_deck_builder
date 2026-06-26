@@ -95,7 +95,7 @@
         "description": "Bijoutier",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand Alplaïa Vamos apparaît, vous pouvez défaussez la carte du dessus de votre Pioche. Si la carte défaussé est une carte , piochez une carte.",
@@ -111,7 +111,8 @@
     "flavor": {
       "text": "Si cette starlette ne jure que par les plages de l'île de Moon, c'est qu'elle ne porte que des moonookinis."
     },
-    "race": "Ecaflip"
+    "race": "Ecaflip",
+    "metier": "Bijoutier"
   },
   {
     "id": "alysse-bonta-brakmar",
@@ -139,7 +140,7 @@
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand Alysse apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte , piochez une carte.",
@@ -156,7 +157,8 @@
       "text": "Alyse ne supporte pas qu'on soit en retard à ses rendez",
       "attribution": "vous. Et encore moins qu'on lui pose un Wapin !"
     },
-    "race": "Xélor"
+    "race": "Xélor",
+    "metier": "Bricoleur"
   },
   {
     "id": "amayiro-bonta-brakmar",
@@ -574,7 +576,7 @@
         "description": "Héros : Sadida",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Mettez l'Arbre de Vie en jeu comme une Zone .",
@@ -1640,7 +1642,7 @@
         "description": "Armurier",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand le Bandit Manchot apparaît, choisissez jusqu'à deux Équipements contrôlés par le même joueur. Pour chaque Équipement, ce joueur doit payer ou détruire cet Équipement.",
@@ -1658,7 +1660,8 @@
       "text": "Pourtant, ne dit",
       "attribution": "on pas « gentil n'a pas de bras » ? — Bigou Drif, digne proche d'Etour Drif."
     },
-    "race": "Bandit"
+    "race": "Bandit",
+    "metier": "Armurier"
   },
   {
     "id": "banque-bonta-brakmar",
@@ -2413,7 +2416,7 @@
         "description": "Héros : Bonta",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tant qu'ils bloquent, les Alliés et Héros que vous contrôlez ont +1 en Force.",
@@ -2681,7 +2684,7 @@
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand le Boulanger Sombre apparaît, choisissez jusqu'à deux Équipements contrôlés par le même joueur. Pour chaque Équipement, ce joueur doit payer ou incliner le Porteur de cet Équipement.",
@@ -2699,7 +2702,8 @@
       "text": "Malgré sa délicieuse recette de pain noir, ce Boulanger Sombre n'a toujours pas mangé son pain blanc."
     },
     "race": "Bandit",
-    "tribe": "Boulanger"
+    "tribe": "Boulanger",
+    "metier": "Bricoleur"
   },
   {
     "id": "brakmar-cite-des-tenebres-bonta-brakmar",
@@ -2723,7 +2727,7 @@
         "description": "Héros : Brâkmar",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tant qu'ils attaquent, les Alliés et Héros que vous contrôlez ont +1 en Force.",
@@ -2808,7 +2812,7 @@
         "description": "Héros : Iop",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Jusqu'à la fin du tour, l'Allié ou Héros attaquant de votre choix gagne un bonus de Force égal à la Force de l'Allié ou Héros qui le bloque de votre choix.",
@@ -3648,7 +3652,7 @@
         "description": "Forgeron",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand Chauchane apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte , piochez une carte.",
@@ -3665,7 +3669,8 @@
       "text": "Tout le monde en a après ses miches ; il faut dire qu'elle sait vous pétrir une pâte !"
     },
     "race": "Féca",
-    "tribe": "Boulanger"
+    "tribe": "Boulanger",
+    "metier": "Forgeron"
   },
   {
     "id": "chef-crocodaille-bonta-brakmar",
@@ -3915,7 +3920,7 @@
         "description": "Héros : Bonta",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tacle",
@@ -5720,7 +5725,7 @@
         "description": "Héros : Sacrieur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Jusqu'au début de votre prochain tour, chaque fois que votre Héros perd un ou plusieurs PV, l'Allié de votre choix gagne un bonus de Force égal au nombre de PV perdus jusqu'à la fin du tour.",
@@ -6653,7 +6658,7 @@
         "description": "Héros : Ecaflip",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Inclinez un de vos Alliés ou Héros Ecaflip : il inflige sa Force en Dommages à l'Allié ou Héros de votre choix. Votre Héros regagne le même nombre de PV.",
@@ -6825,7 +6830,7 @@
         "description": "Héros : Crâ",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Inclinez jusqu'à trois de vos Alliés ou Héros Crâ : Renvoyer le même nombre d'Alliés de votre choix sur le dessus de la Pioche de leur Propriétaire dans l'ordre de votre choix.",
@@ -7077,7 +7082,7 @@
         "description": "Forgeron",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand le Forgeron Sombre apparaît, choisissez jusqu'à deux Équipements contrôlés par le même joueur. Pour chaque Équipement, ce joueur doit payer ou infliger un nombre de Dommages égal au Niveau de cet Équipement à son Porteur.",
@@ -7094,7 +7099,8 @@
     "flavor": {
       "text": "C'est en forgeant dans le noir que l'on devient Forgeron Sombre — Proverbe Iop."
     },
-    "race": "Bandit"
+    "race": "Bandit",
+    "metier": "Forgeron"
   },
   {
     "id": "foudroiement-bonta-brakmar",
@@ -7628,7 +7634,7 @@
         "description": "Armurier",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand Grine Piz apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte , piochez une carte.",
@@ -7644,7 +7650,8 @@
     "flavor": {
       "text": "Avant, Grine Piz était vénéré par les plantes. Et puis un jour, elles ont compris qu'elle était végétarienne !"
     },
-    "race": "Sadida"
+    "race": "Sadida",
+    "metier": "Armurier"
   },
   {
     "id": "gro-n-land-bonta-brakmar",
@@ -7672,7 +7679,7 @@
         "description": "Forgeron",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Recyclez X Alliés de votre Défausse : Mettez en jeu un Équipement ou une Salle de Niveau X gratuitement de votre main.",
@@ -7697,7 +7704,8 @@
     "flavor": {
       "text": "Quand Djaul givra l'île de Frigost, Grö N'land eut aussitôt le souffle coupé !"
     },
-    "race": "Souffleur de Verre"
+    "race": "Souffleur de Verre",
+    "metier": "Forgeron"
   },
   {
     "id": "grouilleux-mecano-bonta-brakmar",
@@ -8337,7 +8345,7 @@
         "description": "Héros : Brâkmar",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Géant",
@@ -8426,7 +8434,7 @@
         "description": "Héros : Pandawa",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Mettez l'Ivresse en jeu comme un « Monstre — Tonneau » de Force 3 qui ne peut ni attaquer, ni bloquer.",
@@ -9211,13 +9219,13 @@
         "description": "Héros : Bonta",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Héros : Brâkmar",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "À la fin de ce combat, détruisez tous les Alliés qui ont été attaquants, bloqueurs ou cible dans ce combat. Vous ne gagnez pas d'XP.",
@@ -9384,7 +9392,7 @@
         "description": "Héros : Osamodas",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Choisissez un Allié dans votre Défausse et mettez-le en jeu dans le Monde. Il apparaît incliné.",
@@ -9985,7 +9993,7 @@
         "description": "Héros : Bonta",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Agilité",
@@ -10567,7 +10575,7 @@
         "description": "Bijoutier",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand le Mineur Sombre apparaît, choisissez jusqu'à deux Équipements contrôlés par le même joueur. Pour chaque Équipement, ce joueur doit payer ou rependre cet Équipement dans sa main.",
@@ -10584,7 +10592,8 @@
     "flavor": {
       "text": "Après des années passées sous terre, ce mineur a fini par broyer du noir. Une bien sombre histoire…"
     },
-    "race": "Bandit"
+    "race": "Bandit",
+    "metier": "Bijoutier"
   },
   {
     "id": "mise-en-garde-bonta-brakmar",
@@ -10608,7 +10617,7 @@
         "description": "Héros : Féca",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Annulez les effets de l'Action ou du pouvoir qui vient d'être joué. Jusqu'à la fin du tour, chaque fois qu'une Action ou un pouvoir est joué, vous pouvez incliner un de vos Alliés ou Héros Féca en pour annuler les effets de cette Action ou de ce pouvoir.",
@@ -10761,7 +10770,7 @@
         "description": "Héros : Eniripsa",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Jusqu'au début de votre prochain tour, chaque fois que votre Héros regagne des PV, il inflige le même nombre de Dommages à l'Allié ou Héros de votre choix.",
@@ -11887,7 +11896,7 @@
         "description": "Héros : Sram",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Annulez les effets de l'Action qui vient d'être jouée. Son contrôleur se défausse d'une carte de sa main.",
@@ -12175,7 +12184,7 @@
         "description": "Héros : Brâkmar",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Recyclez X cartes de votre Défausse : Détruisez l'Allié de Force X de votre choix.",
@@ -12555,7 +12564,7 @@
         "description": "Héros : Xélor",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Remettez en jeu depuis toutes les Défausses tous les Alliés qui ont été détruits pendant ce tour. Ces Alliés apparaissent inclinés dans le Monde. Ne jouez cette carte que lorsqu'un joueur déclare la fin de son tour.",
@@ -12739,7 +12748,7 @@
         "description": "Héros : Enutrof",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Inclinez votre Héros dans le Monde : Recyclez l'Allié de votre choix sous la Pioche de son propriétaire.",

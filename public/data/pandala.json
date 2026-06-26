@@ -3939,7 +3939,7 @@
         "description": "Armurier",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tant que Franom Ontaje est dans le Monde, vos adversaires ne peuvent pas choisir vos Équipements.",
@@ -3965,7 +3965,8 @@
       "text": "Un dessin à retoucher ? Un décor vide ? Des effets de lumière à ajouter sur votre toile ? Une seule solution, demandez Franom Ontaje !"
     },
     "race": "Osamodas",
-    "tribe": "Forgemage"
+    "tribe": "Forgemage",
+    "metier": "Armurier"
   },
   {
     "id": "galgarion-pandala",
@@ -4884,7 +4885,7 @@
         "description": "Héros : Brâkmar",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tant que Karibd est dans le Monde, tous les Dommages sur le point d'être infligés par vos Démons sont augmentés de 1.",
@@ -5038,7 +5039,7 @@
         "description": "Forgeron",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Quand Kura Sao apparaît, vous pouvez chercher une Arme dans votre Défausse et la prendre en main.",
@@ -5055,7 +5056,8 @@
       "text": "Kura Sao aimait nager dans un lagon bleu avec son ami Perry Stoff. Mais un jour il finit par la soûler."
     },
     "race": "Pandawa",
-    "tribe": "Forgemage"
+    "tribe": "Forgemage",
+    "metier": "Forgeron"
   },
   {
     "id": "la-derniere-rasade-pandala",
@@ -5271,7 +5273,7 @@
         "description": "Héros : Bonta",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tant que Les 300 Bonsiates sont attaquants, ils gagnent +2 en Force et tous vos autres Alliés ou Héros attaquants gagnent +1 en Force.",
@@ -6702,7 +6704,7 @@
         "description": "Bijoutier",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tant que Shatte Roulette est dans le Monde, les Dommages sur le point d'être infligés par vos Alliés ou Héros qui portent au moins une Arme ne peuvent pas être réduits.",
@@ -6719,7 +6721,8 @@
       "text": "Avec Shatte, tout est possible, il y a juste à tourner la roulette !"
     },
     "race": "Ecaflip",
-    "tribe": "Forgemage"
+    "tribe": "Forgemage",
+    "metier": "Bijoutier"
   },
   {
     "id": "silar-pandala",
@@ -6747,7 +6750,7 @@
         "description": "Héros : Brâkmar",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Tant que Silar est dans le Monde, réduisez de 1 tous les Dommages sur le point d'être infligés à vos Démons.",
@@ -7269,7 +7272,7 @@
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Les équipements portés par les Alliés ou Héros qui bloquent ou qui sont bloqués par Viktor Yugo perdent tous leurs pouvoirs et leurs bonus.",
@@ -7295,7 +7298,8 @@
       "text": "S'il n'avait pas décidé d'être scribe, cet Enutrof aurait pu faire fortune. Au lieu de ça, c'est un misérable."
     },
     "race": "Enutrof",
-    "tribe": "Brâkmar"
+    "tribe": "Brâkmar",
+    "metier": "Bricoleur"
   },
   {
     "id": "village-aerdala-pandala",

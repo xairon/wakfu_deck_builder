@@ -3772,7 +3772,7 @@
         "description": "Héros : Crâ",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "L'Étendue de Crâ inflige 4 Dommages à l'Allié ou Héros de votre choix, puis, si cet Allié ou Héros est détruit de cette façon, l'Étendue de Crâ inflige 1 Dommage à tous les Alliés et Héros dans le Monde.",
@@ -3812,7 +3812,7 @@
         "description": "Héros : Sram",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "L'Ombre de Sram inflige 2 Dommages à l'Allié ou Héros de votre choix. Si un Héros subit des Dommages de cette façon, son contrôleur ne peut pas jouer d'Action jusqu'à la fin du tour.",
@@ -3853,7 +3853,7 @@
         "description": "Héros : Pandawa",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "La Chopine de Pandawa inflige 4 Dommages à l'Allié ou Héros de votre choix ; ou 2 Dommages à l'Allié ou Héros de votre choix, puis vous piochez une carte.",
@@ -3902,7 +3902,7 @@
         "description": "Héros : Ecaflip",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Jouez à Chi-Fu-Mi. Tant que vous gagnez, vous pouvez décider de rejouer à Chi-Fu-Mi.",
@@ -3945,7 +3945,7 @@
         "description": "Héros : Féca",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Mettez Le Bouclier de Féca en jeu comme un \"Monstre - Bouclier\" de Force 1 qui ne peut pas attaquer ou être incliné pour produire une Ressource.",
@@ -4000,7 +4000,7 @@
         "description": "Héros : Iop",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Détruisez l'Allié de votre choix de Force inférieure ou égale à la Force de votre Héros.",
@@ -4039,7 +4039,7 @@
         "description": "Héros : Osamodas",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Inclinez un de vos Monstres : il gagne +1 en Force jusqu'à la fin du tour, puis il inflige un nombre de Dommages égal à sa Force à l'Allié ou Héros de votre choix.",
@@ -4079,7 +4079,7 @@
         "description": "Héros : Xélor",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Renvoyez l'Allié, la Zone ou l'Équipement de votre choix dans la main de son propriétaire.",
@@ -4118,7 +4118,7 @@
         "description": "Héros : Sacrieur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Le Sang de Sacrieur inflige 2 Dommages à l'Allié ou Héros de votre choix. Si votre Héros a moins de 10 PV, le Sang de Sacrieur inflige 5 Dommages à la place.",
@@ -4158,7 +4158,7 @@
         "description": "Héros : Sadida",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Détruisez l'Équipement de votre choix ; ou prenez le contrôle de la Zone de votre choix.",
@@ -4256,7 +4256,7 @@
         "description": "Héros : Enutrof",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "L'adversaire de votre choix choisi trois Équipements qu'il contrôle, ou tous ses Équipements s'il en contrôle moins de trois. Placez un de ces Équipements sur votre Héros, et détruisez les autres Équipements choisis de cette façon.",
@@ -4295,7 +4295,7 @@
         "description": "Héros : Eniripsa",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "L'Allié ou Héros attaquant ou bloqueur de votre choix retourne incliné dans le Monde. Votre Héros regagne un nombre de PV égal au Niveau de cet Allié ou Héros.",

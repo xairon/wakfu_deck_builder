@@ -4520,7 +4520,7 @@
         "description": "Bricoleur",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Chaque fois que vous devez recycler une carte, vous pouvez recyclez une carte dans la Défausse du joueur de votre choix sous sa Pioche comme si elle était dans votre propre Défausse.",
@@ -4546,7 +4546,8 @@
       "text": "Cet Eniripsa passionné par la couture vous fera les plus beaux points de suture qui puissent exister !"
     },
     "race": "Eniripsa",
-    "tribe": "Alchimiste"
+    "tribe": "Alchimiste",
+    "metier": "Bricoleur"
   },
   {
     "id": "malory-natouf-astrub",

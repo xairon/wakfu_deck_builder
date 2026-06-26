@@ -3502,7 +3502,7 @@
         "description": "Forgeron",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Détruisez l'Équipement de Niveau X de votre choix.",
@@ -3519,7 +3519,8 @@
     "flavor": {
       "text": "Les hommes préfèrent les rousses. Et ce n'est pas Merelyne qui va s'en plaindre."
     },
-    "race": "Sacrieur"
+    "race": "Sacrieur",
+    "metier": "Forgeron"
   },
   {
     "id": "minotoror-dofus-collection",

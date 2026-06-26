@@ -102,6 +102,7 @@ interface RawStats {
 }
 interface RawCard {
   name?: string;
+  metier?: string;
   stats?: RawStats;
   keywords?: RawKeyword[];
   effects?: RawEffect[];
@@ -302,6 +303,45 @@ function promoteKeywords(card: RawCard): void {
   visit(card.verso?.effects);
 }
 
+/** Métiers (trait Artisan, glossaire « Métier »). Clé = description normalisée. */
+const METIER_TOKENS: Record<string, string> = {
+  bricoleur: "Bricoleur",
+  forgeron: "Forgeron",
+  bijoutier: "Bijoutier",
+  armurier: "Armurier",
+};
+
+/**
+ * Promeut les tokens TRAITS déversés dans `effects[]` (qui ne sont PAS des
+ * effets) : le métier (Bricoleur/Forgeron/Bijoutier/Armurier) → champ typé
+ * `card.metier` ; la restriction « Héros : X » → reclassée sans champ (X déjà
+ * dans subTypes). Dans les deux cas l'effet source est marqué
+ * `coverage:"trait"`. L'entrée d'effet reste (indices stables → CARD_SCRIPTS).
+ * Doit tourner APRÈS classifyKinds et avant assignCoverageAndMechanics (qui
+ * préserve "trait"). Dédup du métier (set-if-absent) → idempotent.
+ */
+function promoteTraits(card: RawCard): void {
+  const visit = (effects: RawEffect[] | undefined) => {
+    for (const e of effects ?? []) {
+      if (e.kind) continue; // ruling/errata
+      const t = normText(e?.description);
+      if (!t) continue;
+      const metier = METIER_TOKENS[t];
+      if (metier) {
+        if (!card.metier) card.metier = metier;
+        e.coverage = "trait";
+        continue;
+      }
+      if (/^heros\s*:\s*.+$/.test(t)) {
+        e.coverage = "trait"; // restriction classe/alignement (déjà en subTypes)
+      }
+    }
+  };
+  visit(card.effects);
+  visit(card.recto?.effects);
+  visit(card.verso?.effects);
+}
+
 /**
  * Passe finale : pose un statut de couverture EXPLICITE sur chaque effet et
  * dérive ses mécaniques depuis les ops compilées. La couverture persistée est
@@ -312,7 +352,11 @@ function promoteKeywords(card: RawCard): void {
 function assignCoverageAndMechanics(card: RawCard): void {
   const visit = (effects: RawEffect[] | undefined) => {
     for (const e of effects ?? []) {
-      if (e.coverage !== "manual" && e.coverage !== "keyword") {
+      if (
+        e.coverage !== "manual" &&
+        e.coverage !== "keyword" &&
+        e.coverage !== "trait"
+      ) {
         e.coverage = e.kind ? "ruling" : e.compiled ? "auto" : "uncovered";
       }
       const ops = (e.compiled as { ops?: { op: string }[] } | undefined)?.ops;
@@ -350,6 +394,7 @@ for (const file of EXTENSION_FILES) {
     extractBagStats(card);
     classifyKinds(card);
     promoteKeywords(card);
+    promoteTraits(card);
     const name = String(card.name ?? "");
     const element = sourceElementOf(card);
     compileEffects(
