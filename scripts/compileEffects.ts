@@ -25,6 +25,7 @@ import {
 } from "../src/game/rules/effects/dsl";
 import { CARD_SCRIPTS } from "../src/game/rules/effects/cardScripts";
 import { OP_TO_MECHANIC } from "../src/data/mechanics";
+import { cardSchema } from "../src/schema";
 
 const DATA_DIR = join(__dirname, "..", "public", "data");
 const EXTENSION_FILES = [
@@ -265,7 +266,15 @@ function assignCoverageAndMechanics(card: RawCard): void {
       if (ops && ops.length) {
         e.mechanics = [
           ...new Set(
-            ops.map((o) => OP_TO_MECHANIC[o.op as keyof typeof OP_TO_MECHANIC]),
+            ops.map((o) => {
+              const tag = OP_TO_MECHANIC[o.op as keyof typeof OP_TO_MECHANIC];
+              // Garde-fou à la frontière des données non typées : la table est
+              // exhaustive sur l'union des ops, donc ceci ne devrait jamais
+              // tirer — mais on échoue fort plutôt que de pousser `undefined`.
+              if (!tag)
+                throw new Error(`op non mappée vers une mécanique: ${o.op}`);
+              return tag;
+            }),
           ),
         ];
       } else {
@@ -329,6 +338,20 @@ for (const file of EXTENSION_FILES) {
       }
     }
     assignCoverageAndMechanics(card);
+  }
+  // Validation à l'écriture : le pipeline REFUSE d'émettre des données non
+  // conformes au schéma (source de vérité). Validation seule — n'altère rien.
+  for (const card of cards) {
+    const res = cardSchema.safeParse(card);
+    if (!res.success) {
+      const id = (card as { id?: string }).id ?? "?";
+      const issue = res.error.issues[0];
+      const where = issue?.path.length ? ` @ ${issue.path.join(".")}` : "";
+      console.error(
+        `✗ ${file}: carte ${id} invalide${where}: ${issue?.message ?? "invalide"}`,
+      );
+      process.exit(1);
+    }
   }
   writeFileSync(path, JSON.stringify(cards, null, 2) + "\n", "utf8");
   console.log(`✓ ${file} (${cards.length} cartes)`);
