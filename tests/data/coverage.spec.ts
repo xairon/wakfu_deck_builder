@@ -40,7 +40,7 @@ function allEffects(card: RawCard): RawEffect[] {
   ];
 }
 
-const COVERAGE = new Set(["auto", "manual", "uncovered", "ruling"]);
+const COVERAGE = new Set(["auto", "manual", "uncovered", "ruling", "keyword"]);
 
 const cards: RawCard[] = EXTENSION_FILES.flatMap(
   (f) => JSON.parse(readFileSync(join(DATA_DIR, f), "utf8")) as RawCard[],

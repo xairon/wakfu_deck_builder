@@ -37,6 +37,7 @@ const tally: Record<string, number> = {
   manual: 0,
   uncovered: 0,
   ruling: 0,
+  keyword: 0,
   unknown: 0,
 };
 const uncovered: string[] = [];
@@ -68,6 +69,7 @@ console.log(`  auto:      ${tally.auto}`);
 console.log(`  manual:    ${tally.manual}`);
 console.log(`  uncovered: ${tally.uncovered}`);
 console.log(`  ruling:    ${tally.ruling}`);
+console.log(`  keyword:   ${tally.keyword}`);
 if (tally.unknown) console.log(`  unknown:   ${tally.unknown} (à régénérer)`);
 console.log(
   `  → ${structured}/${printed} effets imprimés structurés (${pct} %)`,
