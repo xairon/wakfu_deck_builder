@@ -481,7 +481,7 @@
       "text": "Chez lui, c'est automatique : chaque fois que quelqu'un le chauffe un peu, il s'apprête à croiser le fer !"
     },
     "race": "Forgemage",
-    "metier": "Forgeron"
+    "metier": ["Forgeron"]
   },
   {
     "id": "anna-jaizik-otomai",
@@ -1573,7 +1573,7 @@
       "attribution": "Arnold Ovouarcraf."
     },
     "race": "Forgemage",
-    "metier": "Armurier"
+    "metier": ["Armurier"]
   },
   {
     "id": "july-vamine-otomai",
@@ -2616,7 +2616,7 @@
       "text": "A force de boire, Bobby Lapinte a les joues aussi roses que des fesses de Dragodindes !"
     },
     "race": "Forgemage",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "o-zaune-otomai",
@@ -3652,7 +3652,7 @@
     },
     "race": "Enutrof",
     "tribe": "Forgemage",
-    "metier": "Bijoutier"
+    "metier": ["Bijoutier"]
   },
   {
     "id": "niko-la-flameche-otomai",

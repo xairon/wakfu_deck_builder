@@ -3520,7 +3520,7 @@
       "text": "Les hommes préfèrent les rousses. Et ce n'est pas Merelyne qui va s'en plaindre."
     },
     "race": "Sacrieur",
-    "metier": "Forgeron"
+    "metier": ["Forgeron"]
   },
   {
     "id": "minotoror-dofus-collection",

@@ -102,7 +102,7 @@ interface RawStats {
 }
 interface RawCard {
   name?: string;
-  metier?: string;
+  metier?: string[];
   stats?: RawStats;
   keywords?: RawKeyword[];
   effects?: RawEffect[];
@@ -321,6 +321,7 @@ const METIER_TOKENS: Record<string, string> = {
  * préserve "trait"). Dédup du métier (set-if-absent) → idempotent.
  */
 function promoteTraits(card: RawCard): void {
+  delete card.metier; // re-dérivé des tokens à chaque run (pas de valeur périmée)
   const visit = (effects: RawEffect[] | undefined) => {
     for (const e of effects ?? []) {
       if (e.kind) continue; // ruling/errata
@@ -328,7 +329,8 @@ function promoteTraits(card: RawCard): void {
       if (!t) continue;
       const metier = METIER_TOKENS[t];
       if (metier) {
-        if (!card.metier) card.metier = metier;
+        card.metier = card.metier ?? [];
+        if (!card.metier.includes(metier)) card.metier.push(metier);
         e.coverage = "trait";
         continue;
       }

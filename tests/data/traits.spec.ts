@@ -23,7 +23,7 @@ interface RawEffect {
 }
 interface RawCard {
   id?: string;
-  metier?: string;
+  metier?: string[];
   effects?: RawEffect[];
   recto?: { effects?: RawEffect[] };
   verso?: { effects?: RawEffect[] };
@@ -63,8 +63,10 @@ describe("couche traits", () => {
           armurier: "Armurier",
         }[t];
         if (!m) continue;
-        if (c.metier !== m)
-          bad.push(`${c.id}: metier=${c.metier} attendu ${m}`);
+        if (!(c.metier ?? []).includes(m))
+          bad.push(
+            `${c.id}: metier=${JSON.stringify(c.metier)} doit inclure ${m}`,
+          );
         if (e.coverage !== "trait")
           bad.push(`${c.id}: '${e.description}' coverage=${e.coverage}`);
       }
@@ -87,7 +89,7 @@ describe("couche traits", () => {
 
   it("ne devrait promouvoir que des valeurs de métier valides", () => {
     for (const c of cards) {
-      if (c.metier !== undefined) expect(METIERS.has(c.metier)).toBe(true);
+      for (const m of c.metier ?? []) expect(METIERS.has(m)).toBe(true);
     }
   });
 

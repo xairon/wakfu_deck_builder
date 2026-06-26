@@ -3966,7 +3966,7 @@
     },
     "race": "Osamodas",
     "tribe": "Forgemage",
-    "metier": "Armurier"
+    "metier": ["Armurier"]
   },
   {
     "id": "galgarion-pandala",
@@ -5057,7 +5057,7 @@
     },
     "race": "Pandawa",
     "tribe": "Forgemage",
-    "metier": "Forgeron"
+    "metier": ["Forgeron"]
   },
   {
     "id": "la-derniere-rasade-pandala",
@@ -6722,7 +6722,7 @@
     },
     "race": "Ecaflip",
     "tribe": "Forgemage",
-    "metier": "Bijoutier"
+    "metier": ["Bijoutier"]
   },
   {
     "id": "silar-pandala",
@@ -7299,7 +7299,7 @@
     },
     "race": "Enutrof",
     "tribe": "Brâkmar",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "village-aerdala-pandala",

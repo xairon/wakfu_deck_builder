@@ -4547,7 +4547,7 @@
     },
     "race": "Eniripsa",
     "tribe": "Alchimiste",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "malory-natouf-astrub",

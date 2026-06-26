@@ -112,7 +112,7 @@
       "text": "Si cette starlette ne jure que par les plages de l'île de Moon, c'est qu'elle ne porte que des moonookinis."
     },
     "race": "Ecaflip",
-    "metier": "Bijoutier"
+    "metier": ["Bijoutier"]
   },
   {
     "id": "alysse-bonta-brakmar",
@@ -158,7 +158,7 @@
       "attribution": "vous. Et encore moins qu'on lui pose un Wapin !"
     },
     "race": "Xélor",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "amayiro-bonta-brakmar",
@@ -1661,7 +1661,7 @@
       "attribution": "on pas « gentil n'a pas de bras » ? — Bigou Drif, digne proche d'Etour Drif."
     },
     "race": "Bandit",
-    "metier": "Armurier"
+    "metier": ["Armurier"]
   },
   {
     "id": "banque-bonta-brakmar",
@@ -2703,7 +2703,7 @@
     },
     "race": "Bandit",
     "tribe": "Boulanger",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "brakmar-cite-des-tenebres-bonta-brakmar",
@@ -3670,7 +3670,7 @@
     },
     "race": "Féca",
     "tribe": "Boulanger",
-    "metier": "Forgeron"
+    "metier": ["Forgeron"]
   },
   {
     "id": "chef-crocodaille-bonta-brakmar",
@@ -7100,7 +7100,7 @@
       "text": "C'est en forgeant dans le noir que l'on devient Forgeron Sombre — Proverbe Iop."
     },
     "race": "Bandit",
-    "metier": "Forgeron"
+    "metier": ["Forgeron"]
   },
   {
     "id": "foudroiement-bonta-brakmar",
@@ -7651,7 +7651,7 @@
       "text": "Avant, Grine Piz était vénéré par les plantes. Et puis un jour, elles ont compris qu'elle était végétarienne !"
     },
     "race": "Sadida",
-    "metier": "Armurier"
+    "metier": ["Armurier"]
   },
   {
     "id": "gro-n-land-bonta-brakmar",
@@ -7705,7 +7705,7 @@
       "text": "Quand Djaul givra l'île de Frigost, Grö N'land eut aussitôt le souffle coupé !"
     },
     "race": "Souffleur de Verre",
-    "metier": "Forgeron"
+    "metier": ["Forgeron"]
   },
   {
     "id": "grouilleux-mecano-bonta-brakmar",
@@ -10593,7 +10593,7 @@
       "text": "Après des années passées sous terre, ce mineur a fini par broyer du noir. Une bien sombre histoire…"
     },
     "race": "Bandit",
-    "metier": "Bijoutier"
+    "metier": ["Bijoutier"]
   },
   {
     "id": "mise-en-garde-bonta-brakmar",

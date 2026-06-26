@@ -5905,7 +5905,7 @@
     },
     "race": "Roi",
     "tribe": "Xélor",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "sheran-sharm-roi-sadida-amakna",

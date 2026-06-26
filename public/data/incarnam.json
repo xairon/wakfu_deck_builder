@@ -7048,7 +7048,7 @@
       "text": "S'il considère son ancêtre Elya comme une mauviette, c'est qu'il préfère manier l'épée que la baguette !"
     },
     "race": "Eniripsa",
-    "metier": "Forgeron"
+    "metier": ["Forgeron", "Bricoleur"]
   },
   {
     "id": "guma-bobeule-incarnam",
@@ -7960,7 +7960,7 @@
       "text": "Keyss Aouti s'entendait très bien avec son amie Molette, jusqu'au jour où il vola sa clef."
     },
     "race": "Pandawa",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "klore-ofil-incarnam",
@@ -9585,7 +9585,7 @@
       "text": "Les hommes préfèrent les rousses. Et ce n'est pas Merelyne qui va s'en plaindre."
     },
     "race": "Sacrieur",
-    "metier": "Forgeron"
+    "metier": ["Forgeron"]
   },
   {
     "id": "milimulou-incarnam",
@@ -12726,7 +12726,7 @@
       "text": "Botaniste de talent, Selk Ator est si ambitieuse qu'elle n'hésitera pas à vous couper l'herbe sous le pied !"
     },
     "race": "Sadida",
-    "metier": "Bricoleur"
+    "metier": ["Bricoleur"]
   },
   {
     "id": "shiffer-van-brushing-incarnam",
