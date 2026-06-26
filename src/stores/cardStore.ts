@@ -5,6 +5,7 @@ import type { Card } from "@/types/cards";
 import { loadAllCards } from "@/services/cardLoader";
 import { useLocalStorage } from "@vueuse/core";
 import { localStorageService } from "@/services/localStorage";
+import { canonicalKey } from "@/utils/cardIdentity";
 
 function isValidCollection(
   payload: unknown,
@@ -39,6 +40,23 @@ export const useCardStore = defineStore("cards", () => {
     for (const card of cards.value) map.set(card.id, card);
     return map;
   });
+  // Index clé-canonique → impressions, mémoïsé (évite un filtre O(n) par ligne
+  // de deck affichée). Recalculé seulement quand `cards` est réassigné.
+  const printingsIndex = computed(() => {
+    const map = new Map<string, Card[]>();
+    for (const card of cards.value) {
+      const key = canonicalKey(card);
+      const list = map.get(key);
+      if (list) list.push(card);
+      else map.set(key, [card]);
+    }
+    return map;
+  });
+
+  /** Toutes les impressions chargées partageant la clé canonique de `card`. */
+  function printingsOf(card: Card): Card[] {
+    return printingsIndex.value.get(canonicalKey(card)) ?? [card];
+  }
   const collection = ref<Record<string, { normal: number; foil: number }>>({});
   const loading = ref(false);
   const error = ref<string | null>(null);
@@ -508,6 +526,8 @@ export const useCardStore = defineStore("cards", () => {
     // État
     cards,
     cardIndex,
+    printingsIndex,
+    printingsOf,
     collection,
     isInitializing,
     isInitialized,
