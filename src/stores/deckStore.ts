@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import type { Card, Deck, DeckCard } from "@/types/cards";
 import { DECK_CONSTRAINTS } from "@/config/cards";
 import { isUniqueCard, maxCopiesForCard } from "@/utils/cardRules";
+import { canonicalKey } from "@/utils/cardIdentity";
 import { validateDeck } from "@/validators/deck";
 import { useCardStore } from "./cardStore";
 import { namespacedKey } from "@/services/storageNamespace";
@@ -508,8 +509,9 @@ export const useDeckStore = defineStore("deck", () => {
     // Règle TCG : 1 exemplaire pour les cartes "Unique", sinon 3.
     // La limite de copies s'applique au TOTAL (deck principal + réserve).
     const maxCopies = isUniqueCard(card) ? 1 : MAX_COPIES_PER_CARD;
+    const key = canonicalKey(card);
     const totalCopies = currentDeck.value.cards
-      .filter((c) => c.card.id === card.id)
+      .filter((c) => canonicalKey(c.card) === key)
       .reduce((a, c) => a + c.quantity, 0);
     let room = maxCopies - totalCopies;
     // Capacité de zone (48 principal / 12 réserve).
