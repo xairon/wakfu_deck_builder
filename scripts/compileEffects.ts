@@ -148,7 +148,11 @@ function classifyKinds(card: RawCard): void {
   const notes = new Set((card.notes ?? []).map(normText).filter(Boolean));
   const visit = (effects: RawEffect[] | undefined) => {
     for (const e of effects ?? []) {
-      delete e.coverage; // efface toute couverture persistée : seule la boucle d'overrides de CE run pourra reposer "manual"
+      // efface toute couverture/mécanique persistée : seule la boucle d'overrides
+      // de CE run pourra reposer "manual", et la passe finale les re-dérive dans
+      // un ordre déterministe (coverage puis mechanics).
+      delete e.coverage;
+      delete e.mechanics;
       const t = normText(e?.description);
       if (!t) continue;
       if (notes.has(t) || ERRATA_RE.test(t)) {

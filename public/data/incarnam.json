@@ -4245,8 +4245,6 @@
         "description": "Le Monstre de votre choix gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "manual",
-        "mechanics": ["buff-force-target"],
         "compiled": {
           "trigger": "onTap",
           "ops": [
@@ -4258,7 +4256,9 @@
               "zones": ["monde", "havreSac"]
             }
           ]
-        }
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],
@@ -6145,8 +6145,6 @@
         "description": "Les Forêts d'Astrub apparaissent inclinés.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "manual",
-        "mechanics": ["tap-self"],
         "compiled": {
           "trigger": "onArrive",
           "ops": [
@@ -6154,7 +6152,9 @@
               "op": "tapSelf"
             }
           ]
-        }
+        },
+        "coverage": "manual",
+        "mechanics": ["tap-self"]
       }
     ],
     "keywords": [],
@@ -9082,8 +9082,6 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "manual",
-        "mechanics": ["buff-force-self"],
         "compiled": {
           "trigger": "onTap",
           "ops": [
@@ -9092,7 +9090,9 @@
               "n": 3
             }
           ]
-        }
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-self"]
       }
     ],
     "keywords": [],
@@ -9638,8 +9638,6 @@
         "description": "Les Mines d'Astrub apparaissent inclinés.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "manual",
-        "mechanics": ["tap-self"],
         "compiled": {
           "trigger": "onArrive",
           "ops": [
@@ -9647,7 +9645,9 @@
               "op": "tapSelf"
             }
           ]
-        }
+        },
+        "coverage": "manual",
+        "mechanics": ["tap-self"]
       }
     ],
     "keywords": [],
