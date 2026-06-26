@@ -61,11 +61,25 @@ premier match) :
 > Axe A). Le total `uncovered` = 1655 ; les tableaux servent à prioriser, pas à
 > additionner.
 
+## Insight clé (mesuré) : le goulot est le VOCABULAIRE D'ACTIONS, pas les triggers
+
+Sur les 366 « Quand/Chaque fois », **174 sont « Quand [self] apparaît »** dont le
+trigger est **déjà reconnu** par `compileEffectText` — ils restent `uncovered`
+uniquement parce que leur **corps (l'action) n'a pas d'op**. Idem pour
+`au début de votre tour` / `onTap` / Actions `onPlay` : le cadre marche déjà,
+c'est l'**op d'action** qui manque. Donc **étendre fidèlement les ops d'action
+débloque le plus, simultanément sur tous les cadres**. Prioriser l'Axe B (ops
+d'action exécutables) AVANT le parseur de trigger générique (qui ne sert que les
+~190 triggers à sujet ≠ self).
+
 ## Plan de vagues (ordre = ROI × sécurité × déblocage)
 
 Chaque vague : implémentée, testée (compile gate strict + suite), commitée,
 mergée localement (pas de push = pas de déploiement). Mesure de progrès :
-`npm run report-coverage`.
+`npm run report-coverage`. **Méthode par op d'action** : ajouter le type+Zod, le
+parse DSL (corps de phrase), le handler moteur fidèle (`runFrame`/targeting),
+des tests d'état moteur — puis l'op profite à TOUS les cadres (apparition, tour,
+inclinaison, action).
 
 1. **Vagues « ops sûres » (faible risque, op existante)** — formulations non
    parsées mappées à une op existante & testée. _Déjà commencé_ : « [Héros]
