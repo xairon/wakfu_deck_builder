@@ -31,94 +31,123 @@ export const baseCardSchema = z.object({
   url: z.string().optional(),
 });
 
-const heroFaceSchema = z.object({
-  stats: baseStatsSchema,
-  effects: z.array(cardEffectSchema),
-  keywords: z.array(cardKeywordInfoSchema),
-});
+// `.strict()` (Zod v4) sur chaque membre rejette les clés top-level inconnues :
+// le gate de validation devient réel (typos / champs périmés échouent au lieu
+// d'être silencieusement strippés). Vérifié empiriquement : strict + extend
+// reste compatible avec z.discriminatedUnion en Zod v4.
+const heroFaceSchema = z
+  .object({
+    stats: baseStatsSchema,
+    effects: z.array(cardEffectSchema),
+    keywords: z.array(cardKeywordInfoSchema),
+    // Donnée réelle : les faces `recto`/`verso` portent un `imageUrl` — seule
+    // clé non modélisée trouvée dans les données une fois ajoutée.
+    imageUrl: z.string().optional(),
+  })
+  .strict();
 
-export const allyCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Allié"),
-  stats: baseStatsSchema,
-  race: z.string().optional(),
-  tribe: z.string().optional(),
-});
+export const allyCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Allié"),
+    stats: baseStatsSchema,
+    race: z.string().optional(),
+    tribe: z.string().optional(),
+  })
+  .strict();
 
-export const actionCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Action"),
-  effects: z.array(cardEffectSchema),
-  spellSchool: z.string().optional(),
-});
+export const actionCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Action"),
+    effects: z.array(cardEffectSchema),
+    spellSchool: z.string().optional(),
+  })
+  .strict();
 
-export const equipmentCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Équipement"),
-  equipmentType: z.enum([
-    "Arme",
-    "Armure",
-    "Bijou",
-    "Bouclier",
-    "Dofus",
-    "Familier",
-    "Objet",
-  ]),
-  durability: z.number().optional(),
-  requirements: requirementsSchema.optional(),
-});
+export const equipmentCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Équipement"),
+    equipmentType: z.enum([
+      "Arme",
+      "Armure",
+      "Bijou",
+      "Bouclier",
+      "Dofus",
+      "Familier",
+      "Objet",
+    ]),
+    durability: z.number().optional(),
+    requirements: requirementsSchema.optional(),
+  })
+  .strict();
 
-export const zoneCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Zone"),
-  effects: z.array(cardEffectSchema),
-  zoneType: z.string().optional(),
-});
+export const zoneCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Zone"),
+    effects: z.array(cardEffectSchema),
+    zoneType: z.string().optional(),
+  })
+  .strict();
 
-export const roomCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Salle"),
-  effects: z.array(cardEffectSchema),
-  roomType: z.string().optional(),
-});
+export const roomCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Salle"),
+    effects: z.array(cardEffectSchema),
+    roomType: z.string().optional(),
+  })
+  .strict();
 
-export const dofusCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Dofus"),
-  effects: z.array(cardEffectSchema),
-  requirements: requirementsSchema.optional(),
-});
+export const dofusCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Dofus"),
+    effects: z.array(cardEffectSchema),
+    requirements: requirementsSchema.optional(),
+  })
+  .strict();
 
-export const heroCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Héros"),
-  class: z.string(),
-  // Donnée réelle : `level` est un stat élémentaire {value, element} (25/26
-  // Héros), parfois un simple nombre (1 carte) — accepter les deux formes.
-  level: z.union([z.number(), elementalStatSchema]).optional(),
-  recto: heroFaceSchema,
-  verso: heroFaceSchema.optional(),
-});
+export const heroCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Héros"),
+    class: z.string(),
+    // Donnée réelle : `level` est un stat élémentaire {value, element} (25/26
+    // Héros), parfois un simple nombre (1 carte) — accepter les deux formes.
+    level: z.union([z.number(), elementalStatSchema]).optional(),
+    recto: heroFaceSchema,
+    verso: heroFaceSchema.optional(),
+  })
+  .strict();
 
-export const protectorCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Protecteur"),
-  stats: baseStatsSchema,
-  effects: z.array(cardEffectSchema),
-  guardianType: z.string().optional(),
-});
+export const protectorCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Protecteur"),
+    stats: baseStatsSchema,
+    effects: z.array(cardEffectSchema),
+    guardianType: z.string().optional(),
+  })
+  .strict();
 
-export const havenBagCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Havre-Sac"),
-  effects: z.array(cardEffectSchema),
-  capacity: z.number().optional(),
-});
+export const havenBagCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Havre-Sac"),
+    effects: z.array(cardEffectSchema),
+    capacity: z.number().optional(),
+  })
+  .strict();
 
-export const elementalAllyCardSchema = baseCardSchema.extend({
-  mainType: z.literal("Allié Élémentaire"),
-  stats: baseStatsSchema,
-  elements: z.array(cardElementSchema),
-  // Donnée réelle : `elementalAffinity` est présent mais vide ({}) pour les
-  // Alliés Élémentaires de Draft — `primary` doit donc être optionnel.
-  elementalAffinity: z
-    .object({
-      primary: cardElementSchema.optional(),
-      secondary: cardElementSchema.optional(),
-    })
-    .optional(),
-});
+export const elementalAllyCardSchema = baseCardSchema
+  .extend({
+    mainType: z.literal("Allié Élémentaire"),
+    stats: baseStatsSchema,
+    elements: z.array(cardElementSchema),
+    // Donnée réelle : `elementalAffinity` est présent mais vide ({}) pour les
+    // Alliés Élémentaires de Draft — `primary` doit donc être optionnel.
+    elementalAffinity: z
+      .object({
+        primary: cardElementSchema.optional(),
+        secondary: cardElementSchema.optional(),
+      })
+      .optional(),
+  })
+  .strict();
 
 export const cardSchema = z.discriminatedUnion("mainType", [
   allyCardSchema,

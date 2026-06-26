@@ -35,4 +35,23 @@ describe("validation du schéma de cartes (public/data)", () => {
       expect(failures, failures.slice(0, 5).join(" | ")).toHaveLength(0);
     });
   }
+
+  it("devrait rejeter une carte avec une clé inconnue (schéma strict)", () => {
+    const validCard = {
+      id: "test-1",
+      name: "Carte de test",
+      mainType: "Action",
+      subTypes: [],
+      extension: { name: "Astrub" },
+      rarity: "Commune",
+      artists: [],
+      effects: [],
+    };
+    // La carte minimale est valide telle quelle…
+    expect(cardSchema.safeParse(validCard).success).toBe(true);
+    // …mais ajouter une clé top-level inconnue doit FAIRE ÉCHOUER le parse.
+    expect(cardSchema.safeParse({ ...validCard, __bogus: true }).success).toBe(
+      false,
+    );
+  });
 });
