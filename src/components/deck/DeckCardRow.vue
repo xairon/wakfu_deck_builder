@@ -19,6 +19,31 @@
       {{ dc.card.mainType
       }}<span v-if="dc.card.stats?.pa"> · {{ dc.card.stats.pa }} PA</span>
     </span>
+    <span
+      v-if="hasMultipleEditions"
+      class="shrink-0"
+      @mouseenter="preview.hide()"
+    >
+      <select
+        class="select select-ghost select-xs h-6 min-h-0 max-w-[7.5rem] truncate font-mono text-[10px] uppercase tracking-wider"
+        :value="dc.card.id"
+        :title="`Édition : ${dc.card.extension.name}`"
+        :aria-label="`Édition de ${dc.card.name}`"
+        @change="
+          $emit(
+            'set-edition',
+            dc.card.id,
+            editions.find(
+              (e) => e.id === ($event.target as HTMLSelectElement).value,
+            )!,
+          )
+        "
+      >
+        <option v-for="e in editions" :key="e.id" :value="e.id">
+          {{ e.extension.name }}
+        </option>
+      </select>
+    </span>
     <span class="ml-1 flex shrink-0 items-center gap-1.5">
       <button
         class="text-base-content/40 hover:text-primary"
@@ -67,11 +92,14 @@
 
 <script setup lang="ts">
 import type { Card, DeckCard } from "@/types/cards";
+import { computed } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
+import { useCardStore } from "@/stores/cardStore";
 
 const preview = useCardPreview();
+const cardStore = useCardStore();
 
-defineProps<{
+const props = defineProps<{
   dc: DeckCard;
   spineColor: string;
 }>();
@@ -80,5 +108,9 @@ defineEmits<{
   "move-to-reserve": [id: string];
   remove: [id: string];
   add: [card: Card];
+  "set-edition": [cardId: string, printing: Card];
 }>();
+
+const editions = computed(() => cardStore.printingsOf(props.dc.card));
+const hasMultipleEditions = computed(() => editions.value.length > 1);
 </script>
