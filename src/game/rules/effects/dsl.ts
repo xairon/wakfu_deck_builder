@@ -69,8 +69,13 @@ function parseSentence(
   if (m) return { op: "gainXp", n: toNumber(m[1]) };
   m = sentence.match(/^pioche[zr] (une|deux|trois|\d+) cartes?$/);
   if (m) return { op: "draw", n: toNumber(m[1]) };
-  // « Chaque joueur pioche N carte(s). » — pioche symétrique (joueur actif d'abord).
+  // « Chaque joueur pioche N carte(s). » / « Tous les joueurs piochent N carte(s). »
+  // — pioche symétrique (joueur actif d'abord).
   m = sentence.match(/^chaque joueur pioche (une|deux|trois|\d+) cartes?$/);
+  if (m) return { op: "eachPlayerDraws", n: toNumber(m[1]) };
+  m = sentence.match(
+    /^tous les joueurs piochent (une|deux|trois|\d+) cartes?$/,
+  );
   if (m) return { op: "eachPlayerDraws", n: toNumber(m[1]) };
   m = sentence.match(
     /^(?:gagne[zr]|votre heros gagne) (\d+) (?:pv|points? de vie)$/,
@@ -86,6 +91,26 @@ function parseSentence(
       stat: m[2] as "pa" | "pm",
       n: toNumber(m[1]),
     };
+  // « Tous vos adversaires perdent N PA/PM jusqu'à la fin du tour. » — en 1v1,
+  // l'unique adversaire ; cible déterministe (pas « de votre choix »).
+  m = sentence.match(
+    /^tous vos adversaires perdent (\d+) (pa|pm) jusqu['’]a la fin du tour$/,
+  );
+  if (m)
+    return {
+      op: "oppLoseStatTurn",
+      stat: m[2] as "pa" | "pm",
+      n: toNumber(m[1]),
+    };
+  // « Votre Héros gagne +N en Force jusqu'à la fin du tour. » — bonus de Force
+  // temporaire sur VOTRE Héros (sujet fixe, pas de choix).
+  m = sentence.match(
+    /^votre heros gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m) return { op: "buffForceHeroSelf", n: toNumber(m[1]) };
+  // « Redressez votre Héros. » — redresse VOTRE Héros (pas de choix).
+  m = sentence.match(/^redressez votre heros$/);
+  if (m) return { op: "untapHeroSelf" };
   m = sentence.match(
     /^(?:inflige[zr] (\d+) dommages? au heros adverse|le heros adverse perd (\d+) (?:pv|points? de vie))$/,
   );

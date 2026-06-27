@@ -2805,7 +2805,17 @@
         "description": "Tous les joueurs piochent une carte.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "eachPlayerDraws",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["each-player-draws"]
       },
       {
         "description": "Le pouvoir d'Ewesson Smisse se déclenche à chaque fois qu'une carte est piochée. Si un joueur adverse doit piocher plusieurs cartes en une seule fois, il subit autant de Dommages que de cartes piochées, sous forme de paquets de 1 Dommage .",

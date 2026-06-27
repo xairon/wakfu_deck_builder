@@ -294,14 +294,33 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceHeroSelf",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-hero-self"]
       },
       {
         "description": "Redressez votre Héros.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "untapHeroSelf"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["untap-hero-self"]
       },
       {
         "description": "Votre Héros regagne 3 PV.",
@@ -1888,7 +1907,18 @@
         "description": "Tous vos adversaires perdent 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "oppLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["opp-lose-stat-turn"]
       },
       {
         "description": "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien.",

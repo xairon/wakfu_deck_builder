@@ -5352,7 +5352,17 @@
         "description": "Quand Mik Vendeta apparaït, votre Héros gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "buffForceHeroSelf",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-hero-self"]
       }
     ],
     "keywords": [],

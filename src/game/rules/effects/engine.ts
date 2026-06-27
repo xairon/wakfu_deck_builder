@@ -525,6 +525,50 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "oppLoseStatTurn") {
+        // « Tous vos adversaires perdent N PA/PM » — en 1v1, le Héros adverse.
+        const oppHeroId = deps.getState().seats[otherSeat(seat)].heroInstanceId;
+        if (oppHeroId) {
+          deps.dispatch(
+            incCounterVerb(
+              otherSeat(seat),
+              oppHeroId,
+              op.stat === "pa" ? "paMod" : "pmMod",
+              -op.n,
+              true,
+            ),
+            say(
+              seat,
+              `${deps.playerName(otherSeat(seat))} perd ${op.n} ${op.stat.toUpperCase()} jusqu'à la fin du tour.`,
+            ),
+          );
+        }
+      } else if (op.op === "buffForceHeroSelf") {
+        // « Votre Héros gagne +N en Force » — jeton forceMod (fin de tour).
+        const heroId = deps.getState().seats[seat].heroInstanceId;
+        if (heroId) {
+          deps.dispatch(
+            incCounterVerb(seat, heroId, "forceMod", op.n, true),
+            say(
+              seat,
+              `Votre Héros gagne +${op.n} en Force jusqu'à la fin du tour.`,
+            ),
+          );
+        }
+      } else if (op.op === "untapHeroSelf") {
+        // « Redressez votre Héros » — SET_ORIENTATION upright (no-op si déjà dressé).
+        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const hero = heroId ? deps.getState().instances[heroId] : null;
+        if (heroId && hero && hero.orientation === "tapped") {
+          deps.dispatch(
+            {
+              actor: seat,
+              type: "SET_ORIENTATION",
+              payload: { instanceId: heroId, orientation: "upright" },
+            },
+            say(seat, "Votre Héros est redressé."),
+          );
+        }
       } else if (op.op === "destroySelf") {
         const src = sourceId ? deps.getState().instances[sourceId] : null;
         const inPlay =

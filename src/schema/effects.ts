@@ -68,6 +68,18 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     stat: z.enum(["pa", "pm"]),
     n: z.number(),
   }),
+  // « Tous vos adversaires perdent N PA/PM jusqu'à la fin du tour. » — en 1v1
+  // l'unique adversaire ; pas de « de votre choix » (cible déterministe).
+  z.object({
+    op: z.literal("oppLoseStatTurn"),
+    stat: z.enum(["pa", "pm"]),
+    n: z.number(),
+  }),
+  // « Votre Héros gagne +N en Force jusqu'à la fin du tour. » — jeton forceMod
+  // sur VOTRE Héros (purgé en fin de tour), comme buffForceTarget mais sujet fixe.
+  z.object({ op: z.literal("buffForceHeroSelf"), n: z.number() }),
+  // « Redressez votre Héros. » — SET_ORIENTATION upright sur VOTRE Héros.
+  z.object({ op: z.literal("untapHeroSelf") }),
   z.object({ op: z.literal("tapSelf") }),
   z.object({
     op: z.literal("combatModSelf"),

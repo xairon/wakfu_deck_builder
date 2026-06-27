@@ -132,6 +132,25 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Réduit temporairement les PA ou PM jusqu'à la fin du tour.",
   },
   {
+    id: "opp-lose-stat-turn",
+    label: "Adversaire perd des PA/PM",
+    category: "contrôle",
+    glossary:
+      "Réduit les PA ou PM de l'adversaire jusqu'à la fin du tour (cible déterministe).",
+  },
+  {
+    id: "buff-force-hero-self",
+    label: "Bonus de Force (Héros)",
+    category: "tempo",
+    glossary: "Votre Héros gagne un bonus de Force temporaire.",
+  },
+  {
+    id: "untap-hero-self",
+    label: "Redressement (votre Héros)",
+    category: "tempo",
+    glossary: "Redresse votre Héros.",
+  },
+  {
     id: "tap-self",
     label: "Inclinaison (soi)",
     category: "tempo",
@@ -197,6 +216,9 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   shuffleDeck: "shuffle-deck",
   destroySelf: "destroy-self",
   loseStatTurn: "lose-stat-turn",
+  oppLoseStatTurn: "opp-lose-stat-turn",
+  buffForceHeroSelf: "buff-force-hero-self",
+  untapHeroSelf: "untap-hero-self",
   tapSelf: "tap-self",
   combatModSelf: "combat-mod-self",
   buffForceAlliesMondeTurn: "buff-force-allies-monde",
