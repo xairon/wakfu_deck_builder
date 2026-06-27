@@ -918,6 +918,31 @@ function compileBody(
   if (!sentences.length) return null;
   const ops: EffectOp[] = [];
   for (const s of sentences) {
+    // CLAUSE RÉSIDUELLE « [cet Allié (ou Héros) / il / elle] ne peut pas se
+    // redresser jusqu'au début de votre prochain tour » (les deux ordres) :
+    // se rapporte à la cible inclinée par la phrase précédente (tapTarget) —
+    // on marque cette op `cannotRedress`. Pandrista, Kolo-Kolko, Boufdégou…
+    // STRICT : sans tapTarget précédent, le référent est ambigu → manuel.
+    if (
+      /^(?:cet allie(?: ou heros)?|cette carte|il|elle) ne peut pas se redresser jusqu['’]au debut de votre prochain tour$/.test(
+        s,
+      ) ||
+      /^jusqu['’]au debut de votre prochain tour,? (?:cet allie(?: ou heros)?|cette carte|il|elle) ne peut pas se redresser$/.test(
+        s,
+      )
+    ) {
+      const tapOp = [...ops]
+        .reverse()
+        .find(
+          (o): o is Extract<EffectOp, { op: "tapTarget" }> =>
+            o.op === "tapTarget",
+        );
+      if (tapOp) {
+        tapOp.cannotRedress = true;
+        continue;
+      }
+      return null;
+    }
     if (s === "il apparait incline" || s === "ils apparaissent inclines") {
       // se rapporte à la dernière mise-en-jeu (le mélange peut s'être intercalé :
       // « …mettez-le en jeu, puis mélangez… ») — recherche-Pioche (searchDeck,

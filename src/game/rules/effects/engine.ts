@@ -1220,7 +1220,17 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                   t.op.n,
                 )
               : t.op.op === "tapTarget"
-                ? resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
+                ? resolveTapTarget(
+                    deps.rulesCtx(),
+                    t.seat,
+                    instanceId,
+                    // « … ne peut pas se redresser jusqu'au début de votre
+                    // prochain tour » : jeton noUntapUntilTurn = tour + 2 (même
+                    // borne que la Trêve), posé sur la cible choisie.
+                    t.op.cannotRedress
+                      ? deps.getState().turn.number + 2
+                      : undefined,
+                  )
                 : t.op.op === "untapTarget"
                   ? resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId)
                   : t.op.op === "returnToHand"

@@ -63,7 +63,10 @@ describe("compileEffectText — clause de lieu intégrée (onArrive)", () => {
   });
 
   it("le préfixe nu « apparaît, … » (sans lieu) reste compilé (régression)", () => {
-    const c = compileEffectText("Quand Foo apparaît, piochez une carte.", "Foo");
+    const c = compileEffectText(
+      "Quand Foo apparaît, piochez une carte.",
+      "Foo",
+    );
     expect(c).toEqual({ trigger: "onArrive", ops: [{ op: "draw", n: 1 }] });
   });
 

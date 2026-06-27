@@ -37,7 +37,15 @@ export function nextTurnEvents(state: GameState): DraftEvent[] {
     const inPlay =
       inst.location.zone === "monde" || inst.location.zone === "havreSac";
     if (inst.controller !== next || !inPlay) continue;
-    if (inst.orientation === "tapped") {
+    // « ne peut pas se redresser jusqu'au début de votre prochain tour »
+    // (noUntapUntilTurn, posé par tapTarget{cannotRedress}) : on SAUTE le
+    // redressement tant que le jeton est actif (valeur > tour entrant — même
+    // borne que la Trêve, lue sur l'INSTANTANÉ : la purge ci-dessus n'est pas
+    // encore appliquée). Le jeton expire au début du tour de l'auteur de
+    // l'effet (isTurnToken : nextNumber ≥ valeur), libérant le redressement
+    // au tour suivant du contrôleur de la cible.
+    const noUntapUntil = inst.counters.tokens?.noUntapUntilTurn ?? 0;
+    if (inst.orientation === "tapped" && noUntapUntil <= nextNumber) {
       events.push(untap(next, inst.instanceId));
     }
     if (inst.counters.damage) {

@@ -9,7 +9,14 @@ import type { DraftEvent, InstanceId } from "../../types/events";
 import type { Seat } from "../../types/zones";
 import { otherSeat } from "../../types/zones";
 import type { CombatStance, DamageMod, RuleEvent, RulesCtx } from "../types";
-import { discard, incCounter, move, tap, untap } from "../../engine/verbs";
+import {
+  discard,
+  incCounter,
+  move,
+  setCounter,
+  tap,
+  untap,
+} from "../../engine/verbs";
 import { normWord, xpValue } from "../cardAttrs";
 import { effectiveForce } from "../stats";
 import { reduceDamage } from "./damageMods";
@@ -359,23 +366,42 @@ export function resolveDamageTargetByForce(
  * « Inclinez l'Allié (ou Héros) de votre choix » : incline la cible
  * (SET_ORIENTATION tapped). No-op si déjà inclinée (« Incliner » du glossaire
  * = passer d'une carte dressée à inclinée ; sans effet sur une carte inclinée).
+ *
+ * `cannotRedressUntil` (clause « cet Allié ne peut pas se redresser jusqu'au
+ * début de votre prochain tour » — Pandrista, Kolo-Kolko, Boufdégou…) : pose en
+ * plus un jeton `noUntapUntilTurn` (= tour courant + 2) sur la MÊME cible. Le
+ * jeton fait sauter le redressement de début de tour (cf. nextTurnEvents) tant
+ * qu'il est actif, puis se purge au début du prochain tour du contrôleur de
+ * l'effet (isTurnToken). FIDÉLITÉ (ruling Pandrista) : le jeton est posé MÊME
+ * si la cible est DÉJÀ inclinée (« il n'est pas incliné de nouveau mais ne peut
+ * tout de même pas se redresser par la suite ») — l'inclinaison reste un no-op,
+ * pas l'interdiction.
  */
 export function resolveTapTarget(
   ctx: RulesCtx,
   actor: Seat,
   targetId: InstanceId,
+  cannotRedressUntil?: number,
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   if (!inst) return { events: [], log: [] };
-  if (inst.orientation !== "upright")
-    return {
-      events: [],
-      log: [`${nameOf(ctx, targetId)} est déjà incliné.`],
-    };
-  return {
-    events: [tap(actor, targetId)],
-    log: [`${nameOf(ctx, targetId)} est incliné.`],
-  };
+  const events: DraftEvent[] = [];
+  const log: string[] = [];
+  if (inst.orientation === "upright") {
+    events.push(tap(actor, targetId));
+    log.push(`${nameOf(ctx, targetId)} est incliné.`);
+  } else {
+    log.push(`${nameOf(ctx, targetId)} est déjà incliné.`);
+  }
+  if (cannotRedressUntil !== undefined) {
+    events.push(
+      setCounter(actor, targetId, "noUntapUntilTurn", cannotRedressUntil, true),
+    );
+    log.push(
+      `${nameOf(ctx, targetId)} ne peut pas se redresser jusqu'au début de votre prochain tour.`,
+    );
+  }
+  return { events, log };
 }
 
 /**

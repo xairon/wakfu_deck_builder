@@ -38,9 +38,11 @@ export function isTurnToken(
   if (TURN_TOKENS.has(name)) return true;
   if (name.endsWith("CombatMod")) return true;
   if (TURN_TOKEN_PREFIXES.some((p) => name.startsWith(p))) return true;
-  if (name === "treveUntilTurn") {
+  if (name === "treveUntilTurn" || name === "noUntapUntilTurn") {
     // expiré ssi le prochain tour atteint la borne (« jusqu'au début de
-    // votre prochain tour » : actif tant que tour courant < valeur)
+    // votre prochain tour » : actif tant que tour courant < valeur). Même
+    // cycle pour la Trêve (bouclier global) et l'interdiction de redressement
+    // (noUntapUntilTurn) — toutes deux datées en `tour + 2`.
     return (
       value !== undefined &&
       nextTurnNumber !== undefined &&

@@ -10857,7 +10857,19 @@
         "description": "Inclinez l'Allié ou Héros de votre choix. Jusqu'au début de votre prochain tour, cet Allié ou Héros ne peut pas se redresser.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "tapTarget",
+              "heroes": true,
+              "zones": ["monde"],
+              "cannotRedress": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-target"]
       },
       {
         "description": "Il est possible de jouer Pandrista sur un Allié ou Héros déjà incliné. Dans ce cas il n'est pas incliné de nouveau mais ne peut tout de même pas se redresser par la suite.",

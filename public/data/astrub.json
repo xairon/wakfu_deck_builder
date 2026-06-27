@@ -3988,7 +3988,18 @@
         "description": "Inclinez l'Allié de votre choix. Jusqu'au début de votre prochain tour, cet Allié ne peut pas se redresser.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "tapTarget",
+              "zones": ["monde"],
+              "cannotRedress": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-target"]
       },
       {
         "description": "Le second pouvoir empêche l'Allié choisi de se redresser aussi bien durant la Phase de Redressement que grâce au pouvoir d'une carte. Comme pour Pandrista, vous pouvez choisir un Allié qui est déjà incliné, dans ce cas il n'est pas incliné de nouveau.",

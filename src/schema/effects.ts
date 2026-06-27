@@ -201,6 +201,12 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     orientation: orientationFilterSchema.optional(),
     // Rôle de combat (« inclinez l'Allié attaquant / bloqueur de votre choix »).
     combatRole: combatRoleSchema.optional(),
+    // Clause résiduelle « cet Allié ne peut pas se redresser jusqu'au début de
+    // votre prochain tour » (Pandrista, Kolo-Kolko, Boufdégou…) : la cible
+    // choisie reçoit un jeton `noUntapUntilTurn` (= tour courant + 2) qui FAIT
+    // SAUTER son redressement de début de tour tant que le jeton est actif (cf.
+    // nextTurnEvents). Inclinaison + interdiction portent sur la MÊME cible.
+    cannotRedress: z.boolean().optional(),
     zones: zonesSchema,
   }),
   z.object({
