@@ -11,6 +11,7 @@ import { otherSeat } from "../types/zones.ts";
 import type { CombatTarget, RulesCtx } from "./types";
 import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
+import { combatKeywords } from "./effects/keywords.ts";
 import { planCost } from "./resources.ts";
 
 /** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
@@ -89,10 +90,15 @@ export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
     // « ne peut ni attaquer, ni bloquer » (pouvoir continu) — exclu des
     // attaquants éligibles (volet blocage géré par eligibleBlockers/cannotBlock).
     if (cannotAttackOrBlock(ctx, inst.instanceId)) continue;
-    // le Héros n'a pas le mal d'invocation (en jeu depuis la mise en place)
+    // le Héros n'a pas le mal d'invocation (en jeu depuis la mise en place).
+    // Agressivité (glossaire) : un Allié possédant ce mot-clé PEUT être déclaré
+    // attaquant le tour où il apparaît — on lève UNIQUEMENT le mal d'invocation
+    // (toutes les autres contraintes ci-dessus restent vérifiées).
     if (
       card.mainType === "Allié" &&
-      arrivedTurnOf(inst) >= ctx.state.turn.number
+      arrivedTurnOf(inst) >= ctx.state.turn.number &&
+      !combatKeywords(card, inst.face === "verso" ? "verso" : "recto")
+        .agressivite
     )
       continue;
     out.push(inst.instanceId);
@@ -120,12 +126,37 @@ export function eligibleTargets(ctx: RulesCtx, seat: Seat): CombatTarget[] {
   return out;
 }
 
+/** Mots-clés de combat d'une instance en jeu (face courante incluse). */
+function instanceKeywords(ctx: RulesCtx, id: InstanceId) {
+  const inst = ctx.state.instances[id];
+  const card = inst ? ctx.getCard(inst.cardId) : null;
+  return combatKeywords(card, inst?.face === "verso" ? "verso" : "recto");
+}
+
+/**
+ * Agilité (glossaire) : un attaquant possédant Agilité ne peut être bloqué que
+ * par un bloqueur possédant lui aussi Agilité. `null` (attaquant non précisé) →
+ * pas de filtre Agilité. Un attaquant sans Agilité est bloqué normalement.
+ */
+export function blockerBlockedByAgilite(
+  ctx: RulesCtx,
+  blockerId: InstanceId,
+  attackerId: InstanceId | null,
+): boolean {
+  if (!attackerId) return false;
+  if (!instanceKeywords(ctx, attackerId).agilite) return false;
+  return !instanceKeywords(ctx, blockerId).agilite;
+}
+
 /** Bloqueurs légaux (704) : Alliés redressés du Monde du défenseur, hors
- *  cible — et hors « ne peut pas bloquer » (pouvoir continu, ex. Jicé). */
+ *  cible — et hors « ne peut pas bloquer » (pouvoir continu, ex. Jicé).
+ *  `attacker` (optionnel) : si fourni et qu'il possède Agilité, les bloqueurs
+ *  sans Agilité sont exclus (mot-clé Agilité du glossaire). */
 export function eligibleBlockers(
   ctx: RulesCtx,
   defender: Seat,
   target: CombatTarget,
+  attacker: InstanceId | null = null,
 ): InstanceId[] {
   const out: InstanceId[] = [];
   for (const id of ctx.state.monde) {
@@ -134,7 +165,9 @@ export function eligibleBlockers(
     if (inst.orientation !== "upright") continue;
     if (id === target.instanceId) continue;
     const card = ctx.getCard(inst.cardId);
-    if (card && canBlockCard(card) && !cannotBlock(ctx, id)) out.push(id);
+    if (!card || !canBlockCard(card) || cannotBlock(ctx, id)) continue;
+    if (blockerBlockedByAgilite(ctx, id, attacker)) continue;
+    out.push(id);
   }
   return out;
 }

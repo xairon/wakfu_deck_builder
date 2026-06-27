@@ -21,9 +21,24 @@ export interface CombatKeywords {
   /** Prévention par élément normalisé (minuscules). */
   resistances: Record<string, number>;
   geant: boolean;
+  /**
+   * Agilité (pouvoir continu) : « Ce Héros ou cet Allié ne peut pas être bloqué
+   * par un Allié ou un Héros qui ne possède pas Agilité » — légalité de blocage.
+   */
+  agilite: boolean;
+  /**
+   * Agressivité : « Un Allié possédant Agressivité peut être déclaré comme
+   * attaquant le tour où il apparaît » — lève le mal d'invocation à l'attaque.
+   */
+  agressivite: boolean;
 }
 
-const NONE: CombatKeywords = { resistances: {}, geant: false };
+const NONE: CombatKeywords = {
+  resistances: {},
+  geant: false,
+  agilite: false,
+  agressivite: false,
+};
 
 export function combatKeywords(
   card: Card | null,
@@ -58,7 +73,11 @@ export function combatKeywords(
   for (const e of effects ?? []) {
     if (String(e?.description ?? "").trim() === "Géant") geant = true;
   }
-  return { resistances, geant };
+  // Agilité / Agressivité : mots-clés structurés (glossaire, sans valeur) —
+  // lus exactement comme Géant (face active du Héros incluse).
+  const agilite = (keywords ?? []).some((k) => k?.name === "Agilité");
+  const agressivite = (keywords ?? []).some((k) => k?.name === "Agressivité");
+  return { resistances, geant, agilite, agressivite };
 }
 
 /**
@@ -113,7 +132,14 @@ export function effectiveKeywords(
     // « gagne Géant jusqu'à la fin du TOUR » (grantGeantSelf/grantGeantTarget) :
     // jeton TURN-scoped posé sur l'instance, purgé en fin de tour (isTurnToken).
     !!tokens.geantTurnMod;
-  return { resistances, geant };
+  // Agilité / Agressivité : imprimés sur la face courante (aucun jeton ni bonus
+  // d'équipement ne les confère aujourd'hui) — repris tels quels de `base`.
+  return {
+    resistances,
+    geant,
+    agilite: base.agilite,
+    agressivite: base.agressivite,
+  };
 }
 
 /** Dommages effectifs après Résistance de la cible (par infliction, 7469). */

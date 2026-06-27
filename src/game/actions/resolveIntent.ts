@@ -43,6 +43,7 @@ import {
   eligibleAttackers,
   eligibleTargets,
   eligibleBlockers,
+  blockerBlockedByAgilite,
   pmOf,
 } from "../rules/legality.ts";
 import { planCost } from "../rules/resources.ts";
@@ -441,6 +442,13 @@ export function resolveIntent(
           };
         if (!attackerSet.has(attackerId))
           return { error: "Blocage assigné à un non-attaquant." };
+        // Agilité (glossaire) : un attaquant possédant Agilité ne peut être
+        // bloqué que par un bloqueur possédant lui aussi Agilité.
+        if (blockerBlockedByAgilite(ctx, blockerId, attackerId))
+          return {
+            error:
+              "Bloqueur sans Agilité ne peut pas bloquer un attaquant possédant Agilité.",
+          };
       }
       // Ripostes (707.1) : le serveur REJETTE les choix illégaux (clé ≠ Cible,
       // ou valeur hors des attaquants déclarés) plutôt que de les persister et

@@ -1539,15 +1539,21 @@ export const useGameStore = defineStore("game", () => {
       ? eligibleTargets(rulesCtx(), turn.value.active).map((t) => t.instanceId)
       : [],
   );
-  const combatBlockerIds = computed(() =>
-    combat.value?.step === "blockers" && combat.value.target
-      ? eligibleBlockers(
-          rulesCtx(),
-          otherSeat(turn.value.active),
-          combat.value.target,
-        )
-      : [],
-  );
+  const combatBlockerIds = computed(() => {
+    const c = combat.value;
+    if (c?.step !== "blockers" || !c.target) return [];
+    const def = otherSeat(turn.value.active);
+    // Agilité (glossaire) : un bloqueur est sélectionnable s'il peut bloquer AU
+    // MOINS un attaquant déclaré. L'union sur les attaquants garde un bloqueur
+    // sans Agilité éligible tant qu'un attaquant sans Agilité existe ; il n'est
+    // exclu que si TOUS les attaquants possèdent Agilité.
+    const ctx = rulesCtx();
+    const attackers = c.attackers.length ? c.attackers : [null];
+    const union = new Set<string>();
+    for (const a of attackers)
+      for (const id of eligibleBlockers(ctx, def, c.target, a)) union.add(id);
+    return [...union];
+  });
   /** Attaquants légaux du joueur actif HORS combat — gate du bouton « Attaquer ». */
   const eligibleAttackerIds = computed(() =>
     eligibleAttackers(rulesCtx(), turn.value.active),
