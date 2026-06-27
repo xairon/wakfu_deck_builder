@@ -896,32 +896,65 @@ export function compileStaticEffectText(
 }
 
 /**
- * Compile un DÉCLENCHÉ DE COMBAT « Quand [self] attaque, il gagne +N en
- * Force et +N PM [et Géant] jusqu'à la fin du combat. » (Bruss Ouilis,
- * 804.5). STRICT : le sujet doit être la carte elle-même, le texte entier
- * doit correspondre. Les jetons posés (`forceCombatMod`/`pmCombatMod`/
- * `geantCombatMod`) sont purgés à la fin du combat.
+ * Compile un DÉCLENCHÉ DE COMBAT « Quand [self] attaque, CORPS » (804.5).
+ * STRICT : le sujet du déclencheur doit être la carte elle-même.
+ *
+ * Deux voies, dans cet ordre :
+ *
+ *  (1) FORME FIXE de durée COMBAT — « …, il gagne +N en Force et +N PM
+ *      [et Géant] jusqu'à la fin du COMBAT » (Bruss Ouilis). Modélisée par
+ *      `combatModSelf` : ses jetons (`forceCombatMod`/`pmCombatMod`/
+ *      `geantCombatMod`) sont purgés à la FIN DU COMBAT. C'est le SEUL op qui
+ *      capture fidèlement la durée « combat » d'un bonus de Force, d'où sa
+ *      priorité — un même bonus routé vers `buffForceSelf` (durée TOUR) serait
+ *      infidèle.
+ *
+ *  (2) CORPS ACTOR-BOUND GÉNÉRALISÉ « …, il/elle BODY » où BODY se compile via
+ *      `compileActorBoundBody` (SELF = acteur). Le bus (`attackerFrames` →
+ *      `enqueueTriggered`) enfile la frame avec `sourceId = attaquant` et
+ *      `seat = contrôleur` : self est donc déjà l'acteur des ops
+ *      `damageTarget`/`damageTargetByForce`/`buffForceSelf`. Formes admises :
+ *        - « il/elle inflige N Dommages à l'Allié (ou Héros) de votre choix … »
+ *          (Klara Vane) → damageTarget ;
+ *        - « il/elle inflige sa Force en Dommages à … » → damageTargetByForce ;
+ *        - « il/elle gagne +N en Force jusqu'à la fin du TOUR » (Barak Oktel)
+ *          → buffForceSelf (durée TOUR — distincte de la voie (1)).
+ *
+ * DURÉE — distinction critique (« an approximation of gameplay is worse than a
+ * manual effect ») : « jusqu'à la fin du combat » ⇒ combatModSelf (voie 1),
+ * « jusqu'à la fin du tour » ⇒ buffForceSelf (voie 2). Un bonus de Force sans
+ * durée (ou de durée non reconnue) n'est PAS compilé par compileActorBoundBody
+ * → il reste manuel. Toute autre forme (conditionnelle « si … », valeur
+ * dynamique « égal à … », référence à la cible du combat…) → null (manuel).
  */
 export function compileCombatTriggerText(
   text: string,
   cardName: string,
+  sourceElement = "Neutre",
 ): CompiledEffect | null {
   const body = norm(text).replace(/\.$/, "").trim();
-  const m = body.match(
+  // (1) Forme fixe de durée COMBAT (combatModSelf) — priorité absolue.
+  const fixed = body.match(
     /^quand (.{1,60}?) attaque\s*,\s*(?:il|elle) gagne \+(\d+) en force\s*(?:,\s*|\s+et\s+)\+(\d+) pm( et geant)? jusqu['’]a la fin du combat$/,
   );
+  if (fixed && subjectIsSelf(fixed[1], cardName))
+    return {
+      trigger: "onSelfAttacks",
+      ops: [
+        {
+          op: "combatModSelf",
+          force: toNumber(fixed[2]),
+          pm: toNumber(fixed[3]),
+          ...(fixed[4] ? { geant: true } : {}),
+        },
+      ],
+    };
+  // (2) CORPS ACTOR-BOUND généralisé « il/elle BODY » (SELF = acteur via le bus).
+  const m = body.match(/^quand (.{1,60}?) attaque\s*,\s*(?:il|elle)\s+(.+)$/);
   if (!m || !subjectIsSelf(m[1], cardName)) return null;
-  return {
-    trigger: "onSelfAttacks",
-    ops: [
-      {
-        op: "combatModSelf",
-        force: toNumber(m[2]),
-        pm: toNumber(m[3]),
-        ...(m[4] ? { geant: true } : {}),
-      },
-    ],
-  };
+  const ops = compileActorBoundBody(m[2], sourceElement);
+  if (!ops) return null;
+  return { trigger: "onSelfAttacks", ops };
 }
 
 /**
@@ -948,7 +981,7 @@ export function selfAttackEffects(
     const compiled =
       e?.compiled ??
       (text && !e?.requiresIncline
-        ? compileCombatTriggerText(text, card.name)
+        ? compileCombatTriggerText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onSelfAttacks")
       atoms.push({ ...compiled, text });

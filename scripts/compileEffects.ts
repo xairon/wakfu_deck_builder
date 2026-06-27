@@ -207,7 +207,7 @@ function compileEffects(
         ? compileTapEffectText(text, cardName, sourceElement)
         : isAction
           ? compileActionEffectText(text, cardName, sourceElement)
-          : (compileCombatTriggerText(text, cardName) ??
+          : (compileCombatTriggerText(text, cardName, sourceElement) ??
             compileAppearanceTriggerText(text, cardName, sourceElement) ??
             compileEffectText(text, cardName, sourceElement) ??
             compileTurnStartEffectText(text, cardName, sourceElement) ??

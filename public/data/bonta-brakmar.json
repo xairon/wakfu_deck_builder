@@ -1759,7 +1759,17 @@
         "description": "Quand Barak Okteïl attaque, il gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfAttacks",
+          "ops": [
+            {
+              "op": "buffForceSelf",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-self"]
       }
     ],
     "keywords": [],
@@ -9079,7 +9089,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfAttacks",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Feu",
+              "heroes": false,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [
