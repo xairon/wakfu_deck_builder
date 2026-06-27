@@ -11,6 +11,7 @@ export * from "./combat";
 export * from "./progress";
 export * from "./stats";
 export * from "./modifiers";
+export * from "./bearer";
 export * from "./destruction";
 export * from "./effects/keywords";
 export * from "./effects/dsl";

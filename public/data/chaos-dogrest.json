@@ -2345,7 +2345,15 @@
         "description": "Le Porteur du Dragouf gagne +2 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 2
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Détruisez le Dragouf : Tous les Équipements portés par le Porteur du Dragouf sur le point d'être détruits par une Action ou un pouvoir restent en jeu à la place.",

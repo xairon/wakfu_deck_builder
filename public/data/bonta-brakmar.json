@@ -1984,7 +1984,15 @@
         "description": "Le Porteur du Bébé Dragodinde gagne +1 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [

@@ -15,6 +15,7 @@ import { isHeroCard } from "../../../types/cards.ts";
 import type { InstanceId } from "../../types/events";
 import type { RulesCtx } from "../types";
 import { normElement } from "../cardAttrs.ts";
+import { bearerBonuses } from "../modifiers.ts";
 
 export interface CombatKeywords {
   /** Prévention par élément normalisé (minuscules). */
@@ -63,9 +64,10 @@ export function combatKeywords(
 /**
  * Mots-clés EFFECTIFS d'une instance en jeu : imprimés (face courante de
  * l'instance) + jetons (`geantMod`/`geantCombatMod` → Géant, `resMod_<el>` →
- * Résistance, posés par les effets — lots C/D). Les bonus conférés par
- * l'équipement arrivent au lot F. C'est la SEULE lecture correcte en
- * contexte de partie — `combatKeywords(card)` seul ignore face et jetons.
+ * Résistance, posés par les effets — lots C/D) + bonus conférés par
+ * l'équipement / la Monture PORTÉ(E) (305.x, `bearerBonus` → Résistance pour le
+ * Porteur). C'est la SEULE lecture correcte en contexte de partie —
+ * `combatKeywords(card)` seul ignore face, jetons et équipement porté.
  */
 export function effectiveKeywords(
   ctx: RulesCtx,
@@ -82,6 +84,15 @@ export function effectiveKeywords(
     if (!m) continue;
     const el = normElement(m[1]);
     resistances[el] = (resistances[el] ?? 0) + value;
+  }
+  // 305.x — Résistance conférée au Porteur par l'équipement / la Monture porté(e)
+  // (« Le Porteur de X gagne Résistance N (Élément) »). Le bonus appartient au
+  // Porteur (la carte portée ne combat pas) : on le lit ici, jamais sur la carte
+  // portée elle-même (combatKeywords renvoie NONE pour un Équipement).
+  for (const b of bearerBonuses(ctx, id)) {
+    if (!b.resistance) continue;
+    const el = normElement(b.resistance.element);
+    resistances[el] = (resistances[el] ?? 0) + b.resistance.n;
   }
   const geant = base.geant || !!tokens.geantMod || !!tokens.geantCombatMod;
   return { resistances, geant };

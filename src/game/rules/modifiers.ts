@@ -10,7 +10,11 @@ import { isHeroCard } from "../../types/cards.ts";
 import type { InstanceId } from "../types/events";
 import type { Seat } from "../types/zones";
 import type { RulesCtx } from "./types";
-import { compileStaticEffectText, selfAttackEffects } from "./effects/dsl.ts";
+import {
+  compileBearerBonusText,
+  compileStaticEffectText,
+  selfAttackEffects,
+} from "./effects/dsl.ts";
 
 /**
  * Pouvoirs continus d'une carte (face courante pour un Héros) : forme
@@ -35,7 +39,11 @@ export function staticAbilitiesOf(
     const compiled =
       e?.compiled ??
       (text && !e?.requiresIncline
-        ? compileStaticEffectText(text, card.name)
+        ? // Repli runtime : pouvoir continu « Tant que … » OU bonus de Porteur
+          // « Le Porteur de X gagne … » (305.x) — les deux produisent un
+          // `trigger:"static"` lu identiquement ci-dessous.
+          (compileStaticEffectText(text, card.name) ??
+          compileBearerBonusText(text, card.name))
         : null);
     if (compiled?.trigger === "static" && compiled.static)
       out.push(compiled.static);
@@ -45,6 +53,36 @@ export function staticAbilitiesOf(
 
 function sideOf(ctx: RulesCtx, id: InstanceId): "recto" | "verso" {
   return ctx.state.instances[id]?.face === "verso" ? "verso" : "recto";
+}
+
+/**
+ * Pouvoirs de PORTEUR (305.x) effectifs sur un Porteur en jeu : les
+ * `StaticAbility` de kind `bearerBonus` portées par les cartes ATTACHÉES
+ * (`bearer.attachments` — Équipements / Montures), tant qu'elles sont en jeu.
+ * Le bonus appartient au PORTEUR (la carte portée ne combat pas) : c'est la
+ * lecture correcte depuis l'arrivée du modèle d'attachement (lot F). Seules les
+ * cartes co-localisées en Monde/Havre-Sac comptent (un équipement renvoyé en
+ * main n'est plus porté). Lu par `effectiveForce` (Force) et `combatKeywords`
+ * (Résistance).
+ */
+export function bearerBonuses(
+  ctx: RulesCtx,
+  bearerId: InstanceId,
+): Extract<StaticAbility, { kind: "bearerBonus" }>[] {
+  const bearer = ctx.state.instances[bearerId];
+  if (!bearer?.attachments?.length) return [];
+  const out: Extract<StaticAbility, { kind: "bearerBonus" }>[] = [];
+  for (const equipId of bearer.attachments) {
+    const equip = ctx.state.instances[equipId];
+    if (!equip) continue;
+    const zone = equip.location.zone;
+    if (zone !== "monde" && zone !== "havreSac") continue;
+    const card = ctx.getCard(equip.cardId);
+    for (const s of staticAbilitiesOf(card, sideOf(ctx, equipId))) {
+      if (s.kind === "bearerBonus") out.push(s);
+    }
+  }
+  return out;
 }
 
 /** « [X] ne peut pas bloquer. » (Jicé Aouaire) — lu par `eligibleBlockers`. */

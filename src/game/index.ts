@@ -32,6 +32,8 @@ export {
   playToWorld,
   discard,
   worldHavenSwap,
+  attach,
+  detach,
   tap,
   untap,
   flipLevel,

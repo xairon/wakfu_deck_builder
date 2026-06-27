@@ -938,7 +938,15 @@
         "description": "Le Porteur de la Dragodinde Émeraude gagne +1 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Quand le Porteur de la Dragodinde Émeraude attaque, vous gagnez 1 PM jusqu'à la fin du combat.",
@@ -2022,7 +2030,15 @@
         "description": "Le Porteur de la Dragodinde Prune gagne +1 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Tant que le Porteur de la Dragodinde Prune est attaquant, tous les Alliés adverses perdent tous les pouvoirs qui vous empêchent de les choisir.",
@@ -2400,7 +2416,15 @@
         "description": "Le Porteur de la Monture du Corbeau Noir gagne +2 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 2
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Quand la Monture du Corbeau Noir est Capturée, le joueur de votre choix se défausse d'une carte de sa main au hasard. Si son Porteur est le Corbeau Noir, redressez-le.",
@@ -3111,7 +3135,15 @@
         "description": "Le Porteur de la Dragodinde Ivoire gagne +1 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Tant que le Porteur de la Dragodinde Ivoire est attaquant, les Dommages sur le point d'être infligés par les pouvoirs de vos Alliés ou Héros attaquants sont augmentés de 1.",
@@ -4168,7 +4200,15 @@
         "description": "Le Porteur de la Dragodinde Turquoise gagne +1 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Tant que le Porteur la Dragodinde Turquoise est attaquant, chaque fois que vous détruisez un Allié adverse, vous pouvez piocher un nombre de cartes égal à la valeur d'XP de cet Allié. Si vous le faites, recyclez une carte de votre main.",

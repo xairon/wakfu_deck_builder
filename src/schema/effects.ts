@@ -416,6 +416,18 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("forceEqualsHandSize") }),
   z.object({ kind: z.literal("cannotBlock") }),
   z.object({ kind: z.literal("combatDamageReduction"), n: z.number() }),
+  // BONUS DE PORTEUR (305.x) : pouvoir continu d'un Équipement / d'une Monture
+  // PORTÉ(E) qui s'applique au PORTEUR tant qu'il est en jeu (« Le Porteur de X
+  // gagne +N en Force »). À la différence de `forceAura`, le bénéficiaire n'est
+  // pas une autre carte du Monde mais la créature à laquelle CETTE carte est
+  // attachée (lu via `bearer.attachments`). `force` : bonus de Force continu ;
+  // `resistance` : prévention par Élément normalisé (cumulée à la Résistance du
+  // Porteur). Au moins un des deux est présent.
+  z.object({
+    kind: z.literal("bearerBonus"),
+    force: z.number().optional(),
+    resistance: z.object({ element: z.string(), n: z.number() }).optional(),
+  }),
 ]);
 
 // « Quand un Allié [Famille]? [adverse]? apparaît … » : descripteur de VEILLE

@@ -18,6 +18,7 @@ import { join } from "node:path";
 import {
   compileActionEffectText,
   compileAppearanceTriggerText,
+  compileBearerBonusText,
   compileCombatTriggerText,
   compileEffectText,
   compileStaticEffectText,
@@ -223,7 +224,8 @@ function compileEffects(
             compileAppearanceTriggerText(text, cardName, sourceElement) ??
             compileEffectText(text, cardName, sourceElement) ??
             compileTurnStartEffectText(text, cardName, sourceElement) ??
-            compileStaticEffectText(text, cardName));
+            compileStaticEffectText(text, cardName) ??
+            compileBearerBonusText(text, cardName));
     if (compiled) {
       e.compiled = compiled;
       stats.compiled++;

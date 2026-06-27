@@ -1784,6 +1784,59 @@ export function compileStaticEffectText(
 }
 
 /**
+ * Compile un BONUS DE PORTEUR (305.x) : pouvoir CONTINU d'une carte PORTÉE
+ * (Équipement ou Monture) qui s'applique à son Porteur tant qu'elle est en jeu.
+ * Texte « Le Porteur de <self> gagne +N en Force[.] » ou « … gagne Résistance N
+ * (Élément)[.] ».
+ *
+ * STRICT (« an approximation of gameplay is worse than a manual effect ») :
+ *  - le sujet « Le Porteur de X » doit désigner la carte elle-même (X = son nom) ;
+ *  - le bonus doit être CONTINU : la clause « jusqu'à la fin du tour / du combat »
+ *    décrit une autre durée (buff temporaire, pas un bonus de Porteur porté) →
+ *    PAS compilé ici (resterait infidèle) ;
+ *  - la TOTALITÉ du texte doit correspondre (le `$` rejette « … et <icône> »,
+ *    « … et ne peut pas être choisi … », bonus composés → manuel). Les très
+ *    nombreux « gagne . » (icône perdue au scrape) ne matchent rien → manuel.
+ *
+ * N peut être NÉGATIF (« gagne -N en Force » / « gagne -N en Force ») : un malus
+ * de Porteur est un bonus de Force signé.
+ */
+export function compileBearerBonusText(
+  text: string,
+  cardName: string,
+): CompiledEffect | null {
+  const body = norm(text).replace(/\.$/, "").trim();
+  // « Le Porteur de/du/des/d' <self> gagne +N / -N en Force »
+  let m = body.match(
+    /^le porteur (?:de |du |des |de la |de l['’]\s?|d['’]\s?)?(.{1,60}?) gagne ([+-]?\d+) en force$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "bearerBonus", force: toNumber(m[2]) },
+      ops: [],
+    };
+  // « Le Porteur de <self> gagne Résistance N (Élément) » — prévention continue
+  // par Élément. L'Élément (capitalisé comme les autres Éléments des données)
+  // est stocké tel quel ; la lecture (combatKeywords) le normalise.
+  m = body.match(
+    /^le porteur (?:de |du |des |de la |de l['’]\s?|d['’]\s?)?(.{1,60}?) gagne resistance (\d+) \((feu|eau|terre|air|neutre)\)$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName)) {
+    const element = m[3].charAt(0).toUpperCase() + m[3].slice(1);
+    return {
+      trigger: "static",
+      static: {
+        kind: "bearerBonus",
+        resistance: { element, n: toNumber(m[2]) },
+      },
+      ops: [],
+    };
+  }
+  return null;
+}
+
+/**
  * Compile un DÉCLENCHÉ DE COMBAT « Quand [self] attaque, CORPS » (804.5).
  * STRICT : le sujet du déclencheur doit être la carte elle-même.
  *

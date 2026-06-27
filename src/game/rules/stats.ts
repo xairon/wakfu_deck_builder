@@ -17,7 +17,7 @@
 import type { InstanceId } from "../types/events";
 import type { CombatStance, RulesCtx } from "./types";
 import { forceValue, normWord } from "./cardAttrs.ts";
-import { staticAbilitiesOf } from "./modifiers.ts";
+import { bearerBonuses, staticAbilitiesOf } from "./modifiers.ts";
 
 /** Posture de combat minimale (805.1) : qui bloque actuellement. */
 export interface ForceStance {
@@ -121,6 +121,9 @@ export function effectiveForce(
   if (stanceBlockers(stance).includes(id)) {
     for (const s of statics) if (s.kind === "forceWhileBlocking") force += s.n;
   }
+  // 305.x — bonus de Force conférés par l'équipement / la Monture PORTÉ(E)
+  // (« Le Porteur de X gagne +N en Force »). Le bonus appartient au Porteur.
+  for (const b of bearerBonuses(ctx, id)) force += b.force ?? 0;
   return Math.max(
     0,
     force +

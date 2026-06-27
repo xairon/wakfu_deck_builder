@@ -106,6 +106,36 @@ export function worldHavenSwap(
   });
 }
 
+/**
+ * Attache un Équipement / une Monture à un Porteur (305.3) : l'équipement est
+ * co-localisé avec le Porteur et poussé dans `bearer.attachments` (reducer).
+ */
+export function attach(
+  seat: Seat,
+  equipmentId: InstanceId,
+  bearerId: InstanceId,
+): DraftEvent {
+  return { actor: seat, type: "ATTACH", payload: { equipmentId, bearerId } };
+}
+
+/**
+ * Détache un Équipement / une Monture (le retire des `attachments` de tout
+ * Porteur) et le déplace vers `to` (typiquement la Défausse à la destruction du
+ * Porteur, 305.x).
+ */
+export function detach(
+  seat: Seat,
+  equipmentId: InstanceId,
+  to: ZoneRef,
+  position: Position = top,
+): DraftEvent {
+  return {
+    actor: seat,
+    type: "DETACH",
+    payload: { equipmentId, to, position },
+  };
+}
+
 export function tap(seat: Seat, instanceId: InstanceId): DraftEvent {
   return {
     actor: seat,
