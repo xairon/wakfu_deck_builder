@@ -2764,7 +2764,22 @@
         "description": "Détruisez un de vos Alliés : Piochez une carte.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costDestroyControlled",
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-destroy-controlled", "draw"]
       }
     ],
     "keywords": [],

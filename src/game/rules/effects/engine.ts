@@ -30,6 +30,7 @@ import {
   effectTargetIds,
   grantXpEvents,
   heroLevel,
+  isCostTargetingOp,
   isTargetingOp,
   manualEffects,
   normElement,
@@ -360,6 +361,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           deps.rulesCtx(),
           effectTargeting.value.op,
           effectTargeting.value.seat,
+          effectTargeting.value.sourceId,
         )
       : [],
   );
@@ -374,8 +376,20 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     for (let i = 0; i < ops.length; i++) {
       const op = ops[i];
       if (isTargetingOp(op)) {
-        const eligible = effectTargetIds(deps.rulesCtx(), op, seat);
+        const eligible = effectTargetIds(deps.rulesCtx(), op, seat, sourceId);
         if (!eligible.length) {
+          // COÛT payé sans cible éligible : le coût ne peut PAS être payé, donc
+          // le CORPS ne doit pas s'exécuter — on ABANDONNE toute la frame
+          // (au lieu de `continue` vers les ops suivantes du corps).
+          if (isCostTargetingOp(op)) {
+            deps.dispatch(
+              say(
+                seat,
+                `${cardName} : aucune créature pour payer le coût, pouvoir annulé.`,
+              ),
+            );
+            return false; // frame consommée sans pause (corps non exécuté)
+          }
           deps.dispatch(
             say(seat, `${cardName} : aucune cible légale, effet passé.`),
           );
@@ -809,42 +823,48 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     if (!t || !effectTargetIdsList.value.includes(instanceId)) return;
     effectTargeting.value = null;
     const res =
-      t.op.op === "destroyTarget"
-        ? resolveDestroyTarget(deps.rulesCtx(), t.seat, instanceId)
-        : t.op.op === "healHeroTarget"
-          ? resolveHealHeroTarget(deps.rulesCtx(), t.seat, instanceId, t.op.n)
-          : t.op.op === "buffForceTarget"
-            ? resolveBuffForceTarget(
-                deps.rulesCtx(),
-                t.seat,
-                instanceId,
-                t.op.n,
-              )
-            : t.op.op === "tapTarget"
-              ? resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
-              : t.op.op === "untapTarget"
-                ? resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId)
-                : t.op.op === "returnToHand"
-                  ? resolveReturnToHand(deps.rulesCtx(), t.seat, instanceId)
-                  : t.op.op === "damageTargetByForce"
-                    ? resolveDamageTargetByForce(
-                        deps.rulesCtx(),
-                        t.seat,
-                        instanceId,
-                        t.op.element,
-                        {
-                          mods: activeGlobalMods(deps.rulesCtx()),
-                          ...(t.sourceId ? { sourceId: t.sourceId } : {}),
-                        },
-                      )
-                    : resolveDamageTarget(
-                        deps.rulesCtx(),
-                        t.seat,
-                        instanceId,
-                        t.op.n,
-                        t.op.element,
-                        { mods: activeGlobalMods(deps.rulesCtx()) },
-                      );
+      t.op.op === "destroyTarget" || t.op.op === "costDestroyControlled"
+        ? // COÛT « Détruisez un de vos X » : même résolution que destroyTarget
+          // (un Allié détruit rapporte son XP à l'adversaire, 415.1).
+          resolveDestroyTarget(deps.rulesCtx(), t.seat, instanceId)
+        : t.op.op === "costTapControlled"
+          ? // COÛT « Inclinez un de vos X » : incline la cible choisie (déjà
+            // garantie dressée par l'éligibilité).
+            resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
+          : t.op.op === "healHeroTarget"
+            ? resolveHealHeroTarget(deps.rulesCtx(), t.seat, instanceId, t.op.n)
+            : t.op.op === "buffForceTarget"
+              ? resolveBuffForceTarget(
+                  deps.rulesCtx(),
+                  t.seat,
+                  instanceId,
+                  t.op.n,
+                )
+              : t.op.op === "tapTarget"
+                ? resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
+                : t.op.op === "untapTarget"
+                  ? resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId)
+                  : t.op.op === "returnToHand"
+                    ? resolveReturnToHand(deps.rulesCtx(), t.seat, instanceId)
+                    : t.op.op === "damageTargetByForce"
+                      ? resolveDamageTargetByForce(
+                          deps.rulesCtx(),
+                          t.seat,
+                          instanceId,
+                          t.op.element,
+                          {
+                            mods: activeGlobalMods(deps.rulesCtx()),
+                            ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+                          },
+                        )
+                      : resolveDamageTarget(
+                          deps.rulesCtx(),
+                          t.seat,
+                          instanceId,
+                          t.op.n,
+                          t.op.element,
+                          { mods: activeGlobalMods(deps.rulesCtx()) },
+                        );
     deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
     if (deps.isAssistEffects() && res.ruleEvents?.length)
@@ -860,6 +880,16 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     const t = effectTargeting.value;
     if (!t) return;
     effectTargeting.value = null;
+    // COÛT payé décliné : le coût n'est pas payé → le CORPS (restant en tête de
+    // file via holdRest) ne doit PAS s'exécuter. On retire la frame abandonnée.
+    if (isCostTargetingOp(t.op)) {
+      effectQueue.value = effectQueue.value.slice(1);
+      deps.dispatch(
+        say(t.seat, `${t.cardName} : coût non payé, pouvoir annulé.`),
+      );
+      pumpEffects();
+      return;
+    }
     deps.dispatch(say(t.seat, `${t.cardName} : ciblage passé.`));
     pumpEffects();
   }

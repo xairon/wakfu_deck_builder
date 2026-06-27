@@ -4530,7 +4530,26 @@
         "description": "Inclinez un de vos Alliés ou Héros Sadida : Inclinez l'Allié ou Héros adverse de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costTapControlled",
+              "heroes": true,
+              "sub": "sadida",
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "tapTarget",
+              "heroes": true,
+              "controller": "opponent",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-controlled", "tap-target"]
       }
     ],
     "keywords": [

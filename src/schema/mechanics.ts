@@ -31,6 +31,8 @@ export const mechanicTagSchema = z.enum([
   "tap-target",
   "untap-target",
   "return-to-hand",
+  "cost-tap-controlled",
+  "cost-destroy-controlled",
 ]);
 
 export const mechanicCategorySchema = z.enum([

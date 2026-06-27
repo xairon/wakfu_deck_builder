@@ -596,7 +596,18 @@ export function compileTapEffectText(
   cardName: string,
   sourceElement = "Neutre",
 ): CompiledEffect | null {
-  let body = norm(text);
+  const normalized = norm(text);
+  // COÛT PAYÉ « Inclinez / Détruisez un [autre] de vos [Allié(s) | Allié(s) ou
+  // Héros] [Famille] [de Niveau ≤ N] : CORPS » (806 — coûts d'activation). Le
+  // coût est modélisé comme la PREMIÈRE op (ciblage costTap/costDestroyControlled,
+  // controller self) ; le CORPS suit et a pour sujet le contrôleur (acteur).
+  // STRICT : le CORPS doit se compiler ENTIÈREMENT via compileBody. On REJETTE
+  // (→ manuel) tout corps actor-binding (« il/elle … », « sa Force ») — c'est la
+  // vague suivante. Testé avant la forme sacrificeSelf (« un de vos » n'est pas
+  // soi → l'ancienne forme renverrait null).
+  const paid = compileTapPaidCost(normalized, cardName, sourceElement);
+  if (paid) return paid;
+  let body = normalized;
   // Coût « Détruisez [cette carte] : effet » — le sacrifice remplace
   // l'inclinaison ; un coût dont le sujet n'est pas la carte → rejet.
   let cost: "sacrificeSelf" | undefined;
@@ -609,6 +620,68 @@ export function compileTapEffectText(
   const ops = compileBody(body, cardName, sourceElement);
   if (!ops) return null;
   return cost ? { trigger: "onTap", cost, ops } : { trigger: "onTap", ops };
+}
+
+/**
+ * Le texte a-t-il la forme d'un POUVOIR À COÛT PAYÉ « Inclinez/Détruisez un de
+ * vos X : … » ? Reconnaissance LARGE (préfixe seul) : sert à router vers le
+ * parseur tap même sans `requiresIncline` ; la compilation effective reste
+ * strict (corps entièrement compilable, non actor-binding) — sinon → manuel.
+ */
+export function isPaidCostText(text: string): boolean {
+  return /^(?:inclinez|detruisez) un (?:autre )?de vos allies/.test(norm(text));
+}
+
+/**
+ * Parse un POUVOIR À COÛT PAYÉ « Inclinez / Détruisez un [autre] de vos X :
+ * CORPS » → `{ trigger:"onTap", cost:"paidOps", ops:[costOp, ...body] }`, ou
+ * null si la forme ne correspond pas / le corps ne compile pas / le corps est
+ * actor-binding (« il/elle … », « sa Force »). `text` est DÉJÀ normalisé.
+ */
+function compileTapPaidCost(
+  text: string,
+  cardName: string,
+  sourceElement: string,
+): CompiledEffect | null {
+  // (1) verbe de coût ; (2) « autre » ; (3) « allies » / « allies ou heros » ;
+  // (4) « ou heros » présent ? ; (5) Famille éventuelle ; (6) « de niveau ≤ N » ;
+  // (7) le Niveau ; (8) le CORPS après « : ».
+  const m = text.match(
+    /^(inclinez|detruisez) un (autre )?de vos (allies( ou heros)?)( [a-z-]+)?( de niveau inferieur ou egal a (\d+))?\s*:\s*(.+)$/,
+  );
+  if (!m) return null;
+  const heroes = !!m[4];
+  let sub = m[5]?.trim();
+  // mots de liaison captés par la classe famille → pas une vraie Famille
+  if (sub && ["ou", "non", "de", "et", "dans"].includes(sub)) return null;
+  // « non Monstre » et autres qualificatifs négatifs : hors champ (rejet).
+  if (m[5] && /\bnon\b/.test(m[5])) return null;
+  const bodyText = m[8].trim();
+  // CORPS actor-binding : l'Allié payé serait l'acteur (« il/elle … », « sa
+  // Force ») — HORS champ de cette vague.
+  if (/^(?:il|elle)\b/.test(bodyText) || /\bsa force\b/.test(bodyText))
+    return null;
+  const body = compileBody(bodyText, cardName, sourceElement);
+  if (!body) return null;
+  const costOp: EffectOp =
+    m[1] === "inclinez"
+      ? {
+          op: "costTapControlled",
+          ...(heroes ? { heroes: true } : {}),
+          ...(sub ? { sub } : {}),
+          ...(m[7] ? { maxLevel: toNumber(m[7]) } : {}),
+          ...(m[2] ? { excludeSource: true } : {}),
+          zones: ["monde", "havreSac"],
+        }
+      : {
+          op: "costDestroyControlled",
+          ...(heroes ? { heroes: true } : {}),
+          ...(sub ? { sub } : {}),
+          ...(m[7] ? { maxLevel: toNumber(m[7]) } : {}),
+          ...(m[2] ? { excludeSource: true } : {}),
+          zones: ["monde", "havreSac"],
+        };
+  return { trigger: "onTap", cost: "paidOps", ops: [costOp, ...body] };
 }
 
 /**
@@ -991,9 +1064,13 @@ export function tapPowers(card: Card | null): EffectAtom[] {
   for (const e of card.effects ?? []) {
     if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
+    // Repli (données non migrées / tests) : un pouvoir à coût d'inclinaison
+    // (`requiresIncline`) OU un POUVOIR À COÛT PAYÉ « Inclinez/Détruisez un de
+    // vos X : … » (reconnu à sa grammaire propre via isPaidCostText, même sans
+    // `requiresIncline`). On NE re-parse PAS tout texte arbitraire en onTap.
     const compiled =
       e?.compiled ??
-      (text && e?.requiresIncline
+      (text && (e?.requiresIncline || isPaidCostText(text))
         ? compileTapEffectText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onTap")

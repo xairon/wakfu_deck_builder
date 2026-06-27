@@ -3453,7 +3453,24 @@
         "description": "Inclinez un autre de vos Alliés Bwork : La Mama Bwork gagne +1 en Force jusqu'à la fin de tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costTapControlled",
+              "sub": "bwork",
+              "excludeSource": true,
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "buffForceSelf",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-controlled", "buff-force-self"]
       }
     ],
     "keywords": [],

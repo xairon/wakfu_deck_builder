@@ -378,9 +378,13 @@
                   ? "choisis la cible à redresser"
                   : store.effectTargeting.op.op === "returnToHand"
                     ? "choisis la cible à renvoyer en main"
-                    : store.effectTargeting.op.op === "damageTargetByForce"
-                      ? "choisis la cible qui subit la Force en Dommages"
-                      : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                    : store.effectTargeting.op.op === "costTapControlled"
+                      ? "coût : choisis une de tes créatures à incliner"
+                      : store.effectTargeting.op.op === "costDestroyControlled"
+                        ? "coût : choisis une de tes créatures à détruire"
+                        : store.effectTargeting.op.op === "damageTargetByForce"
+                          ? "choisis la cible qui subit la Force en Dommages"
+                          : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

@@ -158,6 +158,33 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     controller: controllerSchema.optional(),
     zones: zonesSchema,
   }),
+  // COÛT de pouvoir payé « Inclinez un de vos X : … » : op de CIBLAGE (première
+  // op d'une séquence cost:"paidOps"). Le joueur choisit une de SES créatures
+  // (controller = acteur) éligible et DRESSÉE, qui est alors inclinée
+  // (SET_ORIENTATION tapped). `heroes` : le coût accepte aussi un Héros (« un de
+  // vos Alliés ou Héros »). `sub` : Famille requise. `excludeSource` : « un
+  // AUTRE de vos … » (la source du pouvoir ne peut pas se payer elle-même).
+  z.object({
+    op: z.literal("costTapControlled"),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    maxLevel: z.number().optional(),
+    excludeSource: z.boolean().optional(),
+    zones: zonesSchema,
+  }),
+  // COÛT de pouvoir payé « Détruisez un de vos X : … » : op de CIBLAGE. Le joueur
+  // choisit une de SES créatures éligible, qui est alors DÉTRUITE
+  // (resolveDestroyTarget — un Allié détruit rapporte son XP à l'adversaire,
+  // 415.1, fidèle). Mêmes filtres que costTapControlled (sans contrainte
+  // d'orientation : on peut détruire une carte inclinée comme dressée).
+  z.object({
+    op: z.literal("costDestroyControlled"),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    maxLevel: z.number().optional(),
+    excludeSource: z.boolean().optional(),
+    zones: zonesSchema,
+  }),
 ]);
 
 export const staticAbilitySchema = z.discriminatedUnion("kind", [
@@ -199,7 +226,11 @@ export const compiledEffectSchema = z.object({
     "onDamageToBearer",
   ]),
   optional: z.boolean().optional(),
-  cost: z.literal("sacrificeSelf").optional(),
+  // "sacrificeSelf" : le coût est de sacrifier la SOURCE (« Détruisez [cette
+  // carte] : … »). "paidOps" : le coût est la PREMIÈRE op de la séquence (op de
+  // ciblage costTap/costDestroyControlled, « Inclinez/Détruisez un de vos X :
+  // … ») — la source n'est ni inclinée ni sacrifiée automatiquement.
+  cost: z.enum(["sacrificeSelf", "paidOps"]).optional(),
   orElse: z.literal("destroySelf").optional(),
   static: staticAbilitySchema.optional(),
   // Présent uniquement pour trigger:"onOtherAppears".

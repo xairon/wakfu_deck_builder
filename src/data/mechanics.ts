@@ -199,6 +199,20 @@ export const MECHANICS: Mechanic[] = [
     category: "contrôle",
     glossary: "Renvoie un Allié ciblé dans la main de son propriétaire.",
   },
+  {
+    id: "cost-tap-controlled",
+    label: "Coût : inclinaison d'une de vos créatures",
+    category: "autre",
+    glossary:
+      "Coût d'un pouvoir : inclinez une de vos créatures éligibles (au choix) pour payer l'effet.",
+  },
+  {
+    id: "cost-destroy-controlled",
+    label: "Coût : destruction d'une de vos créatures",
+    category: "autre",
+    glossary:
+      "Coût d'un pouvoir : détruisez une de vos créatures éligibles (au choix) pour payer l'effet.",
+  },
 ];
 
 /** op compilée → mécanique (déterministe, 1:1). */
@@ -233,6 +247,8 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   tapTarget: "tap-target",
   untapTarget: "untap-target",
   returnToHand: "return-to-hand",
+  costTapControlled: "cost-tap-controlled",
+  costDestroyControlled: "cost-destroy-controlled",
 };
 
 /** Tags uniques dérivés d'une liste d'ops, dans l'ordre d'apparition. */

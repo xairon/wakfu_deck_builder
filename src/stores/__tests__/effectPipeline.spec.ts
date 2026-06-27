@@ -144,6 +144,87 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
     expect(store.state.monde).not.toContain(id);
   });
 
+  it("activateTapPower (cost paidOps) : NE PAS auto-incliner la source ; le coût met en pause puis le corps tourne", () => {
+    const { store, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    // source du pouvoir + une autre créature pour payer le coût
+    const src = placeInZone(store, "A", { zone: "monde" });
+    const payer = placeInZone(store, "A", { zone: "monde" });
+    // injecte un pouvoir à coût payé sur la carte de la source : « Détruisez un
+    // de vos Alliés : Piochez une carte. »
+    const srcCard = cardStore.cards.find(
+      (c) => c.id === store.state.instances[src].cardId,
+    )!;
+    srcCard.effects = [
+      {
+        description: "Détruisez un de vos Alliés : Piochez une carte.",
+        requiresIncline: true,
+        compiled: {
+          trigger: "onTap",
+          cost: "paidOps",
+          ops: [
+            { op: "costDestroyControlled", zones: ["monde", "havreSac"] },
+            { op: "draw", n: 1 },
+          ],
+        },
+      },
+    ];
+    const mainBefore = store.state.seats.A.main.length;
+    const ok = store.activateTapPower(src);
+    expect(ok).toBe(true);
+    // la SOURCE n'est ni inclinée ni détruite : c'est le coût (au choix) qui paie
+    expect(store.state.instances[src].orientation).toBe("upright");
+    expect(store.state.monde).toContain(src);
+    // en pause sur le coût (ciblage)
+    expect(store.effectTargeting?.op.op).toBe("costDestroyControlled");
+    // on paie en détruisant l'autre créature
+    store.effectTargetChoose(payer);
+    expect(store.state.monde).not.toContain(payer); // détruit
+    expect(store.state.monde).toContain(src); // source intacte
+    // le corps a tourné : +1 carte en main
+    expect(store.state.seats.A.main.length).toBe(mainBefore + 1);
+  });
+
+  it("activateTapPower (cost paidOps) : coût NON payable → le corps ne tourne pas", () => {
+    const { store, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    const src = placeInZone(store, "A", { zone: "monde" });
+    const srcCard = cardStore.cards.find(
+      (c) => c.id === store.state.instances[src].cardId,
+    )!;
+    // « un AUTRE de vos Alliés » : la source ne peut pas se payer elle-même, et
+    // c'est la seule créature de A → coût non payable.
+    srcCard.effects = [
+      {
+        description: "Inclinez un autre de vos Alliés : Piochez une carte.",
+        requiresIncline: true,
+        compiled: {
+          trigger: "onTap",
+          cost: "paidOps",
+          ops: [
+            {
+              op: "costTapControlled",
+              excludeSource: true,
+              zones: ["monde", "havreSac"],
+            },
+            { op: "draw", n: 1 },
+          ],
+        },
+      },
+    ];
+    const mainBefore = store.state.seats.A.main.length;
+    const ok = store.activateTapPower(src);
+    expect(ok).toBe(true);
+    // pas de pause (rien à cibler) et le corps n'a PAS tourné
+    expect(store.effectTargeting).toBeNull();
+    expect(store.state.seats.A.main.length).toBe(mainBefore);
+    expect(store.state.instances[src].orientation).toBe("upright"); // source intacte
+  });
+
   it("combatModSelf : pose les jetons de combat sur la source", () => {
     const { store } = makeEffectSandbox({ first: "A" });
     const id = placeInZone(store, "A", { zone: "monde" });

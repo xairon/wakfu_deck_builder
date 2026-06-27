@@ -25,6 +25,8 @@ export type TargetingOp = Extract<
   | { op: "tapTarget" }
   | { op: "untapTarget" }
   | { op: "returnToHand" }
+  | { op: "costTapControlled" }
+  | { op: "costDestroyControlled" }
 >;
 
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
@@ -36,8 +38,17 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "buffForceTarget" ||
     op.op === "tapTarget" ||
     op.op === "untapTarget" ||
-    op.op === "returnToHand"
+    op.op === "returnToHand" ||
+    op.op === "costTapControlled" ||
+    op.op === "costDestroyControlled"
   );
+}
+
+/** Une op de ciblage est-elle un COÛT de pouvoir payé (« Inclinez/Détruisez un
+ * de vos X : … ») ? Si son éligibilité est vide, la frame doit être ABANDONNÉE
+ * (le corps ne s'exécute pas — le coût n'est pas payé), au lieu de continuer. */
+export function isCostTargetingOp(op: CompiledEffectOp): boolean {
+  return op.op === "costTapControlled" || op.op === "costDestroyControlled";
 }
 
 /**
@@ -49,7 +60,39 @@ export function effectTargetIds(
   ctx: RulesCtx,
   op: TargetingOp,
   actor?: Seat,
+  sourceId?: InstanceId,
 ): InstanceId[] {
+  // COÛTS payés (« Inclinez/Détruisez un de vos X : … ») : éligibilité dédiée —
+  // VOS créatures (controller === acteur), dans op.zones, de mainType Allié (ou
+  // Héros si `heroes`), matchant `sub`/`maxLevel`, hors source si `excludeSource`,
+  // et — pour le coût d'inclinaison — actuellement DRESSÉES (on ne peut pas
+  // incliner une carte déjà inclinée).
+  if (op.op === "costTapControlled" || op.op === "costDestroyControlled") {
+    if (actor === undefined) return [];
+    const out: InstanceId[] = [];
+    for (const inst of Object.values(ctx.state.instances)) {
+      if (!op.zones.includes(inst.location.zone as "monde" | "havreSac"))
+        continue;
+      if (inst.controller !== actor) continue;
+      if (op.excludeSource && inst.instanceId === sourceId) continue;
+      if (op.op === "costTapControlled" && inst.orientation !== "upright")
+        continue;
+      const card = ctx.getCard(inst.cardId);
+      if (!card) continue;
+      const typeOk =
+        card.mainType === "Allié" || (op.heroes && card.mainType === "Héros");
+      if (!typeOk) continue;
+      if (op.sub && !(card.subTypes ?? []).some((s) => normWord(s) === op.sub))
+        continue;
+      if (
+        op.maxLevel !== undefined &&
+        (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) > op.maxLevel
+      )
+        continue;
+      out.push(inst.instanceId);
+    }
+    return out;
+  }
   const zones: ("monde" | "havreSac")[] =
     op.op === "healHeroTarget" ? ["monde", "havreSac"] : op.zones;
   // ops à filtre de contrôleur (« vos » / « adverse »)

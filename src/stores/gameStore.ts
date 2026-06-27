@@ -1284,12 +1284,28 @@ export const useGameStore = defineStore("game", () => {
       return rejectMove("Vous ne contrôlez pas cette carte.");
     if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
       return rejectMove("La carte doit être en jeu.");
+    const seat = perspective.value;
+    const atom = atoms[0];
+    // COÛT PAYÉ (« Inclinez/Détruisez un de vos X : … ») : la SOURCE n'est NI
+    // inclinée NI sacrifiée automatiquement, et n'a PAS à être dressée — le coût
+    // est la première op (ciblage), qui met l'effet en pause pour le choix du
+    // joueur. On enfile directement les ops (cost + corps).
+    if (atom.cost === "paidOps") {
+      if (state.value.turn.active !== perspective.value)
+        return rejectMove("Ce n'est pas votre tour.");
+      dispatch(say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`));
+      engine.enqueueEffect({
+        seat,
+        cardName: card.name,
+        ops: atom.ops,
+        sourceId: instanceId,
+      });
+      return true;
+    }
     if (inst.orientation !== "upright")
       return rejectMove("La carte est déjà inclinée.");
     if (state.value.turn.active !== perspective.value)
       return rejectMove("Ce n'est pas votre tour.");
-    const seat = perspective.value;
-    const atom = atoms[0];
     if (atom.cost === "sacrificeSelf") {
       // « Détruisez [cette carte] : … » — le sacrifice remplace l'inclinaison
       dispatch(
