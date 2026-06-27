@@ -11,6 +11,8 @@
  *  - l'éligibilité du Porteur (un Monstre ne peut pas être Porteur).
  */
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { compileBearerBonusText } from "@/game/rules/effects/dsl";
 import { effectiveForce } from "@/game/rules/stats";
 import { effectiveKeywords, stateBasedDestroyEvents } from "@/game/rules";
@@ -72,6 +74,47 @@ describe("rules/bearer — DSL compileBearerBonusText", () => {
       kind: "bearerBonus",
       resistance: { element: "Feu", n: 1 },
     });
+  });
+
+  it("compile « gagne Résistance N » MULTI-ÉLÉMENTS (Croum)", () => {
+    const c = compileBearerBonusText(
+      "Le Porteur du Croum gagne Résistance 1 (air)(eau)(terre)(feu).",
+      "Croum",
+    );
+    expect(c?.static).toEqual({
+      kind: "bearerBonus",
+      resistance: { element: ["Air", "Eau", "Terre", "Feu"], n: 1 },
+    });
+  });
+
+  it("compile « gagne <Mot-clé> » (Géant / Tacle / Agilité) en bearerBonus.keyword", () => {
+    expect(
+      compileBearerBonusText(
+        "Le Porteur des Bottes du Craqueleur gagne Géant.",
+        "Bottes du Craqueleur",
+      )?.static,
+    ).toEqual({ kind: "bearerBonus", keyword: "Géant" });
+    expect(
+      compileBearerBonusText(
+        "Le Porteur de la Cape du Tofu gagne Tacle.",
+        "Cape du Tofu",
+      )?.static,
+    ).toEqual({ kind: "bearerBonus", keyword: "Tacle" });
+    expect(
+      compileBearerBonusText(
+        "Le Porteur de la Ceinture du Bandit gagne Agilité.",
+        "Ceinture du Bandit",
+      )?.static,
+    ).toEqual({ kind: "bearerBonus", keyword: "Agilité" });
+  });
+
+  it("REJETTE le préfixe conditionnel « Tant qu'il est attaquant, … » (≠ continu)", () => {
+    expect(
+      compileBearerBonusText(
+        "Tant qu'il est attaquant, le Porteur de la Coiffe du Champion gagne Géant.",
+        "Coiffe du Champion",
+      ),
+    ).toBeNull();
   });
 
   it("REJETTE un bonus temporaire (« jusqu'à la fin du tour » ≠ continu)", () => {
@@ -174,6 +217,53 @@ describe("rules/bearer — application des bonus portés", () => {
     expect(effectiveKeywords(ctxOf(f), bearerId).resistances.feu).toBe(2);
   });
 
+  it("effectiveKeywords confère Géant au Porteur (mot-clé porté)", () => {
+    const bearer = makeAlly("bearer", { force: 3 });
+    const boots = createMockAllyCard({
+      id: "boots",
+      name: "Bottes Géantes",
+      subTypes: ["Monstre", "Monture"],
+      stats: { niveau: { value: 1, element: "Feu" } },
+      effects: [{ description: "Le Porteur des Bottes Géantes gagne Géant." }],
+    });
+    const f = fixture([bearer, boots]);
+    const bearerId = instId("A", 0);
+    const bootsId = instId("A", 1);
+    bringToMonde(f, "A", bearerId);
+    bringToMonde(f, "A", bootsId);
+    expect(effectiveKeywords(ctxOf(f), bearerId).geant).toBe(false);
+    dispatch(f, attach("A", bootsId, bearerId));
+    expect(effectiveKeywords(ctxOf(f), bearerId).geant).toBe(true);
+    // Le mot-clé disparaît si l'équipement est détaché.
+    dispatch(f, detach("A", bootsId, { zone: "main", owner: "A" }));
+    expect(effectiveKeywords(ctxOf(f), bearerId).geant).toBe(false);
+  });
+
+  it("effectiveKeywords cumule une Résistance MULTI-ÉLÉMENTS portée (Croum)", () => {
+    const bearer = makeAlly("bearer", { force: 2 });
+    const croum = createMockAllyCard({
+      id: "croum",
+      name: "Croum Test",
+      subTypes: ["Monstre", "Monture"],
+      stats: { niveau: { value: 1, element: "Feu" } },
+      effects: [
+        {
+          description:
+            "Le Porteur du Croum Test gagne Résistance 1 (air)(eau)(terre)(feu).",
+        },
+      ],
+    });
+    const f = fixture([bearer, croum]);
+    const bearerId = instId("A", 0);
+    const croumId = instId("A", 1);
+    bringToMonde(f, "A", bearerId);
+    bringToMonde(f, "A", croumId);
+    dispatch(f, attach("A", croumId, bearerId));
+    const res = effectiveKeywords(ctxOf(f), bearerId).resistances;
+    expect([res.air, res.eau, res.terre, res.feu]).toEqual([1, 1, 1, 1]);
+    expect(res.neutre ?? 0).toBe(0);
+  });
+
   it("un équipement SANS bearerBonus reconnu ne modifie rien une fois attaché", () => {
     const bearer = makeAlly("bearer", { force: 2 });
     const plain: Card = createMockAllyCard({
@@ -226,5 +316,73 @@ describe("rules/bearer — destruction du Porteur (305.x)", () => {
     expect(st.instances[mountId].location.zone).toBe("defausse");
     // Plus aucun attachment résiduel.
     expect(st.instances[bearerId].attachments).not.toContain(mountId);
+  });
+});
+
+describe("rules/bearer — données re-scrapées (icônes récupérées)", () => {
+  // Les 25 Porteurs re-scrapés : (fichier, id, index de l'effet Porteur).
+  const PATCHED: Array<[string, string, number]> = [
+    ["amakna", "bottes-du-craqueleur-amakna", 0],
+    ["amakna", "craquamulette-amakna", 0],
+    ["amakna", "croum-amakna", 1],
+    ["amakna", "megacoiffe-amakna", 0],
+    ["astrub", "amukwak-de-flammes-astrub", 0],
+    ["astrub", "cape-du-tofu-astrub", 0],
+    ["astrub", "ceinture-du-bandit-astrub", 0],
+    ["astrub", "hache-du-shodanwa-astrub", 0],
+    ["astrub", "kwakature-de-flammes-astrub", 0],
+    ["astrub", "marteau-outar-astrub", 0],
+    ["bonta-brakmar", "ceinture-du-rat-blanc-bonta-brakmar", 0],
+    ["bonta-brakmar", "coiffe-du-dragon-cochon-bonta-brakmar", 0],
+    ["chaos-dogrest", "bottes-du-champion-chaos-dogrest", 0],
+    ["chaos-dogrest", "cape-du-champion-chaos-dogrest", 0],
+    ["chaos-dogrest", "chapeau-du-mineur-sombre-chaos-dogrest", 0],
+    ["chaos-dogrest", "coiffe-du-champion-chaos-dogrest", 0],
+    ["dofus-collection", "cape-du-tofu-dofus-collection", 0],
+    ["dofus-collection", "pantoufles-du-tofu-dofus-collection", 0],
+    ["incarnam", "cape-du-vampyre-incarnam", 0],
+    ["incarnam", "hache-du-mulou-incarnam", 0],
+    ["incarnam", "marcassin-incarnam", 1],
+    ["incarnam", "pantoufles-du-tofu-incarnam", 0],
+    ["otomai", "sandales-du-minotot-otomai", 0],
+    ["pandala", "bouclier-feudala-pandala", 0],
+    ["pandala", "griffe-rose-pandala", 0],
+  ];
+
+  const cardCache = new Map<
+    string,
+    Array<{
+      id?: string;
+      effects?: { description?: string; coverage?: string }[];
+    }>
+  >();
+  function effectOf(file: string, id: string, idx: number) {
+    if (!cardCache.has(file)) {
+      const path = join(process.cwd(), "public", "data", `${file}.json`);
+      cardCache.set(file, JSON.parse(readFileSync(path, "utf-8")));
+    }
+    const card = cardCache.get(file)!.find((c) => c.id === id);
+    return card?.effects?.[idx];
+  }
+
+  it("aucune des 25 descriptions ne contient plus l'icône perdue « gagne . »", () => {
+    for (const [file, id, idx] of PATCHED) {
+      const e = effectOf(file, id, idx);
+      expect(e, `${id}[${idx}]`).toBeDefined();
+      expect(e!.description, `${id}[${idx}]`).not.toMatch(/gagne\s*\.\s*$/);
+      expect(e!.description, `${id}[${idx}]`).toContain("gagne ");
+    }
+  });
+
+  it("les 22 bonus continus sont couverts (auto) ; les 3 conditionnels restent uncovered", () => {
+    let auto = 0;
+    let uncovered = 0;
+    for (const [file, id, idx] of PATCHED) {
+      const e = effectOf(file, id, idx)!;
+      if (e.coverage === "auto") auto++;
+      else if (e.coverage === "uncovered") uncovered++;
+    }
+    expect(auto).toBe(22);
+    expect(uncovered).toBe(3); // Bottes/Cape/Coiffe du Champion : « Tant qu'il est attaquant »
   });
 });

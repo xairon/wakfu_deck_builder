@@ -6292,10 +6292,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur des Sandales du Minotot gagne .",
+        "description": "Le Porteur des Sandales du Minotot gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [

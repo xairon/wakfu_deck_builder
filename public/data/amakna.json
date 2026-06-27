@@ -975,10 +975,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur des Bottes du Craqueleur gagne .",
+        "description": "Le Porteur des Bottes du Craqueleur gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Trait Arme remplacé par Armure.",
@@ -2024,11 +2032,22 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Craquamulette gagne .",
+        "description": "Le Porteur de la Craquamulette gagne Résistance 1 (terre).",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "resistance": {
+              "element": "Terre",
+              "n": 1
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -2259,11 +2278,22 @@
         "mechanics": ["lose-stat-turn"]
       },
       {
-        "description": "Le Porteur du Croum gagne .",
+        "description": "Le Porteur du Croum gagne Résistance 1 (air)(eau)(terre)(feu).",
         "elements": ["Air", "Eau", "Terre", "Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "resistance": {
+              "element": ["Air", "Eau", "Terre", "Feu"],
+              "n": 1
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],
@@ -4470,11 +4500,22 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Mégacoiffe gagne .",
+        "description": "Le Porteur de la Mégacoiffe gagne Résistance 1 (eau).",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "resistance": {
+              "element": "Eau",
+              "n": 1
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",

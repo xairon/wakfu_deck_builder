@@ -1025,10 +1025,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Cape du Tofu gagne .",
+        "description": "Le Porteur de la Cape du Tofu gagne Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Tacle"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -4075,10 +4083,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur des Pantoufles du Tofu gagne .",
+        "description": "Le Porteur des Pantoufles du Tofu gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [

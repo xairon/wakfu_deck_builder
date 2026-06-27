@@ -3271,10 +3271,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Ceinture du Rat Blanc gagne .",
+        "description": "Le Porteur de la Ceinture du Rat Blanc gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -4199,10 +4207,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Coiffe du Dragon Cochon gagne .",
+        "description": "Le Porteur de la Coiffe du Dragon Cochon gagne Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Tacle"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [

@@ -2879,10 +2879,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Cape du Vampyre gagne .",
+        "description": "Le Porteur de la Cape du Vampyre gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Armure\" manquant sur la carte.",
@@ -7431,10 +7439,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Hache du Mulou gagne .",
+        "description": "Le Porteur de la Hache du Mulou gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -9726,10 +9742,18 @@
         "mechanics": ["recycle-from-discard"]
       },
       {
-        "description": "Le Porteur du Marcassin gagne .",
+        "description": "Le Porteur du Marcassin gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],
@@ -11034,10 +11058,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur des Pantoufles du Tofu gagne .",
+        "description": "Le Porteur des Pantoufles du Tofu gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [

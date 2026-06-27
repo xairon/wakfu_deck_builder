@@ -976,11 +976,22 @@
     },
     "effects": [
       {
-        "description": "Le Porteur du Bouclier Feudala gagne .",
+        "description": "Le Porteur du Bouclier Feudala gagne Résistance 1 (feu).",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "resistance": {
+              "element": "Feu",
+              "n": 1
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Quand un de vos Alliés ou Héros est sur le point de subir un ou plusieurs Dommages, vous pouvez payer pour mettre en jeu le Bouclier Feudala sur cet Allié ou Héros.",
@@ -4118,10 +4129,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Griffe Rose gagne .",
+        "description": "Le Porteur de la Griffe Rose gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Porteur de la Griffe Rose ne peut être incliné par son contrôleur que s'il est en combat.",

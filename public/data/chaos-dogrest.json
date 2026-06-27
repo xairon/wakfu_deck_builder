@@ -1052,7 +1052,7 @@
     },
     "effects": [
       {
-        "description": "Tant qu'il est attaquant, le Porteur des Bottes du Champion gagne .",
+        "description": "Tant qu'il est attaquant, le Porteur des Bottes du Champion gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -1218,7 +1218,7 @@
     },
     "effects": [
       {
-        "description": "Tant qu'il est attaquant, le Porteur de la Cape du Champion gagne .",
+        "description": "Tant qu'il est attaquant, le Porteur de la Cape du Champion gagne Résistance 2 (air)(terre)(eau)(feu)(neutre).",
         "elements": ["Air", "Terre", "Eau", "Feu", "Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -1439,10 +1439,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur du Chapeau du Mineur Sombre gagne .",
+        "description": "Le Porteur du Chapeau du Mineur Sombre gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -1831,7 +1839,7 @@
     },
     "effects": [
       {
-        "description": "Tant qu'il est attaquant, le Porteur de la Coiffe du Champion gagne .",
+        "description": "Tant qu'il est attaquant, le Porteur de la Coiffe du Champion gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"

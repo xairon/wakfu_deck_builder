@@ -85,16 +85,28 @@ export function effectiveKeywords(
     const el = normElement(m[1]);
     resistances[el] = (resistances[el] ?? 0) + value;
   }
-  // 305.x — Résistance conférée au Porteur par l'équipement / la Monture porté(e)
-  // (« Le Porteur de X gagne Résistance N (Élément) »). Le bonus appartient au
-  // Porteur (la carte portée ne combat pas) : on le lit ici, jamais sur la carte
-  // portée elle-même (combatKeywords renvoie NONE pour un Équipement).
+  // 305.x — Résistance / mot-clé conféré(e) au Porteur par l'équipement / la
+  // Monture porté(e) (« Le Porteur de X gagne Résistance N (Élément) » ou
+  // « … gagne Géant »). Le bonus appartient au Porteur (la carte portée ne
+  // combat pas) : on le lit ici, jamais sur la carte portée elle-même
+  // (combatKeywords renvoie NONE pour un Équipement). La Résistance peut viser
+  // plusieurs Éléments (Croum) ; le mot-clé Géant alimente la répartition de
+  // Force au combat (les autres mots-clés conférés n'ont pas encore de
+  // sémantique de combat, exactement comme s'ils étaient imprimés).
+  let bearerGeant = false;
   for (const b of bearerBonuses(ctx, id)) {
+    if (b.keyword === "Géant") bearerGeant = true;
     if (!b.resistance) continue;
-    const el = normElement(b.resistance.element);
-    resistances[el] = (resistances[el] ?? 0) + b.resistance.n;
+    const els = Array.isArray(b.resistance.element)
+      ? b.resistance.element
+      : [b.resistance.element];
+    for (const e of els) {
+      const el = normElement(e);
+      resistances[el] = (resistances[el] ?? 0) + b.resistance.n;
+    }
   }
-  const geant = base.geant || !!tokens.geantMod || !!tokens.geantCombatMod;
+  const geant =
+    base.geant || bearerGeant || !!tokens.geantMod || !!tokens.geantCombatMod;
   return { resistances, geant };
 }
 

@@ -62,11 +62,22 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de l'Amukwak de Flammes gagne .",
+        "description": "Le Porteur de l'Amukwak de Flammes gagne Résistance 1 (feu).",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "resistance": {
+              "element": "Feu",
+              "n": 1
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -1253,10 +1264,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Cape du Tofu gagne .",
+        "description": "Le Porteur de la Cape du Tofu gagne Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Tacle"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -1437,10 +1456,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Ceinture du Bandit gagne .",
+        "description": "Le Porteur de la Ceinture du Bandit gagne Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -3473,10 +3500,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Hache du Shodanwa gagne .",
+        "description": "Le Porteur de la Hache du Shodanwa gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Détruisez l'Arme de votre choix.",
@@ -4121,11 +4156,22 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de la Kwakature de Flammes gagne .",
+        "description": "Le Porteur de la Kwakature de Flammes gagne Résistance 1 (feu).",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "resistance": {
+              "element": "Feu",
+              "n": 1
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -4766,10 +4812,18 @@
     },
     "effects": [
       {
-        "description": "Le Porteur du Marteau Outar gagne .",
+        "description": "Le Porteur du Marteau Outar gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Détruisez l'Armure de votre choix.",

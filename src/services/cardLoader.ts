@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v30"; // v30 : sous-système conditionnel « Si <cond>, <corps> » (op conditional, selfInZone/heroLevel/controlsAlly)
+const CACHE_KEY = "wakfu-cards-cache-v31"; // v31 : re-scrape des 25 Porteurs (icônes perdues récupérées) + bonus de Porteur conférant un mot-clé (Géant/Tacle/Agilité) et Résistance multi-éléments
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [

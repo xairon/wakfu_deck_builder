@@ -15,6 +15,7 @@
 import type {
   Card,
   CardEffect,
+  CardKeyword,
   CompiledEffect,
   CompiledEffectOp,
 } from "@/types/cards";
@@ -1865,8 +1866,9 @@ export function compileStaticEffectText(
 /**
  * Compile un BONUS DE PORTEUR (305.x) : pouvoir CONTINU d'une carte PORTÉE
  * (Équipement ou Monture) qui s'applique à son Porteur tant qu'elle est en jeu.
- * Texte « Le Porteur de <self> gagne +N en Force[.] » ou « … gagne Résistance N
- * (Élément)[.] ».
+ * Texte « Le Porteur de <self> gagne +N en Force[.] », « … gagne Résistance N
+ * (Élément)[(Élément)…][.] » (mono- ou multi-éléments) ou « … gagne <Mot-clé>[.] »
+ * (Géant, Tacle, Agilité, Portée, Critique, Parade — un seul mot-clé).
  *
  * STRICT (« an approximation of gameplay is worse than a manual effect ») :
  *  - le sujet « Le Porteur de X » doit désigner la carte elle-même (X = son nom) ;
@@ -1895,25 +1897,59 @@ export function compileBearerBonusText(
       static: { kind: "bearerBonus", force: toNumber(m[2]) },
       ops: [],
     };
-  // « Le Porteur de <self> gagne Résistance N (Élément) » — prévention continue
-  // par Élément. L'Élément (capitalisé comme les autres Éléments des données)
-  // est stocké tel quel ; la lecture (combatKeywords) le normalise.
+  // « Le Porteur de <self> gagne Résistance N (Élément)[(Élément)…] » —
+  // prévention continue par Élément, possiblement MULTI-ÉLÉMENTS (Croum :
+  // « Résistance 1 (air)(eau)(terre)(feu) »). Chaque Élément (capitalisé comme
+  // les autres Éléments des données) est stocké tel quel ; la lecture
+  // (effectiveKeywords) les normalise.
   m = body.match(
-    /^le porteur (?:de |du |des |de la |de l['’]\s?|d['’]\s?)?(.{1,60}?) gagne resistance (\d+) \((feu|eau|terre|air|neutre)\)$/,
+    /^le porteur (?:de |du |des |de la |de l['’]\s?|d['’]\s?)?(.{1,60}?) gagne resistance (\d+) ((?:\((?:feu|eau|terre|air|neutre)\))+)$/,
   );
   if (m && subjectIsSelf(m[1], cardName)) {
-    const element = m[3].charAt(0).toUpperCase() + m[3].slice(1);
+    const els = [...m[3].matchAll(/\((feu|eau|terre|air|neutre)\)/g)].map(
+      (g) => g[1].charAt(0).toUpperCase() + g[1].slice(1),
+    );
     return {
       trigger: "static",
       static: {
         kind: "bearerBonus",
-        resistance: { element, n: toNumber(m[2]) },
+        resistance: {
+          element: els.length === 1 ? els[0] : els,
+          n: toNumber(m[2]),
+        },
       },
       ops: [],
     };
   }
+  // « Le Porteur de <self> gagne <Mot-clé>. » — mot-clé conféré au Porteur
+  // (Géant, Tacle, Agilité, Portée, Critique, Parade). STRICT : un SEUL mot-clé,
+  // tout le corps consommé (le `$` rejette les bonus composés « … et … » et les
+  // « gagne . » à icône perdue). Géant alimente le combat ; les autres sont
+  // enregistrés fidèlement (même niveau qu'imprimés).
+  m = body.match(
+    /^le porteur (?:de |du |des |de la |de l['’]\s?|d['’]\s?)?(.{1,60}?) gagne (geant|tacle|agilite|portee|critique|parade)$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName)) {
+    const keyword = BEARER_KEYWORDS[m[2]];
+    if (keyword)
+      return {
+        trigger: "static",
+        static: { kind: "bearerBonus", keyword },
+        ops: [],
+      };
+  }
   return null;
 }
+
+/** Mot-clé conféré normalisé (norm()) → forme canonique de `CardKeyword`. */
+const BEARER_KEYWORDS: Record<string, CardKeyword> = {
+  geant: "Géant",
+  tacle: "Tacle",
+  agilite: "Agilité",
+  portee: "Portée",
+  critique: "Critique",
+  parade: "Parade",
+};
 
 /**
  * Compile un DÉCLENCHÉ DE COMBAT « Quand [self] attaque, CORPS » (804.5).

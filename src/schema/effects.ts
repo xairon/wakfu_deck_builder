@@ -490,11 +490,22 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
   // pas une autre carte du Monde mais la créature à laquelle CETTE carte est
   // attachée (lu via `bearer.attachments`). `force` : bonus de Force continu ;
   // `resistance` : prévention par Élément normalisé (cumulée à la Résistance du
-  // Porteur). Au moins un des deux est présent.
+  // Porteur), possiblement multi-éléments (Croum : « Résistance 1 » aux quatre
+  // Éléments) ; `keyword` : mot-clé conféré au Porteur (« Le Porteur de X gagne
+  // Géant. ») — appliqué à `effectiveKeywords` du Porteur (Géant alimente le
+  // calcul de répartition de Force au combat ; les autres mots-clés sont
+  // enregistrés fidèlement, au même niveau que s'ils étaient imprimés). Au moins
+  // un des trois champs est présent.
   z.object({
     kind: z.literal("bearerBonus"),
     force: z.number().optional(),
-    resistance: z.object({ element: z.string(), n: z.number() }).optional(),
+    resistance: z
+      .object({
+        element: z.union([z.string(), z.array(z.string())]),
+        n: z.number(),
+      })
+      .optional(),
+    keyword: cardKeywordSchema.optional(),
   }),
 ]);
 
