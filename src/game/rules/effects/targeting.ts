@@ -121,8 +121,13 @@ export function effectTargetIds(
           !!op.whatAny?.some((w) => w === card.mainType)
         : op.op === "healHeroTarget"
           ? card.mainType === "Héros"
-          : card.mainType === "Allié" ||
-            (op.heroes && card.mainType === "Héros");
+          : // « … au Héros de votre choix » (damageTarget targetHeroOnly) : seuls
+            // les Héros sont éligibles (aucun Allié). Sinon, Allié (+ Héros si
+            // `heroes`).
+            op.op === "damageTarget" && op.targetHeroOnly
+            ? card.mainType === "Héros"
+            : card.mainType === "Allié" ||
+              (op.heroes && card.mainType === "Héros");
     // famille requise (« le Monstre de votre choix »)
     if (
       ok &&

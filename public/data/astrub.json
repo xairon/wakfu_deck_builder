@@ -544,7 +544,18 @@
         "description": "Détruisez l'Auberge d'Astrub : Le Héros de votre choix regagne 2 PV.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["heal-hero-target"]
       }
     ],
     "keywords": [
@@ -5581,7 +5592,21 @@
         "description": "Détruisez le Phorreur Immature : Cherchez une carte Équipement de Niveau 1 dans votre Défausse et prenez-la en main.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Équipement",
+              "from": "defausse",
+              "exactLevel": 1,
+              "dest": "main"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck"]
       }
     ],
     "keywords": [],

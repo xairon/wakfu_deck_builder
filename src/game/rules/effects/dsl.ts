@@ -287,6 +287,33 @@ function parseSentence(
       ...(m[5] ? { tapped: true } : {}),
     };
   }
+  // « Cherchez une carte [type|Famille] [de Niveau ≤ N | de Niveau N] dans votre
+  //   Défausse[, révélez-la] et prenez-la en main. » → searchDeck(from:"defausse",
+  //   dest:"main") : même machinerie de pick que la recherche-Pioche, mais la
+  //   pile source est la DÉFAUSSE (action toHand). Un éventuel « , puis mélangez »
+  //   est une op suivante (shuffleDeck) — la Défausse elle-même n'est jamais
+  //   mélangée. La forme « prenez-la main » (sans « en ») est tolérée (typo de
+  //   scrape). Le mot-type accepte un type racine OU une Famille de créature
+  //   non ambiguë (pickType / ALLIED_FAMILIES).
+  m = sentence.match(
+    /^cherchez (?:un|une) (?:carte )?([a-z]+)( [a-z]+)?(?: de niveau (?:inferieur ou egal a (\d+)|(\d+)))? dans votre defausse(?:,? revelez-l[ea])? et prenez-l[ea](?: en)? main$/,
+  );
+  if (m) {
+    const pt = pickType(m[1]);
+    if (!pt) return null;
+    const sub = pt.sub ?? m[2]?.trim();
+    // mots de liaison = pas une famille (« ou non Unique », « portant… »)
+    if (sub && ["ou", "non", "portant", "de", "et"].includes(sub)) return null;
+    return {
+      op: "searchDeck",
+      what: pt.what,
+      from: "defausse",
+      ...(sub ? { sub } : {}),
+      ...(m[3] ? { maxLevel: toNumber(m[3]) } : {}),
+      ...(m[4] ? { exactLevel: toNumber(m[4]) } : {}),
+      dest: "main",
+    };
+  }
   // « Mettez en jeu [gratuitement] un(e) [Allié|Zone|Salle|Équipement|Famille]
   //   [Famille]? [de votre choix]? [de Niveau ≤ N | de Niveau N]? [gratuitement]
   //   [incliné[e]]? de/depuis votre (main|défausse) [dans le Monde] [incliné[e]]?. »
@@ -567,6 +594,26 @@ function parseSentence(
       zones: targetZones(m[5], m[6]),
     };
   }
+  // « Infligez N Dommages au Héros de votre choix » (impératif) ou « [La carte]
+  //   inflige N Dommages au Héros de votre choix … » → damageTarget restreint
+  //   aux HÉROS (targetHeroOnly) : aucun Allié n'est éligible. Placé AVANT la
+  //   forme « à l'Allié » (préposition distincte « au heros », pas de
+  //   chevauchement). Toute clause résiduelle (« … qui vient de … », « dans ce
+  //   Havre-Sac ») est rejetée par le `$`.
+  m = sentence.match(
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? au heros de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m) {
+    if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
+    return {
+      op: "damageTarget",
+      n: toNumber(m[2]),
+      element: sourceElement,
+      heroes: true,
+      targetHeroOnly: true,
+      zones: targetZones(m[3], m[4]),
+    };
+  }
   // « Infligez N Dommages à l'Allié [Famille] de votre choix » (impératif) ou
   // « [La carte] inflige N Dommages à l'Allié [ou Héros] de votre choix … »
   // La Famille (« à l'Allié Bouftou ») et « ou Héros » sont mutuellement
@@ -834,6 +881,24 @@ export function isPaidCostText(text: string): boolean {
   return /^(?:inclinez|detruisez) (?:un|l['’ ]?\s?un) (?:autre )?de vos allies/.test(
     norm(text),
   );
+}
+
+/**
+ * Le texte a-t-il la forme d'un POUVOIR À COÛT DE SACRIFICE « Détruisez [cette
+ * carte] : … » ? Reconnaissance LARGE (préfixe « détruisez <X> : ») : sert à
+ * router vers `compileTapEffectText` même sans `requiresIncline`. La compilation
+ * effective reste STRICTE — `compileTapEffectText` n'accepte le sacrifice que si
+ * `subjectIsSelf` (le X est la carte elle-même) ET si le CORPS se compile
+ * entièrement via compileBody ; sinon → manuel. On EXCLUT ici le préfixe de
+ * coût payé « Détruisez un/l'un de vos … » (routé par isPaidCostText) et la
+ * forme « Détruisez un … que vous contrôlez : … » (coût générique non modélisé).
+ */
+export function isSacrificeCostText(text: string): boolean {
+  const n = norm(text);
+  if (isPaidCostText(n)) return false;
+  // « Détruisez un … que vous contrôlez : … » = coût payé non modélisé → manuel.
+  if (/^detruisez .* que vous controlez\s*:/.test(n)) return false;
+  return /^detruisez [^:]{1,50}\s*:/.test(n);
 }
 
 /**
@@ -1353,12 +1418,14 @@ export function tapPowers(card: Card | null): EffectAtom[] {
     if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
     // Repli (données non migrées / tests) : un pouvoir à coût d'inclinaison
-    // (`requiresIncline`) OU un POUVOIR À COÛT PAYÉ « Inclinez/Détruisez un de
-    // vos X : … » (reconnu à sa grammaire propre via isPaidCostText, même sans
-    // `requiresIncline`). On NE re-parse PAS tout texte arbitraire en onTap.
+    // (`requiresIncline`), un POUVOIR À COÛT PAYÉ « Inclinez/Détruisez un de
+    // vos X : … » (isPaidCostText) OU un POUVOIR À COÛT DE SACRIFICE « Détruisez
+    // [cette carte] : … » (isSacrificeCostText), même sans `requiresIncline`. On
+    // NE re-parse PAS tout texte arbitraire en onTap.
     const compiled =
       e?.compiled ??
-      (text && (e?.requiresIncline || isPaidCostText(text))
+      (text &&
+      (e?.requiresIncline || isPaidCostText(text) || isSacrificeCostText(text))
         ? compileTapEffectText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onTap")

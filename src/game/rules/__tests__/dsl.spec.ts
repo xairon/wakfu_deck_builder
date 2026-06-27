@@ -933,7 +933,9 @@ describe("rules/effects — W18 : searchDeck famille-seule / mise-en-jeu inclin�
     ]);
   });
 
-  it("NÉGATIF : recherche-Défausse-vers-MAIN n'est PAS modélisée (« prenez-la en main »)", () => {
+  it("W19 : recherche-Défausse-vers-MAIN → searchDeck(from:defausse, dest:main)", () => {
+    // Reviens (Action) : « prenez-la en main » depuis la Défausse est désormais
+    // modélisé (searchDeck `from:"defausse"`, même machinerie de pick).
     const action = Object.assign(cardWith("Reviens", "x"), {
       mainType: "Action",
     });
@@ -943,7 +945,15 @@ describe("rules/effects — W18 : searchDeck famille-seule / mise-en-jeu inclin�
           "Cherchez une carte Monstre dans votre Défausse et prenez-la en main.",
       },
     ];
-    expect(playEffects(action)).toEqual([]);
+    expect(playEffects(action)[0]?.ops).toEqual([
+      {
+        op: "searchDeck",
+        what: "Allié",
+        from: "defausse",
+        sub: "monstre",
+        dest: "main",
+      },
+    ]);
   });
 });
 

@@ -749,7 +749,21 @@
         "description": "Détruisez l'Île des Wabbits : Cherchez un Allié Wabbit dans votre Défausse et prenez-le en main.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "from": "defausse",
+              "sub": "wabbit",
+              "dest": "main"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck"]
       }
     ],
     "keywords": [],
@@ -855,7 +869,21 @@
         "description": "Détruisez le Phorreur Immature : Cherchez une carte Équipement de Niveau 1 dans votre Défausse et prenez-la en main.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Équipement",
+              "from": "defausse",
+              "exactLevel": 1,
+              "dest": "main"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck"]
       }
     ],
     "keywords": [],

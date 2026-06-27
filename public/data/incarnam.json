@@ -3308,7 +3308,18 @@
         "description": "Détruisez la Chauve-Souris Vampyre : Votre Héros regagne 3 PV.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "heroGainPv",
+              "n": 3
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["hero-gain-pv"]
       }
     ],
     "keywords": [],
@@ -12434,7 +12445,20 @@
         "description": "Cherchez une carte Monstre dans votre Défausse et prenez-la en main.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "from": "defausse",
+              "sub": "monstre",
+              "dest": "main"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck"]
       },
       {
         "description": "Vous pouvez jouer cette Action même si vous n'avez pas de Monstre dans votre Défausse. Néanmoins, si il y a au moins une carte Monstre dans votre Défausse, vous ne pouvez pas choisir d'échouer dans la recherche car la Défausse est une zone publique.",
@@ -14830,7 +14854,20 @@
         "description": "Détruisez le Zaap : Cherchez une carte Zone dans votre Défausse, révélez-la et prenez-la en main.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Zone",
+              "from": "defausse",
+              "dest": "main"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck"]
       }
     ],
     "keywords": [],

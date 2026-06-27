@@ -24,6 +24,7 @@ import {
   compileTapEffectText,
   compileTurnStartEffectText,
   isPaidCostText,
+  isSacrificeCostText,
 } from "../src/game/rules/effects/dsl";
 import { CARD_SCRIPTS } from "../src/game/rules/effects/cardScripts";
 import { OP_TO_MECHANIC } from "../src/data/mechanics";
@@ -199,11 +200,13 @@ function compileEffects(
     const text = String(e?.description ?? "").trim();
     if (!text) continue;
     stats.effects++;
-    // Pouvoir à coût d'inclinaison OU pouvoir à COÛT PAYÉ « Inclinez/Détruisez
-    // un de vos X : … » (reconnu par isPaidCostText même sans requiresIncline) →
-    // parseur tap. Sinon Action → onPlay, sinon chaîne des autres déclencheurs.
+    // Pouvoir à coût d'inclinaison, pouvoir à COÛT PAYÉ « Inclinez/Détruisez
+    // un de vos X : … » (isPaidCostText) OU pouvoir à COÛT DE SACRIFICE
+    // « Détruisez [cette carte] : … » (isSacrificeCostText), même sans
+    // requiresIncline → parseur tap. Sinon Action → onPlay, sinon chaîne des
+    // autres déclencheurs.
     const compiled =
-      e.requiresIncline || isPaidCostText(text)
+      e.requiresIncline || isPaidCostText(text) || isSacrificeCostText(text)
         ? compileTapEffectText(text, cardName, sourceElement)
         : isAction
           ? compileActionEffectText(text, cardName, sourceElement)

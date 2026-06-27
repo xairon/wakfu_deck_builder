@@ -49,6 +49,10 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     n: z.number(),
     element: z.string(),
     heroes: z.boolean(),
+    // « … au Héros de votre choix » : la cible est restreinte aux HÉROS (pas
+    // d'Allié éligible). Exclusif avec `sub` (un Héros n'a pas de Famille).
+    // `heroes` reste true par cohérence (un Héros est ciblable).
+    targetHeroOnly: z.boolean().optional(),
     // Famille requise (« … à l'Allié [Famille] de votre choix »).
     sub: z.string().optional(),
     // Niveau EXACT (« … de Niveau N de votre choix »). Cible sans Niveau =
@@ -95,7 +99,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     what: z.enum(["Dofus", "Action", "Équipement", "Zone", "Salle", "Allié"]),
     sub: z.string().optional(),
     maxLevel: z.number().optional(),
+    // Niveau EXACT (« … de Niveau N ») — distinct de maxLevel (≤). Cible sans
+    // Niveau = inéligible.
+    exactLevel: z.number().optional(),
     tapped: z.boolean().optional(),
+    // Pile de recherche : « dans votre Pioche » (défaut, mélange possible) ou
+    // « dans votre Défausse » (« Cherchez … dans votre Défausse et prenez-la en
+    // main » — la Défausse n'est pas mélangée). `from` absent = "pioche" pour
+    // préserver les données et le comportement historiques.
+    from: z.enum(["pioche", "defausse"]).optional(),
     dest: z.enum(["main", "monde"]),
   }),
   // « Mettez en jeu un [Allié/Zone/Salle/Équipement] [Famille]? [de Niveau ≤ N]?

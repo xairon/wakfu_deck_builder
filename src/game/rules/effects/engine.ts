@@ -418,21 +418,25 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         continue;
       }
       if (op.op === "searchDeck") {
+        // « Cherchez … dans votre Pioche / Défausse … » : même machinerie de
+        // pick, la pile source dépend de `from` (défaut "pioche").
+        const fromZone = op.from === "defausse" ? "defausse" : "pioche";
         const filter: PickFilter = {
           mainType: op.what,
           ...(op.sub ? { sub: op.sub } : {}),
           ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
+          ...(op.exactLevel !== undefined ? { exactLevel: op.exactLevel } : {}),
         };
         const hasMatch = deps
           .getState()
           .seats[
             seat
-          ].pioche.some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+          ][fromZone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
         if (!hasMatch) {
           deps.dispatch(
             say(
               seat,
-              `${cardName} : aucune carte correspondante dans la Pioche.`,
+              `${cardName} : aucune carte correspondante dans la ${fromZone === "defausse" ? "Défausse" : "Pioche"}.`,
             ),
           );
           continue;
@@ -440,7 +444,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         effectPicking.value = {
           seat,
           cardName,
-          zone: "pioche",
+          zone: fromZone,
           action: op.dest === "main" ? "toHand" : "toMonde",
           filter,
           ...(op.tapped ? { enterTapped: true } : {}),
