@@ -363,20 +363,24 @@
           ✨ {{ store.effectTargeting.cardName }} —
           {{
             store.effectTargeting.op.op === "destroyTarget"
-              ? `choisis ${
-                  store.effectTargeting.op.what === "Allié"
-                    ? "l'Allié"
-                    : store.effectTargeting.op.what === "Zone"
-                      ? "la Zone"
-                      : "l'Équipement"
-                } à détruire`
+              ? store.effectTargeting.op.whatAny
+                ? "choisis la cible à détruire"
+                : `choisis ${
+                    store.effectTargeting.op.what === "Allié"
+                      ? "l'Allié"
+                      : store.effectTargeting.op.what === "Zone"
+                        ? "la Zone"
+                        : "l'Équipement"
+                  } à détruire`
               : store.effectTargeting.op.op === "tapTarget"
                 ? "choisis la cible à incliner"
                 : store.effectTargeting.op.op === "untapTarget"
                   ? "choisis la cible à redresser"
                   : store.effectTargeting.op.op === "returnToHand"
                     ? "choisis la cible à renvoyer en main"
-                    : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                    : store.effectTargeting.op.op === "damageTargetByForce"
+                      ? "choisis la cible qui subit la Force en Dommages"
+                      : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

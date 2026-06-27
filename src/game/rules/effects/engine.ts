@@ -35,6 +35,7 @@ import {
   producedElement,
   resolveBuffForceTarget,
   resolveDamageTarget,
+  resolveDamageTargetByForce,
   resolveDestroyTarget,
   resolveHealHeroTarget,
   resolveReturnToHand,
@@ -468,6 +469,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         }
       } else if (op.op === "draw") {
         deps.draw(seat, op.n);
+      } else if (op.op === "eachPlayerDraws") {
+        // « Chaque joueur pioche N carte(s). » — joueur actif (la source) d'abord.
+        deps.draw(seat, op.n);
+        deps.draw(otherSeat(seat), op.n);
       } else if (op.op === "gainXp") {
         const grant = grantXpEvents(deps.rulesCtx(), seat, op.n);
         deps.dispatch(
@@ -667,14 +672,25 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                 ? resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId)
                 : t.op.op === "returnToHand"
                   ? resolveReturnToHand(deps.rulesCtx(), t.seat, instanceId)
-                  : resolveDamageTarget(
-                      deps.rulesCtx(),
-                      t.seat,
-                      instanceId,
-                      t.op.n,
-                      t.op.element,
-                      { mods: activeGlobalMods(deps.rulesCtx()) },
-                    );
+                  : t.op.op === "damageTargetByForce"
+                    ? resolveDamageTargetByForce(
+                        deps.rulesCtx(),
+                        t.seat,
+                        instanceId,
+                        t.op.element,
+                        {
+                          mods: activeGlobalMods(deps.rulesCtx()),
+                          ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+                        },
+                      )
+                    : resolveDamageTarget(
+                        deps.rulesCtx(),
+                        t.seat,
+                        instanceId,
+                        t.op.n,
+                        t.op.element,
+                        { mods: activeGlobalMods(deps.rulesCtx()) },
+                      );
     deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
     if (deps.isAssistEffects() && res.ruleEvents?.length)

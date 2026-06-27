@@ -57,6 +57,20 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Inflige des Dommages à un Allié ou Héros ciblé.",
   },
   {
+    id: "damage-target-by-force",
+    label: "Dégâts ciblés (Force)",
+    category: "dégâts",
+    glossary:
+      "Inflige à une cible des Dommages égaux à la Force de la carte source.",
+  },
+  {
+    id: "each-player-draws",
+    label: "Pioche de tous les joueurs",
+    category: "ressource",
+    glossary:
+      "Chaque joueur pioche un nombre de cartes (joueur actif d'abord).",
+  },
+  {
     id: "heal-hero-target",
     label: "Soin de Héros ciblé",
     category: "soin",
@@ -172,6 +186,8 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   havreSacGainResistance: "bag-gain-resistance",
   destroyTarget: "destroy-target",
   damageTarget: "damage-target",
+  damageTargetByForce: "damage-target-by-force",
+  eachPlayerDraws: "each-player-draws",
   healHeroTarget: "heal-hero-target",
   buffForceTarget: "buff-force-target",
   buffForceSelf: "buff-force-self",

@@ -69,6 +69,9 @@ function parseSentence(
   if (m) return { op: "gainXp", n: toNumber(m[1]) };
   m = sentence.match(/^pioche[zr] (une|deux|trois|\d+) cartes?$/);
   if (m) return { op: "draw", n: toNumber(m[1]) };
+  // « Chaque joueur pioche N carte(s). » — pioche symétrique (joueur actif d'abord).
+  m = sentence.match(/^chaque joueur pioche (une|deux|trois|\d+) cartes?$/);
+  if (m) return { op: "eachPlayerDraws", n: toNumber(m[1]) };
   m = sentence.match(
     /^(?:gagne[zr]|votre heros gagne) (\d+) (?:pv|points? de vie)$/,
   );
@@ -179,6 +182,21 @@ function parseSentence(
   );
   if (m && subjectIsSelf(m[1], cardName))
     return { op: "buffForceSelf", n: toNumber(m[2]) };
+  // « Détruisez l'Équipement ou la Zone de votre choix » (deux types, dans
+  //   l'un ou l'autre ordre) → destroyTarget multi-type. Placé AVANT la forme
+  //   mono-type pour capter les deux compléments.
+  m = sentence.match(
+    /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) ou (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m) {
+    const first = TARGET_WHAT[m[1].replace(/['’]/g, "'").replace(/\s+/g, " ")];
+    const second = TARGET_WHAT[m[2].replace(/['’]/g, "'").replace(/\s+/g, " ")];
+    if (!first || !second || first === second) return null;
+    const zones: ("monde" | "havreSac")[] = m[4]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return { op: "destroyTarget", whatAny: [first, second], zones };
+  }
   m = sentence.match(
     /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );
@@ -246,6 +264,24 @@ function parseSentence(
       n: toNumber(m[2]),
       element: sourceElement,
       heroes: !!m[3],
+      zones: targetZones(m[4], m[5]),
+    };
+  }
+  // « [self] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix
+  //   [adverse] [dans le Monde][ ou dans un Havre-Sac] » → damageTargetByForce.
+  //   Le sujet doit être la carte elle-même (sujet explicite vérifié, ou forme
+  //   nue « inflige… » comme corps d'un déclencheur de la carte). Le montant
+  //   (Force de la source) est calculé à la résolution dans targeting.ts.
+  m = sentence.match(
+    /^(?:(.{1,50}?) )?inflige sa force en dommages? a l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m) {
+    if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
+    return {
+      op: "damageTargetByForce",
+      element: sourceElement,
+      ...(m[2] ? { heroes: true } : {}),
+      ...(m[3] ? { controller: "opponent" as const } : {}),
       zones: targetZones(m[4], m[5]),
     };
   }

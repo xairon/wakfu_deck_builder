@@ -1521,7 +1521,17 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "eachPlayerDraws",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["each-player-draws"]
       }
     ],
     "keywords": [

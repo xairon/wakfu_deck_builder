@@ -9,6 +9,8 @@ export const mechanicTagSchema = z.enum([
   "bag-gain-resistance",
   "destroy-target",
   "damage-target",
+  "damage-target-by-force",
+  "each-player-draws",
   "heal-hero-target",
   "buff-force-target",
   "buff-force-self",

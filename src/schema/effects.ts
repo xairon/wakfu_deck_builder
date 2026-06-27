@@ -14,7 +14,10 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("havreSacGainResistance"), n: z.number() }),
   z.object({
     op: z.literal("destroyTarget"),
-    what: z.enum(["Allié", "Zone", "Équipement"]),
+    // Cas mono-type historique (« Détruisez l'Allié de votre choix »).
+    what: z.enum(["Allié", "Zone", "Équipement"]).optional(),
+    // Cas multi-type (« Détruisez l'Équipement ou la Zone de votre choix »).
+    whatAny: z.array(z.enum(["Allié", "Zone", "Équipement"])).optional(),
     zones: zonesSchema,
   }),
   z.object({
@@ -24,6 +27,17 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     heroes: z.boolean(),
     zones: zonesSchema,
   }),
+  // « [X] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix » :
+  // op à cible dont le montant = Force effective de la SOURCE à la résolution
+  // (410.1, dommages de l'élément de la source).
+  z.object({
+    op: z.literal("damageTargetByForce"),
+    element: z.string(),
+    heroes: z.boolean().optional(),
+    controller: controllerSchema.optional(),
+    zones: zonesSchema,
+  }),
+  z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({ op: z.literal("healHeroTarget"), n: z.number() }),
   z.object({
     op: z.literal("buffForceTarget"),

@@ -19,6 +19,7 @@ export type TargetingOp = Extract<
   CompiledEffectOp,
   | { op: "destroyTarget" }
   | { op: "damageTarget" }
+  | { op: "damageTargetByForce" }
   | { op: "healHeroTarget" }
   | { op: "buffForceTarget" }
   | { op: "tapTarget" }
@@ -30,6 +31,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
   return (
     op.op === "destroyTarget" ||
     op.op === "damageTarget" ||
+    op.op === "damageTargetByForce" ||
     op.op === "healHeroTarget" ||
     op.op === "buffForceTarget" ||
     op.op === "tapTarget" ||
@@ -52,7 +54,10 @@ export function effectTargetIds(
     op.op === "healHeroTarget" ? ["monde", "havreSac"] : op.zones;
   // ops à filtre de contrôleur (« vos » / « adverse »)
   const controller =
-    op.op === "tapTarget" || op.op === "untapTarget" || op.op === "returnToHand"
+    op.op === "tapTarget" ||
+    op.op === "untapTarget" ||
+    op.op === "returnToHand" ||
+    op.op === "damageTargetByForce"
       ? op.controller
       : undefined;
   const out: InstanceId[] = [];
@@ -62,7 +67,8 @@ export function effectTargetIds(
     if (!card) continue;
     let ok =
       op.op === "destroyTarget"
-        ? card.mainType === op.what
+        ? card.mainType === op.what ||
+          !!op.whatAny?.some((w) => w === card.mainType)
         : op.op === "healHeroTarget"
           ? card.mainType === "Héros"
           : card.mainType === "Allié" ||
@@ -198,6 +204,24 @@ export function resolveDamageTarget(
     log.push(...destroy.log);
   }
   return { events, log, ruleEvents };
+}
+
+/**
+ * « [X] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix » :
+ * le montant est la Force EFFECTIVE de la SOURCE (`sourceId`) au moment de la
+ * résolution (204.4/410.1), de l'Élément de la source ; le reste est identique
+ * à `resolveDamageTarget` (Résistance, létalité, XP). Source absente / hors jeu
+ * → effectiveForce = 0 → 0 Dommage (no-op fidèle).
+ */
+export function resolveDamageTargetByForce(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+  element: string,
+  opts: DamageOpts = {},
+): EffectResolution {
+  const n = opts.sourceId ? effectiveForce(ctx, opts.sourceId, opts.stance) : 0;
+  return resolveDamageTarget(ctx, actor, targetId, n, element, opts);
 }
 
 /**
