@@ -5581,7 +5581,26 @@
         "description": "Au début de votre tour, si le Porteur de la Peluche de Pleur Nicheuz est dans le Monde, gagnez 1 XP.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTurnStart",
+          "ops": [
+            {
+              "op": "conditional",
+              "cond": {
+                "cond": "selfInZone",
+                "zone": "monde"
+              },
+              "ops": [
+                {
+                  "op": "gainXp",
+                  "n": 1
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["conditional"]
       },
       {
         "description": "Tant que la Peluche de Pleur Nicheuz est dans votre Défausse, vos gains d'XP sont réduits à 0.",

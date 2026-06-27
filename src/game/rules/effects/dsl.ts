@@ -1178,6 +1178,62 @@ function compileActorBoundBody(
   return null;
 }
 
+/** Spécification de condition « Si <cond> » (cf. schéma effects). */
+type CondSpec = Extract<EffectOp, { op: "conditional" }>["cond"];
+
+/**
+ * Parse une CONDITION « si <cond> » (déjà normalisée, sans « si » initial, sans
+ * virgule de fin) → `CondSpec`, ou null si la condition n'est PAS faithfully
+ * évaluable. STRICT : seules les formes ci-dessous (lisibles exactement de
+ * l'état) sont admises ; tout le reste reste manuel.
+ *  - « [self] est dans le Monde / son Havre-Sac » → selfInZone (le sujet doit
+ *    être la carte elle-même ; « dans votre Défausse » est REJETÉ — le
+ *    déclencheur onTurnStart ne scanne pas la Défausse, ce serait infidèle) ;
+ *  - « votre Héros est de Niveau N (ou plus / ou moins) » → heroLevel ;
+ *  - « vous contrôlez (au moins N) [Allié] <Famille> » → controlsAlly.
+ */
+function parseCond(raw: string, cardName: string): CondSpec | null {
+  const cond = raw.trim();
+  // « [self] est dans le Monde / dans son|votre Havre-Sac » (la SOURCE en jeu).
+  let m = cond.match(
+    /^(.{1,60}?) (?:est|se trouve) dans (le monde|(?:son|votre) havre[- ]?sac)$/,
+  );
+  if (m && subjectIsSelfRef(m[1].trim(), cardName)) {
+    return {
+      cond: "selfInZone",
+      zone: m[2] === "le monde" ? "monde" : "havreSac",
+    };
+  }
+  // « votre Héros est de Niveau N » / « … de Niveau N ou plus » / « … ou moins ».
+  m = cond.match(
+    /^votre heros est (?:de )?niveau (\d+)( ou plus| et plus| ou moins)?$/,
+  );
+  if (m) {
+    const n = toNumber(m[1]);
+    const op = m[2]
+      ? /plus/.test(m[2])
+        ? (">=" as const)
+        : ("<=" as const)
+      : ("==" as const);
+    return { cond: "heroLevel", op, n };
+  }
+  // « vous contrôlez [au moins N] [un] [Allié] <Famille> » → controlsAlly. Le
+  // dénombrement (« au moins trois Kitsous ») ou le singulier (« un Enclos » —
+  // hors champ : Enclos n'est pas une Famille d'Allié) ; on n'admet QUE les
+  // Familles non ambiguës d'Allié (ALLIED_FAMILIES). « moins d'Alliés que … »,
+  // « un Niveau cumulé … » (valeurs comparatives dynamiques) → rejet.
+  m = cond.match(
+    /^vous controlez (?:au moins (une|deux|trois|\d+) )?(?:un |des |le |la )?([a-z-]+?)s?$/,
+  );
+  if (m) {
+    const fam = m[2].replace(/s$/, "");
+    if (!ALLIED_FAMILIES.has(fam)) return null;
+    const min = m[1] ? toNumber(m[1]) : 1;
+    return { cond: "controlsAlly", sub: fam, min };
+  }
+  return null;
+}
+
 /** Le sujet du déclencheur désigne-t-il la carte elle-même ? */
 function subjectIsSelf(subject: string, cardName: string): boolean {
   const s = subject.replace(/^(le |la |les |l['’]\s?|un |une )/, "").trim();
@@ -2121,6 +2177,25 @@ export function compileTurnStartEffectText(
   const m = norm(text).match(/^au debut de votre tour\s*,\s*(.+)$/);
   if (!m) return null;
   let body = m[1].replace(/\.$/, "").trim();
+  // CONDITIONNEL « Au début de votre tour, si <cond>, <CORPS>. » → un op
+  // `conditional` enveloppant le CORPS compilé. STRICT : la condition doit être
+  // FAITHFULLY évaluable (parseCond) ET le CORPS doit se compiler ENTIÈREMENT.
+  // « Vous pouvez … » DANS le corps conditionnel n'est pas modélisé (optionnel
+  // imbriqué dans un conditionnel → ambigu) → manuel. « ou détruisez [cette
+  // carte] » résiduel idem (rejeté par le `$` de compileBody du corps).
+  const condM = body.match(/^si ([^,]{1,80}?)\s*,\s*(.+)$/);
+  if (condM) {
+    const cond = parseCond(condM[1], cardName);
+    if (!cond) return null;
+    const inner = condM[2].replace(/\.$/, "").trim();
+    if (/^vous pouvez /.test(inner)) return null;
+    const innerOps = compileBody(inner, cardName, sourceElement);
+    if (!innerOps) return null;
+    return {
+      trigger: "onTurnStart",
+      ops: [{ op: "conditional", cond, ops: innerOps }],
+    };
+  }
   let orElse: "destroySelf" | undefined;
   const alt = body.match(/^(.+?) ou detruisez (.+)$/);
   if (alt && subjectIsSelf(alt[2].trim(), cardName)) {

@@ -290,6 +290,13 @@ export const MECHANICS: Mechanic[] = [
     glossary:
       "Le joueur de votre choix gagne des PA ou PM jusqu'à la fin du tour.",
   },
+  {
+    id: "conditional",
+    label: "Effet conditionnel",
+    category: "autre",
+    glossary:
+      "« Si <condition>, … » : un corps d'effet ne s'exécute que si une condition lisible de l'état de jeu est vraie à la résolution.",
+  },
 ];
 
 /** op compilée → mécanique (déterministe, 1:1). */
@@ -336,6 +343,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   playerDraw: "player-draw",
   playerLoseStatTurn: "player-lose-stat-turn",
   playerGainStat: "player-gain-stat",
+  conditional: "conditional",
 };
 
 /** Tags uniques dérivés d'une liste d'ops, dans l'ordre d'apparition. */

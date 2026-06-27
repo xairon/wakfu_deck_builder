@@ -15,7 +15,65 @@ const orientationFilterSchema = z.enum(["tapped", "upright"]);
 // « inCombat » = « attaquant OU bloqueur » (l'un OU l'autre rôle).
 const combatRoleSchema = z.enum(["attacking", "blocking", "inCombat"]);
 
+// ── CONDITIONS « Si <condition>, <corps> » (sous-système conditionnel) ────────
+// Une `CondSpec` est une condition FAITHFULLY évaluable depuis l'état de jeu à
+// la résolution de l'effet : si elle est FAUSSE, le corps (ops imbriquées de
+// l'op `conditional`) est ignoré (no-op). On n'implémente QUE des conditions
+// lisibles EXACTEMENT — toute condition non évaluable fidèlement reste manuelle
+// (le DSL renvoie null → uncovered). « an approximation of gameplay is worse
+// than a manual effect ».
+const comparatorSchema = z.enum([">=", "==", "<="]);
+export const condSpecSchema = z.discriminatedUnion("cond", [
+  // « si [self] est dans le Monde / dans son Havre-Sac » : la SOURCE de l'effet
+  // (frame.sourceId) est-elle dans la zone donnée au moment de résoudre ? FIDÈLE
+  // — lu sur inst.location.zone. Sert aux pouvoirs « Au début de votre tour, si
+  // [self] est dans le Monde, … » dont le déclencheur scanne déjà Monde +
+  // Havre-Sac (la zone Défausse n'est PAS scannée → ces formes restent manuelles).
+  z.object({
+    cond: z.literal("selfInZone"),
+    zone: z.enum(["monde", "havreSac"]),
+  }),
+  // « si votre Héros est de Niveau N (ou plus / ou moins) » : Niveau courant du
+  // Héros de l'acteur (307.4/307.5, helper heroLevel) comparé à `n`. FIDÈLE.
+  z.object({
+    cond: z.literal("heroLevel"),
+    op: comparatorSchema,
+    n: z.number(),
+  }),
+  // « si vous contrôlez (au moins N) [Allié] [Famille] » : nombre d'Alliés que
+  // l'acteur contrôle dans le Monde correspondant à `sub` (Famille, sur subTypes)
+  // ≥ `min` (défaut 1). FIDÈLE — compte exact des instances en jeu. Exclut la
+  // SOURCE de l'effet ? Non : « vous contrôlez » inclut toutes vos créatures.
+  z.object({
+    cond: z.literal("controlsAlly"),
+    sub: z.string().optional(),
+    min: z.number().optional(),
+  }),
+]);
+
+// Le corps d'un op `conditional` est une séquence d'ops standard (récursive).
+// On le valide via `z.lazy` pour casser la référence circulaire avec
+// `compiledEffectOpSchema`. La référence paresseuse est annotée explicitement
+// (`z.ZodTypeAny`) : sans cela TypeScript inférerait `any` pour le schéma entier
+// (auto-référence dans son propre initialiseur) et tout le typage des ops
+// s'effondrerait. La validation reste exacte au runtime (l'évaluation de la
+// fonction lazy renvoie le vrai schéma d'op).
+const conditionalBodySchema: z.ZodTypeAny = z.lazy(() =>
+  z.array(compiledEffectOpSchema),
+);
+
 export const compiledEffectOpSchema = z.discriminatedUnion("op", [
+  // « Si <condition>, <corps> » : exécute `ops` (le corps) UNIQUEMENT si `cond`
+  // est vraie à la résolution (évaluée contre l'état/RulesCtx, bornée à la source
+  // et à l'acteur de la frame). Si fausse, les ops du corps sont sautées (no-op
+  // fidèle). Le corps est une séquence d'ops standard (récursive) — les ops à
+  // cible / pile du corps mettent la frame en pause comme à plat. STRICT : une
+  // condition non FAITHFULLY évaluable n'est jamais compilée (manuel).
+  z.object({
+    op: z.literal("conditional"),
+    cond: condSpecSchema,
+    ops: conditionalBodySchema,
+  }),
   z.object({ op: z.literal("gainXp"), n: z.number() }),
   z.object({ op: z.literal("draw"), n: z.number() }),
   z.object({

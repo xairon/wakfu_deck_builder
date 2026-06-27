@@ -43,6 +43,7 @@ export const mechanicTagSchema = z.enum([
   "cost-tap-controlled",
   "cost-destroy-controlled",
   "cost-recycle",
+  "conditional",
 ]);
 
 export const mechanicCategorySchema = z.enum([

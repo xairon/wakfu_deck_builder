@@ -7382,7 +7382,26 @@
         "description": "Au début de votre tour, si Franchiche Laliane est dans le Monde, votre Héros regagne 1 PV.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTurnStart",
+          "ops": [
+            {
+              "op": "conditional",
+              "cond": {
+                "cond": "selfInZone",
+                "zone": "monde"
+              },
+              "ops": [
+                {
+                  "op": "heroGainPv",
+                  "n": 1
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["conditional"]
       }
     ],
     "keywords": [],

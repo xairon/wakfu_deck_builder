@@ -7,7 +7,7 @@
  * docs/superpowers/plans/2026-06-18-effect-engine-extraction.md.
  */
 import { computed, ref } from "vue";
-import type { Card, CompiledEffect } from "@/types/cards";
+import type { Card, CompiledEffect, CondSpec } from "@/types/cards";
 import type { DraftEvent, GameState, Position, Seat, ZoneRef } from "@/game";
 import {
   incCounter as incCounterVerb,
@@ -485,6 +485,50 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   }
 
   /**
+   * Évalue une CONDITION « Si <cond> » contre l'état courant, bornée à l'acteur
+   * (`seat`) et à la source (`sourceId`) de la frame. PURE de lecture (aucune
+   * mutation) — chaque branche ne lit que ce qu'elle peut FAITHFULLY déterminer.
+   * Une condition dont la source/le Héros est absent retourne `false` (le corps
+   * ne s'exécute pas — fidèle : la prémisse n'est pas remplie).
+   */
+  function evalCond(cond: CondSpec, seat: Seat, sourceId?: string): boolean {
+    switch (cond.cond) {
+      case "selfInZone": {
+        // « si [self] est dans le Monde / son Havre-Sac » : la SOURCE de l'effet
+        // est-elle dans la zone donnée à la résolution ?
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        return !!src && src.location.zone === cond.zone;
+      }
+      case "heroLevel": {
+        // « si votre Héros est de Niveau N (ou plus / ou moins) ».
+        const lvl = heroLevel(deps.rulesCtx(), seat);
+        if (cond.op === ">=") return lvl >= cond.n;
+        if (cond.op === "<=") return lvl <= cond.n;
+        return lvl === cond.n;
+      }
+      case "controlsAlly": {
+        // « si vous contrôlez (au moins `min`) [Allié] [Famille] » : compte VOS
+        // Alliés en jeu (Monde + Havre-Sac) matchant la Famille `sub`.
+        const sub = cond.sub ? normWord(cond.sub) : undefined;
+        const min = cond.min ?? 1;
+        let count = 0;
+        for (const inst of Object.values(deps.getState().instances)) {
+          if (inst.controller !== seat) continue;
+          const zone = inst.location.zone;
+          if (zone !== "monde" && zone !== "havreSac") continue;
+          const card = deps.getCard(inst.cardId);
+          if (!card || card.mainType !== "Allié") continue;
+          if (sub && !(card.subTypes ?? []).some((s) => normWord(s) === sub))
+            continue;
+          count++;
+          if (count >= min) return true;
+        }
+        return count >= min;
+      }
+    }
+  }
+
+  /**
    * Exécute les ops de la frame de tête ; retourne `true` si une op
    * interactive met la frame en pause (le reste attend via `holdRest`).
    */
@@ -493,6 +537,22 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     const ops = frame.ops;
     for (let i = 0; i < ops.length; i++) {
       let op = ops[i];
+      if (op.op === "conditional") {
+        // « Si <cond>, <corps> » : on évalue la condition à la RÉSOLUTION. Si
+        // vraie, on APLATIT le corps dans le flux d'ops (devant le reste de la
+        // frame) et on relance la frame ainsi reconstruite — les ops à cible /
+        // pile du corps mettent alors la frame en pause exactement comme à plat.
+        // Si fausse, le corps est sauté (no-op fidèle), on poursuit.
+        if (evalCond(op.cond, seat, sourceId)) {
+          const body = op.ops as EffectOp[];
+          holdRest(frame, [...body, ...ops.slice(i + 1)]);
+          return runFrame(effectQueue.value[0]);
+        }
+        deps.dispatch(
+          say(seat, `${cardName} : condition non remplie, effet passé.`),
+        );
+        continue;
+      }
       if (isTargetingOp(op)) {
         // VALEUR DYNAMIQUE liée au coût « Recyclez jusqu'à N … » : pour les ops à
         // cible à magnitude (damageTarget/buffForceTarget/healHeroTarget) marquées
