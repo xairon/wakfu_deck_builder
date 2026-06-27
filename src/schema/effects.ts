@@ -297,6 +297,28 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     maxForce: z.number().optional(),
     zones: zonesSchema,
   }),
+  // « Détruisez tous les Alliés [adverses] [et Héros] [de Niveau ≤ N | de Niveau
+  //   N] [inclinés / dressés] [dans le Monde]. » → destroyAll, op de MASSE NON
+  //   interactive (board-wipe). Chaque instance éligible subit resolveDestroyTarget
+  //   (415.1 : un Allié détruit rapporte son XP à l'adversaire de son contrôleur).
+  //  - controller : « adverses » (opponent) / « vos » (self) / « tous » (any) ;
+  //  - heroes : « et Héros » inclut les Héros — DANGEREUX (détruire un Héros = perte
+  //    de la partie) : posé UNIQUEMENT si le texte dit littéralement « et Héros » ;
+  //  - sub : Famille requise (« tous les Alliés Piou ») ;
+  //  - maxLevel : « de Niveau inférieur ou égal à N » ; exactLevel : « de Niveau N » ;
+  //  - orientation : « inclinés » (tapped) / « dressés » (upright) — lu sur
+  //    inst.orientation ;
+  //  - zones : « dans le Monde » → ["monde"].
+  z.object({
+    op: z.literal("destroyAll"),
+    controller: massControllerSchema.optional(),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    maxLevel: z.number().optional(),
+    exactLevel: z.number().optional(),
+    orientation: orientationFilterSchema.optional(),
+    zones: zonesSchema,
+  }),
   // COÛT de pouvoir payé « Inclinez un de vos X : … » : op de CIBLAGE (première
   // op d'une séquence cost:"paidOps"). Le joueur choisit une de SES créatures
   // (controller = acteur) éligible et DRESSÉE, qui est alors inclinée

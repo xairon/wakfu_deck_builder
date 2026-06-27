@@ -228,6 +228,20 @@ export const MECHANICS: Mechanic[] = [
       "Inflige des Dommages à tous les Alliés (et Héros) correspondant aux filtres, sans choix du joueur.",
   },
   {
+    id: "destroy-all",
+    label: "Destruction de masse",
+    category: "contrôle",
+    glossary:
+      "Détruit tous les Alliés (et Héros) correspondant aux filtres, sans choix du joueur (board-wipe).",
+    relatesTo: [
+      {
+        tag: "destroy-target",
+        kind: "feeds",
+        note: "Variante de masse de la destruction ciblée.",
+      },
+    ],
+  },
+  {
     id: "cost-tap-controlled",
     label: "Coût : inclinaison d'une de vos créatures",
     category: "autre",
@@ -307,6 +321,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   tapAll: "tap-all",
   untapAll: "untap-all",
   damageAll: "damage-all",
+  destroyAll: "destroy-all",
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
   costRecycle: "cost-recycle",

@@ -945,6 +945,22 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "destroyAll") {
+        // DESTRUCTION DE MASSE (board-wipe, non interactive) : détruit TOUTES les
+        // créatures en jeu correspondant aux filtres, sans choix du joueur. Chaque
+        // cible passe par resolveDestroyTarget (415.1 : un Allié détruit rapporte
+        // son XP à l'adversaire de son contrôleur). Ordre STABLE (tri des
+        // instanceId) pour un déroulé déterministe.
+        const ids = massEligibleIds(op, seat).sort();
+        for (const id of ids) {
+          const res = resolveDestroyTarget(deps.rulesCtx(), seat, id);
+          deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
+        }
+        if (ids.length)
+          deps.dispatch(
+            say(seat, `${cardName} : créatures détruites en masse.`),
+          );
+        deps.checkVictory();
       } else if (
         op.op === "tapAll" ||
         op.op === "untapAll" ||
@@ -1010,10 +1026,12 @@ export function createEffectEngine(deps: EffectEngineDeps) {
 
   /**
    * Instances EN JEU correspondant aux filtres d'une op de MASSE (tapAll /
-   * untapAll / damageAll) : zones autorisées, contrôleur (« vos » self / « adverses »
-   * opponent / « tous » any, relatif à l'acteur), mainType Allié (+ Héros si
-   * `heroes`), Famille `sub` (subTypes), et Force effective ≤ `maxForce`. PUR de
-   * choix — l'effet s'applique à TOUTES les correspondances.
+   * untapAll / damageAll / destroyAll) : zones autorisées, contrôleur (« vos »
+   * self / « adverses » opponent / « tous » any, relatif à l'acteur), mainType
+   * Allié (+ Héros si `heroes`), Famille `sub` (subTypes), Force effective ≤
+   * `maxForce`, Niveau ≤ `maxLevel` / = `exactLevel` (carte sans Niveau =
+   * inéligible quand un filtre de Niveau est posé), et orientation imprimée
+   * (`orientation`). PUR de choix — l'effet s'applique à TOUTES les correspondances.
    */
   function massEligibleIds(
     op: {
@@ -1021,6 +1039,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       heroes?: boolean;
       sub?: string;
       maxForce?: number;
+      maxLevel?: number;
+      exactLevel?: number;
+      orientation?: "tapped" | "upright";
       zones: ("monde" | "havreSac")[];
     },
     actor: Seat,
@@ -1045,6 +1066,17 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         op.maxForce !== undefined &&
         effectiveForce(ctx, inst.instanceId) > op.maxForce
       )
+        continue;
+      // Niveau imprimé : une carte SANS Niveau est inéligible dès qu'un filtre de
+      // Niveau est posé (manquant ≠ N, comme matchesPickFilter).
+      const level = card.stats?.niveau?.value;
+      if (
+        op.maxLevel !== undefined &&
+        (level === undefined || level > op.maxLevel)
+      )
+        continue;
+      if (op.exactLevel !== undefined && level !== op.exactLevel) continue;
+      if (op.orientation !== undefined && inst.orientation !== op.orientation)
         continue;
       out.push(inst.instanceId);
     }

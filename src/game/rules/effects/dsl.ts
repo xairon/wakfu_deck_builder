@@ -936,6 +936,35 @@ function parseMassOp(sentence: string, sourceElement: string): EffectOp | null {
       zones: m[5] ? ["monde"] : ["monde", "havreSac"],
     };
   }
+  // « Détruisez <sujet pluriel> [de Niveau ≤ N | de Niveau N] [inclinés / dressés]
+  //   [dans le Monde]. » → destroyAll (board-wipe non interactif). Le sujet
+  //   (« tous les Alliés [et Héros] [adverses] », « tous vos Alliés [Famille] »…)
+  //   passe par parseMassSubject (mêmes Familles non ambiguës). « de Niveau N »
+  //   (exact) → exactLevel ; « ≤ N » → maxLevel. « inclinés » / « dressés » →
+  //   orientation. Le `$` rejette toute clause résiduelle (« qui lui ont infligé… »,
+  //   « ; ou détruisez… », « Vous ne gagnez pas d'XP. »…) → reste manuel (fidèle).
+  m = sentence.match(
+    /^detrui(?:sez|re) (tous (?:les|vos) [a-z -]+?)(?: de niveau (?:inferieur ou egal a (\d+)|(\d+)))?( inclines?| dresses?)?( dans le monde)?$/,
+  );
+  if (m) {
+    const subj = parseMassSubject(m[1].trim());
+    if (!subj) return null;
+    const orientation = m[4]
+      ? m[4].trim().startsWith("incline")
+        ? ("tapped" as const)
+        : ("upright" as const)
+      : undefined;
+    return {
+      op: "destroyAll",
+      controller: subj.controller,
+      ...(subj.heroes ? { heroes: true } : {}),
+      ...(subj.sub ? { sub: subj.sub } : {}),
+      ...(m[2] ? { maxLevel: toNumber(m[2]) } : {}),
+      ...(m[3] ? { exactLevel: toNumber(m[3]) } : {}),
+      ...(orientation ? { orientation } : {}),
+      zones: m[5] ? ["monde"] : ["monde", "havreSac"],
+    };
+  }
   return null;
 }
 

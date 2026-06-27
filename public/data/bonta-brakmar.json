@@ -4856,7 +4856,20 @@
         "description": "Quand le Cybwork apparaît, détruisez tous les Alliés de Niveau 1 inclinés dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "destroyAll",
+              "controller": "any",
+              "exactLevel": 1,
+              "orientation": "tapped",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-all"]
       }
     ],
     "keywords": [
