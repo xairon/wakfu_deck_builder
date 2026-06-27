@@ -437,4 +437,22 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+  // « Quand le Grand Shushu Craquelé apparaît, il inflige 2 Dommages à l'Allié de
+  //   votre choix. » — déclenché d'apparition de SOI (« il » = la carte). Sujet
+  //   = la source (onArrive fournit déjà sourceId = l'instance qui apparaît) ;
+  //   « à l'Allié » (pas « ou Héros ») → heroes:false. Élément Feu (Force/Niveau).
+  "grand-shushu-craquele-bonta-brakmar": {
+    1: {
+      trigger: "onArrive",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Feu",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
 };

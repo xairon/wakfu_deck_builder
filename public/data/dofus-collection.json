@@ -130,7 +130,26 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "actor": "costTarget",
+          "ops": [
+            {
+              "op": "costTapControlled",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "damageTargetByForce",
+              "element": "Neutre",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-controlled", "damage-target-by-force"]
       },
       {
         "description": "L'effet de cette carte prend en compte tous les modificateurs qui s'appliquent à la Force de l'Allié ou Héros incliné. Si l'Allié ou Héros incliné quitte le jeu avant qu'Agression ne soit résolue, on prend alors comme référence la valeur de Force qu'il avait au moment où il a quitté le jeu.",

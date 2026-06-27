@@ -83,12 +83,23 @@ describe("DSL — pouvoirs à coût payé (compileTapEffectText)", () => {
     });
   });
 
-  it("REJET : corps actor-binding « il … » (vague suivante)", () => {
+  it("actor-binding « il … » désormais compilé (W15) : actor:costTarget", () => {
+    // Anciennement rejeté (vague suivante) ; l'actor-binding par coût est implanté
+    // en W15 (cf. actor-binding-w15.spec.ts). La créature inclinée au coût devient
+    // le sujet du corps.
     const c = compileTapEffectText(
       "Inclinez un de vos Alliés ou Héros : Il inflige sa Force en Dommages à l'Allié de votre choix.",
       "Agression",
     );
-    expect(c).toBeNull();
+    expect(c).toMatchObject({
+      trigger: "onTap",
+      cost: "paidOps",
+      actor: "costTarget",
+      ops: [
+        { op: "costTapControlled", heroes: true },
+        { op: "damageTargetByForce" },
+      ],
+    });
   });
 
   it("REJET : corps « … sa Force … » actor-binding", () => {

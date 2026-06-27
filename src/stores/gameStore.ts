@@ -1299,6 +1299,11 @@ export const useGameStore = defineStore("game", () => {
         cardName: card.name,
         ops: atom.ops,
         sourceId: instanceId,
+        // ACTOR-BINDING « Inclinez un de vos X : il/elle … » : le moteur réécrira
+        // sourceId vers la créature choisie au paiement du coût (sujet du corps).
+        ...(atom.actor === "costTarget"
+          ? { actorBind: "costTarget" as const }
+          : {}),
       });
       return true;
     }

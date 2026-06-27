@@ -121,7 +121,26 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "actor": "costTarget",
+          "ops": [
+            {
+              "op": "costTapControlled",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "damageTargetByForce",
+              "element": "Neutre",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-controlled", "damage-target-by-force"]
       }
     ],
     "keywords": [],

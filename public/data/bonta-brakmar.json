@@ -7559,7 +7559,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Feu",
+              "heroes": false,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       },
       {
         "description": "Détruisez un Équipement que vous contrôlez : Détruisez le Grand Shushu Craquelé. Chaque joueur peut utiliser ce pouvoir.",

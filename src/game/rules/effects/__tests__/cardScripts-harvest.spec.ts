@@ -130,6 +130,21 @@ describe("moisson de scripts manuels W8 (données régénérées)", () => {
         { op: "shuffleDeck" },
       ],
     },
+    {
+      // W15 — déclenché d'apparition de SOI « il inflige 2 Dommages … ».
+      id: "grand-shushu-craquele-bonta-brakmar",
+      index: 1,
+      trigger: "onArrive",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Feu",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
   ];
 
   for (const s of samples) {

@@ -548,6 +548,62 @@ function compileBody(
   return ops;
 }
 
+/**
+ * Compile un CORPS ACTOR-BINDING « il/elle … » (déjà normalisé, sans « il/elle »,
+ * sans point final) : le SUJET est une créature fournie par le contexte (apparue
+ * ou sélectionnée par un coût), pas la carte source. STRICT — seules trois formes
+ * sont admises, chacune une op à sujet implicite (sourceId, réécrit par le
+ * moteur vers la créature liée) :
+ *   - « inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix … »
+ *     → damageTargetByForce ;
+ *   - « inflige N Dommages à l'Allié (ou Héros) de votre choix … »
+ *     → damageTarget ;
+ *   - « gagne +N en Force jusqu'à la fin du tour » → buffForceSelf.
+ * `sourceElement` n'est qu'un repli : à la résolution, l'Élément des Dommages
+ * est recalculé sur la créature liée (cf. engine). Toute autre forme → null.
+ */
+function compileActorBoundBody(
+  rawBody: string,
+  sourceElement: string,
+): EffectOp[] | null {
+  const body = rawBody.replace(/\.$/, "").trim();
+  // « inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix [adverse]
+  //   [dans le Monde][ ou dans un Havre-Sac] » → damageTargetByForce.
+  let m = body.match(
+    /^inflige sa force en dommages? a l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m)
+    return [
+      {
+        op: "damageTargetByForce",
+        element: sourceElement,
+        ...(m[1] ? { heroes: true } : {}),
+        ...(m[2] ? { controller: "opponent" as const } : {}),
+        zones: targetZones(m[3], m[4]),
+      },
+    ];
+  // « inflige N Dommages à l'Allié (ou Héros) de votre choix [dans le Monde]
+  //   [ ou dans un Havre-Sac] » → damageTarget (montant fixe).
+  m = body.match(
+    /^inflige (\d+) dommages? a l['’ ]?\s?allie( ou heros)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m)
+    return [
+      {
+        op: "damageTarget",
+        n: toNumber(m[1]),
+        element: sourceElement,
+        heroes: !!m[2],
+        zones: targetZones(m[3], m[4]),
+      },
+    ];
+  // « gagne +N en Force jusqu'à la fin du tour » → buffForceSelf (sur la créature
+  //   liée). buffForceSelf lit le sourceId réécrit par le moteur.
+  m = body.match(/^gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/);
+  if (m) return [{ op: "buffForceSelf", n: toNumber(m[1]) }];
+  return null;
+}
+
 /** Le sujet du déclencheur désigne-t-il la carte elle-même ? */
 function subjectIsSelf(subject: string, cardName: string): boolean {
   const s = subject.replace(/^(le |la |les |l['’]\s?|un |une )/, "").trim();
@@ -601,10 +657,10 @@ export function compileTapEffectText(
   // Héros] [Famille] [de Niveau ≤ N] : CORPS » (806 — coûts d'activation). Le
   // coût est modélisé comme la PREMIÈRE op (ciblage costTap/costDestroyControlled,
   // controller self) ; le CORPS suit et a pour sujet le contrôleur (acteur).
-  // STRICT : le CORPS doit se compiler ENTIÈREMENT via compileBody. On REJETTE
-  // (→ manuel) tout corps actor-binding (« il/elle … », « sa Force ») — c'est la
-  // vague suivante. Testé avant la forme sacrificeSelf (« un de vos » n'est pas
-  // soi → l'ancienne forme renverrait null).
+  // Le CORPS doit se compiler ENTIÈREMENT via compileBody, OU être un corps
+  // ACTOR-BINDING « il/elle … » sur un coût d'inclinaison (créature payée =
+  // acteur, `actor:"costTarget"`). Testé avant la forme sacrificeSelf (« un de
+  // vos » n'est pas soi → l'ancienne forme renverrait null).
   const paid = compileTapPaidCost(normalized, cardName, sourceElement);
   if (paid) return paid;
   let body = normalized;
@@ -629,14 +685,20 @@ export function compileTapEffectText(
  * strict (corps entièrement compilable, non actor-binding) — sinon → manuel.
  */
 export function isPaidCostText(text: string): boolean {
-  return /^(?:inclinez|detruisez) un (?:autre )?de vos allies/.test(norm(text));
+  // Accepte « un de vos … » et « l'un de vos … » (variante d'édition courante).
+  return /^(?:inclinez|detruisez) (?:un|l['’ ]?\s?un) (?:autre )?de vos allies/.test(
+    norm(text),
+  );
 }
 
 /**
  * Parse un POUVOIR À COÛT PAYÉ « Inclinez / Détruisez un [autre] de vos X :
- * CORPS » → `{ trigger:"onTap", cost:"paidOps", ops:[costOp, ...body] }`, ou
- * null si la forme ne correspond pas / le corps ne compile pas / le corps est
- * actor-binding (« il/elle … », « sa Force »). `text` est DÉJÀ normalisé.
+ * CORPS » → `{ trigger:"onTap", cost:"paidOps", [actor:"costTarget",] ops:[costOp,
+ * ...body] }`, ou null si la forme ne correspond pas / le corps ne compile pas.
+ * ACTOR-BINDING : un corps « il/elle … » (créature payée = acteur) est admis sur
+ * le COÛT D'INCLINAISON via compileActorBoundBody (`actor:"costTarget"`) ; il est
+ * REJETÉ sur un coût-destruction (la créature détruite ne peut pas agir) et pour
+ * « sa Force » sans sujet explicite. `text` est DÉJÀ normalisé.
  */
 function compileTapPaidCost(
   text: string,
@@ -647,22 +709,38 @@ function compileTapPaidCost(
   // (4) « ou heros » présent ? ; (5) Famille éventuelle ; (6) « de niveau ≤ N » ;
   // (7) le Niveau ; (8) le CORPS après « : ».
   const m = text.match(
-    /^(inclinez|detruisez) un (autre )?de vos (allies( ou heros)?)( [a-z-]+)?( de niveau inferieur ou egal a (\d+))?\s*:\s*(.+)$/,
+    /^(inclinez|detruisez) (?:un|l['’ ]?\s?un) (autre )?de vos (allies( ou heros)?)( [a-z-]+)?( de niveau inferieur ou egal a (\d+))?\s*:\s*(.+)$/,
   );
   if (!m) return null;
   const heroes = !!m[4];
-  let sub = m[5]?.trim();
+  const sub = m[5]?.trim();
   // mots de liaison captés par la classe famille → pas une vraie Famille
   if (sub && ["ou", "non", "de", "et", "dans"].includes(sub)) return null;
   // « non Monstre » et autres qualificatifs négatifs : hors champ (rejet).
   if (m[5] && /\bnon\b/.test(m[5])) return null;
   const bodyText = m[8].trim();
-  // CORPS actor-binding : l'Allié payé serait l'acteur (« il/elle … », « sa
-  // Force ») — HORS champ de cette vague.
-  if (/^(?:il|elle)\b/.test(bodyText) || /\bsa force\b/.test(bodyText))
-    return null;
-  const body = compileBody(bodyText, cardName, sourceElement);
-  if (!body) return null;
+  // ACTOR-BINDING : CORPS « il/elle … » — la créature SÉLECTIONNÉE par le coût
+  // est l'acteur (sujet du corps). Réservé au COÛT D'INCLINAISON (« Inclinez … »)
+  // : la créature inclinée reste EN JEU, donc sa Force est lisible au corps. On
+  // REJETTE l'actor-binding sur un coût de DESTRUCTION (la créature détruite ne
+  // peut pas agir → infidèle). Le sujet « il/elle » est retiré, le reste compilé
+  // par compileActorBoundBody (damageTargetByForce / damageTarget / buffForceSelf).
+  // Toute autre forme reste MANUELLE.
+  let actor: "costTarget" | undefined;
+  let body: EffectOp[] | null;
+  const actorBound = bodyText.match(/^(?:il|elle)\s+(.+)$/);
+  if (actorBound) {
+    if (m[1] !== "inclinez") return null; // pas d'acteur sur un coût-destruction
+    body = compileActorBoundBody(actorBound[1], sourceElement);
+    if (!body) return null;
+    actor = "costTarget";
+  } else {
+    // « sa Force » hors actor-binding explicite (« Gagnez un bonus égal à sa
+    // Force ») : acteur implicite non modélisé → MANUEL.
+    if (/\bsa force\b/.test(bodyText)) return null;
+    body = compileBody(bodyText, cardName, sourceElement);
+    if (!body) return null;
+  }
   const costOp: EffectOp =
     m[1] === "inclinez"
       ? {
@@ -681,7 +759,12 @@ function compileTapPaidCost(
           ...(m[2] ? { excludeSource: true } : {}),
           zones: ["monde", "havreSac"],
         };
-  return { trigger: "onTap", cost: "paidOps", ops: [costOp, ...body] };
+  return {
+    trigger: "onTap",
+    cost: "paidOps",
+    ...(actor ? { actor } : {}),
+    ops: [costOp, ...body],
+  };
 }
 
 /**
@@ -880,13 +963,18 @@ export function selfAttackEffects(
  * piochez, gagnez X XP, le Héros adverse perd…). Le texte décrit la carte qui
  * APPARAÎT (mainType/Famille/contrôleur), distinct de la carte source.
  *
+ * ACTOR-BINDING : un CORPS « il/elle … » prend pour sujet l'Allié APPARU (pas le
+ * veilleur). On compile les formes sûres (compileActorBoundBody) en posant
+ * `actor:"appeared"` ; le moteur enfile alors la frame avec sourceId = instance
+ * apparue, seat = contrôleur du veilleur (le « de votre choix » lui appartient).
+ *
  * STRICT et NARROW (« an approximation of gameplay is worse than a manual
- * effect ») : on REJETTE (→ manuel) toute forme actor-binding ou flottante :
- *  - CORPS commençant par « il/elle … » (l'Allié apparu serait l'acteur) ;
+ * effect ») : on REJETTE (→ manuel) toute forme flottante ou non mappée :
  *  - préfixe « Jusqu'à la fin du tour, chaque fois qu'un … » (déclencheur
  *    flottant temporaire) ;
- *  - toute clause de condition/coût/porteur résiduelle (le CORPS doit se
- *    compiler ENTIÈREMENT via compileBody avec le veilleur comme acteur).
+ *  - CORPS « il/elle … » hors des formes de compileActorBoundBody ;
+ *  - toute clause de condition/coût/porteur résiduelle (le CORPS générique doit
+ *    se compiler ENTIÈREMENT via compileBody avec le veilleur comme acteur).
  */
 export function compileAppearanceTriggerText(
   text: string,
@@ -905,19 +993,6 @@ export function compileAppearanceTriggerText(
     /^(?:quand |chaque fois qu['’]\s?)un allie(?:( adverse)|( [a-z-]+))? apparait(?: dans le monde| sous votre controle)?\s*,\s*(.+)$/,
   );
   if (!m) return null;
-  let body = m[3].replace(/\.$/, "").trim();
-  // CORPS « il/elle … » : l'Allié apparu est l'acteur (actor-binding) — HORS
-  // champ de cette tranche.
-  if (/^(?:il|elle)\b/.test(body)) return null;
-  let optional = false;
-  const opt = body.match(/^vous pouvez (.+)$/);
-  if (opt) {
-    optional = true;
-    body = opt[1];
-  }
-  if (optional && /\.\s+\S/.test(body)) return null;
-  const ops = compileBody(body, cardName, sourceElement);
-  if (!ops) return null;
   const sub = m[2]?.trim();
   // mot de liaison capté par la classe famille → pas une vraie Famille
   if (sub && ["adverse", "non", "ou", "de", "et", "sous"].includes(sub))
@@ -927,6 +1002,30 @@ export function compileAppearanceTriggerText(
     ...(sub ? { sub: sub.replace(/s$/, "") } : {}),
     ...(m[1] ? { controller: "opponent" as const } : {}),
   };
+  let body = m[3].replace(/\.$/, "").trim();
+  // ACTOR-BINDING : CORPS « il/elle … » — l'Allié APPARU est l'acteur (sujet du
+  // corps). STRICT : seules les formes de compileActorBoundBody sont admises
+  // (« inflige sa Force… », « inflige N Dommages… », « gagne +N en Force… ») ;
+  // à la résolution le moteur fournit comme sourceId l'instance apparue. Toute
+  // autre forme « il/elle … » reste MANUELLE. Les optionnels (« vous pouvez »)
+  // sur un corps actor-bound ne sont pas modélisés → non captés ici.
+  const actorBound = body.match(/^(?:il|elle)\s+(.+)$/);
+  if (actorBound) {
+    const ops = compileActorBoundBody(actorBound[1], sourceElement);
+    if (!ops) return null;
+    return { trigger: "onOtherAppears", watch, actor: "appeared", ops };
+  }
+  // CORPS générique (sujet = contrôleur du veilleur). « vous pouvez … » →
+  // optionnel (une seule phrase, sinon ambigu).
+  let optional = false;
+  const opt = body.match(/^vous pouvez (.+)$/);
+  if (opt) {
+    optional = true;
+    body = opt[1];
+  }
+  if (optional && /\.\s+\S/.test(body)) return null;
+  const ops = compileBody(body, cardName, sourceElement);
+  if (!ops) return null;
   return {
     trigger: "onOtherAppears",
     watch,

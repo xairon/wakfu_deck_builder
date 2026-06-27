@@ -235,6 +235,16 @@ export const compiledEffectSchema = z.object({
   static: staticAbilitySchema.optional(),
   // Présent uniquement pour trigger:"onOtherAppears".
   watch: appearanceWatchSchema.optional(),
+  // ACTOR-BINDING : le CORPS a pour sujet (source) une créature désignée par le
+  // contexte, pas la carte qui porte l'effet (« …, il/elle inflige sa Force … »).
+  //  - "appeared"   : la créature qui vient d'APPARAÎTRE (onOtherAppears) ; le
+  //    moteur enfile la frame avec sourceId = instance apparue, seat = veilleur.
+  //  - "costTarget" : la créature SÉLECTIONNÉE par le coût (cost:"paidOps",
+  //    costTapControlled en première op) ; le moteur réécrit le sourceId de la
+  //    frame en attente vers l'instance choisie au moment du paiement du coût.
+  // Les ops du corps (damageTargetByForce/buffForceSelf) lisent alors ce
+  // sourceId réécrit (Force et Élément calculés sur la créature liée).
+  actor: z.enum(["appeared", "costTarget"]).optional(),
   ops: z.array(compiledEffectOpSchema),
 });
 

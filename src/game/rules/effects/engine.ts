@@ -27,6 +27,7 @@ import {
   appearanceTriggerEffects,
   arrivalEffects,
   collectTriggeredEffects,
+  effectSourceElement,
   effectTargetIds,
   grantXpEvents,
   heroLevel,
@@ -51,6 +52,15 @@ export interface EffectFrame {
   cardName: string;
   ops: EffectOp[];
   sourceId?: string;
+  /**
+   * ACTOR-BINDING par coût (« Inclinez un de vos X : il/elle … ») : quand la
+   * première op (coût de ciblage) est résolue, le moteur réécrit `sourceId` de
+   * la frame en attente vers la créature SÉLECTIONNÉE, qui devient le sujet du
+   * corps (damageTargetByForce/buffForceSelf lisent ce sourceId). L'apparence
+   * (actor:"appeared") est résolue en amont — la frame est enfilée directement
+   * avec sourceId = instance apparue, sans ce marqueur.
+   */
+  actorBind?: "costTarget";
 }
 
 /** Filtre de recherche dans une pile (type, famille, niveau max, élément). */
@@ -788,6 +798,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           )
         )
           continue;
+        // ACTOR-BINDING « il/elle … » : l'instance APPARUE est le sujet du corps
+        // (sourceId = appearedId) ; le « de votre choix » reste au contrôleur du
+        // veilleur (seat). Sinon, le veilleur lui-même est la source.
+        const bodySourceId =
+          atom.actor === "appeared" && appearedId ? appearedId : watcherId;
         if (atom.optional) {
           effectChoices.value = [
             ...effectChoices.value,
@@ -796,7 +811,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
               cardName: watcherCard.name,
               text: atom.text,
               ops: atom.ops,
-              sourceId: watcherId,
+              sourceId: bodySourceId,
             },
           ];
           continue;
@@ -811,10 +826,24 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           seat: watcher.controller,
           cardName: watcherCard.name,
           ops: atom.ops,
-          sourceId: watcherId,
+          sourceId: bodySourceId,
         });
       }
     }
+  }
+
+  /**
+   * Élément des Dommages d'une op à cible, lu sur la carte de l'instance SOURCE
+   * vivante (410.1). Pour l'actor-binding, `sourceId` est la créature liée
+   * (apparue / sélectionnée par le coût) : l'Élément suit donc cette créature,
+   * pas la carte qui porte l'effet. Retourne undefined si la source est absente
+   * (repli sur l'Élément figé à la compilation).
+   */
+  function liveSourceElement(sourceId?: string): string | undefined {
+    if (!sourceId) return undefined;
+    const inst = deps.getState().instances[sourceId];
+    const card = inst ? deps.getCard(inst.cardId) : null;
+    return card ? effectSourceElement(card) : undefined;
   }
 
   /** Le joueur clique une cible légale : résout l'op puis continue l'effet. */
@@ -851,7 +880,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                           deps.rulesCtx(),
                           t.seat,
                           instanceId,
-                          t.op.element,
+                          // Élément des Dommages = Élément de la SOURCE liée
+                          // (410.1), lu sur la carte de l'instance source vivante
+                          // (acteur lié pour l'actor-binding) ; repli sur l'Élément
+                          // figé à la compilation si la source est absente.
+                          liveSourceElement(t.sourceId) ?? t.op.element,
                           {
                             mods: activeGlobalMods(deps.rulesCtx()),
                             ...(t.sourceId ? { sourceId: t.sourceId } : {}),
@@ -862,9 +895,25 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                           t.seat,
                           instanceId,
                           t.op.n,
-                          t.op.element,
-                          { mods: activeGlobalMods(deps.rulesCtx()) },
+                          // idem : Dommages de l'Élément de la source liée.
+                          liveSourceElement(t.sourceId) ?? t.op.element,
+                          {
+                            mods: activeGlobalMods(deps.rulesCtx()),
+                            ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+                          },
                         );
+    // ACTOR-BINDING par coût : la créature qu'on vient de choisir au COÛT devient
+    // le sujet (sourceId) du CORPS resté en tête de file (holdRest). On réécrit la
+    // frame en attente AVANT de la reprendre, pour que buffForceSelf /
+    // damageTargetByForce y lisent la bonne créature.
+    if (isCostTargetingOp(t.op)) {
+      const head = effectQueue.value[0];
+      if (head?.actorBind === "costTarget")
+        effectQueue.value = [
+          { ...head, sourceId: instanceId },
+          ...effectQueue.value.slice(1),
+        ];
+    }
     deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
     if (deps.isAssistEffects() && res.ruleEvents?.length)
