@@ -1637,7 +1637,22 @@
         "description": "Cherchez une Dragodinde dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "sub": "dragodinde",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Un Enclos est une carte qui possède le trait « Enclos » dans sa ligne de Traits. À date de la sortie de l'extension Pandala, la Dernière Rasade, on compte deux Enclos : les Zones Enclos de Dragodindes (Bonta&Brâkmar) et Pâturages (Pandala).",
@@ -3556,7 +3571,19 @@
         "description": "Détruisez la Zone ou l'Équipement de Niveau inférieur ou égal à 2 de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "whatAny": ["Zone", "Équipement"],
+              "maxLevel": 2,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["destroy-target"]
       }
     ],
     "keywords": [],
@@ -4004,7 +4031,22 @@
         "description": "Cherchez un Chevalier dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "sub": "chevalier",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Recyclez Galgarion depuis le Monde. N'utilisez ce pouvoir que si Galgarion bloque ou est bloqué par un Allié ou Héros de Force supérieure ou égale à la sienne.",

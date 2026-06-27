@@ -436,7 +436,18 @@
         "description": "Détruisez l'Équipement, la Zone ou le Dofus de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "whatAny": ["Équipement", "Zone", "Dofus"],
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["destroy-target"]
       }
     ],
     "keywords": [],

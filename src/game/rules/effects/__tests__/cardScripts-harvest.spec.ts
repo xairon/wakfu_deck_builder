@@ -163,6 +163,104 @@ describe("moisson de scripts manuels W8 (données régénérées)", () => {
     expect(dangling, dangling.join(" | ")).toHaveLength(0);
   });
 
+  // Tranche W10 : seconde moisson — formulations que le DSL strict rate
+  // (apparition au pluriel, « au Monstre », « carte Arme »/« un Chevalier »,
+  // destruction multi-type à trois types).
+  const samplesW10: {
+    id: string;
+    index: number;
+    trigger: string;
+    optional?: boolean;
+    ops: Record<string, unknown>[];
+  }[] = [
+    {
+      id: "megabottes-amakna",
+      index: 0,
+      trigger: "onArrive",
+      optional: true,
+      ops: [{ op: "draw", n: 1 }],
+    },
+    {
+      id: "calanques-d-astrub-incarnam",
+      index: 1,
+      trigger: "onArrive",
+      ops: [{ op: "tapSelf" }],
+    },
+    {
+      id: "pelle-ikan-astrub",
+      index: 0,
+      trigger: "onTap",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Neutre",
+          heroes: false,
+          sub: "monstre",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+    {
+      id: "premieres-armes-incarnam",
+      index: 0,
+      trigger: "onPlay",
+      ops: [
+        { op: "searchDeck", what: "Équipement", sub: "arme", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    },
+    {
+      id: "galgarion-pandala",
+      index: 0,
+      trigger: "onTap",
+      ops: [
+        { op: "searchDeck", what: "Allié", sub: "chevalier", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    },
+    {
+      id: "apparition-d-ogrest-bonta-brakmar",
+      index: 0,
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "destroyTarget",
+          whatAny: ["Équipement", "Zone", "Dofus"],
+          zones: ["monde"],
+        },
+      ],
+    },
+    {
+      id: "faveur-de-la-deesse-pandawa-pandala",
+      index: 0,
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "destroyTarget",
+          whatAny: ["Zone", "Équipement"],
+          maxLevel: 2,
+          zones: ["monde"],
+        },
+      ],
+    },
+  ];
+
+  for (const s of samplesW10) {
+    it(`W10 ${s.id}[${s.index}] est compilé en "manual" avec les ops attendues`, () => {
+      const card = cardsById.get(s.id);
+      expect(card, `carte ${s.id} introuvable`).toBeDefined();
+      const effect = card!.effects?.[s.index];
+      expect(effect, `effet ${s.id}[${s.index}] introuvable`).toBeDefined();
+      expect(effect!.coverage).toBe("manual");
+      expect(effect!.compiled).toBeDefined();
+      expect(effect!.compiled!.trigger).toBe(s.trigger);
+      if (s.optional !== undefined)
+        expect(effect!.compiled!.optional).toBe(s.optional);
+      expect(effect!.compiled!.ops).toEqual(s.ops);
+    });
+  }
+
   it('toutes les entrées scriptées non-ruling sont coverage:"manual"', () => {
     const notManual: string[] = [];
     for (const [id, byIndex] of Object.entries(CARD_SCRIPTS)) {

@@ -264,4 +264,119 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // ── Tranche W10 : seconde moisson (formulations que le DSL strict rate) ──
+
+  // « Quand les Mégabottes apparaissent, vous pouvez piocher une carte. »
+  //   onArrive optionnel — le DSL singulier ne capte pas « apparaissent »
+  //   (sujet pluriel) ; corps « vous pouvez piocher » → draw optionnel.
+  "megabottes-amakna": {
+    0: { trigger: "onArrive", optional: true, ops: [{ op: "draw", n: 1 }] },
+  },
+
+  // « Les Calanques d'Astrub apparaissent inclinés. » — jumeau de
+  //   forets-d-astrub : entrée en jeu inclinée (tapSelf). Le DSL ne reconnaît
+  //   pas la forme « <carte> apparaissent inclinés » (pas un déclencheur
+  //   « Quand … »).
+  "calanques-d-astrub-incarnam": {
+    1: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
+  },
+  "champs-d-astrub-incarnam": {
+    1: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
+  },
+
+  // « [Inclinaison :] La Pelle Ikan inflige 2 Dommages au Monstre de votre
+  //   choix. » — Arme Neutre. « au Monstre » = Allié de Famille Monstre
+  //   (heroes:false) ; le DSL ne gère que « à l'Allié … ».
+  "pelle-ikan-astrub": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Neutre",
+          heroes: false,
+          sub: "monstre",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « Cherchez une carte Arme dans votre Pioche, révélez-la et prenez-la en
+  //   main, puis mélangez votre Pioche. » — Action. « carte Arme » = Équipement
+  //   de Famille Arme (l'Arme est exclusivement un sous-type d'Équipement) ; le
+  //   DSL ne capte que les types racines (« Équipement »), pas « Arme » seul.
+  "premieres-armes-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        { op: "searchDeck", what: "Équipement", sub: "arme", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    },
+  },
+
+  // « Cherchez une Dragodinde dans votre Pioche, révélez-la et prenez-la en
+  //   main, puis mélangez votre Pioche. » — Action. Dragodinde = Famille
+  //   d'Allié (exclusivement). L'effet ciblé est l'index 1 (#0 = réduction de
+  //   coût conditionnelle, laissée manuelle).
+  "certificat-de-monture-pandala": {
+    1: {
+      trigger: "onPlay",
+      ops: [
+        { op: "searchDeck", what: "Allié", sub: "dragodinde", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    },
+  },
+
+  // « [Inclinaison :] Cherchez un Chevalier dans votre Pioche, révélez-le et
+  //   prenez-le en main, puis mélangez votre Pioche. » Chevalier = Famille
+  //   d'Allié (exclusivement). Le DSL exige « un Allié Chevalier ».
+  "galgarion-pandala": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        { op: "searchDeck", what: "Allié", sub: "chevalier", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    },
+  },
+
+  // « Détruisez l'Équipement, la Zone ou le Dofus de votre choix. » — Action ;
+  //   destruction multi-type à TROIS types (le DSL n'en gère que deux). Sans
+  //   clause « dans un Havre-Sac », la cible est dans le Monde (convention
+  //   destroyTarget).
+  "apparition-d-ogrest-bonta-brakmar": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "destroyTarget",
+          whatAny: ["Équipement", "Zone", "Dofus"],
+          zones: ["monde"],
+        },
+      ],
+    },
+  },
+
+  // « Détruisez la Zone ou l'Équipement de Niveau inférieur ou égal à 2 de
+  //   votre choix. » — Action ; destruction multi-type + filtre de Niveau (la
+  //   contrainte ≤ 2 porte sur les deux types ; une carte sans Niveau est
+  //   inéligible).
+  "faveur-de-la-deesse-pandawa-pandala": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "destroyTarget",
+          whatAny: ["Zone", "Équipement"],
+          maxLevel: 2,
+          zones: ["monde"],
+        },
+      ],
+    },
+  },
 };

@@ -4348,7 +4348,18 @@
         "description": "Quand les Mégabottes apparaissent, vous pouvez piocher une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["draw"]
       },
       {
         "description": "Le Porteur de la Panoplie Mégamane peut donc porter une Épée, une Hache, un Marteau, une Dague… Si le bonus de Panoplie est perdu suite à la perte d'un Équipement composant la Panoplie, la limitation a une Arme par Porteur redevient active : les Armes excédentaires devront être détruites.",

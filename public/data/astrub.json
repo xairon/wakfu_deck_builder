@@ -5335,7 +5335,21 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Neutre",
+              "heroes": false,
+              "sub": "monstre",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [

@@ -2578,7 +2578,16 @@
         "description": "Les Calanques d'Astrub apparaissent inclinés.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "tapSelf"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["tap-self"]
       }
     ],
     "keywords": [],
@@ -3174,7 +3183,16 @@
         "description": "Les Champs d'Astrub apparaissent inclinés.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "tapSelf"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["tap-self"]
       }
     ],
     "keywords": [],
@@ -11873,7 +11891,22 @@
         "description": "Cherchez une carte Arme dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Équipement",
+              "sub": "arme",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Ne jouez cette carte que lorsque vous venez de détruire une Allié adverse.",
