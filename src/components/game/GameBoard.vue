@@ -409,10 +409,12 @@
                                 "playerLoseStatTurn" ||
                               store.effectTargeting.op.op === "playerGainStat"
                             ? "choisis le Héros du joueur concerné"
-                            : store.effectTargeting.op.op ===
-                                "damageMultiTarget"
-                              ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                              : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                            : store.effectTargeting.op.op === "grantGeantTarget"
+                              ? "choisis la cible qui gagne Géant"
+                              : store.effectTargeting.op.op ===
+                                  "damageMultiTarget"
+                                ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

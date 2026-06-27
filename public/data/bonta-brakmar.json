@@ -12042,7 +12042,19 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "grantGeantTarget",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-geant-target"]
       }
     ],
     "keywords": [
@@ -12717,7 +12729,19 @@
         "description": "Le Rat bloqué de votre choix gagne Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantGeantTarget",
+              "sub": "rat",
+              "combatRole": "blocking",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-geant-target"]
       }
     ],
     "keywords": [],

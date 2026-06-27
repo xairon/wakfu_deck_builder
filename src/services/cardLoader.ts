@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v32"; // v32 : re-scrape du cluster « gagne <bonus> jusqu'à la fin du tour » (icônes perdues) — bonus récupéré = mot-clé (Géant/Agilité/Agressivité/Tacle/Fantôme) ou Résistance N, patché verbatim ; aucun n'était un buff de Force → restent uncovered (fidèles)
+const CACHE_KEY = "wakfu-cards-cache-v33"; // v33 : ops grantGeantSelf/grantGeantTarget — « gagne Géant jusqu'à la fin du tour » (Ouassingue / Pandaluk / Rat Klure / Petit Anneau de Force) compilé (jeton TURN geantTurnMod → effectiveKeywords) ; variantes BEARER/COMBAT/composite restent manuelles
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [

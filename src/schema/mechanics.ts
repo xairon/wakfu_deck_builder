@@ -31,6 +31,8 @@ export const mechanicTagSchema = z.enum([
   "tap-self",
   "untap-self",
   "combat-mod-self",
+  "grant-geant-self",
+  "grant-geant-target",
   "buff-force-allies-monde",
   "global-damage-shield",
   "tap-target",

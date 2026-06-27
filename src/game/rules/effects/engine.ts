@@ -42,6 +42,7 @@ import {
   resolveDamageTarget,
   resolveDamageTargetByForce,
   resolveDestroyTarget,
+  resolveGrantGeantTarget,
   resolveHealHeroTarget,
   resolveReturnToHand,
   resolveTapTarget,
@@ -833,6 +834,21 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "grantGeantSelf") {
+        // « [self] gagne Géant jusqu'à la fin du tour. » (Ouassingue) — jeton
+        // TURN-scoped `geantTurnMod` sur la SOURCE (uniquement en jeu), purgé en
+        // fin de tour (isTurnToken), lu par effectiveKeywords. Distinct de
+        // combatModSelf (geantCombatMod, portée combat).
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay) {
+          deps.dispatch(
+            setCounterVerb(seat, sourceId!, "geantTurnMod", 1, true),
+            say(seat, `${cardName} gagne Géant jusqu'à la fin du tour.`),
+          );
+        }
       } else if (op.op === "draw") {
         deps.draw(seat, op.n);
       } else if (op.op === "eachPlayerDraws") {
@@ -1438,49 +1454,51 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                   instanceId,
                   t.op.n,
                 )
-              : t.op.op === "tapTarget"
-                ? resolveTapTarget(
-                    deps.rulesCtx(),
-                    t.seat,
-                    instanceId,
-                    // « … ne peut pas se redresser jusqu'au début de votre
-                    // prochain tour » : jeton noUntapUntilTurn = tour + 2 (même
-                    // borne que la Trêve), posé sur la cible choisie.
-                    t.op.cannotRedress
-                      ? deps.getState().turn.number + 2
-                      : undefined,
-                  )
-                : t.op.op === "untapTarget"
-                  ? resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId)
-                  : t.op.op === "returnToHand"
-                    ? resolveReturnToHand(deps.rulesCtx(), t.seat, instanceId)
-                    : t.op.op === "damageTargetByForce"
-                      ? resolveDamageTargetByForce(
-                          deps.rulesCtx(),
-                          t.seat,
-                          instanceId,
-                          // Élément des Dommages = Élément de la SOURCE liée
-                          // (410.1), lu sur la carte de l'instance source vivante
-                          // (acteur lié pour l'actor-binding) ; repli sur l'Élément
-                          // figé à la compilation si la source est absente.
-                          liveSourceElement(t.sourceId) ?? t.op.element,
-                          {
-                            mods: activeGlobalMods(deps.rulesCtx()),
-                            ...(t.sourceId ? { sourceId: t.sourceId } : {}),
-                          },
-                        )
-                      : resolveDamageTarget(
-                          deps.rulesCtx(),
-                          t.seat,
-                          instanceId,
-                          t.op.n,
-                          // idem : Dommages de l'Élément de la source liée.
-                          liveSourceElement(t.sourceId) ?? t.op.element,
-                          {
-                            mods: activeGlobalMods(deps.rulesCtx()),
-                            ...(t.sourceId ? { sourceId: t.sourceId } : {}),
-                          },
-                        );
+              : t.op.op === "grantGeantTarget"
+                ? resolveGrantGeantTarget(deps.rulesCtx(), t.seat, instanceId)
+                : t.op.op === "tapTarget"
+                  ? resolveTapTarget(
+                      deps.rulesCtx(),
+                      t.seat,
+                      instanceId,
+                      // « … ne peut pas se redresser jusqu'au début de votre
+                      // prochain tour » : jeton noUntapUntilTurn = tour + 2 (même
+                      // borne que la Trêve), posé sur la cible choisie.
+                      t.op.cannotRedress
+                        ? deps.getState().turn.number + 2
+                        : undefined,
+                    )
+                  : t.op.op === "untapTarget"
+                    ? resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId)
+                    : t.op.op === "returnToHand"
+                      ? resolveReturnToHand(deps.rulesCtx(), t.seat, instanceId)
+                      : t.op.op === "damageTargetByForce"
+                        ? resolveDamageTargetByForce(
+                            deps.rulesCtx(),
+                            t.seat,
+                            instanceId,
+                            // Élément des Dommages = Élément de la SOURCE liée
+                            // (410.1), lu sur la carte de l'instance source vivante
+                            // (acteur lié pour l'actor-binding) ; repli sur l'Élément
+                            // figé à la compilation si la source est absente.
+                            liveSourceElement(t.sourceId) ?? t.op.element,
+                            {
+                              mods: activeGlobalMods(deps.rulesCtx()),
+                              ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+                            },
+                          )
+                        : resolveDamageTarget(
+                            deps.rulesCtx(),
+                            t.seat,
+                            instanceId,
+                            t.op.n,
+                            // idem : Dommages de l'Élément de la source liée.
+                            liveSourceElement(t.sourceId) ?? t.op.element,
+                            {
+                              mods: activeGlobalMods(deps.rulesCtx()),
+                              ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+                            },
+                          );
     // ACTOR-BINDING par coût : la créature qu'on vient de choisir au COÛT devient
     // le sujet (sourceId) du CORPS resté en tête de file (holdRest). On réécrit la
     // frame en attente AVANT de la reprendre, pour que buffForceSelf /

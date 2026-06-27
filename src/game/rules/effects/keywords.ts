@@ -106,7 +106,13 @@ export function effectiveKeywords(
     }
   }
   const geant =
-    base.geant || bearerGeant || !!tokens.geantMod || !!tokens.geantCombatMod;
+    base.geant ||
+    bearerGeant ||
+    !!tokens.geantMod ||
+    !!tokens.geantCombatMod ||
+    // « gagne Géant jusqu'à la fin du TOUR » (grantGeantSelf/grantGeantTarget) :
+    // jeton TURN-scoped posé sur l'instance, purgé en fin de tour (isTurnToken).
+    !!tokens.geantTurnMod;
   return { resistances, geant };
 }
 

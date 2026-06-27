@@ -183,6 +183,34 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Bonus de combat (Force/PM/Géant) jusqu'à la fin du combat.",
   },
   {
+    id: "grant-geant-self",
+    label: "Géant (soi, jusqu'à la fin du tour)",
+    category: "tempo",
+    glossary:
+      "La carte source gagne le mot-clé Géant jusqu'à la fin du tour (répartition de la Force entre les bloqueurs au combat).",
+    relatesTo: [
+      {
+        tag: "combat-mod-self",
+        kind: "synergizes",
+        note: "Même mot-clé Géant, mais portée TOUR (combatModSelf est portée COMBAT).",
+      },
+    ],
+  },
+  {
+    id: "grant-geant-target",
+    label: "Géant (cible, jusqu'à la fin du tour)",
+    category: "tempo",
+    glossary:
+      "L'Allié ou Héros ciblé gagne le mot-clé Géant jusqu'à la fin du tour.",
+    relatesTo: [
+      {
+        tag: "grant-geant-self",
+        kind: "synergizes",
+        note: "Variante ciblée de l'octroi de Géant.",
+      },
+    ],
+  },
+  {
     id: "buff-force-allies-monde",
     label: "Bonus de Force d'équipe",
     category: "tempo",
@@ -328,6 +356,8 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   tapSelf: "tap-self",
   untapSelf: "untap-self",
   combatModSelf: "combat-mod-self",
+  grantGeantSelf: "grant-geant-self",
+  grantGeantTarget: "grant-geant-target",
   buffForceAlliesMondeTurn: "buff-force-allies-monde",
   globalDamageShield: "global-damage-shield",
   tapTarget: "tap-target",

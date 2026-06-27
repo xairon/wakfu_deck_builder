@@ -161,8 +161,44 @@ describe("re-scrape — cluster « gagne <bonus> jusqu'à la fin du tour »", ()
     }
   });
 
+  // Entrées du cluster désormais COUVERTES fidèlement par une op dédiée
+  // (grantGeantSelf / grantGeantTarget — « gagne Géant jusqu'à la fin du tour »,
+  // jeton TURN geantTurnMod). Elles ne sont PLUS uncovered, mais restent NON
+  // mis-encodées en buff de Force (point 2 du spec, invariant conservé).
+  const GEANT_GRANT_COVERED = new Set([
+    "chaos-dogrest/pandaluk-skaiwoker-chaos-dogrest/0",
+    "bonta-brakmar/rat-klure-bonta-brakmar/0",
+    "bonta-brakmar/petit-anneau-de-force-bonta-brakmar/1",
+  ]);
+
   describe("fidélité : aucun mis-encodage en buff de Force", () => {
     for (const [ext, id, idx] of PATCHED) {
+      const key = `${ext}/${id}/${idx}`;
+      if (GEANT_GRANT_COVERED.has(key)) {
+        // Désormais couvert par grantGeant* (mot-clé Géant à la fin du tour) — la
+        // forme compilée NE contient AUCUN op de Force (fidélité : c'est un octroi
+        // de mot-clé, pas un buff de Force).
+        it(`${id}[${idx}] est couvert par grantGeant* (mot-clé, sans op de Force)`, () => {
+          const e = effOf(ext, id, idx);
+          expect(e.coverage).toBe("auto");
+          const ops =
+            (e.compiled as { ops?: { op: string }[] } | undefined)?.ops ?? [];
+          expect(
+            ops.some(
+              (o) => o.op === "grantGeantSelf" || o.op === "grantGeantTarget",
+            ),
+          ).toBe(true);
+          expect(
+            ops.some(
+              (o) =>
+                o.op === "buffForceTarget" ||
+                o.op === "buffForceSelf" ||
+                o.op === "buffForceHeroSelf",
+            ),
+          ).toBe(false);
+        });
+        continue;
+      }
       it(`${id}[${idx}] reste uncovered (mot-clé/Résistance, pas de Force)`, () => {
         const e = effOf(ext, id, idx);
         expect(e.coverage).toBe("uncovered");

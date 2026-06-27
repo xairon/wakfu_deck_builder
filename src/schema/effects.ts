@@ -291,6 +291,28 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     pm: z.number().optional(),
     geant: z.boolean().optional(),
   }),
+  // « [self] gagne Géant jusqu'à la fin du tour. » (Ouassingue) — la SOURCE
+  // gagne le mot-clé Géant (7258/6135 : répartition de la Force entre les
+  // bloqueurs au combat) jusqu'à la fin du tour. Pose un jeton `geantTurnMod`
+  // sur la source (uniquement si elle est en jeu), purgé en fin de tour
+  // (isTurnToken), lu par effectiveKeywords. Distinct de combatModSelf, dont le
+  // jeton `geantCombatMod` est de portée COMBAT (« jusqu'à la fin du combat »).
+  z.object({ op: z.literal("grantGeantSelf") }),
+  // « L'Allié [ou Héros] [bloqué / de votre choix] gagne Géant jusqu'à la fin
+  // du tour. » (Pandaluk = tout Allié ; Rat Klure = Rat bloqué ; Petit Anneau
+  // de Force = Allié ou Héros, en sacrifice) — op de CIBLAGE : le joueur choisit
+  // une créature éligible, qui reçoit un jeton TURN-scoped `geantTurnMod` (purgé
+  // en fin de tour, lu par effectiveKeywords). Mêmes filtres que les autres ops
+  // à cible : `heroes`, `sub` (Famille), `combatRole` (rôle de combat),
+  // `controller`, `zones`.
+  z.object({
+    op: z.literal("grantGeantTarget"),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    combatRole: combatRoleSchema.optional(),
+    controller: controllerSchema.optional(),
+    zones: zonesSchema,
+  }),
   z.object({
     op: z.literal("buffForceAlliesMondeTurn"),
     n: z.union([z.number(), z.literal("heroLevel")]),

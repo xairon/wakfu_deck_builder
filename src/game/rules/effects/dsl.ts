@@ -472,6 +472,51 @@ function parseSentence(
   );
   if (m && subjectIsSelf(m[1], cardName))
     return { op: "buffForceSelf", n: toNumber(m[2]) };
+  // « L'Allié (ou Héros) [bloqué] de votre choix gagne Géant jusqu'à la fin du
+  //   tour » (Pandaluk = tout Allié ; Petit Anneau de Force = Allié ou Héros,
+  //   en sacrifice) → grantGeantTarget. « bloqué » → combatRole:"blocking"
+  //   (rôle dans le combat en cours). STRICT : « jusqu'à la fin du tour »
+  //   uniquement (les variantes COMBAT/BEARER restent manuelles).
+  m = sentence.match(
+    /^l['’ ]?\s?allie( ou heros)?( bloque)? de votre choix gagne geant jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m)
+    return {
+      op: "grantGeantTarget",
+      heroes: !!m[1],
+      ...(m[2] ? { combatRole: "blocking" as const } : {}),
+      zones: ["monde", "havreSac"],
+    };
+  // « Le <Famille> [bloqué] de votre choix gagne Géant jusqu'à la fin du tour »
+  //   (Rat Klure = « Le Rat bloqué de votre choix … ») → grantGeantTarget filtré
+  //   par Famille (sub, sur subTypes). La Famille doit être non ambiguë
+  //   (ALLIED_FAMILIES — désigne forcément un Allié) ; sinon manuel.
+  m = sentence.match(
+    /^le ([a-z-]+?)( bloque)? de votre choix gagne geant jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m && ALLIED_FAMILIES.has(m[1]))
+    return {
+      op: "grantGeantTarget",
+      sub: m[1],
+      ...(m[2] ? { combatRole: "blocking" as const } : {}),
+      zones: ["monde", "havreSac"],
+    };
+  // « [Cette carte] gagne Géant jusqu'à la fin du tour » (Ouassingue) →
+  //   grantGeantSelf (la SOURCE gagne le mot-clé jusqu'à la fin du tour). Le
+  //   sujet doit être la carte elle-même (subjectIsSelf) ; placé APRÈS les formes
+  //   ciblées pour ne pas capter « L'Allié … de votre choix » (qui n'est pas soi).
+  //   STRICT : on rejette un sujet « Le Porteur de … » (bonus de PORTEUR temporaire,
+  //   mécanisme différent — Anneau du Rat Noir) et tout sujet COMPOSITE (« … perd
+  //   Agilité et gagne Géant » — Pandhravan : retrait de mot-clé non modélisé).
+  //   Ces formes restent manuelles (« an approximation … is worse … »).
+  m = sentence.match(/^(.{1,50}?) gagne geant jusqu['’]a la fin d[ue] tour$/);
+  if (
+    m &&
+    !/\bporteur\b/.test(m[1]) &&
+    !/\b(?:perd|et|puis|ou)\b/.test(m[1]) &&
+    subjectIsSelf(m[1], cardName)
+  )
+    return { op: "grantGeantSelf" };
   // « Détruisez l'Équipement ou la Zone de votre choix » (deux types, dans
   //   l'un ou l'autre ordre) → destroyTarget multi-type. Placé AVANT la forme
   //   mono-type pour capter les deux compléments.

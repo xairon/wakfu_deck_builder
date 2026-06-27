@@ -10872,7 +10872,16 @@
         "description": "La Ouassingue gagne Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantGeantSelf"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-geant-self"]
       }
     ],
     "keywords": [],

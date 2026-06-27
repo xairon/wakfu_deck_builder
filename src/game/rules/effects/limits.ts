@@ -6,7 +6,7 @@
  * la liste en dur de `nextTurn` (gameStore). Sont purgés à chaque transition
  * de tour (« jusqu'à la fin du tour », et filets de sécurité de fin de
  * combat — un combat ne survit jamais au tour) :
- *   forceMod, paMod, pmMod, geantMod, coupCritique, teamForceMod,
+ *   forceMod, paMod, pmMod, geantMod, geantTurnMod, coupCritique, teamForceMod,
  *   tout `*CombatMod` (forceCombatMod, pmCombatMod, geantCombatMod…),
  *   les préfixes resMod_<élément>, powerUses<i>, metier_<nom>,
  *   et `treveUntilTurn` UNIQUEMENT s'il est expiré (la Trêve traverse le
@@ -19,6 +19,10 @@ const TURN_TOKENS = new Set([
   "paMod",
   "pmMod",
   "geantMod",
+  // « gagne Géant jusqu'à la fin du TOUR » (grantGeantSelf/grantGeantTarget) —
+  // purgé en fin de tour, comme forceMod (geantCombatMod, lui, est couvert par
+  // le suffixe *CombatMod ⇒ portée combat).
+  "geantTurnMod",
   "coupCritique",
   "teamForceMod",
 ]);
