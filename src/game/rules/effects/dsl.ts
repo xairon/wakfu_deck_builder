@@ -801,6 +801,104 @@ export function selfAttackEffects(
 }
 
 /**
+ * Compile un DÉCLENCHÉ D'APPARITION NON-SOI (804) : « Quand / Chaque fois
+ * qu'un Allié [Famille]? [adverse]? apparaît [dans le Monde], CORPS. » où le
+ * CORPS a pour sujet le contrôleur de la carte qui VEILLE (ops génériques :
+ * piochez, gagnez X XP, le Héros adverse perd…). Le texte décrit la carte qui
+ * APPARAÎT (mainType/Famille/contrôleur), distinct de la carte source.
+ *
+ * STRICT et NARROW (« an approximation of gameplay is worse than a manual
+ * effect ») : on REJETTE (→ manuel) toute forme actor-binding ou flottante :
+ *  - CORPS commençant par « il/elle … » (l'Allié apparu serait l'acteur) ;
+ *  - préfixe « Jusqu'à la fin du tour, chaque fois qu'un … » (déclencheur
+ *    flottant temporaire) ;
+ *  - toute clause de condition/coût/porteur résiduelle (le CORPS doit se
+ *    compiler ENTIÈREMENT via compileBody avec le veilleur comme acteur).
+ */
+export function compileAppearanceTriggerText(
+  text: string,
+  cardName: string,
+  sourceElement = "Neutre",
+): CompiledEffect | null {
+  const n = norm(text);
+  // « Jusqu'à la fin du tour, chaque fois qu'un … » : déclencheur flottant —
+  // HORS champ de cette tranche (rejet explicite avant tout le reste).
+  if (/^jusqu['’]a la fin du tour\s*,/.test(n)) return null;
+  // (1) Quand/Chaque fois qu'un Allié [Famille]? [adverse]? apparaît [dans le
+  //     Monde], CORPS.  La Famille et « adverse » sont mutuellement exclusifs
+  //     ici (un Allié adverse n'a pas de Famille capturée). « sous votre
+  //     contrôle » → contrôleur self.
+  const m = n.match(
+    /^(?:quand |chaque fois qu['’]\s?)un allie(?:( adverse)|( [a-z-]+))? apparait(?: dans le monde| sous votre controle)?\s*,\s*(.+)$/,
+  );
+  if (!m) return null;
+  let body = m[3].replace(/\.$/, "").trim();
+  // CORPS « il/elle … » : l'Allié apparu est l'acteur (actor-binding) — HORS
+  // champ de cette tranche.
+  if (/^(?:il|elle)\b/.test(body)) return null;
+  let optional = false;
+  const opt = body.match(/^vous pouvez (.+)$/);
+  if (opt) {
+    optional = true;
+    body = opt[1];
+  }
+  if (optional && /\.\s+\S/.test(body)) return null;
+  const ops = compileBody(body, cardName, sourceElement);
+  if (!ops) return null;
+  const sub = m[2]?.trim();
+  // mot de liaison capté par la classe famille → pas une vraie Famille
+  if (sub && ["adverse", "non", "ou", "de", "et", "sous"].includes(sub))
+    return null;
+  const watch: NonNullable<CompiledEffect["watch"]> = {
+    mainType: "Allié",
+    ...(sub ? { sub: sub.replace(/s$/, "") } : {}),
+    ...(m[1] ? { controller: "opponent" as const } : {}),
+  };
+  return {
+    trigger: "onOtherAppears",
+    watch,
+    ...(optional ? { optional } : {}),
+    ops,
+  };
+}
+
+/**
+ * Déclenchés d'apparition non-soi (« Quand un Allié … apparaît ») d'une carte :
+ * forme compilée des données si présente, sinon re-parsing strict du texte.
+ * Consommé par le moteur (queueArrivalEffects) lors de l'apparition d'une AUTRE
+ * carte qui correspond au `watch`. Pendant de `selfAttackEffects`.
+ */
+export function appearanceTriggerEffects(
+  card: Card | null,
+  side: "recto" | "verso" = "recto",
+): EffectAtom[] {
+  if (!card) return [];
+  const face = isHeroCard(card)
+    ? side === "verso"
+      ? (card.verso ?? card.recto)
+      : card.recto
+    : null;
+  const effects: CardEffect[] = (face ? face.effects : card.effects) ?? [];
+  const atoms: EffectAtom[] = [];
+  for (const e of effects) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      (text && !e?.requiresIncline
+        ? compileAppearanceTriggerText(
+            text,
+            card.name,
+            effectSourceElement(card),
+          )
+        : null);
+    if (compiled && compiled.trigger === "onOtherAppears")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
+}
+
+/**
  * Compile l'effet d'une carte ACTION : pas de préfixe, le texte est ce qui
  * se résout quand la carte est jouée (302.1). Strict comme le reste.
  */

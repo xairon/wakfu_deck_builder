@@ -17,6 +17,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   compileActionEffectText,
+  compileAppearanceTriggerText,
   compileCombatTriggerText,
   compileEffectText,
   compileStaticEffectText,
@@ -202,6 +203,7 @@ function compileEffects(
       : isAction
         ? compileActionEffectText(text, cardName, sourceElement)
         : (compileCombatTriggerText(text, cardName) ??
+          compileAppearanceTriggerText(text, cardName, sourceElement) ??
           compileEffectText(text, cardName, sourceElement) ??
           compileTurnStartEffectText(text, cardName, sourceElement) ??
           compileStaticEffectText(text, cardName));

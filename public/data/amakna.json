@@ -1383,7 +1383,22 @@
         "description": "Chaque fois qu'un Allié Wabbit apparait dans le Monde, vous pouvez piocher une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onOtherAppears",
+          "watch": {
+            "mainType": "Allié",
+            "sub": "wabbit"
+          },
+          "optional": true,
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       }
     ],
     "keywords": [],

@@ -176,6 +176,17 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("combatDamageReduction"), n: z.number() }),
 ]);
 
+// « Quand un Allié [Famille]? [adverse]? apparaît … » : descripteur de VEILLE
+// (onOtherAppears). Décrit la carte qui APPARAÎT (pas la carte qui veille) :
+// son mainType, sa Famille éventuelle (`sub`, lue sur subTypes) et le
+// contrôleur relatif au veilleur (« adverse » → opponent). Le CORPS (ops) a
+// pour sujet le contrôleur du veilleur.
+const appearanceWatchSchema = z.object({
+  mainType: z.enum(["Allié", "Héros"]),
+  sub: z.string().optional(),
+  controller: controllerSchema.optional(),
+});
+
 export const compiledEffectSchema = z.object({
   trigger: z.enum([
     "onArrive",
@@ -184,12 +195,15 @@ export const compiledEffectSchema = z.object({
     "onTurnStart",
     "static",
     "onSelfAttacks",
+    "onOtherAppears",
     "onDamageToBearer",
   ]),
   optional: z.boolean().optional(),
   cost: z.literal("sacrificeSelf").optional(),
   orElse: z.literal("destroySelf").optional(),
   static: staticAbilitySchema.optional(),
+  // Présent uniquement pour trigger:"onOtherAppears".
+  watch: appearanceWatchSchema.optional(),
   ops: z.array(compiledEffectOpSchema),
 });
 

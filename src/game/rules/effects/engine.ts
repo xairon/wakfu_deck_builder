@@ -7,7 +7,7 @@
  * docs/superpowers/plans/2026-06-18-effect-engine-extraction.md.
  */
 import { computed, ref } from "vue";
-import type { Card } from "@/types/cards";
+import type { Card, CompiledEffect } from "@/types/cards";
 import type { DraftEvent, GameState, Position, Seat, ZoneRef } from "@/game";
 import {
   incCounter as incCounterVerb,
@@ -24,6 +24,7 @@ import type {
 } from "@/game/rules";
 import {
   activeGlobalMods,
+  appearanceTriggerEffects,
   arrivalEffects,
   collectTriggeredEffects,
   effectTargetIds,
@@ -704,6 +705,101 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
       );
       enqueueEffect({ seat, cardName: card.name, ops: atom.ops, sourceId });
+    }
+    // VEILLE non-soi (804) : d'AUTRES cartes en jeu déclenchent « Quand un Allié
+    // [Famille]? [adverse]? apparaît … ». La carte qui apparaît (`card`,
+    // contrôlée par `seat`) ne se veille jamais elle-même au moment de sa propre
+    // apparition (exclusion de `sourceId`) : elle n'est pas encore « en jeu en
+    // train de veiller » à cet instant (fidélité).
+    queueAppearanceWatchers(seat, card, sourceId);
+  }
+
+  /**
+   * La carte qui apparaît correspond-elle au descripteur de veille ? (mainType,
+   * Famille via subTypes, contrôleur relatif au veilleur.)
+   */
+  function appearedMatchesWatch(
+    appeared: Card,
+    appearedController: Seat,
+    watch: NonNullable<CompiledEffect["watch"]>,
+    watcherController: Seat,
+  ): boolean {
+    if (appeared.mainType !== watch.mainType) return false;
+    if (
+      watch.sub &&
+      !(appeared.subTypes ?? []).some((s) => normWord(s) === watch.sub)
+    )
+      return false;
+    if (watch.controller) {
+      const want =
+        watch.controller === "opponent"
+          ? otherSeat(watcherController)
+          : watcherController;
+      if (appearedController !== want) return false;
+    }
+    return true;
+  }
+
+  /**
+   * Scanne toutes les instances EN JEU (Monde + Havre-Sac des deux sièges) et,
+   * pour chacune qui veille « Quand un Allié … apparaît » et dont le `watch`
+   * correspond à la carte apparue, enfile une frame avec le contrôleur du
+   * veilleur comme acteur. Exclut l'instance apparue elle-même.
+   */
+  function queueAppearanceWatchers(
+    appearedSeat: Seat,
+    appeared: Card,
+    appearedId?: string,
+  ): void {
+    const state = deps.getState();
+    const inPlayIds = [
+      ...state.monde,
+      ...state.seats.A.havreSac,
+      ...state.seats.B.havreSac,
+    ];
+    for (const watcherId of inPlayIds) {
+      if (watcherId === appearedId) continue; // pas de veille sur sa propre apparition
+      const watcher = state.instances[watcherId];
+      if (!watcher) continue;
+      const watcherCard = deps.getCard(watcher.cardId);
+      if (!watcherCard) continue;
+      for (const atom of appearanceTriggerEffects(watcherCard)) {
+        if (
+          !atom.watch ||
+          !appearedMatchesWatch(
+            appeared,
+            appearedSeat,
+            atom.watch,
+            watcher.controller,
+          )
+        )
+          continue;
+        if (atom.optional) {
+          effectChoices.value = [
+            ...effectChoices.value,
+            {
+              seat: watcher.controller,
+              cardName: watcherCard.name,
+              text: atom.text,
+              ops: atom.ops,
+              sourceId: watcherId,
+            },
+          ];
+          continue;
+        }
+        deps.dispatch(
+          say(
+            watcher.controller,
+            `Effet automatique — ${watcherCard.name} : « ${atom.text} »`,
+          ),
+        );
+        enqueueEffect({
+          seat: watcher.controller,
+          cardName: watcherCard.name,
+          ops: atom.ops,
+          sourceId: watcherId,
+        });
+      }
     }
   }
 
