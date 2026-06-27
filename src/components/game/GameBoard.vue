@@ -1094,12 +1094,18 @@ function manaBonus(seat: Seat): boolean {
 
 <style scoped>
 .gtable {
-  --card-field: clamp(82px, 6.9vw, 126px);
-  --card-wide: clamp(74px, 6vw, 110px);
-  --card-hand: clamp(100px, 8.6vw, 152px);
-  --card-opp: clamp(56px, 4.6vw, 84px);
-  --card-havre: clamp(84px, 6.9vw, 126px);
-  --pile: clamp(58px, 5vw, 90px);
+  /* Les dimensions des cartes doivent rester sensibles à la HAUTEUR du viewport,
+     pas seulement à la largeur : sur un portable (large mais peu haut), un
+     dimensionnement purement en vw fait déborder le plateau à hauteur fixe
+     (overflow:hidden) et rogne la main du joueur en bas. min(vw, vh) fait
+     rétrécir les cartes sur les écrans courts ; les bornes max() restent
+     inchangées donc les grands écrans ne sont pas affectés. */
+  --card-field: clamp(72px, min(6.9vw, 10vh), 126px);
+  --card-wide: clamp(66px, min(6vw, 8.5vh), 110px);
+  --card-hand: clamp(92px, min(8.6vw, 13vh), 152px);
+  --card-opp: clamp(52px, min(4.6vw, 6.8vh), 84px);
+  --card-havre: clamp(74px, min(6.9vw, 10vh), 126px);
+  --pile: clamp(52px, min(5vw, 7.2vh), 90px);
   position: relative;
   height: 100%;
   min-height: 0;

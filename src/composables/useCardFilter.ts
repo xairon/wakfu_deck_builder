@@ -26,9 +26,9 @@ export interface FilterCriteria {
   /** Filtre par rareté */
   rarity: string;
   /**
-   * Filtre par élément — ATTENTION : les données stockent les éléments en
-   * minuscules ("feu", "eau", etc.) ; comparer avec card.stats.niveau.element
-   * ou card.stats.force.element (déjà en minuscules dans la source).
+   * Filtre par élément. Les données stockent l'élément capitalisé ("Feu",
+   * "Eau"…) depuis la migration de schéma Zod ; la comparaison dans filterCards
+   * est insensible à la casse, donc la valeur peut arriver en minuscules ou non.
    */
   element: string;
   /** Niveau minimum (stats.niveau.value) */
@@ -155,12 +155,16 @@ export const filterCards = useMemoize(
       filtered = filtered.filter((card) => card.rarity === rarity);
     }
 
-    // Élément — les valeurs dans les données sont en minuscules
+    // Élément — comparaison insensible à la casse : les données stockent
+    // l'élément capitalisé ("Feu") depuis la migration de schéma Zod, alors que
+    // l'UI transmet la valeur en minuscules. Sans normalisation des deux côtés,
+    // chaque élément renverrait « aucune carte ».
     if (element) {
+      const el = element.toLowerCase();
       filtered = filtered.filter(
         (card) =>
-          card.stats?.niveau?.element === element ||
-          card.stats?.force?.element === element,
+          card.stats?.niveau?.element?.toLowerCase() === el ||
+          card.stats?.force?.element?.toLowerCase() === el,
       );
     }
 

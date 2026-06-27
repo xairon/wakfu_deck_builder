@@ -112,6 +112,34 @@ describe("useCardFilter — filterCards", () => {
     ).toEqual([]);
   });
 
+  it("element : filtre insensible à la casse (données 'Feu', filtre 'feu')", () => {
+    // Régression : les données stockent l'élément capitalisé ("Feu") depuis la
+    // migration de schéma Zod, mais l'UI (CardPool/CollectionView) transmet la
+    // valeur en minuscules. La comparaison doit ignorer la casse, sinon
+    // « aucune carte » pour chaque élément.
+    const feu = createMockAllyCard({
+      id: "feu",
+      stats: { niveau: { value: 1, element: "Feu" } },
+    });
+    const eau = createMockAllyCard({
+      id: "eau",
+      stats: { niveau: { value: 1, element: "Eau" } },
+    });
+    expect(
+      filterCards([feu, eau], { ...base, element: "feu" }).map((c) => c.id),
+    ).toEqual(["feu"]);
+    // côté force aussi
+    const air = createMockAllyCard({
+      id: "air",
+      stats: { force: { value: 3, element: "Air" } },
+    });
+    expect(
+      filterCards([feu, eau, air], { ...base, element: "air" }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(["air"]);
+  });
+
   it("hideNotOwned : un changement de ownedIds n'est PAS masqué par le cache mémoïsé", () => {
     // Régression : ownedIds est un Set ; la clé JSON par défaut le sérialise en
     // `{}`, donc deux appels aux mêmes critères mais ownedIds différents
