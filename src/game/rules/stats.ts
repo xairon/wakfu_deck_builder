@@ -38,6 +38,45 @@ export function stanceBlockers(stance?: AnyStance): InstanceId[] {
   return stance.blockers ?? [];
 }
 
+/**
+ * Bonus de Force apporté par les auras `forceAura` du Monde à un bénéficiaire
+ * donné (805.2). Le bénéficiaire est soit un Allié du Monde, soit (si l'aura
+ * porte `heroes`) le Héros du contrôleur. La source ne se compte jamais
+ * elle-même (« vos AUTRES Alliés … » → `id !== srcId`), et seules les sources
+ * du MÊME contrôleur que le bénéficiaire comptent (« VOS autres … »).
+ */
+function auraForceBonus(
+  ctx: RulesCtx,
+  beneficiaryId: InstanceId,
+  controller: string,
+  isHero: boolean,
+  subTypes: string[],
+): number {
+  let bonus = 0;
+  for (const srcId of ctx.state.monde) {
+    if (srcId === beneficiaryId) continue;
+    const src = ctx.state.instances[srcId];
+    if (!src || src.controller !== controller) continue;
+    const srcCard = ctx.getCard(src.cardId);
+    if (!srcCard) continue;
+    const srcSide = src.face === "verso" ? "verso" : "recto";
+    for (const s of staticAbilitiesOf(srcCard, srcSide)) {
+      if (s.kind !== "forceAura") continue;
+      if (isHero) {
+        // « … ou Héros » : votre Héros est une classe de bénéficiaire à part —
+        // la Famille (« Alliés Bouftous ») ne le restreint pas. Il profite de
+        // l'aura SSI elle inclut « et/ou Héros ».
+        if (s.heroes) bonus += s.n;
+        continue;
+      }
+      // Allié bénéficiaire : famille présente ⇒ doit la porter ; absente ⇒ tous
+      if (s.sub && !subTypes.some((st) => normWord(st) === s.sub)) continue;
+      bonus += s.n;
+    }
+  }
+  return bonus;
+}
+
 export function effectiveForce(
   ctx: RulesCtx,
   id: InstanceId,
@@ -53,29 +92,30 @@ export function effectiveForce(
     ? ctx.state.seats[inst.controller].main.length
     : forceValue(card, side);
   if (inst.location.zone === "monde" && card.mainType === "Allié") {
-    // 805.2 — auras des AUTRES cartes du Monde, même contrôleur (la source
-    // ne se compte jamais elle-même : « vos AUTRES Alliés … »)
-    for (const srcId of ctx.state.monde) {
-      if (srcId === id) continue;
-      const src = ctx.state.instances[srcId];
-      if (!src || src.controller !== inst.controller) continue;
-      const srcCard = ctx.getCard(src.cardId);
-      if (!srcCard) continue;
-      const srcSide = src.face === "verso" ? "verso" : "recto";
-      for (const s of staticAbilitiesOf(srcCard, srcSide)) {
-        if (
-          s.kind === "forceAura" &&
-          (card.subTypes ?? []).some((st) => normWord(st) === s.sub)
-        )
-          force += s.n;
-      }
-    }
+    // 805.2 — auras des AUTRES cartes du Monde, même contrôleur.
+    force += auraForceBonus(
+      ctx,
+      id,
+      inst.controller,
+      false,
+      card.subTypes ?? [],
+    );
     // 812.3b — modificateur de SIÈGE (Stratégie de Groupe) : posé sur le
     // Héros du contrôleur, il profite à TOUT Allié du Monde de ce siège,
     // y compris arrivé après la résolution (ensemble dynamique).
     const heroId = ctx.state.seats[inst.controller].heroInstanceId;
     const hero = heroId ? ctx.state.instances[heroId] : null;
     force += hero?.counters.tokens?.teamForceMod ?? 0;
+  } else if (card.mainType === "Héros") {
+    // 805.2 — auras « … vos autres Alliés ET Héros … » : votre Héros (qui vit
+    // dans l'intérieur du Havre-Sac, pas dans le Monde) bénéficie aussi.
+    force += auraForceBonus(
+      ctx,
+      id,
+      inst.controller,
+      true,
+      card.subTypes ?? [],
+    );
   }
   // 805.1 — « Tant qu'il bloque » (Maître Bolet)
   if (stanceBlockers(stance).includes(id)) {

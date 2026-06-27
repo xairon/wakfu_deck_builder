@@ -15,6 +15,7 @@ import {
 import { discard, flipLevel, move, setCounter } from "@/game";
 import {
   HERO_A,
+  HERO_B,
   bringToHand,
   bringToMonde,
   ctxOf,
@@ -170,6 +171,68 @@ describe("rules/stats — Force effective composée (lot B)", () => {
     const chefLoc = ctxOf(f).state.instances[instId("A", 0)].location;
     dispatch(f, discard("A", instId("A", 0), chefLoc));
     expect(effectiveForce(ctxOf(f), instId("A", 1))).toBe(2);
+  });
+
+  it("forceAura SANS Famille : +N à TOUS vos autres Alliés du Monde, pas la source ni l'adversaire", () => {
+    const totem = withStatic(makeAlly("totem", { force: 3 }), {
+      kind: "forceAura",
+      n: 2,
+    });
+    const bouftou = makeAlly("b1", { force: 2 });
+    bouftou.subTypes = ["Bouftou"];
+    const tofu = makeAlly("t1", { force: 2 });
+    tofu.subTypes = ["Tofu"];
+    const adverse = makeAlly("adv", { force: 2 });
+    const f = fixture([totem, bouftou, tofu], [adverse]);
+    bringToMonde(f, "A", instId("A", 0));
+    bringToMonde(f, "A", instId("A", 1));
+    bringToMonde(f, "A", instId("A", 2));
+    bringToMonde(f, "B", instId("B", 0));
+    // sans Famille : tout Allié du Monde, quelle que soit sa Famille, +2
+    expect(effectiveForce(ctxOf(f), instId("A", 1))).toBe(4); // Bouftou
+    expect(effectiveForce(ctxOf(f), instId("A", 2))).toBe(4); // Tofu
+    expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(3); // pas la source
+    expect(effectiveForce(ctxOf(f), instId("B", 0))).toBe(2); // adversaire : rien
+    // le Héros n'est PAS visé (pas de `heroes`)
+    expect(effectiveForce(ctxOf(f), HERO_A)).toBe(2);
+  });
+
+  it("forceAura AVEC Héros : votre Héros (intérieur du Havre-Sac) gagne +N, pas le Héros adverse", () => {
+    const totem = withStatic(makeAlly("totem", { force: 3 }), {
+      kind: "forceAura",
+      n: 1,
+      heroes: true,
+    });
+    const ally = makeAlly("a1", { force: 2 });
+    const f = fixture([totem, ally]);
+    bringToMonde(f, "A", instId("A", 0));
+    bringToMonde(f, "A", instId("A", 1));
+    // Allié bénéficiaire + Héros du même siège (base 2 dans le harnais recto)
+    expect(effectiveForce(ctxOf(f), instId("A", 1))).toBe(3);
+    expect(effectiveForce(ctxOf(f), HERO_A)).toBe(3);
+    // le Héros ADVERSE ne profite jamais de votre aura
+    expect(effectiveForce(ctxOf(f), HERO_B)).toBe(2);
+    // un forceAura SANS `heroes` ne toucherait pas le Héros (cf. test précédent)
+  });
+
+  it("forceAura AVEC Famille + Héros : le Héros gagne même sans Famille (« Alliés Bouftous ou Héros »)", () => {
+    const totem = withStatic(makeAlly("totem", { force: 3 }), {
+      kind: "forceAura",
+      n: 1,
+      sub: "bouftou",
+      heroes: true,
+    });
+    const bouftou = makeAlly("b1", { force: 2 });
+    bouftou.subTypes = ["Bouftou"];
+    const tofu = makeAlly("t1", { force: 2 });
+    tofu.subTypes = ["Tofu"];
+    const f = fixture([totem, bouftou, tofu]);
+    bringToMonde(f, "A", instId("A", 0));
+    bringToMonde(f, "A", instId("A", 1));
+    bringToMonde(f, "A", instId("A", 2));
+    expect(effectiveForce(ctxOf(f), instId("A", 1))).toBe(3); // Bouftou : +1
+    expect(effectiveForce(ctxOf(f), instId("A", 2))).toBe(2); // Tofu : rien
+    expect(effectiveForce(ctxOf(f), HERO_A)).toBe(3); // Héros : +1 (pas de filtre Famille)
   });
 
   it("forceWhileBlocking : +2 via la posture seulement ; clamp à 0", () => {

@@ -87,7 +87,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
 ]);
 
 export const staticAbilitySchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("forceAura"), n: z.number(), sub: z.string() }),
+  z.object({
+    kind: z.literal("forceAura"),
+    n: z.number(),
+    // Famille bénéficiaire (« vos autres Alliés Bouftous »). Absente = toutes
+    // vos autres créatures éligibles, sans restriction de Famille.
+    sub: z.string().optional(),
+    // « et Héros » / « Alliés ou Héros » : votre Héros bénéficie aussi de l'aura.
+    heroes: z.boolean().optional(),
+  }),
   z.object({ kind: z.literal("forceWhileBlocking"), n: z.number() }),
   z.object({ kind: z.literal("forceEqualsHandSize") }),
   z.object({ kind: z.literal("cannotBlock") }),

@@ -466,21 +466,32 @@ export function compileStaticEffectText(
       static: { kind: "forceEqualsHandSize" },
       ops: [],
     };
-  // « Tant que le Chef de Guerre Bouftou est dans le Monde, vos autres
-  //   Alliés Bouftous dans le Monde gagnent +1 en Force. »
+  // « Tant que [self] est dans le Monde, vos autres Alliés [Famille] [et/ou
+  //   Héros] [dans le Monde] gagnent +N en Force. » (805.2). Le `$` impose que
+  //   la TOTALITÉ du texte corresponde : une variante avec clause résiduelle
+  //   (débuff adverse, condition « tant qu'il bloque », « jusqu'à la fin du
+  //   tour »…) ne compile PAS — elle resterait une approximation infidèle.
+  //   Sous-groupes : (2) « tous » optionnel ; (3) famille (absente = toutes) ;
+  //   (4) « et/ou Héros » ; (N) la valeur.
   m = body.match(
-    /^tant que (.{1,60}?) est dans le monde\s*,\s*vos autres allies ([a-z-]+) dans le monde gagnent \+(\d+) en force$/,
+    /^tant que (.{1,60}?) est dans le monde\s*,\s*(tous )?vos autres allies( [a-z-]+)?( (?:et|ou) heros)?(?: dans le monde)? gagnent \+(\d+) en force$/,
   );
-  if (m && subjectIsSelf(m[1], cardName))
+  if (m && subjectIsSelf(m[1], cardName)) {
+    const fam = m[3]?.trim();
+    // mot de liaison capté par la classe famille → pas une Famille réelle :
+    // sans « et/ou Héros » explicite, « et »/« ou » seul ne doit pas matcher.
+    if (fam && ["et", "ou", "dans"].includes(fam)) return null;
     return {
       trigger: "static",
       static: {
         kind: "forceAura",
-        n: toNumber(m[3]),
-        sub: m[2].replace(/s$/, ""), // famille au singulier (« Bouftous »)
+        n: toNumber(m[5]),
+        ...(fam ? { sub: fam.replace(/s$/, "") } : {}), // famille au singulier
+        ...(m[4] ? { heroes: true } : {}),
       },
       ops: [],
     };
+  }
   // « Tant qu'il bloque, le Maître Bolet gagne +2 en Force. »
   m = body.match(
     /^tant qu['’]\s?(?:il|elle) bloque\s*,\s*(.{1,60}?) gagne \+(\d+) en force$/,

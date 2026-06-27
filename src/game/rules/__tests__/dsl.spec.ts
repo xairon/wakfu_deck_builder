@@ -612,3 +612,94 @@ describe("rules/effects — grammaire des Actions (lot C : Trêve, Stratégie)",
     ).toBeNull();
   });
 });
+
+describe("rules/effects — forceAura : variantes sans Famille / avec Héros", () => {
+  it("famille → forceAura { n, sub } (cas existant inchangé)", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que le Chef de Guerre Bouftou est dans le Monde, vos autres Alliés Bouftous dans le Monde gagnent +1 en Force.",
+        "Chef de Guerre Bouftou",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 1, sub: "bouftou" },
+      ops: [],
+    });
+  });
+
+  it("sans Famille → forceAura { n } (sub omis), « tous » optionnel", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que le Totem est dans le Monde, tous vos autres Alliés gagnent +2 en Force.",
+        "Totem",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 2 },
+      ops: [],
+    });
+    // sans « tous », sans « dans le Monde » sur les bénéficiaires
+    expect(
+      compileStaticEffectText(
+        "Tant que le Totem est dans le Monde, vos autres Alliés gagnent +1 en Force.",
+        "Totem",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 1 },
+      ops: [],
+    });
+  });
+
+  it("« et/ou Héros » → forceAura { heroes: true } (avec ou sans Famille)", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que le Totem est dans le Monde, tous vos autres Alliés et Héros gagnent +1 en Force.",
+        "Totem",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 1, heroes: true },
+      ops: [],
+    });
+    expect(
+      compileStaticEffectText(
+        "Tant que le Totem est dans le Monde, vos autres Alliés Bouftous ou Héros gagnent +1 en Force.",
+        "Totem",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 1, sub: "bouftou", heroes: true },
+      ops: [],
+    });
+  });
+
+  it("NÉGATIF : une clause résiduelle (débuff adverse, Abraknyde) → pas forceAura", () => {
+    // Abraknyde Ancestral : la moitié « +1 Force » serait fidèle, mais le texte
+    // ENTIER inclut un débuff adverse non modélisé → on n'approxime pas.
+    expect(
+      compileStaticEffectText(
+        "Tant que l'Abraknyde Ancestral est dans le Monde, tous vos autres Alliés et Héros gagnent +1 en Force et la Force de tous les Alliés et Héros adverses est réduite de 1, jusqu'à un minimun de 1.",
+        "Abraknyde Ancestral",
+      ),
+    ).toBeNull();
+  });
+
+  it("NÉGATIF : une condition « tant qu'il bloque … gagnent » ne compile pas en forceAura", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant qu'il bloque, vos autres Alliés gagnent +1 en Force.",
+        "Pseudo-Bloqueur",
+      ),
+    ).toBeNull();
+  });
+
+  it("NÉGATIF : « jusqu'à la fin du tour » (effet temporaire, pas continu) → pas forceAura", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que le Totem est dans le Monde, vos autres Alliés gagnent +1 en Force jusqu'à la fin du tour.",
+        "Totem",
+      ),
+    ).toBeNull();
+  });
+});
