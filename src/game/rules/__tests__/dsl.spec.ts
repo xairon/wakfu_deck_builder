@@ -522,6 +522,81 @@ describe("rules/effects — effets imprimés vs notes de règles (kind)", () => 
     ).toEqual({ trigger: "static", static: { kind: "cannotBlock" }, ops: [] });
   });
 
+  it("devrait compiler « ne peut ni attaquer, ni bloquer » → cannotAttackOrBlock", () => {
+    expect(
+      compileStaticEffectText(
+        "L'Épouvantail ne peut ni attaquer, ni bloquer.",
+        "Épouvantail",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "cannotAttackOrBlock" },
+      ops: [],
+    });
+    // article élidé + apostrophe courbe + accent (Allié Élémentaire)
+    expect(
+      compileStaticEffectText(
+        "L’Aero ne peut ni attaquer, ni bloquer.",
+        "Aero",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "cannotAttackOrBlock" },
+      ops: [],
+    });
+    // ordre inversé admis
+    expect(
+      compileStaticEffectText(
+        "Le Pyro ne peut ni bloquer, ni attaquer.",
+        "Pyro",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "cannotAttackOrBlock" },
+      ops: [],
+    });
+  });
+
+  it("ne devrait PAS capter « ne peut pas bloquer » comme cannotAttackOrBlock (reste cannotBlock)", () => {
+    expect(
+      compileStaticEffectText("Le Pyro ne peut pas bloquer.", "Pyro"),
+    ).toEqual({ trigger: "static", static: { kind: "cannotBlock" }, ops: [] });
+  });
+
+  it("ne devrait PAS compiler une clause d'attaque/blocage avec suite conditionnelle", () => {
+    // suite résiduelle « ni utiliser ses pouvoirs » → texte non TOTALEMENT compris
+    expect(
+      compileStaticEffectText(
+        "L'Allié de votre choix ne peut ni attaquer, ni bloquer, ni utiliser ses pouvoirs.",
+        "Quelqu'un",
+      ),
+    ).toBeNull();
+  });
+
+  it("devrait compiler « ne peut pas porter d'Équipement » → cannotCarryEquipment", () => {
+    expect(
+      compileStaticEffectText(
+        "Le Terra ne peut pas porter d’Équipement.",
+        "Terra",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "cannotCarryEquipment" },
+      ops: [],
+    });
+    // apostrophe droite + pluriel toléré
+    expect(
+      compileStaticEffectText(
+        "L'Akwa ne peut pas porter d'Équipements.",
+        "Akwa",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "cannotCarryEquipment" },
+      ops: [],
+    });
+  });
+
   it("devrait compiler la réduction de Dommages de Poum recto (1) et verso (2)", () => {
     expect(
       compileStaticEffectText(

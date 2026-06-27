@@ -240,4 +240,46 @@ describe("rules/legality — attaquants, cibles, bloqueurs", () => {
     });
     expect(blockers).toEqual([instId("B", 1)]);
   });
+
+  function withCannotAttackOrBlock(id: string) {
+    const a = makeAlly(id, { force: 3 });
+    a.effects = [
+      {
+        description: `${id} ne peut ni attaquer, ni bloquer.`,
+        compiled: {
+          trigger: "static",
+          static: { kind: "cannotAttackOrBlock" },
+          ops: [],
+        },
+      },
+    ];
+    return a;
+  }
+
+  it("« ne peut ni attaquer, ni bloquer » : exclu des attaquants ET des bloqueurs", () => {
+    // attaquant : la carte est retirée de eligibleAttackers (volet attaque)
+    const fa = fixture([
+      withCannotAttackOrBlock("epouvantail"),
+      makeAlly("ok"),
+    ]);
+    setTurn(fa, "A", 3);
+    bringToMonde(fa, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(fa, "A", instId("A", 1), { arrivedTurn: 1 });
+    const attackers = eligibleAttackers(ctxOf(fa), "A");
+    expect(attackers).not.toContain(instId("A", 0));
+    expect(attackers).toContain(instId("A", 1));
+
+    // bloqueur : la même carte est aussi retirée de eligibleBlockers (volet blocage)
+    const fb = fixture(
+      [],
+      [withCannotAttackOrBlock("epou"), makeAlly("autre")],
+    );
+    bringToMonde(fb, "B", instId("B", 0));
+    bringToMonde(fb, "B", instId("B", 1));
+    const blockers = eligibleBlockers(ctxOf(fb), "B", {
+      kind: "hero",
+      instanceId: HERO_B,
+    });
+    expect(blockers).toEqual([instId("B", 1)]);
+  });
 });

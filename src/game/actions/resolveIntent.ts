@@ -46,7 +46,7 @@ import {
   pmOf,
 } from "../rules/legality.ts";
 import { planCost } from "../rules/resources.ts";
-import { attackPmBonus } from "../rules/modifiers.ts";
+import { attackPmBonus, cannotCarryEquipment } from "../rules/modifiers.ts";
 import { resolveCombat } from "../rules/combat.ts";
 import { activeGlobalMods } from "../rules/effects/damageMods.ts";
 import type { RulesCtx } from "../rules/types";
@@ -321,6 +321,10 @@ export function resolveIntent(
       if (e1) return { error: e1 };
       const e2 = controlError(state, seat, intent.bearerId);
       if (e2) return { error: e2 };
+      // « [bearer] ne peut pas porter d'Équipement. » (Allies Élémentaires) —
+      // pouvoir continu refusant à cette créature le rôle de Porteur.
+      if (cannotCarryEquipment(ctx, intent.bearerId))
+        return { error: "Cette carte ne peut pas porter d'Équipement." };
       const payload: AttachPayload = {
         equipmentId: intent.equipmentId,
         bearerId: intent.bearerId,

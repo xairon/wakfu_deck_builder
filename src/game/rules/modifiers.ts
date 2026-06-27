@@ -85,12 +85,36 @@ export function bearerBonuses(
   return out;
 }
 
-/** « [X] ne peut pas bloquer. » (Jicé Aouaire) — lu par `eligibleBlockers`. */
+/** « [X] ne peut pas bloquer. » (Jicé Aouaire) — lu par `eligibleBlockers`.
+ *  `cannotAttackOrBlock` (Épouvantail, Allies Élémentaires) couvre aussi le
+ *  blocage : il est inclus ici pour que la lecture « peut-il bloquer ? » reste
+ *  exhaustive. */
 export function cannotBlock(ctx: RulesCtx, id: InstanceId): boolean {
   const inst = ctx.state.instances[id];
   const card = inst ? ctx.getCard(inst.cardId) : null;
   return staticAbilitiesOf(card, sideOf(ctx, id)).some(
-    (s) => s.kind === "cannotBlock",
+    (s) => s.kind === "cannotBlock" || s.kind === "cannotAttackOrBlock",
+  );
+}
+
+/** « [X] ne peut ni attaquer, ni bloquer. » (Épouvantail, Aero/Akwa/Pyro/Terra)
+ *  — lu par `eligibleAttackers` (le volet blocage est couvert par `cannotBlock`
+ *  ci-dessus, qui inclut ce kind). */
+export function cannotAttackOrBlock(ctx: RulesCtx, id: InstanceId): boolean {
+  const inst = ctx.state.instances[id];
+  const card = inst ? ctx.getCard(inst.cardId) : null;
+  return staticAbilitiesOf(card, sideOf(ctx, id)).some(
+    (s) => s.kind === "cannotAttackOrBlock",
+  );
+}
+
+/** « [X] ne peut pas porter d'Équipement. » (Allies Élémentaires) — lu par
+ *  l'intention ATTACH (refus comme Porteur). */
+export function cannotCarryEquipment(ctx: RulesCtx, id: InstanceId): boolean {
+  const inst = ctx.state.instances[id];
+  const card = inst ? ctx.getCard(inst.cardId) : null;
+  return staticAbilitiesOf(card, sideOf(ctx, id)).some(
+    (s) => s.kind === "cannotCarryEquipment",
   );
 }
 

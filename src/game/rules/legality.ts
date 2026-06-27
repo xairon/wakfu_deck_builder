@@ -10,7 +10,7 @@ import type { Seat, ZoneRef } from "../types/zones";
 import { otherSeat } from "../types/zones.ts";
 import type { CombatTarget, RulesCtx } from "./types";
 import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs.ts";
-import { cannotBlock } from "./modifiers.ts";
+import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
 import { planCost } from "./resources.ts";
 
 /** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
@@ -86,6 +86,9 @@ export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
     if (inst.orientation !== "upright") continue;
     const card = ctx.getCard(inst.cardId);
     if (!card || !canAttackCard(card)) continue;
+    // « ne peut ni attaquer, ni bloquer » (pouvoir continu) — exclu des
+    // attaquants éligibles (volet blocage géré par eligibleBlockers/cannotBlock).
+    if (cannotAttackOrBlock(ctx, inst.instanceId)) continue;
     // le Héros n'a pas le mal d'invocation (en jeu depuis la mise en place)
     if (
       card.mainType === "Allié" &&

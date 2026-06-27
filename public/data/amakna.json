@@ -2980,7 +2980,14 @@
         "description": "L'Épouvantail ne peut ni attaquer, ni bloquer.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "cannotAttackOrBlock"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "L'Épouvantail ne peut pas être détruit.",

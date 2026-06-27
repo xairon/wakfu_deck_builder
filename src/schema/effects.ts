@@ -415,6 +415,16 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("forceWhileBlocking"), n: z.number() }),
   z.object({ kind: z.literal("forceEqualsHandSize") }),
   z.object({ kind: z.literal("cannotBlock") }),
+  // « [self] ne peut ni attaquer, ni bloquer. » (Épouvantail, Allies
+  // Élémentaires Aero/Akwa/Pyro/Terra) — restriction CONTINUE : la créature
+  // est retirée de `eligibleAttackers` ET `eligibleBlockers` (mêmes points
+  // d'autorité que `cannotBlock`). Plus fort que `cannotBlock` (couvre aussi
+  // l'attaque), modélisé comme un kind distinct pour rester littéral.
+  z.object({ kind: z.literal("cannotAttackOrBlock") }),
+  // « [self] ne peut pas porter d'Équipement. » (Allies Élémentaires) —
+  // restriction CONTINUE : cette créature ne peut jamais être Porteur ; l'op
+  // ATTACH la refuse comme bearer (lu par `cannotCarryEquipment`).
+  z.object({ kind: z.literal("cannotCarryEquipment") }),
   z.object({ kind: z.literal("combatDamageReduction"), n: z.number() }),
   // BONUS DE PORTEUR (305.x) : pouvoir continu d'un Équipement / d'une Monture
   // PORTÉ(E) qui s'applique au PORTEUR tant qu'il est en jeu (« Le Porteur de X

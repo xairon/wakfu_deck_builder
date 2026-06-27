@@ -6,7 +6,9 @@
 import { describe, expect, it } from "vitest";
 import type { AllyCard, StaticAbility } from "@/types/cards";
 import {
+  cannotAttackOrBlock,
   cannotBlock,
+  cannotCarryEquipment,
   effectiveForce,
   heroLevel,
   resolveBuffForceTarget,
@@ -92,6 +94,33 @@ describe("rules/modifiers — lecture des pouvoirs continus", () => {
     bringToMonde(f, "A", instId("A", 1));
     expect(cannotBlock(ctxOf(f), instId("A", 0))).toBe(true);
     expect(cannotBlock(ctxOf(f), instId("A", 1))).toBe(false);
+  });
+
+  it("cannotAttackOrBlock implique aussi cannotBlock (volet blocage)", () => {
+    const epou = withStatic(makeAlly("epou"), { kind: "cannotAttackOrBlock" });
+    const autre = makeAlly("autre");
+    const f = fixture([epou, autre]);
+    bringToMonde(f, "A", instId("A", 0));
+    bringToMonde(f, "A", instId("A", 1));
+    expect(cannotAttackOrBlock(ctxOf(f), instId("A", 0))).toBe(true);
+    expect(cannotBlock(ctxOf(f), instId("A", 0))).toBe(true); // inclus
+    expect(cannotAttackOrBlock(ctxOf(f), instId("A", 1))).toBe(false);
+    expect(cannotBlock(ctxOf(f), instId("A", 1))).toBe(false);
+  });
+
+  it("cannotCarryEquipment : vrai seulement pour la carte au pouvoir continu", () => {
+    const terra = withStatic(makeAlly("terra"), {
+      kind: "cannotCarryEquipment",
+    });
+    const autre = makeAlly("autre2");
+    const f = fixture([terra, autre]);
+    bringToMonde(f, "A", instId("A", 0));
+    bringToMonde(f, "A", instId("A", 1));
+    expect(cannotCarryEquipment(ctxOf(f), instId("A", 0))).toBe(true);
+    expect(cannotCarryEquipment(ctxOf(f), instId("A", 1))).toBe(false);
+    // n'affecte ni l'attaque ni le blocage
+    expect(cannotAttackOrBlock(ctxOf(f), instId("A", 0))).toBe(false);
+    expect(cannotBlock(ctxOf(f), instId("A", 0))).toBe(false);
   });
 
   it("heroLevel : 1 au recto, 2 au verso, 3 au compteur level", () => {

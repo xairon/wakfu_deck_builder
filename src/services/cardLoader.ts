@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v28"; // v28 : static bearerBonus (« Le Porteur de X gagne +N en Force / Résistance »)
+const CACHE_KEY = "wakfu-cards-cache-v29"; // v29 : statics cannotAttackOrBlock / cannotCarryEquipment (Épouvantail, Allies Élémentaires)
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [

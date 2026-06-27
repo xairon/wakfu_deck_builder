@@ -1769,6 +1769,29 @@ export function compileStaticEffectText(
   m = body.match(/^(.{1,60}?) ne peut pas bloquer$/);
   if (m && subjectIsSelf(m[1], cardName))
     return { trigger: "static", static: { kind: "cannotBlock" }, ops: [] };
+  // « [self] ne peut ni attaquer, ni bloquer. » (Épouvantail, Aero/Akwa/Pyro/
+  //   Terra) — restriction CONTINUE retirant la créature des attaquants ET des
+  //   bloqueurs éligibles. Les deux ordres (« ni attaquer, ni bloquer » /
+  //   « ni bloquer, ni attaquer ») sont admis. STRICT : la clause doit
+  //   constituer TOUT le texte (le `$` rejette les suites conditionnelles).
+  m = body.match(
+    /^(.{1,60}?) ne peut (?:ni attaquer\s*,?\s*ni bloquer|ni bloquer\s*,?\s*ni attaquer)$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "cannotAttackOrBlock" },
+      ops: [],
+    };
+  // « [self] ne peut pas porter d'Équipement. » (Aero/Akwa/Pyro/Terra) —
+  //   restriction CONTINUE : la créature ne peut jamais devenir Porteur.
+  m = body.match(/^(.{1,60}?) ne peut pas porter d['’]\s?equipements?$/);
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "cannotCarryEquipment" },
+      ops: [],
+    };
   // « Tant que Poum Ondacié est attaquant, bloqueur ou cible d'une attaque,
   //   tous les Dommages sur le point de lui être infligés sont réduits de N. »
   m = body.match(
