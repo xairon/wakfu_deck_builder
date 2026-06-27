@@ -11007,7 +11007,28 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse",
+              "n": 3,
+              "max": true
+            },
+            {
+              "op": "damageTarget",
+              "n": 0,
+              "fromCount": true,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "damage-target"]
       }
     ],
     "keywords": [],
@@ -11076,7 +11097,27 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse",
+              "n": 3,
+              "max": true
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 0,
+              "fromCount": true,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "buff-force-target"]
       }
     ],
     "keywords": [],
@@ -12785,7 +12826,27 @@
         "description": "Recyclez X Monstres de votre Défausse : Votre Héros regagne X PV.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse",
+              "n": 99,
+              "max": true,
+              "what": "Allié",
+              "sub": "monstre"
+            },
+            {
+              "op": "heroGainPv",
+              "n": 0,
+              "fromCount": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "hero-gain-pv"]
       }
     ],
     "keywords": [
@@ -14218,7 +14279,20 @@
         "description": "Mettez en jeu un Monstre de NIveau 1 ou 2 gratuitement de votre main.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "main",
+              "what": "Allié",
+              "sub": "monstre",
+              "levelIn": [1, 2]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       },
       {
         "description": "Un Monstre Invoqué n'est pas considéré comme ayant été joué. Le Monstre n'est choisi qu'à la résolution du pouvoir de Trantmy Londami, par conséquent l'adversaire ne peut pas attendre de savoir quel Monstre est invoqué pour jouer une éventuelle Réaction. On peut utiliser ce pouvoir sans carte Monstre en Main, dans ce cas le pouvoir ne fait rien.",
@@ -14257,7 +14331,20 @@
           "description": "Mettez en jeu un Monstre de NIveau 1 ou 2 gratuitement de votre main.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "main",
+                "what": "Allié",
+                "sub": "monstre",
+                "levelIn": [1, 2]
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         },
         {
           "description": "Un Monstre Invoqué n'est pas considéré comme ayant été joué. Le Monstre n'est choisi qu'à la résolution du pouvoir de Trantmy Londami, par conséquent l'adversaire ne peut pas attendre de savoir quel Monstre est invoqué pour jouer une éventuelle Réaction. On peut utiliser ce pouvoir sans carte Monstre en Main, dans ce cas le pouvoir ne fait rien.",

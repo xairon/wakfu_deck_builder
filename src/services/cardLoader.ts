@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v20"; // v20 : op costRecycle (coût de recyclage : Défausse/main/soi) + mécanique cost-recycle
+const CACHE_KEY = "wakfu-cards-cache-v21"; // v21 : coût « Recyclez jusqu'à N … » à valeur « nombre recyclé » (fromCount) + putInPlay levelIn (Niveau 1 ou 2)
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [

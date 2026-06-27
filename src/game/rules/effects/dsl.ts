@@ -333,6 +333,30 @@ function parseSentence(
   //   porteur résiduelle (« … sur l'Allié … », « … et placez-le … ») → ces formes
   //   restent manuelles. La CRÉATION de jeton (« Mettez en jeu un jeton … »,
   //   « Invoquez … ») ne correspond pas (pas de mot-type connu nu).
+  // « Mettez en jeu un [type] [Famille]? de Niveau N ou M [gratuitement] de votre
+  //   main [dans le Monde] [incliné] » → putInPlay avec un filtre `levelIn:[N,M]`
+  //   (énumération de Niveaux, distincte de ≤ N / = N). Forme courante « de Niveau
+  //   1 ou 2 ». Placée AVANT la grammaire générale (dont le sous-motif de Niveau
+  //   ne capte qu'un seul nombre). `from` est la main (les formes observées sont
+  //   toutes « de votre main »). Action/Dofus exclus (pas des cibles putInPlay).
+  m = sentence.match(
+    /^mett(?:ez|re) en jeu (?:gratuitement )?(?:un |une |le |la )([a-z]+)( [a-z-]+)? de niveau (\d+) ou (\d+)(?: gratuitement)? (?:de|depuis) votre main( dans le monde)?( incline[es]?)?$/,
+  );
+  if (m) {
+    const pt = pickType(m[1]);
+    if (!pt || pt.what === "Action" || pt.what === "Dofus") return null;
+    const sub = pt.sub ?? m[2]?.trim();
+    if (sub && ["ou", "non", "de", "et", "gratuitement"].includes(sub))
+      return null;
+    return {
+      op: "putInPlay",
+      from: "main",
+      what: pt.what,
+      ...(sub ? { sub } : {}),
+      levelIn: [toNumber(m[3]), toNumber(m[4])],
+      ...(m[6] ? { tapped: true } : {}),
+    };
+  }
   const lvl = "(?: de niveau (?:inferieur ou egal a (\\d+)|(\\d+)))?";
   m = sentence.match(
     new RegExp(
@@ -907,8 +931,17 @@ export function compileTapEffectText(
   text: string,
   cardName: string,
   sourceElement = "Neutre",
+  // Carte ACTION (302.1) : un coût de RECYCLAGE sur une Action est sa résolution
+  // au moment où elle est jouée → trigger "onPlay" (lu par playEffects), pas
+  // "onTap" (pouvoir à inclinaison). Les Parchemins (« Recyclez jusqu'à N … : … »)
+  // en relèvent. N'affecte QUE les coûts de recyclage (les autres formes onTap —
+  // inclinaison/sacrifice — ne s'appliquent pas aux Actions). Défaut false.
+  asAction = false,
 ): CompiledEffect | null {
   const normalized = norm(text);
+  const recycleTrigger: CompiledEffect["trigger"] = asAction
+    ? "onPlay"
+    : "onTap";
   // COÛT PAYÉ « Inclinez / Détruisez un [autre] de vos [Allié(s) | Allié(s) ou
   // Héros] [Famille] [de Niveau ≤ N] : CORPS » (806 — coûts d'activation). Le
   // coût est modélisé comme la PREMIÈRE op (ciblage costTap/costDestroyControlled,
@@ -919,11 +952,21 @@ export function compileTapEffectText(
   // vos » n'est pas soi → l'ancienne forme renverrait null).
   const paid = compileTapPaidCost(normalized, cardName, sourceElement);
   if (paid) return paid;
+  // COÛT DE RECYCLAGE « JUSQU'À N » À VALEUR « nombre recyclé » (« Recyclez jusqu'à
+  // N Monstres … : … le même nombre de Dommages … ») — testé AVANT la forme à coût
+  // fixe (« une carte »), qu'il ne capte pas. Recyclage optionnel 0..N, magnitude
+  // du corps = compte réel (fromCount).
+  const recycleCount = compileRecycleCountCost(
+    normalized,
+    cardName,
+    sourceElement,
+  );
+  if (recycleCount) return { ...recycleCount, trigger: recycleTrigger };
   // COÛT DE RECYCLAGE « Recyclez … : CORPS » (Défausse / main / soi-depuis-le-
   // Monde) → cost:"paidOps" avec costRecycle en première op. Testé avant la
   // forme incline/sacrifice (le préfixe « Recyclez » ne capte ni l'un ni l'autre).
   const recycle = compileRecyclePaidCost(normalized, cardName, sourceElement);
-  if (recycle) return recycle;
+  if (recycle) return { ...recycle, trigger: recycleTrigger };
   let body = normalized;
   // COÛT D'INCLINAISON DE SOI « Inclinez [cette carte] : CORPS » — la phrase
   // de coût explicite la même inclinaison de la SOURCE qu'un pouvoir
@@ -1148,6 +1191,144 @@ function compileRecyclePaidCost(
     trigger: "onTap",
     cost: "paidOps",
     ops: [{ op: "costRecycle", from }, ...body],
+  };
+}
+
+/**
+ * Mot-type d'un coût de recyclage (« jusqu'à N MONSTRES / ALLIÉS / cartes ») →
+ * filtre `{what?, sub?}`, ou null si le mot n'est ni « cartes » (aucun filtre)
+ * ni un type/Famille reconnu. `word` est déjà normalisé et SANS le « s » final.
+ */
+function recycleTypeFilter(
+  word: string,
+): { what?: "Allié"; sub?: string } | null {
+  if (word === "carte") return {};
+  if (word === "allie") return { what: "Allié" };
+  if (ALLIED_FAMILIES.has(word)) return { what: "Allié", sub: word };
+  return null;
+}
+
+/**
+ * Parse un CORPS À VALEUR « nombre de cartes recyclées » (lié à un coût « Recyclez
+ * JUSQU'À N … »). Le sujet de la magnitude est le NOMBRE de cartes effectivement
+ * recyclées (op `fromCount:true`, lu au runtime sur frame.boundCount). STRICT —
+ * seules les formes SCALAIRES non ambiguës sont admises (un seul nombre = compte
+ * recyclé) :
+ *   - « Le Héros de votre choix regagne N PV par carte recyclée » → healHeroTarget
+ *     fromCount perCount=N ;
+ *   - « Votre Héros regagne X PV » → heroGainPv fromCount (X = compte recyclé) ;
+ *   - « Infligez le même nombre de Dommages à l'Allié (ou Héros) de votre choix »
+ *     → damageTarget fromCount ;
+ *   - « <self> inflige le même nombre de Dommages à l'Allié (ou Héros) de votre
+ *     choix » → damageTarget fromCount (sujet = la carte elle-même) ;
+ *   - « La Force de l'Allié (ou Héros) de votre choix est augmentée du même nombre
+ *     jusqu'à la fin du tour » → buffForceTarget fromCount.
+ * SKIP (→ null, manuel) : multi-cible par compte (« le même nombre d'Alliés »),
+ * « Force cumulée », création de jetons, etc. `body` est déjà normalisé, sans
+ * point final.
+ */
+function compileRecycleCountBody(
+  body: string,
+  cardName: string,
+  sourceElement: string,
+): EffectOp[] | null {
+  // « Le Héros de votre choix regagne N PV par carte recyclée » → soin ciblé,
+  // magnitude = compte × N.
+  let m = body.match(
+    /^le heros de votre choix regagne (\d+) (?:pv|points? de vie) par carte recyclee$/,
+  );
+  if (m)
+    return [
+      {
+        op: "healHeroTarget",
+        n: 0,
+        fromCount: true,
+        ...(toNumber(m[1]) !== 1 ? { perCount: toNumber(m[1]) } : {}),
+      },
+    ];
+  // « Votre Héros regagne X PV » (X = compte recyclé, forme « Recyclez X … : … X PV »).
+  m = body.match(/^votre heros regagne x (?:pv|points? de vie)$/);
+  if (m) return [{ op: "heroGainPv", n: 0, fromCount: true }];
+  // « Infligez le même nombre de Dommages à l'Allié (ou Héros) de votre choix »
+  // ou « <self> inflige le même nombre … » → Dommages ciblés = compte recyclé.
+  m = body.match(
+    /^(?:infligez|(.{1,50}?) inflige) le meme nombre de dommages? a l['’ ]?\s?allie( ou heros)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m) {
+    if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
+    return [
+      {
+        op: "damageTarget",
+        n: 0,
+        fromCount: true,
+        element: sourceElement,
+        heroes: !!m[2],
+        zones: targetZones(m[3], m[4]),
+      },
+    ];
+  }
+  // « La Force de l'Allié (ou Héros) de votre choix est augmentée du même nombre
+  // jusqu'à la fin du tour » → bonus de Force ciblé = compte recyclé.
+  m = body.match(
+    /^la force de l['’ ]?\s?allie( ou heros)? de votre choix est augmentee du meme nombre jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m)
+    return [
+      {
+        op: "buffForceTarget",
+        n: 0,
+        fromCount: true,
+        heroes: !!m[1],
+        zones: ["monde", "havreSac"],
+      },
+    ];
+  return null;
+}
+
+/**
+ * Parse un POUVOIR À COÛT DE RECYCLAGE « JUSQU'À N » À VALEUR DYNAMIQUE « nombre
+ * de cartes recyclées » : « Recyclez jusqu'à N [Monstres|Alliés|cartes] de votre
+ * Défausse : CORPS » (ou « Recyclez X [Monstres|cartes] … » — X = compte libre).
+ * → `{ trigger:"onTap", cost:"paidOps", ops:[costRecycle{from:"defausse", n, max:true,
+ * [what,sub]}, ...countBody] }`, ou null. Le coût est OPTIONNEL (0..N, « jusqu'à »)
+ * et TOUJOURS payé ; la magnitude du CORPS suit le compte réel (compileRecycleCountBody).
+ * SKIP (manuel) toute forme dont le corps n'est pas un scalaire « compte recyclé »
+ * non ambigu. `text` déjà normalisé.
+ */
+function compileRecycleCountCost(
+  text: string,
+  cardName: string,
+  sourceElement: string,
+): CompiledEffect | null {
+  // (1) quantité : « jusqu'à N » (cap N) OU « X » (compte libre, cap pratique) ;
+  // (2) le nombre N (forme « jusqu'à ») ; (3) le mot-type (Monstres/Alliés/cartes).
+  const m = text.match(
+    /^recyclez (?:jusqu['’]a (une|deux|trois|\d+)|(x)) ([a-zéèêàùûôîç]+?)s? de votre defausse\s*:\s*(.+)$/,
+  );
+  if (!m) return null;
+  const filter = recycleTypeFilter(m[3]);
+  if (!filter) return null;
+  // « jusqu'à N » → cap = N ; « X » (compte libre) → cap pratique élevé (la pile
+  // borne de toute façon ; le joueur peut s'arrêter avant).
+  const n = m[1] ? toNumber(m[1]) : 99;
+  const bodyText = m[4].replace(/\.$/, "").trim();
+  if (/^(?:il|elle)\s/.test(bodyText)) return null; // actor-binding non modélisé
+  const body = compileRecycleCountBody(bodyText, cardName, sourceElement);
+  if (!body) return null;
+  return {
+    trigger: "onTap",
+    cost: "paidOps",
+    ops: [
+      {
+        op: "costRecycle",
+        from: "defausse",
+        n,
+        max: true,
+        ...(filter.what ? { what: filter.what } : {}),
+        ...(filter.sub ? { sub: filter.sub } : {}),
+      },
+      ...body,
+    ],
   };
 }
 
@@ -1573,10 +1754,21 @@ export function playEffects(card: Card | null): EffectAtom[] {
   for (const e of card.effects ?? []) {
     if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
+    // Repli (données non migrées / tests) : un coût de RECYCLAGE sur une Action
+    // (Parchemins) se compile en "onPlay" via compileTapEffectText(asAction=true) ;
+    // sinon résolution d'Action standard. `requiresIncline` n'a pas de sens sur une
+    // Action — on ne re-parse pas dans ce cas (cohérent avec l'historique).
     const compiled =
       e?.compiled ??
       (text && !e?.requiresIncline
-        ? compileActionEffectText(text, card.name, effectSourceElement(card))
+        ? isRecycleCostText(text)
+          ? compileTapEffectText(
+              text,
+              card.name,
+              effectSourceElement(card),
+              true,
+            )
+          : compileActionEffectText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onPlay")
       atoms.push({ ...compiled, text });

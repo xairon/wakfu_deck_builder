@@ -61,6 +61,15 @@ export interface EffectFrame {
    * avec sourceId = instance apparue, sans ce marqueur.
    */
   actorBind?: "costTarget";
+  /**
+   * VALEUR LIÉE AU COÛT « Recyclez jusqu'à N … » (costRecycle{max:true}) : nombre
+   * de cartes RÉELLEMENT recyclées au paiement du coût. Les ops du corps marquées
+   * `fromCount:true` lisent ce nombre comme magnitude (× perCount éventuel). Le
+   * moteur le pose sur la frame retenue (holdRest) quand le recyclage « jusqu'à »
+   * se termine. Absent (ou 0) = aucune carte recyclée → magnitude 0 (no-op fidèle
+   * pour « jusqu'à »).
+   */
+  boundCount?: number;
 }
 
 /** Filtre de recherche dans une pile (type, famille, niveau max, élément). */
@@ -70,6 +79,8 @@ export interface PickFilter {
   maxLevel?: number;
   /** Niveau EXACT (« … de Niveau N ») : carte sans Niveau = inéligible. */
   exactLevel?: number;
+  /** Niveau dans un ENSEMBLE (« … de Niveau 1 ou 2 ») : carte sans Niveau = inéligible. */
+  levelIn?: number[];
   /** « une carte [Feu] » : seules les cartes de cet Élément. */
   element?: string;
 }
@@ -94,6 +105,8 @@ export function matchesPickFilter(card: Card | null, f?: PickFilter): boolean {
   )
     return false;
   if (f.exactLevel !== undefined && card.stats?.niveau?.value !== f.exactLevel)
+    return false;
+  if (f.levelIn && !f.levelIn.includes(card.stats?.niveau?.value ?? Number.NaN))
     return false;
   return true;
 }
@@ -176,6 +189,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
      * un recycle « libre » poursuit simplement l'effet.
      */
     cost?: boolean;
+    /**
+     * COÛT « Recyclez JUSQU'À N … » (costRecycle{max:true}) : recyclage OPTIONNEL
+     * 0..N. Passer le choix (effectPickSkip) ne l'ANNULE PAS (« jusqu'à » admet 0)
+     * — au lieu d'abandonner la frame, on FIXE `frame.boundCount` au nombre déjà
+     * recyclé (`picked`) et on poursuit le CORPS. Distinct de `cost` (recyclage
+     * imposé : passer = abandon). `picked` compte les cartes recyclées jusqu'ici.
+     */
+    upTo?: boolean;
+    picked?: number;
     remaining: number;
     sourceId?: string;
   } | null>(null);
@@ -359,13 +381,31 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       );
     }
     const remaining = p.remaining - 1;
+    const picked = (p.picked ?? 0) + 1;
     const stillHas = effectPickIds.value.length > 0;
     if (remaining > 0 && stillHas) {
-      effectPicking.value = { ...p, remaining };
+      effectPicking.value = { ...p, remaining, picked };
       return;
     }
     effectPicking.value = null;
+    // COÛT « Recyclez jusqu'à N … » (upTo) terminé (max atteint / pile épuisée) :
+    // lie le nombre RÉELLEMENT recyclé à la frame retenue avant de reprendre le corps.
+    if (p.upTo) bindCountToHeldFrame(picked);
     pumpEffects();
+  }
+
+  /**
+   * Pose `boundCount` sur la frame en tête de file (le CORPS retenu via holdRest)
+   * — fin d'un recyclage « jusqu'à N » (costRecycle{max:true}). Les ops du corps
+   * `fromCount:true` lisent ce nombre comme magnitude.
+   */
+  function bindCountToHeldFrame(count: number): void {
+    const head = effectQueue.value[0];
+    if (!head) return;
+    effectQueue.value = [
+      { ...head, boundCount: count },
+      ...effectQueue.value.slice(1),
+    ];
   }
 
   /** Passe le choix en cours (pile vide / décision du joueur). */
@@ -380,6 +420,18 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       effectQueue.value = effectQueue.value.slice(1);
       deps.dispatch(
         say(p.seat, `${p.cardName} : coût non payé, pouvoir annulé.`),
+      );
+      pumpEffects();
+      return;
+    }
+    // COÛT « Recyclez JUSQU'À N … » (upTo) : passer ARRÊTE le recyclage sans
+    // annuler le pouvoir (« jusqu'à » admet d'en recycler moins, voire 0). On lie
+    // le nombre déjà recyclé (`picked`) à la frame retenue et on poursuit le CORPS.
+    if (p.upTo) {
+      const picked = p.picked ?? 0;
+      bindCountToHeldFrame(picked);
+      deps.dispatch(
+        say(p.seat, `${p.cardName} : ${picked} carte(s) recyclée(s).`),
       );
       pumpEffects();
       return;
@@ -400,6 +452,20 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   );
 
   /**
+   * Magnitude EFFECTIVE d'une op à valeur scalaire, en tenant compte de la
+   * liaison au COÛT « Recyclez jusqu'à N … » : si l'op porte `fromCount:true`, la
+   * magnitude est le nombre de cartes recyclées (frame.boundCount, défaut 0)
+   * multiplié par `perCount` (défaut 1, « N PV par carte recyclée »). Sinon `n`.
+   */
+  function opMagnitude(
+    op: { n?: number; fromCount?: boolean; perCount?: number },
+    frame: EffectFrame,
+  ): number {
+    if (op.fromCount) return (frame.boundCount ?? 0) * (op.perCount ?? 1);
+    return op.n ?? 0;
+  }
+
+  /**
    * Exécute les ops de la frame de tête ; retourne `true` si une op
    * interactive met la frame en pause (le reste attend via `holdRest`).
    */
@@ -407,8 +473,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     const { seat, cardName, sourceId } = frame;
     const ops = frame.ops;
     for (let i = 0; i < ops.length; i++) {
-      const op = ops[i];
+      let op = ops[i];
       if (isTargetingOp(op)) {
+        // VALEUR DYNAMIQUE liée au coût « Recyclez jusqu'à N … » : pour les ops à
+        // cible à magnitude (damageTarget/buffForceTarget/healHeroTarget) marquées
+        // `fromCount`, on FIGE `n` au nombre recyclé AVANT le ciblage (le clic du
+        // joueur lit `t.op.n`). Recyclé 0 → n 0 (Dommages/soin/bonus de 0, fidèle).
+        if ("fromCount" in op && op.fromCount) {
+          op = { ...op, n: opMagnitude(op, frame) };
+        }
         const eligible = effectTargetIds(deps.rulesCtx(), op, seat, sourceId);
         if (!eligible.length) {
           // COÛT payé sans cible éligible : le coût ne peut PAS être payé, donc
@@ -484,6 +557,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ...(op.sub ? { sub: op.sub } : {}),
           ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
           ...(op.exactLevel !== undefined ? { exactLevel: op.exactLevel } : {}),
+          ...(op.levelIn ? { levelIn: op.levelIn } : {}),
         };
         const hasMatch = deps
           .getState()
@@ -577,18 +651,56 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           );
           continue; // coût payé → le corps suit
         }
-        // from "defausse" / "main" : choix INTERACTIF dans la pile. Si rien n'est
-        // recyclable (pile vide / aucune carte de l'Élément), le coût ne peut pas
-        // être payé → on abandonne la frame (corps non exécuté).
+        // from "defausse" / "main" : choix INTERACTIF dans la pile.
         const zone = from === "main" ? "main" : "defausse";
-        const filter: PickFilter | undefined = op.element
-          ? { element: op.element }
-          : undefined;
+        // Filtre éventuel : Élément (« une carte [Feu] ») et/ou TYPE/Famille
+        // (« jusqu'à N Monstres / Alliés »). Absent = toute carte recyclable.
+        const filter: PickFilter | undefined =
+          op.element || op.what || op.sub
+            ? {
+                ...(op.element ? { element: op.element } : {}),
+                ...(op.what ? { mainType: op.what } : {}),
+                ...(op.sub ? { sub: op.sub } : {}),
+              }
+            : undefined;
         const hasMatch = deps
           .getState()
           .seats[
             seat
           ][zone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+        // « Recyclez JUSQU'À N … » (max) : recyclage OPTIONNEL 0..N. Le coût est
+        // TOUJOURS payé (« jusqu'à » admet 0) ; si rien n'est recyclable, on lie
+        // boundCount = 0 et le CORPS tourne (magnitude 0, no-op fidèle) — pas
+        // d'abandon. Sinon (W21) : recyclage IMPOSÉ de `n` cartes, abandon si rien.
+        if (op.max) {
+          if (!hasMatch) {
+            holdRest(frame, [...ops.slice(i + 1)]);
+            // boundCount = 0 sur la frame retenue, puis on poursuit.
+            effectQueue.value = [
+              { ...effectQueue.value[0], boundCount: 0 },
+              ...effectQueue.value.slice(1),
+            ];
+            deps.dispatch(
+              say(seat, `${cardName} : aucune carte à recycler (0 recyclée).`),
+            );
+            continue;
+          }
+          effectPicking.value = {
+            seat,
+            cardName,
+            zone,
+            action: "recycle",
+            ...(filter ? { filter } : {}),
+            upTo: true,
+            picked: 0,
+            remaining: op.n ?? 1,
+            sourceId,
+          };
+          holdRest(frame, ops.slice(i + 1));
+          return true;
+        }
+        // Si rien n'est recyclable (pile vide / aucune carte de l'Élément), le coût
+        // ne peut pas être payé → on abandonne la frame (corps non exécuté).
         if (!hasMatch) {
           deps.dispatch(
             say(
@@ -643,8 +755,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           deps.onMatchWon(seat);
         }
       } else if (op.op === "heroGainPv") {
+        // « Votre Héros regagne X PV » (X = nombre recyclé, costRecycle{max}) →
+        // magnitude dynamique via opMagnitude (recyclé 0 → +0 PV, no-op fidèle).
         const heroId = deps.getState().seats[seat].heroInstanceId;
-        if (heroId) deps.adjustCounter(heroId, "hp", op.n);
+        const amount = opMagnitude(op, frame);
+        if (heroId && amount) deps.adjustCounter(heroId, "hp", amount);
       } else if (op.op === "heroLosePv") {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) deps.adjustCounter(heroId, "hp", -op.n);

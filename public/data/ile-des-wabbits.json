@@ -1135,7 +1135,20 @@
         "description": "Mettez en jeu un Allié Wabbit de Niveau 1 ou 2 gratuitement de votre main dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "main",
+              "what": "Allié",
+              "sub": "wabbit",
+              "levelIn": [1, 2]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       }
     ],
     "keywords": [
@@ -1176,7 +1189,20 @@
           "description": "Mettez en jeu un Allié Wabbit de Niveau 1 ou 2 gratuitement de votre main dans le Monde.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "main",
+                "what": "Allié",
+                "sub": "wabbit",
+                "levelIn": [1, 2]
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         }
       ],
       "keywords": [],

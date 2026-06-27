@@ -15,7 +15,15 @@ const combatRoleSchema = z.enum(["attacking", "blocking", "inCombat"]);
 export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("gainXp"), n: z.number() }),
   z.object({ op: z.literal("draw"), n: z.number() }),
-  z.object({ op: z.literal("heroGainPv"), n: z.number() }),
+  z.object({
+    op: z.literal("heroGainPv"),
+    n: z.number(),
+    // « Votre Héros regagne X PV » / « … N PV par carte recyclée » : magnitude =
+    // nombre de cartes recyclées (frame.boundCount), × perCount éventuel. Voir
+    // damageTarget.fromCount.
+    fromCount: z.boolean().optional(),
+    perCount: z.number().optional(),
+  }),
   z.object({ op: z.literal("heroLosePv"), n: z.number() }),
   z.object({ op: z.literal("damageOppHero"), n: z.number() }),
   z.object({ op: z.literal("havreSacGainResistance"), n: z.number() }),
@@ -47,6 +55,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("damageTarget"),
     n: z.number(),
+    // « … le même nombre de Dommages … » (valeur dynamique liée au COÛT de
+    // recyclage « Recyclez jusqu'à N … : … ») : la magnitude est le NOMBRE de
+    // cartes effectivement recyclées (frame.boundCount), pas `n`. Quand présent,
+    // `n` sert de repli (0). Lié uniquement à un costRecycle{max:true} en amont.
+    fromCount: z.boolean().optional(),
+    // Multiplicateur par carte recyclée (« N Dommages par carte recyclée »).
+    perCount: z.number().optional(),
     element: z.string(),
     heroes: z.boolean(),
     // « … au Héros de votre choix » : la cible est restreinte aux HÉROS (pas
@@ -75,10 +90,21 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     zones: zonesSchema,
   }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
-  z.object({ op: z.literal("healHeroTarget"), n: z.number() }),
+  z.object({
+    op: z.literal("healHeroTarget"),
+    n: z.number(),
+    // « Le Héros de votre choix regagne N PV par carte recyclée » — magnitude =
+    // boundCount × perCount. Voir damageTarget.fromCount.
+    fromCount: z.boolean().optional(),
+    perCount: z.number().optional(),
+  }),
   z.object({
     op: z.literal("buffForceTarget"),
     n: z.number(),
+    // « La Force de l'Allié ou Héros de votre choix est augmentée du même nombre »
+    // — magnitude = boundCount (× perCount). Voir damageTarget.fromCount.
+    fromCount: z.boolean().optional(),
+    perCount: z.number().optional(),
     heroes: z.boolean(),
     sub: z.string().optional(),
     // Orientation imprimée (« l'Allié incliné / dressé de votre choix »).
@@ -125,6 +151,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // Niveau EXACT (« Mettez en jeu un Monstre de Niveau N … ») — distinct de
     // maxLevel (≤). Une carte sans Niveau est inéligible (manquant ≠ N).
     exactLevel: z.number().optional(),
+    // Niveau dans un ENSEMBLE (« … de Niveau 1 ou 2 … ») — carte sans Niveau
+    // inéligible. Distinct de maxLevel/exactLevel (énumération exacte).
+    levelIn: z.array(z.number()).optional(),
     tapped: z.boolean().optional(),
   }),
   z.object({ op: z.literal("shuffleDeck") }),
@@ -232,7 +261,19 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("costRecycle"),
     n: z.number().optional(),
+    // « Recyclez JUSQU'À N … » : `n` est le MAXIMUM (recyclage de 0..N), pas une
+    // quantité imposée. Le coût est TOUJOURS payé (recycler 0 est licite : « jusqu'à »)
+    // — le moteur enregistre le nombre RÉELLEMENT recyclé sur frame.boundCount,
+    // que les ops du corps `fromCount:true` lisent. Sans `max`, le coût impose le
+    // recyclage de `n` cartes (sinon abandon), comportement W21 inchangé.
+    max: z.boolean().optional(),
     element: z.string().optional(),
+    // Filtre de TYPE sur les cartes recyclables (« Recyclez jusqu'à N MONSTRES /
+    // ALLIÉS de votre Défausse ») : `what` = mainType requis ; `sub` = Famille
+    // requise (lue sur subTypes). Absent (« … N cartes … ») = aucune restriction
+    // de type. Lu par matchesPickFilter (engine), comme searchDeck/destroyTarget.
+    what: z.enum(["Allié", "Zone", "Équipement", "Dofus", "Salle"]).optional(),
+    sub: z.string().optional(),
     from: z.enum(["defausse", "main", "self"]).optional(),
   }),
 ]);

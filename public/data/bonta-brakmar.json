@@ -11141,7 +11141,29 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse",
+              "n": 3,
+              "max": true,
+              "what": "Allié"
+            },
+            {
+              "op": "damageTarget",
+              "n": 0,
+              "fromCount": true,
+              "element": "Air",
+              "heroes": false,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "damage-target"]
       },
       {
         "description": "Chaque fois qu'un Allié est banni depuis le Monde, vous pouvez redressez Olaf Requiem.",
@@ -14199,7 +14221,19 @@
         "description": "Mettez en jeu un Équipement de Niveau 1 ou 2 gratuitement de votre main.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "main",
+              "what": "Équipement",
+              "levelIn": [1, 2]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       }
     ],
     "keywords": [],
@@ -14229,7 +14263,19 @@
           "description": "Mettez en jeu un Équipement de Niveau 1 ou 2 gratuitement de votre main.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "main",
+                "what": "Équipement",
+                "levelIn": [1, 2]
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         }
       ],
       "keywords": [],

@@ -9,7 +9,9 @@ import {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const CACHE_KEY = "wakfu-cards-cache-v19";
+// Doit suivre le CACHE_KEY de src/services/cardLoader.ts (bumpé à chaque
+// changement de forme/normalisation des données compilées).
+const CACHE_KEY = "wakfu-cards-cache-v21";
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24h - mirrors the source constant
 
 /**
