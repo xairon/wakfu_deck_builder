@@ -74,8 +74,21 @@ export function effectTargetIds(
           : card.mainType === "Allié" ||
             (op.heroes && card.mainType === "Héros");
     // famille requise (« le Monstre de votre choix »)
-    if (ok && op.op === "buffForceTarget" && op.sub) {
+    if (
+      ok &&
+      (op.op === "buffForceTarget" ||
+        op.op === "destroyTarget" ||
+        op.op === "damageTarget") &&
+      op.sub
+    ) {
       ok = (card.subTypes ?? []).some((s) => normWord(s) === op.sub);
+    }
+    // Niveau max (« … de Niveau inférieur ou égal à N ») : une cible sans
+    // valeur de Niveau est INÉLIGIBLE (manquant = +Infinity > N), comme
+    // matchesPickFilter pour searchDeck.
+    if (ok && op.op === "destroyTarget" && op.maxLevel !== undefined) {
+      ok =
+        (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) <= op.maxLevel;
     }
     // filtre de contrôleur (« un de vos … » / « … adverse »)
     if (ok && controller && actor !== undefined) {

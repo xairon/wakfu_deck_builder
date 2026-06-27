@@ -15,9 +15,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("destroyTarget"),
     // Cas mono-type historique (« Détruisez l'Allié de votre choix »).
-    what: z.enum(["Allié", "Zone", "Équipement"]).optional(),
+    what: z.enum(["Allié", "Zone", "Équipement", "Dofus"]).optional(),
     // Cas multi-type (« Détruisez l'Équipement ou la Zone de votre choix »).
-    whatAny: z.array(z.enum(["Allié", "Zone", "Équipement"])).optional(),
+    whatAny: z
+      .array(z.enum(["Allié", "Zone", "Équipement", "Dofus"]))
+      .optional(),
+    // Famille requise (« Détruisez l'Allié [Famille] de votre choix »).
+    sub: z.string().optional(),
+    // Niveau max (« … de Niveau inférieur ou égal à N »). Cible sans Niveau
+    // = inéligible (cf. matchesPickFilter, missing = +Infinity).
+    maxLevel: z.number().optional(),
     zones: zonesSchema,
   }),
   z.object({
@@ -25,6 +32,8 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     n: z.number(),
     element: z.string(),
     heroes: z.boolean(),
+    // Famille requise (« … à l'Allié [Famille] de votre choix »).
+    sub: z.string().optional(),
     zones: zonesSchema,
   }),
   // « [X] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix » :
@@ -81,6 +90,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // « Redressez votre Héros. » — SET_ORIENTATION upright sur VOTRE Héros.
   z.object({ op: z.literal("untapHeroSelf") }),
   z.object({ op: z.literal("tapSelf") }),
+  // « Redressez [cette carte]. » — SET_ORIENTATION upright sur la SOURCE
+  // (no-op si déjà dressée). Pendant de tapSelf.
+  z.object({ op: z.literal("untapSelf") }),
   z.object({
     op: z.literal("combatModSelf"),
     force: z.number().optional(),

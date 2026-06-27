@@ -13722,7 +13722,16 @@
         "description": "Redressez le Porteur du Tiwabbit.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "untapSelf"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["untap-self"]
       }
     ],
     "keywords": [],

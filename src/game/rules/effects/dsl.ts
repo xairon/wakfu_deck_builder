@@ -37,12 +37,13 @@ function toNumber(raw: string): number {
   return WORD_NUMBERS[raw] ?? Number.parseInt(raw, 10);
 }
 
-const TARGET_WHAT: Record<string, "Allié" | "Zone" | "Équipement"> = {
+const TARGET_WHAT: Record<string, "Allié" | "Zone" | "Équipement" | "Dofus"> = {
   "l allie": "Allié",
   "l'allie": "Allié",
   "la zone": "Zone",
   "l equipement": "Équipement",
   "l'equipement": "Équipement",
+  "le dofus": "Dofus",
 };
 
 /**
@@ -111,6 +112,14 @@ function parseSentence(
   // « Redressez votre Héros. » — redresse VOTRE Héros (pas de choix).
   m = sentence.match(/^redressez votre heros$/);
   if (m) return { op: "untapHeroSelf" };
+  // « Redressez [cette carte]. » — redresse la SOURCE (pendant de tapSelf).
+  //   Conservateur : on n'accepte QUE « redressez <ce X / nom de la carte> »
+  //   dont le sujet est sans ambiguïté la carte elle-même (subjectIsSelf).
+  //   Une cible générique (« redressez l'Allié de votre choix ») est traitée
+  //   plus bas par untapTarget ; « redressez-le/la » nu reste ambigu → manuel.
+  m = sentence.match(/^redressez (ce[t]?(?:te)? .{1,50}|.{1,50})$/);
+  if (m && subjectIsSelf(m[1].replace(/^cet?t?e? /, ""), cardName))
+    return { op: "untapSelf" };
   m = sentence.match(
     /^(?:inflige[zr] (\d+) dommages? au heros adverse|le heros adverse perd (\d+) (?:pv|points? de vie))$/,
   );
@@ -211,7 +220,7 @@ function parseSentence(
   //   l'un ou l'autre ordre) → destroyTarget multi-type. Placé AVANT la forme
   //   mono-type pour capter les deux compléments.
   m = sentence.match(
-    /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) ou (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+    /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) ou (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );
   if (m) {
     const first = TARGET_WHAT[m[1].replace(/['’]/g, "'").replace(/\s+/g, " ")];
@@ -222,8 +231,30 @@ function parseSentence(
       : ["monde"];
     return { op: "destroyTarget", whatAny: [first, second], zones };
   }
+  // « Détruisez l'Allié [Famille] de votre choix [de Niveau inférieur ou égal
+  //   à N] » → destroyTarget mono-type Allié + filtres `sub`/`maxLevel`. Placé
+  //   AVANT la forme mono-type nue (qui rejetterait la famille / le niveau via
+  //   son `$`). Seul l'Allié porte une Famille et un Niveau dans ce TCG.
   m = sentence.match(
-    /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+    /^detrui(?:sez|re) l['’ ]?\s?allie( [a-z-]+)? de votre choix( de niveau inferieur ou egal a (\d+))?( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m && (m[1] || m[3])) {
+    const sub = m[1]?.trim();
+    // mots de liaison captés par la classe famille → pas une vraie Famille
+    if (sub && ["ou", "non", "de", "et"].includes(sub)) return null;
+    const zones: ("monde" | "havreSac")[] = m[5]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return {
+      op: "destroyTarget",
+      what: "Allié",
+      ...(sub ? { sub } : {}),
+      ...(m[3] ? { maxLevel: toNumber(m[3]) } : {}),
+      zones,
+    };
+  }
+  m = sentence.match(
+    /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );
   if (m) {
     const what = TARGET_WHAT[m[1].replace(/['’]/g, "'").replace(/\s+/g, " ")];
@@ -277,19 +308,25 @@ function parseSentence(
       ...(m[2] ? { controller: "opponent" } : {}),
       zones: ["monde", "havreSac"],
     };
-  // « Infligez N Dommages à l'Allié de votre choix » (impératif) ou
-  // « [La carte] inflige N Dommages à l'Allié ou Héros de votre choix … »
+  // « Infligez N Dommages à l'Allié [Famille] de votre choix » (impératif) ou
+  // « [La carte] inflige N Dommages à l'Allié [ou Héros] de votre choix … »
+  // La Famille (« à l'Allié Bouftou ») et « ou Héros » sont mutuellement
+  // exclusifs ici (un Héros n'a pas de Famille) → groupes alternés.
   m = sentence.match(
-    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? a l['’ ]?\s?allie( ou heros)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? a l['’ ]?\s?allie(?:( ou heros)|( [a-z-]+))? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
   );
   if (m) {
     if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
+    const sub = m[4]?.trim();
+    // mots de liaison captés par la classe famille → pas une vraie Famille
+    if (sub && ["ou", "non", "de", "et", "dans"].includes(sub)) return null;
     return {
       op: "damageTarget",
       n: toNumber(m[2]),
       element: sourceElement,
       heroes: !!m[3],
-      zones: targetZones(m[4], m[5]),
+      ...(sub ? { sub } : {}),
+      zones: targetZones(m[5], m[6]),
     };
   }
   // « [self] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix

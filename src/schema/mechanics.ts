@@ -24,6 +24,7 @@ export const mechanicTagSchema = z.enum([
   "buff-force-hero-self",
   "untap-hero-self",
   "tap-self",
+  "untap-self",
   "combat-mod-self",
   "buff-force-allies-monde",
   "global-damage-shield",

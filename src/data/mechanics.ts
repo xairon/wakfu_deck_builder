@@ -157,6 +157,12 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Incline la carte source.",
   },
   {
+    id: "untap-self",
+    label: "Redressement (soi)",
+    category: "tempo",
+    glossary: "Redresse la carte source.",
+  },
+  {
     id: "combat-mod-self",
     label: "Modificateur de combat (soi)",
     category: "tempo",
@@ -220,6 +226,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   buffForceHeroSelf: "buff-force-hero-self",
   untapHeroSelf: "untap-hero-self",
   tapSelf: "tap-self",
+  untapSelf: "untap-self",
   combatModSelf: "combat-mod-self",
   buffForceAlliesMondeTurn: "buff-force-allies-monde",
   globalDamageShield: "global-damage-shield",

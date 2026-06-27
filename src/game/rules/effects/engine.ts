@@ -508,6 +508,20 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             payload: { instanceId: sourceId!, orientation: "tapped" },
           });
         }
+      } else if (op.op === "untapSelf") {
+        // « Redressez [cette carte] » — SET_ORIENTATION upright sur la source
+        // (no-op si déjà dressée). Pendant de tapSelf.
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay && src!.orientation === "tapped") {
+          deps.dispatch({
+            actor: seat,
+            type: "SET_ORIENTATION",
+            payload: { instanceId: sourceId!, orientation: "upright" },
+          });
+        }
       } else if (op.op === "loseStatTurn") {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) {

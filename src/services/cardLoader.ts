@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v18"; // v18 : champ coverage + mechanics dérivées par effet
+const CACHE_KEY = "wakfu-cards-cache-v19"; // v19 : op untapSelf + filtres destroyTarget/damageTarget (sub/maxLevel/Dofus)
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [
