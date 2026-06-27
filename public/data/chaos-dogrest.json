@@ -2067,7 +2067,20 @@
         "description": "Quand la Démone XX apparaît dans le Monde, inclinez tous les Alliés et Héros adverses de Force inférieure ou égale à 5.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "tapAll",
+              "controller": "opponent",
+              "heroes": true,
+              "maxForce": 5,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-all"]
       }
     ],
     "keywords": [
@@ -2817,7 +2830,19 @@
         "description": "Quand Grasmera apparaît dans le Monde, vous pouvez détruire l'Allié de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Allié",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       },
       {
         "description": "Tant que Grasmera est dans le monde, chaque fois qu'un autre de vos Alliés Uniques apparaît, vous pouvez détruire l'Allié de votre choix.",

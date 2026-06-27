@@ -37,6 +37,20 @@ function toNumber(raw: string): number {
   return WORD_NUMBERS[raw] ?? Number.parseInt(raw, 10);
 }
 
+/**
+ * Phrase de LIEU / PROVENANCE optionnelle insérée entre « apparaît » et la
+ * virgule du déclencheur d'apparition : « apparaît DANS LE MONDE, … »,
+ * « apparaît DEPUIS VOTRE PIOCHE, … », « apparaît EN RENFORT, … ». Purement
+ * locative : elle ne change PAS la sémantique (le déclencheur reste onArrive /
+ * onOtherAppears, le corps inchangé). CONSERVATEUR — allowlist de phrases de
+ * lieu connues (jamais du texte arbitraire, qui resterait une condition non
+ * comprise → manuel). Le ` ?` initial absorbe l'espace avant la clause ; le
+ * fragment entier est optionnel (`(?: … )?`). Sans groupe capturant (n'altère
+ * pas les indices de capture des regex hôtes).
+ */
+const APPEAR_LOC =
+  "(?: (?:dans le monde|dans (?:votre|son) havre[- ]?sac|en renfort|en defense|depuis (?:votre|sa) (?:main|defausse|pioche)))?";
+
 const TARGET_WHAT: Record<string, "Allié" | "Zone" | "Équipement" | "Dofus"> = {
   "l allie": "Allié",
   "l'allie": "Allié",
@@ -1019,8 +1033,13 @@ export function compileEffectText(
   cardName: string,
   sourceElement = "Neutre",
 ): CompiledEffect | null {
+  // Une phrase de LIEU optionnelle (« apparaît dans le Monde, … », « apparaît
+  // depuis votre Pioche, … ») peut s'intercaler avant la virgule sans changer
+  // le déclencheur (toujours onArrive) — cf. APPEAR_LOC (allowlist locative).
   const m = norm(text).match(
-    /^(?:quand|lorsque) (.{1,60}?) apparait\s*,\s*(.+)$/,
+    new RegExp(
+      "^(?:quand|lorsque) (.{1,60}?) apparait" + APPEAR_LOC + "\\s*,\\s*(.+)$",
+    ),
   );
   if (!m || !subjectIsSelf(m[1], cardName)) return null;
   let rest = m[2].replace(/\.$/, "").trim();
@@ -1716,8 +1735,19 @@ export function compileAppearanceTriggerText(
   //     Monde], CORPS.  La Famille et « adverse » sont mutuellement exclusifs
   //     ici (un Allié adverse n'a pas de Famille capturée). « sous votre
   //     contrôle » → contrôleur self.
+  // Même généralisation locative que compileEffectText (APPEAR_LOC) : une phrase
+  // de lieu / provenance optionnelle (« apparaît dans le Monde, … », « apparaît
+  // depuis votre Défausse, … ») peut s'intercaler avant la virgule sans changer
+  // le déclencheur. « sous votre contrôle » reste admis (il identifie le
+  // contrôleur self ; non modélisé en watch — les corps de ces cartes sont des
+  // choix-joueur hors champ, comportement inchangé).
   const m = n.match(
-    /^(?:quand |chaque fois qu['’]\s?)un allie(?:( adverse)|( [a-z-]+))? apparait(?: dans le monde| sous votre controle)?\s*,\s*(.+)$/,
+    new RegExp(
+      "^(?:quand |chaque fois qu['’]\\s?)un allie(?:( adverse)|( [a-z-]+))? apparait" +
+        "(?:" +
+        APPEAR_LOC +
+        "| sous votre controle)?\\s*,\\s*(.+)$",
+    ),
   );
   if (!m) return null;
   const sub = m[2]?.trim();
