@@ -5397,7 +5397,20 @@
         "description": "Le Champion de votre choix gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": false,
+              "sub": "champion",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],

@@ -410,7 +410,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [
@@ -5543,7 +5556,20 @@
         "description": "Le Bandit de votre choix gagne +3 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 3,
+              "heroes": false,
+              "sub": "bandit",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],
@@ -6617,7 +6643,20 @@
         "description": "L'Allié Gelée de votre choix gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": false,
+              "sub": "gelee",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],
@@ -8599,7 +8638,21 @@
         "description": "Cherchez une carte Équipement dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Équipement",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Ne jouez cette carte que lorsque vous venez de détruire un de vos Alliés.",
@@ -10215,7 +10268,20 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [
@@ -12212,7 +12278,18 @@
         "description": "L'Allié de votre choix retourne dans la main de son propriétaire.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "returnToHand",
+              "heroes": false,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["return-to-hand"]
       }
     ],
     "keywords": [],
@@ -14149,7 +14226,21 @@
         "description": "Cherchez une carte Zone dans votre Pioche et mettez-la en jeu, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Zone",
+              "dest": "monde"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Ne jouez cette carte que si votre Héros était le seul Héros dans le Monde au début de votre tour.",

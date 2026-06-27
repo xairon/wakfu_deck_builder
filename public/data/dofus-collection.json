@@ -2050,7 +2050,20 @@
         "description": "Le Monstre de votre choix gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": false,
+              "sub": "monstre",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],
@@ -2845,7 +2858,20 @@
         "description": "L'Allié Gelée de votre choix gagne +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": false,
+              "sub": "gelee",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],

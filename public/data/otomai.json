@@ -3241,7 +3241,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Feu",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       },
       {
         "description": "Quand un autre de vos Bworks apparaît dans le Monde, vous pouvez renvoyer Bworkasse le Dégoûtant dans la main de son propriétaire.",

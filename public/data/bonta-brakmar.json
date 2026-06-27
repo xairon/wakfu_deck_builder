@@ -3875,7 +3875,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Feu",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       },
       {
         "description": "Quand Clara Byne apparaît, détruisez l'Allié de votre choix de Niveau inférieur ou égal au nombre d'Alliés ou Héros Brâkmar que vous contrôlez.",

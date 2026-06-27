@@ -76,4 +76,192 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ops: [{ op: "recycleFromDiscard", n: 1, element: "Terre" }],
     },
   },
+
+  // ── Tranche W8 : moisson d'effets imprimés FIDÈLEMENT cartographiables ──
+
+  // « L'Allié de votre choix retourne dans la main de son propriétaire. »
+  // → Action (onPlay) ; renvoi en main du propriétaire (502/501.2).
+  "repulsion-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        { op: "returnToHand", heroes: false, zones: ["monde", "havreSac"] },
+      ],
+    },
+  },
+
+  // « [Inclinaison :] Le Nommon inflige 1 Dommage à l'Allié ou Héros de votre
+  //   choix. » — Arme Neutre, élément de la source = Neutre.
+  "nomoon-incarnam": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 1,
+          element: "Neutre",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « [Inclinaison :] Le Monstre de votre choix gagne +2 en Force jusqu'à la
+  //   fin du tour. » (jumeau de demi-finame-incarnam)
+  "demi-finame-dofus-collection": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 2,
+          heroes: false,
+          sub: "monstre",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « [Inclinaison :] Le Bandit de votre choix gagne +3 en Force jusqu'à la
+  //   fin du tour. »
+  "eratz-le-revendicateur-incarnam": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 3,
+          heroes: false,
+          sub: "bandit",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « [Inclinaison :] L'Allié Gelée de votre choix gagne +2 en Force jusqu'à la
+  //   fin du tour. »
+  "gelee-menthe-dofus-collection": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 2,
+          heroes: false,
+          sub: "gelee",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+  "gelee-menthe-incarnam": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 2,
+          heroes: false,
+          sub: "gelee",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « [Inclinaison :] Le Champion de votre choix gagne +2 en Force jusqu'à la
+  //   fin du tour. » (Familier — pouvoir d'inclinaison)
+  "mini-champion-chaos-dogrest": {
+    0: {
+      trigger: "onTap",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 2,
+          heroes: false,
+          sub: "champion",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « Quand Clara Byne apparaît, elle inflige 1 Dommage à l'Allié ou Héros de
+  //   votre choix. » — élément de la source = Feu.
+  "clara-byne-bonta-brakmar": {
+    0: {
+      trigger: "onArrive",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 1,
+          element: "Feu",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « Quand l'Aiguille gluante arrive en jeu, elle inflige 1 Dommage à l'Allié
+  //   ou Héros de votre choix. » — Arme Neutre.
+  "aiguille-gluante-incarnam": {
+    0: {
+      trigger: "onArrive",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 1,
+          element: "Neutre",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « Quand Bworkasse le Dégoûtant apparaît dans le Monde, il inflige 2
+  //   Dommages à l'Allié ou Héros de votre choix. » — élément source = Feu ;
+  //   « dans le Monde » qualifie son apparition, pas la zone de la cible.
+  "bworkasse-le-degoutant-otomai": {
+    0: {
+      trigger: "onArrive",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Feu",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « Cherchez une carte Équipement dans votre Pioche, révélez-la et prenez-la
+  //   en main, puis mélangez votre Pioche. » — Action.
+  "la-derniere-mode-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        { op: "searchDeck", what: "Équipement", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    },
+  },
+
+  // « Cherchez une carte Zone dans votre Pioche et mettez-la en jeu, puis
+  //   mélangez votre Pioche. » — Action.
+  "vacances-sur-l-ile-de-moon-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        { op: "searchDeck", what: "Zone", dest: "monde" },
+        { op: "shuffleDeck" },
+      ],
+    },
+  },
 };
