@@ -47,6 +47,85 @@ const TARGET_WHAT: Record<string, "Allié" | "Zone" | "Équipement" | "Dofus"> =
 };
 
 /**
+ * FAMILLES DE CRÉATURE = SOUS-TYPES D'ALLIÉ (et UNIQUEMENT d'Allié). Une carte
+ * désignée par sa seule Famille (« un Monstre », « une carte Tofu ») est donc
+ * un Allié de cette Famille → `{ what:"Allié", sub:<famille> }`. CONSERVATEUR
+ * (cf. tâche W18) : on n'admet QUE des Familles non ambiguës de créature.
+ * SONT EXCLUS volontairement (pourraient désigner un autre type que l'Allié) :
+ *  - les CLASSES de Héros (Iop, Crâ, Féca, Sacrieur, Ecaflip, Sram…) — « un Iop »
+ *    peut viser un Héros ;
+ *  - les ALIGNEMENTS / villes (Bonta, Brâkmar) ;
+ *  - les mots-clés / marqueurs (« Unique »), titres combinables (« Roi »,
+ *    « Princesse »).
+ * Tout mot hors de cet allowlist retombe en MANUEL (pas de devinette de type).
+ * Clé = forme normalisée (norm()).
+ */
+const ALLIED_FAMILIES = new Set([
+  "monstre",
+  "champignon",
+  "wabbit",
+  "bouftou",
+  "bandit",
+  "chevalier",
+  "tofu",
+  "piou",
+  "gelee",
+  "bwork",
+  "koalak",
+  "dragodinde",
+  "monture",
+  "vampyre",
+  "fantome",
+  "abraknyde",
+  "blop",
+  "chafer",
+  "corbac",
+  "larve",
+  "prespic",
+  "craqueleur",
+  "shushu",
+  "rat",
+  "arakne",
+  "crocodaille",
+  "kralamoure",
+  "scarafeuille",
+  "crustace",
+  "gobelin",
+  "dopeul",
+  "pirate",
+  "demon",
+  "flaqueux",
+  "grouilleux",
+  "kanniboul",
+  "minos",
+]);
+
+/**
+ * Mot-type d'une recherche / mise-en-jeu → `{ what, sub? }`, ou null si le mot
+ * n'est ni un type racine connu (Allié/Zone/Salle/Équipement/Dofus/Action) ni
+ * une Famille de créature non ambiguë (→ Allié + sub). `mot` est déjà normalisé.
+ */
+function pickType(word: string): {
+  what: "Allié" | "Zone" | "Salle" | "Équipement" | "Dofus" | "Action";
+  sub?: string;
+} | null {
+  const ROOT: Record<
+    string,
+    "Allié" | "Zone" | "Salle" | "Équipement" | "Dofus" | "Action"
+  > = {
+    allie: "Allié",
+    zone: "Zone",
+    salle: "Salle",
+    equipement: "Équipement",
+    dofus: "Dofus",
+    action: "Action",
+  };
+  if (ROOT[word]) return { what: ROOT[word] };
+  if (ALLIED_FAMILIES.has(word)) return { what: "Allié", sub: word };
+  return null;
+}
+
+/**
  * Une phrase → une op sûre, ou null (l'effet entier est alors abandonné).
  * Accepte l'impératif (« piochez ») et, après « vous pouvez », l'infinitif
  * (« piocher »). `sourceElement` = Élément de la carte source (410.1), figé
@@ -156,65 +235,92 @@ function parseSentence(
     /^defaussez[- ]vous de jusqu['’]a (une|deux|trois|\d+) cartes?(?: de votre main)?$/,
   );
   if (m) return { op: "discardFromHand", n: toNumber(m[1]) };
-  // « Cherchez un [type] [Famille] [de Niveau ≤ N] dans votre Pioche,
-  // révélez-le et prenez-le en main » ou « … et mettez-le en jeu »
-  // (le mélange arrive en op suivante).
+  // « Cherchez un(e) [carte] [type|Famille] [de Niveau ≤ N] dans votre
+  //   Pioche, révélez-le et prenez-le en main » ou « … et mettez-le en jeu
+  //   [incliné[e]] » (le mélange arrive en op suivante).
+  //   - Le mot-type peut être un type racine (Allié/Zone/Salle/Équipement/
+  //     Dofus/Action) OU une Famille de créature non ambiguë (« carte Tofu »,
+  //     « carte Bouftou ») → Allié + sub (cf. pickType / ALLIED_FAMILIES).
+  //   - « inclinée » en ligne après « en jeu » → tapped (jumeau de la phrase
+  //     de liaison « Il apparaît incliné. »), uniquement quand dest = monde.
   m = sentence.match(
-    /^cherchez (?:un|une) (dofus|action|equipement|zone|salle|allie)( [a-z]+)?( de niveau inferieur ou egal a (\d+))? dans votre pioche,? (?:revelez-l[ea] et prenez-l[ea] en main|et mettez-l[ea] en jeu)$/,
+    /^cherchez (?:un|une) (?:carte )?([a-z]+)( [a-z]+)?( de niveau inferieur ou egal a (\d+))? dans votre pioche,? (?:revelez-l[ea] et prenez-l[ea] en main|et mettez-l[ea] en jeu( inclinee?)?)$/,
   );
   if (m) {
-    const WHAT: Record<
-      string,
-      "Dofus" | "Action" | "Équipement" | "Zone" | "Salle" | "Allié"
-    > = {
-      dofus: "Dofus",
-      action: "Action",
-      equipement: "Équipement",
-      zone: "Zone",
-      salle: "Salle",
-      allie: "Allié",
-    };
-    const sub = m[2]?.trim();
+    const pt = pickType(m[1]);
+    if (!pt) return null;
+    const sub = pt.sub ?? m[2]?.trim();
     // mots de liaison = pas une famille (« ou non Unique », « portant… »)
     if (sub && ["ou", "non", "portant", "de", "et"].includes(sub)) return null;
+    const dest = sentence.includes("en jeu") ? "monde" : "main";
     return {
       op: "searchDeck",
-      what: WHAT[m[1]],
+      what: pt.what,
       ...(sub ? { sub } : {}),
       ...(m[4] ? { maxLevel: toNumber(m[4]) } : {}),
-      dest: sentence.includes("en jeu") ? "monde" : "main",
+      ...(m[5] && dest === "monde" ? { tapped: true } : {}),
+      dest,
     };
   }
-  // « Mettez en jeu [gratuitement] un(e) [Allié|Zone|Salle|Équipement]
-  //   [Famille]? [de votre choix]? [de Niveau ≤ N]? [gratuitement] de/depuis
-  //   votre (main|défausse) [dans le Monde]. » → putInPlay (pick d'une carte
-  //   existante de la main/Défausse, mise en Monde). « gratuitement » = sans
-  //   coût (la mise en jeu par effet est déjà gratuite — pas de clause
-  //   résiduelle). Le `$` final REJETTE toute condition/cible-porteur résiduelle
-  //   (« … sur l'Allié … », « … et placez-le … ») → ces formes restent
-  //   manuelles. La CRÉATION de jeton (« Mettez en jeu un jeton … », « Invoquez
-  //   … ») ne correspond pas (pas de mot-type Allié/Zone/Salle/Équipement nu).
+  // « Cherchez une carte [type|Famille] [de Niveau ≤ N] dans votre Défausse et
+  //   mettez-la en jeu [incliné[e]]. » → putInPlay(from:"defausse") : choisir
+  //   une carte de la DÉFAUSSE et la mettre en jeu (machinerie identique à
+  //   « Mettez en jeu un X de votre Défausse »). dest implicite = Monde ; pas de
+  //   mélange (la Défausse n'est pas mélangée). « prenez-la en main » depuis la
+  //   Défausse n'est PAS modélisé (aucune op de recherche-Défausse-vers-main) →
+  //   reste manuel.
   m = sentence.match(
-    /^mett(?:ez|re) en jeu (?:gratuitement )?(?:un |une |l['’ ]?\s?|le |la )(allie|zone|salle|equipement)( [a-z-]+)?( de votre choix)?( de niveau inferieur ou egal a (\d+))?(?: gratuitement)? (?:de|depuis) votre (main|defausse)( dans le monde)?$/,
+    /^cherchez (?:un|une) (?:carte )?([a-z]+)( [a-z]+)?( de niveau inferieur ou egal a (\d+))? dans votre defausse et mettez-l[ea] en jeu( inclinee?)?(?: dans le monde)?$/,
   );
   if (m) {
-    const PUT_WHAT: Record<string, "Allié" | "Zone" | "Salle" | "Équipement"> =
-      {
-        allie: "Allié",
-        zone: "Zone",
-        salle: "Salle",
-        equipement: "Équipement",
-      };
-    const sub = m[2]?.trim();
+    const pt = pickType(m[1]);
+    // putInPlay n'accepte pas Action/Dofus (schéma) ; on reste strict.
+    if (!pt || pt.what === "Action" || pt.what === "Dofus") return null;
+    const sub = pt.sub ?? m[2]?.trim();
+    if (sub && ["ou", "non", "portant", "de", "et"].includes(sub)) return null;
+    return {
+      op: "putInPlay",
+      from: "defausse",
+      what: pt.what,
+      ...(sub ? { sub } : {}),
+      ...(m[4] ? { maxLevel: toNumber(m[4]) } : {}),
+      ...(m[5] ? { tapped: true } : {}),
+    };
+  }
+  // « Mettez en jeu [gratuitement] un(e) [Allié|Zone|Salle|Équipement|Famille]
+  //   [Famille]? [de votre choix]? [de Niveau ≤ N | de Niveau N]? [gratuitement]
+  //   [incliné[e]]? de/depuis votre (main|défausse) [dans le Monde] [incliné[e]]?. »
+  //   → putInPlay (pick d'une carte existante de la main/Défausse, mise en Monde).
+  //   - Le mot-type peut être un type racine (Allié/Zone/Salle/Équipement) OU une
+  //     Famille de créature non ambiguë (« un Monstre », « un Champignon ») →
+  //     Allié + sub (cf. pickType / ALLIED_FAMILIES). Action/Dofus ne sont pas
+  //     des cibles putInPlay (schéma) → rejet.
+  //   - « de Niveau N » (exact) → exactLevel ; « de Niveau ≤ N » → maxLevel.
+  //   - « incliné[e] » (avant ou après la zone) → tapped.
+  //   « gratuitement » = sans coût (la mise en jeu par effet est déjà gratuite —
+  //   pas de clause résiduelle). Le `$` final REJETTE toute condition/cible-
+  //   porteur résiduelle (« … sur l'Allié … », « … et placez-le … ») → ces formes
+  //   restent manuelles. La CRÉATION de jeton (« Mettez en jeu un jeton … »,
+  //   « Invoquez … ») ne correspond pas (pas de mot-type connu nu).
+  m = sentence.match(
+    /^mett(?:ez|re) en jeu (?:gratuitement )?(?:un |une |l['’ ]?\s?|le |la )([a-z]+)( [a-z-]+)?( de votre choix)?(?: de niveau (?:inferieur ou egal a (\d+)|(\d+)))?(?: gratuitement)?( incline[es]?)? (?:de|depuis) votre (main|defausse)( dans le monde)?( incline[es]?)?$/,
+  );
+  if (m) {
+    const pt = pickType(m[1]);
+    if (!pt || pt.what === "Action" || pt.what === "Dofus") return null;
+    const sub = pt.sub ?? m[2]?.trim();
     // mots de liaison captés par la classe famille → pas une vraie Famille
     if (sub && ["ou", "non", "de", "et", "gratuitement"].includes(sub))
       return null;
+    const tapped = !!(m[6] || m[9]);
     return {
       op: "putInPlay",
-      from: m[6] === "main" ? "main" : "defausse",
-      what: PUT_WHAT[m[1]],
+      from: m[7] === "main" ? "main" : "defausse",
+      what: pt.what,
       ...(sub ? { sub } : {}),
-      ...(m[5] ? { maxLevel: toNumber(m[5]) } : {}),
+      ...(m[4] ? { maxLevel: toNumber(m[4]) } : {}),
+      ...(m[5] ? { exactLevel: toNumber(m[5]) } : {}),
+      ...(tapped ? { tapped: true } : {}),
     };
   }
   m = sentence.match(/^melangez(?:[- ]la)? votre pioche$/);
@@ -881,26 +987,37 @@ export function compileStaticEffectText(
       ops: [],
     };
   // « Tant que [self] est dans le Monde, vos autres Alliés [Famille] [et/ou
-  //   Héros] [dans le Monde] gagnent +N en Force. » (805.2). Le `$` impose que
-  //   la TOTALITÉ du texte corresponde : une variante avec clause résiduelle
+  //   Héros] [dans le Monde] gagnent/ont +N en Force. » (805.2). Le `$` impose
+  //   que la TOTALITÉ du texte corresponde : une variante avec clause résiduelle
   //   (débuff adverse, condition « tant qu'il bloque », « jusqu'à la fin du
   //   tour »…) ne compile PAS — elle resterait une approximation infidèle.
-  //   Sous-groupes : (2) « tous » optionnel ; (3) famille (absente = toutes) ;
-  //   (4) « et/ou Héros » ; (N) la valeur.
+  //   Sous-groupes : (2) « tous » optionnel ; (3) famille après « Alliés »
+  //   (absente = toutes) ; (4) « et/ou Héros » ; (5) variante « vos autres
+  //   <Famille> » (la Famille remplace « Alliés ») ; (6) « gagnent » / « ont »
+  //   (synonymes) ; (7) la valeur. « ont +N en Force » = « gagnent +N en Force »
+  //   (même bonus continu).
   m = body.match(
-    /^tant que (.{1,60}?) est dans le monde\s*,\s*(tous )?vos autres allies( [a-z-]+)?( (?:et|ou) heros)?(?: dans le monde)? gagnent \+(\d+) en force$/,
+    /^tant que (.{1,60}?) est dans le monde\s*,\s*(tous )?vos autres (?:allies( [a-z-]+)?( (?:et|ou) heros)?|([a-z-]+))(?: dans le monde)? (?:gagnent|ont) \+(\d+) en force$/,
   );
   if (m && subjectIsSelf(m[1], cardName)) {
-    const fam = m[3]?.trim();
-    // mot de liaison capté par la classe famille → pas une Famille réelle :
-    // sans « et/ou Héros » explicite, « et »/« ou » seul ne doit pas matcher.
-    if (fam && ["et", "ou", "dans"].includes(fam)) return null;
+    // Famille soit après « Alliés » (m[3]), soit en remplacement (m[5]).
+    const famRaw = (m[3] ?? m[5])?.trim();
+    // mot de liaison / type capté → pas une Famille de créature non ambiguë.
+    if (
+      famRaw &&
+      !ALLIED_FAMILIES.has(famRaw.replace(/s$/, "")) &&
+      // « vos autres Alliés » nu (m[5] absent, m[3] absent) reste licite.
+      m[5] !== undefined
+    )
+      return null;
+    if (famRaw && ["et", "ou", "dans"].includes(famRaw)) return null;
+    const fam = famRaw ? famRaw.replace(/s$/, "") : undefined;
     return {
       trigger: "static",
       static: {
         kind: "forceAura",
-        n: toNumber(m[5]),
-        ...(fam ? { sub: fam.replace(/s$/, "") } : {}), // famille au singulier
+        n: toNumber(m[6]),
+        ...(fam ? { sub: fam } : {}),
         ...(m[4] ? { heroes: true } : {}),
       },
       ops: [],

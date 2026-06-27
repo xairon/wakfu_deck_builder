@@ -2099,7 +2099,22 @@
         "description": "Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "sub": "bouftou",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Le pouvoir du Bouftou Royal demande de chercher une carte \"Bouftou\" sans préciser son type. Ce pouvoir s'applique à tous les types de carte de la Famille Bouftou, c'est-à-dire contenant \"Bouftou\" dans la ligne de trait.",
@@ -2896,7 +2911,19 @@
         "description": "Cherchez une carte Monstre dans votre Défausse et mettez-la en jeu.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "defausse",
+              "what": "Allié",
+              "sub": "monstre"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       },
       {
         "description": "Vous pouvez jouer cette Action même si vous n'avez pas de Monstre dans votre Défausse. S'il y a au moins une carte Monstre dans votre Défausse, vous ne pouvez pas choisir d'échouer dans la recherche car la Défausse est une zone publique.",
@@ -3374,7 +3401,16 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceAura",
+            "n": 1,
+            "sub": "monstre"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Choisissez jusqu'à deux Alliés ou Héros attaquants ou bloqueurs. Le Chêne Mou leur inflige 2 Dommages .",
@@ -14190,7 +14226,20 @@
           "description": "Mettez en jeu un Monstre de NIveau inférieur ou égal à 3 gratuitement de votre main.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "main",
+                "what": "Allié",
+                "sub": "monstre",
+                "maxLevel": 3
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         }
       ],
       "keywords": [],

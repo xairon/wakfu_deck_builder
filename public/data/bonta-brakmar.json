@@ -11347,7 +11347,20 @@
         "description": "Au début de votre tour, vous pouvez mettre en jeu un Champignon gratuitement de votre main.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTurnStart",
+          "optional": true,
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "main",
+              "what": "Allié",
+              "sub": "champignon"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       }
     ],
     "keywords": [

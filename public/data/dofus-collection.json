@@ -734,7 +734,22 @@
         "description": "Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "sub": "bouftou",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Le pouvoir du Bouftou Royal demande de chercher une carte \"Bouftou\" sans préciser son type. Ce pouvoir s'applique à tous les types de carte de la Famille Bouftou, c'est-à-dire contenant \"Bouftou\" dans la ligne de trait.",
@@ -1367,7 +1382,16 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceAura",
+            "n": 1,
+            "sub": "monstre"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Choisissez jusqu'à deux Alliés ou Héros attaquants ou bloqueurs. Le Chêne Mou leur inflige 2 Dommages .",
@@ -4545,13 +4569,39 @@
         "description": "Tant que le Tofu Royal est dans le Monde, tous vos autres Alliés Tofu dans le Monde ont +1 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceAura",
+            "n": 1,
+            "sub": "tofu"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Cherchez une carte Tofu de Niveau inférieur ou égal à 2 dans votre Pioche et mettez-la en jeu inclinée, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "sub": "tofu",
+              "maxLevel": 2,
+              "tapped": true,
+              "dest": "monde"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Le bonus de Force du Tofu Royal ne dure pas jusqu'à la fin du tour, mais tant qu'il est en jeu dans le Monde. Si un Tofu (un Allié de Force 1) dans le Monde en même temps que le Tofu Royal subit 1 Dommage, puis que le Tofu Royal quitte le jeu, le Tofu est détruit.",

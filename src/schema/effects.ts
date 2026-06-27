@@ -110,6 +110,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     what: z.enum(["Allié", "Zone", "Salle", "Équipement"]),
     sub: z.string().optional(),
     maxLevel: z.number().optional(),
+    // Niveau EXACT (« Mettez en jeu un Monstre de Niveau N … ») — distinct de
+    // maxLevel (≤). Une carte sans Niveau est inéligible (manquant ≠ N).
+    exactLevel: z.number().optional(),
     tapped: z.boolean().optional(),
   }),
   z.object({ op: z.literal("shuffleDeck") }),

@@ -68,6 +68,8 @@ export interface PickFilter {
   mainType?: string;
   sub?: string;
   maxLevel?: number;
+  /** Niveau EXACT (« … de Niveau N ») : carte sans Niveau = inéligible. */
+  exactLevel?: number;
   /** « une carte [Feu] » : seules les cartes de cet Élément. */
   element?: string;
 }
@@ -90,6 +92,8 @@ export function matchesPickFilter(card: Card | null, f?: PickFilter): boolean {
     f.maxLevel !== undefined &&
     (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) > f.maxLevel
   )
+    return false;
+  if (f.exactLevel !== undefined && card.stats?.niveau?.value !== f.exactLevel)
     return false;
   return true;
 }
@@ -456,6 +460,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           mainType: op.what,
           ...(op.sub ? { sub: op.sub } : {}),
           ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
+          ...(op.exactLevel !== undefined ? { exactLevel: op.exactLevel } : {}),
         };
         const hasMatch = deps
           .getState()

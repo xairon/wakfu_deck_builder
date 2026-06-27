@@ -3,12 +3,15 @@ import {
   arrivalEffects,
   compileActionEffectText,
   compileStaticEffectText,
+  compileTapEffectText,
+  compileTurnStartEffectText,
   playEffects,
   printedEffects,
   tapPowers,
   turnStartEffects,
 } from "@/game/rules";
 import { CARD_SCRIPTS } from "@/game/rules/effects/cardScripts";
+import { compiledEffectSchema } from "@/schema/effects";
 import { createMockAllyCard } from "tests/factories/card";
 
 function cardWith(name: string, ...descriptions: string[]) {
@@ -805,5 +808,200 @@ describe("rules/effects — DSL putInPlay (« Mettez en jeu … de votre main / 
       { mainType: "Action" },
     );
     expect(playEffects(combatPlace)).toEqual([]);
+  });
+});
+
+// ── Tranche W18 : famille-seule (putInPlay/searchDeck), Niveau exact, aura « ont » ──
+
+describe("rules/effects — W18 : putInPlay famille / Niveau exact", () => {
+  it("« Mettez en jeu un Monstre de Niveau N de votre main » → Allié + sub + exactLevel", () => {
+    // Gwenolaz Barnumuze (pouvoir à inclinaison).
+    expect(
+      compileTapEffectText(
+        "Mettez en jeu un Monstre de Niveau 1 de votre main.",
+        "Gwenolaz Barnumuze",
+      ),
+    ).toEqual({
+      trigger: "onTap",
+      ops: [
+        {
+          op: "putInPlay",
+          from: "main",
+          what: "Allié",
+          sub: "monstre",
+          exactLevel: 1,
+        },
+      ],
+    });
+  });
+
+  it("« Mettez en jeu un Monstre de Niveau ≤ N … » → maxLevel (Trantmy Londami verso)", () => {
+    expect(
+      compileTapEffectText(
+        "Mettez en jeu un Monstre de Niveau inférieur ou égal à 3 gratuitement de votre main.",
+        "Trantmy Londami",
+      ),
+    ).toEqual({
+      trigger: "onTap",
+      ops: [
+        {
+          op: "putInPlay",
+          from: "main",
+          what: "Allié",
+          sub: "monstre",
+          maxLevel: 3,
+        },
+      ],
+    });
+  });
+
+  it("« … vous pouvez mettre en jeu un Champignon … » au début du tour → onTurnStart optionnel", () => {
+    // Ougah : famille-seule (Champignon) + déclencheur début de tour optionnel.
+    expect(
+      compileTurnStartEffectText(
+        "Au début de votre tour, vous pouvez mettre en jeu un Champignon gratuitement de votre main.",
+        "Ougah",
+      ),
+    ).toEqual({
+      trigger: "onTurnStart",
+      optional: true,
+      ops: [
+        { op: "putInPlay", from: "main", what: "Allié", sub: "champignon" },
+      ],
+    });
+  });
+
+  it("NÉGATIF : une CLASSE de Héros (Iop) n'est PAS une famille d'Allié → pas de putInPlay", () => {
+    // « un Iop » pourrait viser un Héros → on n'invente pas le type (manuel).
+    expect(
+      compileTapEffectText("Mettez en jeu un Iop de votre main.", "Carte"),
+    ).toBeNull();
+  });
+});
+
+describe("rules/effects — W18 : searchDeck famille-seule / mise-en-jeu inclinée / Défausse", () => {
+  it("« Cherchez une carte Bouftou dans votre Pioche … prenez-la en main » → searchDeck Allié+sub", () => {
+    expect(
+      compileTapEffectText(
+        "Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
+        "Bouftou Royal",
+      ),
+    ).toEqual({
+      trigger: "onTap",
+      ops: [
+        { op: "searchDeck", what: "Allié", sub: "bouftou", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    });
+  });
+
+  it("« … mettez-la en jeu inclinée » (en ligne) → dest monde + tapped (Tofu Royal)", () => {
+    expect(
+      compileTapEffectText(
+        "Cherchez une carte Tofu de Niveau inférieur ou égal à 2 dans votre Pioche et mettez-la en jeu inclinée, puis mélangez votre Pioche.",
+        "Tofu Royal",
+      ),
+    ).toEqual({
+      trigger: "onTap",
+      ops: [
+        {
+          op: "searchDeck",
+          what: "Allié",
+          sub: "tofu",
+          maxLevel: 2,
+          tapped: true,
+          dest: "monde",
+        },
+        { op: "shuffleDeck" },
+      ],
+    });
+  });
+
+  it("« Cherchez une carte Monstre dans votre Défausse et mettez-la en jeu » → putInPlay(defausse)", () => {
+    // Capture d'Âmes (Action) : recherche-Défausse-vers-Monde = putInPlay.
+    const action = Object.assign(cardWith("Capture d'Âmes", "x"), {
+      mainType: "Action",
+    });
+    action.effects = [
+      {
+        description:
+          "Cherchez une carte Monstre dans votre Défausse et mettez-la en jeu.",
+      },
+    ];
+    expect(playEffects(action)[0]?.ops).toEqual([
+      { op: "putInPlay", from: "defausse", what: "Allié", sub: "monstre" },
+    ]);
+  });
+
+  it("NÉGATIF : recherche-Défausse-vers-MAIN n'est PAS modélisée (« prenez-la en main »)", () => {
+    const action = Object.assign(cardWith("Reviens", "x"), {
+      mainType: "Action",
+    });
+    action.effects = [
+      {
+        description:
+          "Cherchez une carte Monstre dans votre Défausse et prenez-la en main.",
+      },
+    ];
+    expect(playEffects(action)).toEqual([]);
+  });
+});
+
+describe("rules/effects — W18 : forceAura « ont +N en Force » (synonyme) + famille nue", () => {
+  it("« vos autres Alliés Tofu … ont +1 en Force » → forceAura { n, sub } (Tofu Royal)", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que le Tofu Royal est dans le Monde, tous vos autres Alliés Tofu dans le Monde ont +1 en Force.",
+        "Tofu Royal",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 1, sub: "tofu" },
+      ops: [],
+    });
+  });
+
+  it("« vos autres Monstres ont +1 en Force » (famille remplace « Alliés ») → forceAura (Chêne Mou)", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que le Chêne Mou est dans le Monde, vos autres Monstres ont +1 en Force.",
+        "Chêne Mou",
+      ),
+    ).toEqual({
+      trigger: "static",
+      static: { kind: "forceAura", n: 1, sub: "monstre" },
+      ops: [],
+    });
+  });
+
+  it("NÉGATIF : « vos autres Iops ont … » (classe, pas famille) → pas forceAura", () => {
+    expect(
+      compileStaticEffectText(
+        "Tant que la Carte est dans le Monde, vos autres Iops ont +1 en Force.",
+        "Carte",
+      ),
+    ).toBeNull();
+  });
+});
+
+describe("rules/effects — CARD_SCRIPTS : intégrité du registre", () => {
+  it("chaque entrée est un index valide et une forme compilée conforme au schéma", () => {
+    for (const [cardId, byIdx] of Object.entries(CARD_SCRIPTS)) {
+      for (const [idx, entry] of Object.entries(byIdx)) {
+        expect(
+          Number.isInteger(Number(idx)),
+          `${cardId}: index « ${idx} » non entier`,
+        ).toBe(true);
+        expect(Number(idx) >= 0, `${cardId}#${idx} index négatif`).toBe(true);
+        if ("ops" in entry) {
+          // forme compilée → doit valider contre le schéma source de vérité.
+          const res = compiledEffectSchema.safeParse(entry);
+          expect(res.success, `${cardId}#${idx} invalide`).toBe(true);
+        } else {
+          // entrée de classement ruling/errata.
+          expect(["ruling", "errata"]).toContain(entry.kind);
+        }
+      }
+    }
   });
 });

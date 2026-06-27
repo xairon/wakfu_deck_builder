@@ -3370,7 +3370,20 @@
         "description": "Mettez en jeu un Monstre de Niveau 1 de votre main.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "main",
+              "what": "Allié",
+              "sub": "monstre",
+              "exactLevel": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       }
     ],
     "keywords": [],
@@ -6808,13 +6821,39 @@
         "description": "Tant que le Tofu Royal est dans le Monde, tous vos autres Alliés Tofu dans le Monde ont +1 en Force.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "forceAura",
+            "n": 1,
+            "sub": "tofu"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Cherchez une carte Tofu de Niveau inférieur ou égal à 2 dans votre Pioche et mettez-la en jeu inclinée, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "sub": "tofu",
+              "maxLevel": 2,
+              "tapped": true,
+              "dest": "monde"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Le bonus de Force du Tofu Royal ne dure pas jusqu'à la fin du tour, mais tant qu'il est en jeu dans le Monde. Si un Tofu (un Allié de Force 1) dans le Monde en même temps que le Tofu Royal subit 1 Dommage, puis que le Tofu Royal quitte le jeu, le Tofu est détruit.",
