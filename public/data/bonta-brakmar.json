@@ -390,7 +390,7 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de l'Anneau du Rat Noir gagne jusqu'à la fin du tour.",
+        "description": "Le Porteur de l'Anneau du Rat Noir gagne Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -659,7 +659,7 @@
     },
     "effects": [
       {
-        "description": "L'Arc du Koalak inflige 1 Dommage à l'Allié de votre choix. Le Porteur de l'Arc du Koalak gagne jusqu'à la fin du tour.",
+        "description": "L'Arc du Koalak inflige 1 Dommage à l'Allié de votre choix. Le Porteur de l'Arc du Koalak gagne Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -8342,7 +8342,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Tant qu'elle porte au moins un Équipement, Hilary Goll gagne .",
+        "description": "Tant qu'elle porte au moins un Équipement, Hilary Goll gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -11852,7 +11852,7 @@
         "mechanics": ["draw"]
       },
       {
-        "description": "Détruisez le Petit Anneau d'Agilité : L'Allié ou héros de votre choix gagne jusqu'à la fin du tour.",
+        "description": "Détruisez le Petit Anneau d'Agilité : L'Allié ou héros de votre choix gagne Agilité jusqu'à la fin du tour.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -11914,7 +11914,7 @@
         "mechanics": ["draw"]
       },
       {
-        "description": "Détruisez le Petit Anneau d'Intelligence : L'Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
+        "description": "Détruisez le Petit Anneau d'Intelligence : L'Allié ou Héros de votre choix gagne Agressivité jusqu'à la fin du tour.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -11976,7 +11976,7 @@
         "mechanics": ["draw"]
       },
       {
-        "description": "Détruisez le Petit Anneau de Chance : L'Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
+        "description": "Détruisez le Petit Anneau de Chance : L'Allié ou Héros de votre choix gagne Tacle jusqu'à la fin du tour.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -12038,7 +12038,7 @@
         "mechanics": ["draw"]
       },
       {
-        "description": "Détruisez le Petit Anneau de Force : L'Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
+        "description": "Détruisez le Petit Anneau de Force : L'Allié ou Héros de votre choix gagne Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -12714,7 +12714,7 @@
     },
     "effects": [
       {
-        "description": "Le Rat bloqué de votre choix gagne jusqu'à la fin du tour.",
+        "description": "Le Rat bloqué de votre choix gagne Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -15043,7 +15043,7 @@
     },
     "effects": [
       {
-        "description": "Le Monstre de votre choix que vous contrôlez gagne jusqu'à la fin du tour. À la fin du tour, détruisez ce Monstre.",
+        "description": "Le Monstre de votre choix que vous contrôlez gagne Agressivité jusqu'à la fin du tour. À la fin du tour, détruisez ce Monstre.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"

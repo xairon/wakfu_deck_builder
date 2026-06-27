@@ -166,7 +166,7 @@
     },
     "effects": [
       {
-        "description": "Le Porteur de l'Anneau Rigami gagne jusqu'à la fin du tour.",
+        "description": "Le Porteur de l'Anneau Rigami gagne Résistance 1 (air)(terre)(feu)(eau) jusqu'à la fin du tour.",
         "elements": ["Air", "Terre", "Feu", "Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -737,7 +737,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "L'Allié Tofu de votre choix gagne jusqu'à la fin du tour.",
+        "description": "L'Allié Tofu de votre choix gagne Agilité jusqu'à la fin du tour.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -4381,7 +4381,7 @@
     },
     "effects": [
       {
-        "description": "Quand La-Haine apparaît, vous pouvez choisir un Monstre de Niveau inférieur ou égal à 3 dans votre Défausse et le mettre en jeu. Ce Monstre gagne .",
+        "description": "Quand La-Haine apparaît, vous pouvez choisir un Monstre de Niveau inférieur ou égal à 3 dans votre Défausse et le mettre en jeu. Ce Monstre gagne Agressivité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -5436,7 +5436,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Au début de votre tour, Pandhravan, Pandawushu Novice perd et gagne jusqu'à la fin du tour.",
+        "description": "Au début de votre tour, Pandhravan, Pandawushu Novice perd Agilité et gagne Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"

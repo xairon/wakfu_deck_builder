@@ -4146,7 +4146,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Quand Maskemane attaque, vous pouvez payer . Si vous le faites, inclinez l'Allié ou Héros de votre choix contrôlé par le joueur défenseur, puis Maskemane gagne jusqu'à la fin du tour.",
+        "description": "Quand Maskemane attaque, vous pouvez payer . Si vous le faites, inclinez l'Allié ou Héros de votre choix contrôlé par le joueur défenseur, puis Maskemane gagne Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5670,7 +5670,7 @@
     },
     "effects": [
       {
-        "description": "Le Béco du Tofu inflige 1 Dommage à l'Allié ou Héros de votre choix. Un autre Allié ou Héros de votre choix gagne jusqu'à la fin du tour.",
+        "description": "Le Béco du Tofu inflige 1 Dommage à l'Allié ou Héros de votre choix. Un autre Allié ou Héros de votre choix gagne Agilité jusqu'à la fin du tour.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -6070,7 +6070,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié de votre choix dans votre Défausse qui est du même Alignement que votre Héros gagne jusqu'à la fin du tour.",
+        "description": "L'Allié de votre choix dans votre Défausse qui est du même Alignement que votre Héros gagne Fantôme jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -6213,7 +6213,7 @@
     },
     "effects": [
       {
-        "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, le Porteur des Bottes de Poursuite gagne jusqu'à la fin du tour.",
+        "description": "Jouez à Chi-Fu-Mi. Si vous gagnez, le Porteur des Bottes de Poursuite gagne Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -6387,7 +6387,7 @@
     },
     "effects": [
       {
-        "description": "Quand le Porteur de la Ceinture des Vents attaque, un autre de vos Alliés ou Héros gagne jusqu'à la fin du tour.",
+        "description": "Quand le Porteur de la Ceinture des Vents attaque, un autre de vos Alliés ou Héros gagne Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"

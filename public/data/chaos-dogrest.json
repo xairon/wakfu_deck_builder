@@ -316,7 +316,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
+        "description": "L'Allié de votre choix gagne Agilité jusqu'à la fin du tour.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -1490,7 +1490,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié de votre choix de la Classe de votre Héros gagne jusqu'à la fin du tour.",
+        "description": "L'Allié de votre choix de la Classe de votre Héros gagne Agressivité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -2688,7 +2688,7 @@
     },
     "effects": [
       {
-        "description": "Quand Eve Rett apparaît, vous pouvez recycler jusqu'à trois cartes de votre Défausse. Pour chaque carte recyclée de cette façon, un de vos Alliés ou Héros gagne jusqu'à la fin du tour.",
+        "description": "Quand Eve Rett apparaît, vous pouvez recycler jusqu'à trois cartes de votre Défausse. Pour chaque carte recyclée de cette façon, un de vos Alliés ou Héros gagne Agilité jusqu'à la fin du tour.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5565,7 +5565,7 @@
     },
     "effects": [
       {
-        "description": "Quand Monsa Von apparaît, vous pouvez recyclez jusqu'à trois cartes de votre Défausse. Pour chaque carte recyclée de cette façon, un de vos Alliés ou Héros gagne jusqu'à la fin du tour.",
+        "description": "Quand Monsa Von apparaît, vous pouvez recyclez jusqu'à trois cartes de votre Défausse. Pour chaque carte recyclée de cette façon, un de vos Alliés ou Héros gagne Résistance 1 (air)(terre)(eau)(feu)(neutre) jusqu'à la fin du tour.",
         "elements": ["Feu", "Air", "Terre", "Eau", "Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5700,7 +5700,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
+        "description": "L'Allié de votre choix gagne Tacle jusqu'à la fin du tour.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -6037,7 +6037,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
+        "description": "L'Allié de votre choix gagne Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -6890,7 +6890,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié de votre choix gagne jusqu'à la fin du tour.",
+        "description": "L'Allié de votre choix gagne Agressivité jusqu'à la fin du tour.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,

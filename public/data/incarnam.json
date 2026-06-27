@@ -5041,7 +5041,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Votre Héros gagne .",
+        "description": "Votre Héros gagne Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -6789,7 +6789,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié Gelée de votre choix gagne jusqu'à la fin du tour.",
+        "description": "L'Allié Gelée de votre choix gagne Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -10869,7 +10869,7 @@
     },
     "effects": [
       {
-        "description": "La Ouassingue gagne jusqu'à la fin du tour.",
+        "description": "La Ouassingue gagne Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"

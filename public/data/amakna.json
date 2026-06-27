@@ -5269,7 +5269,7 @@
     },
     "effects": [
       {
-        "description": "Le Monstre de votre choix gagne jusqu'à la fin du tour.",
+        "description": "Le Monstre de votre choix gagne Agressivité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
