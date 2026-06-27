@@ -989,6 +989,42 @@ function parseOps(
 }
 
 /**
+ * « Choisissez jusqu'à N Alliés ou Héros [attaquants ou bloqueurs]?
+ * [différents]? » — 1re phrase d'un effet de Dommages MULTI-CIBLES BORNÉ.
+ * Retourne la borne (count), le drapeau « différents » et le filtre de rôle de
+ * combat, ou null si la phrase n'est pas EXACTEMENT cette forme (STRICT :
+ * « contrôlés par le même joueur », valeurs dynamiques, etc. → manuel).
+ */
+function matchChooseUpTo(sentence: string): {
+  count: number;
+  heroes: boolean;
+  distinct: boolean;
+  combatRole?: "inCombat";
+} | null {
+  const m = sentence.match(
+    /^choisissez jusqu['’]a (une|deux|trois|\d+) allies ou heros( attaquants ou bloqueurs)?( differents)?$/,
+  );
+  if (!m) return null;
+  return {
+    count: toNumber(m[1]),
+    heroes: true,
+    distinct: !!m[3],
+    ...(m[2] ? { combatRole: "inCombat" as const } : {}),
+  };
+}
+
+/**
+ * « [La source] leur inflige X Dommages » — 2e phrase d'un effet de Dommages
+ * multi-cibles. Le sujet doit être la carte elle-même (subjectIsSelf). Retourne
+ * X, ou null. STRICT : toute clause résiduelle (« … et perd … ») rejetée par `$`.
+ */
+function matchLeurInflige(sentence: string, cardName: string): number | null {
+  const m = sentence.match(/^(.{1,50}?) leur inflige (\d+) dommages?$/);
+  if (!m || !subjectIsSelf(m[1], cardName)) return null;
+  return toNumber(m[2]);
+}
+
+/**
  * Compile un corps d'effet (déjà normalisé, sans point final) en ops.
  * Gère la clause de liaison « Il apparaît incliné. » : elle marque la
  * recherche-mise-en-jeu précédente (`tapped`), sinon rejet.
@@ -1005,7 +1041,33 @@ function compileBody(
     .filter(Boolean);
   if (!sentences.length) return null;
   const ops: EffectOp[] = [];
-  for (const s of sentences) {
+  for (let si = 0; si < sentences.length; si++) {
+    const s = sentences[si];
+    // DOMMAGES MULTI-CIBLES BORNÉS, sur DEUX phrases (« Choisissez jusqu'à N
+    // Alliés ou Héros [attaquants ou bloqueurs]? [différents]?. [La source] leur
+    // inflige X Dommages. ») → un seul op `damageMultiTarget`. La 1re phrase porte
+    // la BORNE (count), les filtres (combatRole / différents) ; la 2e porte la
+    // valeur X. Reconnu ICI (pas dans parseSentence) car l'op naît de deux phrases.
+    const multi = matchChooseUpTo(s);
+    if (multi) {
+      const next = sentences[si + 1];
+      const dmg = next ? matchLeurInflige(next, cardName) : null;
+      if (dmg) {
+        ops.push({
+          op: "damageMultiTarget",
+          n: dmg,
+          element: sourceElement,
+          count: multi.count,
+          ...(multi.distinct ? { distinct: true } : {}),
+          ...(multi.heroes ? { heroes: true } : {}),
+          ...(multi.combatRole ? { combatRole: multi.combatRole } : {}),
+          zones: ["monde", "havreSac"],
+        });
+        si++; // consomme aussi la phrase « … leur inflige X Dommages »
+        continue;
+      }
+      return null; // « Choisissez … » sans phrase de Dommages comprise → manuel
+    }
     // CLAUSE RÉSIDUELLE « [cet Allié (ou Héros) / il / elle] ne peut pas se
     // redresser jusqu'au début de votre prochain tour » (les deux ordres) :
     // se rapporte à la cible inclinée par la phrase précédente (tapTarget) —

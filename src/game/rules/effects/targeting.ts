@@ -26,6 +26,7 @@ export type TargetingOp = Extract<
   CompiledEffectOp,
   | { op: "destroyTarget" }
   | { op: "damageTarget" }
+  | { op: "damageMultiTarget" }
   | { op: "damageTargetByForce" }
   | { op: "healHeroTarget" }
   | { op: "buffForceTarget" }
@@ -46,6 +47,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
   return (
     op.op === "destroyTarget" ||
     op.op === "damageTarget" ||
+    op.op === "damageMultiTarget" ||
     op.op === "damageTargetByForce" ||
     op.op === "healHeroTarget" ||
     op.op === "buffForceTarget" ||
@@ -91,6 +93,9 @@ export function effectTargetIds(
   op: TargetingOp,
   actor?: Seat,
   sourceId?: InstanceId,
+  // Cibles DÉJÀ choisies à exclure (« … N Alliés ou Héros DIFFÉRENTS » —
+  // damageMultiTarget distinct : on ne re-propose pas une cible déjà touchée).
+  excludeIds?: ReadonlySet<InstanceId>,
 ): InstanceId[] {
   // COÛTS payés (« Inclinez/Détruisez un de vos X : … ») : éligibilité dédiée —
   // VOS créatures (controller === acteur), dans op.zones, de mainType Allié (ou
@@ -241,6 +246,7 @@ export function effectTargetIds(
       ok &&
       (op.op === "destroyTarget" ||
         op.op === "damageTarget" ||
+        op.op === "damageMultiTarget" ||
         op.op === "buffForceTarget" ||
         op.op === "tapTarget" ||
         op.op === "untapTarget") &&
@@ -261,6 +267,8 @@ export function effectTargetIds(
       const want = controller === "self" ? actor : otherSeat(actor);
       ok = inst.controller === want;
     }
+    // cibles déjà choisies (« … différents ») — exclues de l'éligibilité.
+    if (ok && excludeIds?.has(inst.instanceId)) ok = false;
     if (ok) out.push(inst.instanceId);
   }
   return out;

@@ -308,7 +308,22 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageMultiTarget",
+              "n": 1,
+              "element": "Neutre",
+              "count": 3,
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-multi-target"]
       }
     ],
     "keywords": [],

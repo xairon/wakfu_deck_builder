@@ -169,6 +169,19 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     cardName: string;
     op: TargetingOp;
     sourceId?: string;
+    /**
+     * DOMMAGES MULTI-CIBLES BORNÉS (« Choisissez jusqu'à N … leur inflige X
+     * Dommages », op damageMultiTarget) : état d'un ciblage RÉPÉTÉ. `remaining`
+     * = nombre de choix encore possibles (décrémenté à chaque cible) ; `distinct`
+     * = « … différents » (les cibles déjà touchées, `chosen`, sont retirées de
+     * l'éligibilité). « Jusqu'à » : le joueur peut s'ARRÊTER avant (effectTargetSkip
+     * clôt la boucle sans abandonner l'effet). Absent = ciblage simple (1 cible).
+     */
+    multi?: {
+      remaining: number;
+      distinct: boolean;
+      chosen: string[];
+    };
   } | null>(null);
 
   /** Choix de carte(s) dans une pile (recycler / défausser / chercher). */
@@ -449,6 +462,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           effectTargeting.value.op,
           effectTargeting.value.seat,
           effectTargeting.value.sourceId,
+          // Ciblage multi-cibles « différents » : exclure les cibles déjà choisies.
+          effectTargeting.value.multi?.distinct
+            ? new Set(effectTargeting.value.multi.chosen)
+            : undefined,
         )
       : [],
   );
@@ -503,7 +520,24 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           );
           continue;
         }
-        effectTargeting.value = { seat, cardName, op, sourceId };
+        effectTargeting.value = {
+          seat,
+          cardName,
+          op,
+          sourceId,
+          // DOMMAGES MULTI-CIBLES BORNÉS : ouvre un ciblage RÉPÉTÉ (jusqu'à
+          // op.count cibles). effectTargetChoose ré-ouvre tant que `remaining > 0`
+          // et qu'il reste des cibles ; effectTargetSkip clôt (« jusqu'à »).
+          ...(op.op === "damageMultiTarget"
+            ? {
+                multi: {
+                  remaining: op.count,
+                  distinct: !!op.distinct,
+                  chosen: [],
+                },
+              }
+            : {}),
+        };
         holdRest(frame, ops.slice(i + 1));
         return true;
       }
@@ -1233,6 +1267,56 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   function effectTargetChoose(instanceId: string): void {
     const t = effectTargeting.value;
     if (!t || !effectTargetIdsList.value.includes(instanceId)) return;
+    // DOMMAGES MULTI-CIBLES BORNÉS (« Choisissez jusqu'à N … leur inflige X
+    // Dommages ») : chaque cible choisie subit X Dommages immédiatement, puis on
+    // RÉ-OUVRE le ciblage tant qu'il reste des choix (remaining) ET des cibles
+    // éligibles. Le joueur peut s'arrêter avant via effectTargetSkip (« jusqu'à »).
+    if (t.op.op === "damageMultiTarget" && t.multi) {
+      const op = t.op;
+      const res = resolveDamageTarget(
+        deps.rulesCtx(),
+        t.seat,
+        instanceId,
+        op.n,
+        liveSourceElement(t.sourceId) ?? op.element,
+        {
+          mods: activeGlobalMods(deps.rulesCtx()),
+          ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+        },
+      );
+      deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+      if (deps.isAssistEffects() && res.ruleEvents?.length)
+        enqueueTriggered(
+          collectTriggeredEffects(deps.rulesCtx(), res.ruleEvents),
+        );
+      const chosen = [...t.multi.chosen, instanceId];
+      const remaining = t.multi.remaining - 1;
+      // Re-calcule l'éligibilité APRÈS résolution (une cible détruite a quitté le
+      // jeu) en excluant les cibles déjà touchées si « différents ».
+      const stillEligible =
+        remaining > 0
+          ? effectTargetIds(
+              deps.rulesCtx(),
+              op,
+              t.seat,
+              t.sourceId,
+              op.distinct ? new Set(chosen) : undefined,
+            )
+          : [];
+      if (remaining > 0 && stillEligible.length) {
+        effectTargeting.value = {
+          ...t,
+          multi: { remaining, distinct: t.multi.distinct, chosen },
+        };
+        // la frame (corps restant) reste retenue via holdRest ; on attend le clic.
+        deps.checkVictory();
+        return;
+      }
+      effectTargeting.value = null;
+      deps.checkVictory();
+      pumpEffects();
+      return;
+    }
     effectTargeting.value = null;
     // OPS « LE JOUEUR DE VOTRE CHOIX … » : la cible choisie est un HÉROS ; l'effet
     // s'applique au CONTRÔLEUR de ce Héros (vous ou l'adversaire). Résolution via
@@ -1370,6 +1454,19 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       effectQueue.value = effectQueue.value.slice(1);
       deps.dispatch(
         say(t.seat, `${t.cardName} : coût non payé, pouvoir annulé.`),
+      );
+      pumpEffects();
+      return;
+    }
+    // DOMMAGES MULTI-CIBLES « jusqu'à N » : passer = s'ARRÊTER avant la borne
+    // (les cibles déjà touchées le restent) — l'effet n'est pas annulé, le corps
+    // restant (holdRest) reprend normalement.
+    if (t.op.op === "damageMultiTarget" && t.multi) {
+      deps.dispatch(
+        say(
+          t.seat,
+          `${t.cardName} : ${t.multi.chosen.length} cible(s) choisie(s).`,
+        ),
       );
       pumpEffects();
       return;

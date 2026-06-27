@@ -3499,7 +3499,22 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageMultiTarget",
+              "n": 2,
+              "element": "Terre",
+              "count": 2,
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-multi-target"]
       },
       {
         "description": "Le bonus de +1 en Force s'applique également aux Monstres que vous contrôlez dans votre Havre Sac car la capacité du Chêne Mou n'est pas affectée par les Règles de Choix.",
@@ -9789,7 +9804,23 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageMultiTarget",
+              "n": 1,
+              "element": "Neutre",
+              "count": 2,
+              "distinct": true,
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-multi-target"]
       }
     ],
     "keywords": [
@@ -10895,7 +10926,22 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageMultiTarget",
+              "n": 3,
+              "element": "Neutre",
+              "count": 2,
+              "distinct": true,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-multi-target"]
       },
       {
         "description": "Si l'un des Alliés ou Héros choisis quitte le jeu avant la résolution du Sort, celui-ci n'est pas annulé, les autres Alliés ou Héros choisis se voient tout de même infliger les Dommages.",
@@ -15193,7 +15239,23 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageMultiTarget",
+              "n": 2,
+              "element": "Eau",
+              "count": 2,
+              "distinct": true,
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-multi-target"]
       }
     ],
     "keywords": [

@@ -57,6 +57,13 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Inflige des Dommages à un Allié ou Héros ciblé.",
   },
   {
+    id: "damage-multi-target",
+    label: "Dégâts multi-cibles",
+    category: "dégâts",
+    glossary:
+      "Inflige des Dommages à plusieurs cibles choisies (jusqu'à un nombre fixé).",
+  },
+  {
     id: "damage-target-by-force",
     label: "Dégâts ciblés (Force)",
     category: "dégâts",
@@ -295,6 +302,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   havreSacGainResistance: "bag-gain-resistance",
   destroyTarget: "destroy-target",
   damageTarget: "damage-target",
+  damageMultiTarget: "damage-multi-target",
   damageTargetByForce: "damage-target-by-force",
   eachPlayerDraws: "each-player-draws",
   healHeroTarget: "heal-hero-target",

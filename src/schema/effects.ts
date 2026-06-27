@@ -92,6 +92,27 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     controller: controllerSchema.optional(),
     zones: zonesSchema,
   }),
+  // « Choisissez jusqu'à N Alliés ou Héros [attaquants ou bloqueurs]?
+  //   [différents]?. [La source] leur inflige X Dommages. » — DOMMAGES
+  //   MULTI-CIBLES BORNÉS : le joueur choisit JUSQU'À `count` cibles (0..count ;
+  //   « jusqu'à » → il peut s'arrêter avant), chacune subit X Dommages
+  //   (resolveDamageTarget : Résistance / létalité / XP). `distinct` (« …
+  //   différents ») : une même cible ne peut pas être choisie deux fois.
+  //   `combatRole`/`heroes`/`zones` : mêmes filtres d'éligibilité que damageTarget.
+  //   FIDÈLE : borne FIXE (pas « égal à … »), pas de clause résiduelle (PA, etc.).
+  z.object({
+    op: z.literal("damageMultiTarget"),
+    n: z.number(),
+    element: z.string(),
+    // Nombre MAXIMAL de cibles distinctes (« jusqu'à N ») — borne, pas un quota.
+    count: z.number(),
+    // « … différents » : interdit de re-choisir une cible déjà touchée.
+    distinct: z.boolean().optional(),
+    heroes: z.boolean().optional(),
+    // Rôle de combat (« … attaquants ou bloqueurs »). inCombat = l'un OU l'autre.
+    combatRole: combatRoleSchema.optional(),
+    zones: zonesSchema,
+  }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({
     op: z.literal("healHeroTarget"),
