@@ -354,6 +354,26 @@
     <!-- ════════ Bandeau de ciblage d'effet ════════ -->
     <Transition name="slidedown">
       <div
+        v-if="store.pendingBearer"
+        class="gcombat gcombat--effect"
+        role="toolbar"
+        aria-label="Ciblage de Porteur"
+      >
+        <span class="gcombat__step">
+          🛡️ choisis la créature qui portera cet équipement
+        </span>
+        <div class="gcombat__btns">
+          <button
+            class="gbtn gbtn--ghost"
+            @click="store.cancelBearerTargeting()"
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    </Transition>
+    <Transition name="slidedown">
+      <div
         v-if="store.effectTargeting"
         class="gcombat gcombat--effect"
         role="toolbar"
@@ -877,6 +897,7 @@ watch(
   () => store.perspective,
   () => {
     selectedId.value = null;
+    store.cancelBearerTargeting(); // un ciblage de Porteur ne survit pas à la passation
   },
 );
 const selectedInst = computed(() =>
@@ -888,6 +909,12 @@ const selectedName = computed(() => {
   return resolveCard(inst.cardId)?.name ?? "Carte face cachée";
 });
 function select(instanceId: string): void {
+  // ciblage de Porteur en cours (305.x) : le clic désigne la créature qui
+  // portera l'équipement / la Monture en attente de jeu.
+  if (store.pendingBearer) {
+    store.attachToBearer(instanceId);
+    return;
+  }
   // effet à cible en cours : le clic désigne la cible
   if (store.effectTargeting) {
     store.effectTargetChoose(instanceId);

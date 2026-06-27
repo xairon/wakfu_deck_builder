@@ -48,11 +48,13 @@ function attackerFrames(
 
 /**
  * damageDealt → effets `onDamageToBearer` (riposte Prespic, 804.3).
- * DORMANT jusqu'au lot F : sans modèle de Porteur (`bearerOf`,
- * `equipment.ts`), aucun Équipement n'est attaché à la cible — la collecte
- * retourne toujours []. La structure (filtrage source Allié/Héros, pas de
- * boucle Cape↔Cape car la riposte a un Équipement pour source) arrive avec
- * le lot F.
+ * DORMANT : le modèle de Porteur existe désormais (lot F : `attachments` +
+ * `bearerBonuses`), mais AUCUN équipement des données n'a de riposte fidèlement
+ * parseable « Quand le Porteur subit des Dommages, … » (les seuls déclenchés de
+ * Porteur observés portent sur l'ATTAQUE / la DESTRUCTION, pas sur les Dommages
+ * subis, et embarquent des clauses non modélisées). Activer ce bus sans donnée
+ * fidèle serait une approximation : on le laisse dormant tant qu'aucun
+ * `trigger:"onDamageToBearer"` compilé n'existe (cf. report bearer).
  */
 function bearerFrames(
   _ctx: RulesCtx,

@@ -15,7 +15,7 @@ import type { DraftEvent, InstanceId } from "../types/events";
 import type { Seat } from "../types/zones";
 import { otherSeat } from "../types/zones";
 import type { RulesCtx } from "./types";
-import { discard, move } from "../engine/verbs";
+import { detach, discard, move } from "../engine/verbs";
 import { xpValue } from "./cardAttrs";
 import type { ForceStance } from "./stats";
 import { effectiveForce } from "./stats";
@@ -61,6 +61,27 @@ export function stateBasedDestroyEvents(
         : `${card.name} est détruit (Dommages ${damage} ≥ Force ${force}, 3019).`,
     );
     xpBySeat[otherSeat(inst.controller)] += xpValue(card);
+    // 305.x — l'équipement / la Monture PORTÉ(E) quitte le jeu avec son Porteur :
+    // détaché (retiré des attachments) puis défaussé chez son propriétaire. Le
+    // DETACH précède pour que l'art soit nettoyé proprement ; un seul mouvement
+    // par carte portée. (Les Porteurs en jeu sont les seules cibles d'ATTACH.)
+    for (const equipId of inst.attachments ?? []) {
+      const equip = ctx.state.instances[equipId];
+      if (!equip) continue;
+      const ez = equip.location.zone;
+      if (ez !== "monde" && ez !== "havreSac") continue;
+      events.push(
+        detach(inst.controller, equipId, {
+          zone: "defausse",
+          owner: equip.owner,
+        }),
+      );
+      destroyed.push(equipId);
+      const ec = ctx.getCard(equip.cardId);
+      log.push(
+        `${ec?.name ?? "L'équipement"} est défaussé (son Porteur quitte le jeu, 305.x).`,
+      );
+    }
   }
   for (const seat of ["A", "B"] as const) {
     const grant = grantXpEvents(ctx, seat, xpBySeat[seat]);

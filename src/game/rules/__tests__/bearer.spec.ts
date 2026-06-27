@@ -13,9 +13,9 @@
 import { describe, expect, it } from "vitest";
 import { compileBearerBonusText } from "@/game/rules/effects/dsl";
 import { effectiveForce } from "@/game/rules/stats";
-import { effectiveKeywords } from "@/game/rules";
+import { effectiveKeywords, stateBasedDestroyEvents } from "@/game/rules";
 import { canBearEquipment } from "@/game/rules/bearer";
-import { attach, detach } from "@/game";
+import { attach, detach, incCounter } from "@/game";
 import type { AllyCard, Card } from "@/types/cards";
 import {
   createMockAllyCard,
@@ -189,5 +189,42 @@ describe("rules/bearer — application des bonus portés", () => {
     bringToMonde(f, "A", plainId);
     dispatch(f, attach("A", plainId, bearerId));
     expect(effectiveForce(ctxOf(f), bearerId)).toBe(2);
+  });
+});
+
+describe("rules/bearer — destruction du Porteur (305.x)", () => {
+  it("l'équipement porté est défaussé quand son Porteur est détruit", () => {
+    // Porteur de Force 2, Monture +2 portée → Force effective 4 ; on lui pose
+    // 4 Dommages → létal (3019). La destruction d'état doit défausser la Monture.
+    const bearer = makeAlly("bearer", { force: 2 });
+    const mount = createMockAllyCard({
+      id: "mount",
+      name: "Monture mount",
+      subTypes: ["Monstre", "Monture"],
+      // Pas de Force imprimée → la Monture elle-même n'est jamais détruite d'office
+      // (garde « Force inconnue »), on isole la destruction du Porteur.
+      stats: { niveau: { value: 1, element: "Feu" } },
+      effects: [
+        { description: "Le Porteur de Monture mount gagne +2 en Force." },
+      ],
+    });
+    const f = fixture([bearer, mount]);
+    const bearerId = instId("A", 0);
+    const mountId = instId("A", 1);
+    bringToMonde(f, "A", bearerId);
+    bringToMonde(f, "A", mountId);
+    dispatch(f, attach("A", mountId, bearerId));
+    expect(effectiveForce(ctxOf(f), bearerId)).toBe(4);
+    // 4 Dommages sur le Porteur (Force effective 4) → létal.
+    dispatch(f, incCounter("A", bearerId, "damage", 4));
+    const sbd = stateBasedDestroyEvents(ctxOf(f));
+    expect(sbd.destroyed).toContain(bearerId);
+    expect(sbd.destroyed).toContain(mountId);
+    dispatch(f, ...sbd.events);
+    const st = ctxOf(f).state;
+    expect(st.instances[bearerId].location.zone).toBe("defausse");
+    expect(st.instances[mountId].location.zone).toBe("defausse");
+    // Plus aucun attachment résiduel.
+    expect(st.instances[bearerId].attachments).not.toContain(mountId);
   });
 });

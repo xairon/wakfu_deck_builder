@@ -23,6 +23,7 @@ import type {
   ZoneRef,
 } from "@/game";
 import {
+  attach,
   createGame,
   deriveState,
   drawTop,
@@ -47,9 +48,11 @@ import {
   combatKeywords,
   effectiveForce,
   eligibleAttackers,
+  eligibleBearers,
   eligibleBlockers,
   eligibleTargets,
   equalityRescueEvents,
+  grantsBearerBonus,
   forceValue,
   havreSacHasRoom,
   planCost,
@@ -1139,15 +1142,50 @@ export const useGameStore = defineStore("game", () => {
   }
 
   /**
+   * 305.x — CIBLAGE DE PORTEUR en attente : on joue un Équipement / une Monture
+   * à bonus de Porteur et l'on attend que le joueur clique la créature qui le
+   * portera (`eligible` = sièges-cibles pré-calculés). `null` hors prompt. La
+   * mise en jeu réelle (avec attachement) part dans `attachToBearer`.
+   */
+  const pendingBearer = ref<{
+    equipmentId: string;
+    eligible: string[];
+  } | null>(null);
+
+  /** Annule le prompt de Porteur (clic ailleurs, passation). L'équipement reste en main. */
+  function cancelBearerTargeting(): void {
+    pendingBearer.value = null;
+  }
+
+  /**
+   * Résout le prompt de Porteur : joue l'équipement en attente ATTACHÉ à
+   * `bearerId`. Rejette (sans consommer le prompt) si la cible n'est pas
+   * éligible. À la réussite, le prompt est fermé.
+   */
+  function attachToBearer(bearerId: string): boolean {
+    const pend = pendingBearer.value;
+    if (!pend) return false;
+    if (!pend.eligible.includes(bearerId))
+      return rejectMove("Cible de Porteur invalide.");
+    const equipmentId = pend.equipmentId;
+    pendingBearer.value = null;
+    return playFromHand(equipmentId, bearerId);
+  }
+
+  /**
    * Jouer une carte de sa main (mode assisté) : légalité, inclinaison
    * automatique des producteurs de Ressources, arrivée dans la bonne zone.
+   * Un Équipement / une Monture à bonus de Porteur (305.x) ouvre un ciblage de
+   * Porteur (cf. pendingBearer / attachToBearer) plutôt que d'arriver standalone.
    * Retourne `false` (avec `ruleError`) si le coup est refusé.
    */
-  function playFromHand(instanceId: string): boolean {
+  function playFromHand(instanceId: string, bearerId?: string): boolean {
     const seat = perspective.value;
     // EN LIGNE (P2) : intention PLAY_CARD — le serveur valide tour/zone/coût et
     // choisit la destination (Salle → Havre-Sac), incline les producteurs, pose
     // le jeton d'arrivée. Un refus revient en français via ruleError.
+    // L'attachement de Porteur (lot F) n'est PAS encore autoritaire côté serveur
+    // → en ligne, l'équipement est joué en standalone (comportement actuel).
     if (tryIntent({ kind: "PLAY_CARD", instanceId })) return true;
     if (!assist.value) {
       moveTo(instanceId, { zone: "monde" });
@@ -1163,6 +1201,26 @@ export const useGameStore = defineStore("game", () => {
     if (!inst || !card) return rejectMove("Carte inconnue.");
     const plan = planCost(ctx, seat, card);
     if (!plan.ok) return rejectMove(plan.reason);
+
+    // 305.x — ÉQUIPEMENT / MONTURE à BONUS DE PORTEUR : il se joue ATTACHÉ à une
+    // créature contrôlée (Allié non-Monstre / Héros en jeu), pas en standalone.
+    // Le bonus n'est vivant qu'une fois porté. Si aucun bearerId n'est fourni, on
+    // ouvre un prompt de ciblage (clic du Porteur sur le plateau) ; sans cible
+    // éligible, le jeu est illégal (rien à équiper). Un équipement SANS bonus
+    // reconnu garde le comportement standalone (branche ignorée → additif).
+    if (grantsBearerBonus(card)) {
+      const eligible = eligibleBearers(ctx, seat, instanceId);
+      if (bearerId === undefined) {
+        if (!eligible.length)
+          return rejectMove(
+            `Aucune créature en jeu ne peut porter ${card.name}.`,
+          );
+        pendingBearer.value = { equipmentId: instanceId, eligible };
+        return true; // en attente du clic sur le Porteur (attachToBearer)
+      }
+      if (!eligible.includes(bearerId))
+        return rejectMove("Cible de Porteur invalide.");
+    }
 
     const drafts: DraftEvent[] = plan.producers.map((id) => ({
       actor: seat,
@@ -1225,6 +1283,16 @@ export const useGameStore = defineStore("game", () => {
       plan.producers.includes(sacId)
     ) {
       drafts.push(setCounterVerb(seat, sacId, "sacBonusUsed", 1, true));
+    }
+    // 305.x — ATTACHEMENT au Porteur choisi : après la mise en jeu (la carte est
+    // alors une instance en jeu), on l'attache (reducer ATTACH : co-localisation
+    // + push dans bearer.attachments). Le bonus de Porteur devient vivant.
+    if (bearerId !== undefined) {
+      drafts.push(attach(seat, instanceId, bearerId));
+      const bearerName =
+        getCard(state.value.instances[bearerId]?.cardId ?? null)?.name ??
+        "une créature";
+      drafts.push(say(seat, `${card.name} est équipé(e) sur ${bearerName}.`));
     }
     dispatch(...drafts);
     if (actionAtoms.length) {
@@ -2083,6 +2151,10 @@ export const useGameStore = defineStore("game", () => {
     ruleError,
     clearRuleError,
     playFromHand,
+    rulesCtx,
+    pendingBearer,
+    attachToBearer,
+    cancelBearerTargeting,
     attackedOnTurn,
     combat,
     combatAttackerIds,
