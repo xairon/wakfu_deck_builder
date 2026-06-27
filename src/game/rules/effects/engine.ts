@@ -168,6 +168,14 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     enterTapped?: boolean;
     /** Choix imposé par une règle (pas de bouton « Passer »). */
     mandatory?: boolean;
+    /**
+     * COÛT payé interactif (costRecycle from defausse/main) : si le joueur PASSE
+     * le choix (effectPickSkip), le coût n'est PAS payé → la frame en tête de
+     * file (le CORPS, retenu via holdRest) doit être ABANDONNÉE, comme pour les
+     * coûts de ciblage (costTap/costDestroyControlled). Sans ce drapeau, passer
+     * un recycle « libre » poursuit simplement l'effet.
+     */
+    cost?: boolean;
     remaining: number;
     sourceId?: string;
   } | null>(null);
@@ -365,6 +373,17 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     const p = effectPicking.value;
     if (!p || p.mandatory) return; // un choix imposé ne se passe pas
     effectPicking.value = null;
+    // COÛT payé interactif (costRecycle) décliné : le coût n'est PAS payé → le
+    // CORPS (retenu en tête de file via holdRest) ne doit PAS s'exécuter. On
+    // retire la frame abandonnée, comme effectTargetSkip pour un coût de ciblage.
+    if (p.cost) {
+      effectQueue.value = effectQueue.value.slice(1);
+      deps.dispatch(
+        say(p.seat, `${p.cardName} : coût non payé, pouvoir annulé.`),
+      );
+      pumpEffects();
+      return;
+    }
     deps.dispatch(say(p.seat, `${p.cardName} : choix passé.`));
     pumpEffects();
   }
@@ -520,6 +539,73 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           action: op.op === "recycleFromDiscard" ? "recycle" : "discard",
           ...(filter ? { filter } : {}),
           remaining: op.n,
+          sourceId,
+        };
+        holdRest(frame, ops.slice(i + 1));
+        return true;
+      }
+      if (op.op === "costRecycle") {
+        // COÛT « Recyclez … : CORPS » — première op d'une séquence cost:"paidOps".
+        // Recycler = remettre une carte SOUS la Pioche de son propriétaire. Le
+        // coût doit être payé ENTIÈREMENT, sinon le CORPS (ops suivantes) ne
+        // s'exécute pas — on ABANDONNE la frame (return false sans pause), comme
+        // costTap/costDestroyControlled.
+        const from = op.from ?? "defausse";
+        if (from === "self") {
+          // Recycle la SOURCE elle-même (aucune interaction). La source doit être
+          // en jeu (Monde / Havre-Sac) ; sinon le coût ne peut pas être payé.
+          const src = sourceId ? deps.getState().instances[sourceId] : null;
+          const inPlay =
+            src &&
+            (src.location.zone === "monde" || src.location.zone === "havreSac");
+          if (!inPlay) {
+            deps.dispatch(
+              say(
+                seat,
+                `${cardName} : la carte n'est pas en jeu, pouvoir annulé.`,
+              ),
+            );
+            return false; // coût non payable → corps non exécuté
+          }
+          deps.moveTo(
+            sourceId!,
+            { zone: "pioche", owner: src!.owner },
+            { at: "bottom" },
+          );
+          deps.dispatch(
+            say(seat, `${cardName} : la carte est recyclée sous la Pioche.`),
+          );
+          continue; // coût payé → le corps suit
+        }
+        // from "defausse" / "main" : choix INTERACTIF dans la pile. Si rien n'est
+        // recyclable (pile vide / aucune carte de l'Élément), le coût ne peut pas
+        // être payé → on abandonne la frame (corps non exécuté).
+        const zone = from === "main" ? "main" : "defausse";
+        const filter: PickFilter | undefined = op.element
+          ? { element: op.element }
+          : undefined;
+        const hasMatch = deps
+          .getState()
+          .seats[
+            seat
+          ][zone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+        if (!hasMatch) {
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} : rien à recycler${filter ? ` (aucune carte ${filter.element})` : ""}, pouvoir annulé.`,
+            ),
+          );
+          return false; // coût non payable → corps non exécuté
+        }
+        effectPicking.value = {
+          seat,
+          cardName,
+          zone,
+          action: "recycle",
+          ...(filter ? { filter } : {}),
+          cost: true,
+          remaining: op.n ?? 1,
           sourceId,
         };
         holdRest(frame, ops.slice(i + 1));

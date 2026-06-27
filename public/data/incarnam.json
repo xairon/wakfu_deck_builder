@@ -2966,7 +2966,22 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse"
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "draw"]
       },
       {
         "description": "Si votre Défausse ne contient aucune carte à la résolution du pouvoir, aucune carte ne peut être recyclée. Dans ce cas, vous ne piochez pas de carte car la pioche est une action conditionnelle.",

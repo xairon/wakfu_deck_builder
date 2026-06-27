@@ -25,6 +25,7 @@ import {
   compileTurnStartEffectText,
   isInclineCostText,
   isPaidCostText,
+  isRecycleCostText,
   isSacrificeCostText,
 } from "../src/game/rules/effects/dsl";
 import { CARD_SCRIPTS } from "../src/game/rules/effects/cardScripts";
@@ -211,7 +212,8 @@ function compileEffects(
       e.requiresIncline ||
       isPaidCostText(text) ||
       isInclineCostText(text) ||
-      isSacrificeCostText(text)
+      isSacrificeCostText(text) ||
+      isRecycleCostText(text)
         ? compileTapEffectText(text, cardName, sourceElement)
         : isAction
           ? compileActionEffectText(text, cardName, sourceElement)

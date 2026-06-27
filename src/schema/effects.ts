@@ -214,6 +214,27 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     excludeSource: z.boolean().optional(),
     zones: zonesSchema,
   }),
+  // COÛT de pouvoir payé « Recyclez … : CORPS » : op de COÛT (première op d'une
+  // séquence cost:"paidOps", comme costTap/costDestroyControlled). Recycler =
+  // remettre une carte SOUS la Pioche de son propriétaire (502 / glossaire). La
+  // sémantique dépend de `from` :
+  //  - "defausse" (défaut, « Recyclez une carte de votre Défausse : … ») : choix
+  //    INTERACTIF dans la Défausse (machinerie effectPicking, action "recycle").
+  //    `element` : filtre optionnel (« une carte [Feu] »). Si RIEN à recycler →
+  //    le coût ne peut PAS être payé → la frame est ABANDONNÉE (corps non exécuté),
+  //    comme costTap/costDestroyControlled. Pareil si le joueur PASSE le choix.
+  //  - "self" (« Recyclez [cette carte] depuis le Monde [ou votre Havre-Sac] :
+  //    … ») : recycle la SOURCE elle-même (aucune interaction). Si la source
+  //    n'est pas en jeu (Monde/Havre-Sac), le coût ne peut pas être payé → abandon.
+  //  - "main" (« Recyclez une carte de votre main : … ») : choix interactif dans
+  //    la main (même règle d'abandon que "defausse").
+  // `n` : nombre de cartes à recycler (défaut 1) — pour les formes interactives.
+  z.object({
+    op: z.literal("costRecycle"),
+    n: z.number().optional(),
+    element: z.string().optional(),
+    from: z.enum(["defausse", "main", "self"]).optional(),
+  }),
 ]);
 
 export const staticAbilitySchema = z.discriminatedUnion("kind", [

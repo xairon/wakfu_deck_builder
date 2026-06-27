@@ -220,6 +220,13 @@ export const MECHANICS: Mechanic[] = [
     glossary:
       "Coût d'un pouvoir : détruisez une de vos créatures éligibles (au choix) pour payer l'effet.",
   },
+  {
+    id: "cost-recycle",
+    label: "Coût : recyclage",
+    category: "autre",
+    glossary:
+      "Coût d'un pouvoir : recyclez une carte (Défausse au choix, votre main, ou la carte source depuis le jeu) — remise sous la Pioche — pour payer l'effet.",
+  },
 ];
 
 /** op compilée → mécanique (déterministe, 1:1). */
@@ -257,6 +264,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   returnToHand: "return-to-hand",
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
+  costRecycle: "cost-recycle",
 };
 
 /** Tags uniques dérivés d'une liste d'ops, dans l'ordre d'apparition. */

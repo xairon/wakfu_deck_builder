@@ -919,6 +919,11 @@ export function compileTapEffectText(
   // vos » n'est pas soi → l'ancienne forme renverrait null).
   const paid = compileTapPaidCost(normalized, cardName, sourceElement);
   if (paid) return paid;
+  // COÛT DE RECYCLAGE « Recyclez … : CORPS » (Défausse / main / soi-depuis-le-
+  // Monde) → cost:"paidOps" avec costRecycle en première op. Testé avant la
+  // forme incline/sacrifice (le préfixe « Recyclez » ne capte ni l'un ni l'autre).
+  const recycle = compileRecyclePaidCost(normalized, cardName, sourceElement);
+  if (recycle) return recycle;
   let body = normalized;
   // COÛT D'INCLINAISON DE SOI « Inclinez [cette carte] : CORPS » — la phrase
   // de coût explicite la même inclinaison de la SOURCE qu'un pouvoir
@@ -1073,6 +1078,76 @@ function compileTapPaidCost(
     cost: "paidOps",
     ...(actor ? { actor } : {}),
     ops: [costOp, ...body],
+  };
+}
+
+/**
+ * Le texte a-t-il la forme d'un POUVOIR À COÛT DE RECYCLAGE « Recyclez … :
+ * CORPS » ? Reconnaissance LARGE (préfixe « recyclez … : ») : sert à router vers
+ * `compileTapEffectText` même sans `requiresIncline`. La compilation effective
+ * reste STRICTE (`compileRecyclePaidCost` n'accepte que les trois formes
+ * connues — Défausse / main / soi-depuis-le-Monde — avec un CORPS entièrement
+ * compilable). Le `:` est REQUIS : « Recyclez une carte, puis piochez … »
+ * (recyclage LIBRE, pas un coût — op recycleFromDiscard) n'est PAS capté.
+ */
+export function isRecycleCostText(text: string): boolean {
+  return /^recycle[zr] [^:]{1,60}:/.test(norm(text));
+}
+
+/**
+ * Parse un POUVOIR À COÛT DE RECYCLAGE « Recyclez … : CORPS » →
+ * `{ trigger:"onTap", cost:"paidOps", ops:[costRecycle{...}, ...body] }`, ou null.
+ * Trois formes (mirroir de la sémantique de costRecycle.from) :
+ *  - « Recyclez une carte de votre Défausse : CORPS » → from:"defausse" ;
+ *  - « Recyclez une carte de votre main : CORPS »     → from:"main" ;
+ *  - « Recyclez [cette carte / <nom>] depuis le Monde [ou votre Havre-Sac] :
+ *    CORPS » → from:"self" (le sujet DOIT être la carte elle-même, subjectIsSelf).
+ * Le CORPS se compile ENTIÈREMENT via compileBody (sinon manuel). Un corps
+ * actor-binding (« il/elle … ») est REJETÉ (non modélisé sur ce coût). « depuis
+ * la Défausse / votre Défausse » avec « X cartes » / « jusqu'à N » / « même
+ * nombre » / « élément de la carte recyclée » (valeurs dynamiques) ne correspond
+ * pas aux formes ci-dessus → reste MANUEL (SKIP fidèle). `text` déjà normalisé.
+ */
+function compileRecyclePaidCost(
+  text: string,
+  cardName: string,
+  sourceElement: string,
+): CompiledEffect | null {
+  let from: "defausse" | "main" | "self" | null = null;
+  let bodyText: string | null = null;
+  // « Recyclez une carte de votre Défausse : CORPS »
+  let m = text.match(/^recyclez une carte de votre defausse\s*:\s*(.+)$/);
+  if (m) {
+    from = "defausse";
+    bodyText = m[1];
+  }
+  // « Recyclez une carte de votre main : CORPS »
+  if (!from) {
+    m = text.match(/^recyclez une carte de votre main\s*:\s*(.+)$/);
+    if (m) {
+      from = "main";
+      bodyText = m[1];
+    }
+  }
+  // « Recyclez [cette carte / <nom>] depuis le Monde [ou votre Havre-Sac] : CORPS »
+  if (!from) {
+    m = text.match(
+      /^recyclez (.{1,50}?) depuis le monde(?: ou (?:votre|son) havre[- ]?sac)?\s*:\s*(.+)$/,
+    );
+    if (m && subjectIsSelfRef(m[1].trim(), cardName)) {
+      from = "self";
+      bodyText = m[2];
+    }
+  }
+  if (!from || !bodyText) return null;
+  // Corps actor-binding (« il/elle … ») non modélisé sur ce coût → manuel.
+  if (/^(?:il|elle)\s/.test(bodyText.trim())) return null;
+  const body = compileBody(bodyText, cardName, sourceElement);
+  if (!body) return null;
+  return {
+    trigger: "onTap",
+    cost: "paidOps",
+    ops: [{ op: "costRecycle", from }, ...body],
   };
 }
 
@@ -1528,7 +1603,8 @@ export function tapPowers(card: Card | null): EffectAtom[] {
       (e?.requiresIncline ||
         isPaidCostText(text) ||
         isInclineCostText(text) ||
-        isSacrificeCostText(text))
+        isSacrificeCostText(text) ||
+        isRecycleCostText(text))
         ? compileTapEffectText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onTap")

@@ -12704,7 +12704,22 @@
         "description": "Recyclez une carte de votre Défausse : Le Héros de votre choix regagne 2 PV.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse"
+            },
+            {
+              "op": "healHeroTarget",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "heal-hero-target"]
       }
     ],
     "keywords": [],
