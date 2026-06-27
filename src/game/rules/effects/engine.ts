@@ -33,6 +33,7 @@ import {
   grantXpEvents,
   heroLevel,
   isCostTargetingOp,
+  isPlayerChoiceOp,
   isTargetingOp,
   manualEffects,
   normElement,
@@ -1201,6 +1202,48 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     const t = effectTargeting.value;
     if (!t || !effectTargetIdsList.value.includes(instanceId)) return;
     effectTargeting.value = null;
+    // OPS « LE JOUEUR DE VOTRE CHOIX … » : la cible choisie est un HÉROS ; l'effet
+    // s'applique au CONTRÔLEUR de ce Héros (vous ou l'adversaire). Résolution via
+    // deps.draw / jeton paMod·pmMod (purgé en fin de tour), pas un resolve* pur.
+    if (isPlayerChoiceOp(t.op)) {
+      const pop = t.op;
+      const chosen = deps.getState().instances[instanceId];
+      const targetSeat = chosen?.controller;
+      if (targetSeat !== undefined) {
+        if (pop.op === "playerDraw") {
+          deps.draw(targetSeat, pop.n);
+          deps.dispatch(
+            say(
+              t.seat,
+              `${deps.playerName(targetSeat)} pioche ${pop.n} carte(s).`,
+            ),
+          );
+        } else if (
+          pop.op === "playerLoseStatTurn" ||
+          pop.op === "playerGainStat"
+        ) {
+          // playerLoseStatTurn (perd −N) / playerGainStat (gagne +N) : jeton
+          // paMod/pmMod sur le Héros choisi, purgé en fin de tour (isTurnToken).
+          const delta = pop.op === "playerLoseStatTurn" ? -pop.n : pop.n;
+          deps.dispatch(
+            incCounterVerb(
+              targetSeat,
+              instanceId,
+              pop.stat === "pa" ? "paMod" : "pmMod",
+              delta,
+              true,
+            ),
+            say(
+              t.seat,
+              `${deps.playerName(targetSeat)} ${delta < 0 ? "perd" : "gagne"} ${Math.abs(delta)} ${pop.stat.toUpperCase()} jusqu'à la fin du tour.`,
+            ),
+          );
+        }
+      }
+      deps.checkVictory();
+      pumpEffects();
+      return;
+    }
     const res =
       t.op.op === "destroyTarget" || t.op.op === "costDestroyControlled"
         ? // COÛT « Détruisez un de vos X » : même résolution que destroyTarget

@@ -248,6 +248,27 @@ export const MECHANICS: Mechanic[] = [
     glossary:
       "Coût d'un pouvoir : recyclez une carte (Défausse au choix, votre main, ou la carte source depuis le jeu) — remise sous la Pioche — pour payer l'effet.",
   },
+  {
+    id: "player-draw",
+    label: "Pioche du joueur choisi",
+    category: "ressource",
+    glossary:
+      "Le joueur de votre choix (vous ou l'adversaire) pioche un nombre de cartes.",
+  },
+  {
+    id: "player-lose-stat-turn",
+    label: "Joueur choisi perd PA/PM",
+    category: "contrôle",
+    glossary:
+      "Le joueur de votre choix perd des PA ou PM jusqu'à la fin du tour.",
+  },
+  {
+    id: "player-gain-stat",
+    label: "Joueur choisi gagne PA/PM",
+    category: "tempo",
+    glossary:
+      "Le joueur de votre choix gagne des PA ou PM jusqu'à la fin du tour.",
+  },
 ];
 
 /** op compilée → mécanique (déterministe, 1:1). */
@@ -289,6 +310,9 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
   costRecycle: "cost-recycle",
+  playerDraw: "player-draw",
+  playerLoseStatTurn: "player-lose-stat-turn",
+  playerGainStat: "player-gain-stat",
 };
 
 /** Tags uniques dérivés d'une liste d'ops, dans l'ordre d'apparition. */

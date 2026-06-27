@@ -3982,7 +3982,18 @@
         "description": "Le joueur de votre choix perd 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pm",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       },
       {
         "description": "Inclinez l'Allié de votre choix. Jusqu'au début de votre prochain tour, cet Allié ne peut pas se redresser.",
@@ -6075,7 +6086,19 @@
         "description": "Détruisez le Prespicot : Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [],
@@ -6376,7 +6399,18 @@
         "description": "Quand Rok Gnorok apparaît, le joueur de votre choix perd 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pm",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [

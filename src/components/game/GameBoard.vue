@@ -384,7 +384,12 @@
                         ? "coût : choisis une de tes créatures à détruire"
                         : store.effectTargeting.op.op === "damageTargetByForce"
                           ? "choisis la cible qui subit la Force en Dommages"
-                          : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                          : store.effectTargeting.op.op === "playerDraw" ||
+                              store.effectTargeting.op.op ===
+                                "playerLoseStatTurn" ||
+                              store.effectTargeting.op.op === "playerGainStat"
+                            ? "choisis le Héros du joueur concerné"
+                            : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

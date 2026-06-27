@@ -196,6 +196,39 @@ function parseSentence(
       stat: m[2] as "pa" | "pm",
       n: toNumber(m[1]),
     };
+  // « Le joueur de votre choix pioche N carte(s). » — choix d'un JOUEUR (ciblage
+  // de Héros) : le joueur choisi pioche N. STRICT : la totalité de la phrase doit
+  // correspondre (le `$` rejette « … puis se défausse … », qui vise le joueur
+  // choisi et n'est pas modélisé → manuel).
+  m = sentence.match(
+    /^le joueur de votre choix pioche (une|deux|trois|\d+) cartes?$/,
+  );
+  if (m) return { op: "playerDraw", n: toNumber(m[1]) };
+  // « Le joueur de votre choix perd N PA/PM jusqu'à la fin du tour. » → jeton
+  // paMod/pmMod −N sur le Héros choisi (purgé en fin de tour). Le `$` rejette
+  // « … jusqu'à la fin de SON prochain tour » (durée non modélisée) et toute
+  // clause résiduelle (« Puis, si … », « Piochez une carte » est une op suivante).
+  m = sentence.match(
+    /^le joueur de votre choix perd (\d+) (pa|pm) jusqu['’]a la fin du tour$/,
+  );
+  if (m)
+    return {
+      op: "playerLoseStatTurn",
+      stat: m[2] as "pa" | "pm",
+      n: toNumber(m[1]),
+    };
+  // « Le joueur de votre choix gagne N PA/PM jusqu'à la fin du tour. » → jeton
+  // paMod/pmMod +N sur le Héros choisi. Même restriction de durée (« du tour »
+  // uniquement ; « de son prochain tour » → manuel).
+  m = sentence.match(
+    /^le joueur de votre choix gagne (\d+) (pa|pm) jusqu['’]a la fin du tour$/,
+  );
+  if (m)
+    return {
+      op: "playerGainStat",
+      stat: m[2] as "pa" | "pm",
+      n: toNumber(m[1]),
+    };
   // « Votre Héros gagne +N en Force jusqu'à la fin du tour. » — bonus de Force
   // temporaire sur VOTRE Héros (sujet fixe, pas de choix).
   m = sentence.match(

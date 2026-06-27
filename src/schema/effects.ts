@@ -173,6 +173,30 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     stat: z.enum(["pa", "pm"]),
     n: z.number(),
   }),
+  // OPS « LE JOUEUR DE VOTRE CHOIX … » : choix d'un JOUEUR modélisé comme un
+  // ciblage de HÉROS (ops de ciblage, éligibilité = tous les Héros en jeu, les
+  // deux contrôleurs — on peut se choisir soi-même OU l'adversaire). L'effet
+  // s'applique au CONTRÔLEUR du Héros choisi. Aucune nouvelle interaction : la
+  // table réutilise effectTargeting (clic sur un Héros).
+  // « Le joueur de votre choix pioche N cartes. » → le contrôleur du Héros choisi
+  // pioche N (deps.draw).
+  z.object({ op: z.literal("playerDraw"), n: z.number() }),
+  // « Le joueur de votre choix perd N PA/PM jusqu'à la fin du tour. » → jeton
+  // paMod/pmMod −N sur le Héros choisi (purgé en fin de tour, comme
+  // loseStatTurn/oppLoseStatTurn). Généralise oppLoseStatTurn au joueur choisi.
+  z.object({
+    op: z.literal("playerLoseStatTurn"),
+    stat: z.enum(["pa", "pm"]),
+    n: z.number(),
+  }),
+  // « Le joueur de votre choix gagne N PA/PM jusqu'à la fin du tour. » → jeton
+  // paMod/pmMod +N sur le Héros choisi (purgé en fin de tour). Pendant positif
+  // de playerLoseStatTurn.
+  z.object({
+    op: z.literal("playerGainStat"),
+    stat: z.enum(["pa", "pm"]),
+    n: z.number(),
+  }),
   // « Votre Héros gagne +N en Force jusqu'à la fin du tour. » — jeton forceMod
   // sur VOTRE Héros (purgé en fin de tour), comme buffForceTarget mais sujet fixe.
   z.object({ op: z.literal("buffForceHeroSelf"), n: z.number() }),

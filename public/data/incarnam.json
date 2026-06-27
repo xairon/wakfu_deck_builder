@@ -252,7 +252,18 @@
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       },
       {
         "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
@@ -291,7 +302,18 @@
           "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "playerLoseStatTurn",
+                "stat": "pa",
+                "n": 1
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["player-lose-stat-turn"]
         },
         {
           "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
@@ -323,7 +345,18 @@
           "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "playerLoseStatTurn",
+                "stat": "pa",
+                "n": 1
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["player-lose-stat-turn"]
         },
         {
           "description": "Cette carte a reçu un errata officiel : la valeur du nombre de PA de ce héros est désormais de 6 à la place de 7 au niveau 1.",
@@ -1462,7 +1495,18 @@
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [
@@ -3855,7 +3899,18 @@
         "description": "Quand le Corbac apparaît, le joueur de votre choix perd 2 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [],
@@ -3977,7 +4032,22 @@
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour. Piochez une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn", "draw"]
       },
       {
         "description": "Un Héros ne peut avoir moins de 0 PA. Si les PA d'un joueur devraient être inférieurs a 0 suite à la résolution de Coupure Temporelle, ils deviennent égaux à 0 à la place. Si vous jouez cette Action sur un joueur dont le Héros a déjà 0 PA, vous piochez quand même.",
@@ -9519,7 +9589,18 @@
         "description": "Quand le Maître Corbac apparaît, le joueur de votre choix perd 4 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 4
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       },
       {
         "description": "Le pouvoir du Maître Corbac est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Echec Critique.",
@@ -12231,7 +12312,18 @@
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [],
@@ -13511,13 +13603,35 @@
         "description": "Le joueur de votre choix gagne 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerGainStat",
+              "stat": "pm",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-gain-stat"]
       },
       {
         "description": "Le joueur de votre choix perd 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pm",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [],
@@ -13766,7 +13880,18 @@
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [

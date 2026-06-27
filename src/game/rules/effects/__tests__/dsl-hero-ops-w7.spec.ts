@@ -71,9 +71,15 @@ describe("DSL — ops Héros/adversaire déterministes (W7)", () => {
     ).toBeNull();
   });
 
-  it("STRICT : « le joueur de votre choix perd 1 PA » NE compile PAS (cible non déterministe)", () => {
+  // NB : « Le joueur de votre choix perd N PA/PM … » est désormais compilé en
+  // playerLoseStatTurn (ciblage de Héros, contrôleur choisi) — voir
+  // player-choice-ops-w26.spec.ts. Ce qui RESTE non déterministe et non compilé
+  // est la variante « … jusqu'à la fin de SON prochain tour » (durée non modélisée).
+  it("STRICT : « … gagne 1 PM jusqu'à la fin de son prochain tour » NE compile PAS (durée non modélisée)", () => {
     expect(
-      tapOps("Le joueur de votre choix perd 1 PA jusqu'à la fin du tour."),
+      tapOps(
+        "Le joueur de votre choix gagne 1 PM jusqu'à la fin de son prochain tour.",
+      ),
     ).toBeNull();
   });
 });

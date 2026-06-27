@@ -34,6 +34,12 @@ export type TargetingOp = Extract<
   | { op: "returnToHand" }
   | { op: "costTapControlled" }
   | { op: "costDestroyControlled" }
+  // OPS « LE JOUEUR DE VOTRE CHOIX … » : on choisit un JOUEUR en CIBLANT son
+  // Héros (éligibilité = tous les Héros en jeu, les deux contrôleurs). L'effet
+  // s'applique au contrôleur du Héros choisi (résolu dans effectTargetChoose).
+  | { op: "playerDraw" }
+  | { op: "playerLoseStatTurn" }
+  | { op: "playerGainStat" }
 >;
 
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
@@ -47,7 +53,24 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "untapTarget" ||
     op.op === "returnToHand" ||
     op.op === "costTapControlled" ||
-    op.op === "costDestroyControlled"
+    op.op === "costDestroyControlled" ||
+    op.op === "playerDraw" ||
+    op.op === "playerLoseStatTurn" ||
+    op.op === "playerGainStat"
+  );
+}
+
+/** Op « le joueur de votre choix … » : choix de joueur via ciblage de Héros. */
+export type PlayerChoiceOp = Extract<
+  CompiledEffectOp,
+  { op: "playerDraw" } | { op: "playerLoseStatTurn" } | { op: "playerGainStat" }
+>;
+
+export function isPlayerChoiceOp(op: CompiledEffectOp): op is PlayerChoiceOp {
+  return (
+    op.op === "playerDraw" ||
+    op.op === "playerLoseStatTurn" ||
+    op.op === "playerGainStat"
   );
 }
 
@@ -97,6 +120,24 @@ export function effectTargetIds(
       )
         continue;
       out.push(inst.instanceId);
+    }
+    return out;
+  }
+  // OPS « LE JOUEUR DE VOTRE CHOIX … » : éligibilité = TOUS les Héros en jeu
+  // (Monde / Havre-Sac), des DEUX contrôleurs — on peut se choisir soi-même OU
+  // l'adversaire (c'est le sens de « le joueur de votre choix »). L'effet
+  // s'appliquera au contrôleur du Héros choisi (résolu dans effectTargetChoose).
+  if (
+    op.op === "playerDraw" ||
+    op.op === "playerLoseStatTurn" ||
+    op.op === "playerGainStat"
+  ) {
+    const out: InstanceId[] = [];
+    for (const inst of Object.values(ctx.state.instances)) {
+      if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
+        continue;
+      const card = ctx.getCard(inst.cardId);
+      if (card?.mainType === "Héros") out.push(inst.instanceId);
     }
     return out;
   }

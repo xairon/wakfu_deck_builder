@@ -4334,7 +4334,18 @@
         "description": "Quand le Corbac Albinos apparaît, le joueur de votre choix gagne 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerGainStat",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-gain-stat"]
       }
     ],
     "keywords": [],
@@ -4407,7 +4418,18 @@
         "description": "Quand la Corbacape apparaît, le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [

@@ -1676,7 +1676,18 @@
         "description": "Quand le Corbac apparaît, le joueur de votre choix perd 2 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [],
@@ -1801,7 +1812,18 @@
         "description": "Quand le Craqueleur des Plaines apparaît, le joueur de votre choix perd 2 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       },
       {
         "description": "Ce joueur peut incliner jusqu'à deux Alliés qu'il contrôle dans le Monde pour réduire cette perte de 1 PA par Allié incliné.",
@@ -3461,7 +3483,18 @@
         "description": "Quand le Maître Corbac apparaît, le joueur de votre choix perd 4 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 4
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       },
       {
         "description": "Le pouvoir du Maître Corbac est un pouvoir déclenché et n'est pas, comme tous les pouvoirs déclenchés, considéré comme joué par le joueur. Ce pouvoir ne peut donc pas être annulé par la carte Échec Critique.",
@@ -4152,7 +4185,18 @@
         "description": "Le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pa",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [],
@@ -4300,7 +4344,18 @@
         "description": "Quand Rok Gnorok apparaît, le joueur de votre choix perd 1 PM jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "playerLoseStatTurn",
+              "stat": "pm",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["player-lose-stat-turn"]
       }
     ],
     "keywords": [
