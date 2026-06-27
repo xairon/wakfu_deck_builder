@@ -4,6 +4,9 @@ import { mechanicTagSchema } from "./mechanics";
 
 const zonesSchema = z.array(z.enum(["monde", "havreSac"]));
 const controllerSchema = z.enum(["self", "opponent"]);
+// Filtre de contrôleur des OPS DE MASSE (non interactives) : « vos » (self),
+// « adverses » (opponent) ou aucune restriction (« tous les … » → any).
+const massControllerSchema = z.enum(["self", "opponent", "any"]);
 // « l'Allié incliné / dressé de votre choix » (orientation imprimée sur la
 // cible) — filtre fidèle lu sur inst.orientation.
 const orientationFilterSchema = z.enum(["tapped", "upright"]);
@@ -214,6 +217,54 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     op: z.literal("returnToHand"),
     heroes: z.boolean().optional(),
     controller: controllerSchema.optional(),
+    // Cas MULTI-TYPE (« Renvoyez l'Allié, la Zone ou l'Équipement de votre
+    // choix … ») : la cible peut être de l'un de ces types. Absent = forme
+    // historique (Allié, + Héros si `heroes`). Un Héros ne « rentre » pas en
+    // main (il vit dans le Havre-Sac) — `whatAny` et `heroes` sont disjoints
+    // en pratique (la grammaire ne les combine pas).
+    whatAny: z
+      .array(z.enum(["Allié", "Zone", "Équipement", "Dofus"]))
+      .optional(),
+    zones: zonesSchema,
+  }),
+  // OPS DE MASSE (NON interactives — pas de « de votre choix ») : appliquent
+  // l'effet à TOUTES les créatures en jeu correspondant aux filtres, sans choix
+  // du joueur. Résolues directement dans runFrame (comme draw/heroGainPv), pas
+  // via effectTargeting.
+  //  - controller : « vos » (self) / « adverses » (opponent) / « tous » (any) ;
+  //  - heroes : « et Héros » inclut les Héros ;
+  //  - sub : Famille requise (« tous vos Alliés Bouftous ») ;
+  //  - maxForce : « de Force inférieure ou égale à N » (effectiveForce) ;
+  //  - zones : « dans le Monde » → ["monde"].
+  // « Inclinez tous les Alliés [et Héros] [de Force ≤ N] dans le Monde. »
+  z.object({
+    op: z.literal("tapAll"),
+    controller: massControllerSchema.optional(),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    maxForce: z.number().optional(),
+    zones: zonesSchema,
+  }),
+  // « Redressez tous vos Alliés [Famille] [et Héros] dans le Monde. »
+  z.object({
+    op: z.literal("untapAll"),
+    controller: massControllerSchema.optional(),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    maxForce: z.number().optional(),
+    zones: zonesSchema,
+  }),
+  // « Infligez N Dommages à tous les Alliés [adverses] [et Héros] [dans le
+  //   Monde]. » Chaque cible subit resolveDamageTarget (Résistance / létalité /
+  //   XP). `element` = Élément des Dommages (source, 410.1).
+  z.object({
+    op: z.literal("damageAll"),
+    n: z.number(),
+    element: z.string(),
+    controller: massControllerSchema.optional(),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    maxForce: z.number().optional(),
     zones: zonesSchema,
   }),
   // COÛT de pouvoir payé « Inclinez un de vos X : … » : op de CIBLAGE (première

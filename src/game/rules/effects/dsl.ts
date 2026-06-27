@@ -599,6 +599,27 @@ function parseSentence(
       controller: "self",
       zones: m[4] ? ["monde", "havreSac"] : ["monde"],
     };
+  // « Renvoyez l'Allié, la Zone ou l'Équipement de votre choix dans la main de
+  //   son propriétaire » (TROIS types — Sablier de Xelor) → returnToHand multi-
+  //   type. Énumération « X, Y ou Z » : trois compléments mutuellement distincts.
+  //   Placé AVANT la forme mono-type « Renvoyez l'Allié … ». Le renvoi en main
+  //   fonctionne pour tout type (la résolution déplace vers la main du
+  //   propriétaire, indépendamment du type). « ou Héros » n'apparaît pas dans
+  //   cette énumération de types-cartes (un Héros n'est pas renvoyé en main).
+  m = sentence.match(
+    /^renvoyez (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus), (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) ou (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) de votre choix dans la main de son proprietaire$/,
+  );
+  if (m) {
+    const norms = [m[1], m[2], m[3]].map(
+      (w) => TARGET_WHAT[w.replace(/['’]/g, "'").replace(/\s+/g, " ")],
+    );
+    if (norms.some((w) => !w) || new Set(norms).size !== 3) return null;
+    return {
+      op: "returnToHand",
+      whatAny: norms as ("Allié" | "Zone" | "Équipement" | "Dofus")[],
+      zones: ["monde", "havreSac"],
+    };
+  }
   // « Renvoyez l'Allié (ou Héros) [adverse] de votre choix dans la main de son
   //   propriétaire » → returnToHand. « adverse » → opponent. La cible retourne
   //   dans la main de SON propriétaire (résolution dans targeting.ts).
@@ -745,6 +766,103 @@ function parseSentence(
     /^jusqu['’]au debut de votre prochain tour\s*,?\s*tous les dommages sont reduits a 0$/,
   );
   if (m) return { op: "globalDamageShield" };
+  // OPS DE MASSE (« tous les … » / « tous vos … » — pas de « de votre choix ») :
+  // inclinaison / redressement / Dommages de masse. Parseur dédié.
+  const mass = parseMassOp(sentence, sourceElement);
+  if (mass) return mass;
+  return null;
+}
+
+/**
+ * Sujet pluriel d'une op de MASSE → filtres `{controller, heroes?, sub?}`, ou
+ * null si le sujet n'est pas une forme reconnue. Formes admises :
+ *  - « tous les allies [et heros] [adverses] » → controller any (ou opponent si
+ *    « adverses ») ;
+ *  - « tous vos allies [<famille>] [et heros] » → controller self (+ Famille) ;
+ *  - « tous vos <famille>s » (« tous vos Bouftous ») → self + sub (Famille).
+ * `subject` est déjà normalisé, sans le préfixe verbal. CONSERVATEUR : une
+ * Famille hors ALLIED_FAMILIES → null (pas de devinette de type).
+ */
+function parseMassSubject(subject: string): {
+  controller: "self" | "opponent" | "any";
+  heroes?: boolean;
+  sub?: string;
+} | null {
+  // « tous les Alliés [et Héros] [adverses] » (controller any, ou opponent si adverses)
+  let m = subject.match(/^tous les allies( et heros)?( adverses)?$/);
+  if (m)
+    return {
+      controller: m[2] ? "opponent" : "any",
+      ...(m[1] ? { heroes: true } : {}),
+    };
+  // « tous vos Alliés [Famille] [et Héros] » (controller self, Famille optionnelle)
+  m = subject.match(/^tous vos allies( [a-z-]+?)?(s)?( et heros)?$/);
+  if (m) {
+    const famRaw = m[1]?.trim();
+    // mot de liaison capté par la classe famille → pas une vraie Famille
+    if (famRaw && ["et", "ou", "de", "dans"].includes(famRaw)) return null;
+    const fam = famRaw ? famRaw.replace(/s$/, "") : undefined;
+    if (fam && !ALLIED_FAMILIES.has(fam)) return null;
+    return {
+      controller: "self",
+      ...(fam ? { sub: fam } : {}),
+      ...(m[3] ? { heroes: true } : {}),
+    };
+  }
+  // « tous vos <Famille>s » (« tous vos Bouftous ») → Allié de cette Famille.
+  m = subject.match(/^tous vos ([a-z-]+?)s?$/);
+  if (m) {
+    const fam = m[1].replace(/s$/, "");
+    if (ALLIED_FAMILIES.has(fam)) return { controller: "self", sub: fam };
+  }
+  return null;
+}
+
+/**
+ * Parse une op de MASSE non interactive (« Inclinez/Redressez tous … »,
+ * « Infligez N Dommages à tous les Alliés … »). STRICT : la totalité de la
+ * phrase doit correspondre (le `$` rejette toute clause résiduelle). Le filtre
+ * « de Force inférieure ou égale à N » devient `maxForce` ; « dans le Monde » →
+ * zones ["monde"], absent → tout le jeu (targetZones). `sentence` est normalisé.
+ */
+function parseMassOp(sentence: string, sourceElement: string): EffectOp | null {
+  // « Inclinez / Redressez <sujet pluriel> [de Force inférieure ou égale à N]
+  //   [dans le Monde]. »
+  let m = sentence.match(
+    /^(incline|redresse)[zr] (tous (?:les|vos) [a-z -]+?)( de force inferieure ou egale a (\d+))?( dans le monde)?$/,
+  );
+  if (m) {
+    const subj = parseMassSubject(m[2].trim());
+    if (!subj) return null;
+    return {
+      op: m[1] === "incline" ? "tapAll" : "untapAll",
+      controller: subj.controller,
+      ...(subj.heroes ? { heroes: true } : {}),
+      ...(subj.sub ? { sub: subj.sub } : {}),
+      ...(m[4] ? { maxForce: toNumber(m[4]) } : {}),
+      zones: m[5] ? ["monde"] : ["monde", "havreSac"],
+    };
+  }
+  // « Infligez N Dommages à tous les Alliés [et Héros] [adverses] [dans le
+  //   Monde] » (et variantes « tous vos … ») → damageAll. L'Élément des Dommages
+  //   est celui de la source (410.1), figé à la compilation.
+  m = sentence.match(
+    /^infligez (\d+) dommages? a (tous (?:les|vos) [a-z -]+?)( de force inferieure ou egale a (\d+))?( dans le monde)?$/,
+  );
+  if (m) {
+    const subj = parseMassSubject(m[2].trim());
+    if (!subj) return null;
+    return {
+      op: "damageAll",
+      n: toNumber(m[1]),
+      element: sourceElement,
+      controller: subj.controller,
+      ...(subj.heroes ? { heroes: true } : {}),
+      ...(subj.sub ? { sub: subj.sub } : {}),
+      ...(m[4] ? { maxForce: toNumber(m[4]) } : {}),
+      zones: m[5] ? ["monde"] : ["monde", "havreSac"],
+    };
+  }
   return null;
 }
 

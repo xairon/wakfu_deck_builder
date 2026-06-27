@@ -119,15 +119,20 @@ export function effectTargetIds(
       op.op === "destroyTarget"
         ? card.mainType === op.what ||
           !!op.whatAny?.some((w) => w === card.mainType)
-        : op.op === "healHeroTarget"
-          ? card.mainType === "Héros"
-          : // « … au Héros de votre choix » (damageTarget targetHeroOnly) : seuls
-            // les Héros sont éligibles (aucun Allié). Sinon, Allié (+ Héros si
-            // `heroes`).
-            op.op === "damageTarget" && op.targetHeroOnly
+        : // « Renvoyez l'Allié, la Zone ou l'Équipement … » (returnToHand
+          // multi-type) : la cible est de l'un des types listés. Sans `whatAny`,
+          // la forme mono-type tombe dans le défaut (Allié + Héros si `heroes`).
+          op.op === "returnToHand" && op.whatAny
+          ? op.whatAny.some((w) => w === card.mainType)
+          : op.op === "healHeroTarget"
             ? card.mainType === "Héros"
-            : card.mainType === "Allié" ||
-              (op.heroes && card.mainType === "Héros");
+            : // « … au Héros de votre choix » (damageTarget targetHeroOnly) : seuls
+              // les Héros sont éligibles (aucun Allié). Sinon, Allié (+ Héros si
+              // `heroes`).
+              op.op === "damageTarget" && op.targetHeroOnly
+              ? card.mainType === "Héros"
+              : card.mainType === "Allié" ||
+                (op.heroes && card.mainType === "Héros");
     // famille requise (« le Monstre de votre choix »)
     if (
       ok &&

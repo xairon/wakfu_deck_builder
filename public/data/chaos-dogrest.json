@@ -4196,7 +4196,18 @@
         "description": "Renvoyez l'Allié, la Zone ou l'Équipement de votre choix dans la main de son propriétaire.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "returnToHand",
+              "whatAny": ["Allié", "Zone", "Équipement"],
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["return-to-hand"]
       }
     ],
     "keywords": [],

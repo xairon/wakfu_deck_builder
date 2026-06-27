@@ -207,6 +207,27 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Renvoie un Allié ciblé dans la main de son propriétaire.",
   },
   {
+    id: "tap-all",
+    label: "Inclinaison de masse",
+    category: "tempo",
+    glossary:
+      "Incline tous les Alliés (et Héros) correspondant aux filtres, sans choix du joueur.",
+  },
+  {
+    id: "untap-all",
+    label: "Redressement de masse",
+    category: "tempo",
+    glossary:
+      "Redresse tous les Alliés (et Héros) correspondant aux filtres, sans choix du joueur.",
+  },
+  {
+    id: "damage-all",
+    label: "Dégâts de masse",
+    category: "dégâts",
+    glossary:
+      "Inflige des Dommages à tous les Alliés (et Héros) correspondant aux filtres, sans choix du joueur.",
+  },
+  {
     id: "cost-tap-controlled",
     label: "Coût : inclinaison d'une de vos créatures",
     category: "autre",
@@ -262,6 +283,9 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   tapTarget: "tap-target",
   untapTarget: "untap-target",
   returnToHand: "return-to-hand",
+  tapAll: "tap-all",
+  untapAll: "untap-all",
+  damageAll: "damage-all",
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
   costRecycle: "cost-recycle",

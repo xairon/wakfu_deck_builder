@@ -27,6 +27,7 @@ import {
   appearanceTriggerEffects,
   arrivalEffects,
   collectTriggeredEffects,
+  effectiveForce,
   effectSourceElement,
   effectTargetIds,
   grantXpEvents,
@@ -943,9 +944,110 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (
+        op.op === "tapAll" ||
+        op.op === "untapAll" ||
+        op.op === "damageAll"
+      ) {
+        // OPS DE MASSE (non interactives) : appliquent l'effet à TOUTES les
+        // créatures en jeu correspondant aux filtres, sans choix du joueur. Ordre
+        // STABLE (tri des instanceId) pour un déroulé déterministe côté joueur actif.
+        const ids = massEligibleIds(op, seat).sort();
+        if (op.op === "tapAll") {
+          for (const id of ids) {
+            const inst = deps.getState().instances[id];
+            if (!inst || inst.orientation !== "upright") continue;
+            deps.dispatch({
+              actor: seat,
+              type: "SET_ORIENTATION",
+              payload: { instanceId: id, orientation: "tapped" },
+            });
+          }
+          deps.dispatch(
+            say(seat, `${cardName} : créatures inclinées en masse.`),
+          );
+        } else if (op.op === "untapAll") {
+          for (const id of ids) {
+            const inst = deps.getState().instances[id];
+            if (!inst || inst.orientation !== "tapped") continue;
+            deps.dispatch({
+              actor: seat,
+              type: "SET_ORIENTATION",
+              payload: { instanceId: id, orientation: "upright" },
+            });
+          }
+          deps.dispatch(
+            say(seat, `${cardName} : créatures redressées en masse.`),
+          );
+        } else {
+          // damageAll : chaque cible subit resolveDamageTarget (Résistance /
+          // létalité / XP par cible), de l'Élément de la source vivante (410.1)
+          // ou, à défaut, de l'Élément figé à la compilation.
+          const element = liveSourceElement(sourceId) ?? op.element;
+          const mods = activeGlobalMods(deps.rulesCtx());
+          for (const id of ids) {
+            const res = resolveDamageTarget(
+              deps.rulesCtx(),
+              seat,
+              id,
+              op.n,
+              element,
+              { mods, ...(sourceId ? { sourceId } : {}) },
+            );
+            deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
+            if (deps.isAssistEffects() && res.ruleEvents?.length)
+              enqueueTriggered(
+                collectTriggeredEffects(deps.rulesCtx(), res.ruleEvents),
+              );
+          }
+          deps.checkVictory();
+        }
       }
     }
     return false;
+  }
+
+  /**
+   * Instances EN JEU correspondant aux filtres d'une op de MASSE (tapAll /
+   * untapAll / damageAll) : zones autorisées, contrôleur (« vos » self / « adverses »
+   * opponent / « tous » any, relatif à l'acteur), mainType Allié (+ Héros si
+   * `heroes`), Famille `sub` (subTypes), et Force effective ≤ `maxForce`. PUR de
+   * choix — l'effet s'applique à TOUTES les correspondances.
+   */
+  function massEligibleIds(
+    op: {
+      controller?: "self" | "opponent" | "any";
+      heroes?: boolean;
+      sub?: string;
+      maxForce?: number;
+      zones: ("monde" | "havreSac")[];
+    },
+    actor: Seat,
+  ): string[] {
+    const ctx = deps.rulesCtx();
+    const sub = op.sub ? normWord(op.sub) : undefined;
+    const out: string[] = [];
+    for (const inst of Object.values(deps.getState().instances)) {
+      if (!op.zones.includes(inst.location.zone as "monde" | "havreSac"))
+        continue;
+      if (op.controller === "self" && inst.controller !== actor) continue;
+      if (op.controller === "opponent" && inst.controller !== otherSeat(actor))
+        continue;
+      const card = deps.getCard(inst.cardId);
+      if (!card) continue;
+      const typeOk =
+        card.mainType === "Allié" || (op.heroes && card.mainType === "Héros");
+      if (!typeOk) continue;
+      if (sub && !(card.subTypes ?? []).some((s) => normWord(s) === sub))
+        continue;
+      if (
+        op.maxForce !== undefined &&
+        effectiveForce(ctx, inst.instanceId) > op.maxForce
+      )
+        continue;
+      out.push(inst.instanceId);
+    }
+    return out;
   }
 
   /**

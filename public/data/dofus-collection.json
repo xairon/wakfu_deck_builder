@@ -728,7 +728,19 @@
         "description": "Quand le Bouftou Royal apparaît, redressez tous vos Alliés Bouftous dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "untapAll",
+              "controller": "self",
+              "sub": "bouftou",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["untap-all"]
       },
       {
         "description": "Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",

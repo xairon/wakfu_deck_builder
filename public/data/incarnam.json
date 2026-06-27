@@ -2093,7 +2093,19 @@
         "description": "Quand le Bouftou Royal apparaît, redressez tous vos Bouftous dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "untapAll",
+              "controller": "self",
+              "sub": "bouftou",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["untap-all"]
       },
       {
         "description": "Cherchez une carte Bouftou dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
@@ -13560,7 +13572,20 @@
         "description": "Inclinez tous les Alliés et Héros de Force inférieure ou égale à 3 dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "tapAll",
+              "controller": "any",
+              "heroes": true,
+              "maxForce": 3,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-all"]
       }
     ],
     "keywords": [],
