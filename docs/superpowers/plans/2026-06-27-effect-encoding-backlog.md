@@ -96,6 +96,16 @@ inclinaison, action).
    bus (`collectTriggeredEffects` existe déjà). Vague majeure, sous-découpée par
    type d'événement.
 5. **Pouvoirs à paiement génériques** (148) : coûts au-delà de `sacrificeSelf`.
+   ⚠️ Finding (2026-06-27) : le modèle de coût actuel (`activateTapPower`,
+   gameStore:1275) n'incline/sacrifie QUE la carte source. Les coûts « Inclinez
+   un de vos X : … » exigent un **paiement interactif ciblé** (le joueur choisit
+   la carte à incliner) ET un **liage d'acteur** : dans le corps « il inflige sa
+   Force… », « il » = la carte INCLINÉE, pas la source → le sujet/source du body
+   change. Feature non triviale (cost-payment-with-target + actor binding),
+   sensible à la fidélité. Les ops d'action de dégâts (« inflige sa Force »,
+   8 occ.) sont toutes gatées derrière ce frame → les implémenter seules = 0 gain.
+   Vague A (tapTarget/untapTarget/returnToHand, +8) était le dernier lot
+   relativement propre ; tout le reste est une feature majeure.
 6. **Modèle Équipement/Porteur (lot F)** (148) : feature structurelle ; débloque
    bearer + ripostes (déjà câblé en dormant dans le bus).
 7. **Modèles structurels restants** : Ressources (26), Annulation/File (26),
