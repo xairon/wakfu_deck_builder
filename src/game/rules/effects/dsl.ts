@@ -322,15 +322,26 @@ function parseSentence(
   //     Famille de créature non ambiguë (« un Monstre », « un Champignon ») →
   //     Allié + sub (cf. pickType / ALLIED_FAMILIES). Action/Dofus ne sont pas
   //     des cibles putInPlay (schéma) → rejet.
-  //   - « de Niveau N » (exact) → exactLevel ; « de Niveau ≤ N » → maxLevel.
+  //   - « de Niveau N » (exact) → exactLevel ; « de Niveau ≤ N » → maxLevel. La
+  //     clause de Niveau est admise AVANT ou APRÈS « de votre choix » (variante
+  //     d'ordre courante : « l'Allié de Niveau 1 de votre choix … » comme
+  //     « … un Allié de votre choix de Niveau ≤ 3 … ») — deux groupes optionnels
+  //     mutuellement exclusifs (un seul des deux peut être présent à la fois).
   //   - « incliné[e] » (avant ou après la zone) → tapped.
   //   « gratuitement » = sans coût (la mise en jeu par effet est déjà gratuite —
   //   pas de clause résiduelle). Le `$` final REJETTE toute condition/cible-
   //   porteur résiduelle (« … sur l'Allié … », « … et placez-le … ») → ces formes
   //   restent manuelles. La CRÉATION de jeton (« Mettez en jeu un jeton … »,
   //   « Invoquez … ») ne correspond pas (pas de mot-type connu nu).
+  const lvl = "(?: de niveau (?:inferieur ou egal a (\\d+)|(\\d+)))?";
   m = sentence.match(
-    /^mett(?:ez|re) en jeu (?:gratuitement )?(?:un |une |l['’ ]?\s?|le |la )([a-z]+)( [a-z-]+)?( de votre choix)?(?: de niveau (?:inferieur ou egal a (\d+)|(\d+)))?(?: gratuitement)?( incline[es]?)? (?:de|depuis) votre (main|defausse)( dans le monde)?( incline[es]?)?$/,
+    new RegExp(
+      "^mett(?:ez|re) en jeu (?:gratuitement )?(?:un |une |l['’ ]?\\s?|le |la )([a-z]+)( [a-z-]+)?" +
+        lvl +
+        "( de votre choix)?" +
+        lvl +
+        "(?: gratuitement)?( incline[es]?)? (?:de|depuis) votre (main|defausse)( dans le monde)?( incline[es]?)?$",
+    ),
   );
   if (m) {
     const pt = pickType(m[1]);
@@ -339,14 +350,17 @@ function parseSentence(
     // mots de liaison captés par la classe famille → pas une vraie Famille
     if (sub && ["ou", "non", "de", "et", "gratuitement"].includes(sub))
       return null;
-    const tapped = !!(m[6] || m[9]);
+    // Niveau présent dans l'un OU l'autre emplacement (jamais les deux).
+    const maxLevel = m[3] ?? m[6];
+    const exactLevel = m[4] ?? m[7];
+    const tapped = !!(m[8] || m[11]);
     return {
       op: "putInPlay",
-      from: m[7] === "main" ? "main" : "defausse",
+      from: m[9] === "main" ? "main" : "defausse",
       what: pt.what,
       ...(sub ? { sub } : {}),
-      ...(m[4] ? { maxLevel: toNumber(m[4]) } : {}),
-      ...(m[5] ? { exactLevel: toNumber(m[5]) } : {}),
+      ...(maxLevel ? { maxLevel: toNumber(maxLevel) } : {}),
+      ...(exactLevel ? { exactLevel: toNumber(exactLevel) } : {}),
       ...(tapped ? { tapped: true } : {}),
     };
   }
@@ -462,6 +476,28 @@ function parseSentence(
       zones,
     };
   }
+  // « Détruisez le/la/l' <Famille> de votre choix [de Niveau …] » → destroyTarget
+  //   Allié + `sub`. La Famille nue (« le Démon », « la Gelée ») désigne un Allié
+  //   de cette Famille (cf. ALLIED_FAMILIES — UNIQUEMENT des Familles de créature
+  //   non ambiguës ; un mot hors allowlist retombe en manuel). Pendant
+  //   « Détruisez » de la forme « Mettez en jeu un <Famille> ». Placé AVANT la
+  //   forme mono-type nue (qui ne connaît que les types racines).
+  m = sentence.match(
+    /^detrui(?:sez|re) (?:le |la |l['’ ]?\s?)([a-z]+) de votre choix( de niveau inferieur ou egal a (\d+)| de niveau (\d+))?( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m && ALLIED_FAMILIES.has(m[1])) {
+    const zones: ("monde" | "havreSac")[] = m[5]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return {
+      op: "destroyTarget",
+      what: "Allié",
+      sub: m[1],
+      ...(m[3] ? { maxLevel: toNumber(m[3]) } : {}),
+      ...(m[4] ? { exactLevel: toNumber(m[4]) } : {}),
+      zones,
+    };
+  }
   m = sentence.match(
     /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );
@@ -544,6 +580,21 @@ function parseSentence(
   //   dans la main de SON propriétaire (résolution dans targeting.ts).
   m = sentence.match(
     /^renvoyez l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix dans la main de son proprietaire$/,
+  );
+  if (m)
+    return {
+      op: "returnToHand",
+      ...(m[1] ? { heroes: true } : {}),
+      ...(m[2] ? { controller: "opponent" } : {}),
+      zones: ["monde", "havreSac"],
+    };
+  // « L'Allié (ou Héros) [adverse] de votre choix retourne(nt) dans la main de
+  //   son propriétaire » → returnToHand (variante sujet-en-tête / passive de la
+  //   forme impérative « Renvoyez … » ci-dessus ; même op, jumeau du script
+  //   repulsion-incarnam). Le `$` rejette toute clause résiduelle (« … attaquant
+  //   … », « … dans le Monde … », « Le Héros de ce joueur perd … » en op suivante).
+  m = sentence.match(
+    /^l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix retourne(?:nt)? dans la main de son proprietaire$/,
   );
   if (m)
     return {
@@ -804,6 +855,19 @@ function subjectIsSelf(subject: string, cardName: string): boolean {
 }
 
 /**
+ * Le sujet d'un COÛT désigne-t-il la carte elle-même ? Plus large que
+ * `subjectIsSelf` : reconnaît aussi les RÉFÉRENTS DÉMONSTRATIFS auto-référents
+ * « cette carte » (toujours = soi) et « ce/cet/cette <type> » (on retire le
+ * démonstratif puis on rapproche du nom, comme la phrase « Redressez ce X. »).
+ * Conservateur : tout sujet hors de ces formes / du nom de la carte → faux.
+ */
+function subjectIsSelfRef(subject: string, cardName: string): boolean {
+  const s = subject.trim();
+  if (s === "cette carte") return true;
+  return subjectIsSelf(s.replace(/^cet?t?e? /, ""), cardName);
+}
+
+/**
  * Compile un texte d'effet en forme machine, ou null si une seule partie
  * n'est pas comprise. Pur — utilisé par le script de compilation hors-ligne
  * et comme repli runtime.
@@ -856,6 +920,23 @@ export function compileTapEffectText(
   const paid = compileTapPaidCost(normalized, cardName, sourceElement);
   if (paid) return paid;
   let body = normalized;
+  // COÛT D'INCLINAISON DE SOI « Inclinez [cette carte] : CORPS » — la phrase
+  // de coût explicite la même inclinaison de la SOURCE qu'un pouvoir
+  // `requiresIncline` (l'inclinaison par défaut d'activateTapPower) ; elle ne
+  // produit donc AUCUNE op (pas de cost field) — seul le CORPS est compilé. Le
+  // sujet du « : » doit être la carte elle-même (subjectIsSelf) ; « Inclinez un
+  // de vos … » (coût payé, déjà routé) et « Inclinez l'Allié … de votre choix »
+  // (cible — pas de « : », corps tapTarget) ne sont PAS captés ici. Un corps
+  // actor-binding (« il/elle … ») n'a pas de sens sur l'inclinaison de la source
+  // (le sujet du corps EST la source, pas une créature payée) → rejet, manuel.
+  const inclineCost = body.match(/^inclinez ([^:]{1,50}?)\s*:\s*(.+)$/);
+  if (inclineCost) {
+    if (!subjectIsSelfRef(inclineCost[1].trim(), cardName)) return null;
+    if (/^(?:il|elle)\s/.test(inclineCost[2].trim())) return null;
+    const inclineOps = compileBody(inclineCost[2], cardName, sourceElement);
+    if (!inclineOps) return null;
+    return { trigger: "onTap", ops: inclineOps };
+  }
   // Coût « Détruisez [cette carte] : effet » — le sacrifice remplace
   // l'inclinaison ; un coût dont le sujet n'est pas la carte → rejet.
   let cost: "sacrificeSelf" | undefined;
@@ -899,6 +980,24 @@ export function isSacrificeCostText(text: string): boolean {
   // « Détruisez un … que vous contrôlez : … » = coût payé non modélisé → manuel.
   if (/^detruisez .* que vous controlez\s*:/.test(n)) return false;
   return /^detruisez [^:]{1,50}\s*:/.test(n);
+}
+
+/**
+ * Le texte a-t-il la forme d'un POUVOIR À COÛT D'INCLINAISON DE SOI « Inclinez
+ * [cette carte] : … » ? Reconnaissance LARGE (préfixe « inclinez <X> : ») : sert
+ * à router vers `compileTapEffectText` même quand `requiresIncline` est absent
+ * des données. La compilation effective reste STRICTE — `compileTapEffectText`
+ * n'accepte cette forme que si `subjectIsSelf` (le X désigne la carte
+ * elle-même : « cette carte », « ce <type> », ou son nom) ET si le CORPS se
+ * compile entièrement via compileBody ; sinon → manuel. On EXCLUT ici le coût
+ * PAYÉ « Inclinez un/l'un de vos … » (routé par isPaidCostText). Le `:` est
+ * REQUIS : « Inclinez l'Allié … de votre choix » (sans « : ») est une CIBLE
+ * (corps tapTarget compilé directement), pas un coût d'inclinaison de soi.
+ */
+export function isInclineCostText(text: string): boolean {
+  const n = norm(text);
+  if (isPaidCostText(n)) return false;
+  return /^inclinez [^:]{1,50}\s*:/.test(n);
 }
 
 /**
@@ -1419,13 +1518,17 @@ export function tapPowers(card: Card | null): EffectAtom[] {
     const text = String(e?.description ?? "").trim();
     // Repli (données non migrées / tests) : un pouvoir à coût d'inclinaison
     // (`requiresIncline`), un POUVOIR À COÛT PAYÉ « Inclinez/Détruisez un de
-    // vos X : … » (isPaidCostText) OU un POUVOIR À COÛT DE SACRIFICE « Détruisez
-    // [cette carte] : … » (isSacrificeCostText), même sans `requiresIncline`. On
-    // NE re-parse PAS tout texte arbitraire en onTap.
+    // vos X : … » (isPaidCostText), un POUVOIR À COÛT D'INCLINAISON DE SOI
+    // « Inclinez [cette carte] : … » (isInclineCostText) OU un POUVOIR À COÛT DE
+    // SACRIFICE « Détruisez [cette carte] : … » (isSacrificeCostText), même sans
+    // `requiresIncline`. On NE re-parse PAS tout texte arbitraire en onTap.
     const compiled =
       e?.compiled ??
       (text &&
-      (e?.requiresIncline || isPaidCostText(text) || isSacrificeCostText(text))
+      (e?.requiresIncline ||
+        isPaidCostText(text) ||
+        isInclineCostText(text) ||
+        isSacrificeCostText(text))
         ? compileTapEffectText(text, card.name, effectSourceElement(card))
         : null);
     if (compiled && compiled.trigger === "onTap")

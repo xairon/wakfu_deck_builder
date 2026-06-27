@@ -1674,7 +1674,19 @@
         "description": "Détruisez le Démon de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Allié",
+              "sub": "demon",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       },
       {
         "description": "Tous les dommages sur le point d'être infligés au Chevalier Justice par un Démon sont réduits à 0.",

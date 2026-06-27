@@ -4575,7 +4575,18 @@
         "description": "Détruisez Deyko Nexion : L'Allié de votre choix retourne dans la main de son propriétaire.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "returnToHand",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["return-to-hand"]
       },
       {
         "description": "Vous ne pouvez utiliser ce pouvoir que sur des Alliés en jeu.",
@@ -11835,7 +11846,20 @@
         "description": "Cherchez une carte Familier dans votre Défausse et prenez-la main.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Équipement",
+              "sub": "familier",
+              "from": "defausse",
+              "dest": "main"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["search-deck"]
       }
     ],
     "keywords": [],

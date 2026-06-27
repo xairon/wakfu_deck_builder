@@ -2335,7 +2335,20 @@
         "description": "Au début de votre tour, vous pouvez mettre en jeu l'Allié de Niveau 1 de votre choix depuis votre Défausse.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTurnStart",
+          "optional": true,
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "defausse",
+              "what": "Allié",
+              "exactLevel": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       }
     ],
     "keywords": [],
@@ -2365,7 +2378,20 @@
           "description": "Au début de votre tour, vous pouvez mettre en jeu l'Allié de Niveau 1 de votre choix depuis votre Défausse.",
           "isOncePerTurn": false,
           "requiresIncline": false,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTurnStart",
+            "optional": true,
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "defausse",
+                "what": "Allié",
+                "exactLevel": 1
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         }
       ],
       "keywords": [],
@@ -2390,7 +2416,20 @@
           "description": "Au début de votre tour, vous pouvez mettre en jeu l'Allié de Niveau inférieur ou égal à 3 de votre choix depuis votre Défausse.",
           "isOncePerTurn": false,
           "requiresIncline": false,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTurnStart",
+            "optional": true,
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "defausse",
+                "what": "Allié",
+                "maxLevel": 3
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         }
       ],
       "keywords": [],

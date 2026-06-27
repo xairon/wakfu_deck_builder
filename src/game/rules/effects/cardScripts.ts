@@ -455,4 +455,27 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // ── Tranche W20 : moisson via recherche-Défausse d'un sous-type d'Équipement ──
+
+  // « Cherchez une carte Familier dans votre Défausse et prenez-la main. » —
+  //   Action. « Familier » est EXCLUSIVEMENT un sous-type d'Équipement (comme
+  //   « Arme » pour premieres-armes) ; le DSL ne capte que les types racines via
+  //   pickType, donc « Familier » seul reste manuel → script. La Défausse n'est
+  //   pas mélangée (pas de shuffleDeck). « prenez-la main » (typo de scrape, sans
+  //   « en ») = prise en main.
+  "poudre-d-eniripsa-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "searchDeck",
+          what: "Équipement",
+          sub: "familier",
+          from: "defausse",
+          dest: "main",
+        },
+      ],
+    },
+  },
 };

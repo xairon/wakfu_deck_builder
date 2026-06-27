@@ -276,6 +276,97 @@ describe("moisson de scripts manuels W8 (données régénérées)", () => {
     });
   }
 
+  // Tranche W20 : moisson via grammaire (DSL auto) + script Familier-Défausse.
+  //  - bom-d-utygr : putInPlay depuis la Défausse, Niveau AVANT « de votre choix »
+  //    (variante d'ordre) — auto via la grammaire onTurnStart optionnelle ;
+  //  - chevalier-justice : destruction par Famille nue (« le Démon ») — auto ;
+  //  - nemoh : destruction par Famille nue optionnelle à l'apparition — auto ;
+  //  - poudre-d-eniripsa : recherche-Défausse d'un Familier (sous-type
+  //    d'Équipement) → script manuel.
+  const samplesW20: {
+    id: string;
+    index: number;
+    coverage: "auto" | "manual";
+    trigger: string;
+    optional?: boolean;
+    ops: Record<string, unknown>[];
+  }[] = [
+    {
+      id: "bom-d-utygr-bonta-brakmar",
+      index: 0,
+      coverage: "auto",
+      trigger: "onTurnStart",
+      optional: true,
+      ops: [
+        { op: "putInPlay", from: "defausse", what: "Allié", exactLevel: 1 },
+      ],
+    },
+    {
+      id: "chevalier-justice-chaos-dogrest",
+      index: 1,
+      coverage: "auto",
+      trigger: "onTap",
+      ops: [
+        { op: "destroyTarget", what: "Allié", sub: "demon", zones: ["monde"] },
+      ],
+    },
+    {
+      id: "nemoh-otomai",
+      index: 0,
+      coverage: "auto",
+      trigger: "onArrive",
+      optional: true,
+      ops: [
+        {
+          op: "destroyTarget",
+          what: "Allié",
+          sub: "monstre",
+          zones: ["monde"],
+        },
+      ],
+    },
+    {
+      id: "poudre-d-eniripsa-incarnam",
+      index: 0,
+      coverage: "manual",
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "searchDeck",
+          what: "Équipement",
+          sub: "familier",
+          from: "defausse",
+          dest: "main",
+        },
+      ],
+    },
+    {
+      // « Détruisez Deyko Nexion : L'Allié de votre choix retourne dans la main
+      //   de son propriétaire. » — coût de sacrifice de soi + returnToHand
+      //   (variante sujet-en-tête « … retourne … » de « Renvoyez … »).
+      id: "deyko-nexion-incarnam",
+      index: 0,
+      coverage: "auto",
+      trigger: "onTap",
+      ops: [{ op: "returnToHand", zones: ["monde", "havreSac"] }],
+    },
+  ];
+
+  for (const s of samplesW20) {
+    it(`W20 ${s.id}[${s.index}] → ${s.coverage} avec les ops attendues`, () => {
+      const card = cardsById.get(s.id);
+      expect(card, `carte ${s.id} introuvable`).toBeDefined();
+      const effect = card!.effects?.[s.index];
+      expect(effect, `effet ${s.id}[${s.index}] introuvable`).toBeDefined();
+      expect(effect!.coverage).toBe(s.coverage);
+      expect(effect!.compiled).toBeDefined();
+      expect(effect!.compiled!.trigger).toBe(s.trigger);
+      if (s.optional !== undefined)
+        expect(effect!.compiled!.optional).toBe(s.optional);
+      expect(effect!.compiled!.ops).toEqual(s.ops);
+    });
+  }
+
   it('toutes les entrées scriptées non-ruling sont coverage:"manual"', () => {
     const notManual: string[] = [];
     for (const [id, byIndex] of Object.entries(CARD_SCRIPTS)) {

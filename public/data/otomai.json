@@ -3577,7 +3577,20 @@
         "description": "Quand Nemoh apparaît, vous pouvez détruire le Monstre de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Allié",
+              "sub": "monstre",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       },
       {
         "description": "Détruisez toutes les et tous les jetons adverses.",
