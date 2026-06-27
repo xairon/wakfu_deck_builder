@@ -114,10 +114,13 @@ describe("DSL — tapTarget / untapTarget / returnToHand", () => {
     ).toBeNull();
   });
 
-  it("NE compile PAS « Inclinez l'Allié attaquant ou bloqueur de votre choix » (condition de combat)", () => {
+  // W11 : le filtre combatRole rend cette formulation FIDÈLEMENT compilable
+  //   (l'état du combat détermine les attaquants/bloqueurs). Ce qui était une
+  //   condition non automatisable (W9) est désormais une op à filtre.
+  it("compile « Inclinez l'Allié attaquant ou bloqueur de votre choix » → tapTarget combatRole inCombat", () => {
     expect(
       ops("Inclinez l'Allié attaquant ou bloqueur de votre choix."),
-    ).toBeNull();
+    ).toEqual([{ op: "tapTarget", combatRole: "inCombat", zones: ["monde"] }]);
   });
 
   it("NE compile PAS « Inclinez un de vos Forgemages » (famille, hors champ)", () => {

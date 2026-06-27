@@ -490,7 +490,21 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Terre",
+              "heroes": true,
+              "orientation": "tapped",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [
@@ -4159,7 +4173,18 @@
         "description": "Inclinez l'Allié attaquant ou bloqueur de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "tapTarget",
+              "combatRole": "inCombat",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-target"]
       }
     ],
     "keywords": [

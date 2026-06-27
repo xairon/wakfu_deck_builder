@@ -379,4 +379,62 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // ── Tranche W11 : moisson via filtres orientation/combatRole (sujet pronom) ──
+
+  // « Quand Emy Lijoly apparaît, elle inflige 2 Dommages à l'Allié ou au Héros
+  //   incliné de votre choix. » — onArrive ; le DSL ne lie pas le pronom
+  //   « elle » au sujet. Élément source = Feu ; filtre orientation tapped.
+  "emy-lijoly-chaos-dogrest": {
+    0: {
+      trigger: "onArrive",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Feu",
+          heroes: true,
+          orientation: "tapped",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
+  // « Quand Qil Bil apparaît, il peut infliger 3 Dommages à l'Allié ou Héros
+  //   incliné de votre choix. » — onArrive OPTIONNEL (« peut »), sujet pronom
+  //   « il ». Élément source = Feu ; orientation tapped. L'effet ciblé est
+  //   l'index 1 (#0 = mot-clé Géant). Deux impressions (Astrub / Collection).
+  "qil-bil-astrub": {
+    1: {
+      trigger: "onArrive",
+      optional: true,
+      ops: [
+        {
+          op: "damageTarget",
+          n: 3,
+          element: "Feu",
+          heroes: true,
+          orientation: "tapped",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+  "qil-bil-dofus-collection": {
+    1: {
+      trigger: "onArrive",
+      optional: true,
+      ops: [
+        {
+          op: "damageTarget",
+          n: 3,
+          element: "Feu",
+          heroes: true,
+          orientation: "tapped",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
 };

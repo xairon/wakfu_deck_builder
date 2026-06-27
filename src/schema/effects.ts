@@ -4,6 +4,13 @@ import { mechanicTagSchema } from "./mechanics";
 
 const zonesSchema = z.array(z.enum(["monde", "havreSac"]));
 const controllerSchema = z.enum(["self", "opponent"]);
+// « l'Allié incliné / dressé de votre choix » (orientation imprimée sur la
+// cible) — filtre fidèle lu sur inst.orientation.
+const orientationFilterSchema = z.enum(["tapped", "upright"]);
+// « l'Allié ou Héros attaquant / bloqueur de votre choix » — rôle dans le
+// combat EN COURS (state.combat) ; hors combat, aucune cible éligible.
+// « inCombat » = « attaquant OU bloqueur » (l'un OU l'autre rôle).
+const combatRoleSchema = z.enum(["attacking", "blocking", "inCombat"]);
 
 export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("gainXp"), n: z.number() }),
@@ -25,6 +32,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // Niveau max (« … de Niveau inférieur ou égal à N »). Cible sans Niveau
     // = inéligible (cf. matchesPickFilter, missing = +Infinity).
     maxLevel: z.number().optional(),
+    // Niveau EXACT (« … de Niveau N ») — distinct de maxLevel (≤). Cible sans
+    // Niveau = inéligible.
+    exactLevel: z.number().optional(),
+    // Type d'Équipement requis (« Détruisez l'Arme / l'Armure … de votre
+    // choix ») — lu sur card.equipmentType.
+    equipType: z.string().optional(),
+    // Orientation imprimée (« l'Allié incliné / dressé de votre choix »).
+    orientation: orientationFilterSchema.optional(),
+    // Rôle de combat (« l'Allié ou Héros attaquant / bloqueur de votre choix »).
+    combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
   z.object({
@@ -34,6 +51,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     heroes: z.boolean(),
     // Famille requise (« … à l'Allié [Famille] de votre choix »).
     sub: z.string().optional(),
+    // Niveau EXACT (« … de Niveau N de votre choix »). Cible sans Niveau =
+    // inéligible.
+    exactLevel: z.number().optional(),
+    // Orientation imprimée (« … à l'Allié incliné / dressé de votre choix »).
+    orientation: orientationFilterSchema.optional(),
+    // Rôle de combat (« … à l'Allié ou Héros attaquant / bloqueur »).
+    combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
   // « [X] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix » :
@@ -53,6 +77,10 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     n: z.number(),
     heroes: z.boolean(),
     sub: z.string().optional(),
+    // Orientation imprimée (« l'Allié incliné / dressé de votre choix »).
+    orientation: orientationFilterSchema.optional(),
+    // Rôle de combat (« l'Allié ou Héros attaquant / bloqueur de votre choix »).
+    combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
   z.object({ op: z.literal("buffForceSelf"), n: z.number() }),
@@ -108,12 +136,20 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     op: z.literal("tapTarget"),
     heroes: z.boolean().optional(),
     controller: controllerSchema.optional(),
+    // Orientation imprimée (« inclinez l'Allié dressé de votre choix »).
+    orientation: orientationFilterSchema.optional(),
+    // Rôle de combat (« inclinez l'Allié attaquant / bloqueur de votre choix »).
+    combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
   z.object({
     op: z.literal("untapTarget"),
     heroes: z.boolean().optional(),
     controller: controllerSchema.optional(),
+    // Orientation imprimée (« redressez l'Allié incliné de votre choix »).
+    orientation: orientationFilterSchema.optional(),
+    // Rôle de combat (« redressez l'Allié attaquant / bloqueur de votre choix »).
+    combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
   z.object({

@@ -3225,7 +3225,22 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Feu",
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [

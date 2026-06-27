@@ -811,7 +811,21 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Feu",
+              "heroes": false,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [],
@@ -3396,7 +3410,19 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "equipType": "Arme",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       },
       {
         "description": "Les types d'Armes sont : Arc, Baguette, Bâton, Dague, Épée, Hache, Marteau, Pelle, Aiguille et Cartes.",
@@ -4364,7 +4390,21 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Air",
+              "heroes": true,
+              "orientation": "tapped",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [
@@ -4626,7 +4666,19 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "equipType": "Armure",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       },
       {
         "description": "Les types d'Armures sont : Chapeau, Cape, Ceinture et Bottes.",
@@ -5939,7 +5991,25 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target", "draw"]
       },
       {
         "description": "Si l'Allié choisi est détruit en Réaction, il n'y a plus de choix légal, vous ne piochez pas.",
@@ -6068,7 +6138,22 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 3,
+              "element": "Feu",
+              "heroes": true,
+              "orientation": "tapped",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [

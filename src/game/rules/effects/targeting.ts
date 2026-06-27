@@ -60,6 +60,13 @@ export function effectTargetIds(
     op.op === "damageTargetByForce"
       ? op.controller
       : undefined;
+  // Rôles du combat EN COURS (state.combat) : un instance est « attaquant »
+  // s'il figure dans combat.attackers, « bloqueur » s'il est une clé de
+  // combat.blocks. Hors combat (combat null), ces ensembles sont vides ⇒
+  // aucune cible éligible pour un filtre combatRole (fidèle : pas de cible).
+  const combat = ctx.state.combat ?? null;
+  const attackers = new Set(combat?.attackers ?? []);
+  const blockers = new Set(combat ? Object.keys(combat.blocks) : []);
   const out: InstanceId[] = [];
   for (const inst of Object.values(ctx.state.instances)) {
     if (!zones.includes(inst.location.zone as "monde" | "havreSac")) continue;
@@ -89,6 +96,64 @@ export function effectTargetIds(
     if (ok && op.op === "destroyTarget" && op.maxLevel !== undefined) {
       ok =
         (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) <= op.maxLevel;
+    }
+    // Niveau EXACT (« … de Niveau N ») : une cible sans Niveau est inéligible
+    // (manquant ≠ N), comme maxLevel. Sur les ops qui portent le champ.
+    if (
+      ok &&
+      (op.op === "destroyTarget" ||
+        op.op === "damageTarget" ||
+        op.op === "buffForceTarget") &&
+      "exactLevel" in op &&
+      op.exactLevel !== undefined
+    ) {
+      ok = card.stats?.niveau?.value === op.exactLevel;
+    }
+    // Type d'Équipement (« Détruisez l'Arme / l'Armure … de votre choix ») :
+    // lu sur card.equipmentType (présent uniquement sur les Équipements). Une
+    // carte sans equipmentType est inéligible.
+    if (ok && op.op === "destroyTarget" && op.equipType) {
+      ok =
+        card.mainType === "Équipement" &&
+        normWord((card as { equipmentType?: string }).equipmentType ?? "") ===
+          normWord(op.equipType);
+    }
+    // Orientation imprimée (« l'Allié incliné / dressé de votre choix ») : la
+    // cible doit avoir l'orientation demandée (inst.orientation). Sur les ops
+    // qui portent le champ.
+    if (
+      ok &&
+      (op.op === "destroyTarget" ||
+        op.op === "damageTarget" ||
+        op.op === "buffForceTarget" ||
+        op.op === "tapTarget" ||
+        op.op === "untapTarget") &&
+      "orientation" in op &&
+      op.orientation
+    ) {
+      ok = inst.orientation === op.orientation;
+    }
+    // Rôle de combat (« l'Allié ou Héros attaquant / bloqueur de votre choix »)
+    // — uniquement les instances jouant ce rôle dans le combat en cours. Hors
+    // combat, les ensembles sont vides ⇒ inéligible.
+    if (
+      ok &&
+      (op.op === "destroyTarget" ||
+        op.op === "damageTarget" ||
+        op.op === "buffForceTarget" ||
+        op.op === "tapTarget" ||
+        op.op === "untapTarget") &&
+      "combatRole" in op &&
+      op.combatRole
+    ) {
+      ok =
+        op.combatRole === "attacking"
+          ? attackers.has(inst.instanceId)
+          : op.combatRole === "blocking"
+            ? blockers.has(inst.instanceId)
+            : // « attaquant ou bloqueur » : participe au combat dans l'un
+              // OU l'autre rôle.
+              attackers.has(inst.instanceId) || blockers.has(inst.instanceId);
     }
     // filtre de contrôleur (« un de vos … » / « … adverse »)
     if (ok && controller && actor !== undefined) {

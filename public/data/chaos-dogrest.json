@@ -2502,7 +2502,21 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Feu",
+              "heroes": true,
+              "orientation": "tapped",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [],

@@ -231,18 +231,61 @@ function parseSentence(
       : ["monde"];
     return { op: "destroyTarget", whatAny: [first, second], zones };
   }
-  // « Détruisez l'Allié [Famille] de votre choix [de Niveau inférieur ou égal
-  //   à N] » → destroyTarget mono-type Allié + filtres `sub`/`maxLevel`. Placé
-  //   AVANT la forme mono-type nue (qui rejetterait la famille / le niveau via
-  //   son `$`). Seul l'Allié porte une Famille et un Niveau dans ce TCG.
+  // « Détruisez l'Arme / l'Armure / le Bijou / le Bouclier / le Familier /
+  //   l'Objet de votre choix » → destroyTarget Équipement + filtre equipType
+  //   (lu sur card.equipmentType). Placé AVANT la forme mono-type nue. Ces
+  //   noms sont EXCLUSIVEMENT des sous-types d'Équipement.
   m = sentence.match(
-    /^detrui(?:sez|re) l['’ ]?\s?allie( [a-z-]+)? de votre choix( de niveau inferieur ou egal a (\d+))?( dans le monde)?( ou dans un havre ?-?sac)?$/,
+    /^detrui(?:sez|re) (l['’ ]?\s?arme|l['’ ]?\s?armure|le bijou|le bouclier|le familier|l['’ ]?\s?objet) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );
-  if (m && (m[1] || m[3])) {
+  if (m) {
+    const EQUIP: Record<string, string> = {
+      arme: "Arme",
+      armure: "Armure",
+      bijou: "Bijou",
+      bouclier: "Bouclier",
+      familier: "Familier",
+      objet: "Objet",
+    };
+    const key = m[1].replace(/^(l['’ ]?\s?|le )/, "").trim();
+    const equipType = EQUIP[key];
+    if (equipType) {
+      const zones: ("monde" | "havreSac")[] = m[3]
+        ? ["monde", "havreSac"]
+        : ["monde"];
+      return { op: "destroyTarget", what: "Équipement", equipType, zones };
+    }
+  }
+  // « Détruisez l'Allié de Niveau N de votre choix » → destroyTarget Allié +
+  //   exactLevel (le « de Niveau N » précède « de votre choix » dans ces
+  //   cartes ; ordre distinct de la forme maxLevel ci-dessous). Cible sans
+  //   Niveau = inéligible.
+  m = sentence.match(
+    /^detrui(?:sez|re) l['’ ]?\s?allie de niveau (\d+) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m) {
+    const zones: ("monde" | "havreSac")[] = m[3]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return {
+      op: "destroyTarget",
+      what: "Allié",
+      exactLevel: toNumber(m[1]),
+      zones,
+    };
+  }
+  // « Détruisez l'Allié [Famille] de votre choix [de Niveau inférieur ou égal
+  //   à N | de Niveau N] » → destroyTarget mono-type Allié + filtres `sub` /
+  //   `maxLevel` (≤) / `exactLevel` (= N exact). Placé AVANT la forme mono-type
+  //   nue. Seul l'Allié porte une Famille et un Niveau dans ce TCG.
+  m = sentence.match(
+    /^detrui(?:sez|re) l['’ ]?\s?allie( [a-z-]+)? de votre choix( de niveau inferieur ou egal a (\d+)| de niveau (\d+))?( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m && (m[1] || m[3] || m[4])) {
     const sub = m[1]?.trim();
     // mots de liaison captés par la classe famille → pas une vraie Famille
     if (sub && ["ou", "non", "de", "et"].includes(sub)) return null;
-    const zones: ("monde" | "havreSac")[] = m[5]
+    const zones: ("monde" | "havreSac")[] = m[6]
       ? ["monde", "havreSac"]
       : ["monde"];
     return {
@@ -250,6 +293,7 @@ function parseSentence(
       what: "Allié",
       ...(sub ? { sub } : {}),
       ...(m[3] ? { maxLevel: toNumber(m[3]) } : {}),
+      ...(m[4] ? { exactLevel: toNumber(m[4]) } : {}),
       zones,
     };
   }
@@ -264,6 +308,41 @@ function parseSentence(
       : ["monde"];
     return { op: "destroyTarget", what, zones };
   }
+  // « Inclinez / Redressez l'Allié (ou Héros) ATTAQUANT (OU BLOQUEUR) de votre
+  //   choix » → tapTarget / untapTarget + filtre combatRole (rôle dans le
+  //   combat en cours). Placé AVANT la forme générique. Aucune cible hors
+  //   combat (filtre vide).
+  m = sentence.match(
+    /^(incline|redresse)[zr] l['’ ]?\s?allie( ou heros)? (attaquant ou bloqueur|bloqueur ou attaquant|attaquant|bloqueur) de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m) {
+    const role = m[3];
+    return {
+      op: m[1] === "incline" ? "tapTarget" : "untapTarget",
+      ...(m[2] ? { heroes: true } : {}),
+      combatRole:
+        role === "attaquant"
+          ? "attacking"
+          : role === "bloqueur"
+            ? "blocking"
+            : "inCombat",
+      zones: m[4] ? ["monde", "havreSac"] : ["monde"],
+    };
+  }
+  // « Inclinez / Redressez l'Allié (ou Héros) INCLINÉ / DRESSÉ de votre choix »
+  //   → tapTarget / untapTarget + filtre orientation. « Redressez l'Allié
+  //   incliné » / « Inclinez l'Allié dressé » : seule la cible de l'orientation
+  //   donnée est éligible. Placé AVANT la forme générique.
+  m = sentence.match(
+    /^(incline|redresse)[zr] l['’ ]?\s?allie( ou heros)? (incline|dresse) de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m)
+    return {
+      op: m[1] === "incline" ? "tapTarget" : "untapTarget",
+      ...(m[2] ? { heroes: true } : {}),
+      orientation: m[3] === "incline" ? "tapped" : "upright",
+      zones: m[4] ? ["monde", "havreSac"] : ["monde"],
+    };
   // « Inclinez / Redressez l'Allié (ou Héros) [adverse] de votre choix
   //   [dans le Monde][ ou dans un Havre-Sac] » → tapTarget / untapTarget.
   // « adverse » → contrôleur opponent ; sinon n'importe quel contrôleur. La
@@ -308,6 +387,48 @@ function parseSentence(
       ...(m[2] ? { controller: "opponent" } : {}),
       zones: ["monde", "havreSac"],
     };
+  // « Infligez N Dommages à l'Allié (ou Héros) INCLINÉ / DRESSÉ de votre choix »
+  //   → damageTarget + filtre orientation. La cible doit avoir l'orientation
+  //   imprimée (tapped/upright). Placé AVANT la forme générique (son `$`
+  //   rejetterait le qualificatif). Sujet self optionnel comme la forme nue.
+  m = sentence.match(
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? a l['’ ]?\s?allie( ou (?:au )?heros)? (incline|dresse) de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m) {
+    if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
+    return {
+      op: "damageTarget",
+      n: toNumber(m[2]),
+      element: sourceElement,
+      heroes: !!m[3],
+      orientation: m[4] === "incline" ? "tapped" : "upright",
+      zones: targetZones(m[5], m[6]),
+    };
+  }
+  // « Infligez N Dommages à l'Allié (ou Héros) ATTAQUANT (OU BLOQUEUR) de votre
+  //   choix » → damageTarget + filtre combatRole. « attaquant ou bloqueur » =
+  //   inCombat (l'un ou l'autre rôle) ; « attaquant » / « bloqueur » seuls =
+  //   le rôle exact. Hors combat, aucune cible (filtre vide).
+  m = sentence.match(
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? a l['’ ]?\s?allie( ou (?:au )?heros)? (attaquant ou bloqueur|bloqueur ou attaquant|attaquant|bloqueur) de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m) {
+    if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
+    const role = m[4];
+    return {
+      op: "damageTarget",
+      n: toNumber(m[2]),
+      element: sourceElement,
+      heroes: !!m[3],
+      combatRole:
+        role === "attaquant"
+          ? "attacking"
+          : role === "bloqueur"
+            ? "blocking"
+            : "inCombat",
+      zones: targetZones(m[5], m[6]),
+    };
+  }
   // « Infligez N Dommages à l'Allié [Famille] de votre choix » (impératif) ou
   // « [La carte] inflige N Dommages à l'Allié [ou Héros] de votre choix … »
   // La Famille (« à l'Allié Bouftou ») et « ou Héros » sont mutuellement

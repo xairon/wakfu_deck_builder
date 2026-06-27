@@ -1270,7 +1270,23 @@
         "description": "Détruisez l'Allié de Niveau 1 de votre choix. Piochez une carte",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Allié",
+              "exactLevel": 1,
+              "zones": ["monde"]
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target", "draw"]
       }
     ],
     "keywords": [],
