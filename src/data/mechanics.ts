@@ -114,6 +114,13 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Cherche une carte filtrée dans la Pioche.",
   },
   {
+    id: "put-in-play",
+    label: "Mise en jeu depuis la main / Défausse",
+    category: "tempo",
+    glossary:
+      "Met en jeu une carte existante choisie dans la main ou la Défausse ; ses effets d'apparition se déclenchent.",
+  },
+  {
     id: "shuffle-deck",
     label: "Mélange de Pioche",
     category: "autre",
@@ -233,6 +240,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   recycleFromDiscard: "recycle-from-discard",
   discardFromHand: "discard-from-hand",
   searchDeck: "search-deck",
+  putInPlay: "put-in-play",
   shuffleDeck: "shuffle-deck",
   destroySelf: "destroy-self",
   loseStatTurn: "lose-stat-turn",

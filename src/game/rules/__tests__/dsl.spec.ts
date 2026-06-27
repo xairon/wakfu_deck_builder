@@ -703,3 +703,107 @@ describe("rules/effects — forceAura : variantes sans Famille / avec Héros", (
     ).toBeNull();
   });
 });
+
+describe("rules/effects — DSL putInPlay (« Mettez en jeu … de votre main / Défausse »)", () => {
+  it("compile « Mettez en jeu un Équipement … de votre main » (pouvoir à inclinaison)", () => {
+    const card = cardWith(
+      "Thapa Sambal",
+      "Mettez en jeu un Équipement de Niveau inférieur ou égal à 4 gratuitement de votre main.",
+    );
+    card.effects![0].requiresIncline = true;
+    const atoms = tapPowers(card);
+    expect(atoms).toHaveLength(1);
+    expect(atoms[0].trigger).toBe("onTap");
+    expect(atoms[0].ops).toEqual([
+      { op: "putInPlay", from: "main", what: "Équipement", maxLevel: 4 },
+    ]);
+  });
+
+  it("compile « Mettez en jeu l'Équipement de votre choix … depuis votre Défausse »", () => {
+    const card = cardWith(
+      "Jorbak le Bourgeois",
+      "Mettez en jeu l'Équipement de votre choix gratuitement depuis votre Défausse.",
+    );
+    card.effects![0].requiresIncline = true;
+    expect(tapPowers(card)[0]?.ops).toEqual([
+      { op: "putInPlay", from: "defausse", what: "Équipement" },
+    ]);
+  });
+
+  it("compile « Mettez en jeu un Allié [Famille] … de votre main dans le Monde » (filtre famille)", () => {
+    const card = cardWith(
+      "Wa Wabbit",
+      "Mettez en jeu un Allié Wabbit de Niveau inférieur ou égal à 3 gratuitement de votre main dans le Monde.",
+    );
+    card.effects![0].requiresIncline = true;
+    expect(tapPowers(card)[0]?.ops).toEqual([
+      {
+        op: "putInPlay",
+        from: "main",
+        what: "Allié",
+        sub: "wabbit",
+        maxLevel: 3,
+      },
+    ]);
+  });
+
+  it("compile en onPlay (carte Action) une mise en jeu depuis la Défausse", () => {
+    const action = Object.assign(
+      cardWith("Carte", "Mettez en jeu une Zone de votre défausse."),
+      { mainType: "Action" },
+    );
+    const atoms = playEffects(action);
+    expect(atoms).toHaveLength(1);
+    expect(atoms[0].trigger).toBe("onPlay");
+    expect(atoms[0].ops).toEqual([
+      { op: "putInPlay", from: "defausse", what: "Zone" },
+    ]);
+  });
+
+  it("« Il apparaît incliné. » marque la mise en jeu (tapped:true)", () => {
+    const action = Object.assign(
+      cardWith(
+        "Carte",
+        "Mettez en jeu un Allié de votre défausse. Il apparaît incliné.",
+      ),
+      { mainType: "Action" },
+    );
+    expect(playEffects(action)[0]?.ops).toEqual([
+      { op: "putInPlay", from: "defausse", what: "Allié", tapped: true },
+    ]);
+  });
+
+  it("NÉGATIF : la création de jeton (« Invoquez … », « un jeton … ») n'est PAS captée", () => {
+    const token = Object.assign(
+      cardWith(
+        "Abraknyde",
+        'Mettez en jeu un jeton "Monstre — Arakne" de Force 1.',
+      ),
+      { mainType: "Action" },
+    );
+    expect(playEffects(token)).toEqual([]);
+    const invoke = Object.assign(cardWith("Invocation", "Invoquez un Tofu."), {
+      mainType: "Action",
+    });
+    expect(playEffects(invoke)).toEqual([]);
+  });
+
+  it("NÉGATIF : une clause résiduelle (porteur / placement combat) n'est PAS captée", () => {
+    const bearer = Object.assign(
+      cardWith(
+        "Prêts à se Battre",
+        "Mettez en jeu un Équipement gratuitement de votre main sur l'Allié ou Héros de votre choix.",
+      ),
+      { mainType: "Action" },
+    );
+    expect(playEffects(bearer)).toEqual([]);
+    const combatPlace = Object.assign(
+      cardWith(
+        "Chamrak",
+        "Mettez en jeu un Allié de Niveau inférieur ou égal à 3 gratuitement de votre main et placez-le en attaquant ou bloqueur dans ce combat.",
+      ),
+      { mainType: "Action" },
+    );
+    expect(playEffects(combatPlace)).toEqual([]);
+  });
+});

@@ -17,6 +17,7 @@ export const mechanicTagSchema = z.enum([
   "recycle-from-discard",
   "discard-from-hand",
   "search-deck",
+  "put-in-play",
   "shuffle-deck",
   "destroy-self",
   "lose-stat-turn",

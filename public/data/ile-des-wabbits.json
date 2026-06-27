@@ -1179,7 +1179,20 @@
           "description": "Mettez en jeu un Allié Wabbit de Niveau inférieur ou égal à 3 gratuitement de votre main dans le Monde.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "main",
+                "what": "Allié",
+                "sub": "wabbit",
+                "maxLevel": 3
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         }
       ],
       "keywords": [],

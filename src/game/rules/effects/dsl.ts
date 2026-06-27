@@ -185,6 +185,38 @@ function parseSentence(
       dest: sentence.includes("en jeu") ? "monde" : "main",
     };
   }
+  // « Mettez en jeu [gratuitement] un(e) [Allié|Zone|Salle|Équipement]
+  //   [Famille]? [de votre choix]? [de Niveau ≤ N]? [gratuitement] de/depuis
+  //   votre (main|défausse) [dans le Monde]. » → putInPlay (pick d'une carte
+  //   existante de la main/Défausse, mise en Monde). « gratuitement » = sans
+  //   coût (la mise en jeu par effet est déjà gratuite — pas de clause
+  //   résiduelle). Le `$` final REJETTE toute condition/cible-porteur résiduelle
+  //   (« … sur l'Allié … », « … et placez-le … ») → ces formes restent
+  //   manuelles. La CRÉATION de jeton (« Mettez en jeu un jeton … », « Invoquez
+  //   … ») ne correspond pas (pas de mot-type Allié/Zone/Salle/Équipement nu).
+  m = sentence.match(
+    /^mett(?:ez|re) en jeu (?:gratuitement )?(?:un |une |l['’ ]?\s?|le |la )(allie|zone|salle|equipement)( [a-z-]+)?( de votre choix)?( de niveau inferieur ou egal a (\d+))?(?: gratuitement)? (?:de|depuis) votre (main|defausse)( dans le monde)?$/,
+  );
+  if (m) {
+    const PUT_WHAT: Record<string, "Allié" | "Zone" | "Salle" | "Équipement"> =
+      {
+        allie: "Allié",
+        zone: "Zone",
+        salle: "Salle",
+        equipement: "Équipement",
+      };
+    const sub = m[2]?.trim();
+    // mots de liaison captés par la classe famille → pas une vraie Famille
+    if (sub && ["ou", "non", "de", "et", "gratuitement"].includes(sub))
+      return null;
+    return {
+      op: "putInPlay",
+      from: m[6] === "main" ? "main" : "defausse",
+      what: PUT_WHAT[m[1]],
+      ...(sub ? { sub } : {}),
+      ...(m[5] ? { maxLevel: toNumber(m[5]) } : {}),
+    };
+  }
   m = sentence.match(/^melangez(?:[- ]la)? votre pioche$/);
   if (m) return { op: "shuffleDeck" };
   m = sentence.match(/^votre heros regagne (\d+) (?:pv|points? de vie)$/);
@@ -526,17 +558,24 @@ function compileBody(
   if (!sentences.length) return null;
   const ops: EffectOp[] = [];
   for (const s of sentences) {
-    if (s === "il apparait incline") {
-      // se rapporte à la dernière recherche-mise-en-jeu (le mélange peut
-      // s'être intercalé : « …mettez-le en jeu, puis mélangez… »)
-      const search = [...ops]
+    if (s === "il apparait incline" || s === "ils apparaissent inclines") {
+      // se rapporte à la dernière mise-en-jeu (le mélange peut s'être intercalé :
+      // « …mettez-le en jeu, puis mélangez… ») — recherche-Pioche (searchDeck,
+      // dest monde) OU mise-en-jeu main/Défausse (putInPlay).
+      const put = [...ops]
         .reverse()
         .find(
-          (o): o is Extract<EffectOp, { op: "searchDeck" }> =>
-            o.op === "searchDeck",
+          (
+            o,
+          ): o is Extract<
+            EffectOp,
+            { op: "searchDeck" } | { op: "putInPlay" }
+          > =>
+            (o.op === "searchDeck" && o.dest === "monde") ||
+            o.op === "putInPlay",
         );
-      if (search && search.dest === "monde") {
-        search.tapped = true;
+      if (put) {
+        put.tapped = true;
         continue;
       }
       return null;

@@ -98,6 +98,20 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     tapped: z.boolean().optional(),
     dest: z.enum(["main", "monde"]),
   }),
+  // « Mettez en jeu un [Allié/Zone/Salle/Équipement] [Famille]? [de Niveau ≤ N]?
+  // de votre main / Défausse. » — le joueur choisit une carte CORRESPONDANTE
+  // dans sa main ou sa Défausse et la met en jeu (Monde) ; ses effets
+  // d'apparition se déclenchent (cascade). Réutilise la machinerie de pick de
+  // searchDeck (zone configurable, action toMonde). `tapped` = « il apparaît
+  // incliné ». PAS de création de jeton (« Invoquez … » reste manuel).
+  z.object({
+    op: z.literal("putInPlay"),
+    from: z.enum(["main", "defausse"]),
+    what: z.enum(["Allié", "Zone", "Salle", "Équipement"]),
+    sub: z.string().optional(),
+    maxLevel: z.number().optional(),
+    tapped: z.boolean().optional(),
+  }),
   z.object({ op: z.literal("shuffleDeck") }),
   z.object({ op: z.literal("destroySelf") }),
   z.object({

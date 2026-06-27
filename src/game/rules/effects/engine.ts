@@ -446,6 +446,44 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         holdRest(frame, ops.slice(i + 1));
         return true;
       }
+      if (op.op === "putInPlay") {
+        // « Mettez en jeu un [type] [Famille]? [de Niveau ≤ N]? de votre
+        // main / Défausse. » — même machinerie de pick que searchDeck, mais la
+        // zone source est la main ou la Défausse (action toMonde : le pick
+        // déplace en Monde, oriente si enterTapped, et déclenche les effets
+        // d'apparition de la carte mise en jeu via queueArrivalEffects).
+        const filter: PickFilter = {
+          mainType: op.what,
+          ...(op.sub ? { sub: op.sub } : {}),
+          ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
+        };
+        const hasMatch = deps
+          .getState()
+          .seats[
+            seat
+          ][op.from].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+        if (!hasMatch) {
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} : rien à mettre en jeu (aucune carte correspondante en ${op.from === "main" ? "main" : "Défausse"}).`,
+            ),
+          );
+          continue;
+        }
+        effectPicking.value = {
+          seat,
+          cardName,
+          zone: op.from,
+          action: "toMonde",
+          filter,
+          ...(op.tapped ? { enterTapped: true } : {}),
+          remaining: 1,
+          sourceId,
+        };
+        holdRest(frame, ops.slice(i + 1));
+        return true;
+      }
       if (op.op === "recycleFromDiscard" || op.op === "discardFromHand") {
         const zone = op.op === "recycleFromDiscard" ? "defausse" : "main";
         const filter: PickFilter | undefined =

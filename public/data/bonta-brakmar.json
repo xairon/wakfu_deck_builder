@@ -8834,7 +8834,18 @@
         "description": "Mettez en jeu l'Équipement de votre choix gratuitement depuis votre Défausse.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "putInPlay",
+              "from": "defausse",
+              "what": "Équipement"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["put-in-play"]
       }
     ],
     "keywords": [
@@ -14176,7 +14187,19 @@
           "description": "Mettez en jeu un Équipement de Niveau inférieur ou égal à 4 gratuitement de votre main.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "putInPlay",
+                "from": "main",
+                "what": "Équipement",
+                "maxLevel": 4
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["put-in-play"]
         }
       ],
       "keywords": [],

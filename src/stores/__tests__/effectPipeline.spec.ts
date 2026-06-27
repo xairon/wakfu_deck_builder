@@ -618,3 +618,150 @@ describe("pipeline d'effets — rappels manuels (effets non couverts)", () => {
     expect(store.manualReminders.length).toBe(0);
   });
 });
+
+describe("pipeline d'effets — putInPlay (mise en jeu depuis main / Défausse)", () => {
+  it("putInPlay from main : un Allié correspondant en main → pick → en Monde", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    // deux Alliés en main (zone source)
+    store.draw("A", 2);
+    const mondeBefore = store.state.monde.length;
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "putInPlay", from: "main", what: "Allié" }],
+    });
+    expect(store.effectPicking?.zone).toBe("main");
+    expect(store.effectPicking?.action).toBe("toMonde");
+    const picked = store.effectPickIds[0];
+    expect(store.state.seats.A.main).toContain(picked);
+    store.effectPick(picked);
+    expect(store.state.monde).toContain(picked);
+    expect(store.state.monde.length).toBe(mondeBefore + 1);
+    expect(store.state.seats.A.main).not.toContain(picked);
+    expect(store.effectPicking).toBeNull();
+  });
+
+  it("putInPlay : le filtre exclut les cartes non correspondantes (Dofus absent)", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.draw("A", 2); // que des Alliés en main
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "putInPlay", from: "main", what: "Équipement" }],
+    });
+    // aucun Équipement en main → no-op, journal explicite, pas de picker
+    expect(store.effectPicking).toBeNull();
+    expect(logText(store)).toContain("rien à mettre en jeu");
+  });
+
+  it("putInPlay : main vide pour le type demandé → no-op (pas de picker)", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    // main vidée
+    store.state.seats.A.main = [];
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "putInPlay", from: "main", what: "Allié" }],
+    });
+    expect(store.effectPicking).toBeNull();
+  });
+
+  it("putInPlay from defausse : un Allié de la Défausse entre en jeu", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    const inDiscard = placeInZone(store, "A", {
+      zone: "defausse",
+      owner: "A",
+    });
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "putInPlay", from: "defausse", what: "Allié" }],
+    });
+    expect(store.effectPicking?.zone).toBe("defausse");
+    expect(store.effectPickIds).toContain(inDiscard);
+    store.effectPick(inDiscard);
+    expect(store.state.monde).toContain(inDiscard);
+    expect(store.state.seats.A.defausse).not.toContain(inDiscard);
+    expect(store.effectPicking).toBeNull();
+  });
+
+  it("putInPlay tapped : la carte mise en jeu arrive inclinée", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.draw("A", 1);
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "putInPlay", from: "main", what: "Allié", tapped: true }],
+    });
+    const picked = store.effectPickIds[0];
+    store.effectPick(picked);
+    expect(store.state.instances[picked].orientation).toBe("tapped");
+  });
+
+  it("putInPlay : la carte mise en jeu déclenche ses effets d'apparition (cascade)", () => {
+    const { store, deck, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    for (const dc of deck.cards)
+      dc.card.effects = [
+        {
+          description: `Quand ${dc.card.name} apparaît, vous pouvez piocher une carte.`,
+        },
+      ];
+    cardStore.cards = [
+      deck.hero!,
+      deck.havreSac!,
+      ...deck.cards.map((dc) => dc.card),
+    ];
+    store.draw("A", 1);
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "putInPlay", from: "main", what: "Allié" }],
+    });
+    store.effectPick(store.effectPickIds[0]);
+    // l'effet d'arrivée optionnel de la carte mise en jeu est proposé
+    expect(store.effectChoice).not.toBeNull();
+  });
+});
