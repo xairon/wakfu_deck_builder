@@ -4793,7 +4793,26 @@
         "description": "Recyclez Cya Nhûr depuis le Monde : Le Héros du joueur de votre choix perd 1 PV.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "self"
+            },
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Eau",
+              "heroes": true,
+              "targetHeroOnly": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "damage-target"]
       }
     ],
     "keywords": [],

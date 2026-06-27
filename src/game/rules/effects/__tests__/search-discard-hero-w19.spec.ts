@@ -174,10 +174,21 @@ describe("W19 — DSL : « inflige N Dommages au Héros de votre choix »", () =
     ).toBeNull();
   });
 
-  it("négatif : « au Héros du joueur de votre choix » (player-target) non capté", () => {
+  it("W27 : « au Héros du joueur de votre choix » → damageTarget heroes-only (identique à « de votre choix »)", () => {
+    // Depuis W27, « du joueur de votre choix » (choix d'un JOUEUR via son Héros)
+    // est traité comme « de votre choix » : éligibilité = tous les Héros en jeu.
     expect(
       action("Infligez 1 Dommage au Héros du joueur de votre choix."),
-    ).toBeNull();
+    ).toEqual([
+      {
+        op: "damageTarget",
+        n: 1,
+        element: "Neutre",
+        heroes: true,
+        targetHeroOnly: true,
+        zones: ["monde", "havreSac"],
+      },
+    ]);
   });
 });
 

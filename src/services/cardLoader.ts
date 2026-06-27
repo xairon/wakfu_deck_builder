@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v24"; // v24 : ops « le joueur de votre choix … » (playerDraw / playerLoseStatTurn / playerGainStat)
+const CACHE_KEY = "wakfu-cards-cache-v25"; // v25 : Héros « du joueur » de votre choix (dommages/soin) + apparition à sujet Famille nu
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [

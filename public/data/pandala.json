@@ -2328,7 +2328,25 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onOtherAppears",
+          "watch": {
+            "mainType": "Allié",
+            "sub": "bwork"
+          },
+          "actor": "appeared",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [],

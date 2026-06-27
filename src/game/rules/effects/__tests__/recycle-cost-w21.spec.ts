@@ -139,12 +139,26 @@ describe("DSL — pouvoirs à coût de recyclage (compileTapEffectText)", () => 
     expect(c).toBeNull();
   });
 
-  it("REJET : corps « le Héros du joueur de votre choix perd 1 PV » (player-choice non modélisé)", () => {
+  it("W27 : coût de recyclage de soi + « le Héros du joueur de votre choix perd 1 PV » se compose", () => {
+    // Le corps « Héros du joueur de votre choix perd N PV » est désormais une op
+    // FIDÈLE (damageTarget heroes-only) — il se compose avec le coût costRecycle.
     const c = compileTapEffectText(
       "Recyclez Cya Nhûr depuis le Monde : Le Héros du joueur de votre choix perd 1 PV.",
       "Cya Nhûr",
+      "Eau",
     );
-    expect(c).toBeNull();
+    expect(c?.cost).toBe("paidOps");
+    expect(c?.ops).toEqual([
+      { op: "costRecycle", from: "self" },
+      {
+        op: "damageTarget",
+        n: 1,
+        element: "Eau",
+        heroes: true,
+        targetHeroOnly: true,
+        zones: ["monde", "havreSac"],
+      },
+    ]);
   });
 
   it("REJET : « depuis le Monde » dont le sujet n'est PAS la carte (pas subjectIsSelf)", () => {

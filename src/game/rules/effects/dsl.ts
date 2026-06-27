@@ -439,8 +439,13 @@ function parseSentence(
   if (m) return { op: "shuffleDeck" };
   m = sentence.match(/^votre heros regagne (\d+) (?:pv|points? de vie)$/);
   if (m) return { op: "heroGainPv", n: toNumber(m[1]) };
+  // « Le Héros [du joueur] de votre choix regagne N PV » → healHeroTarget
+  //   (éligibilité = tous les Héros en jeu, les deux contrôleurs). « du joueur de
+  //   votre choix » (choix d'un JOUEUR via son Héros) est sémantiquement identique
+  //   à « de votre choix » ici : on soigne le Héros choisi. Placé AVANT la forme
+  //   self générique « [Ce Héros] regagne N PV » pour ne pas être capté par elle.
   m = sentence.match(
-    /^le heros de votre choix regagne (\d+) (?:pv|points? de vie)$/,
+    /^le heros (?:du joueur )?de votre choix regagne (\d+) (?:pv|points? de vie)$/,
   );
   if (m) return { op: "healHeroTarget", n: toNumber(m[1]) };
   // « [Ce Héros] regagne N PV » : le sujet est la carte elle-même (un Héros) →
@@ -737,14 +742,16 @@ function parseSentence(
       zones: targetZones(m[5], m[6]),
     };
   }
-  // « Infligez N Dommages au Héros de votre choix » (impératif) ou « [La carte]
-  //   inflige N Dommages au Héros de votre choix … » → damageTarget restreint
-  //   aux HÉROS (targetHeroOnly) : aucun Allié n'est éligible. Placé AVANT la
-  //   forme « à l'Allié » (préposition distincte « au heros », pas de
-  //   chevauchement). Toute clause résiduelle (« … qui vient de … », « dans ce
-  //   Havre-Sac ») est rejetée par le `$`.
+  // « Infligez N Dommages au Héros [du joueur] de votre choix » (impératif) ou
+  //   « [La carte] inflige N Dommages au Héros [du joueur] de votre choix … » →
+  //   damageTarget restreint aux HÉROS (targetHeroOnly) : aucun Allié n'est
+  //   éligible. « du joueur de votre choix » (choix d'un JOUEUR via son Héros) est
+  //   sémantiquement identique à « de votre choix » ici (éligibilité = tous les
+  //   Héros en jeu, les deux contrôleurs). Placé AVANT la forme « à l'Allié »
+  //   (préposition distincte « au heros », pas de chevauchement). Toute clause
+  //   résiduelle (« … qui vient de … », « dans ce Havre-Sac ») est rejetée par `$`.
   m = sentence.match(
-    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? au heros de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? au heros (?:du joueur )?de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
   );
   if (m) {
     if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
@@ -757,6 +764,25 @@ function parseSentence(
       zones: targetZones(m[3], m[4]),
     };
   }
+  // « Le Héros [du joueur] de votre choix perd N PV » → damageTarget restreint aux
+  //   HÉROS (targetHeroOnly), montant N (410.2 : un Héros perd des PV). Pendant de
+  //   « inflige N Dommages au Héros … de votre choix » formulé en perte de PV par
+  //   le Héros CHOISI (distinct de « le Héros ADVERSE perd N PV » → damageOppHero,
+  //   non interactif). STRICT : `$` rejette toute restriction résiduelle
+  //   (« … N'utilisez ce pouvoir que si … » est une phrase suivante non comprise →
+  //   l'effet entier reste manuel).
+  m = sentence.match(
+    /^le heros (?:du joueur )?de votre choix perd (\d+) (?:pv|points? de vie)$/,
+  );
+  if (m)
+    return {
+      op: "damageTarget",
+      n: toNumber(m[1]),
+      element: sourceElement,
+      heroes: true,
+      targetHeroOnly: true,
+      zones: ["monde", "havreSac"],
+    };
   // « Infligez N Dommages à l'Allié [Famille] de votre choix » (impératif) ou
   // « [La carte] inflige N Dommages à l'Allié [ou Héros] de votre choix … »
   // La Famille (« à l'Allié Bouftou ») et « ou Héros » sont mutuellement
@@ -1799,25 +1825,41 @@ export function compileAppearanceTriggerText(
   // le déclencheur. « sous votre contrôle » reste admis (il identifie le
   // contrôleur self ; non modélisé en watch — les corps de ces cartes sont des
   // choix-joueur hors champ, comportement inchangé).
+  // Sujet : « un Allié [Famille]? [adverse]? » OU « un <Famille> » nu (« un
+  // Bwork apparaît »). Le premier mot (m[1]) est soit « allie », soit une Famille
+  // de créature non ambiguë (ALLIED_FAMILIES) — dans ce dernier cas le sujet est
+  // un Allié de cette Famille (même convention que pickType : « un Monstre » =
+  // Allié + sub). m[2]/m[3] (« adverse » / Famille après « allie ») ne s'appliquent
+  // qu'au sujet « allie ».
   const m = n.match(
     new RegExp(
-      "^(?:quand |chaque fois qu['’]\\s?)un allie(?:( adverse)|( [a-z-]+))? apparait" +
+      "^(?:quand |chaque fois qu['’]\\s?)un ([a-zéèêàùûôîç-]+)(?:( adverse)|( [a-z-]+))? apparait" +
         "(?:" +
         APPEAR_LOC +
         "| sous votre controle)?\\s*,\\s*(.+)$",
     ),
   );
   if (!m) return null;
-  const sub = m[2]?.trim();
+  const head = m[1];
+  // Sujet Famille nu (« un Bwork ») : aucun qualificatif (adverse/famille) après
+  // — sinon la forme est inattendue → rejet. Le mot doit être une Famille connue.
+  const headFamily =
+    head !== "allie"
+      ? ALLIED_FAMILIES.has(head.replace(/s$/, ""))
+        ? head.replace(/s$/, "")
+        : null
+      : null;
+  if (head !== "allie" && (!headFamily || m[2] || m[3])) return null;
+  const sub = headFamily ?? m[3]?.trim();
   // mot de liaison capté par la classe famille → pas une vraie Famille
   if (sub && ["adverse", "non", "ou", "de", "et", "sous"].includes(sub))
     return null;
   const watch: NonNullable<CompiledEffect["watch"]> = {
     mainType: "Allié",
     ...(sub ? { sub: sub.replace(/s$/, "") } : {}),
-    ...(m[1] ? { controller: "opponent" as const } : {}),
+    ...(m[2] ? { controller: "opponent" as const } : {}),
   };
-  let body = m[3].replace(/\.$/, "").trim();
+  let body = m[4].replace(/\.$/, "").trim();
   // ACTOR-BINDING : CORPS « il/elle … » — l'Allié APPARU est l'acteur (sujet du
   // corps). STRICT : seules les formes de compileActorBoundBody sont admises
   // (« inflige sa Force… », « inflige N Dommages… », « gagne +N en Force… ») ;
