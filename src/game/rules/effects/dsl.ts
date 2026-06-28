@@ -686,6 +686,28 @@ function parseSentence(
     const resist = parseResistClause(m[2]);
     if (resist) return { op: "grantResistanceSelf", resist };
   }
+  // « Détruisez l'Allié, la Zone ou l'Équipement de votre choix [dans le Monde] »
+  //   (TROIS types — Otomaï, Apparition d'Ogrest) → destroyTarget multi-type à
+  //   trois compléments. Énumération « X, Y ou Z » : trois types mutuellement
+  //   distincts. Placé AVANT la forme à deux types (qui ne capte que « X ou Y »).
+  //   Jumeau de la forme « Renvoyez X, Y ou Z … » (returnToHand 3-type).
+  m = sentence.match(
+    /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus), (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) ou (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m) {
+    const norms = [m[1], m[2], m[3]].map(
+      (w) => TARGET_WHAT[w.replace(/['’]/g, "'").replace(/\s+/g, " ")],
+    );
+    if (norms.some((w) => !w) || new Set(norms).size !== 3) return null;
+    const zones: ("monde" | "havreSac")[] = m[5]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return {
+      op: "destroyTarget",
+      whatAny: norms as ("Allié" | "Zone" | "Équipement" | "Dofus")[],
+      zones,
+    };
+  }
   // « Détruisez l'Équipement ou la Zone de votre choix » (deux types, dans
   //   l'un ou l'autre ordre) → destroyTarget multi-type. Placé AVANT la forme
   //   mono-type pour capter les deux compléments.

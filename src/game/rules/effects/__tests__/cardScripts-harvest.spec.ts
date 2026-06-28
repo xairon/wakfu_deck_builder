@@ -367,6 +367,91 @@ describe("moisson de scripts manuels W8 (données régénérées)", () => {
     });
   }
 
+  // Tranche « harvest-final » : créatures-jetons « Mettez [self] en jeu comme un
+  //   Monstre … de Force N [Élément] » (script manuel, Élément récupéré du raw) +
+  //   « apparaît incliné » (tapSelf) + destruction 3-type d'Otomaï (DSL auto via
+  //   la nouvelle phrasing « Détruisez X, Y ou Z de votre choix »).
+  const samplesFinal: {
+    id: string;
+    index: number;
+    coverage: "auto" | "manual";
+    trigger: string;
+    ops: Record<string, unknown>[];
+  }[] = [
+    {
+      id: "coffre-anime-amakna",
+      index: 0,
+      coverage: "manual",
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Coffre",
+          force: 1,
+          element: "Eau",
+          sub: "Coffre",
+        },
+      ],
+    },
+    {
+      id: "la-bloqueuse-astrub",
+      index: 0,
+      coverage: "manual",
+      trigger: "onPlay",
+      ops: [{ op: "createToken", name: "Monstre", force: 4, element: "Terre" }],
+    },
+    {
+      id: "invocation-de-dragonnet-otomai",
+      index: 0,
+      coverage: "manual",
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Dragonnet",
+          force: 5,
+          element: "Feu",
+          sub: "Dragonnet",
+        },
+      ],
+    },
+    {
+      id: "goultard-le-barbare-incarnam",
+      index: 0,
+      coverage: "manual",
+      trigger: "onArrive",
+      ops: [{ op: "tapSelf" }],
+    },
+    {
+      // DSL auto : « Quand Otomaï apparaît, détruisez l'Allié, la Zone ou
+      //   l'Équipement de votre choix dans le Monde. » (destruction à 3 types).
+      id: "otomai-incarnam",
+      index: 0,
+      coverage: "auto",
+      trigger: "onArrive",
+      ops: [
+        {
+          op: "destroyTarget",
+          whatAny: ["Allié", "Zone", "Équipement"],
+          zones: ["monde"],
+        },
+      ],
+    },
+  ];
+
+  for (const s of samplesFinal) {
+    it(`harvest-final ${s.id}[${s.index}] → ${s.coverage} avec les ops attendues`, () => {
+      const card = cardsById.get(s.id);
+      expect(card, `carte ${s.id} introuvable`).toBeDefined();
+      const effect = card!.effects?.[s.index];
+      expect(effect, `effet ${s.id}[${s.index}] introuvable`).toBeDefined();
+      expect(effect!.coverage).toBe(s.coverage);
+      expect(effect!.compiled).toBeDefined();
+      expect(effect!.compiled!.trigger).toBe(s.trigger);
+      expect(effect!.compiled!.ops).toEqual(s.ops);
+    });
+  }
+
   it('toutes les entrées scriptées non-ruling sont coverage:"manual"', () => {
     const notManual: string[] = [];
     for (const [id, byIndex] of Object.entries(CARD_SCRIPTS)) {

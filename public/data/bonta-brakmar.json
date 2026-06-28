@@ -1597,7 +1597,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Balise",
+              "force": 1,
+              "element": "Feu",
+              "sub": "Balise"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "Au début de votre tour, la Balise Ardente inflige 1 Dommage à l'Allié ou Héros de votre choix.",

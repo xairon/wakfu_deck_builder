@@ -478,4 +478,136 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // ── Tranche « harvest-final » : créatures-jetons « Mettez [self] en jeu comme
+  //   un Monstre … de Force N [Élément] » (Action → onPlay createToken) ──
+  //   L'icône d'Élément de la créature a été PERDUE au scraping (la description
+  //   se termine par « de Force N . ») — RÉCUPÉRÉE verbatim depuis raw-card-data
+  //   (jamais devinée). Le jeton est une carte SYNTHÉTIQUE : participant de combat
+  //   à part entière, sans effet d'apparition (fidèle — createToken). Le `name`
+  //   conserve la forme imprimée « Monstre - <Nom> » (jetons portant le même nom).
+  //   Les AUTRES effets de ces cartes (réactions/statiques sur le jeton) restent
+  //   des index distincts non couverts (le jeton ne les porte pas — limite connue).
+
+  // « … comme un « Monstre — Aiguille Chercheuse » de Force 1 [Feu]. »
+  "aiguille-chercheuse-amakna": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Aiguille Chercheuse",
+          force: 1,
+          element: "Feu",
+          sub: "Aiguille Chercheuse",
+        },
+      ],
+    },
+  },
+  // « … dans le Monde comme un « Monstre — Coffre » de Force 1 [Eau]. »
+  "coffre-anime-amakna": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Coffre",
+          force: 1,
+          element: "Eau",
+          sub: "Coffre",
+        },
+      ],
+    },
+  },
+  // « … comme un « Monstre — Épée » de Force 1 [Air]. »
+  "epee-volante-amakna": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Épée",
+          force: 1,
+          element: "Air",
+          sub: "Épée",
+        },
+      ],
+    },
+  },
+  // « … dans le Monde comme un « Monstre — Chaton » de Force 2 [Air]. »
+  "griffe-invocatrice-amakna": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Chaton",
+          force: 2,
+          element: "Air",
+          sub: "Chaton",
+        },
+      ],
+    },
+  },
+  // « … dans le Monde comme un « Monstre — Lapin » de Force 1 [Feu]. »
+  "mot-d-amitie-amakna": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Lapin",
+          force: 1,
+          element: "Feu",
+          sub: "Lapin",
+        },
+      ],
+    },
+  },
+  // « … dans le Monde comme un Monstre de Force 4 [Terre]. » (sans Famille → name
+  //   « Monstre », pas de sub)
+  "la-bloqueuse-astrub": {
+    0: {
+      trigger: "onPlay",
+      ops: [{ op: "createToken", name: "Monstre", force: 4, element: "Terre" }],
+    },
+  },
+  // « … comme un « Monstre — Balise » de Force 1 [Feu]. »
+  "balise-ardente-bonta-brakmar": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Balise",
+          force: 1,
+          element: "Feu",
+          sub: "Balise",
+        },
+      ],
+    },
+  },
+  // « … comme un "Monstre - Dragonnet" de Force 5 [Feu]. »
+  "invocation-de-dragonnet-otomai": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Dragonnet",
+          force: 5,
+          element: "Feu",
+          sub: "Dragonnet",
+        },
+      ],
+    },
+  },
+
+  // « Goultard le Barbare apparaît incliné dans le Monde. » — entrée en jeu
+  //   inclinée (onArrive → tapSelf), jumeau de mines-d-astrub / forets-d-astrub
+  //   (« apparaissent inclinés »). Le DSL ne reconnaît pas cette forme (le sujet
+  //   est la carte, sans déclencheur « Quand … »).
+  "goultard-le-barbare-incarnam": {
+    0: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
+  },
 };

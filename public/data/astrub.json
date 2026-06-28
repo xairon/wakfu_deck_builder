@@ -4341,7 +4341,19 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre",
+              "force": 4,
+              "element": "Terre"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "Les Dommages que devrait infliger La Bloqueuse sont réduits à 0.",

@@ -152,7 +152,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Aiguille Chercheuse",
+              "force": 1,
+              "element": "Feu",
+              "sub": "Aiguille Chercheuse"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "L'Aiguille Chercheuse inflige 1 Dommage au Héros du joueur de votre choix qui vient de perdre un ou plusieurs PA.",
@@ -1774,7 +1787,20 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Coffre",
+              "force": 1,
+              "element": "Eau",
+              "sub": "Coffre"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "Piochez une carte. Ne jouez ce pouvoir que lorsque vous êtes sur le point de piocher une ou plusieurs cartes grâce à une Action ou un Sort.",
@@ -2966,7 +2992,20 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Épée",
+              "force": 1,
+              "element": "Air",
+              "sub": "Épée"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "L'Épée Volante inflige 1 Dommages à un de vos Alliés ou Héros de votre choix. Cet Allié ou Héros gagne +1 en Force jusqu'à la fin du tour.",
@@ -3529,7 +3568,20 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Chaton",
+              "force": 2,
+              "element": "Air",
+              "sub": "Chaton"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "Quand la Griffe Invocatrice est sur le point d'infliger des dommages, jouez à Chi-Fu-Mi. Si vous gagnez, doublez ces Dommages. Sinon réduisez-les à 0.",
@@ -4793,7 +4845,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Lapin",
+              "force": 1,
+              "element": "Feu",
+              "sub": "Lapin"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "Chaque fois que votre Héros regagne un ou plusieurs PV, ce gain est augmenté de 1.",

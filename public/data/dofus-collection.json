@@ -4016,7 +4016,18 @@
         "description": "Quand Otomaï apparaît, détruisez l'Allié, la Zone ou l'Équipement de votre choix dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "whatAny": ["Allié", "Zone", "Équipement"],
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       },
       {
         "description": "Quand Otomaï est détruit, recyclez toutes les cartes de la Défausse du joueur de votre choix.",

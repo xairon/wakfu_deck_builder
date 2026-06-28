@@ -5496,7 +5496,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Dragonnet",
+              "force": 5,
+              "element": "Feu",
+              "sub": "Dragonnet"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["create-token"]
       },
       {
         "description": "L'Invocation de Dragonnet inflige 2 Dommages à l'Allié ou Héros de votre choix. Cet Allié ou Héros perd tous ses pouvoirs jusqu'à la fin du tour.",
