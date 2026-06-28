@@ -19,10 +19,13 @@ const TURN_TOKENS = new Set([
   "paMod",
   "pmMod",
   "geantMod",
-  // « gagne Géant jusqu'à la fin du TOUR » (grantGeantSelf/grantGeantTarget) —
-  // purgé en fin de tour, comme forceMod (geantCombatMod, lui, est couvert par
-  // le suffixe *CombatMod ⇒ portée combat).
+  // « gagne <Mot-clé> jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) —
+  // jetons TURN-scoped purgés en fin de tour, comme forceMod (geantCombatMod, lui,
+  // est couvert par le suffixe *CombatMod ⇒ portée combat). Un jeton par mot-clé
+  // octroyable de combat (Géant / Agilité / Agressivité), lu par effectiveKeywords.
   "geantTurnMod",
+  "agiliteTurnMod",
+  "agressiviteTurnMod",
   "coupCritique",
   "teamForceMod",
 ]);

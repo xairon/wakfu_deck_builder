@@ -183,11 +183,11 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Bonus de combat (Force/PM/Géant) jusqu'à la fin du combat.",
   },
   {
-    id: "grant-geant-self",
-    label: "Géant (soi, jusqu'à la fin du tour)",
+    id: "grant-keyword-self",
+    label: "Mot-clé conféré (soi, jusqu'à la fin du tour)",
     category: "tempo",
     glossary:
-      "La carte source gagne le mot-clé Géant jusqu'à la fin du tour (répartition de la Force entre les bloqueurs au combat).",
+      "La carte source gagne un mot-clé de combat (Géant : répartition de Force ; Agilité : ne peut être bloqué que par Agilité ; Agressivité : peut attaquer le tour de son apparition) jusqu'à la fin du tour.",
     relatesTo: [
       {
         tag: "combat-mod-self",
@@ -197,16 +197,16 @@ export const MECHANICS: Mechanic[] = [
     ],
   },
   {
-    id: "grant-geant-target",
-    label: "Géant (cible, jusqu'à la fin du tour)",
+    id: "grant-keyword-target",
+    label: "Mot-clé conféré (cible, jusqu'à la fin du tour)",
     category: "tempo",
     glossary:
-      "L'Allié ou Héros ciblé gagne le mot-clé Géant jusqu'à la fin du tour.",
+      "L'Allié ou Héros ciblé gagne un mot-clé de combat (Géant / Agilité / Agressivité) jusqu'à la fin du tour.",
     relatesTo: [
       {
-        tag: "grant-geant-self",
+        tag: "grant-keyword-self",
         kind: "synergizes",
-        note: "Variante ciblée de l'octroi de Géant.",
+        note: "Variante ciblée de l'octroi de mot-clé.",
       },
     ],
   },
@@ -356,8 +356,8 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   tapSelf: "tap-self",
   untapSelf: "untap-self",
   combatModSelf: "combat-mod-self",
-  grantGeantSelf: "grant-geant-self",
-  grantGeantTarget: "grant-geant-target",
+  grantKeywordSelf: "grant-keyword-self",
+  grantKeywordTarget: "grant-keyword-target",
   buffForceAlliesMondeTurn: "buff-force-allies-monde",
   globalDamageShield: "global-damage-shield",
   tapTarget: "tap-target",

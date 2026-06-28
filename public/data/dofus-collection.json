@@ -2898,7 +2898,20 @@
         "description": "L'Allié Gelée de votre choix gagne Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agilité",
+              "heroes": false,
+              "sub": "gelee",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],
@@ -4055,12 +4068,13 @@
           "trigger": "onTap",
           "ops": [
             {
-              "op": "grantGeantSelf"
+              "op": "grantKeywordSelf",
+              "keyword": "Géant"
             }
           ]
         },
         "coverage": "auto",
-        "mechanics": ["grant-geant-self"]
+        "mechanics": ["grant-keyword-self"]
       }
     ],
     "keywords": [],

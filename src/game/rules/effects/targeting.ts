@@ -21,6 +21,7 @@ import { normWord, xpValue } from "../cardAttrs";
 import { effectiveForce } from "../stats";
 import { reduceDamage } from "./damageMods";
 import { grantXpEvents } from "../progress";
+import { GRANT_KEYWORD_TOKEN } from "./keywords";
 
 export type TargetingOp = Extract<
   CompiledEffectOp,
@@ -30,7 +31,7 @@ export type TargetingOp = Extract<
   | { op: "damageTargetByForce" }
   | { op: "healHeroTarget" }
   | { op: "buffForceTarget" }
-  | { op: "grantGeantTarget" }
+  | { op: "grantKeywordTarget" }
   | { op: "tapTarget" }
   | { op: "untapTarget" }
   | { op: "returnToHand" }
@@ -52,7 +53,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "damageTargetByForce" ||
     op.op === "healHeroTarget" ||
     op.op === "buffForceTarget" ||
-    op.op === "grantGeantTarget" ||
+    op.op === "grantKeywordTarget" ||
     op.op === "tapTarget" ||
     op.op === "untapTarget" ||
     op.op === "returnToHand" ||
@@ -156,7 +157,7 @@ export function effectTargetIds(
     op.op === "untapTarget" ||
     op.op === "returnToHand" ||
     op.op === "damageTargetByForce" ||
-    op.op === "grantGeantTarget"
+    op.op === "grantKeywordTarget"
       ? op.controller
       : undefined;
   // Rôles du combat EN COURS (state.combat) : un instance est « attaquant »
@@ -195,7 +196,7 @@ export function effectTargetIds(
       (op.op === "buffForceTarget" ||
         op.op === "destroyTarget" ||
         op.op === "damageTarget" ||
-        op.op === "grantGeantTarget") &&
+        op.op === "grantKeywordTarget") &&
       op.sub
     ) {
       ok = (card.subTypes ?? []).some((s) => normWord(s) === op.sub);
@@ -252,7 +253,7 @@ export function effectTargetIds(
         op.op === "damageTarget" ||
         op.op === "damageMultiTarget" ||
         op.op === "buffForceTarget" ||
-        op.op === "grantGeantTarget" ||
+        op.op === "grantKeywordTarget" ||
         op.op === "tapTarget" ||
         op.op === "untapTarget") &&
       "combatRole" in op &&
@@ -510,21 +511,25 @@ export function resolveReturnToHand(
 }
 
 /**
- * « L'Allié [ou Héros] [bloqué / de votre choix] gagne Géant jusqu'à la fin du
- * tour » (Pandaluk, Rat Klure, Petit Anneau de Force) : pose un jeton TURN-scoped
- * `geantTurnMod` sur la cible choisie (purgé en fin de tour, isTurnToken ; lu par
- * effectiveKeywords pour la répartition de Force au combat).
+ * « L'Allié [ou Héros] [Famille] [bloqué / de votre choix] gagne <Mot-clé>
+ * jusqu'à la fin du tour » (Géant : Pandaluk, Rat Klure, Petit Anneau de Force ;
+ * Agilité : Petit Anneau d'Agilité, Gelée… ; Agressivité : Monstre de votre choix,
+ * Petit Anneau d'Intelligence…) : pose le jeton TURN-scoped `<kw>TurnMod`
+ * (geantTurnMod / agiliteTurnMod / agressiviteTurnMod) sur la cible choisie (purgé
+ * en fin de tour, isTurnToken ; lu par effectiveKeywords → légalité de combat).
  */
-export function resolveGrantGeantTarget(
+export function resolveGrantKeywordTarget(
   ctx: RulesCtx,
   actor: Seat,
   targetId: InstanceId,
+  keyword: "Géant" | "Agilité" | "Agressivité",
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   if (!inst) return { events: [], log: [] };
+  const token = GRANT_KEYWORD_TOKEN[keyword];
   return {
-    events: [setCounter(actor, targetId, "geantTurnMod", 1, true)],
-    log: [`${nameOf(ctx, targetId)} gagne Géant jusqu'à la fin du tour.`],
+    events: [setCounter(actor, targetId, token, 1, true)],
+    log: [`${nameOf(ctx, targetId)} gagne ${keyword} jusqu'à la fin du tour.`],
   };
 }
 

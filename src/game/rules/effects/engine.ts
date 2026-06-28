@@ -30,6 +30,7 @@ import {
   effectiveForce,
   effectSourceElement,
   effectTargetIds,
+  GRANT_KEYWORD_TOKEN,
   grantXpEvents,
   heroLevel,
   isCostTargetingOp,
@@ -42,7 +43,7 @@ import {
   resolveDamageTarget,
   resolveDamageTargetByForce,
   resolveDestroyTarget,
-  resolveGrantGeantTarget,
+  resolveGrantKeywordTarget,
   resolveHealHeroTarget,
   resolveReturnToHand,
   resolveTapTarget,
@@ -834,19 +835,29 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
-      } else if (op.op === "grantGeantSelf") {
-        // « [self] gagne Géant jusqu'à la fin du tour. » (Ouassingue) — jeton
-        // TURN-scoped `geantTurnMod` sur la SOURCE (uniquement en jeu), purgé en
-        // fin de tour (isTurnToken), lu par effectiveKeywords. Distinct de
-        // combatModSelf (geantCombatMod, portée combat).
+      } else if (op.op === "grantKeywordSelf") {
+        // « [self] gagne <Mot-clé> jusqu'à la fin du tour. » (Ouassingue : Géant) —
+        // jeton TURN-scoped `<kw>TurnMod` (geantTurnMod / agiliteTurnMod /
+        // agressiviteTurnMod) sur la SOURCE (uniquement en jeu), purgé en fin de
+        // tour (isTurnToken), lu par effectiveKeywords → légalité de combat.
+        // Distinct de combatModSelf (geantCombatMod, portée combat).
         const src = sourceId ? deps.getState().instances[sourceId] : null;
         const inPlay =
           src &&
           (src.location.zone === "monde" || src.location.zone === "havreSac");
         if (inPlay) {
           deps.dispatch(
-            setCounterVerb(seat, sourceId!, "geantTurnMod", 1, true),
-            say(seat, `${cardName} gagne Géant jusqu'à la fin du tour.`),
+            setCounterVerb(
+              seat,
+              sourceId!,
+              GRANT_KEYWORD_TOKEN[op.keyword],
+              1,
+              true,
+            ),
+            say(
+              seat,
+              `${cardName} gagne ${op.keyword} jusqu'à la fin du tour.`,
+            ),
           );
         }
       } else if (op.op === "draw") {
@@ -1454,8 +1465,13 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                   instanceId,
                   t.op.n,
                 )
-              : t.op.op === "grantGeantTarget"
-                ? resolveGrantGeantTarget(deps.rulesCtx(), t.seat, instanceId)
+              : t.op.op === "grantKeywordTarget"
+                ? resolveGrantKeywordTarget(
+                    deps.rulesCtx(),
+                    t.seat,
+                    instanceId,
+                    t.op.keyword,
+                  )
                 : t.op.op === "tapTarget"
                   ? resolveTapTarget(
                       deps.rulesCtx(),

@@ -11856,7 +11856,20 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agilité",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [
@@ -11918,7 +11931,20 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "sacrificeSelf",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agressivité",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [
@@ -12047,14 +12073,15 @@
           "cost": "sacrificeSelf",
           "ops": [
             {
-              "op": "grantGeantTarget",
+              "op": "grantKeywordTarget",
+              "keyword": "Géant",
               "heroes": true,
               "zones": ["monde", "havreSac"]
             }
           ]
         },
         "coverage": "auto",
-        "mechanics": ["grant-geant-target"]
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [
@@ -12733,7 +12760,8 @@
           "trigger": "onTap",
           "ops": [
             {
-              "op": "grantGeantTarget",
+              "op": "grantKeywordTarget",
+              "keyword": "Géant",
               "sub": "rat",
               "combatRole": "blocking",
               "zones": ["monde", "havreSac"]
@@ -12741,7 +12769,7 @@
           ]
         },
         "coverage": "auto",
-        "mechanics": ["grant-geant-target"]
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],

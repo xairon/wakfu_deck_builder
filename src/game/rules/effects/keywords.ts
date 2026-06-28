@@ -129,18 +129,41 @@ export function effectiveKeywords(
     bearerGeant ||
     !!tokens.geantMod ||
     !!tokens.geantCombatMod ||
-    // « gagne Géant jusqu'à la fin du TOUR » (grantGeantSelf/grantGeantTarget) :
+    // « gagne Géant jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) :
     // jeton TURN-scoped posé sur l'instance, purgé en fin de tour (isTurnToken).
     !!tokens.geantTurnMod;
-  // Agilité / Agressivité : imprimés sur la face courante (aucun jeton ni bonus
-  // d'équipement ne les confère aujourd'hui) — repris tels quels de `base`.
+  // Agilité / Agressivité : imprimés sur la face courante (`base`) OU conférés
+  // « jusqu'à la fin du tour » par un jeton TURN-scoped `<kw>TurnMod`
+  // (grantKeywordSelf/grantKeywordTarget), purgé en fin de tour (isTurnToken).
+  // Ces jetons alimentent EXACTEMENT les mêmes légalités que les mots-clés
+  // imprimés (Agilité → blocage 704 ; Agressivité → mal d'invocation à l'attaque),
+  // lus par eligibleBlockers/eligibleAttackers via effectiveKeywords.
+  const agilite = base.agilite || !!tokens.agiliteTurnMod;
+  const agressivite = base.agressivite || !!tokens.agressiviteTurnMod;
   return {
     resistances,
     geant,
-    agilite: base.agilite,
-    agressivite: base.agressivite,
+    agilite,
+    agressivite,
   };
 }
+
+/**
+ * Mot-clé octroyable « jusqu'à la fin du tour » → nom du jeton TURN-scoped
+ * correspondant (`<kw>TurnMod`), lu par effectiveKeywords et purgé en fin de tour
+ * (TURN_TOKENS). Centralise la correspondance Mot-clé → jeton pour le moteur
+ * (grantKeywordSelf) et le ciblage (grantKeywordTarget). N'admet QUE les mots-clés
+ * de combat câblés (grantKeywordSchema) — les autres ne sont pas octroyés (no-op
+ * = approximation, donc laissés manuels en amont par le DSL).
+ */
+export const GRANT_KEYWORD_TOKEN: Record<
+  "Géant" | "Agilité" | "Agressivité",
+  "geantTurnMod" | "agiliteTurnMod" | "agressiviteTurnMod"
+> = {
+  Géant: "geantTurnMod",
+  Agilité: "agiliteTurnMod",
+  Agressivité: "agressiviteTurnMod",
+};
 
 /** Dommages effectifs après Résistance de la cible (par infliction, 7469). */
 export function preventDamage(

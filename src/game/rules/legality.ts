@@ -11,7 +11,7 @@ import { otherSeat } from "../types/zones.ts";
 import type { CombatTarget, RulesCtx } from "./types";
 import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
-import { combatKeywords } from "./effects/keywords.ts";
+import { effectiveKeywords } from "./effects/keywords.ts";
 import { planCost } from "./resources.ts";
 
 /** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
@@ -93,12 +93,13 @@ export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
     // le Héros n'a pas le mal d'invocation (en jeu depuis la mise en place).
     // Agressivité (glossaire) : un Allié possédant ce mot-clé PEUT être déclaré
     // attaquant le tour où il apparaît — on lève UNIQUEMENT le mal d'invocation
-    // (toutes les autres contraintes ci-dessus restent vérifiées).
+    // (toutes les autres contraintes ci-dessus restent vérifiées). Lu via
+    // effectiveKeywords : l'Agressivité IMPRIMÉE comme celle CONFÉRÉE « jusqu'à
+    // la fin du tour » (jeton agressiviteTurnMod) lèvent toutes deux le mal.
     if (
       card.mainType === "Allié" &&
       arrivedTurnOf(inst) >= ctx.state.turn.number &&
-      !combatKeywords(card, inst.face === "verso" ? "verso" : "recto")
-        .agressivite
+      !effectiveKeywords(ctx, inst.instanceId).agressivite
     )
       continue;
     out.push(inst.instanceId);
@@ -126,11 +127,14 @@ export function eligibleTargets(ctx: RulesCtx, seat: Seat): CombatTarget[] {
   return out;
 }
 
-/** Mots-clés de combat d'une instance en jeu (face courante incluse). */
+/**
+ * Mots-clés de combat EFFECTIFS d'une instance en jeu : face courante imprimée +
+ * jetons (« gagne <Mot-clé> jusqu'à la fin du tour » → `<kw>TurnMod`) + bonus de
+ * Porteur. On lit via effectiveKeywords (et non combatKeywords) pour que
+ * l'Agilité CONFÉRÉE soit aussi prise en compte dans la légalité de blocage (704).
+ */
 function instanceKeywords(ctx: RulesCtx, id: InstanceId) {
-  const inst = ctx.state.instances[id];
-  const card = inst ? ctx.getCard(inst.cardId) : null;
-  return combatKeywords(card, inst?.face === "verso" ? "verso" : "recto");
+  return effectiveKeywords(ctx, id);
 }
 
 /**

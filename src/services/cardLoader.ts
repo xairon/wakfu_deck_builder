@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v33"; // v33 : ops grantGeantSelf/grantGeantTarget — « gagne Géant jusqu'à la fin du tour » (Ouassingue / Pandaluk / Rat Klure / Petit Anneau de Force) compilé (jeton TURN geantTurnMod → effectiveKeywords) ; variantes BEARER/COMBAT/composite restent manuelles
+const CACHE_KEY = "wakfu-cards-cache-v34"; // v34 : ops grantGeant* généralisées en grantKeyword{Self,Target}{keyword} — « gagne <Géant|Agilité|Agressivité> jusqu'à la fin du tour » compilé (jetons TURN geantTurnMod/agiliteTurnMod/agressiviteTurnMod → effectiveKeywords → légalité combat) ; +7 grants Agilité/Agressivité couverts ; mots-clés inertes (Tacle…), BEARER/COMBAT/composite restent manuels
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [

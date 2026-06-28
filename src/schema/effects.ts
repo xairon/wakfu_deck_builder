@@ -14,6 +14,14 @@ const orientationFilterSchema = z.enum(["tapped", "upright"]);
 // combat EN COURS (state.combat) ; hors combat, aucune cible éligible.
 // « inCombat » = « attaquant OU bloqueur » (l'un OU l'autre rôle).
 const combatRoleSchema = z.enum(["attacking", "blocking", "inCombat"]);
+// Mots-clés OCTROYABLES « jusqu'à la fin du tour » (grantKeyword{Self,Target}).
+// STRICT : on n'autorise QUE les mots-clés ayant une SÉMANTIQUE DE COMBAT câblée
+// (lue par effectiveKeywords → légalité) — un octroi d'un mot-clé inerte (Tacle,
+// Fantôme, Défense, Renfort…) serait un no-op, donc une APPROXIMATION. Ceux-là
+// restent manuels (le DSL ne les compile pas). Géant : répartition de Force au
+// combat (7258/6135). Agilité : ne peut être bloqué que par Agilité (704).
+// Agressivité : peut attaquer le tour de son apparition (lève le mal d'invocation).
+const grantKeywordSchema = z.enum(["Géant", "Agilité", "Agressivité"]);
 
 // ── CONDITIONS « Si <condition>, <corps> » (sous-système conditionnel) ────────
 // Une `CondSpec` est une condition FAITHFULLY évaluable depuis l'état de jeu à
@@ -291,22 +299,25 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     pm: z.number().optional(),
     geant: z.boolean().optional(),
   }),
-  // « [self] gagne Géant jusqu'à la fin du tour. » (Ouassingue) — la SOURCE
-  // gagne le mot-clé Géant (7258/6135 : répartition de la Force entre les
-  // bloqueurs au combat) jusqu'à la fin du tour. Pose un jeton `geantTurnMod`
-  // sur la source (uniquement si elle est en jeu), purgé en fin de tour
-  // (isTurnToken), lu par effectiveKeywords. Distinct de combatModSelf, dont le
-  // jeton `geantCombatMod` est de portée COMBAT (« jusqu'à la fin du combat »).
-  z.object({ op: z.literal("grantGeantSelf") }),
-  // « L'Allié [ou Héros] [bloqué / de votre choix] gagne Géant jusqu'à la fin
-  // du tour. » (Pandaluk = tout Allié ; Rat Klure = Rat bloqué ; Petit Anneau
-  // de Force = Allié ou Héros, en sacrifice) — op de CIBLAGE : le joueur choisit
-  // une créature éligible, qui reçoit un jeton TURN-scoped `geantTurnMod` (purgé
-  // en fin de tour, lu par effectiveKeywords). Mêmes filtres que les autres ops
-  // à cible : `heroes`, `sub` (Famille), `combatRole` (rôle de combat),
-  // `controller`, `zones`.
+  // « [self] gagne <Mot-clé> jusqu'à la fin du tour. » (Ouassingue : Géant) — la
+  // SOURCE gagne un mot-clé de COMBAT (grantKeywordSchema : Géant 7258/6135,
+  // Agilité 704, Agressivité = lève le mal d'invocation) jusqu'à la fin du tour.
+  // Pose un jeton TURN-scoped `<kw>TurnMod` (geantTurnMod / agiliteTurnMod /
+  // agressiviteTurnMod) sur la source (uniquement si elle est en jeu), purgé en
+  // fin de tour (isTurnToken), lu par effectiveKeywords. Distinct de combatModSelf
+  // (jeton `geantCombatMod`, portée COMBAT « jusqu'à la fin du combat »).
+  z.object({ op: z.literal("grantKeywordSelf"), keyword: grantKeywordSchema }),
+  // « L'Allié [ou Héros] [Famille] [bloqué / de votre choix] gagne <Mot-clé>
+  // jusqu'à la fin du tour. » (Pandaluk : Géant ; Rat Klure : Géant/Rat bloqué ;
+  // Petit Anneau de Force : Géant en sacrifice ; Petit Anneau d'Agilité :
+  // Agilité en sacrifice ; Monstre de votre choix : Agressivité) — op de CIBLAGE :
+  // le joueur choisit une créature éligible, qui reçoit un jeton TURN-scoped
+  // `<kw>TurnMod` (purgé en fin de tour, lu par effectiveKeywords). Mêmes filtres
+  // que les autres ops à cible : `heroes`, `sub` (Famille), `combatRole` (rôle de
+  // combat), `controller`, `zones`.
   z.object({
-    op: z.literal("grantGeantTarget"),
+    op: z.literal("grantKeywordTarget"),
+    keyword: grantKeywordSchema,
     heroes: z.boolean().optional(),
     sub: z.string().optional(),
     combatRole: combatRoleSchema.optional(),

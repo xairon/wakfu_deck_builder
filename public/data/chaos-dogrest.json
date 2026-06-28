@@ -320,7 +320,19 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agilité",
+              "heroes": false,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],
@@ -6045,14 +6057,15 @@
           "trigger": "onTap",
           "ops": [
             {
-              "op": "grantGeantTarget",
+              "op": "grantKeywordTarget",
+              "keyword": "Géant",
               "heroes": false,
               "zones": ["monde", "havreSac"]
             }
           ]
         },
         "coverage": "auto",
-        "mechanics": ["grant-geant-target"]
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],
@@ -6905,7 +6918,19 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agressivité",
+              "heroes": false,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],

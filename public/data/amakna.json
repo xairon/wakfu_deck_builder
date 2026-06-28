@@ -5272,7 +5272,19 @@
         "description": "Le Monstre de votre choix gagne Agressivité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agressivité",
+              "sub": "monstre",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],

@@ -116,6 +116,22 @@ const ALLIED_FAMILIES = new Set([
 ]);
 
 /**
+ * Mots-clés OCTROYABLES « jusqu'à la fin du tour » → forme canonique (accentuée)
+ * stockée dans l'op grantKeyword{Self,Target}. STRICT : on ne reconnaît QUE les
+ * mots-clés ayant une SÉMANTIQUE DE COMBAT câblée (lue par effectiveKeywords →
+ * légalité). Les autres (Tacle, Fantôme, Défense, Renfort, Portée, Critique,
+ * Parade…) NE sont PAS ici : les octroyer serait un no-op = approximation, donc
+ * ces effets restent MANUELS (« an approximation of gameplay is worse than a
+ * manual effect »). Clé = forme normalisée (norm()).
+ */
+const GRANTABLE_KEYWORDS: Record<string, "Géant" | "Agilité" | "Agressivité"> =
+  {
+    geant: "Géant",
+    agilite: "Agilité",
+    agressivite: "Agressivité",
+  };
+
+/**
  * Mot-type d'une recherche / mise-en-jeu → `{ what, sub? }`, ou null si le mot
  * n'est ni un type racine connu (Allié/Zone/Salle/Équipement/Dofus/Action) ni
  * une Famille de créature non ambiguë (→ Allié + sub). `mot` est déjà normalisé.
@@ -472,51 +488,62 @@ function parseSentence(
   );
   if (m && subjectIsSelf(m[1], cardName))
     return { op: "buffForceSelf", n: toNumber(m[2]) };
-  // « L'Allié (ou Héros) [bloqué] de votre choix gagne Géant jusqu'à la fin du
-  //   tour » (Pandaluk = tout Allié ; Petit Anneau de Force = Allié ou Héros,
-  //   en sacrifice) → grantGeantTarget. « bloqué » → combatRole:"blocking"
-  //   (rôle dans le combat en cours). STRICT : « jusqu'à la fin du tour »
-  //   uniquement (les variantes COMBAT/BEARER restent manuelles).
+  // « L'Allié (ou Héros) [<Famille>] [bloqué] de votre choix gagne <Mot-clé>
+  //   jusqu'à la fin du tour » (Pandaluk : Géant tout Allié ; Petit Anneau de
+  //   Force : Géant Allié ou Héros en sacrifice ; chaos-dogrest : Agilité /
+  //   Agressivité ; L'Allié Gelée/Tofu de votre choix : Agilité par Famille)
+  //   → grantKeywordTarget. STRICT : seuls les mots-clés DE COMBAT câblés
+  //   (GRANTABLE_KEYWORDS : Géant/Agilité/Agressivité) sont compilés ; les autres
+  //   (Tacle, Fantôme…) restent manuels (octroi = no-op = approximation). « bloqué »
+  //   → combatRole:"blocking" ; « jusqu'à la fin du tour » uniquement (variantes
+  //   COMBAT/BEARER manuelles). m[2] = Famille optionnelle (validée ALLIED_FAMILIES).
   m = sentence.match(
-    /^l['’ ]?\s?allie( ou heros)?( bloque)? de votre choix gagne geant jusqu['’]a la fin d[ue] tour$/,
+    /^l['’ ]?\s?allie( ou heros)?(?: ([a-z-]+))?( bloque)? de votre choix gagne ([a-z]+) jusqu['’]a la fin d[ue] tour$/,
   );
-  if (m)
+  if (m && GRANTABLE_KEYWORDS[m[4]] && (!m[2] || ALLIED_FAMILIES.has(m[2])))
     return {
-      op: "grantGeantTarget",
+      op: "grantKeywordTarget",
+      keyword: GRANTABLE_KEYWORDS[m[4]],
       heroes: !!m[1],
-      ...(m[2] ? { combatRole: "blocking" as const } : {}),
+      ...(m[2] ? { sub: m[2] } : {}),
+      ...(m[3] ? { combatRole: "blocking" as const } : {}),
       zones: ["monde", "havreSac"],
     };
-  // « Le <Famille> [bloqué] de votre choix gagne Géant jusqu'à la fin du tour »
-  //   (Rat Klure = « Le Rat bloqué de votre choix … ») → grantGeantTarget filtré
-  //   par Famille (sub, sur subTypes). La Famille doit être non ambiguë
-  //   (ALLIED_FAMILIES — désigne forcément un Allié) ; sinon manuel.
+  // « Le <Famille> [bloqué] de votre choix gagne <Mot-clé> jusqu'à la fin du
+  //   tour » (Rat Klure : Géant/Rat bloqué ; Le Monstre de votre choix : Agressivité)
+  //   → grantKeywordTarget filtré par Famille (sub, sur subTypes). La Famille doit
+  //   être non ambiguë (ALLIED_FAMILIES — désigne forcément un Allié) ; sinon manuel.
   m = sentence.match(
-    /^le ([a-z-]+?)( bloque)? de votre choix gagne geant jusqu['’]a la fin d[ue] tour$/,
+    /^le ([a-z-]+?)( bloque)? de votre choix gagne ([a-z]+) jusqu['’]a la fin d[ue] tour$/,
   );
-  if (m && ALLIED_FAMILIES.has(m[1]))
+  if (m && ALLIED_FAMILIES.has(m[1]) && GRANTABLE_KEYWORDS[m[3]])
     return {
-      op: "grantGeantTarget",
+      op: "grantKeywordTarget",
+      keyword: GRANTABLE_KEYWORDS[m[3]],
       sub: m[1],
       ...(m[2] ? { combatRole: "blocking" as const } : {}),
       zones: ["monde", "havreSac"],
     };
-  // « [Cette carte] gagne Géant jusqu'à la fin du tour » (Ouassingue) →
-  //   grantGeantSelf (la SOURCE gagne le mot-clé jusqu'à la fin du tour). Le
+  // « [Cette carte] gagne <Mot-clé> jusqu'à la fin du tour » (Ouassingue : Géant)
+  //   → grantKeywordSelf (la SOURCE gagne le mot-clé jusqu'à la fin du tour). Le
   //   sujet doit être la carte elle-même (subjectIsSelf) ; placé APRÈS les formes
   //   ciblées pour ne pas capter « L'Allié … de votre choix » (qui n'est pas soi).
-  //   STRICT : on rejette un sujet « Le Porteur de … » (bonus de PORTEUR temporaire,
-  //   mécanisme différent — Anneau du Rat Noir) et tout sujet COMPOSITE (« … perd
-  //   Agilité et gagne Géant » — Pandhravan : retrait de mot-clé non modélisé).
-  //   Ces formes restent manuelles (« an approximation … is worse … »).
-  m = sentence.match(/^(.{1,50}?) gagne geant jusqu['’]a la fin d[ue] tour$/);
+  //   STRICT : seuls les mots-clés DE COMBAT câblés (GRANTABLE_KEYWORDS) sont
+  //   compilés ; on rejette un sujet « Le Porteur de … » (bonus de PORTEUR
+  //   temporaire — Anneau du Rat Noir) et tout sujet COMPOSITE (« … perd Agilité et
+  //   gagne Géant » — Pandhravan : retrait de mot-clé non modélisé). Ces formes
+  //   restent manuelles (« an approximation … is worse … »).
+  m = sentence.match(
+    /^(.{1,50}?) gagne ([a-z]+) jusqu['’]a la fin d[ue] tour$/,
+  );
   if (
     m &&
+    GRANTABLE_KEYWORDS[m[2]] &&
     !/\bporteur\b/.test(m[1]) &&
     !/\b(?:perd|et|puis|ou)\b/.test(m[1]) &&
     subjectIsSelf(m[1], cardName)
   )
-    return { op: "grantGeantSelf" };
+    return { op: "grantKeywordSelf", keyword: GRANTABLE_KEYWORDS[m[2]] };
   // « Détruisez l'Équipement ou la Zone de votre choix » (deux types, dans
   //   l'un ou l'autre ordre) → destroyTarget multi-type. Placé AVANT la forme
   //   mono-type pour capter les deux compléments.

@@ -1,19 +1,25 @@
 /**
- * « gagne Géant jusqu'à la fin du tour » — octroi TURN-scoped du mot-clé Géant.
+ * « gagne <Mot-clé> jusqu'à la fin du tour » — octroi TURN-scoped d'un mot-clé
+ * de COMBAT câblé (Géant / Agilité / Agressivité), généralisé depuis l'octroi de
+ * Géant.
  *
  * Deux ops :
- *  - grantGeantSelf  : « [self] gagne Géant jusqu'à la fin du tour. » (Ouassingue)
- *    → jeton `geantTurnMod` sur la SOURCE (en jeu), purgé en fin de tour.
- *  - grantGeantTarget : « L'Allié [ou Héros] [bloqué / de votre choix] gagne
- *    Géant jusqu'à la fin du tour. » (Pandaluk = tout Allié ; Rat Klure = Rat
- *    bloqué ; Petit Anneau de Force = Allié ou Héros en sacrifice) → op de
- *    ciblage posant `geantTurnMod` sur la cible choisie.
+ *  - grantKeywordSelf{keyword}   : « [self] gagne <kw> jusqu'à la fin du tour. »
+ *    (Ouassingue : Géant) → jeton `<kw>TurnMod` sur la SOURCE (en jeu), purgé en
+ *    fin de tour.
+ *  - grantKeywordTarget{keyword} : « L'Allié [ou Héros] [Famille] [bloqué / de
+ *    votre choix] gagne <kw> jusqu'à la fin du tour. » → op de ciblage posant
+ *    `<kw>TurnMod` sur la cible choisie.
  *
- * Distinct de combatModSelf (jeton `geantCombatMod`, portée COMBAT). STRICT :
- * seules les formes « jusqu'à la fin du tour » sont compilées ; les variantes
- * BEARER (« Le Porteur de X gagne Géant … »), COMBAT et composites (« perd
- * Agilité et gagne Géant ») restent manuelles (« an approximation of gameplay
- * is worse than a manual effect »).
+ * Jetons : geantTurnMod / agiliteTurnMod / agressiviteTurnMod, lus par
+ * effectiveKeywords (geant/agilite/agressivite) qui alimentent la LÉGALITÉ de
+ * combat (Agilité → bloqué uniquement par Agilité ; Agressivité → attaque le tour
+ * de son apparition ; Géant → répartition de Force). Distinct de combatModSelf
+ * (jeton `geantCombatMod`, portée COMBAT). STRICT : seules les formes « jusqu'à la
+ * fin du tour » et les mots-clés FONCTIONNELS sont compilés ; les variantes BEARER
+ * (« Le Porteur de X gagne … »), COMBAT, composites (« perd Agilité et gagne
+ * Géant ») et les mots-clés inertes (Tacle…) restent manuels (« an approximation
+ * of gameplay is worse than a manual effect »).
  */
 import { describe, it, expect, vi } from "vitest";
 import type { GameState } from "@/game";
@@ -25,6 +31,8 @@ import { isTurnToken } from "../limits";
 import { effectiveKeywords } from "../keywords";
 import { effectTargetIds } from "../targeting";
 import { nextTurnEvents } from "../../../engine/turn";
+import { eligibleAttackers, eligibleBlockers } from "../../legality";
+import { HERO_B } from "../../__tests__/harness";
 import {
   bringToMonde,
   ctxOf,
@@ -37,19 +45,19 @@ import {
 
 // ── Volet 1 : DSL ────────────────────────────────────────────────────────────
 
-describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
-  it("« La Ouassingue gagne Géant jusqu'à la fin du tour » → grantGeantSelf (onTap, requiresIncline)", () => {
+describe("DSL — « gagne <Mot-clé> jusqu'à la fin du tour » (Géant — régression)", () => {
+  it("« La Ouassingue gagne Géant jusqu'à la fin du tour » → grantKeywordSelf{Géant}", () => {
     const c = compileTapEffectText(
       "La Ouassingue gagne Géant jusqu'à la fin du tour.",
       "Ouassingue",
     );
     expect(c).toEqual({
       trigger: "onTap",
-      ops: [{ op: "grantGeantSelf" }],
+      ops: [{ op: "grantKeywordSelf", keyword: "Géant" }],
     });
   });
 
-  it("« L'Allié de votre choix gagne Géant jusqu'à la fin du tour » → grantGeantTarget (Pandaluk)", () => {
+  it("« L'Allié de votre choix gagne Géant jusqu'à la fin du tour » → grantKeywordTarget{Géant} (Pandaluk)", () => {
     const c = compileTapEffectText(
       "L'Allié de votre choix gagne Géant jusqu'à la fin du tour.",
       "Pandaluk Skaïwoker",
@@ -58,7 +66,8 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
       trigger: "onTap",
       ops: [
         {
-          op: "grantGeantTarget",
+          op: "grantKeywordTarget",
+          keyword: "Géant",
           heroes: false,
           zones: ["monde", "havreSac"],
         },
@@ -66,7 +75,7 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
     });
   });
 
-  it("« Le Rat bloqué de votre choix gagne Géant … » → grantGeantTarget{sub:rat, combatRole:blocking} (Rat Klure)", () => {
+  it("« Le Rat bloqué de votre choix gagne Géant … » → grantKeywordTarget{Géant,sub:rat,combatRole:blocking} (Rat Klure)", () => {
     const c = compileTapEffectText(
       "Le Rat bloqué de votre choix gagne Géant jusqu'à la fin du tour.",
       "Rat Klure",
@@ -75,7 +84,8 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
       trigger: "onTap",
       ops: [
         {
-          op: "grantGeantTarget",
+          op: "grantKeywordTarget",
+          keyword: "Géant",
           sub: "rat",
           combatRole: "blocking",
           zones: ["monde", "havreSac"],
@@ -84,7 +94,7 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
     });
   });
 
-  it("variante SACRIFICE « Détruisez le Petit Anneau de Force : L'Allié ou Héros … » → cost:sacrificeSelf + grantGeantTarget{heroes}", () => {
+  it("variante SACRIFICE « Détruisez le Petit Anneau de Force : … » → cost:sacrificeSelf + grantKeywordTarget{Géant,heroes}", () => {
     const c = compileTapEffectText(
       "Détruisez le Petit Anneau de Force : L'Allié ou Héros de votre choix gagne Géant jusqu'à la fin du tour.",
       "Petit Anneau de Force",
@@ -94,17 +104,116 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
       cost: "sacrificeSelf",
       ops: [
         {
-          op: "grantGeantTarget",
+          op: "grantKeywordTarget",
+          keyword: "Géant",
           heroes: true,
           zones: ["monde", "havreSac"],
         },
       ],
     });
   });
+});
 
-  // NÉGATIF : « Le Porteur de X gagne Géant jusqu'à la fin du tour » (Anneau du
-  // Rat Noir) est un bonus de PORTEUR temporaire (mécanisme différent — bearerBonus
-  // est continu-seulement). Doit rester non compilé par compileTapEffectText.
+describe("DSL — Agilité / Agressivité (nouveaux mots-clés octroyables)", () => {
+  it("« L'Allié de votre choix gagne Agilité jusqu'à la fin du tour » → grantKeywordTarget{Agilité}", () => {
+    const c = compileTapEffectText(
+      "L'Allié de votre choix gagne Agilité jusqu'à la fin du tour.",
+      "Carte X",
+    );
+    expect(c).toEqual({
+      trigger: "onTap",
+      ops: [
+        {
+          op: "grantKeywordTarget",
+          keyword: "Agilité",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+  });
+
+  it("« L'Allié Gelée de votre choix gagne Agilité … » → grantKeywordTarget{Agilité,sub:gelee} (forme Famille)", () => {
+    const c = compileTapEffectText(
+      "L'Allié Gelée de votre choix gagne Agilité jusqu'à la fin du tour.",
+      "Carte X",
+    );
+    expect(c).toEqual({
+      trigger: "onTap",
+      ops: [
+        {
+          op: "grantKeywordTarget",
+          keyword: "Agilité",
+          heroes: false,
+          sub: "gelee",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+  });
+
+  it("« Le Monstre de votre choix gagne Agressivité … » → grantKeywordTarget{Agressivité,sub:monstre}", () => {
+    const c = compileTapEffectText(
+      "Le Monstre de votre choix gagne Agressivité jusqu'à la fin du tour.",
+      "Carte X",
+    );
+    expect(c).toEqual({
+      trigger: "onTap",
+      ops: [
+        {
+          op: "grantKeywordTarget",
+          keyword: "Agressivité",
+          sub: "monstre",
+          combatRole: undefined,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+  });
+
+  it("SACRIFICE « Détruisez le Petit Anneau d'Intelligence : … gagne Agressivité » → cost + grantKeywordTarget{Agressivité,heroes}", () => {
+    const c = compileTapEffectText(
+      "Détruisez le Petit Anneau d'Intelligence : L'Allié ou Héros de votre choix gagne Agressivité jusqu'à la fin du tour.",
+      "Petit Anneau d'Intelligence",
+    );
+    expect(c).toEqual({
+      trigger: "onTap",
+      cost: "sacrificeSelf",
+      ops: [
+        {
+          op: "grantKeywordTarget",
+          keyword: "Agressivité",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+  });
+});
+
+describe("DSL — négatifs (fidélité)", () => {
+  // NÉGATIF : mot-clé SANS sémantique de combat câblée (Tacle) — l'octroyer serait
+  // un no-op = approximation. Doit rester non compilé.
+  it("ne devrait PAS compiler « L'Allié de votre choix gagne Tacle … » (mot-clé inerte)", () => {
+    expect(
+      compileTapEffectText(
+        "L'Allié de votre choix gagne Tacle jusqu'à la fin du tour.",
+        "Carte X",
+      ),
+    ).toBeNull();
+  });
+
+  it("ne devrait PAS compiler « [self] gagne Tacle … » (mot-clé inerte, soi)", () => {
+    expect(
+      compileTapEffectText(
+        "Cette carte gagne Tacle jusqu'à la fin du tour.",
+        "Carte X",
+      ),
+    ).toBeNull();
+  });
+
+  // NÉGATIF : « Le Porteur de X gagne <kw> … » (Anneau du Rat Noir) — bonus de
+  // PORTEUR temporaire (mécanisme différent). Non compilé par compileTapEffectText.
   it("ne devrait PAS compiler « Le Porteur de l'Anneau du Rat Noir gagne Géant … » (bonus de Porteur)", () => {
     expect(
       compileTapEffectText(
@@ -114,9 +223,9 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
     ).toBeNull();
   });
 
-  // NÉGATIF : composite « perd Agilité et gagne Géant » (Pandhravan) — nécessite
-  // un retrait de mot-clé non modélisé. Reste manuel.
-  it("ne devrait PAS compiler « … perd Agilité et gagne Géant … » (composite, retrait de mot-clé)", () => {
+  // NÉGATIF : composite « perd Agilité et gagne Géant » (Pandhravan) — retrait de
+  // mot-clé non modélisé. Reste manuel.
+  it("ne devrait PAS compiler « … perd Agilité et gagne Géant … » (composite)", () => {
     expect(
       compileTapEffectText(
         "Pandhravan perd Agilité et gagne Géant jusqu'à la fin du tour.",
@@ -125,8 +234,7 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
     ).toBeNull();
   });
 
-  // NÉGATIF : famille ambiguë (Iop = classe de Héros, hors ALLIED_FAMILIES) — on
-  // ne devine pas le type. Reste manuel.
+  // NÉGATIF : famille ambiguë (Iop = classe de Héros) — on ne devine pas le type.
   it("ne devrait PAS compiler « Le Iop de votre choix gagne Géant … » (famille ambiguë)", () => {
     expect(
       compileTapEffectText(
@@ -137,7 +245,7 @@ describe("DSL — « gagne Géant jusqu'à la fin du tour »", () => {
   });
 });
 
-// ── Volet 2 : moteur (engine isolé) — grantGeantSelf ─────────────────────────
+// ── Volet 2 : moteur (engine isolé) — grantKeywordSelf ───────────────────────
 
 function aSrc(id: string): Card {
   return {
@@ -217,8 +325,8 @@ function tokenOn(
     );
 }
 
-describe("moteur — grantGeantSelf (jeton geantTurnMod sur la source)", () => {
-  it("pose un jeton geantTurnMod sur la source en jeu", () => {
+describe("moteur — grantKeywordSelf (jeton <kw>TurnMod sur la source)", () => {
+  it("Géant : pose un jeton geantTurnMod sur la source en jeu", () => {
     const cards = { "card-s": aSrc("s") };
     const state = makeState({ s: inst("s", "card-s") });
     const dispatch = vi.fn();
@@ -227,12 +335,31 @@ describe("moteur — grantGeantSelf (jeton geantTurnMod sur la source)", () => {
       seat: "A",
       cardName: "Ouassingue",
       sourceId: "s",
-      ops: [{ op: "grantGeantSelf" }],
+      ops: [{ op: "grantKeywordSelf", keyword: "Géant" }],
     });
     const tok = tokenOn(dispatch, "s", "geantTurnMod");
     expect(tok, "geantTurnMod sur la source").toBeTruthy();
     expect(tok.payload.value).toBe(1);
     expect(tok.payload.token).toBe(true);
+  });
+
+  it("Agilité : pose un jeton agiliteTurnMod ; Agressivité : agressiviteTurnMod", () => {
+    for (const [keyword, token] of [
+      ["Agilité", "agiliteTurnMod"],
+      ["Agressivité", "agressiviteTurnMod"],
+    ] as const) {
+      const cards = { "card-s": aSrc("s") };
+      const state = makeState({ s: inst("s", "card-s") });
+      const dispatch = vi.fn();
+      const engine = createEffectEngine(mockDeps(state, cards, { dispatch }));
+      engine.enqueueEffect({
+        seat: "A",
+        cardName: "Carte X",
+        sourceId: "s",
+        ops: [{ op: "grantKeywordSelf", keyword }],
+      });
+      expect(tokenOn(dispatch, "s", token), `${keyword}→${token}`).toBeTruthy();
+    }
   });
 
   it("NÉGATIF : source hors jeu (Défausse) → aucun jeton (no-op fidèle)", () => {
@@ -246,7 +373,7 @@ describe("moteur — grantGeantSelf (jeton geantTurnMod sur la source)", () => {
       seat: "A",
       cardName: "Ouassingue",
       sourceId: "s",
-      ops: [{ op: "grantGeantSelf" }],
+      ops: [{ op: "grantKeywordSelf", keyword: "Géant" }],
     });
     expect(tokenOn(dispatch, "s", "geantTurnMod")).toBeFalsy();
   });
@@ -254,51 +381,36 @@ describe("moteur — grantGeantSelf (jeton geantTurnMod sur la source)", () => {
 
 // ── Volet 3 : effectiveKeywords + purge de fin de tour (harness réel) ─────────
 
-describe("rules/effects — geantTurnMod alimente effectiveKeywords (Géant) et se purge", () => {
-  it("grantGeantSelf : effectiveKeywords.geant devient true pour la source", () => {
-    const f = fixture([makeAlly("ouas", { force: 2 })]);
-    setTurn(f, "A", 3);
-    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
-    const id = instId("A", 0);
-    // avant : pas de Géant intrinsèque
-    expect(effectiveKeywords(ctxOf(f), id).geant).toBe(false);
-    // pose le jeton TURN (comme le ferait grantGeantSelf)
-    dispatch(f, {
-      actor: "A",
-      type: "SET_COUNTER",
-      payload: {
-        instanceId: id,
-        counter: "geantTurnMod",
-        value: 1,
-        token: true,
-      },
-    } as never);
-    expect(effectiveKeywords(ctxOf(f), id).geant).toBe(true);
-  });
+describe("rules/effects — <kw>TurnMod alimente effectiveKeywords et se purge", () => {
+  const cases = [
+    ["geantTurnMod", "geant"],
+    ["agiliteTurnMod", "agilite"],
+    ["agressiviteTurnMod", "agressivite"],
+  ] as const;
 
-  it("le jeton geantTurnMod est purgé au passage au tour suivant (effectiveKeywords redevient false)", () => {
-    const f = fixture([makeAlly("ouas", { force: 2 })]);
-    setTurn(f, "A", 3);
-    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
-    const id = instId("A", 0);
-    dispatch(f, {
-      actor: "A",
-      type: "SET_COUNTER",
-      payload: {
-        instanceId: id,
-        counter: "geantTurnMod",
-        value: 1,
-        token: true,
-      },
-    } as never);
-    expect(effectiveKeywords(ctxOf(f), id).geant).toBe(true);
-    // passage au tour suivant : nextTurnEvents purge les jetons « du tour »
-    dispatch(f, ...nextTurnEvents(ctxOf(f).state));
-    expect(effectiveKeywords(ctxOf(f), id).geant).toBe(false);
-  });
+  for (const [token, kw] of cases) {
+    it(`${token} → effectiveKeywords.${kw} devient true puis se purge en fin de tour`, () => {
+      const f = fixture([makeAlly("c", { force: 2 })]);
+      setTurn(f, "A", 3);
+      bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+      const id = instId("A", 0);
+      expect(effectiveKeywords(ctxOf(f), id)[kw]).toBe(false);
+      dispatch(f, {
+        actor: "A",
+        type: "SET_COUNTER",
+        payload: { instanceId: id, counter: token, value: 1, token: true },
+      } as never);
+      expect(effectiveKeywords(ctxOf(f), id)[kw]).toBe(true);
+      // passage au tour suivant : nextTurnEvents purge les jetons « du tour »
+      dispatch(f, ...nextTurnEvents(ctxOf(f).state));
+      expect(effectiveKeywords(ctxOf(f), id)[kw]).toBe(false);
+    });
+  }
 
-  it("isTurnToken reconnaît geantTurnMod (purgé) mais pas geantCombatMod via ce nom (portée combat couverte par *CombatMod)", () => {
+  it("isTurnToken reconnaît les trois jetons d'octroi (purgés)", () => {
     expect(isTurnToken("geantTurnMod")).toBe(true);
+    expect(isTurnToken("agiliteTurnMod")).toBe(true);
+    expect(isTurnToken("agressiviteTurnMod")).toBe(true);
     // geantCombatMod reste purgé par le suffixe *CombatMod (portée combat)
     expect(isTurnToken("geantCombatMod")).toBe(true);
     // un jeton durable n'est pas purgé
@@ -306,10 +418,10 @@ describe("rules/effects — geantTurnMod alimente effectiveKeywords (Géant) et 
   });
 });
 
-// ── Volet 4 : ciblage — grantGeantTarget (éligibilité + résolution) ──────────
+// ── Volet 4 : ciblage — grantKeywordTarget (éligibilité + résolution) ────────
 
-describe("moteur — grantGeantTarget (ciblage + jeton sur la cible choisie)", () => {
-  it("Pandaluk (tout Allié) : pose geantTurnMod sur l'Allié choisi", () => {
+describe("moteur — grantKeywordTarget (ciblage + jeton sur la cible choisie)", () => {
+  it("Pandaluk (Géant, tout Allié) : pose geantTurnMod sur l'Allié choisi", () => {
     const f = fixture(
       [makeAlly("src", { force: 1 }), makeAlly("cible", { force: 2 })],
       [makeAlly("ennemi", { force: 2 })],
@@ -319,29 +431,28 @@ describe("moteur — grantGeantTarget (ciblage + jeton sur la cible choisie)", (
     bringToMonde(f, "A", instId("A", 1), { arrivedTurn: 1 });
     bringToMonde(f, "B", instId("B", 0), { arrivedTurn: 1 });
 
-    const dispatched: unknown[] = [];
     const engine = createEffectEngine(
-      mockDepsFromFixture(f, (drafts) => {
-        dispatched.push(...drafts);
-        dispatch(f, ...(drafts as never[]));
-      }),
+      mockDepsFromFixture(f, (drafts) => dispatch(f, ...(drafts as never[]))),
     );
     engine.enqueueEffect({
       seat: "A",
       cardName: "Pandaluk Skaïwoker",
       sourceId: instId("A", 0),
       ops: [
-        { op: "grantGeantTarget", heroes: false, zones: ["monde", "havreSac"] },
+        {
+          op: "grantKeywordTarget",
+          keyword: "Géant",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
       ],
     });
-    expect(engine.effectTargeting.value?.op.op).toBe("grantGeantTarget");
+    expect(engine.effectTargeting.value?.op.op).toBe("grantKeywordTarget");
     engine.effectTargetChoose(instId("A", 1));
     expect(effectiveKeywords(ctxOf(f), instId("A", 1)).geant).toBe(true);
   });
 
   it("filtre sub+combatRole (Rat Klure) : seul un Rat BLOQUEUR est éligible", () => {
-    // src (A) attaque ; côté B : un Rat qui bloque, un Rat qui NE bloque pas,
-    // un non-Rat qui bloque. Seul le Rat bloqueur doit être ciblable.
     const ratBloqueur = makeAlly("ratBlk", { force: 2 });
     (ratBloqueur as { subTypes: string[] }).subTypes = ["Monstre", "Rat"];
     const ratLibre = makeAlly("ratFree", { force: 2 });
@@ -357,8 +468,6 @@ describe("moteur — grantGeantTarget (ciblage + jeton sur la cible choisie)", (
     bringToMonde(f, "B", instId("B", 1), { arrivedTurn: 1 });
     bringToMonde(f, "B", instId("B", 2), { arrivedTurn: 1 });
 
-    // Construit un ctx avec un combat en cours : ratBloqueur et autreBloqueur
-    // bloquent l'attaquant de A ; ratLibre ne bloque pas.
     const base = ctxOf(f);
     const ctx = {
       ...base,
@@ -378,7 +487,8 @@ describe("moteur — grantGeantTarget (ciblage + jeton sur la cible choisie)", (
     const ids = effectTargetIds(
       ctx,
       {
-        op: "grantGeantTarget",
+        op: "grantKeywordTarget",
+        keyword: "Géant",
         sub: "rat",
         combatRole: "blocking",
         zones: ["monde", "havreSac"],
@@ -386,6 +496,74 @@ describe("moteur — grantGeantTarget (ciblage + jeton sur la cible choisie)", (
       "A",
     );
     expect(ids).toEqual([instId("B", 0)]); // uniquement le Rat bloqueur
+  });
+});
+
+// ── Volet 5 : sémantique de combat des mots-clés CONFÉRÉS (légalité) ──────────
+
+describe("rules/effects — Agilité conférée rend la cible imbloquable (eligibleBlockers)", () => {
+  it("un attaquant ayant reçu Agilité (jeton) n'est bloquable que par Agilité", () => {
+    // A attaque avec `atk` (sans Agilité imprimée) ; B a deux bloqueurs normaux.
+    const f = fixture(
+      [makeAlly("atk", { force: 2 })],
+      [makeAlly("b0", { force: 2 }), makeAlly("b1", { force: 2 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    bringToMonde(f, "B", instId("B", 1));
+    // avant l'octroi : les deux bloqueurs normaux sont éligibles
+    let blockers = eligibleBlockers(
+      ctxOf(f),
+      "B",
+      { kind: "hero", instanceId: HERO_B },
+      instId("A", 0),
+    );
+    expect(blockers).toContain(instId("B", 0));
+    // on CONFÈRE Agilité à l'attaquant (jeton agiliteTurnMod, comme grantKeyword)
+    dispatch(f, {
+      actor: "A",
+      type: "SET_COUNTER",
+      payload: {
+        instanceId: instId("A", 0),
+        counter: "agiliteTurnMod",
+        value: 1,
+        token: true,
+      },
+    } as never);
+    // après : aucun bloqueur normal n'est éligible (attaquant Agilité)
+    blockers = eligibleBlockers(
+      ctxOf(f),
+      "B",
+      { kind: "hero", instanceId: HERO_B },
+      instId("A", 0),
+    );
+    expect(blockers).not.toContain(instId("B", 0));
+    expect(blockers).not.toContain(instId("B", 1));
+  });
+});
+
+describe("rules/effects — Agressivité conférée lève le mal d'invocation (eligibleAttackers)", () => {
+  it("un Allié arrivé CE tour devient attaquant éligible après octroi d'Agressivité", () => {
+    const f = fixture([makeAlly("frais", { force: 2 })]);
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 3 }); // arrivé ce tour
+    const id = instId("A", 0);
+    // avant : mal d'invocation → exclu
+    expect(eligibleAttackers(ctxOf(f), "A")).not.toContain(id);
+    // on CONFÈRE Agressivité (jeton agressiviteTurnMod)
+    dispatch(f, {
+      actor: "A",
+      type: "SET_COUNTER",
+      payload: {
+        instanceId: id,
+        counter: "agressiviteTurnMod",
+        value: 1,
+        token: true,
+      },
+    } as never);
+    // après : le mal d'invocation est levé
+    expect(eligibleAttackers(ctxOf(f), "A")).toContain(id);
   });
 });
 

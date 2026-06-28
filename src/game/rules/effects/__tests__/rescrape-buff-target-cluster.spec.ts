@@ -7,15 +7,18 @@
  *
  * Constat de fidélité : AUCUN de ces bonus n'est un buff de Force. Tous confèrent
  * un MOT-CLÉ (Géant / Agilité / Agressivité / Tacle / Fantôme) ou « Résistance N »
- * à une cible CHOISIE / au Porteur / à VOTRE Héros — il n'existe pas d'op fidèle
- * pour « conférer un mot-clé à une cible jusqu'à la fin du tour ». Conformément à
- * « an approximation of gameplay is worse than a manual effect », ces effets sont
- * patchés mais restent NON couverts (uncovered). Ce spec verrouille donc :
+ * à une cible CHOISIE / au Porteur / à VOTRE Héros. Les mots-clés DE COMBAT câblés
+ * (Géant / Agilité / Agressivité) « jusqu'à la fin du tour » sont désormais
+ * FONCTIONNELS (op grantKeyword*, jeton TURN → effectiveKeywords → légalité) ; les
+ * mots-clés INERTES (Tacle, Fantôme…), « Résistance N » conférée et les formes non
+ * routées restent uncovered (« an approximation of gameplay is worse than a manual
+ * effect »). Ce spec verrouille donc :
  *  1. l'intégrité des données patchées (plus d'icône perdue, mot-clé présent) ;
- *  2. l'absence de MIS-ENCODAGE (ces effets ne compilent PAS en buffForce*) ;
+ *  2. l'absence de MIS-ENCODAGE (ces effets ne compilent JAMAIS en buffForce*) ;
  *  3. des positifs DSL de régression sur les grammaires buffForceTarget /
  *     buffForceHeroSelf (qui restent réservées aux VRAIS buffs de Force) ;
- *  4. un négatif DSL : une cible recevant un mot-clé ne compile PAS en Force.
+ *  4. les grants de mot-clé câblé compilent en grantKeyword* (pas en Force) ;
+ *     un mot-clé inerte (Tacle) ne compile pas.
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -162,11 +165,20 @@ describe("re-scrape — cluster « gagne <bonus> jusqu'à la fin du tour »", ()
   });
 
   // Entrées du cluster désormais COUVERTES fidèlement par une op dédiée
-  // (grantGeantSelf / grantGeantTarget — « gagne Géant jusqu'à la fin du tour »,
-  // jeton TURN geantTurnMod). Elles ne sont PLUS uncovered, mais restent NON
-  // mis-encodées en buff de Force (point 2 du spec, invariant conservé).
+  // (grantKeywordSelf / grantKeywordTarget — « gagne <Mot-clé> jusqu'à la fin du
+  // tour », jeton TURN <kw>TurnMod). Elles ne sont PLUS uncovered, mais restent
+  // NON mis-encodées en buff de Force (point 2 du spec, invariant conservé).
+  // Géant (Pandaluk, Rat Klure, Petit Anneau de Force) + Agilité / Agressivité
+  // (Anny Koleta, Soda Moza, Piqûre Motivante) : « gagne <Mot-clé de combat>
+  // jusqu'à la fin du tour » est désormais FONCTIONNEL (jeton TURN → effectiveKeywords
+  // → légalité combat), donc compilé en grantKeyword*. Les mots-clés INERTES (Tacle,
+  // Fantôme…), les formes BEARER, à qualificatif (« que vous contrôlez », « de la
+  // Classe de votre Héros ») ou non routées (requiresIncline:false) restent uncovered.
   const GEANT_GRANT_COVERED = new Set([
     "chaos-dogrest/pandaluk-skaiwoker-chaos-dogrest/0",
+    "chaos-dogrest/anny-koleta-chaos-dogrest/0",
+    "chaos-dogrest/soda-moza-chaos-dogrest/0",
+    "amakna/piqure-motivante-amakna/0",
     "bonta-brakmar/rat-klure-bonta-brakmar/0",
     "bonta-brakmar/petit-anneau-de-force-bonta-brakmar/1",
   ]);
@@ -175,17 +187,18 @@ describe("re-scrape — cluster « gagne <bonus> jusqu'à la fin du tour »", ()
     for (const [ext, id, idx] of PATCHED) {
       const key = `${ext}/${id}/${idx}`;
       if (GEANT_GRANT_COVERED.has(key)) {
-        // Désormais couvert par grantGeant* (mot-clé Géant à la fin du tour) — la
+        // Désormais couvert par grantKeyword* (mot-clé à la fin du tour) — la
         // forme compilée NE contient AUCUN op de Force (fidélité : c'est un octroi
         // de mot-clé, pas un buff de Force).
-        it(`${id}[${idx}] est couvert par grantGeant* (mot-clé, sans op de Force)`, () => {
+        it(`${id}[${idx}] est couvert par grantKeyword* (mot-clé, sans op de Force)`, () => {
           const e = effOf(ext, id, idx);
           expect(e.coverage).toBe("auto");
           const ops =
             (e.compiled as { ops?: { op: string }[] } | undefined)?.ops ?? [];
           expect(
             ops.some(
-              (o) => o.op === "grantGeantSelf" || o.op === "grantGeantTarget",
+              (o) =>
+                o.op === "grantKeywordSelf" || o.op === "grantKeywordTarget",
             ),
           ).toBe(true);
           expect(
@@ -243,9 +256,28 @@ describe("re-scrape — cluster « gagne <bonus> jusqu'à la fin du tour »", ()
       expect(c?.ops).toEqual([{ op: "buffForceHeroSelf", n: 1 }]);
     });
 
-    it("négatif : « L'Allié de votre choix gagne Agilité jusqu'à la fin du tour » NE compile PAS (mot-clé, pas Force)", () => {
+    it("« L'Allié de votre choix gagne Agilité … » compile en grantKeywordTarget (PAS en Force)", () => {
+      // Agilité est désormais un mot-clé de combat FONCTIONNEL : la forme compile
+      // en grantKeywordTarget (jeton TURN), jamais en buffForce* (fidélité point 2).
       const c = compileActionEffectText(
         "L'Allié de votre choix gagne Agilité jusqu'à la fin du tour.",
+        "Carte",
+      );
+      expect(c?.ops).toEqual([
+        {
+          op: "grantKeywordTarget",
+          keyword: "Agilité",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ]);
+    });
+
+    it("négatif : « L'Allié de votre choix gagne Tacle … » NE compile PAS (mot-clé inerte, non câblé)", () => {
+      // Tacle n'a pas de sémantique de combat câblée : l'octroyer serait un no-op
+      // = approximation → reste manuel (uncovered).
+      const c = compileActionEffectText(
+        "L'Allié de votre choix gagne Tacle jusqu'à la fin du tour.",
         "Carte",
       );
       expect(c).toBeNull();
