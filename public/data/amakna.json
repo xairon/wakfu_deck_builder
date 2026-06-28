@@ -6336,7 +6336,23 @@
         "description": "Bannissez l'Équipement de votre choix dans la Défausse d'un adversaire, puis piochez une carte.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "banishFromZone",
+              "from": "defausse",
+              "controller": "opponent",
+              "what": "Équipement"
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["banish-from-zone", "draw"]
       }
     ],
     "keywords": [],

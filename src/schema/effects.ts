@@ -145,6 +145,27 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     controller: controllerSchema.optional(),
     zones: zonesSchema,
   }),
+  // « Bannissez la carte [l'Équipement…] de votre choix de la Défausse d'un
+  //   adversaire » (Snouffle, Poubelles d'Astrub) → BANNISSEMENT depuis une PILE
+  //   (pas une créature en jeu). Le joueur choisit une carte dans la Défausse de
+  //   l'ADVERSAIRE (pick interactif, machinerie effectPicking action "banish") ;
+  //   la carte choisie part en EXIL de son propriétaire — « retirée de la partie »,
+  //   AUCUN XP (un bannissement n'est pas une destruction), elle ne revient
+  //   jamais en jeu. Si la Défausse adverse (filtrée) est vide, l'op est un no-op
+  //   fidèle (rien à bannir). FIDÈLE : cible une PILE PUBLIQUE (la Défausse est
+  //   visible des deux joueurs), pas d'information cachée.
+  //   - `from` : pile source (seul "defausse" modélisé) ;
+  //   - `controller` : propriétaire de la pile ("opponent" = la Défausse adverse) ;
+  //   - `what` : type requis (« l'Équipement … » → Équipement). Absent = toute
+  //     carte (« la carte de votre choix »).
+  z.object({
+    op: z.literal("banishFromZone"),
+    from: z.literal("defausse"),
+    controller: controllerSchema,
+    what: z
+      .enum(["Allié", "Zone", "Équipement", "Dofus", "Action", "Salle"])
+      .optional(),
+  }),
   z.object({
     op: z.literal("damageTarget"),
     n: z.number(),
@@ -286,6 +307,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     force: z.number(),
     element: z.string().optional(),
     sub: z.string().optional(),
+    // « Il apparaît incliné. » / « … jetons … inclinés dans le Monde. » : le(s)
+    // jeton(s) entre(nt) INCLINÉ(S) (orientation "tapped" à l'arrivée, lue par
+    // le reducer CREATE_TOKEN). Absent = dressé (106.3, défaut).
+    tapped: z.boolean().optional(),
+    // « Mettez en jeu LE MÊME NOMBRE de jetons … » (Classe de Vampyro) : le
+    // NOMBRE de jetons créés est le nombre de cartes recyclées par le coût en
+    // amont (frame.boundCount), pas 1. Lié uniquement à un costRecycle{max:true}
+    // (« Recyclez jusqu'à N … »). FIDÈLE : compte dynamique borné = compte réel.
+    // Sans ce drapeau, createToken minte exactement UN jeton (comportement W24).
+    countFromRecycled: z.boolean().optional(),
   }),
   z.object({ op: z.literal("destroySelf") }),
   z.object({

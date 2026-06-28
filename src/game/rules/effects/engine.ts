@@ -197,7 +197,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     seat: Seat;
     cardName: string;
     zone: "defausse" | "main" | "pioche";
-    action: "recycle" | "discard" | "toHand" | "toMonde";
+    /**
+     * PROPRIÉTAIRE de la pile où l'on choisit. Absent = `seat` (l'acteur — cas
+     * historique : on pioche/recycle/défausse dans SES propres piles). Posé à
+     * l'adversaire pour « … de la Défausse d'un adversaire » (banishFromZone) :
+     * le pick lit alors `seats[owner][zone]`, et la carte choisie va en EXIL de
+     * son propriétaire (= owner).
+     */
+    owner?: Seat;
+    action: "recycle" | "discard" | "toHand" | "toMonde" | "banish";
     /** Filtre de la recherche dans la Pioche. */
     filter?: PickFilter;
     /** « Il apparaît incliné. » — la carte mise en jeu arrive inclinée. */
@@ -343,7 +351,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   const effectPickIds = computed(() => {
     const p = effectPicking.value;
     if (!p) return [];
-    const ids = [...deps.getState().seats[p.seat][p.zone]];
+    const ids = [...deps.getState().seats[p.owner ?? p.seat][p.zone]];
     if (!p.filter) return ids;
     return ids.filter((id) =>
       matchesPickFilter(
@@ -378,6 +386,22 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         say(
           p.seat,
           `${p.cardName} : ${deps.getCard(deps.getState().instances[instanceId]?.cardId ?? null)?.name ?? "une carte"} rejoint la main.`,
+        ),
+      );
+    } else if (p.action === "banish") {
+      // « Bannissez la carte de votre choix de la Défausse d'un adversaire » :
+      // la carte choisie part en EXIL de SON propriétaire (= owner de la pile),
+      // « retirée de la partie ». PAS de destruction (aucun XP), PAS de retour
+      // en jeu. preservesIdentity:false → un éventuel jeton cesse d'exister.
+      const owner = p.owner ?? p.seat;
+      const cardLabel =
+        deps.getCard(deps.getState().instances[instanceId]?.cardId ?? null)
+          ?.name ?? "une carte";
+      deps.moveTo(instanceId, { zone: "exil", owner });
+      deps.dispatch(
+        say(
+          p.seat,
+          `${p.cardName} : ${cardLabel} est bannie de la Défausse (retirée de la partie).`,
         ),
       );
     } else {
@@ -722,6 +746,43 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         holdRest(frame, ops.slice(i + 1));
         return true;
       }
+      if (op.op === "banishFromZone") {
+        // « Bannissez la carte [l'Équipement…] de votre choix de la Défausse
+        // d'un adversaire » : choix INTERACTIF dans la Défausse de l'adversaire
+        // (owner = otherSeat), la carte choisie part en EXIL de son propriétaire
+        // (action "banish"). Si la pile (filtrée) est vide → no-op fidèle (rien
+        // à bannir), on poursuit le reste de la frame (« puis piochez … »).
+        const owner = op.controller === "opponent" ? otherSeat(seat) : seat;
+        const filter: PickFilter | undefined = op.what
+          ? { mainType: op.what }
+          : undefined;
+        const hasMatch = deps
+          .getState()
+          .seats[
+            owner
+          ][op.from].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+        if (!hasMatch) {
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} : rien à bannir dans la Défausse adverse, effet passé.`,
+            ),
+          );
+          continue;
+        }
+        effectPicking.value = {
+          seat,
+          cardName,
+          owner,
+          zone: op.from,
+          action: "banish",
+          ...(filter ? { filter } : {}),
+          remaining: 1,
+          sourceId,
+        };
+        holdRest(frame, ops.slice(i + 1));
+        return true;
+      }
       if (op.op === "costRecycle") {
         // COÛT « Recyclez … : CORPS » — première op d'une séquence cost:"paidOps".
         // Recycler = remettre une carte SOUS la Pioche de son propriétaire. Le
@@ -915,15 +976,27 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ...(op.element ? { element: op.element } : {}),
           ...(op.sub ? { sub: op.sub } : {}),
         });
-        const instanceId = mintTokenInstanceId(seat);
-        deps.dispatch(
-          createTokenVerb(seat, { instanceId, cardId, controller: seat }),
-          say(
-            seat,
-            `${cardName} : un jeton « ${op.name} » (Force ${op.force}) entre en jeu.`,
-          ),
-        );
-        queueAppearanceWatchers(seat, tokenCard, instanceId);
+        // « Mettez en jeu LE MÊME NOMBRE de jetons … » (countFromRecycled) : le
+        // nombre de jetons = compte recyclé lié à la frame (boundCount, 0..N).
+        // Recyclé 0 → 0 jeton (no-op fidèle). Sinon, un seul jeton (défaut W24).
+        const tokenCount = op.countFromRecycled ? (frame.boundCount ?? 0) : 1;
+        for (let k = 0; k < tokenCount; k++) {
+          const instanceId = mintTokenInstanceId(seat);
+          deps.dispatch(
+            createTokenVerb(seat, {
+              instanceId,
+              cardId,
+              controller: seat,
+              // « … inclinés dans le Monde. » : entre incliné (sinon dressé).
+              ...(op.tapped ? { orientation: "tapped" as const } : {}),
+            }),
+            say(
+              seat,
+              `${cardName} : un jeton « ${op.name} » (Force ${op.force})${op.tapped ? " (incliné)" : ""} entre en jeu.`,
+            ),
+          );
+          queueAppearanceWatchers(seat, tokenCard, instanceId);
+        }
       } else if (op.op === "draw") {
         deps.draw(seat, op.n);
       } else if (op.op === "eachPlayerDraws") {

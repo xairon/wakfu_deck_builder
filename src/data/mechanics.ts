@@ -58,6 +58,13 @@ export const MECHANICS: Mechanic[] = [
       "Bannit une carte ciblée : elle est retirée de la partie (Exil), sans accorder d'XP — distinct de la destruction.",
   },
   {
+    id: "banish-from-zone",
+    label: "Bannissement depuis la Défausse adverse",
+    category: "contrôle",
+    glossary:
+      "Bannit une carte choisie dans la Défausse d'un adversaire : elle est retirée de la partie (Exil), sans accorder d'XP — distinct de la destruction.",
+  },
+  {
     id: "damage-target",
     label: "Dégâts ciblés",
     category: "dégâts",
@@ -393,6 +400,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   havreSacGainResistance: "bag-gain-resistance",
   destroyTarget: "destroy-target",
   banishTarget: "banish-target",
+  banishFromZone: "banish-from-zone",
   damageTarget: "damage-target",
   damageMultiTarget: "damage-multi-target",
   damageTargetByForce: "damage-target-by-force",

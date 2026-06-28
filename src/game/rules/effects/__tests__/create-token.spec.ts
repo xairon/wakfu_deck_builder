@@ -94,12 +94,35 @@ describe("DSL — createToken", () => {
     });
   });
 
-  it("NÉGATIF : « le même nombre de jetons » (Classe de Vampyro) → non compilé (manuel)", () => {
+  it("Classe de Vampyro → costRecycle{max} (Monstres, Défausse) + createToken countFromRecycled tapped", () => {
+    // « Mettez en jeu LE MÊME NOMBRE de jetons … » : le nombre de jetons suit le
+    // compte recyclé (countFromRecycled), entrée inclinée (tapped).
     const c = compileTapEffectText(
       "Recyclez jusqu'à 3 Monstres de votre Défausse : Mettez en jeu le même nombre de jetons « Monstre - Vampyre » de Force 1 inclinés dans le Monde.",
       "Classe de Vampyro",
     );
-    expect(c).toBeNull();
+    expect(c).toEqual<CompiledEffect>({
+      trigger: "onTap",
+      cost: "paidOps",
+      ops: [
+        {
+          op: "costRecycle",
+          from: "defausse",
+          n: 3,
+          max: true,
+          what: "Allié",
+          sub: "monstre",
+        },
+        {
+          op: "createToken",
+          name: "Monstre - Vampyre",
+          force: 1,
+          sub: "Vampyre",
+          countFromRecycled: true,
+          tapped: true,
+        },
+      ],
+    });
   });
 
   it("NÉGATIF : jeton de Famille inconnue → non compilé (pas de devinette de type)", () => {
@@ -470,6 +493,86 @@ describe("moteur — createToken (isolé)", () => {
       ],
     });
     expect(engine.effectTargeting.value).toBeNull();
+    expect(
+      dispatch.mock.calls.flat().some((d) => d?.type === "CREATE_TOKEN"),
+    ).toBe(false);
+    expect(engine.effectQueue.value).toHaveLength(0);
+  });
+
+  it("createToken countFromRecycled : minte boundCount jetons, inclinés si tapped (Classe de Vampyro)", () => {
+    const state = makeState({ monstreInPlay: false });
+    // dispatch qui APPLIQUE CREATE_TOKEN à l'état (comme le reducer réel) pour
+    // que mintTokenInstanceId avance entre deux mints → instanceIds distincts.
+    const dispatch = vi.fn(
+      (...drafts: { type?: string; payload?: unknown }[]) => {
+        for (const d of drafts) {
+          if (d?.type === "CREATE_TOKEN") {
+            const p = d.payload as { instanceId: string };
+            (state.instances as Record<string, unknown>)[p.instanceId] = {
+              instanceId: p.instanceId,
+            };
+          }
+        }
+      },
+    );
+    const engine = createEffectEngine(mockDeps(state, { dispatch }));
+    // boundCount = 2 (2 Monstres recyclés en amont) → 2 jetons « Vampyre » tapés.
+    engine.enqueueEffect({
+      seat: "A",
+      cardName: "Classe de Vampyro",
+      sourceId: "hero-A",
+      boundCount: 2,
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Vampyre",
+          force: 1,
+          sub: "Vampyre",
+          countFromRecycled: true,
+          tapped: true,
+        },
+      ],
+    });
+    const created = dispatch.mock.calls
+      .flat()
+      .filter(
+        (d): d is { type: string; payload: Record<string, unknown> } =>
+          (d as { type?: string })?.type === "CREATE_TOKEN",
+      );
+    expect(created).toHaveLength(2);
+    // chaque jeton entre incliné, instanceIds distincts.
+    for (const c of created) {
+      expect(c.payload.orientation).toBe("tapped");
+      expect(c.payload.cardId).toBe(
+        tokenCardId({ name: "Monstre - Vampyre", force: 1, sub: "Vampyre" }),
+      );
+    }
+    expect(created[0].payload.instanceId).not.toBe(
+      created[1].payload.instanceId,
+    );
+    expect(engine.effectQueue.value).toHaveLength(0);
+  });
+
+  it("createToken countFromRecycled : boundCount 0 → AUCUN jeton (no-op fidèle « jusqu'à 0 »)", () => {
+    const state = makeState({ monstreInPlay: false });
+    const dispatch = vi.fn();
+    const engine = createEffectEngine(mockDeps(state, { dispatch }));
+    engine.enqueueEffect({
+      seat: "A",
+      cardName: "Classe de Vampyro",
+      sourceId: "hero-A",
+      boundCount: 0,
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Vampyre",
+          force: 1,
+          sub: "Vampyre",
+          countFromRecycled: true,
+          tapped: true,
+        },
+      ],
+    });
     expect(
       dispatch.mock.calls.flat().some((d) => d?.type === "CREATE_TOKEN"),
     ).toBe(false);

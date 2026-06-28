@@ -829,6 +829,38 @@ function parseSentence(
   //   (manuel). Formes : Allié [Famille] [de Niveau ≤ N], <Famille> nue, ou un
   //   type racine (Allié / Zone / Équipement / Dofus). Placé AVANT les ciblages
   //   d'inclinaison génériques.
+  // « Bannissez la carte [l'Équipement / l'Allié / la Zone / le Dofus] de votre
+  //   choix [dans / de] la Défausse d'un adversaire » (Snouffle, Poubelles
+  //   d'Astrub) → banishFromZone : bannissement depuis une PILE (la Défausse
+  //   ADVERSE — publique), pas une créature en jeu. La carte choisie part en
+  //   Exil de son propriétaire (manuel auparavant ; testé AVANT les ciblages
+  //   banishTarget « dans le Monde »). « la carte » = aucun filtre de type.
+  m = sentence.match(
+    /^bannissez (la carte|l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus|l['’ ]?\s?action|la salle) de votre choix (?:dans|de) la defausse d['’ ]?\s?un adversaire$/,
+  );
+  if (m) {
+    const w = m[1].replace(/['’]/g, "'").replace(/\s+/g, " ");
+    const BANISH_ZONE_WHAT: Record<
+      string,
+      "Allié" | "Zone" | "Équipement" | "Dofus" | "Action" | "Salle"
+    > = {
+      "l'allie": "Allié",
+      "la zone": "Zone",
+      "l'equipement": "Équipement",
+      "le dofus": "Dofus",
+      "l'action": "Action",
+      "la salle": "Salle",
+    };
+    const what = w === "la carte" ? undefined : BANISH_ZONE_WHAT[w];
+    // Un mot-type reconnu (ou « la carte » = sans filtre) ; sinon → manuel.
+    if (w !== "la carte" && !what) return null;
+    return {
+      op: "banishFromZone",
+      from: "defausse",
+      controller: "opponent",
+      ...(what ? { what } : {}),
+    };
+  }
   // « Bannissez l'Allié [Famille] de votre choix [de Niveau inférieur ou égal à N]
   //   [dans le Monde] » → banishTarget Allié + filtres `sub` / `maxLevel`.
   m = sentence.match(
@@ -2086,6 +2118,36 @@ function compileRecycleCountBody(
         zones: ["monde", "havreSac"],
       },
     ];
+  // « Mettez en jeu le même nombre de jetons "Monstre - <Famille>" de Force N
+  // [Élément] [inclinés] [dans le Monde] » (Classe de Vampyro) → createToken
+  // dont le NOMBRE de jetons = compte recyclé (countFromRecycled). Mêmes
+  // contraintes STRICTES que parseCreateToken (nom « Monstre - <Famille> »,
+  // Famille connue, Force requise, Élément final facultatif) ; clause finale
+  // « inclinés » (tapped) et « dans le Monde » tolérées (les jetons entrent
+  // toujours dans le Monde, lieu par défaut). Guillemets/tiret/espaces souples.
+  m = body.match(
+    /^mett(?:ez|re) en jeu le meme nombre de jetons "?[«»]?\s*monstre\s*[-—]?\s*([a-zéèêàùûôîç]+)\s*[«»]?"? de force (\d+)(?: \(?(?!inclines?\b|dans\b)([a-z]+)\)?)?( inclines?)?( dans le monde)?$/,
+  );
+  if (m) {
+    const fam = m[1].replace(/s$/, "");
+    if (!ALLIED_FAMILIES.has(fam)) return null;
+    const elRaw = m[3];
+    const element = elRaw ? TOKEN_ELEMENTS[elRaw] : undefined;
+    // Un mot final non reconnu comme Élément = clause résiduelle → manuel.
+    if (elRaw && !element) return null;
+    const famCap = fam.charAt(0).toUpperCase() + fam.slice(1);
+    return [
+      {
+        op: "createToken",
+        name: `Monstre - ${famCap}`,
+        force: toNumber(m[2]),
+        sub: famCap,
+        countFromRecycled: true,
+        ...(element ? { element } : {}),
+        ...(m[4] ? { tapped: true } : {}),
+      },
+    ];
+  }
   return null;
 }
 

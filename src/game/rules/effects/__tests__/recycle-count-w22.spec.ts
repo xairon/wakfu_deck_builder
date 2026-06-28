@@ -148,12 +148,31 @@ describe("DSL — coût « Recyclez jusqu'à N … » à valeur dynamique (compi
     expect(c).toBeNull();
   });
 
-  it("REJET : création de jetons « Mettez en jeu le même nombre de jetons … »", () => {
+  it("ACCEPTE : création de jetons « Mettez en jeu le même nombre de jetons … » (countFromRecycled, em-dash)", () => {
+    // « Le même nombre de jetons … » : nombre = compte recyclé (countFromRecycled).
+    // Le tiret em « Monstre — Vampyre » est normalisé en « Monstre - Vampyre ».
     const c = compileTapEffectText(
       "Recyclez jusqu'à 3 Monstres de votre Défausse : Mettez en jeu le même nombre de jetons « Monstre — Vampyre » de Force 1 inclinés dans le Monde.",
       "Classe de Vampyro",
     );
-    expect(c).toBeNull();
+    expect(c?.ops).toEqual([
+      {
+        op: "costRecycle",
+        from: "defausse",
+        n: 3,
+        max: true,
+        what: "Allié",
+        sub: "monstre",
+      },
+      {
+        op: "createToken",
+        name: "Monstre - Vampyre",
+        force: 1,
+        sub: "Vampyre",
+        countFromRecycled: true,
+        tapped: true,
+      },
+    ]);
   });
 });
 

@@ -1785,7 +1785,30 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse",
+              "n": 3,
+              "max": true,
+              "what": "Allié",
+              "sub": "monstre"
+            },
+            {
+              "op": "createToken",
+              "name": "Monstre - Vampyre",
+              "force": 1,
+              "sub": "Vampyre",
+              "countFromRecycled": true,
+              "tapped": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "create-token"]
       }
     ],
     "keywords": [],
@@ -6125,7 +6148,22 @@
         "description": "Bannissez la carte de votre choix de la Défausse d'un adversaire. Piochez une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "banishFromZone",
+              "from": "defausse",
+              "controller": "opponent"
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["banish-from-zone", "draw"]
       },
       {
         "description": "Si vous n'avez pas de carte à bannir, vous ne pouvez pas jouer les Poubelles d'Astrub. Si la carte ne peut plus être bannie à la résolution, vous ne piochez pas.",

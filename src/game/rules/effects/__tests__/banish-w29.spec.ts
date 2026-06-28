@@ -31,6 +31,8 @@ import {
   compileTapEffectText,
   isBanishCostText,
 } from "../dsl";
+import { createEffectEngine } from "../engine";
+import type { EffectEngineDeps } from "../engine";
 import { ensureTokenCard, resetTokenRegistry, tokenCardId } from "../tokens";
 import {
   HERO_A,
@@ -231,14 +233,146 @@ describe("banish — DSL (négatifs : skip fidèle, jamais d'approximation)", ()
     expect(compileTapEffectText(text, "La Bibliothèque de Barbok")).toBeNull();
   });
 
-  it("bannissement depuis la Défausse ADVERSE → pas une cible banishTarget (manuel)", () => {
-    // ciblage de zone différent (Défausse d'un adversaire) — pas compilé.
+  it("bannissement depuis la Défausse ADVERSE → banishFromZone (pas banishTarget)", () => {
+    // ciblage de PILE (Défausse adverse), pas une créature en jeu : op dédiée
+    // banishFromZone (controller opponent), pas banishTarget.
     expect(
       compileActionEffectText(
         "Bannissez l'Allié de votre choix dans la Défausse d'un adversaire.",
         "X",
+      )?.ops[0],
+    ).toEqual({
+      op: "banishFromZone",
+      from: "defausse",
+      controller: "opponent",
+      what: "Allié",
+    });
+  });
+});
+
+// ── Volet 5 : DSL + moteur — banishFromZone (Snouffle, Poubelles d'Astrub) ───
+describe("banishFromZone — Défausse adverse (Snouffle / Poubelles d'Astrub)", () => {
+  it("Snouffle → banishFromZone Équipement (Défausse adverse) + draw", () => {
+    expect(
+      compileActionEffectText(
+        "Bannissez l'Équipement de votre choix dans la Défausse d'un adversaire, puis piochez une carte.",
+        "Snouffle",
       ),
-    ).toBeNull();
+    ).toEqual<CompiledEffect>({
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "banishFromZone",
+          from: "defausse",
+          controller: "opponent",
+          what: "Équipement",
+        },
+        { op: "draw", n: 1 },
+      ],
+    });
+  });
+
+  it("Poubelles d'Astrub → banishFromZone sans filtre (« la carte ») + draw", () => {
+    expect(
+      compileActionEffectText(
+        "Bannissez la carte de votre choix de la Défausse d'un adversaire. Piochez une carte.",
+        "Poubelles d'Astrub",
+      ),
+    ).toEqual<CompiledEffect>({
+      trigger: "onPlay",
+      ops: [
+        { op: "banishFromZone", from: "defausse", controller: "opponent" },
+        { op: "draw", n: 1 },
+      ],
+    });
+  });
+
+  it("MOTEUR (isolé) : choix dans la Défausse ADVERSE → la carte choisie part en Exil de son propriétaire", () => {
+    // B a deux cartes en Défausse (un Équipement, un Allié) ; A bannit
+    // l'Équipement → seul l'Équipement est éligible, et il est déplacé vers
+    // l'Exil de B (owner = adversaire), pas la Défausse de A.
+    const EQ: Card = {
+      id: "b-eq",
+      name: "Équipement B",
+      mainType: "Équipement",
+      extension: "Test",
+      rarity: "Commune",
+    } as unknown as Card;
+    const ALLY: Card = {
+      id: "b-ally",
+      name: "Allié B",
+      mainType: "Allié",
+      extension: "Test",
+      rarity: "Commune",
+    } as unknown as Card;
+    const inst = (id: string, cardId: string) => ({
+      instanceId: id,
+      cardId,
+      owner: "B" as const,
+      controller: "B" as const,
+      orientation: "upright" as const,
+      location: { zone: "defausse" as const, owner: "B" as const },
+      counters: {},
+      attachments: [],
+      revealedTo: ["A", "B"],
+    });
+    const state = {
+      turn: { active: "A", number: 1 },
+      monde: [],
+      instances: {
+        eq1: inst("eq1", "b-eq"),
+        al1: inst("al1", "b-ally"),
+      },
+      seats: {
+        A: { main: [], pioche: [], defausse: [], havreSac: [], exil: [] },
+        B: {
+          main: [],
+          pioche: [],
+          defausse: ["eq1", "al1"],
+          havreSac: [],
+          exil: [],
+        },
+      },
+    } as unknown as GameState;
+    const getCard = (id: string | null) =>
+      id === "b-eq" ? EQ : id === "b-ally" ? ALLY : null;
+    const moves: { id: string; to: unknown }[] = [];
+    const engine = createEffectEngine({
+      getState: () => state,
+      rulesCtx: () => ({ state, getCard }),
+      getCard,
+      isAssist: () => true,
+      isAssistEffects: () => true,
+      getMatchPhase: () => "playing",
+      playerName: () => "Joueur",
+      paOf: () => 6,
+      dispatch: () => {},
+      moveTo: (id: string, to: unknown) => moves.push({ id, to }),
+      shufflePioche: () => {},
+      checkVictory: () => {},
+      draw: () => {},
+      adjustCounter: () => {},
+      onMatchWon: () => {},
+    } as unknown as EffectEngineDeps);
+    engine.enqueueEffect({
+      seat: "A",
+      cardName: "Snouffle",
+      sourceId: "ci_A_001",
+      ops: [
+        {
+          op: "banishFromZone",
+          from: "defausse",
+          controller: "opponent",
+          what: "Équipement",
+        },
+      ],
+    });
+    // seul l'Équipement de la Défausse de B est éligible.
+    expect(engine.effectPickIds.value).toEqual(["eq1"]);
+    engine.effectPick("eq1");
+    // la carte choisie est déplacée vers l'Exil de son propriétaire (B).
+    expect(moves).toEqual([{ id: "eq1", to: { zone: "exil", owner: "B" } }]);
+    expect(engine.effectPicking.value).toBeNull();
   });
 });
 
