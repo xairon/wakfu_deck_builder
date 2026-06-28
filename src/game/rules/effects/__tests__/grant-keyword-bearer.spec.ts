@@ -6,10 +6,13 @@
  * l'équipement ne sert qu'à désigner son Porteur, donc la cible fidèle EST la
  * créature qui le porte. STRICT : seuls les mots-clés CÂBLÉS sont compilés.
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import type { GameState } from "@/game";
 import type { Card } from "@/types/cards";
 import type { RulesCtx } from "../../types";
 import { compileTapEffectText } from "../dsl";
+import { createEffectEngine } from "../engine";
+import type { EffectEngineDeps } from "../engine";
 import { effectTargetIds } from "../targeting";
 
 // ── Volet 1 : DSL ─────────────────────────────────────────────────────────────
@@ -161,5 +164,148 @@ describe("éligibilité — requiresAttachment ne retient que les Porteurs", () 
         "A",
       ),
     ).toEqual([]);
+  });
+});
+
+// ── Volet 3 : Scarature Blanche — chooseOne de grantKeywordBearerSelf ─────────
+
+describe("DSL — « le Porteur de <self> gagne A ou B » (Scarature Blanche)", () => {
+  it("→ chooseOne de deux grantKeywordBearerSelf (Agilité / Tacle)", () => {
+    const c = compileTapEffectText(
+      "Jusqu'à la fin du tour, le Porteur de la Scarature Blanche gagne Agilité ou Tacle.",
+      "Scarature Blanche",
+    );
+    expect(c?.ops[0]).toMatchObject({
+      op: "chooseOne",
+      options: [
+        {
+          label: "Agilité",
+          ops: [{ op: "grantKeywordBearerSelf", keyword: "Agilité" }],
+        },
+        {
+          label: "Tacle",
+          ops: [{ op: "grantKeywordBearerSelf", keyword: "Tacle" }],
+        },
+      ],
+    });
+  });
+
+  it("ne compile PAS la forme STATIQUE (sans « jusqu'à la fin du tour ») ici", () => {
+    // « Le Porteur de X gagne Tacle. » = bonus de Porteur statique (autre voie) —
+    // la grammaire « gagne A ou B » exige le préfixe de durée du tour.
+    expect(
+      compileTapEffectText(
+        "Le Porteur de la Scarature Blanche gagne Agilité ou Tacle.",
+        "Scarature Blanche",
+      ),
+    ).toBeNull();
+  });
+});
+
+const EQUIP: Card = {
+  id: "equip",
+  name: "Scarature Blanche",
+  mainType: "Équipement",
+  subTypes: [],
+} as unknown as Card;
+
+function engineDeps(
+  state: GameState,
+  cards: Record<string, Card>,
+  dispatch: ReturnType<typeof vi.fn>,
+): EffectEngineDeps {
+  const getCard = (id: string | null) => (id ? (cards[id] ?? null) : null);
+  return {
+    getState: () => state,
+    rulesCtx: () => ({ state, getCard }) as never,
+    getCard,
+    isAssist: () => true,
+    isAssistEffects: () => true,
+    getMatchPhase: () => "lobby",
+    playerName: () => "Joueur",
+    paOf: () => 6,
+    dispatch,
+    moveTo: vi.fn(),
+    shufflePioche: vi.fn(),
+    checkVictory: vi.fn(),
+    draw: vi.fn(),
+    adjustCounter: vi.fn(),
+    onMatchWon: vi.fn(),
+  } as unknown as EffectEngineDeps;
+}
+
+function tokenOn(
+  dispatch: ReturnType<typeof vi.fn>,
+  targetId: string,
+  counter: string,
+) {
+  return dispatch.mock.calls
+    .flat()
+    .find(
+      (e) =>
+        e &&
+        typeof e === "object" &&
+        e.type === "SET_COUNTER" &&
+        e.payload?.instanceId === targetId &&
+        e.payload?.counter === counter,
+    );
+}
+
+describe("moteur — grantKeywordBearerSelf (jeton sur le Porteur de la source)", () => {
+  function state(bearerAttached: boolean): GameState {
+    return {
+      turn: { active: "A", number: 1 },
+      instances: {
+        bearer: {
+          instanceId: "bearer",
+          cardId: "ally",
+          owner: "A",
+          controller: "A",
+          location: { zone: "monde" },
+          attachments: bearerAttached ? ["eq"] : [],
+        },
+        eq: {
+          instanceId: "eq",
+          cardId: "equip",
+          owner: "A",
+          controller: "A",
+          location: { zone: "monde" },
+          attachments: [],
+        },
+      },
+      seats: {
+        A: { main: [], pioche: [], defausse: [], heroInstanceId: "hero-A" },
+        B: { main: [], pioche: [], defausse: [], heroInstanceId: "hero-B" },
+      },
+    } as unknown as GameState;
+  }
+
+  it("pose agiliteTurnMod sur le PORTEUR (pas sur l'équipement)", () => {
+    const dispatch = vi.fn();
+    const engine = createEffectEngine(
+      engineDeps(state(true), { ally: ALLY, equip: EQUIP }, dispatch),
+    );
+    engine.enqueueEffect({
+      seat: "A",
+      cardName: "Scarature Blanche",
+      sourceId: "eq",
+      ops: [{ op: "grantKeywordBearerSelf", keyword: "Agilité" }],
+    });
+    expect(tokenOn(dispatch, "bearer", "agiliteTurnMod")).toBeTruthy();
+    expect(tokenOn(dispatch, "eq", "agiliteTurnMod")).toBeFalsy();
+  });
+
+  it("NÉGATIF : source non portée (aucun Porteur) → aucun jeton (no-op fidèle)", () => {
+    const dispatch = vi.fn();
+    const engine = createEffectEngine(
+      engineDeps(state(false), { ally: ALLY, equip: EQUIP }, dispatch),
+    );
+    engine.enqueueEffect({
+      seat: "A",
+      cardName: "Scarature Blanche",
+      sourceId: "eq",
+      ops: [{ op: "grantKeywordBearerSelf", keyword: "Agilité" }],
+    });
+    expect(tokenOn(dispatch, "bearer", "agiliteTurnMod")).toBeFalsy();
   });
 });

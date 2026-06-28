@@ -592,6 +592,39 @@ function parseSentence(
   m = sentence.match(/^(.{1,50}?) regagne (\d+) (?:pv|points? de vie)$/);
   if (m && subjectIsSelf(m[1], cardName))
     return { op: "heroGainPv", n: toNumber(m[2]) };
+  // « Jusqu'à la fin du tour, le Porteur de <self> gagne <A> ou <B> » (Scarature
+  //   Blanche : Agilité ou Tacle) → chooseOne de deux grantKeywordBearerSelf (le
+  //   mot-clé atterrit sur le PORTEUR de la source-équipement). « de soi » : pas de
+  //   « de votre choix » (≠ pattern chooseOne ciblé). STRICT : les 2 mots-clés
+  //   câblés + sujet = self. NB : la forme SANS « jusqu'à la fin du tour » est un
+  //   bonus de Porteur STATIQUE (compileBearerBonusText) — non captée ici.
+  m = sentence.match(
+    /^jusqu['’]a la fin d[ue] tour, le porteur de (.{1,50}?) gagne ([a-z]+) ou ([a-z]+)$/,
+  );
+  if (
+    m &&
+    subjectIsSelf(m[1], cardName) &&
+    GRANTABLE_KEYWORDS[m[2]] &&
+    GRANTABLE_KEYWORDS[m[3]]
+  )
+    return {
+      op: "chooseOne",
+      prompt: sentence,
+      options: [
+        {
+          label: GRANTABLE_KEYWORDS[m[2]],
+          ops: [
+            { op: "grantKeywordBearerSelf", keyword: GRANTABLE_KEYWORDS[m[2]] },
+          ],
+        },
+        {
+          label: GRANTABLE_KEYWORDS[m[3]],
+          ops: [
+            { op: "grantKeywordBearerSelf", keyword: GRANTABLE_KEYWORDS[m[3]] },
+          ],
+        },
+      ],
+    };
   // « Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner <Mot-clé> à
   //   son Porteur » (Emma Tenl/Tacle, Fauvéa/Agressivité, Klozette Wateur/Agilité,
   //   Terril Hachterr/Géant) → grantKeywordTarget{requiresAttachment} : on cible le

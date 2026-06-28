@@ -392,6 +392,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // fin de tour (isTurnToken), lu par effectiveKeywords. Distinct de combatModSelf
   // (jeton `geantCombatMod`, portée COMBAT « jusqu'à la fin du combat »).
   z.object({ op: z.literal("grantKeywordSelf"), keyword: grantKeywordSchema }),
+  // « Le Porteur de <self> gagne <Mot-clé> jusqu'à la fin du tour. » (Scarature
+  // Blanche, via chooseOne « Agilité ou Tacle ») — la SOURCE est un Équipement ;
+  // le mot-clé TURN-scoped (`<kw>TurnMod`) est posé sur SON PORTEUR (la créature
+  // dont `attachments` contient la source), pas sur l'équipement. No-op fidèle si
+  // la source n'est pas attachée (aucun Porteur). Pendant « de soi » de
+  // grantKeywordTarget{requiresAttachment} (qui, lui, laisse le joueur choisir).
+  z.object({
+    op: z.literal("grantKeywordBearerSelf"),
+    keyword: grantKeywordSchema,
+  }),
   // « L'Allié [ou Héros] [Famille] [bloqué / de votre choix] gagne <Mot-clé>
   // jusqu'à la fin du tour. » (Pandaluk : Géant ; Rat Klure : Géant/Rat bloqué ;
   // Petit Anneau de Force : Géant en sacrifice ; Petit Anneau d'Agilité :

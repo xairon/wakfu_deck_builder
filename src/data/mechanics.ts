@@ -225,6 +225,13 @@ export const MECHANICS: Mechanic[] = [
     ],
   },
   {
+    id: "grant-keyword-bearer-self",
+    label: "Mot-clé conféré au Porteur de soi (jusqu'à la fin du tour)",
+    category: "tempo",
+    glossary:
+      "« Le Porteur de <self> gagne <mot-clé> jusqu'à la fin du tour » : la source (un Équipement) confère un mot-clé de combat à la créature qui la porte, jusqu'à la fin du tour.",
+  },
+  {
     id: "grant-keyword-target",
     label: "Mot-clé conféré (cible, jusqu'à la fin du tour)",
     category: "tempo",
@@ -430,6 +437,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   untapSelf: "untap-self",
   combatModSelf: "combat-mod-self",
   grantKeywordSelf: "grant-keyword-self",
+  grantKeywordBearerSelf: "grant-keyword-bearer-self",
   grantKeywordTarget: "grant-keyword-target",
   grantResistanceSelf: "grant-resistance-self",
   grantResistanceTarget: "grant-resistance-target",

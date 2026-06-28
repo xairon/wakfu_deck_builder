@@ -977,6 +977,34 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "grantKeywordBearerSelf") {
+        // « Le Porteur de <self> gagne <Mot-clé> jusqu'à la fin du tour. »
+        // (Scarature Blanche) — la SOURCE est un Équipement ; on pose le jeton
+        // TURN-scoped sur SON PORTEUR (l'instance dont `attachments` contient la
+        // source, en jeu). No-op fidèle si la source n'est pas portée.
+        const insts = deps.getState().instances;
+        const bearer = sourceId
+          ? Object.values(insts).find((i) => i.attachments?.includes(sourceId))
+          : null;
+        const inPlay =
+          bearer &&
+          (bearer.location.zone === "monde" ||
+            bearer.location.zone === "havreSac");
+        if (bearer && inPlay) {
+          deps.dispatch(
+            setCounterVerb(
+              seat,
+              bearer.instanceId,
+              GRANT_KEYWORD_TOKEN[op.keyword],
+              1,
+              true,
+            ),
+            say(
+              seat,
+              `Le Porteur de ${cardName} gagne ${op.keyword} jusqu'à la fin du tour.`,
+            ),
+          );
+        }
       } else if (op.op === "grantResistanceSelf") {
         // « [self] gagne Résistance N (Élément)[…] jusqu'à la fin du tour. » —
         // jeton TURN-scoped `resMod_<el>` (+N par Élément) sur la SOURCE (en jeu),

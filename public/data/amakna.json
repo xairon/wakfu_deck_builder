@@ -5985,7 +5985,37 @@
         "description": "Jusqu'à la fin du tour, le Porteur de la Scarature Blanche gagne Agilité ou Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "chooseOne",
+              "prompt": "jusqu'a la fin du tour, le porteur de la scarature blanche gagne agilite ou tacle",
+              "options": [
+                {
+                  "label": "Agilité",
+                  "ops": [
+                    {
+                      "op": "grantKeywordBearerSelf",
+                      "keyword": "Agilité"
+                    }
+                  ]
+                },
+                {
+                  "label": "Tacle",
+                  "ops": [
+                    {
+                      "op": "grantKeywordBearerSelf",
+                      "keyword": "Tacle"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["choose-one"]
       }
     ],
     "keywords": [
