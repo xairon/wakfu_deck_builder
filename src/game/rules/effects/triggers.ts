@@ -13,7 +13,7 @@ import type { CompiledEffectOp } from "@/types/cards";
 import type { InstanceId } from "../../types/events";
 import type { Seat } from "../../types/zones";
 import type { RuleEvent, RulesCtx } from "../types";
-import { selfAttackEffects } from "./dsl";
+import { selfAttackEffects, selfDestroyedEffects } from "./dsl";
 
 /** Frame déclenchée, prête pour `enqueueEffect` du store. */
 export interface TriggeredFrame {
@@ -23,6 +23,12 @@ export interface TriggeredFrame {
   /** Texte d'origine (journal). */
   text: string;
   ops: CompiledEffectOp[];
+  /**
+   * « Vous pouvez … » sur le déclenché (ex. onSelfDestroyed optionnel) : le
+   * moteur le présente comme un CHOIX (effectChoices) à confirmer plutôt que de
+   * l'exécuter d'office. Absent = exécution automatique (déclenchés obligatoires).
+   */
+  optional?: boolean;
 }
 
 function sideOf(ctx: RulesCtx, id: InstanceId): "recto" | "verso" {
@@ -64,6 +70,31 @@ function bearerFrames(
 }
 
 /**
+ * destroyed → effets « Quand [self] est détruit » de la carte détruite (804.7).
+ * L'instance détruite est lue dans le contexte FOURNI : l'appelant collecte les
+ * frames AU MOMENT de la destruction (avant que le déplacement vers la Défausse
+ * ne sorte l'instance du jeu), si bien que controller / cardName restent lisibles.
+ * Le CORPS se résout avec sourceId = l'instance détruite (son info subsiste
+ * l'instant où elle est détruite — 804.7 : déclenché APRÈS la destruction).
+ */
+function destroyedFrames(
+  ctx: RulesCtx,
+  evt: Extract<RuleEvent, { kind: "destroyed" }>,
+): TriggeredFrame[] {
+  const inst = ctx.state.instances[evt.instanceId];
+  const card = inst ? ctx.getCard(inst.cardId) : null;
+  if (!card) return [];
+  return selfDestroyedEffects(card).map((atom) => ({
+    seat: evt.controller,
+    sourceId: evt.instanceId,
+    cardName: card.name,
+    text: atom.text,
+    ops: atom.ops,
+    ...(atom.optional ? { optional: true } : {}),
+  }));
+}
+
+/**
  * Frames déclenchées par une rafale d'événements de règles — joueur actif
  * d'abord (804.6 approx.), ordre d'émission préservé par ailleurs.
  */
@@ -76,6 +107,8 @@ export function collectTriggeredEffects(
     if (evt.kind === "attackerDeclared")
       frames.push(...attackerFrames(ctx, evt));
     else if (evt.kind === "damageDealt") frames.push(...bearerFrames(ctx, evt));
+    else if (evt.kind === "destroyed")
+      frames.push(...destroyedFrames(ctx, evt));
   }
   const active = ctx.state.turn.active;
   return [

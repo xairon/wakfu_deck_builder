@@ -354,7 +354,26 @@ export const useGameStore = defineStore("game", () => {
       for (let i = 0; i < 32; i++) {
         const sbd = stateBasedDestroyEvents(rulesCtx(), currentStance());
         if (!sbd.destroyed.length) break;
+        // 804.7 — bus : « Quand [self] est détruit ». On collecte les frames AVANT
+        // de défausser (l'instance détruite est encore lisible : controller /
+        // cardName), puis on enfile APRÈS la destruction. `destroyed` n'est émis
+        // que pour une DESTRUCTION (→ Défausse), jamais un bannissement/recyclage.
+        const ctx = rulesCtx();
+        const events: RuleEvent[] = sbd.destroyed.flatMap((id) => {
+          const inst = ctx.state.instances[id];
+          return inst
+            ? [
+                {
+                  kind: "destroyed",
+                  instanceId: id,
+                  controller: inst.controller,
+                },
+              ]
+            : [];
+        });
         dispatch(...sbd.events, ...sbd.log.map((l) => say("system", l)));
+        if (assistEffects.value && events.length)
+          engine.enqueueTriggered(collectTriggeredEffects(ctx, events));
       }
       // 410.7 — Havre-Sac à 0 Résistance : banni, intérieur expulsé/détruit.
       const hsb = havreSacBanishEvents(rulesCtx());

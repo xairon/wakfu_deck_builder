@@ -75,7 +75,14 @@ export type RuleEvent =
       /** Dommages de combat (duels/frappes) vs effet ciblé. */
       combat: boolean;
     } // jamais émis à ≤ 0 (811.4)
-  | { kind: "attackerDeclared"; seat: Seat; instanceId: InstanceId };
+  | { kind: "attackerDeclared"; seat: Seat; instanceId: InstanceId }
+  // DESTRUCTION RÉELLE (→ Défausse) d'une carte en jeu (415.1 / 1414 / 3019 /
+  // sacrifice). Émis au moment exact de la destruction : l'instance détruite
+  // est encore lisible dans le contexte (controller / cardName) pour collecter
+  // son déclenché « Quand [self] est détruit » (onSelfDestroyed, 804.7 : après
+  // la résolution de la destruction). JAMAIS émis pour un BANNISSEMENT (→ Exil)
+  // ni un RECYCLAGE (→ Pioche) : ce ne sont pas des destructions.
+  | { kind: "destroyed"; instanceId: InstanceId; controller: Seat };
 
 /**
  * Posture COMPLÈTE d'un combat (702–706) : qui attaque, qui bloque qui, et

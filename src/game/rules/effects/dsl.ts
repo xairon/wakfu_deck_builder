@@ -2657,6 +2657,86 @@ export function selfAttackEffects(
 }
 
 /**
+ * Compile un DÉCLENCHÉ DE MORT DE SOI (804.7) : « Quand / Lorsque <self> est
+ * détruit(e), [vous pouvez] CORPS. » → `{ trigger:"onSelfDestroyed", ops }`.
+ * Le déclenché part quand la SOURCE est DÉTRUITE (déplacée vers la Défausse
+ * depuis le jeu) — JAMAIS pour un bannissement (→ Exil) ni un recyclage
+ * (→ Pioche). Le moteur résout le CORPS avec sourceId = l'instance détruite
+ * (son info reste lisible à l'instant de la destruction).
+ *
+ * STRICT et NARROW (« an approximation of gameplay is worse than a manual
+ * effect ») — REJETÉ (→ manuel) :
+ *  - le QUALIFICATIF de destructeur « par un joueur adverse / par un adversaire »
+ *    (on ne conditionne pas fidèlement sur QUI détruit) ;
+ *  - la MORT DU PORTEUR « le Porteur de X est détruit » (sujet ≠ self) ;
+ *  - les VEILLES de mort d'AUTRUI « un autre de vos Tofus / un de vos Alliés …
+ *    est détruit » (sujet ≠ self) ;
+ *  - les CORPS de PAIEMENT « vous pouvez payer pour … » et tout CORPS « il/elle … »
+ *    ou résiduel non compilable (compileBody rejette le reste).
+ * « Vous pouvez … » → `optional` (une seule phrase, sinon ambigu).
+ */
+export function compileSelfDestroyedText(
+  text: string,
+  cardName: string,
+  sourceElement = "Neutre",
+): CompiledEffect | null {
+  const m = norm(text).match(
+    /^(?:quand|lorsque) (.{1,60}?) est detruit(?:e)?\s*,\s*(.+)$/,
+  );
+  if (!m) return null;
+  const subject = m[1].trim();
+  // SKIP la mort du PORTEUR (« le Porteur de X … ») et les veilles d'AUTRUI
+  // (« un autre de vos … », « un de vos … », « un Allié … ») : le sujet n'est
+  // pas la carte elle-même.
+  if (/\bporteur\b/.test(subject)) return null;
+  if (!subjectIsSelf(subject, cardName)) return null;
+  let body = m[2].replace(/\.$/, "").trim();
+  // SKIP le QUALIFICATIF de destructeur « par un joueur adverse / un adversaire »
+  // resté collé en tête du sujet (« est détruit par un adversaire, … ») : déjà
+  // exclu si la regex l'a laissé dans le sujet, mais on garde un garde-fou si la
+  // virgule a coupé après le qualificatif.
+  if (/^par un (?:joueur )?adversaire?\b/.test(body)) return null;
+  // « Vous pouvez … » → optionnel (une seule phrase).
+  let optional = false;
+  const opt = body.match(/^vous pouvez (.+)$/);
+  if (opt) {
+    optional = true;
+    body = opt[1];
+  }
+  if (optional && /\.\s+\S/.test(body)) return null;
+  const ops = compileBody(body, cardName, sourceElement);
+  if (!ops) return null;
+  return {
+    trigger: "onSelfDestroyed",
+    ...(optional ? { optional } : {}),
+    ops,
+  };
+}
+
+/**
+ * Effets « Quand [self] est détruit » de cette carte (trigger onSelfDestroyed) :
+ * forme compilée des données si présente, sinon re-parsing strict du texte.
+ * Consommé par le bus (`collectTriggeredEffects` via l'événement `destroyed`).
+ * Pendant de `selfAttackEffects`.
+ */
+export function selfDestroyedEffects(card: Card | null): EffectAtom[] {
+  if (!card) return [];
+  const atoms: EffectAtom[] = [];
+  for (const e of card.effects ?? []) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      (text && !e?.requiresIncline
+        ? compileSelfDestroyedText(text, card.name, effectSourceElement(card))
+        : null);
+    if (compiled && compiled.trigger === "onSelfDestroyed")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
+}
+
+/**
  * Compile un DÉCLENCHÉ D'APPARITION NON-SOI (804) : « Quand / Chaque fois
  * qu'un Allié [Famille]? [adverse]? apparaît [dans le Monde], CORPS. » où le
  * CORPS a pour sujet le contrôleur de la carte qui VEILLE (ops génériques :

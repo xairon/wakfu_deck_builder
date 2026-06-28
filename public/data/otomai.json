@@ -2909,7 +2909,17 @@
         "description": "Quand le Nerbe est détruit, votre Héros regagne 2 PV.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfDestroyed",
+          "ops": [
+            {
+              "op": "heroGainPv",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["hero-gain-pv"]
       }
     ],
     "keywords": [

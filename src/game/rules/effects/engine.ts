@@ -20,6 +20,7 @@ import {
 import { ensureTokenCard, tokenCardId } from "./tokens";
 import type {
   EffectOp,
+  RuleEvent,
   RulesCtx,
   TargetingOp,
   TriggeredFrame,
@@ -308,6 +309,22 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     for (const f of frames) {
       if (f.text)
         deps.dispatch(say(f.seat, `Déclenché — ${f.cardName} : « ${f.text} »`));
+      // « Vous pouvez … » : le déclenché est OPTIONNEL → choix à confirmer
+      // (effectChoices), pas une exécution d'office (ex. onSelfDestroyed de la
+      // Daguette : « vous pouvez détruire la Zone ou l'Équipement … »).
+      if (f.optional) {
+        effectChoices.value = [
+          ...effectChoices.value,
+          {
+            seat: f.seat,
+            cardName: f.cardName,
+            text: f.text,
+            ops: f.ops,
+            sourceId: f.sourceId,
+          },
+        ];
+        continue;
+      }
       enqueueEffect({
         seat: f.seat,
         cardName: f.cardName,
@@ -1210,14 +1227,35 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // son XP à l'adversaire de son contrôleur). Ordre STABLE (tri des
         // instanceId) pour un déroulé déterministe.
         const ids = massEligibleIds(op, seat).sort();
+        const wipeFrames: TriggeredFrame[] = [];
         for (const id of ids) {
-          const res = resolveDestroyTarget(deps.rulesCtx(), seat, id);
+          // 804.7 — collecte « Quand [self] est détruit » AVANT le dispatch (l'art
+          // est encore lisible, même pour un jeton supprimé par le reducer en
+          // quittant le jeu) ; chaque cible de masse va en Défausse (415.1).
+          const ctx = deps.rulesCtx();
+          const inst = ctx.state.instances[id];
+          if (inst)
+            wipeFrames.push(
+              ...collectTriggeredEffects(ctx, [
+                {
+                  kind: "destroyed",
+                  instanceId: id,
+                  controller: inst.controller,
+                },
+              ]),
+            );
+          const res = resolveDestroyTarget(ctx, seat, id);
           deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
         }
         if (ids.length)
           deps.dispatch(
             say(seat, `${cardName} : créatures détruites en masse.`),
           );
+        // Les déclenchés de mort partent APRÈS toutes les destructions de la
+        // rafale (804.7) ; frames collectées sur l'état pré-destruction de chaque
+        // cible (art lisible), enfilées maintenant.
+        if (deps.isAssistEffects() && wipeFrames.length)
+          enqueueTriggered(wipeFrames);
         deps.checkVictory();
       } else if (
         op.op === "tapAll" ||
@@ -1715,12 +1753,34 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ...effectQueue.value.slice(1),
         ];
     }
+    // 804.7 — bus : « Quand [self] est détruit » de la cible DÉTRUITE (415.1).
+    // Collecté AVANT le dispatch (l'instance est encore lisible) ; n'émet que
+    // pour une vraie DESTRUCTION (destroyTarget / costDestroyControlled → Défausse),
+    // jamais pour un bannissement (banishTarget → Exil) ni un recyclage (→ Pioche).
+    const destroyedEvents: RuleEvent[] =
+      t.op.op === "destroyTarget" || t.op.op === "costDestroyControlled"
+        ? (() => {
+            const inst = deps.getState().instances[instanceId];
+            return inst
+              ? [
+                  {
+                    kind: "destroyed" as const,
+                    instanceId,
+                    controller: inst.controller,
+                  },
+                ]
+              : [];
+          })()
+        : [];
+    const destroyedCtx = deps.rulesCtx();
     deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
     // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
     if (deps.isAssistEffects() && res.ruleEvents?.length)
       enqueueTriggered(
         collectTriggeredEffects(deps.rulesCtx(), res.ruleEvents),
       );
+    if (deps.isAssistEffects() && destroyedEvents.length)
+      enqueueTriggered(collectTriggeredEffects(destroyedCtx, destroyedEvents));
     deps.checkVictory();
     pumpEffects();
   }

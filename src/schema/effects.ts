@@ -734,6 +734,7 @@ export const compiledEffectSchema = z.object({
     "static",
     "onSelfAttacks",
     "onOtherAppears",
+    "onSelfDestroyed",
     "onDamageToBearer",
   ]),
   optional: z.boolean().optional(),

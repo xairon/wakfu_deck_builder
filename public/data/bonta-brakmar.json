@@ -15094,7 +15094,17 @@
         "description": "Quand Xav le Boulanger est détruit, le Héros de votre choix regagne 1 PV.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfDestroyed",
+          "ops": [
+            {
+              "op": "healHeroTarget",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["heal-hero-target"]
       }
     ],
     "keywords": [],

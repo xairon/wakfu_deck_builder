@@ -1976,7 +1976,19 @@
         "description": "Quand la Daguette est détruite, vous pouvez détruire la Zone ou l'Équipement de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfDestroyed",
+          "optional": true,
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "whatAny": ["Zone", "Équipement"],
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       }
     ],
     "keywords": [
