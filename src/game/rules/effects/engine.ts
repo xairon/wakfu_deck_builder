@@ -167,6 +167,14 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       ops: EffectOp[];
       /** Branche exécutée si le joueur décline (« ou détruisez X »). */
       declineOps?: EffectOp[];
+      /**
+       * CHOIX EXCLUSIF « A ou B » (op chooseOne) : étiquettes des deux boutons
+       * (`[label A, label B]`). `ops` = branche A (bouton 0, accept=true),
+       * `declineOps` = branche B (bouton 1, accept=false). Présent ⇒ ce n'est PAS
+       * un effet optionnel « vous pouvez … » mais un choix obligatoire entre deux
+       * effets — l'UI rend deux boutons étiquetés au lieu d'Appliquer/Décliner.
+       */
+      optionLabels?: [string, string];
       sourceId?: string;
     }[]
   >([]);
@@ -601,6 +609,31 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           say(seat, `${cardName} : condition non remplie, effet passé.`),
         );
         continue;
+      }
+      if (op.op === "chooseOne") {
+        // « A ou B » — CHOIX EXCLUSIF du joueur. On présente les deux branches
+        // étiquetées (effectChoices : deux boutons) ; la branche choisie
+        // s'exécute, l'autre est ignorée. Le RESTE de la frame (ops après le
+        // choix) est aplati dans CHAQUE branche pour reprendre après résolution
+        // (« … ou … Piochez une carte »). La frame courante est CONSOMMÉE (return
+        // false) : sa continuation vit désormais dans les branches du choix, en
+        // attente du clic du joueur (effectChoices n'est pas une barrière de pump,
+        // résolu hors-bande via l'overlay). Les ops AVANT le choix ont déjà tourné.
+        const rest = ops.slice(i + 1);
+        const [a, b] = op.options;
+        effectChoices.value = [
+          ...effectChoices.value,
+          {
+            seat,
+            cardName,
+            text: op.prompt ?? `${a.label} ou ${b.label}`,
+            ops: [...(a.ops as EffectOp[]), ...rest],
+            declineOps: [...(b.ops as EffectOp[]), ...rest],
+            optionLabels: [a.label, b.label],
+            ...(sourceId ? { sourceId } : {}),
+          },
+        ];
+        return false;
       }
       if (isTargetingOp(op)) {
         // VALEUR DYNAMIQUE liée au coût « Recyclez jusqu'à N … » : pour les ops à
@@ -1822,8 +1855,18 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     const choice = effectChoices.value[0];
     if (!choice) return;
     effectChoices.value = effectChoices.value.slice(1);
+    // CHOIX « A ou B » (optionLabels) : « décliner » n'est pas un refus mais le
+    // choix de la branche B — on journalise l'option retenue, pas « décliné ».
+    const chosenLabel = choice.optionLabels?.[accept ? 0 : 1];
     if (!accept) {
-      deps.dispatch(say(choice.seat, `Effet décliné — ${choice.cardName}.`));
+      deps.dispatch(
+        say(
+          choice.seat,
+          chosenLabel
+            ? `${choice.cardName} : ${chosenLabel}.`
+            : `Effet décliné — ${choice.cardName}.`,
+        ),
+      );
       if (choice.declineOps?.length) {
         enqueueEffect({
           seat: choice.seat,
@@ -1837,7 +1880,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     deps.dispatch(
       say(
         choice.seat,
-        `Effet appliqué — ${choice.cardName} : « ${choice.text} »`,
+        chosenLabel
+          ? `${choice.cardName} : ${chosenLabel}.`
+          : `Effet appliqué — ${choice.cardName} : « ${choice.text} »`,
       ),
     );
     enqueueEffect({

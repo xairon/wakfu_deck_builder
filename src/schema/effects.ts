@@ -84,6 +84,20 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     cond: condSpecSchema,
     ops: conditionalBodySchema,
   }),
+  // CHOIX EXCLUSIF « A ou B » (« L'Allié de votre choix gagne Géant ou +2 en
+  // Force… ») : le joueur choisit UNE option, dont les ops s'exécutent ; les
+  // autres sont ignorées. Chaque option porte un `label` (bouton) et une séquence
+  // d'ops (récursive, comme conditional). Présenté via effectChoices (boutons
+  // étiquetés). STRICT : on ne compile un chooseOne QUE si TOUTES les branches
+  // sont des effets câblés fidèlement (sinon manuel — pas de demi-encodage).
+  // `prompt` : légende d'origine pour l'overlay (sinon « A ou B » dérivé).
+  z.object({
+    op: z.literal("chooseOne"),
+    prompt: z.string().optional(),
+    options: z
+      .array(z.object({ label: z.string(), ops: conditionalBodySchema }))
+      .min(2),
+  }),
   z.object({ op: z.literal("gainXp"), n: z.number() }),
   z.object({ op: z.literal("draw"), n: z.number() }),
   z.object({

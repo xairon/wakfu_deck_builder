@@ -388,6 +388,13 @@ export const MECHANICS: Mechanic[] = [
     glossary:
       "« Si <condition>, … » : un corps d'effet ne s'exécute que si une condition lisible de l'état de jeu est vraie à la résolution.",
   },
+  {
+    id: "choose-one",
+    label: "Choix exclusif « A ou B »",
+    category: "autre",
+    glossary:
+      "« … gagne A ou B » : le joueur choisit UNE des branches proposées, dont l'effet s'exécute ; les autres sont ignorées.",
+  },
 ];
 
 /** op compilée → mécanique (déterministe, 1:1). */
@@ -443,6 +450,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   playerLoseStatTurn: "player-lose-stat-turn",
   playerGainStat: "player-gain-stat",
   conditional: "conditional",
+  chooseOne: "choose-one",
 };
 
 /** Tags uniques dérivés d'une liste d'ops, dans l'ordre d'apparition. */

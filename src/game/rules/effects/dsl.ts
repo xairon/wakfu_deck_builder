@@ -135,6 +135,44 @@ const GRANTABLE_KEYWORDS: Record<
   tacle: "Tacle",
 };
 
+/**
+ * Octroi à une CIBLE « de votre choix » pour UN token normalisé : mot-clé câblé
+ * (Géant/Agilité/Agressivité/Tacle → grantKeywordTarget) ou « +N en Force »
+ * (→ buffForceTarget). `target` porte les filtres de cible communs (heroes/sub).
+ * Renvoie null si le token n'est pas un octroi câblé (→ pas de demi-encodage).
+ * Réutilisé par le CHOIX « A ou B » (chooseOne) pour bâtir chaque branche.
+ */
+function grantTargetOpFromToken(
+  token: string,
+  target: { heroes: boolean; sub?: string },
+): EffectOp | null {
+  const force = token.match(/^\+?(\d+) en force$/);
+  if (force)
+    return {
+      op: "buffForceTarget",
+      n: toNumber(force[1]),
+      heroes: target.heroes,
+      ...(target.sub ? { sub: target.sub } : {}),
+      zones: ["monde", "havreSac"],
+    };
+  if (GRANTABLE_KEYWORDS[token])
+    return {
+      op: "grantKeywordTarget",
+      keyword: GRANTABLE_KEYWORDS[token],
+      heroes: target.heroes,
+      ...(target.sub ? { sub: target.sub } : {}),
+      zones: ["monde", "havreSac"],
+    };
+  return null;
+}
+
+/** Étiquette lisible (bouton de choix) d'un token d'octroi. */
+function grantTokenLabel(token: string): string {
+  const force = token.match(/^\+?(\d+) en force$/);
+  if (force) return `+${force[1]} en Force`;
+  return GRANTABLE_KEYWORDS[token] ?? token;
+}
+
 const RESIST_ELEMENTS = new Set(["air", "eau", "feu", "terre", "neutre"]);
 
 /**
@@ -554,6 +592,33 @@ function parseSentence(
   m = sentence.match(/^(.{1,50}?) regagne (\d+) (?:pv|points? de vie)$/);
   if (m && subjectIsSelf(m[1], cardName))
     return { op: "heroGainPv", n: toNumber(m[2]) };
+  // « <Cible> de votre choix gagne <A> ou <B> jusqu'à la fin du tour » — CHOIX
+  //   EXCLUSIF entre deux octrois câblés sur la MÊME cible (Baguette du Bandit
+  //   Ensorceleur : Géant ou Agilité ; La-Haine / Temple Osamodas : Géant ou +2 en
+  //   Force ; Dofus-Arena Max : Agilité ou Géant + pioche en 2e phrase). → op
+  //   chooseOne (deux branches étiquetées via grantTargetOpFromToken). Cible :
+  //   « l'Allié [ou Héros] » (heroes) ou « le <Famille>/Monstre » (sub,
+  //   ALLIED_FAMILIES). STRICT : les DEUX tokens doivent être des octrois câblés
+  //   (mot-clé Géant/Agilité/Agressivité/Tacle ou « +N en Force ») — sinon on
+  //   laisse passer (manuel), JAMAIS de demi-encodage. Placé AVANT les formes à
+  //   octroi unique (qui exigent « gagne <token> jusqu'à… » sans « ou »).
+  m = sentence.match(
+    /^(?:l['’ ]?\s?allie( ou heros)?|le ([a-z-]+)) de votre choix gagne (\+?\d+ en force|[a-z]+) ou (\+?\d+ en force|[a-z]+) jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m && (!m[2] || ALLIED_FAMILIES.has(m[2]))) {
+    const target = { heroes: !!m[1], ...(m[2] ? { sub: m[2] } : {}) };
+    const a = grantTargetOpFromToken(m[3], target);
+    const b = grantTargetOpFromToken(m[4], target);
+    if (a && b)
+      return {
+        op: "chooseOne",
+        prompt: sentence,
+        options: [
+          { label: grantTokenLabel(m[3]), ops: [a] },
+          { label: grantTokenLabel(m[4]), ops: [b] },
+        ],
+      };
+  }
   // « L'Allié (ou Héros) de votre choix gagne +N en Force jusqu'à la fin du tour »
   m = sentence.match(
     /^l['’ ]?\s?allie( ou heros)? de votre choix gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/,

@@ -342,14 +342,36 @@
     <Transition name="ovl">
       <div v-if="store.effectChoice" class="overlay">
         <div class="overlay__card">
-          <p class="eyebrow text-primary">Effet optionnel</p>
+          <p class="eyebrow text-primary">
+            {{ store.effectChoice.optionLabels ? "Choix" : "Effet optionnel" }}
+          </p>
           <h2 class="mt-2 font-display text-3xl">
             {{ store.effectChoice.cardName }}
           </h2>
           <p class="mt-3 max-w-md text-base-content/75">
             « {{ store.effectChoice.text }} »
           </p>
-          <div class="mt-6 flex justify-center gap-3">
+          <!-- CHOIX EXCLUSIF « A ou B » : deux boutons étiquetés (bouton 0 →
+               resolve(true), bouton 1 → resolve(false)). -->
+          <div
+            v-if="store.effectChoice.optionLabels"
+            class="mt-6 flex justify-center gap-3"
+          >
+            <button
+              class="btn btn-primary"
+              @click="store.effectChoiceResolve(true)"
+            >
+              {{ store.effectChoice.optionLabels[0] }}
+            </button>
+            <button
+              class="btn btn-primary btn-outline"
+              @click="store.effectChoiceResolve(false)"
+            >
+              {{ store.effectChoice.optionLabels[1] }}
+            </button>
+          </div>
+          <!-- Effet OPTIONNEL « vous pouvez … » : Appliquer / Décliner. -->
+          <div v-else class="mt-6 flex justify-center gap-3">
             <button
               class="btn btn-primary"
               @click="store.effectChoiceResolve(true)"

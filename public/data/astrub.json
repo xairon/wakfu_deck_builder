@@ -693,7 +693,41 @@
         "description": "L'Allié ou Héros de votre choix gagne Géant ou Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "chooseOne",
+              "prompt": "l'allie ou heros de votre choix gagne geant ou agilite jusqu'a la fin du tour",
+              "options": [
+                {
+                  "label": "Géant",
+                  "ops": [
+                    {
+                      "op": "grantKeywordTarget",
+                      "keyword": "Géant",
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "Agilité",
+                  "ops": [
+                    {
+                      "op": "grantKeywordTarget",
+                      "keyword": "Agilité",
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["choose-one"]
       }
     ],
     "keywords": [],
@@ -2418,7 +2452,45 @@
         "description": "L'Allié ou Héros de votre choix gagne Agilité ou Géant jusqu'à la fin du tour. Piochez une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "chooseOne",
+              "prompt": "l'allie ou heros de votre choix gagne agilite ou geant jusqu'a la fin du tour",
+              "options": [
+                {
+                  "label": "Agilité",
+                  "ops": [
+                    {
+                      "op": "grantKeywordTarget",
+                      "keyword": "Agilité",
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "Géant",
+                  "ops": [
+                    {
+                      "op": "grantKeywordTarget",
+                      "keyword": "Géant",
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["choose-one", "draw"]
       }
     ],
     "keywords": [],
@@ -4452,7 +4524,41 @@
         "description": "L'Allié de votre choix gagne Géant ou +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "chooseOne",
+              "prompt": "l'allie de votre choix gagne geant ou +2 en force jusqu'a la fin du tour",
+              "options": [
+                {
+                  "label": "Géant",
+                  "ops": [
+                    {
+                      "op": "grantKeywordTarget",
+                      "keyword": "Géant",
+                      "heroes": false,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "+2 en Force",
+                  "ops": [
+                    {
+                      "op": "buffForceTarget",
+                      "n": 2,
+                      "heroes": false,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["choose-one"]
       }
     ],
     "keywords": [],
@@ -7029,7 +7135,43 @@
         "description": "Le Monstre de votre choix gagne Géant ou +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "chooseOne",
+              "prompt": "le monstre de votre choix gagne geant ou +2 en force jusqu'a la fin du tour",
+              "options": [
+                {
+                  "label": "Géant",
+                  "ops": [
+                    {
+                      "op": "grantKeywordTarget",
+                      "keyword": "Géant",
+                      "heroes": false,
+                      "sub": "monstre",
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "+2 en Force",
+                  "ops": [
+                    {
+                      "op": "buffForceTarget",
+                      "n": 2,
+                      "heroes": false,
+                      "sub": "monstre",
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["choose-one"]
       }
     ],
     "keywords": [
