@@ -604,6 +604,28 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
       z.object({ kind: z.literal("unique") }),
     ]),
   }),
+  // AURA DE MOT-CLÉ (805.2 — « Tant que <self> est dans le Monde, vos [autres]
+  // Alliés [Famille] [et Héros] gagnent <Mot-clé>. »). Pouvoir CONTINU : tant que
+  // la SOURCE est en jeu, les créatures du même contrôleur dans le `scope`
+  // (sub / heroes — mêmes règles de sélection que forceAura) gagnent un mot-clé
+  // de COMBAT FONCTIONNEL (lu par effectiveKeywords → légalité / résolution).
+  // STRICT — seuls les mots-clés CÂBLÉS sont admis (grantKeywordSchema :
+  // Géant 7258/6135, Agilité 704, Agressivité = mal d'invocation, Tacle = verrou
+  // d'inclinaison) : octroyer un mot-clé inerte (Fantôme, Défense, Renfort…)
+  // serait un no-op = approximation → ces formes restent manuelles (le DSL ne les
+  // compile pas). Miroir exact de forceAura, mais octroie un mot-clé au lieu de
+  // Force. `excludeSource` : « vos AUTRES Alliés … » (la source ne se compte pas).
+  z.object({
+    kind: z.literal("keywordAura"),
+    keyword: grantKeywordSchema,
+    // Famille bénéficiaire (« vos autres Alliés Pirates »). Absente = toutes vos
+    // créatures éligibles, sans restriction de Famille.
+    sub: z.string().optional(),
+    // « et Héros » / « Alliés ou Héros » : votre Héros bénéficie aussi de l'aura.
+    heroes: z.boolean().optional(),
+    // « vos AUTRES Alliés … » : la SOURCE elle-même ne bénéficie pas de l'aura.
+    excludeSource: z.boolean().optional(),
+  }),
 ]);
 
 // « Quand un Allié [Famille]? [adverse]? apparaît … » : descripteur de VEILLE

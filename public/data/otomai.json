@@ -1691,7 +1691,16 @@
         "description": "Tant que Bash Skwal est dans le Monde, tous vos Pirates gagnent Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "keywordAura",
+            "keyword": "Agilité",
+            "sub": "pirate"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -2323,7 +2332,16 @@
         "description": "Tant que la Gelée Royale Citron est dans le Monde, toutes vos Gelées gagnent Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "keywordAura",
+            "keyword": "Agilité",
+            "sub": "gelee"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],

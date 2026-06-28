@@ -711,7 +711,16 @@
         "description": "Tant que le Boomba est dans le Monde, tous vos Pirates gagnent Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "keywordAura",
+            "keyword": "Tacle",
+            "sub": "pirate"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],

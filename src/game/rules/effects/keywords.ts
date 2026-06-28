@@ -14,8 +14,8 @@ import type { Card } from "@/types/cards";
 import { isHeroCard } from "../../../types/cards.ts";
 import type { InstanceId } from "../../types/events";
 import type { RulesCtx } from "../types";
-import { normElement } from "../cardAttrs.ts";
-import { bearerBonuses } from "../modifiers.ts";
+import { normElement, normWord } from "../cardAttrs.ts";
+import { bearerBonuses, staticAbilitiesOf } from "../modifiers.ts";
 
 export interface CombatKeywords {
   /** Prévention par élément normalisé (minuscules). */
@@ -95,12 +95,56 @@ export function combatKeywords(
 }
 
 /**
+ * Mots-clés CONFÉRÉS à un bénéficiaire par les auras `keywordAura` du Monde
+ * (805.2). Miroir EXACT de `auraForceBonus` (stats.ts) : le bénéficiaire est soit
+ * un Allié du Monde, soit (si l'aura porte `heroes`) le Héros du contrôleur ; on
+ * ne scanne que les sources du MÊME contrôleur (« VOS … »), et une aura
+ * `excludeSource` (« vos AUTRES Alliés … ») ne se compte jamais elle-même.
+ * Renvoie l'ensemble des mots-clés câblés ainsi gagnés (Géant/Agilité/
+ * Agressivité/Tacle), lu par effectiveKeywords pour les agréger aux imprimés.
+ */
+function auraKeywords(
+  ctx: RulesCtx,
+  beneficiaryId: InstanceId,
+  controller: string,
+  isHero: boolean,
+  subTypes: string[],
+): Set<"Géant" | "Agilité" | "Agressivité" | "Tacle"> {
+  const granted = new Set<"Géant" | "Agilité" | "Agressivité" | "Tacle">();
+  for (const srcId of ctx.state.monde) {
+    const src = ctx.state.instances[srcId];
+    if (!src || src.controller !== controller) continue;
+    const srcCard = ctx.getCard(src.cardId);
+    if (!srcCard) continue;
+    const srcSide = src.face === "verso" ? "verso" : "recto";
+    for (const s of staticAbilitiesOf(srcCard, srcSide)) {
+      if (s.kind !== "keywordAura") continue;
+      // « vos AUTRES … » : la source ne se confère pas l'aura à elle-même.
+      if (s.excludeSource && srcId === beneficiaryId) continue;
+      if (isHero) {
+        // « … ou Héros » : votre Héros est une classe de bénéficiaire à part —
+        // la Famille ne le restreint pas. Il profite de l'aura SSI elle inclut
+        // « et/ou Héros ».
+        if (s.heroes) granted.add(s.keyword);
+        continue;
+      }
+      // Allié bénéficiaire : famille présente ⇒ doit la porter ; absente ⇒ tous.
+      if (s.sub && !subTypes.some((st) => normWord(st) === s.sub)) continue;
+      granted.add(s.keyword);
+    }
+  }
+  return granted;
+}
+
+/**
  * Mots-clés EFFECTIFS d'une instance en jeu : imprimés (face courante de
  * l'instance) + jetons (`geantMod`/`geantCombatMod` → Géant, `resMod_<el>` →
  * Résistance, posés par les effets — lots C/D) + bonus conférés par
  * l'équipement / la Monture PORTÉ(E) (305.x, `bearerBonus` → Résistance pour le
- * Porteur). C'est la SEULE lecture correcte en contexte de partie —
- * `combatKeywords(card)` seul ignore face, jetons et équipement porté.
+ * Porteur) + mots-clés conférés par les auras `keywordAura` du Monde (805.2,
+ * « Tant que <self> est dans le Monde, vos [autres] Alliés [Famille] [et Héros]
+ * gagnent <Mot-clé> »). C'est la SEULE lecture correcte en contexte de partie —
+ * `combatKeywords(card)` seul ignore face, jetons, équipement porté et auras.
  */
 export function effectiveKeywords(
   ctx: RulesCtx,
@@ -109,6 +153,17 @@ export function effectiveKeywords(
   const inst = ctx.state.instances[id];
   const card = inst ? ctx.getCard(inst.cardId) : null;
   const base = combatKeywords(card, inst?.face === "verso" ? "verso" : "recto");
+  // 805.2 — auras de mot-clé des cartes du Monde (même contrôleur). Un Allié du
+  // Monde en bénéficie ; le Héros en bénéficie SSI l'aura inclut « et Héros »
+  // (il vit dans l'intérieur du Havre-Sac, comme pour forceAura).
+  const auraGranted =
+    inst && card
+      ? card.mainType === "Allié" && inst.location.zone === "monde"
+        ? auraKeywords(ctx, id, inst.controller, false, card.subTypes ?? [])
+        : card.mainType === "Héros"
+          ? auraKeywords(ctx, id, inst.controller, true, card.subTypes ?? [])
+          : new Set<"Géant" | "Agilité" | "Agressivité" | "Tacle">()
+      : new Set<"Géant" | "Agilité" | "Agressivité" | "Tacle">();
   const tokens = inst?.counters.tokens ?? {};
   const resistances = { ...base.resistances };
   for (const [name, value] of Object.entries(tokens)) {
@@ -145,19 +200,26 @@ export function effectiveKeywords(
     !!tokens.geantCombatMod ||
     // « gagne Géant jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) :
     // jeton TURN-scoped posé sur l'instance, purgé en fin de tour (isTurnToken).
-    !!tokens.geantTurnMod;
+    !!tokens.geantTurnMod ||
+    // 805.2 — aura de mot-clé Géant du Monde (keywordAura).
+    auraGranted.has("Géant");
   // Agilité / Agressivité : imprimés sur la face courante (`base`) OU conférés
   // « jusqu'à la fin du tour » par un jeton TURN-scoped `<kw>TurnMod`
   // (grantKeywordSelf/grantKeywordTarget), purgé en fin de tour (isTurnToken).
   // Ces jetons alimentent EXACTEMENT les mêmes légalités que les mots-clés
   // imprimés (Agilité → blocage 704 ; Agressivité → mal d'invocation à l'attaque),
   // lus par eligibleBlockers/eligibleAttackers via effectiveKeywords.
-  const agilite = base.agilite || !!tokens.agiliteTurnMod;
-  const agressivite = base.agressivite || !!tokens.agressiviteTurnMod;
+  const agilite =
+    base.agilite || !!tokens.agiliteTurnMod || auraGranted.has("Agilité");
+  const agressivite =
+    base.agressivite ||
+    !!tokens.agressiviteTurnMod ||
+    auraGranted.has("Agressivité");
   // Tacle : imprimé (`base`) OU conféré « jusqu'à la fin du tour » par un jeton
-  // TURN-scoped `tacleTurnMod` (grantKeywordSelf/grantKeywordTarget). Le verrou
-  // d'inclinaison reste appliqué par resolveCombat (relation de blocage).
-  const tacle = base.tacle || !!tokens.tacleTurnMod;
+  // TURN-scoped `tacleTurnMod` (grantKeywordSelf/grantKeywordTarget) OU par une
+  // aura de mot-clé du Monde (keywordAura). Le verrou d'inclinaison reste appliqué
+  // par resolveCombat (relation de blocage).
+  const tacle = base.tacle || !!tokens.tacleTurnMod || auraGranted.has("Tacle");
   return {
     resistances,
     geant,

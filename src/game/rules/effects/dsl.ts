@@ -1970,6 +1970,56 @@ export function compileStaticEffectText(
       ops: [],
     };
   }
+  // AURA DE MOT-CLÉ (805.2) :
+  //   « Tant que <self> est dans le Monde, (tous|toutes)? vos [autres]?
+  //     (Alliés [Famille] [et/ou Héros] | <Famille>) [dans le Monde]? gagnent
+  //     <Mot-clé>. »
+  //   → static keywordAura{ keyword, sub?, heroes?, excludeSource? }. Miroir exact
+  //   de forceAura (mêmes sous-groupes / règles de Famille) mais octroie un mot-clé
+  //   de COMBAT au lieu de Force. STRICT — seuls les mots-clés CÂBLÉS
+  //   (GRANTABLE_KEYWORDS : Géant/Agilité/Agressivité/Tacle) sont compilés ;
+  //   octroyer un mot-clé inerte (Fantôme, Défense, Renfort…) serait un no-op =
+  //   approximation → manuel. Le `$` impose que la TOTALITÉ du texte corresponde
+  //   (toute clause résiduelle ou condition « tant qu'il bloque » → manuel).
+  //   Sous-groupes : (2) « tous/toutes » optionnel ; (3) « autres » optionnel ;
+  //   (4) famille après « Alliés » (absente = toutes) ; (5) « et/ou Héros » ;
+  //   (6) variante « vos <Famille> » (la Famille remplace « Alliés ») ; (7) le
+  //   mot-clé.
+  m = body.match(
+    /^tant que (.{1,60}?) est dans le monde\s*,\s*(?:tous |toutes )?vos (autres )?(?:allies( [a-z-]+)?( (?:et|ou) heros)?|([a-z-]+))(?: dans le monde)? gagnent ([a-z]+)$/,
+  );
+  // « le Porteur de <self> » est un sujet de PORTEUR (l'aura ne vit que tant que
+  // le PORTEUR est en jeu — pas l'Équipement seul) → SKIP (manuel, comme costAura).
+  // subjectIsSelf accepte « le porteur de X » car la chaîne contient le nom : on
+  // l'exclut explicitement ici.
+  if (m && !/\bporteur\b/.test(m[1]) && subjectIsSelf(m[1], cardName)) {
+    const keyword = GRANTABLE_KEYWORDS[m[6]];
+    // Mot-clé inerte / inconnu → no-op = approximation → manuel.
+    if (keyword) {
+      // Famille soit après « Alliés » (m[3]), soit en remplacement (m[5]).
+      const famRaw = (m[3] ?? m[5])?.trim();
+      const liaison = famRaw ? ["et", "ou", "dans"].includes(famRaw) : false;
+      // mot de liaison / type capté → pas une Famille de créature non ambiguë.
+      const badFamily =
+        m[5] !== undefined && famRaw
+          ? !ALLIED_FAMILIES.has(famRaw.replace(/s$/, ""))
+          : false;
+      if (!liaison && !badFamily) {
+        const fam = famRaw ? famRaw.replace(/s$/, "") : undefined;
+        return {
+          trigger: "static",
+          static: {
+            kind: "keywordAura",
+            keyword,
+            ...(fam ? { sub: fam } : {}),
+            ...(m[4] ? { heroes: true } : {}),
+            ...(m[2] ? { excludeSource: true } : {}),
+          },
+          ops: [],
+        };
+      }
+    }
+  }
   // « Tant qu'il bloque, le Maître Bolet gagne +2 en Force. »
   m = body.match(
     /^tant qu['’]\s?(?:il|elle) bloque\s*,\s*(.{1,60}?) gagne \+(\d+) en force$/,
