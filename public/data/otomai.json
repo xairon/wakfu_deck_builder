@@ -1058,7 +1058,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Ecaflip"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Jusqu'à la fin du tour, le prochain Chi-Fu-Mi que vous jouez est automatiquement gagné.",
@@ -2138,7 +2147,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Iop"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "L'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour. S'il s'agit d'un Iop, il gagne en plus.",
@@ -3241,7 +3259,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Cra"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Dopeul Crâ inflige 2 Dommages à l'Allié ou Héros de votre choix qui vient de subir un ou plusieurs Dommages.",
@@ -4292,7 +4319,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Osamodas"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "L'Allié ou Héros de votre choix gagne +1 en Force jusqu'à la fin du tour. S'il s'agit d'un Monstre, il gagne +2 en Force à la place.",

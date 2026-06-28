@@ -571,6 +571,39 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
       .optional(),
     keyword: cardKeywordSchema.optional(),
   }),
+  // RÉDUCTION DE COÛT DE SOI, conditionnée par la CLASSE du Héros (805 — les ~12
+  // Dopeuls : « Si votre Héros est <Classe>, le coût du <self> est réduit de N. »).
+  // Pouvoir CONTINU lu par `planCost` UNIQUEMENT pour la carte elle-même au moment
+  // de la jouer : si le Héros du contrôleur est de la Classe `ifHeroClass`, son
+  // coût de lancement est réduit de `n` (plancher 0, fidèle). `ifHeroClass` est la
+  // Classe exacte (« Sram », « Iop »… cf. heroCard.class) comparée par normWord.
+  z.object({
+    kind: z.literal("selfCostMod"),
+    n: z.number(),
+    ifHeroClass: z.string(),
+  }),
+  // AURA DE RÉDUCTION DE COÛT (805.2 — « Tant que <self> est dans le Monde, le
+  // coût de vos <scope> est réduit de N. »). Pouvoir CONTINU : tant que la SOURCE
+  // est en jeu (Monde / Havre-Sac), le coût de lancement des cartes du contrôleur
+  // correspondant au `scope` est réduit de `n` (plancher 0, lu par `planCost`).
+  // STRICT — seuls les scopes fidèlement calculables sont compilés :
+  //  - { kind:"family", sub } : « vos Alliés <Famille> » (Famille sur subTypes) ;
+  //  - { kind:"type", mainType } : « vos Actions » / « vos Alliés » (mainType) ;
+  //  - { kind:"unique" } : « vos cartes Uniques » (trait Unique, isUniqueCard).
+  // Les scopes non modélisables fidèlement (« Capture de vos Dragodindes », « vos
+  // Invocations », « Sorts de la même Classe »…) ne sont PAS compilés → manuel.
+  z.object({
+    kind: z.literal("costAura"),
+    n: z.number(),
+    scope: z.discriminatedUnion("kind", [
+      z.object({ kind: z.literal("family"), sub: z.string() }),
+      z.object({
+        kind: z.literal("type"),
+        mainType: z.enum(["Allié", "Action"]),
+      }),
+      z.object({ kind: z.literal("unique") }),
+    ]),
+  }),
 ]);
 
 // « Quand un Allié [Famille]? [adverse]? apparaît … » : descripteur de VEILLE

@@ -2018,6 +2018,70 @@ export function compileStaticEffectText(
       static: { kind: "combatDamageReduction", n: toNumber(m[2]) },
       ops: [],
     };
+  // RÉDUCTION DE COÛT DE SOI gated par la CLASSE du Héros (~12 Dopeuls) :
+  //   « Si votre Héros est <Classe>, le coût du/de <self> est réduit de N. »
+  //   → static selfCostMod{ n, ifHeroClass }. Lu par planCost UNIQUEMENT pour la
+  //   carte elle-même : son coût baisse de N si le Héros du contrôleur est de la
+  //   Classe nommée (plancher 0). STRICT : le sujet du coût doit désigner la carte
+  //   elle-même (subjectIsSelf — « le coût du Dopeul Sram » sur la carte « Dopeul
+  //   Sram ») ; sinon manuel. La Classe (m[1]) est stockée capitalisée comme
+  //   heroCard.class (la comparaison runtime passe par normWord). Le `$` rejette
+  //   toute clause résiduelle (« … jusqu'à un minimum de 1 », autres conditions).
+  m = body.match(
+    /^si votre heros est ([a-zâäàéèêëïîôöûü-]+)\s*,\s*le cout (?:du |de la |de l['’]\s?|des |de )(.{1,60}?) est reduit de (\d+)$/,
+  );
+  if (m && subjectIsSelf(m[2], cardName))
+    return {
+      trigger: "static",
+      static: {
+        kind: "selfCostMod",
+        n: toNumber(m[3]),
+        // Classe capitalisée (1re lettre) — heroCard.class l'est aussi.
+        ifHeroClass: m[1].charAt(0).toUpperCase() + m[1].slice(1),
+      },
+      ops: [],
+    };
+  // AURA DE RÉDUCTION DE COÛT (805.2) :
+  //   « Tant que <self> est dans le Monde, le coût de vos <scope> est réduit de N. »
+  //   → static costAura{ n, scope }. Tant que la SOURCE est en jeu, le coût des
+  //   cartes du contrôleur correspondant au scope baisse de N (plancher 0, planCost).
+  //   STRICT — seuls trois scopes fidèlement calculables sont compilés :
+  //     - « vos Alliés <Famille> » → family (Famille validée ALLIED_FAMILIES) ;
+  //     - « vos Alliés » / « vos Actions » → type (mainType) ;
+  //     - « vos cartes Uniques » → unique (trait Unique).
+  //   Les autres (« Capture de vos Dragodindes », « vos Invocations », « réduit
+  //   à 0 », « jusqu'à un minimum de 1 »…) ne matchent pas → manuel. Le `$` final
+  //   rejette toute clause de plancher / scope non modélisé.
+  m = body.match(
+    /^tant que (.{1,60}?) est dans le monde\s*,\s*le cout de vos (allies( [a-z-]+)?|actions|cartes uniques) est reduit de (\d+)$/,
+  );
+  // « le Porteur de <self> » est un sujet de PORTEUR (l'aura ne vit que tant que
+  // le PORTEUR est en jeu — pas l'Équipement seul) → SKIP (bearer cost-mod manuel,
+  // « an approximation … is worse … »). subjectIsSelf accepte « le porteur de X »
+  // car la chaîne contient le nom : on l'exclut explicitement ici.
+  if (m && !/\bporteur\b/.test(m[1]) && subjectIsSelf(m[1], cardName)) {
+    const scopeRaw = m[2];
+    const n = toNumber(m[4]);
+    let scope:
+      | { kind: "family"; sub: string }
+      | { kind: "type"; mainType: "Allié" | "Action" }
+      | { kind: "unique" }
+      | null = null;
+    if (scopeRaw === "actions") scope = { kind: "type", mainType: "Action" };
+    else if (scopeRaw === "cartes uniques") scope = { kind: "unique" };
+    else if (scopeRaw === "allies") scope = { kind: "type", mainType: "Allié" };
+    else {
+      // « allies <famille> » : la Famille (m[3]) doit être non ambiguë.
+      const fam = m[3]?.trim().replace(/s$/, "");
+      if (fam && ALLIED_FAMILIES.has(fam)) scope = { kind: "family", sub: fam };
+    }
+    if (scope)
+      return {
+        trigger: "static",
+        static: { kind: "costAura", n, scope },
+        ops: [],
+      };
+  }
   return null;
 }
 

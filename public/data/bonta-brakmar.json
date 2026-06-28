@@ -551,7 +551,19 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "costAura",
+            "n": 1,
+            "scope": {
+              "kind": "family",
+              "sub": "grouilleux"
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Araknotanker Grouilleux ayant la famille Grouilleux, il se compte lui-même dans le calcul de sa Force. La Force de base de l'Araknotanker Grouilleux est calculée en permanence, que celui-ci soit en main, dans la Défausse ou en jeu.",
@@ -5703,7 +5715,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Eniripsa"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Jusqu'au début de votre prochain tour, le joueur de votre choix possède le nombre de PA et de PM inscrit sur son Héros et ne peut ni gagner, ni perdre de PA ou de PM.",
@@ -5755,7 +5776,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Sacrieur"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Déplacez dans le Monde l'Allié ou Héros incliné de votre choix présent dans son Havre Sac.",
@@ -5812,7 +5842,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Sadida"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Défaussez une carte Monstre : Le Dopeul Sadida inflige la Force de ce Monstre en Dommages à l'Allié ou Héros attaquant ou bloqueur de votre choix.",
@@ -5870,7 +5909,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Sram"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Jusqu'au début de votre prochain tour, l'Allié ou Héros de votre choix ne peut pas être choisi par une Action ou un pouvoir. Vous gagnez 1 PM jusqu'à la fin du tour.",

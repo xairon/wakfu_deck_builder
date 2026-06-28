@@ -2394,7 +2394,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Enutrof"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Dopeul Enutrof inflige 1 Dommage à l'Allié ou Héros de votre choix. Annulez tous les bonus de Force et les pouvoirs qui durent jusqu'à la fin du tour gagnés par cet Allié ou Héros.",
@@ -2441,7 +2450,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Feca"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Jusqu'à la fin du combat, tous les Dommages sur le point d'être infligés à vos Alliés ou Héros attaquants ou bloqueurs sont réduits de 1.",
@@ -2493,7 +2511,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Pandawa"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Nommez un élément et choisissez un Allié ou Héros. Jusqu'à la fin du tour, tous les Dommages de l'élément nommé sur le point d'être infligés à cet Allié ou Héros sont augmentés de 1.",
@@ -2544,7 +2571,16 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "selfCostMod",
+            "n": 1,
+            "ifHeroClass": "Xelor"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Dopeul Xélor inflige 1 Dommage au Héros du joueur de votre choix qui vient de perdre un ou plusieurs PA.",
