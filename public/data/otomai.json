@@ -6754,7 +6754,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Retirez 1 Ether de la Hache de Feuhekel : Jusqu'à la fin du tour, tous vos Monstres gagnent et .",
+        "description": "Retirez 1 Ether de la Hache de Feuhekel : Jusqu'à la fin du tour, tous vos Monstres gagnent Géant et Résistance 1 (air)(eau)(feu).",
         "elements": ["Terre", "Air", "Eau", "Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -6810,7 +6810,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Retirez 1 Ether de l'Épée du Khebab : Jusqu'à la fin du tour, tous vos Monstres gagnent et .",
+        "description": "Retirez 1 Ether de l'Épée du Khebab : Jusqu'à la fin du tour, tous vos Monstres gagnent Tacle et Résistance 1 (terre)(air)(feu).",
         "elements": ["Eau", "Terre", "Air", "Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -6866,7 +6866,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Retirez 1 Ether du Marteau de Cokelocu : Jusqu'à la fin du tour, tous vos Monstres gagnent et .",
+        "description": "Retirez 1 Ether du Marteau de Cokelocu : Jusqu'à la fin du tour, tous vos Monstres gagnent Agressivité et Résistance 1 (terre)(eau)(air).",
         "elements": ["Feu", "Terre", "Eau", "Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,

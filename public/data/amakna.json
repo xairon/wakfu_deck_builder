@@ -2877,7 +2877,7 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Tacle à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -3226,7 +3226,7 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Agressivité à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -3811,7 +3811,7 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Agilité à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -5943,7 +5943,7 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, le Porteur de la Scarature Blanche gagne ou .",
+        "description": "Jusqu'à la fin du tour, le Porteur de la Scarature Blanche gagne Agilité ou Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -6639,7 +6639,7 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner à son Porteur.",
+        "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Géant à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -6996,7 +6996,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "le joueur adverse joue une Flèche Chercheuse sur votre Tynril au début de son tour. Ce dernier va subir 1 Dommage , puis gagner . Ensuite le joueur adverse attaque votre Tynril avec une Gelée Fraise. Le Tynril va subir des Dommages de la part de la Gelée Fraise et simultanément perdre sa , puis gagner jusqu'à la fin du tour, ou jusqu'à ce qu'il subisse de nouveau des Dommages.",
+        "description": "le joueur adverse joue une Flèche Chercheuse sur votre Tynril au début de son tour. Ce dernier va subir 1 Dommage (air), puis gagner Résistance 2 (air). Ensuite le joueur adverse attaque votre Tynril avec une Gelée Fraise. Le Tynril va subir des Dommages de la part de la Gelée Fraise et simultanément perdre sa Résistance 2 (air), puis gagner Résistance 2 (feu) jusqu'à la fin du tour, ou jusqu'à ce qu'il subisse de nouveau des Dommages.",
         "elements": ["Air", "Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,

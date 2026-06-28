@@ -9365,7 +9365,7 @@
     },
     "effects": [
       {
-        "description": "Le Koalak Farouche de votre choix gagne ou jusqu'à la fin du tour.",
+        "description": "Le Koalak Farouche de votre choix gagne Tacle ou Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"

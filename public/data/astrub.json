@@ -690,7 +690,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "L'Allié ou Héros de votre choix gagne ou jusqu'à la fin du tour.",
+        "description": "L'Allié ou Héros de votre choix gagne Géant ou Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -2415,7 +2415,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié ou Héros de votre choix gagne ou jusqu'à la fin du tour. Piochez une carte.",
+        "description": "L'Allié ou Héros de votre choix gagne Agilité ou Géant jusqu'à la fin du tour. Piochez une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -4449,7 +4449,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "L'Allié de votre choix gagne ou +2 en Force jusqu'à la fin du tour.",
+        "description": "L'Allié de votre choix gagne Géant ou +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
@@ -7026,7 +7026,7 @@
     },
     "effects": [
       {
-        "description": "Le Monstre de votre choix gagne ou +2 en Force jusqu'à la fin du tour.",
+        "description": "Le Monstre de votre choix gagne Géant ou +2 en Force jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
