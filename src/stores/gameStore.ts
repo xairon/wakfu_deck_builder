@@ -1356,10 +1356,41 @@ export const useGameStore = defineStore("game", () => {
       return rejectMove("Pas de pouvoir à inclinaison automatisé.");
     if (inst.controller !== perspective.value)
       return rejectMove("Vous ne contrôlez pas cette carte.");
-    if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
-      return rejectMove("La carte doit être en jeu.");
     const seat = perspective.value;
     const atom = atoms[0];
+    // COÛT « Bannissez [cette carte] depuis votre Défausse : … » — la SOURCE
+    // doit être dans la DÉFAUSSE (pas en jeu) ; elle est BANNIE (déplacée vers
+    // l'Exil de son propriétaire), AUCUN XP, AUCUNE destruction. Traité AVANT le
+    // garde « en jeu » (la source est précisément hors-jeu).
+    if (atom.cost === "banishSelfFromDiscard") {
+      if (inst.location.zone !== "defausse")
+        return rejectMove("La carte doit être dans votre Défausse.");
+      if (state.value.turn.active !== perspective.value)
+        return rejectMove("Ce n'est pas votre tour.");
+      dispatch(
+        move(seat, {
+          instanceId,
+          from: inst.location,
+          to: { zone: "exil", owner: inst.owner },
+          position: { at: "top" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+        }),
+        say(
+          seat,
+          `Pouvoir activé (bannissement depuis la Défausse) — ${card.name} : « ${atom.text} »`,
+        ),
+      );
+      engine.enqueueEffect({
+        seat,
+        cardName: card.name,
+        ops: atom.ops,
+        sourceId: instanceId,
+      });
+      return true;
+    }
+    if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
+      return rejectMove("La carte doit être en jeu.");
     // COÛT PAYÉ (« Inclinez/Détruisez un de vos X : … ») : la SOURCE n'est NI
     // inclinée NI sacrifiée automatiquement, et n'a PAS à être dressée — le coût
     // est la première op (ciblage), qui met l'effet en pause pour le choix du
@@ -1385,20 +1416,27 @@ export const useGameStore = defineStore("game", () => {
       return rejectMove("La carte est déjà inclinée.");
     if (state.value.turn.active !== perspective.value)
       return rejectMove("Ce n'est pas votre tour.");
-    if (atom.cost === "sacrificeSelf") {
-      // « Détruisez [cette carte] : … » — le sacrifice remplace l'inclinaison
+    if (atom.cost === "sacrificeSelf" || atom.cost === "banishSelf") {
+      // « Détruisez [cette carte] : … » (sacrifice → Défausse) OU « Bannissez
+      // [cette carte] : … » (banishSelf → Exil, retiré de la partie) : le coût
+      // remplace l'inclinaison. Le bannissement n'est PAS une destruction : la
+      // source part en Exil de son propriétaire, sans XP.
+      const isBanish = atom.cost === "banishSelf";
       dispatch(
         move(seat, {
           instanceId,
           from: inst.location,
-          to: { zone: "defausse", owner: inst.owner },
+          to: {
+            zone: isBanish ? "exil" : "defausse",
+            owner: inst.owner,
+          },
           position: { at: "top" },
           visibility: { faceDown: false, visibleTo: "all" },
           preservesIdentity: false,
         }),
         say(
           seat,
-          `Pouvoir activé (sacrifice) — ${card.name} : « ${atom.text} »`,
+          `Pouvoir activé (${isBanish ? "bannissement" : "sacrifice"}) — ${card.name} : « ${atom.text} »`,
         ),
       );
     } else {

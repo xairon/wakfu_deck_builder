@@ -6667,7 +6667,20 @@
         "description": "Bannissez les Têtes à Clic et à Clac : Bannissez le Démon de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "banishSelf",
+          "ops": [
+            {
+              "op": "banishTarget",
+              "what": "Allié",
+              "sub": "demon",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["banish-target"]
       }
     ],
     "keywords": [],

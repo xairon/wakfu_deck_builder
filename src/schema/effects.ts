@@ -123,6 +123,28 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
+  // « Bannissez l'Allié [Famille] [de Niveau ≤ N] de votre choix [dans le Monde] »
+  //   / « Bannissez le <Famille> de votre choix » → op de CIBLAGE jumelle de
+  //   destroyTarget, MAIS le BANNISSEMENT n'est PAS une destruction : la cible
+  //   choisie est DÉPLACÉE vers l'Exil de SON propriétaire (« retirée de la
+  //   partie ») — AUCUN XP n'est accordé (contrairement à destroyTarget/415.1),
+  //   AUCUN événement de destruction n'est émis, et la carte ne va jamais en
+  //   Défausse/Pioche. Un JETON banni quitte le jeu vers une zone hors-jeu →
+  //   il CESSE D'EXISTER (chemin de suppression de jeton du reducer). Mêmes
+  //   filtres d'éligibilité que destroyTarget (type/sub/maxLevel/controller/zones).
+  z.object({
+    op: z.literal("banishTarget"),
+    // Cas mono-type (« Bannissez l'Allié de votre choix »).
+    what: z.enum(["Allié", "Zone", "Équipement", "Dofus"]).optional(),
+    // Famille requise (« Bannissez le Démon de votre choix » → sub Demon).
+    sub: z.string().optional(),
+    // Niveau max (« … de Niveau inférieur ou égal à N »). Cible sans Niveau
+    // = inéligible (manquant = +Infinity).
+    maxLevel: z.number().optional(),
+    // « … vos » (self) / « … adverse » (opponent) — filtre de contrôleur.
+    controller: controllerSchema.optional(),
+    zones: zonesSchema,
+  }),
   z.object({
     op: z.literal("damageTarget"),
     n: z.number(),
@@ -685,10 +707,17 @@ export const compiledEffectSchema = z.object({
   ]),
   optional: z.boolean().optional(),
   // "sacrificeSelf" : le coût est de sacrifier la SOURCE (« Détruisez [cette
-  // carte] : … »). "paidOps" : le coût est la PREMIÈRE op de la séquence (op de
-  // ciblage costTap/costDestroyControlled, « Inclinez/Détruisez un de vos X :
-  // … ») — la source n'est ni inclinée ni sacrifiée automatiquement.
-  cost: z.enum(["sacrificeSelf", "paidOps"]).optional(),
+  // carte] : … »). "banishSelf" : le coût est de BANNIR la SOURCE (« Bannissez
+  // [cette carte] [depuis votre Défausse] : … ») — la source est déplacée vers
+  // l'Exil de son propriétaire (retirée de la partie), AUCUN XP, AUCUNE
+  // destruction (parallèle exact de sacrificeSelf, mais en exil au lieu de la
+  // Défausse ; la variante « depuis votre Défausse » bannit depuis la Défausse).
+  // "paidOps" : le coût est la PREMIÈRE op de la séquence (op de ciblage
+  // costTap/costDestroyControlled, « Inclinez/Détruisez un de vos X : … ») — la
+  // source n'est ni inclinée ni sacrifiée automatiquement.
+  cost: z
+    .enum(["sacrificeSelf", "banishSelf", "banishSelfFromDiscard", "paidOps"])
+    .optional(),
   orElse: z.literal("destroySelf").optional(),
   static: staticAbilitySchema.optional(),
   // Présent uniquement pour trigger:"onOtherAppears".

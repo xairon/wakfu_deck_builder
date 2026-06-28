@@ -24,6 +24,7 @@ import {
   compileStaticEffectText,
   compileTapEffectText,
   compileTurnStartEffectText,
+  isBanishCostText,
   isInclineCostText,
   isPaidCostText,
   isRecycleCostText,
@@ -215,6 +216,7 @@ function compileEffects(
       isPaidCostText(text) ||
       isInclineCostText(text) ||
       isSacrificeCostText(text) ||
+      isBanishCostText(text) ||
       isRecycleCostText(text) ||
       isTokenTapPowerText(text)
         ? // Un coût de RECYCLAGE sur une Action (Parchemins) compile en "onPlay"

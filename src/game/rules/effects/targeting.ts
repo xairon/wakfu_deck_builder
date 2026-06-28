@@ -26,6 +26,7 @@ import { GRANT_KEYWORD_TOKEN, resistanceLabel } from "./keywords";
 export type TargetingOp = Extract<
   CompiledEffectOp,
   | { op: "destroyTarget" }
+  | { op: "banishTarget" }
   | { op: "damageTarget" }
   | { op: "damageMultiTarget" }
   | { op: "damageTargetByForce" }
@@ -50,6 +51,7 @@ export type TargetingOp = Extract<
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
   return (
     op.op === "destroyTarget" ||
+    op.op === "banishTarget" ||
     op.op === "damageTarget" ||
     op.op === "damageMultiTarget" ||
     op.op === "damageTargetByForce" ||
@@ -170,7 +172,8 @@ export function effectTargetIds(
     op.op === "returnToHand" ||
     op.op === "damageTargetByForce" ||
     op.op === "grantKeywordTarget" ||
-    op.op === "grantResistanceTarget"
+    op.op === "grantResistanceTarget" ||
+    op.op === "banishTarget"
       ? op.controller
       : undefined;
   // Rôles du combat EN COURS (state.combat) : un instance est « attaquant »
@@ -189,25 +192,32 @@ export function effectTargetIds(
       op.op === "destroyTarget"
         ? card.mainType === op.what ||
           !!op.whatAny?.some((w) => w === card.mainType)
-        : // « Renvoyez l'Allié, la Zone ou l'Équipement … » (returnToHand
-          // multi-type) : la cible est de l'un des types listés. Sans `whatAny`,
-          // la forme mono-type tombe dans le défaut (Allié + Héros si `heroes`).
-          op.op === "returnToHand" && op.whatAny
-          ? op.whatAny.some((w) => w === card.mainType)
-          : op.op === "healHeroTarget"
-            ? card.mainType === "Héros"
-            : // « … au Héros de votre choix » (damageTarget targetHeroOnly) : seuls
-              // les Héros sont éligibles (aucun Allié). Sinon, Allié (+ Héros si
-              // `heroes`).
-              op.op === "damageTarget" && op.targetHeroOnly
+        : op.op === "banishTarget"
+          ? // « Bannissez l'X de votre choix » : mono-type `what` (Allié par
+            // défaut quand seul `sub` est donné — « Bannissez le Démon »).
+            op.what
+            ? card.mainType === op.what
+            : card.mainType === "Allié"
+          : // « Renvoyez l'Allié, la Zone ou l'Équipement … » (returnToHand
+            // multi-type) : la cible est de l'un des types listés. Sans `whatAny`,
+            // la forme mono-type tombe dans le défaut (Allié + Héros si `heroes`).
+            op.op === "returnToHand" && op.whatAny
+            ? op.whatAny.some((w) => w === card.mainType)
+            : op.op === "healHeroTarget"
               ? card.mainType === "Héros"
-              : card.mainType === "Allié" ||
-                (op.heroes && card.mainType === "Héros");
+              : // « … au Héros de votre choix » (damageTarget targetHeroOnly) : seuls
+                // les Héros sont éligibles (aucun Allié). Sinon, Allié (+ Héros si
+                // `heroes`).
+                op.op === "damageTarget" && op.targetHeroOnly
+                ? card.mainType === "Héros"
+                : card.mainType === "Allié" ||
+                  (op.heroes && card.mainType === "Héros");
     // famille requise (« le Monstre de votre choix »)
     if (
       ok &&
       (op.op === "buffForceTarget" ||
         op.op === "destroyTarget" ||
+        op.op === "banishTarget" ||
         op.op === "damageTarget" ||
         op.op === "grantKeywordTarget" ||
         op.op === "grantResistanceTarget") &&
@@ -218,7 +228,11 @@ export function effectTargetIds(
     // Niveau max (« … de Niveau inférieur ou égal à N ») : une cible sans
     // valeur de Niveau est INÉLIGIBLE (manquant = +Infinity > N), comme
     // matchesPickFilter pour searchDeck.
-    if (ok && op.op === "destroyTarget" && op.maxLevel !== undefined) {
+    if (
+      ok &&
+      (op.op === "destroyTarget" || op.op === "banishTarget") &&
+      op.maxLevel !== undefined
+    ) {
       ok =
         (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) <= op.maxLevel;
     }
@@ -350,6 +364,41 @@ export function resolveDestroyTarget(
     );
   }
   return { events, log };
+}
+
+/**
+ * BANNIT la cible (« Bannir » du glossaire — retirer de la partie). À la
+ * différence de `resolveDestroyTarget`, ce N'EST PAS une destruction :
+ *  - la cible est DÉPLACÉE vers l'EXIL de son PROPRIÉTAIRE (inst.owner), pas
+ *    vers la Défausse ;
+ *  - AUCUN XP n'est accordé (contrairement à 415.1 — une carte bannie « cesse
+ *    d'exister », elle n'est pas détruite) ;
+ *  - AUCUN événement de destruction n'est émis (ne route PAS via
+ *    resolveDestroyTarget).
+ * Un JETON banni quitte le jeu vers une zone hors-jeu (Exil) → le reducer le
+ * supprime des instances (isTokenCardId && !arrivesInPlayZone) : il cesse
+ * d'exister, fidèle.
+ */
+export function resolveBanishTarget(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  return {
+    events: [
+      move(actor, {
+        instanceId: targetId,
+        from: inst.location,
+        to: { zone: "exil", owner: inst.owner },
+        position: { at: "top" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: false,
+      }),
+    ],
+    log: [`${nameOf(ctx, targetId)} est banni (retiré de la partie).`],
+  };
 }
 
 /**

@@ -822,6 +822,56 @@ function parseSentence(
       : ["monde"];
     return { op: "destroyTarget", what, zones };
   }
+  // ── BANNISSEMENT CIBLÉ « Bannissez l'X de votre choix » (banishTarget) ───────
+  //   Jumeau de destroyTarget MAIS sans XP ni destruction (la cible va en Exil).
+  //   STRICT : on ne capte que les zones de jeu (Monde / Havre-Sac) — la cible
+  //   « dans la Défausse d'un adversaire » est un ciblage de zone différent
+  //   (manuel). Formes : Allié [Famille] [de Niveau ≤ N], <Famille> nue, ou un
+  //   type racine (Allié / Zone / Équipement / Dofus). Placé AVANT les ciblages
+  //   d'inclinaison génériques.
+  // « Bannissez l'Allié [Famille] de votre choix [de Niveau inférieur ou égal à N]
+  //   [dans le Monde] » → banishTarget Allié + filtres `sub` / `maxLevel`.
+  m = sentence.match(
+    /^bannissez l['’ ]?\s?allie( [a-z-]+)? de votre choix( de niveau inferieur ou egal a (\d+))?( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m) {
+    const sub = m[1]?.trim();
+    if (sub && ["ou", "non", "de", "et"].includes(sub)) return null;
+    const zones: ("monde" | "havreSac")[] = m[5]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return {
+      op: "banishTarget",
+      what: "Allié",
+      ...(sub ? { sub } : {}),
+      ...(m[3] ? { maxLevel: toNumber(m[3]) } : {}),
+      zones,
+    };
+  }
+  // « Bannissez le/la/l' <Famille> de votre choix [dans le Monde] » → banishTarget
+  //   Allié + `sub` (Famille non ambiguë : ALLIED_FAMILIES). « Bannissez le Démon ».
+  m = sentence.match(
+    /^bannissez (?:le |la |l['’ ]?\s?)([a-z]+) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m && ALLIED_FAMILIES.has(m[1])) {
+    const zones: ("monde" | "havreSac")[] = m[2]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return { op: "banishTarget", what: "Allié", sub: m[1], zones };
+  }
+  // « Bannissez l'Allié / la Zone / l'Équipement / le Dofus de votre choix
+  //   [dans le Monde] » → banishTarget mono-type nu (sans Famille ni Niveau).
+  m = sentence.match(
+    /^bannissez (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m) {
+    const what = TARGET_WHAT[m[1].replace(/['’]/g, "'").replace(/\s+/g, " ")];
+    if (!what) return null;
+    const zones: ("monde" | "havreSac")[] = m[2]
+      ? ["monde", "havreSac"]
+      : ["monde"];
+    return { op: "banishTarget", what, zones };
+  }
   // « Inclinez / Redressez l'Allié (ou Héros) ATTAQUANT (OU BLOQUEUR) de votre
   //   choix » → tapTarget / untapTarget + filtre combatRole (rôle dans le
   //   combat en cours). Placé AVANT la forme générique. Aucune cible hors
@@ -1635,9 +1685,39 @@ export function compileTapEffectText(
     if (!inclineOps) return null;
     return { trigger: "onTap", ops: inclineOps };
   }
+  // Coût « Bannissez [cette carte] [depuis votre Défausse] : effet » — le
+  // bannissement de la SOURCE remplace l'inclinaison (cost:banishSelf), OU se
+  // paie depuis la Défausse (cost:banishSelfFromDiscard). Le bannissement n'est
+  // PAS une destruction : la source part en Exil (retirée de la partie), sans
+  // XP. Le sujet du « : » doit être la carte elle-même (subjectIsSelf) — «
+  // Bannissez l'Allié de votre choix » (cible, sans « : ») n'est PAS capté ici.
+  // Testé AVANT « Détruisez [self] : » (préfixe distinct).
+  let cost:
+    | "sacrificeSelf"
+    | "banishSelf"
+    | "banishSelfFromDiscard"
+    | undefined;
+  const banishCost = body.match(/^bannissez ([^:]{1,60}?)\s*:\s*(.+)$/);
+  if (banishCost) {
+    let subject = banishCost[1].trim();
+    let fromDiscard = false;
+    // « … depuis votre Défausse » : la source est bannie depuis la Défausse.
+    const md = subject.match(/^(.+?)\s+depuis votre defausse$/);
+    if (md) {
+      subject = md[1].trim();
+      fromDiscard = true;
+    }
+    if (!subjectIsSelf(subject, cardName)) return null;
+    cost = fromDiscard ? "banishSelfFromDiscard" : "banishSelf";
+    // La SOURCE est bannie (retirée de la partie) → elle ne peut pas réactiver
+    // le pouvoir : la clause once-per-turn est redondante (fidèle à retirer).
+    const banishBody = stripTapOncePerTurn(banishCost[2].trim());
+    const banishOps = compileBody(banishBody, cardName, sourceElement);
+    if (!banishOps) return null;
+    return { trigger: "onTap", cost, ops: banishOps };
+  }
   // Coût « Détruisez [cette carte] : effet » — le sacrifice remplace
   // l'inclinaison ; un coût dont le sujet n'est pas la carte → rejet.
-  let cost: "sacrificeSelf" | undefined;
   const costMatch = body.match(/^detruisez ([^:]{1,50}?)\s*:\s*(.+)$/);
   if (costMatch) {
     if (!subjectIsSelf(costMatch[1].trim(), cardName)) return null;
@@ -1699,6 +1779,22 @@ export function isSacrificeCostText(text: string): boolean {
   // « Détruisez un … que vous contrôlez : … » = coût payé non modélisé → manuel.
   if (/^detruisez .* que vous controlez\s*:/.test(n)) return false;
   return /^detruisez [^:]{1,50}\s*:/.test(n);
+}
+
+/**
+ * Le texte a-t-il la forme d'un POUVOIR À COÛT DE BANNISSEMENT DE SOI
+ * « Bannissez [cette carte] [depuis votre Défausse] : … » ? Reconnaissance LARGE
+ * (préfixe « bannissez <X> : ») : sert à router vers `compileTapEffectText` même
+ * sans `requiresIncline` (cas Bibliothèque de Barbok, bannie depuis la Défausse).
+ * La compilation effective reste STRICTE — `compileTapEffectText` n'accepte ce
+ * coût que si `subjectIsSelf` (le X est la carte elle-même) ET si le CORPS se
+ * compile entièrement via compileBody ; sinon → manuel. Le `:` est REQUIS :
+ * « Bannissez l'Allié … de votre choix » (sans « : ») est une CIBLE
+ * (banishTarget), pas un coût de bannissement de soi.
+ */
+export function isBanishCostText(text: string): boolean {
+  const n = norm(text);
+  return /^bannissez [^:]{1,60}\s*:/.test(n);
 }
 
 /**
@@ -2775,6 +2871,7 @@ export function tapPowers(card: Card | null): EffectAtom[] {
         isPaidCostText(text) ||
         isInclineCostText(text) ||
         isSacrificeCostText(text) ||
+        isBanishCostText(text) ||
         isRecycleCostText(text) ||
         isTokenTapPowerText(text))
         ? compileTapEffectText(

@@ -225,6 +225,78 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
     expect(store.state.instances[src].orientation).toBe("upright"); // source intacte
   });
 
+  it("activateTapPower (cost banishSelf) : la SOURCE part en EXIL (pas la Défausse), puis le corps tourne", () => {
+    const { store, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    const src = placeInZone(store, "A", { zone: "monde" });
+    // cible adverse à bannir
+    const victim = placeInZone(store, "B", { zone: "monde" });
+    const srcCard = cardStore.cards.find(
+      (c) => c.id === store.state.instances[src].cardId,
+    )!;
+    // « Bannissez [cette carte] : Bannissez l'Allié de votre choix dans le Monde. »
+    srcCard.effects = [
+      {
+        description: "Bannissez la source : Bannissez l'Allié de votre choix.",
+        requiresIncline: true,
+        compiled: {
+          trigger: "onTap",
+          cost: "banishSelf",
+          ops: [{ op: "banishTarget", what: "Allié", zones: ["monde"] }],
+        },
+      },
+    ];
+    const victimOwner = store.state.instances[victim].owner;
+    const ok = store.activateTapPower(src);
+    expect(ok).toBe(true);
+    // la SOURCE est BANNIE : en Exil de son propriétaire, jamais la Défausse.
+    const srcOwner = store.state.instances[src].owner;
+    expect(store.state.seats[srcOwner].exil).toContain(src);
+    expect(store.state.seats[srcOwner].defausse).not.toContain(src);
+    expect(store.state.monde).not.toContain(src);
+    // le corps a tourné : on est en pause sur le ciblage banishTarget…
+    expect(store.effectTargeting?.op.op).toBe("banishTarget");
+    store.effectTargetChoose(victim);
+    // …la cible choisie est bannie elle aussi (Exil de SON propriétaire).
+    expect(store.state.seats[victimOwner].exil).toContain(victim);
+    expect(store.state.seats[victimOwner].defausse).not.toContain(victim);
+    expect(store.state.monde).not.toContain(victim);
+  });
+
+  it("activateTapPower (cost banishSelf) : aucun XP accordé pour la source ni la cible bannies", () => {
+    const { store, cardStore } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+    });
+    const src = placeInZone(store, "A", { zone: "monde" });
+    const victim = placeInZone(store, "B", { zone: "monde" });
+    const srcCard = cardStore.cards.find(
+      (c) => c.id === store.state.instances[src].cardId,
+    )!;
+    srcCard.effects = [
+      {
+        description: "Bannissez la source : Bannissez l'Allié de votre choix.",
+        requiresIncline: true,
+        compiled: {
+          trigger: "onTap",
+          cost: "banishSelf",
+          ops: [{ op: "banishTarget", what: "Allié", zones: ["monde"] }],
+        },
+      },
+    ];
+    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroB = store.state.seats.B.heroInstanceId!;
+    const xpABefore = store.state.instances[heroA].counters.xp ?? 0;
+    const xpBBefore = store.state.instances[heroB].counters.xp ?? 0;
+    store.activateTapPower(src);
+    store.effectTargetChoose(victim);
+    // bannissement = pas de destruction → aucun XP de part ni d'autre.
+    expect(store.state.instances[heroA].counters.xp ?? 0).toBe(xpABefore);
+    expect(store.state.instances[heroB].counters.xp ?? 0).toBe(xpBBefore);
+  });
+
   it("combatModSelf : pose les jetons de combat sur la source", () => {
     const { store } = makeEffectSandbox({ first: "A" });
     const id = placeInZone(store, "A", { zone: "monde" });

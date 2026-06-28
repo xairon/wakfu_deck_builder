@@ -1376,7 +1376,22 @@
         "description": "Bannissez la Carte du Grav'Mar'Av' : Cherchez une carte Zone dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "banishSelf",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Zone",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       }
     ],
     "keywords": [],
@@ -3247,7 +3262,19 @@
         "description": "Bannissez les Geôles d'Astrub : Bannissez l'Allié de votre choix dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "banishSelf",
+          "ops": [
+            {
+              "op": "banishTarget",
+              "what": "Allié",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["banish-target"]
       }
     ],
     "keywords": [],
