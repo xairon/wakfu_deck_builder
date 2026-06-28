@@ -81,7 +81,7 @@
     },
     "effects": [
       {
-        "description": "Mettez en jeu un jeton \"Monstre — Arakne\" de Force 1 . N'utilisez ce pouvoir qu'une seule fois par tour.",
+        "description": "Mettez en jeu un jeton \"Monstre — Arakne\" de Force 1 Terre. N'utilisez ce pouvoir qu'une seule fois par tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2739,10 +2739,11 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Échec critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être . Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement mais ne sont pas comme joués. Échec critique ne permet donc pas de les annuler.",
+        "description": "Échec critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement mais ne sont pas comme joués. Échec critique ne permet donc pas de les annuler.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],

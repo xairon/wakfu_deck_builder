@@ -1371,7 +1371,7 @@
     },
     "effects": [
       {
-        "description": "Tant qu'il est attaquant, le coût des Actions et des pouvoirs adverses qui choississent le Porteur de la Ceinture du Champion est augmentée de .",
+        "description": "Tant qu'il est attaquant, le coût des Actions et des pouvoirs adverses qui choississent le Porteur de la Ceinture du Champion est augmentée de 2.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -2752,10 +2752,11 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Si vous utilisez le pouvoir de Fantômayte pour copier les pouvoirs d'un autre Allié, Fantômayte perd son pouvoir . Néanmoins, comme le pouvoir de copie s'arrête si Fantômayte quitte le jeu, donc si par exemple elle est détruite et mise dans votre Défausse, Fantômayte pourra tout de même être remise en jeu depuis votre Défausse grâce à son pouvoir .",
+        "description": "Si vous utilisez le pouvoir de Fantômayte pour copier les pouvoirs d'un autre Allié, Fantômayte perd son pouvoir Fantôme. Néanmoins, comme le pouvoir de copie s'arrête si Fantômayte quitte le jeu, donc si par exemple elle est détruite et mise dans votre Défausse, Fantômayte pourra tout de même être remise en jeu depuis votre Défausse grâce à son pouvoir Fantôme.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -2961,7 +2962,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Quand Grozilla attaque, vous pouvez payer X . Si vous le faites, Grozilla inflige X Dommages à l'Allié de votre choix.",
+        "description": "Quand Grozilla attaque, vous pouvez payer X Feu. Si vous le faites, Grozilla inflige X Dommages Feu à l'Allié de votre choix.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3507,7 +3508,7 @@
     },
     "effects": [
       {
-        "description": "Produisez deux Ressources . N'utilisez ce pouvoir que pour payer le coût d'un Sort Xélor.",
+        "description": "Produisez deux Ressources Neutre. N'utilisez ce pouvoir que pour payer le coût d'un Sort Xélor.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -3939,7 +3940,7 @@
         "coverage": "trait"
       },
       {
-        "description": "L'Étendue de Crâ inflige 4 Dommages à l'Allié ou Héros de votre choix, puis, si cet Allié ou Héros est détruit de cette façon, l'Étendue de Crâ inflige 1 Dommage à tous les Alliés et Héros dans le Monde.",
+        "description": "L'Étendue de Crâ inflige 4 Dommages Feu à l'Allié ou Héros de votre choix, puis, si cet Allié ou Héros est détruit de cette façon, l'Étendue de Crâ inflige 1 Dommage Feu à tous les Alliés et Héros dans le Monde.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,

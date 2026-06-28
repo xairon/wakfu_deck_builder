@@ -708,7 +708,7 @@
     },
     "effects": [
       {
-        "description": "Tant que le Boomba est dans le Monde, tous vos Pirates gagnent .",
+        "description": "Tant que le Boomba est dans le Monde, tous vos Pirates gagnent Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -745,7 +745,7 @@
     },
     "effects": [
       {
-        "description": "Chaque fois qu'une carte est bannie, vous pouvez payer . Si vous le faites, piochez une carte, puis défaussez-vous d'une carte.",
+        "description": "Chaque fois qu'une carte est bannie, vous pouvez payer 1. Si vous le faites, piochez une carte, puis défaussez-vous d'une carte.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -1264,7 +1264,7 @@
     },
     "effects": [
       {
-        "description": "Tant que le Porteur du Bracelet du Chef Crocodaille est en jeu, chaque fois qu'un joueur devrait piocher une carte pendant sa phase principale, il peut payer . S'il ne le fait pas, annulez cette pioche.",
+        "description": "Tant que le Porteur du Bracelet du Chef Crocodaille est en jeu, chaque fois qu'un joueur devrait piocher une carte pendant sa phase principale, il peut payer 1. S'il ne le fait pas, annulez cette pioche.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -1753,7 +1753,7 @@
     },
     "effects": [
       {
-        "description": "Le coût des Actions ou des pouvoirs adverses qui choisissent le Porteur du Chapeau Aerdala est augmenté de .",
+        "description": "Le coût des Actions ou des pouvoirs adverses qui choisissent le Porteur du Chapeau Aerdala est augmenté de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2022,7 +2022,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Si les Dagues de Boisaille sont portées par un Allié Bonta possédant un pouvoir qui n'est actif que si le Héros est d'Alignement Bonta (écrit sous la forme « . [Pouvoir]) », les Dagues de Boisaille modifient également ce pouvoir qui devient actif si le Héros est d'Alignement Brâkmar (le pouvoir devient donc « . [Pouvoir] »).",
+        "description": "Si les Dagues de Boisaille sont portées par un Allié Bonta possédant un pouvoir qui n'est actif que si le Héros est d'Alignement Bonta (écrit sous la forme « Bonta. [Pouvoir] »), les Dagues de Boisaille modifient également ce pouvoir qui devient actif si le Héros est d'Alignement Brâkmar (le pouvoir devient donc « Brâkmar. [Pouvoir] »).",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -2390,7 +2390,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Enutrof, le coût du Dopeul Enutrof est réduit de .",
+        "description": "Si votre Héros est Enutrof, le coût du Dopeul Enutrof est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2437,7 +2437,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Féca, le coût du Dopeul Féca est réduit de .",
+        "description": "Si votre Héros est Féca, le coût du Dopeul Féca est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2489,7 +2489,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Si votre Héros est Pandawa, le coût du Dopeul Pandawa est réduit de .",
+        "description": "Si votre Héros est Pandawa, le coût du Dopeul Pandawa est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2540,7 +2540,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Xélor, le coût du Dopeul Xélor est réduit de .",
+        "description": "Si votre Héros est Xélor, le coût du Dopeul Xélor est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3002,7 +3002,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Si l'Epée de Boisaille est portée par un Allié Brâkmar possédant un pouvoir qui n'est actif que si le Héros est d'Alignement Brâkmar (écrit sous la forme « . [Pouvoir]) », l'Epée de Boisaille modifie également ce pouvoir qui devient actif si le Héros est d'Alignement Bonta (le pouvoir devient donc « . [Pouvoir] »).",
+        "description": "Si l'Epée de Boisaille est portée par un Allié Brâkmar possédant un pouvoir qui n'est actif que si le Héros est d'Alignement Brâkmar (écrit sous la forme « Brâkmar. [Pouvoir] »), l'Epée de Boisaille modifie également ce pouvoir qui devient actif si le Héros est d'Alignement Bonta (le pouvoir devient donc « Bonta. [Pouvoir] »).",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -5429,7 +5429,7 @@
     },
     "effects": [
       {
-        "description": "Tant qu'un Petit Garçon est en jeu, Lotie gagne et .",
+        "description": "Tant qu'un Petit Garçon est en jeu, Lotie gagne Agilité et Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -5884,7 +5884,7 @@
     },
     "effects": [
       {
-        "description": "Choisissez un Allié ou Héros et un Allié ou Héros dans le Monde. Chacun de ces Alliés ou Héros inflige sa Force en Dommages à l'autre.",
+        "description": "Choisissez un Allié ou Héros Bonta et un Allié ou Héros Brâkmar dans le Monde. Chacun de ces Alliés ou Héros inflige sa Force en Dommages à l'autre.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -6369,10 +6369,11 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir . Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
+        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -6420,10 +6421,11 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir . Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
+        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -6477,10 +6479,11 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir . Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
+        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -6528,10 +6531,11 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir . Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
+        "description": "Le Ranger apparaît en Défense s'il apparaît après avoir été joué via son pouvoir Défense. Si le Ranger apparaît alors que vous l'avez joué de manière traditionnelle ou que vous l'avez mis en jeu, son pouvoir ne se déclenchera pas.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [
@@ -7198,7 +7202,7 @@
     },
     "effects": [
       {
-        "description": "Tant qu'une Petite Fille est en jeu, Touffe gagne et .",
+        "description": "Tant qu'une Petite Fille est en jeu, Touffe gagne Géant et Agressivité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"

@@ -3696,7 +3696,7 @@
     },
     "effects": [
       {
-        "description": "Chaque fois qu'Isletate le Vampyre détruit un Allié, vous pouvez payer pour mettre en jeu un jeton « Monstre — Vampyre » de Force 1 dans le Monde.",
+        "description": "Chaque fois qu'Isletate le Vampyre détruit un Allié, vous pouvez payer 1 pour mettre en jeu un jeton « Monstre — Vampyre » de Force 1 dans le Monde.",
         "elements": ["Neutre", "Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,

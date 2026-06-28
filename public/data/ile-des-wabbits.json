@@ -506,10 +506,11 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Échec critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être . Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement et ne sont pas considérés comme joués. Échec critique ne permet donc pas de les annuler.",
+        "description": "Échec critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement et ne sont pas considérés comme joués. Échec critique ne permet donc pas de les annuler.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],

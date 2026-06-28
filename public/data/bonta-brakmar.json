@@ -547,7 +547,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Tant que l'Araknotanker Grouilleux est dans le Monde, le coût de vos Alliés Grouilleux est réduit de .",
+        "description": "Tant que l'Araknotanker Grouilleux est dans le Monde, le coût de vos Alliés Grouilleux est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -703,7 +703,7 @@
     },
     "effects": [
       {
-        "description": "Quand l'Arc Hord'Eon apparaît, recyclez jusqu'à trois Monstres . Le bonus de Force de l'Arc Hord'Eon est égal au nombre de Monstres recyclés de cette façon.",
+        "description": "Quand l'Arc Hord'Eon apparaît, recyclez jusqu'à trois Monstres Feu. Le bonus de Force de l'Arc Hord'Eon est égal au nombre de Monstres Feu recyclés de cette façon.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -1844,7 +1844,7 @@
     },
     "effects": [
       {
-        "description": "Quand le bâton Bah'Pik' apparaît, recyclez jusqu'à trois Monstres . Le bonus de Force du Bâton Bah'Pik' est égal au nombre de Monstres recyclés de cette façon.",
+        "description": "Quand le bâton Bah'Pik' apparaît, recyclez jusqu'à trois Monstres Terre. Le bonus de Force du Bâton Bah'Pik' est égal au nombre de Monstres Terre recyclés de cette façon.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2583,7 +2583,7 @@
     },
     "effects": [
       {
-        "description": "Tant que le Porteur des Bottes Dorées d'Hogmeiser est dans le Monde, le coût des Actions jouées par vos adversaires pendant votre tour est augmenté de .",
+        "description": "Tant que le Porteur des Bottes Dorées d'Hogmeiser est dans le Monde, le coût des Actions jouées par vos adversaires pendant votre tour est augmenté de 2.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3084,7 +3084,7 @@
     },
     "effects": [
       {
-        "description": "Tant que le Porteur de la Cape Cérémoniale est dans le Monde, le coût de vos cartes Uniques est réduit de .",
+        "description": "Tant que le Porteur de la Cape Cérémoniale est dans le Monde, le coût de vos cartes Uniques est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -4979,7 +4979,7 @@
     },
     "effects": [
       {
-        "description": "Quand les Dagues Haih'Ri'Don' apparaissent, recyclez jusqu'à trois Monstres . Le bonus de Force des Dagues Haih'Ri'Don' est égal au nombre de Monstres recyclés de cette façon.",
+        "description": "Quand les Dagues Haih'Ri'Don' apparaissent, recyclez jusqu'à trois Monstres Air. Le bonus de Force des Dagues Haih'Ri'Don' est égal au nombre de Monstres Air recyclés de cette façon.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5699,7 +5699,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Eniripsa, le coût du Dopeul Eniripsa est réduit de .",
+        "description": "Si votre Héros est Eniripsa, le coût du Dopeul Eniripsa est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5751,7 +5751,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Si votre Héros est Sacrieur, le coût de Dopeul Sacrieur est réduit de .",
+        "description": "Si votre Héros est Sacrieur, le coût de Dopeul Sacrieur est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5808,7 +5808,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Si votre Héros est Sadida, le coût du Dopeul Sadida est réduit de .",
+        "description": "Si votre Héros est Sadida, le coût du Dopeul Sadida est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5866,7 +5866,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Si votre Héros est Sram, le coût du Dopeul Sram est réduit de .",
+        "description": "Si votre Héros est Sram, le coût du Dopeul Sram est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -6490,7 +6490,7 @@
     },
     "effects": [
       {
-        "description": "Tant que l'Enclos de Dragodindes est dans le Monde, le coût de de vos Dragodindes est réduit de .",
+        "description": "Tant que l'Enclos de Dragodindes est dans le Monde, le coût de Capture de vos Dragodindes est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -7312,7 +7312,7 @@
     },
     "effects": [
       {
-        "description": "Choisissez un Niveau. Le Foudroiement inflige 1 Dommage à tous les Alliés de ce Niveau dans le Monde.",
+        "description": "Choisissez un Niveau. Le Foudroiement inflige 1 Dommage Feu à tous les Alliés de ce Niveau dans le Monde.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -11751,7 +11751,7 @@
     },
     "effects": [
       {
-        "description": "Quand la Pelle Rin' apparaît, recyclez jusqu'à trois Monstres . Le bonus de Force de la Pelle Rin' est égal au nombre de Monstres recyclés de cette façon.",
+        "description": "Quand la Pelle Rin' apparaît, recyclez jusqu'à trois Monstres Eau. Le bonus de Force de la Pelle Rin' est égal au nombre de Monstres Eau recyclés de cette façon.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -14245,7 +14245,7 @@
     },
     "effects": [
       {
-        "description": "Chaque fois qu'un de vos Alliés est détruit par un joueur adverse, vous pouvez payer . Si vous le faites, le Surveillant Vampyre inflige 1 Dommage à l'Allié ou Héros de votre choix.",
+        "description": "Chaque fois qu'un de vos Alliés est détruit par un joueur adverse, vous pouvez payer Feu. Si vous le faites, le Surveillant Vampyre inflige 1 Dommage Feu à l'Allié ou Héros de votre choix.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,

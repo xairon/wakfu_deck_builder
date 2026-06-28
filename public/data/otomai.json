@@ -525,7 +525,7 @@
     },
     "effects": [
       {
-        "description": "Recyclez Anna Jaizik depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
+        "description": "Recyclez Anna Jaizik depuis le Monde ou votre Havre Sac : Produisez une Ressource Terre et une Ressource Feu. N'utilisez ce pouvoir que pour jouer une Action Terre.",
         "elements": ["Terre", "Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -1054,7 +1054,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Ecaflip, le coût du Dopeul Ecaflip est réduit de .",
+        "description": "Si votre Héros est Ecaflip, le coût du Dopeul Ecaflip est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -1625,7 +1625,7 @@
     },
     "effects": [
       {
-        "description": "Recyclez July Vamine depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
+        "description": "Recyclez July Vamine depuis le Monde ou votre Havre Sac : Produisez une Ressource Air et une Ressource Terre. N'utilisez ce pouvoir que pour jouer une Action Air.",
         "elements": ["Air", "Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -1679,7 +1679,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Tant que Bash Skwal est dans le Monde, tous vos Pirates gagnent .",
+        "description": "Tant que Bash Skwal est dans le Monde, tous vos Pirates gagnent Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -1976,7 +1976,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Chaque fois que Remington est choisi par un joueur adverse, vous pouvez payer . Si vous le faîtes, Remington inflige 1 Dommage au Havre Sac ou au Héros de ce joueur.",
+        "description": "Chaque fois que Remington est choisi par un joueur adverse, vous pouvez payer Feu. Si vous le faîtes, Remington inflige 1 Dommage Feu au Havre Sac ou au Héros de ce joueur.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2134,7 +2134,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Iop, le coût du Dopeul Iop est réduit de .",
+        "description": "Si votre Héros est Iop, le coût du Dopeul Iop est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2302,7 +2302,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Tant que la Gelée Royale Citron est dans le Monde, toutes vos Gelées gagnent .",
+        "description": "Tant que la Gelée Royale Citron est dans le Monde, toutes vos Gelées gagnent Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -2569,7 +2569,7 @@
     },
     "effects": [
       {
-        "description": "Tant que Terry l'Ermite est dans le Monde, le coût de vos est réduit de , jusqu'à un minimum de .",
+        "description": "Tant que Terry l'Ermite est dans le Monde, le coût de vos Invocations est réduit de 1, jusqu'à un minimum de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -2695,7 +2695,7 @@
     },
     "effects": [
       {
-        "description": "Recyclez Ô Zaune depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
+        "description": "Recyclez Ô Zaune depuis le Monde ou votre Havre Sac : Produisez une Ressource Feu et une Ressource Eau. N'utilisez ce pouvoir que pour jouer une Action Feu.",
         "elements": ["Feu", "Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -3237,7 +3237,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Crâ, le coût du Dopeul Crâ est réduit de .",
+        "description": "Si votre Héros est Crâ, le coût du Dopeul Crâ est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3502,7 +3502,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Quand le Démon XV apparaît depuis votre main, vous pouvez l'incliner et payer X . Si vous le faites, le Démon XV inflige X Dommages à chaque autre Allié ou Héros dans le Monde. Vous ne gagnez pas d'XP.",
+        "description": "Quand le Démon XV apparaît depuis votre main, vous pouvez l'incliner et payer X Feu. Si vous le faites, le Démon XV inflige X Dommages Feu à chaque autre Allié ou Héros dans le Monde. Vous ne gagnez pas d'XP.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3794,7 +3794,7 @@
     },
     "effects": [
       {
-        "description": "Recyclez Niko la Flamèche depuis le Monde ou votre Havre Sac : Produisez une Ressource et une Ressource . N'utilisez ce pouvoir que pour jouer une Action .",
+        "description": "Recyclez Niko la Flamèche depuis le Monde ou votre Havre Sac : Produisez une Ressource Eau et une Ressource Air. N'utilisez ce pouvoir que pour jouer une Action Eau.",
         "elements": ["Eau", "Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -4146,7 +4146,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Quand Maskemane attaque, vous pouvez payer . Si vous le faites, inclinez l'Allié ou Héros de votre choix contrôlé par le joueur défenseur, puis Maskemane gagne Géant jusqu'à la fin du tour.",
+        "description": "Quand Maskemane attaque, vous pouvez payer Terre. Si vous le faites, inclinez l'Allié ou Héros de votre choix contrôlé par le joueur défenseur, puis Maskemane gagne Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -4288,7 +4288,7 @@
     },
     "effects": [
       {
-        "description": "Si votre Héros est Osamodas, le coût du Dopeul Osamodas est réduit de .",
+        "description": "Si votre Héros est Osamodas, le coût du Dopeul Osamodas est réduit de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -4391,7 +4391,7 @@
     },
     "effects": [
       {
-        "description": "Quand un adversaire vient de joueur une Action, vous pouvez payer pour mettre en jeu la Gamine Zoth dans le Monde. Quand la Gamine Zoth apparait de cette façon, vous pouvez annuler les effets d'une Action qui vient d'être jouée.",
+        "description": "Quand un adversaire vient de joueur une Action, vous pouvez payer Eau Eau Eau Eau pour mettre en jeu la Gamine Zoth dans le Monde. Quand la Gamine Zoth apparait de cette façon, vous pouvez annuler les effets d'une Action qui vient d'être jouée.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -4603,7 +4603,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Tant que le Minotot est dans le Monde, le coût des Actions jouées par vos adversaires est augmenté de .",
+        "description": "Tant que le Minotot est dans le Monde, le coût des Actions jouées par vos adversaires est augmenté de 2.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -6037,7 +6037,7 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Tant que le cillage des Dopeuls est en jeu, le coût des Sorts qui sont de la même Classe que le Héros de leur propriétaire est réduit de , jusqu'à un minimum de .",
+        "description": "Tant que le Village des Dopeuls est en jeu, le coût des Sorts qui sont de la même Classe que le Héros de leur propriétaire est réduit de 1, jusqu'à un minimum de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -6923,7 +6923,7 @@
     },
     "effects": [
       {
-        "description": "Tant que le Porteur du Marteau Mato est attaquant, chaque fois qu'une de vos Actions est sur le point d'infliger un ou plusieurs Dommages à un Allié ou Héros adverse, vous pouvez payer . Si vous le faites, ces Dommages sont augmentés de 1.",
+        "description": "Tant que le Porteur du Marteau Mato est attaquant, chaque fois qu'une de vos Actions est sur le point d'infliger un ou plusieurs Dommages à un Allié ou Héros adverse, vous pouvez payer 1. Si vous le faites, ces Dommages sont augmentés de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,

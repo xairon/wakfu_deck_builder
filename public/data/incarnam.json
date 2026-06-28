@@ -159,7 +159,7 @@
     },
     "effects": [
       {
-        "description": "Mettez en jeu un jeton \"Monstre - Arakne\" de Force 1 . N'utilisez ce pouvoir qu'une seule fois par tour.",
+        "description": "Mettez en jeu un jeton \"Monstre - Arakne\" de Force 1 Terre. N'utilisez ce pouvoir qu'une seule fois par tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5571,10 +5571,11 @@
         "coverage": "uncovered"
       },
       {
-        "description": "Échec Critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être . Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement mais ne sont pas comme joués. Échec Critique ne permet donc pas de les annuler.",
+        "description": "Échec Critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement mais ne sont pas comme joués. Échec Critique ne permet donc pas de les annuler.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "kind": "ruling",
+        "coverage": "ruling"
       }
     ],
     "keywords": [],
@@ -5833,7 +5834,7 @@
     },
     "effects": [
       {
-        "description": "Tant que Erbus Erport est dressé dans le Monde, le coût des Équipements est augmenté de .",
+        "description": "Tant que Erbus Erport est dressé dans le Monde, le coût des Équipements est augmenté de 1.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -5877,7 +5878,7 @@
     },
     "effects": [
       {
-        "description": "Nommez une famille de Monstres : Tous les Monstres de cette famille dans le Monde subissent 1 Dommage . Vous ne gagnez pas d'xp.",
+        "description": "Nommez une famille de Monstres : Tous les Monstres de cette famille dans le Monde subissent 1 Dommage Neutre. Vous ne gagnez pas d'xp.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -6194,7 +6195,7 @@
     },
     "effects": [
       {
-        "description": "La Flèche Blizzard inflige 2 Dommages à tous les Alliés et Héros dans le Monde. Vous ne gagnez pas d'XP.",
+        "description": "La Flèche Blizzard inflige 2 Dommages Air à tous les Alliés et Héros dans le Monde. Vous ne gagnez pas d'XP.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -8941,7 +8942,7 @@
     },
     "effects": [
       {
-        "description": "Mettez la Folle en jeu dans votre Monde comme un Monstre de Force 1 . Quand la Folle apparaît, le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
+        "description": "Mettez la Folle en jeu dans votre Monde comme un Monstre de Force 1 Terre. Quand la Folle apparaît, le joueur de votre choix perd 1 PA jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,

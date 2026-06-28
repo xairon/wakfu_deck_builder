@@ -3,7 +3,7 @@
 // Version du cache : à incrémenter quand la forme/normalisation des cartes
 // change (sinon les anciens caches servent des données obsolètes — ex. mots-clés
 // pollués, éléments en minuscules).
-const CACHE_KEY = "wakfu-cards-cache-v35"; // v35 : Tacle câblé (verrou d'inclinaison relationnel dans resolveCombat — les bloqueurs en relation de blocage avec un possesseur de Tacle ne s'inclinent pas en fin de combat) → grantKeyword{Self,Target}{Tacle} compilé (jeton TURN tacleTurnMod → effectiveKeywords.tacle) ; +2 grants couverts (Petit Anneau de Chance, Ocehan Zileveun) ; BEARER/COMBAT/composite Tacle + mots-clés encore inertes (Fantôme/Défense/Renfort) restent manuels
+const CACHE_KEY = "wakfu-cards-cache-v36"; // v36 : re-scrape batch3 — récupération verbatim des descriptions à icônes perdues (65 effets sur 9 extensions : coûts « réduit/augmenté de N », éléments de Dommages/Ressources/jetons, mots-clés Géant/Agilité/Tacle/Agressivité/Capture/Défense, alignements Bonta/Brâkmar, glyphe « joué » d'Échec critique). Données seulement ; 8 reclassés en ruling, le reste reste uncovered (nécessite de futurs ops : modif de coût, octroi statique de mot-clé, production de Ressource élémentaire). v35 : Tacle câblé (verrou d'inclinaison relationnel dans resolveCombat — les bloqueurs en relation de blocage avec un possesseur de Tacle ne s'inclinent pas en fin de combat) → grantKeyword{Self,Target}{Tacle} compilé (jeton TURN tacleTurnMod → effectiveKeywords.tacle) ; +2 grants couverts (Petit Anneau de Chance, Ocehan Zileveun) ; BEARER/COMBAT/composite Tacle + mots-clés encore inertes (Fantôme/Défense/Renfort) restent manuels
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24 heures
 
 const EXTENSION_FILES = [

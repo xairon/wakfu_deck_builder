@@ -321,7 +321,7 @@
     },
     "effects": [
       {
-        "description": "Le coût de chaque Action, Sort ou pouvoir joué par un adversaire pendant un combat où vous êtes défenseur est augmenté de .",
+        "description": "Le coût de chaque Action, Sort ou pouvoir joué par un adversaire pendant un combat où vous êtes défenseur est augmenté de 2.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
