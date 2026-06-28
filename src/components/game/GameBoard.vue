@@ -413,9 +413,12 @@
                                 "grantKeywordTarget"
                               ? `choisis la cible qui gagne ${store.effectTargeting.op.keyword}`
                               : store.effectTargeting.op.op ===
-                                  "damageMultiTarget"
-                                ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                                : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                                  "grantResistanceTarget"
+                                ? "choisis la cible qui gagne de la Résistance"
+                                : store.effectTargeting.op.op ===
+                                    "damageMultiTarget"
+                                  ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                  : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

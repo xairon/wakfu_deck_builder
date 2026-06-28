@@ -211,6 +211,34 @@ export const MECHANICS: Mechanic[] = [
     ],
   },
   {
+    id: "grant-resistance-self",
+    label: "Résistance conférée (soi, jusqu'à la fin du tour)",
+    category: "contrôle",
+    glossary:
+      "La carte source gagne de la Résistance à un ou plusieurs Éléments jusqu'à la fin du tour (prévention de Dommages de cet Élément, 7469).",
+    relatesTo: [
+      {
+        tag: "grant-resistance-target",
+        kind: "synergizes",
+        note: "Variante ciblée de l'octroi de Résistance.",
+      },
+    ],
+  },
+  {
+    id: "grant-resistance-target",
+    label: "Résistance conférée (cible, jusqu'à la fin du tour)",
+    category: "contrôle",
+    glossary:
+      "L'Allié ou Héros ciblé gagne de la Résistance à un ou plusieurs Éléments jusqu'à la fin du tour (prévention de Dommages, 7469).",
+    relatesTo: [
+      {
+        tag: "grant-resistance-self",
+        kind: "synergizes",
+        note: "Variante (soi) de l'octroi de Résistance.",
+      },
+    ],
+  },
+  {
     id: "buff-force-allies-monde",
     label: "Bonus de Force d'équipe",
     category: "tempo",
@@ -358,6 +386,8 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   combatModSelf: "combat-mod-self",
   grantKeywordSelf: "grant-keyword-self",
   grantKeywordTarget: "grant-keyword-target",
+  grantResistanceSelf: "grant-resistance-self",
+  grantResistanceTarget: "grant-resistance-target",
   buffForceAlliesMondeTurn: "buff-force-allies-monde",
   globalDamageShield: "global-damage-shield",
   tapTarget: "tap-target",

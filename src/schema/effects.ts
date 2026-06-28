@@ -326,6 +326,35 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     controller: controllerSchema.optional(),
     zones: zonesSchema,
   }),
+  // « [self] gagne Résistance N (Élément)[(Élément)…] jusqu'à la fin du tour. » —
+  // la SOURCE gagne de la Résistance TURN-scoped à un ou plusieurs Éléments.
+  // Pose un jeton TURN-scoped `resMod_<el>` (+N par Élément) sur la source
+  // (uniquement si elle est en jeu), purgé en fin de tour (TURN_TOKEN_PREFIXES :
+  // « resMod_ »), lu par effectiveKeywords → CombatKeywords.resistances → la
+  // prévention de Dommages (7469, par infliction). `resist` : un (Élément, N) par
+  // Élément (multi-éléments : « Résistance 1 (air)(eau)(terre)(feu) »). FIDÈLE :
+  // valeur FIXE par Élément, portée TOUR (les variantes BEARER « Le Porteur … »,
+  // COMBAT et DYNAMIQUES « N par carte recyclée / dans l'élément des Dommages »
+  // restent manuelles — approximation interdite).
+  z.object({
+    op: z.literal("grantResistanceSelf"),
+    resist: z.array(z.object({ element: z.string(), n: z.number() })).min(1),
+  }),
+  // « L'Allié [ou Héros] [Famille] [bloqué / de votre choix] gagne Résistance N
+  // (Élément)[…] jusqu'à la fin du tour. » — op de CIBLAGE : le joueur choisit une
+  // créature éligible, qui reçoit un jeton TURN-scoped `resMod_<el>` (+N par
+  // Élément, purgé en fin de tour, lu par effectiveKeywords). Mêmes filtres que les
+  // autres ops à cible : `heroes`, `sub` (Famille), `combatRole`, `controller`,
+  // `zones`. Variante ciblée de grantResistanceSelf.
+  z.object({
+    op: z.literal("grantResistanceTarget"),
+    resist: z.array(z.object({ element: z.string(), n: z.number() })).min(1),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    combatRole: combatRoleSchema.optional(),
+    controller: controllerSchema.optional(),
+    zones: zonesSchema,
+  }),
   z.object({
     op: z.literal("buffForceAlliesMondeTurn"),
     n: z.union([z.number(), z.literal("heroLevel")]),

@@ -17,11 +17,11 @@ import {
   tap,
   untap,
 } from "../../engine/verbs";
-import { normWord, xpValue } from "../cardAttrs";
+import { normElement, normWord, xpValue } from "../cardAttrs";
 import { effectiveForce } from "../stats";
 import { reduceDamage } from "./damageMods";
 import { grantXpEvents } from "../progress";
-import { GRANT_KEYWORD_TOKEN } from "./keywords";
+import { GRANT_KEYWORD_TOKEN, resistanceLabel } from "./keywords";
 
 export type TargetingOp = Extract<
   CompiledEffectOp,
@@ -32,6 +32,7 @@ export type TargetingOp = Extract<
   | { op: "healHeroTarget" }
   | { op: "buffForceTarget" }
   | { op: "grantKeywordTarget" }
+  | { op: "grantResistanceTarget" }
   | { op: "tapTarget" }
   | { op: "untapTarget" }
   | { op: "returnToHand" }
@@ -54,6 +55,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "healHeroTarget" ||
     op.op === "buffForceTarget" ||
     op.op === "grantKeywordTarget" ||
+    op.op === "grantResistanceTarget" ||
     op.op === "tapTarget" ||
     op.op === "untapTarget" ||
     op.op === "returnToHand" ||
@@ -157,7 +159,8 @@ export function effectTargetIds(
     op.op === "untapTarget" ||
     op.op === "returnToHand" ||
     op.op === "damageTargetByForce" ||
-    op.op === "grantKeywordTarget"
+    op.op === "grantKeywordTarget" ||
+    op.op === "grantResistanceTarget"
       ? op.controller
       : undefined;
   // Rôles du combat EN COURS (state.combat) : un instance est « attaquant »
@@ -196,7 +199,8 @@ export function effectTargetIds(
       (op.op === "buffForceTarget" ||
         op.op === "destroyTarget" ||
         op.op === "damageTarget" ||
-        op.op === "grantKeywordTarget") &&
+        op.op === "grantKeywordTarget" ||
+        op.op === "grantResistanceTarget") &&
       op.sub
     ) {
       ok = (card.subTypes ?? []).some((s) => normWord(s) === op.sub);
@@ -254,6 +258,7 @@ export function effectTargetIds(
         op.op === "damageMultiTarget" ||
         op.op === "buffForceTarget" ||
         op.op === "grantKeywordTarget" ||
+        op.op === "grantResistanceTarget" ||
         op.op === "tapTarget" ||
         op.op === "untapTarget") &&
       "combatRole" in op &&
@@ -530,6 +535,37 @@ export function resolveGrantKeywordTarget(
   return {
     events: [setCounter(actor, targetId, token, 1, true)],
     log: [`${nameOf(ctx, targetId)} gagne ${keyword} jusqu'à la fin du tour.`],
+  };
+}
+
+/**
+ * « L'Allié [ou Héros] [Famille] [bloqué / de votre choix] gagne Résistance N
+ * (Élément)[…] jusqu'à la fin du tour » : pose un jeton TURN-scoped `resMod_<el>`
+ * (+N par Élément normalisé) sur la cible choisie (purgé en fin de tour, préfixe
+ * resMod_ ; lu par effectiveKeywords → resistances → prévention de Dommages 7469).
+ * Multi-éléments : un jeton par Élément (« Résistance 1 (air)(eau)(terre)(feu) »).
+ */
+export function resolveGrantResistanceTarget(
+  ctx: RulesCtx,
+  actor: Seat,
+  targetId: InstanceId,
+  resist: readonly { element: string; n: number }[],
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  return {
+    events: resist.map((r) =>
+      incCounter(
+        actor,
+        targetId,
+        `resMod_${normElement(r.element)}`,
+        r.n,
+        true,
+      ),
+    ),
+    log: [
+      `${nameOf(ctx, targetId)} gagne ${resistanceLabel(resist)} jusqu'à la fin du tour.`,
+    ],
   };
 }
 

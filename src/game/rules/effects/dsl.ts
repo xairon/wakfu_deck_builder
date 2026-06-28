@@ -135,6 +135,29 @@ const GRANTABLE_KEYWORDS: Record<
   tacle: "Tacle",
 };
 
+const RESIST_ELEMENTS = new Set(["air", "eau", "feu", "terre", "neutre"]);
+
+/**
+ * Parse une clause « résistance N (élément)(élément)… » (déjà normalisée) en une
+ * liste `{ element, n }` (un par Élément, même valeur N) pour les ops d'octroi de
+ * Résistance. STRICT : exactement « résistance <N> » suivi d'au moins un Élément
+ * entre parenthèses, tous reconnus (RESIST_ELEMENTS) ; sinon null (forme non
+ * comprise → l'effet reste manuel). « Résistance N » SANS Élément (« dans
+ * l'élément de votre choix », « dans l'élément des Dommages … ») n'est PAS captée
+ * ici → manuel (choix/dynamique d'Élément non modélisé).
+ */
+function parseResistClause(
+  clause: string,
+): { element: string; n: number }[] | null {
+  const m = clause.match(/^resistance (\d+)((?: ?\([a-z]+\))+)$/);
+  if (!m) return null;
+  const n = toNumber(m[1]);
+  const elements = [...m[2].matchAll(/\(([a-z]+)\)/g)].map((e) => e[1]);
+  if (!elements.length || !elements.every((e) => RESIST_ELEMENTS.has(e)))
+    return null;
+  return elements.map((element) => ({ element, n }));
+}
+
 /**
  * Mot-type d'une recherche / mise-en-jeu → `{ what, sub? }`, ou null si le mot
  * n'est ni un type racine connu (Allié/Zone/Salle/Équipement/Dofus/Action) ni
@@ -548,6 +571,65 @@ function parseSentence(
     subjectIsSelf(m[1], cardName)
   )
     return { op: "grantKeywordSelf", keyword: GRANTABLE_KEYWORDS[m[2]] };
+  // « L'Allié (ou Héros) [<Famille>] [bloqué] de votre choix gagne Résistance N
+  //   (Élément)[…] jusqu'à la fin du tour » → grantResistanceTarget. STRICT :
+  //   la clause de Résistance doit lister au moins un Élément reconnu entre
+  //   parenthèses (parseResistClause) ; « dans l'élément de votre choix / des
+  //   Dommages … » (choix / dynamique d'Élément) n'est PAS captée → manuel.
+  //   « bloqué » → combatRole:"blocking" ; m[2] = Famille optionnelle (validée
+  //   ALLIED_FAMILIES). Variantes BEARER / per-count restent manuelles.
+  m = sentence.match(
+    /^l['’ ]?\s?allie( ou heros)?(?: ([a-z-]+))?( bloque)? de votre choix gagne (resistance \d+(?: ?\([a-z]+\))+) jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m && (!m[2] || ALLIED_FAMILIES.has(m[2]))) {
+    const resist = parseResistClause(m[4]);
+    if (resist)
+      return {
+        op: "grantResistanceTarget",
+        resist,
+        heroes: !!m[1],
+        ...(m[2] ? { sub: m[2] } : {}),
+        ...(m[3] ? { combatRole: "blocking" as const } : {}),
+        zones: ["monde", "havreSac"],
+      };
+  }
+  // « Le <Famille> [bloqué] de votre choix gagne Résistance N (Élément)[…] jusqu'à
+  //   la fin du tour » → grantResistanceTarget filtré par Famille (sub, non
+  //   ambiguë : ALLIED_FAMILIES). Pendant de la forme « Le <Famille> … gagne
+  //   <Mot-clé> … » pour la Résistance.
+  m = sentence.match(
+    /^le ([a-z-]+?)( bloque)? de votre choix gagne (resistance \d+(?: ?\([a-z]+\))+) jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m && ALLIED_FAMILIES.has(m[1])) {
+    const resist = parseResistClause(m[3]);
+    if (resist)
+      return {
+        op: "grantResistanceTarget",
+        resist,
+        sub: m[1],
+        ...(m[2] ? { combatRole: "blocking" as const } : {}),
+        zones: ["monde", "havreSac"],
+      };
+  }
+  // « [Cette carte] gagne Résistance N (Élément)[…] jusqu'à la fin du tour »
+  //   → grantResistanceSelf (la SOURCE gagne la Résistance jusqu'à la fin du
+  //   tour). Le sujet doit être la carte elle-même (subjectIsSelf) ; placé APRÈS
+  //   les formes ciblées. On rejette « Le Porteur de … » (bonus de PORTEUR — forme
+  //   BEARER, manuelle) et tout sujet COMPOSITE (« perd … et gagne … »). « dans
+  //   l'élément de votre choix / des Dommages » n'est pas captée (parseResistClause
+  //   exige des Éléments explicites) → manuel.
+  m = sentence.match(
+    /^(.{1,50}?) gagne (resistance \d+(?: ?\([a-z]+\))+) jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (
+    m &&
+    !/\bporteur\b/.test(m[1]) &&
+    !/\b(?:perd|et|puis|ou)\b/.test(m[1]) &&
+    subjectIsSelf(m[1], cardName)
+  ) {
+    const resist = parseResistClause(m[2]);
+    if (resist) return { op: "grantResistanceSelf", resist };
+  }
   // « Détruisez l'Équipement ou la Zone de votre choix » (deux types, dans
   //   l'un ou l'autre ordre) → destroyTarget multi-type. Placé AVANT la forme
   //   mono-type pour capter les deux compléments.

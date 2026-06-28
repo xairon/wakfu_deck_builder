@@ -185,6 +185,26 @@ export const GRANT_KEYWORD_TOKEN: Record<
   Tacle: "tacleTurnMod",
 };
 
+/**
+ * Étiquette « Résistance N (élément)[(élément)…] » pour le JOURNAL d'un octroi de
+ * Résistance (grantResistance{Self,Target}). Regroupe les Éléments par valeur N
+ * (la majorité des cartes accordent la même valeur à plusieurs Éléments :
+ * « Résistance 1 (air)(eau)(terre)(feu) »). Purement cosmétique.
+ */
+export function resistanceLabel(
+  resist: readonly { element: string; n: number }[],
+): string {
+  const byN = new Map<number, string[]>();
+  for (const r of resist) {
+    const list = byN.get(r.n) ?? [];
+    list.push(normElement(r.element));
+    byN.set(r.n, list);
+  }
+  return [...byN.entries()]
+    .map(([n, els]) => `Résistance ${n} ${els.map((e) => `(${e})`).join("")}`)
+    .join(", ");
+}
+
 /** Dommages effectifs après Résistance de la cible (par infliction, 7469). */
 export function preventDamage(
   target: CombatKeywords,
