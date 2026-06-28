@@ -40,6 +40,22 @@ export interface CombatKeywords {
    * combat.ts.
    */
   tacle: boolean;
+  /**
+   * Défense (mot-clé de TIMING de jeu) : « Un Allié jouable durant la Phase
+   * d'Actions d'un combat si son contrôleur est le défenseur ; il est placé comme
+   * bloqueur. » Relâche la barrière tour/phase de `whyCannotPlay` quand un combat
+   * est en cours et que `seat` en est le défenseur (cf. legality.ts). Le placement
+   * « comme bloqueur » se fait par le flux normal de déclaration de blocage :
+   * l'Allié arrive redressé dans le Monde → immédiatement éligible (eligibleBlockers).
+   */
+  defense: boolean;
+  /**
+   * Renfort (mot-clé de TIMING de jeu) : « Un Allié possédant Renfort peut être
+   * joué pendant la phase d'actions d'un combat où son propriétaire est le joueur
+   * attaquant, et que son Héros est attaquant dans ce combat. » Relâche la barrière
+   * tour/phase de `whyCannotPlay` dans cette fenêtre précise (cf. legality.ts).
+   */
+  renfort: boolean;
 }
 
 const NONE: CombatKeywords = {
@@ -48,6 +64,8 @@ const NONE: CombatKeywords = {
   agilite: false,
   agressivite: false,
   tacle: false,
+  defense: false,
+  renfort: false,
 };
 
 export function combatKeywords(
@@ -91,7 +109,13 @@ export function combatKeywords(
   // Agilité/Agressivité. Sa sémantique de combat (verrou d'inclinaison) est
   // appliquée par resolveCombat via la relation de blocage.
   const tacle = (keywords ?? []).some((k) => k?.name === "Tacle");
-  return { resistances, geant, agilite, agressivite, tacle };
+  // Défense / Renfort : mots-clés de TIMING de jeu (glossaire, sans valeur) — lus
+  // exactement comme Agilité/Tacle. Leur sémantique (relâchement de la barrière
+  // tour/phase dans une fenêtre de combat) est appliquée par whyCannotPlay
+  // (legality.ts) ; ils n'ont aucun effet sur la résolution du combat lui-même.
+  const defense = (keywords ?? []).some((k) => k?.name === "Défense");
+  const renfort = (keywords ?? []).some((k) => k?.name === "Renfort");
+  return { resistances, geant, agilite, agressivite, tacle, defense, renfort };
 }
 
 /**
@@ -220,12 +244,18 @@ export function effectiveKeywords(
   // aura de mot-clé du Monde (keywordAura). Le verrou d'inclinaison reste appliqué
   // par resolveCombat (relation de blocage).
   const tacle = base.tacle || !!tokens.tacleTurnMod || auraGranted.has("Tacle");
+  // Défense / Renfort : mots-clés de TIMING de jeu attachés à la carte imprimée
+  // (face courante). Ils ne sont ni octroyés par jeton ni conférés par aura dans
+  // les données (aucune carte « accorde Défense/Renfort ») — donc passés tels
+  // quels depuis `base`. (Si un tel octroi apparaissait, il serait câblé ici.)
   return {
     resistances,
     geant,
     agilite,
     agressivite,
     tacle,
+    defense: base.defense,
+    renfort: base.renfort,
   };
 }
 

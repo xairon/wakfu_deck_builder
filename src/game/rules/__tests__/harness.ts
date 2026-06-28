@@ -16,11 +16,14 @@ import {
   deriveState,
   move,
   sequence,
+  setCombat,
   setCounter,
   setPhase,
   tap,
 } from "@/game";
 import type { DraftEvent, PersistedEvent, Seat, TurnPhase } from "@/game";
+import type { CombatState } from "../../types/state";
+import type { InstanceId } from "../../types/events";
 import type { RulesCtx } from "../types";
 import {
   createMockAllyCard,
@@ -61,6 +64,10 @@ export function makeAlly(
     geant?: boolean;
     /** Mot-clé structuré Tacle (glossaire, sans valeur). */
     tacle?: boolean;
+    /** Mot-clé structuré Défense (glossaire, sans valeur). */
+    defense?: boolean;
+    /** Mot-clé structuré Renfort (glossaire, sans valeur). */
+    renfort?: boolean;
   } = {},
 ): AllyCard {
   const element = opts.element ?? "Feu";
@@ -72,6 +79,8 @@ export function makeAlly(
       elements: [opts.resist[0]],
     });
   if (opts.tacle) keywords.push({ name: "Tacle", description: "" });
+  if (opts.defense) keywords.push({ name: "Défense", description: "" });
+  if (opts.renfort) keywords.push({ name: "Renfort", description: "" });
   return createMockAllyCard({
     id,
     name: `Allié ${id}`,
@@ -177,6 +186,31 @@ export function bringToMonde(
       setCounter(seat, instanceId, "arrivedTurn", opts.arrivedTurn, true),
     );
   if (opts.tapped) dispatch(f, tap(seat, instanceId));
+}
+
+/**
+ * Pose un combat EN COURS (state.combat) dans l'état de test : `attacker` déclare
+ * `attackers` (par défaut son Héros) contre `target` (par défaut le Héros adverse).
+ * Sert aux tests de timing Défense/Renfort (rôles attaquant/défenseur).
+ */
+export function setCombatState(
+  f: Fixture,
+  attacker: Seat,
+  opts: { attackers?: InstanceId[]; target?: CombatState["target"] } = {},
+): void {
+  const defender: Seat = attacker === "A" ? "B" : "A";
+  const heroOf = (s: Seat) => (s === "A" ? "ci_A_001" : "ci_B_001");
+  const combat: CombatState = {
+    attackerSeat: attacker,
+    step: "blockers",
+    target: opts.target ?? { kind: "hero", instanceId: heroOf(defender) },
+    attackers: opts.attackers ?? [heroOf(attacker)],
+    blocks: {},
+    strikes: {},
+    ripostes: {},
+    reactingSeat: defender,
+  };
+  dispatch(f, setCombat(attacker, combat));
 }
 
 export function bringToHand(f: Fixture, seat: Seat, instanceId: string): void {

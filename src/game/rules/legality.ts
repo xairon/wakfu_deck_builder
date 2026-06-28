@@ -11,7 +11,7 @@ import { otherSeat } from "../types/zones.ts";
 import type { CombatTarget, RulesCtx } from "./types";
 import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
-import { effectiveKeywords } from "./effects/keywords.ts";
+import { combatKeywords, effectiveKeywords } from "./effects/keywords.ts";
 import { planCost } from "./resources.ts";
 
 /** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
@@ -23,6 +23,40 @@ export function playDestination(card: Card, seat: Seat): ZoneRef {
 /** Tour d'entrée en jeu (token `arrivedTurn`, 0 = mise en place). */
 export function arrivedTurnOf(inst: CardInstance): number {
   return inst.counters.tokens?.arrivedTurn ?? 0;
+}
+
+/**
+ * Fenêtre de combat où un mot-clé de TIMING (Défense / Renfort) autorise à jouer
+ * un Allié de sa main HORS des règles de tour/phase normales. Renvoie `true` si
+ * la carte porte le mot-clé adéquat ET que `seat` occupe le rôle requis dans le
+ * combat EN COURS (Phase d'Actions). `false` sinon (pas de combat, mauvais rôle,
+ * mauvais mot-clé) → la barrière tour/phase standard s'applique.
+ *
+ * - **Défense** : jouable si un combat est en cours et que `seat` en est le
+ *   DÉFENSEUR (l'adversaire de l'attaquant). L'Allié arrive redressé dans le
+ *   Monde → immédiatement éligible comme bloqueur (eligibleBlockers), ce qui
+ *   réalise le « placé comme bloqueur » par le flux normal de blocage.
+ * - **Renfort** : jouable si un combat est en cours, que `seat` en est
+ *   l'ATTAQUANT, ET que SON HÉROS est lui-même attaquant dans ce combat
+ *   (héros dans `combat.attackers`). Ne suffit PAS d'attaquer avec des Alliés.
+ *
+ * On lit les mots-clés IMPRIMÉS de la carte (combatKeywords) : Défense/Renfort
+ * sont des propriétés de l'Allié joué depuis la main (pas d'une instance en jeu).
+ */
+function combatPlayWindow(ctx: RulesCtx, seat: Seat, card: Card): boolean {
+  const combat = ctx.state.combat;
+  if (!combat) return false;
+  const kw = combatKeywords(card);
+  if (!kw.defense && !kw.renfort) return false;
+  const defender = otherSeat(combat.attackerSeat);
+  // Défense : le contrôleur doit être le défenseur du combat.
+  if (kw.defense && seat === defender) return true;
+  // Renfort : le contrôleur doit être l'attaquant ET son Héros doit attaquer.
+  if (kw.renfort && seat === combat.attackerSeat) {
+    const heroId = ctx.state.seats[seat].heroInstanceId;
+    if (heroId && combat.attackers.includes(heroId)) return true;
+  }
+  return false;
 }
 
 /**
@@ -40,14 +74,21 @@ export function whyCannotPlay(
   if (!inst) return "Carte introuvable.";
   if (inst.location.zone !== "main" || inst.owner !== seat)
     return "Cette carte n'est pas dans votre main.";
-  // 706 — en fenêtre de réaction on joue HORS de son tour : ces deux contrôles
-  // sont relâchés (les autres — main, coût, zone, 4943 — restent actifs).
-  if (!reaction && state.turn.active !== seat)
-    return "Ce n'est pas votre tour.";
-  if (!reaction && state.turn.phase !== "principale")
-    return "On ne joue des cartes qu'en Phase Principale.";
   const card = ctx.getCard(inst.cardId);
   if (!card) return "Carte inconnue — jouez-la en mode libre.";
+  // Défense / Renfort (mots-clés de timing) : un Allié possédant le mot-clé et
+  // dont le contrôleur occupe le bon rôle dans le combat EN COURS peut être joué
+  // durant la Phase d'Actions, HORS des règles de tour/phase. On RELÂCHE alors
+  // exactement les deux mêmes contrôles que la fenêtre de réaction (tour/phase) —
+  // toutes les autres contraintes (main, coût, zone, 4943) restent vérifiées.
+  const combatWindow = combatPlayWindow(ctx, seat, card);
+  const bypassTurnPhase = reaction || combatWindow;
+  // 706 — en fenêtre de réaction on joue HORS de son tour : ces deux contrôles
+  // sont relâchés (les autres — main, coût, zone, 4943 — restent actifs).
+  if (!bypassTurnPhase && state.turn.active !== seat)
+    return "Ce n'est pas votre tour.";
+  if (!bypassTurnPhase && state.turn.phase !== "principale")
+    return "On ne joue des cartes qu'en Phase Principale.";
   const dest = playDestination(card, seat);
   if (dest.zone === "monde" && state.turn.number === 1)
     return "Aucune carte ne peut entrer dans le Monde au premier tour de la partie.";
