@@ -592,6 +592,23 @@ function parseSentence(
   m = sentence.match(/^(.{1,50}?) regagne (\d+) (?:pv|points? de vie)$/);
   if (m && subjectIsSelf(m[1], cardName))
     return { op: "heroGainPv", n: toNumber(m[2]) };
+  // « Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner <Mot-clé> à
+  //   son Porteur » (Emma Tenl/Tacle, Fauvéa/Agressivité, Klozette Wateur/Agilité,
+  //   Terril Hachterr/Géant) → grantKeywordTarget{requiresAttachment} : on cible le
+  //   PORTEUR (créature ayant ≥1 attachement), choisir l'équipement ne sert qu'à le
+  //   désigner. heroes:true (un Héros peut être Porteur), aucun contrôleur (« de
+  //   votre choix » = n'importe quel équipement en jeu). STRICT : mot-clé câblé.
+  m = sentence.match(
+    /^jusqu['’]a la fin d[ue] tour, l['’ ]?\s?equipement de votre choix fait gagner ([a-z]+) a son porteur$/,
+  );
+  if (m && GRANTABLE_KEYWORDS[m[1]])
+    return {
+      op: "grantKeywordTarget",
+      keyword: GRANTABLE_KEYWORDS[m[1]],
+      requiresAttachment: true,
+      heroes: true,
+      zones: ["monde", "havreSac"],
+    };
   // « <Cible> de votre choix gagne <A> ou <B> jusqu'à la fin du tour » — CHOIX
   //   EXCLUSIF entre deux octrois câblés sur la MÊME cible (Baguette du Bandit
   //   Ensorceleur : Géant ou Agilité ; La-Haine / Temple Osamodas : Géant ou +2 en

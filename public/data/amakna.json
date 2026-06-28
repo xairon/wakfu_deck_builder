@@ -2880,7 +2880,20 @@
         "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Tacle à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Tacle",
+              "requiresAttachment": true,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],
@@ -3229,7 +3242,20 @@
         "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Agressivité à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agressivité",
+              "requiresAttachment": true,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],
@@ -3814,7 +3840,20 @@
         "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Agilité à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Agilité",
+              "requiresAttachment": true,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],
@@ -6642,7 +6681,20 @@
         "description": "Jusqu'à la fin du tour, l'Équipement de votre choix fait gagner Géant à son Porteur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "grantKeywordTarget",
+              "keyword": "Géant",
+              "requiresAttachment": true,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["grant-keyword-target"]
       }
     ],
     "keywords": [],

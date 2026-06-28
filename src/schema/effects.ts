@@ -407,6 +407,11 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     sub: z.string().optional(),
     combatRole: combatRoleSchema.optional(),
     controller: controllerSchema.optional(),
+    // « l'Équipement de votre choix fait gagner <Kw> à son Porteur » : on cible
+    // directement le PORTEUR (créature ayant ≥1 Équipement/Dofus attaché) —
+    // choisir l'équipement ne sert qu'à désigner son Porteur, donc la cible
+    // fidèle EST la créature qui le porte. Filtre d'éligibilité : attachments ≥ 1.
+    requiresAttachment: z.boolean().optional(),
     zones: zonesSchema,
   }),
   // « [self] gagne Résistance N (Élément)[(Élément)…] jusqu'à la fin du tour. » —

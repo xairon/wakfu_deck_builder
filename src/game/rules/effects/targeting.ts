@@ -297,6 +297,18 @@ export function effectTargetIds(
               // OU l'autre rôle.
               attackers.has(inst.instanceId) || blockers.has(inst.instanceId);
     }
+    // « l'Équipement de votre choix fait gagner Kw à son Porteur » → la cible EST
+    // le Porteur : on n'admet que les créatures portant ≥1 attachement (Équipement
+    // /Dofus). Choisir l'équipement ne sert qu'à désigner son Porteur (équivalent
+    // fidèle : cibler la créature qui le porte).
+    if (
+      ok &&
+      op.op === "grantKeywordTarget" &&
+      "requiresAttachment" in op &&
+      op.requiresAttachment
+    ) {
+      ok = (inst.attachments?.length ?? 0) > 0;
+    }
     // filtre de contrôleur (« un de vos … » / « … adverse »)
     if (ok && controller && actor !== undefined) {
       const want = controller === "self" ? actor : otherSeat(actor);
