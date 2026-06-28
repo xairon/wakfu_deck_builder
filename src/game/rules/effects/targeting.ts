@@ -522,7 +522,7 @@ export function resolveGrantKeywordTarget(
   ctx: RulesCtx,
   actor: Seat,
   targetId: InstanceId,
-  keyword: "Géant" | "Agilité" | "Agressivité",
+  keyword: "Géant" | "Agilité" | "Agressivité" | "Tacle",
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   if (!inst) return { events: [], log: [] };

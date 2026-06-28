@@ -13,6 +13,7 @@ import {
   setTurn,
 } from "./harness";
 import { setCounter } from "@/game";
+import { combatKeywords, effectiveKeywords } from "../effects/keywords";
 import type { Fixture } from "./harness";
 
 /** Applique le résultat du combat à la fixture et retourne le nouvel état. */
@@ -316,5 +317,111 @@ describe("rules/combat — inclinaison des bloqueurs (708.3)", () => {
       blocks: { [instId("B", 0)]: instId("A", 0) },
     });
     expect(state.instances[instId("B", 0)].orientation).toBe("tapped");
+  });
+});
+
+describe("rules/combat — Tacle (verrou d'inclinaison, glossaire)", () => {
+  // combatKeywords lit le mot-clé structuré Tacle (comme Agilité/Agressivité).
+  it("combatKeywords.tacle = true pour un Allié possédant le mot-clé Tacle", () => {
+    const tacleur = makeAlly("t", { tacle: true });
+    expect(combatKeywords(tacleur).tacle).toBe(true);
+    expect(combatKeywords(makeAlly("x")).tacle).toBe(false);
+  });
+
+  // effectiveKeywords lit aussi le jeton conféré tacleTurnMod (grantKeyword).
+  it("effectiveKeywords.tacle = true via le jeton conféré tacleTurnMod", () => {
+    const f = fixture([makeAlly("c", { force: 2 })]);
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    const id = instId("A", 0);
+    expect(effectiveKeywords(ctxOf(f), id).tacle).toBe(false);
+    dispatch(f, {
+      actor: "A",
+      type: "SET_COUNTER",
+      payload: {
+        instanceId: id,
+        counter: "tacleTurnMod",
+        value: 1,
+        token: true,
+      },
+    } as never);
+    expect(effectiveKeywords(ctxOf(f), id).tacle).toBe(true);
+  });
+
+  // LE VERROU : un bloqueur qui bloque un ATTAQUANT possédant Tacle « ne peut
+  // pas s'incliner » → il n'est PAS incliné en fin de combat (reste redressé).
+  it("un bloqueur SURVIVANT qui bloque un attaquant Tacle n'est PAS incliné", () => {
+    const f = fixture(
+      [makeAlly("atkTacle", { force: 1, tacle: true })],
+      [makeAlly("blk", { force: 5 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    // force 1 vs 5 : le bloqueur survit ; sans Tacle il serait tapped (708.3),
+    // mais l'attaquant a Tacle → le bloqueur reste redressé.
+    expect(state.instances[instId("B", 0)].orientation).toBe("upright");
+  });
+
+  // Le verrou est RELATIONNEL : un bloqueur en relation avec un attaquant SANS
+  // Tacle s'incline normalement, même si un autre attaquant Tacle existe ailleurs.
+  it("un bloqueur NON-relié à un possesseur de Tacle s'incline normalement", () => {
+    const f = fixture(
+      [
+        makeAlly("atkTacle", { force: 1, tacle: true }),
+        makeAlly("atkPlain", { force: 1 }),
+      ],
+      [makeAlly("b0", { force: 5 }), makeAlly("b1", { force: 5 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "A", instId("A", 1), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    bringToMonde(f, "B", instId("B", 1));
+    const { state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0), instId("A", 1)],
+      blocks: {
+        [instId("B", 0)]: instId("A", 0), // bloque l'attaquant Tacle → verrouillé
+        [instId("B", 1)]: instId("A", 1), // bloque l'attaquant normal → incliné
+      },
+    });
+    expect(state.instances[instId("B", 0)].orientation).toBe("upright");
+    expect(state.instances[instId("B", 1)].orientation).toBe("tapped");
+  });
+
+  // Tacle CONFÉRÉ (jeton tacleTurnMod) verrouille comme le mot-clé imprimé.
+  it("Tacle conféré (jeton) à l'attaquant verrouille aussi son bloqueur", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 1 })],
+      [makeAlly("blk", { force: 5 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    dispatch(f, {
+      actor: "A",
+      type: "SET_COUNTER",
+      payload: {
+        instanceId: instId("A", 0),
+        counter: "tacleTurnMod",
+        value: 1,
+        token: true,
+      },
+    } as never);
+    const { state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    expect(state.instances[instId("B", 0)].orientation).toBe("upright");
   });
 });

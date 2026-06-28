@@ -191,27 +191,43 @@ describe("DSL — Agilité / Agressivité (nouveaux mots-clés octroyables)", ()
   });
 });
 
-describe("DSL — négatifs (fidélité)", () => {
-  // NÉGATIF : mot-clé SANS sémantique de combat câblée (Tacle) — l'octroyer serait
-  // un no-op = approximation. Doit rester non compilé.
-  it("ne devrait PAS compiler « L'Allié de votre choix gagne Tacle … » (mot-clé inerte)", () => {
+describe("DSL — Tacle octroyable (verrou d'inclinaison câblé dans resolveCombat)", () => {
+  // Tacle a désormais une SÉMANTIQUE DE COMBAT câblée (resolveCombat empêche
+  // l'inclinaison des bloqueurs en relation de blocage avec un possesseur de
+  // Tacle) → l'octroi « jusqu'à la fin du tour » est compilé comme Géant/Agilité.
+  it("« L'Allié ou Héros de votre choix gagne Tacle … » → grantKeywordTarget{Tacle} (Petit Anneau de Chance)", () => {
     expect(
       compileTapEffectText(
-        "L'Allié de votre choix gagne Tacle jusqu'à la fin du tour.",
-        "Carte X",
+        "L'Allié ou Héros de votre choix gagne Tacle jusqu'à la fin du tour.",
+        "Petit Anneau de Chance",
       ),
-    ).toBeNull();
+    ).toEqual({
+      trigger: "onTap",
+      ops: [
+        {
+          op: "grantKeywordTarget",
+          keyword: "Tacle",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
   });
 
-  it("ne devrait PAS compiler « [self] gagne Tacle … » (mot-clé inerte, soi)", () => {
+  it("« [self] gagne Tacle … » → grantKeywordSelf{Tacle}", () => {
     expect(
       compileTapEffectText(
         "Cette carte gagne Tacle jusqu'à la fin du tour.",
-        "Carte X",
+        "Cette carte",
       ),
-    ).toBeNull();
+    ).toEqual({
+      trigger: "onTap",
+      ops: [{ op: "grantKeywordSelf", keyword: "Tacle" }],
+    });
   });
+});
 
+describe("DSL — négatifs (fidélité)", () => {
   // NÉGATIF : « Le Porteur de X gagne <kw> … » (Anneau du Rat Noir) — bonus de
   // PORTEUR temporaire (mécanisme différent). Non compilé par compileTapEffectText.
   it("ne devrait PAS compiler « Le Porteur de l'Anneau du Rat Noir gagne Géant … » (bonus de Porteur)", () => {
@@ -343,10 +359,11 @@ describe("moteur — grantKeywordSelf (jeton <kw>TurnMod sur la source)", () => 
     expect(tok.payload.token).toBe(true);
   });
 
-  it("Agilité : pose un jeton agiliteTurnMod ; Agressivité : agressiviteTurnMod", () => {
+  it("Agilité : agiliteTurnMod ; Agressivité : agressiviteTurnMod ; Tacle : tacleTurnMod", () => {
     for (const [keyword, token] of [
       ["Agilité", "agiliteTurnMod"],
       ["Agressivité", "agressiviteTurnMod"],
+      ["Tacle", "tacleTurnMod"],
     ] as const) {
       const cards = { "card-s": aSrc("s") };
       const state = makeState({ s: inst("s", "card-s") });
@@ -386,6 +403,7 @@ describe("rules/effects — <kw>TurnMod alimente effectiveKeywords et se purge",
     ["geantTurnMod", "geant"],
     ["agiliteTurnMod", "agilite"],
     ["agressiviteTurnMod", "agressivite"],
+    ["tacleTurnMod", "tacle"],
   ] as const;
 
   for (const [token, kw] of cases) {
@@ -407,10 +425,11 @@ describe("rules/effects — <kw>TurnMod alimente effectiveKeywords et se purge",
     });
   }
 
-  it("isTurnToken reconnaît les trois jetons d'octroi (purgés)", () => {
+  it("isTurnToken reconnaît les quatre jetons d'octroi (purgés)", () => {
     expect(isTurnToken("geantTurnMod")).toBe(true);
     expect(isTurnToken("agiliteTurnMod")).toBe(true);
     expect(isTurnToken("agressiviteTurnMod")).toBe(true);
+    expect(isTurnToken("tacleTurnMod")).toBe(true);
     // geantCombatMod reste purgé par le suffixe *CombatMod (portée combat)
     expect(isTurnToken("geantCombatMod")).toBe(true);
     // un jeton durable n'est pas purgé

@@ -59,9 +59,19 @@ export function makeAlly(
     /** Mot-clé Résistance : [élément, valeur]. */
     resist?: [CardElement, number];
     geant?: boolean;
+    /** Mot-clé structuré Tacle (glossaire, sans valeur). */
+    tacle?: boolean;
   } = {},
 ): AllyCard {
   const element = opts.element ?? "Feu";
+  const keywords: AllyCard["keywords"] = [];
+  if (opts.resist)
+    keywords.push({
+      name: "Résistance",
+      description: String(opts.resist[1]),
+      elements: [opts.resist[0]],
+    });
+  if (opts.tacle) keywords.push({ name: "Tacle", description: "" });
   return createMockAllyCard({
     id,
     name: `Allié ${id}`,
@@ -70,15 +80,7 @@ export function makeAlly(
       force: { value: opts.force ?? 2, element },
     },
     experience: opts.xp ?? 1,
-    keywords: opts.resist
-      ? [
-          {
-            name: "Résistance",
-            description: String(opts.resist[1]),
-            elements: [opts.resist[0]],
-          },
-        ]
-      : [],
+    keywords,
     effects: opts.geant ? [{ description: "Géant" }] : [],
   });
 }

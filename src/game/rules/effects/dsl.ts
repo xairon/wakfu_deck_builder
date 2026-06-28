@@ -119,17 +119,21 @@ const ALLIED_FAMILIES = new Set([
  * Mots-clés OCTROYABLES « jusqu'à la fin du tour » → forme canonique (accentuée)
  * stockée dans l'op grantKeyword{Self,Target}. STRICT : on ne reconnaît QUE les
  * mots-clés ayant une SÉMANTIQUE DE COMBAT câblée (lue par effectiveKeywords →
- * légalité). Les autres (Tacle, Fantôme, Défense, Renfort, Portée, Critique,
- * Parade…) NE sont PAS ici : les octroyer serait un no-op = approximation, donc
- * ces effets restent MANUELS (« an approximation of gameplay is worse than a
- * manual effect »). Clé = forme normalisée (norm()).
+ * légalité / résolution). Les autres (Fantôme, Défense, Renfort, Portée,
+ * Critique, Parade…) NE sont PAS ici : les octroyer serait un no-op =
+ * approximation, donc ces effets restent MANUELS (« an approximation of gameplay
+ * is worse than a manual effect »). Tacle : verrou d'inclinaison relationnel
+ * appliqué par resolveCombat. Clé = forme normalisée (norm()).
  */
-const GRANTABLE_KEYWORDS: Record<string, "Géant" | "Agilité" | "Agressivité"> =
-  {
-    geant: "Géant",
-    agilite: "Agilité",
-    agressivite: "Agressivité",
-  };
+const GRANTABLE_KEYWORDS: Record<
+  string,
+  "Géant" | "Agilité" | "Agressivité" | "Tacle"
+> = {
+  geant: "Géant",
+  agilite: "Agilité",
+  agressivite: "Agressivité",
+  tacle: "Tacle",
+};
 
 /**
  * Mot-type d'une recherche / mise-en-jeu → `{ what, sub? }`, ou null si le mot
@@ -493,8 +497,8 @@ function parseSentence(
   //   Force : Géant Allié ou Héros en sacrifice ; chaos-dogrest : Agilité /
   //   Agressivité ; L'Allié Gelée/Tofu de votre choix : Agilité par Famille)
   //   → grantKeywordTarget. STRICT : seuls les mots-clés DE COMBAT câblés
-  //   (GRANTABLE_KEYWORDS : Géant/Agilité/Agressivité) sont compilés ; les autres
-  //   (Tacle, Fantôme…) restent manuels (octroi = no-op = approximation). « bloqué »
+  //   (GRANTABLE_KEYWORDS : Géant/Agilité/Agressivité/Tacle) sont compilés ; les
+  //   autres (Fantôme…) restent manuels (octroi = no-op = approximation). « bloqué »
   //   → combatRole:"blocking" ; « jusqu'à la fin du tour » uniquement (variantes
   //   COMBAT/BEARER manuelles). m[2] = Famille optionnelle (validée ALLIED_FAMILIES).
   m = sentence.match(

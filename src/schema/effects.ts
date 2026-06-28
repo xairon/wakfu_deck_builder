@@ -16,12 +16,14 @@ const orientationFilterSchema = z.enum(["tapped", "upright"]);
 const combatRoleSchema = z.enum(["attacking", "blocking", "inCombat"]);
 // Mots-clés OCTROYABLES « jusqu'à la fin du tour » (grantKeyword{Self,Target}).
 // STRICT : on n'autorise QUE les mots-clés ayant une SÉMANTIQUE DE COMBAT câblée
-// (lue par effectiveKeywords → légalité) — un octroi d'un mot-clé inerte (Tacle,
-// Fantôme, Défense, Renfort…) serait un no-op, donc une APPROXIMATION. Ceux-là
-// restent manuels (le DSL ne les compile pas). Géant : répartition de Force au
-// combat (7258/6135). Agilité : ne peut être bloqué que par Agilité (704).
-// Agressivité : peut attaquer le tour de son apparition (lève le mal d'invocation).
-const grantKeywordSchema = z.enum(["Géant", "Agilité", "Agressivité"]);
+// (lue par effectiveKeywords → légalité / résolution) — un octroi d'un mot-clé
+// inerte (Fantôme, Défense, Renfort…) serait un no-op, donc une APPROXIMATION.
+// Ceux-là restent manuels (le DSL ne les compile pas). Géant : répartition de
+// Force au combat (7258/6135). Agilité : ne peut être bloqué que par Agilité
+// (704). Agressivité : peut attaquer le tour de son apparition (lève le mal
+// d'invocation). Tacle : pouvoir continu de combat — les Alliés/Héros bloquant
+// un possesseur de Tacle ne s'inclinent pas en fin de combat (resolveCombat).
+const grantKeywordSchema = z.enum(["Géant", "Agilité", "Agressivité", "Tacle"]);
 
 // ── CONDITIONS « Si <condition>, <corps> » (sous-système conditionnel) ────────
 // Une `CondSpec` est une condition FAITHFULLY évaluable depuis l'état de jeu à

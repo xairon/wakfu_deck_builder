@@ -31,6 +31,15 @@ export interface CombatKeywords {
    * attaquant le tour où il apparaît » — lève le mal d'invocation à l'attaque.
    */
   agressivite: boolean;
+  /**
+   * Tacle (pouvoir continu de la Phase d'Actions) : « jusqu'à la fin du combat,
+   * les Alliés ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros
+   * possédant Tacle ne peuvent pas s'incliner ». Verrou RELATIONNEL de combat :
+   * appliqué par `resolveCombat` (les bloqueurs survivants en relation de blocage
+   * avec un possesseur de Tacle ne sont pas inclinés en fin de combat) — cf.
+   * combat.ts.
+   */
+  tacle: boolean;
 }
 
 const NONE: CombatKeywords = {
@@ -38,6 +47,7 @@ const NONE: CombatKeywords = {
   geant: false,
   agilite: false,
   agressivite: false,
+  tacle: false,
 };
 
 export function combatKeywords(
@@ -77,7 +87,11 @@ export function combatKeywords(
   // lus exactement comme Géant (face active du Héros incluse).
   const agilite = (keywords ?? []).some((k) => k?.name === "Agilité");
   const agressivite = (keywords ?? []).some((k) => k?.name === "Agressivité");
-  return { resistances, geant, agilite, agressivite };
+  // Tacle : mot-clé structuré (glossaire, sans valeur) — lu exactement comme
+  // Agilité/Agressivité. Sa sémantique de combat (verrou d'inclinaison) est
+  // appliquée par resolveCombat via la relation de blocage.
+  const tacle = (keywords ?? []).some((k) => k?.name === "Tacle");
+  return { resistances, geant, agilite, agressivite, tacle };
 }
 
 /**
@@ -140,11 +154,16 @@ export function effectiveKeywords(
   // lus par eligibleBlockers/eligibleAttackers via effectiveKeywords.
   const agilite = base.agilite || !!tokens.agiliteTurnMod;
   const agressivite = base.agressivite || !!tokens.agressiviteTurnMod;
+  // Tacle : imprimé (`base`) OU conféré « jusqu'à la fin du tour » par un jeton
+  // TURN-scoped `tacleTurnMod` (grantKeywordSelf/grantKeywordTarget). Le verrou
+  // d'inclinaison reste appliqué par resolveCombat (relation de blocage).
+  const tacle = base.tacle || !!tokens.tacleTurnMod;
   return {
     resistances,
     geant,
     agilite,
     agressivite,
+    tacle,
   };
 }
 
@@ -157,12 +176,13 @@ export function effectiveKeywords(
  * = approximation, donc laissés manuels en amont par le DSL).
  */
 export const GRANT_KEYWORD_TOKEN: Record<
-  "Géant" | "Agilité" | "Agressivité",
-  "geantTurnMod" | "agiliteTurnMod" | "agressiviteTurnMod"
+  "Géant" | "Agilité" | "Agressivité" | "Tacle",
+  "geantTurnMod" | "agiliteTurnMod" | "agressiviteTurnMod" | "tacleTurnMod"
 > = {
   Géant: "geantTurnMod",
   Agilité: "agiliteTurnMod",
   Agressivité: "agressiviteTurnMod",
+  Tacle: "tacleTurnMod",
 };
 
 /** Dommages effectifs après Résistance de la cible (par infliction, 7469). */

@@ -308,12 +308,39 @@ export function resolveCombat(
     if (loser) winner = winner ?? otherSeat(loser);
   }
 
+  // Tacle (pouvoir continu, glossaire) : « jusqu'à la fin du combat, les Alliés
+  // ou Héros qui bloquent ou qui sont bloqués par un Allié ou Héros possédant
+  // Tacle ne peuvent pas s'incliner ». Verrou RELATIONNEL : un bloqueur est
+  // verrouillé s'il bloque un attaquant possédant Tacle (il « bloque » un
+  // possesseur de Tacle). Réciproquement, un attaquant bloqué par un bloqueur
+  // possédant Tacle est « bloqué par » un possesseur de Tacle — mais les
+  // attaquants ne sont PAS inclinés en fin de combat (ils l'ont été à la
+  // déclaration, A6) et le combat se termine ici : leur verrou « ne peut pas
+  // s'incliner jusqu'à la fin du combat » n'a donc aucune inclinaison à
+  // empêcher. La SEULE inclinaison effective en fin de combat est celle des
+  // bloqueurs survivants (708.3) : on la supprime pour ceux verrouillés par
+  // Tacle. C'est le point d'application FIDÈLE et porteur du mot-clé.
+  const tacleLocked = (blocker: InstanceId): boolean => {
+    const attacker = plan.blocks[blocker];
+    // « bloque un possesseur de Tacle » (l'attaquant bloqué a Tacle)
+    if (attacker && effectiveKeywords(ctx, attacker).tacle) return true;
+    return false;
+  };
+
   // 708.3 — Fin de Combat : les bloqueurs SURVIVANTS sont inclinés (les
   // attaquants l'ont été à la déclaration, A6). Les détruits sont en défausse.
   for (const blocker of Object.keys(plan.blocks)) {
     if (destroyed.includes(blocker)) continue;
     const inst = ctx.state.instances[blocker];
     if (!inst || inst.orientation === "tapped") continue;
+    // Tacle : un bloqueur verrouillé « ne peut pas s'incliner » → on n'émet pas
+    // son inclinaison de fin de combat (708.3 cédant au pouvoir continu Tacle).
+    if (tacleLocked(blocker)) {
+      log.push(
+        `${nameOf(ctx, blocker)} ne s'incline pas (Tacle de ${nameOf(ctx, plan.blocks[blocker])}).`,
+      );
+      continue;
+    }
     events.push({
       actor: atk,
       type: "SET_ORIENTATION",

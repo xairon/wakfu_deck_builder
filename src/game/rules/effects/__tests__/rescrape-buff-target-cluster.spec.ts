@@ -8,17 +8,17 @@
  * Constat de fidélité : AUCUN de ces bonus n'est un buff de Force. Tous confèrent
  * un MOT-CLÉ (Géant / Agilité / Agressivité / Tacle / Fantôme) ou « Résistance N »
  * à une cible CHOISIE / au Porteur / à VOTRE Héros. Les mots-clés DE COMBAT câblés
- * (Géant / Agilité / Agressivité) « jusqu'à la fin du tour » sont désormais
- * FONCTIONNELS (op grantKeyword*, jeton TURN → effectiveKeywords → légalité) ; les
- * mots-clés INERTES (Tacle, Fantôme…), « Résistance N » conférée et les formes non
- * routées restent uncovered (« an approximation of gameplay is worse than a manual
- * effect »). Ce spec verrouille donc :
+ * (Géant / Agilité / Agressivité / Tacle) « jusqu'à la fin du tour » sont désormais
+ * FONCTIONNELS (op grantKeyword*, jeton TURN → effectiveKeywords → légalité /
+ * résolution) ; les mots-clés INERTES (Fantôme…), « Résistance N » conférée et les
+ * formes non routées restent uncovered (« an approximation of gameplay is worse than
+ * a manual effect »). Ce spec verrouille donc :
  *  1. l'intégrité des données patchées (plus d'icône perdue, mot-clé présent) ;
  *  2. l'absence de MIS-ENCODAGE (ces effets ne compilent JAMAIS en buffForce*) ;
  *  3. des positifs DSL de régression sur les grammaires buffForceTarget /
  *     buffForceHeroSelf (qui restent réservées aux VRAIS buffs de Force) ;
  *  4. les grants de mot-clé câblé compilent en grantKeyword* (pas en Force) ;
- *     un mot-clé inerte (Tacle) ne compile pas.
+ *     un mot-clé encore inerte (Fantôme) ne compile pas.
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -171,8 +171,10 @@ describe("re-scrape — cluster « gagne <bonus> jusqu'à la fin du tour »", ()
   // Géant (Pandaluk, Rat Klure, Petit Anneau de Force) + Agilité / Agressivité
   // (Anny Koleta, Soda Moza, Piqûre Motivante) : « gagne <Mot-clé de combat>
   // jusqu'à la fin du tour » est désormais FONCTIONNEL (jeton TURN → effectiveKeywords
-  // → légalité combat), donc compilé en grantKeyword*. Les mots-clés INERTES (Tacle,
-  // Fantôme…), les formes BEARER, à qualificatif (« que vous contrôlez », « de la
+  // → légalité / résolution combat), donc compilé en grantKeyword*. Tacle (Ocehan
+  // Zileveun, Petit Anneau de Chance) est lui aussi câblé (verrou d'inclinaison).
+  // Les mots-clés ENCORE INERTES (Fantôme…), les formes BEARER, à qualificatif
+  // (« que vous contrôlez », « de la
   // Classe de votre Héros ») ou non routées (requiresIncline:false) restent uncovered.
   const GEANT_GRANT_COVERED = new Set([
     "chaos-dogrest/pandaluk-skaiwoker-chaos-dogrest/0",
@@ -181,6 +183,10 @@ describe("re-scrape — cluster « gagne <bonus> jusqu'à la fin du tour »", ()
     "amakna/piqure-motivante-amakna/0",
     "bonta-brakmar/rat-klure-bonta-brakmar/0",
     "bonta-brakmar/petit-anneau-de-force-bonta-brakmar/1",
+    // Tacle désormais câblé (verrou d'inclinaison relationnel dans resolveCombat) :
+    // l'octroi « gagne Tacle jusqu'à la fin du tour » compile en grantKeyword*.
+    "chaos-dogrest/ocehan-zileveun-chaos-dogrest/0",
+    "bonta-brakmar/petit-anneau-de-chance-bonta-brakmar/1",
   ]);
 
   describe("fidélité : aucun mis-encodage en buff de Force", () => {
@@ -273,14 +279,22 @@ describe("re-scrape — cluster « gagne <bonus> jusqu'à la fin du tour »", ()
       ]);
     });
 
-    it("négatif : « L'Allié de votre choix gagne Tacle … » NE compile PAS (mot-clé inerte, non câblé)", () => {
-      // Tacle n'a pas de sémantique de combat câblée : l'octroyer serait un no-op
-      // = approximation → reste manuel (uncovered).
+    it("« L'Allié de votre choix gagne Tacle … » compile en grantKeywordTarget (verrou d'inclinaison câblé)", () => {
+      // Tacle a désormais une sémantique de combat câblée (resolveCombat empêche
+      // l'inclinaison des bloqueurs en relation avec un possesseur de Tacle) →
+      // l'octroi compile en grantKeywordTarget (jeton TURN), jamais en buffForce*.
       const c = compileActionEffectText(
         "L'Allié de votre choix gagne Tacle jusqu'à la fin du tour.",
         "Carte",
       );
-      expect(c).toBeNull();
+      expect(c?.ops).toEqual([
+        {
+          op: "grantKeywordTarget",
+          keyword: "Tacle",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ]);
     });
 
     it("négatif : « Votre Héros gagne Géant. » NE compile PAS en buffForceHeroSelf", () => {
