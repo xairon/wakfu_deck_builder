@@ -28,6 +28,7 @@ import {
   isPaidCostText,
   isRecycleCostText,
   isSacrificeCostText,
+  isTokenTapPowerText,
 } from "../src/game/rules/effects/dsl";
 import { CARD_SCRIPTS } from "../src/game/rules/effects/cardScripts";
 import { OP_TO_MECHANIC } from "../src/data/mechanics";
@@ -214,7 +215,8 @@ function compileEffects(
       isPaidCostText(text) ||
       isInclineCostText(text) ||
       isSacrificeCostText(text) ||
-      isRecycleCostText(text)
+      isRecycleCostText(text) ||
+      isTokenTapPowerText(text)
         ? // Un coût de RECYCLAGE sur une Action (Parchemins) compile en "onPlay"
           // (résolution au jeu) plutôt qu'en "onTap" — cf. compileTapEffectText.
           // `requiresIncline` propagé : il autorise le retrait de la clause

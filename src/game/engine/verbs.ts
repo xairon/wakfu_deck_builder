@@ -9,6 +9,7 @@ import type {
   PersistedEvent,
   InstanceId,
   ShufflePayload,
+  CreateTokenPayload,
 } from "../types/events";
 import type { CombatState, GameState, TurnPhase } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
@@ -191,6 +192,19 @@ export function incCounter(
     type: "INC_COUNTER",
     payload: { instanceId, counter, delta, token },
   };
+}
+
+/**
+ * Mise en jeu d'un JETON de créature (« Mettez en jeu un jeton "Monstre - X" de
+ * Force N [Élément] »). Minte une instance dans le Monde du contrôleur,
+ * référençant un `cardId` synthétique (registre de jetons). L'`instanceId` est
+ * fourni par l'appelant (déterministe : le reducer reste pur, sans aléa).
+ */
+export function createToken(
+  actor: Seat,
+  p: CreateTokenPayload,
+): DraftEvent<CreateTokenPayload> {
+  return { actor, type: "CREATE_TOKEN", payload: p };
 }
 
 /** Mélange autoritatif : permutation dérivée d'une graine serveur. */

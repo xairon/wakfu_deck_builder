@@ -249,6 +249,22 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     tapped: z.boolean().optional(),
   }),
   z.object({ op: z.literal("shuffleDeck") }),
+  // « Mettez en jeu un jeton "Monstre - <Famille>" de Force N [Élément]. »
+  //   (Abraknyde, Vampyro…) → createToken : MINTE une nouvelle créature en jeu
+  //   SANS carte de deck. Le jeton est une carte SYNTHÉTIQUE (mainType "Allié",
+  //   subType "Monstre" + Famille `sub`, Force `force` de l'Élément `element`) :
+  //   participant de combat à part entière (distribue sa Force, attaque/bloque,
+  //   subit des Dommages, meurt à Dommages ≥ Force). Il entre dans le Monde du
+  //   contrôleur, dressé. À sa sortie de jeu il CESSE D'EXISTER (jamais de
+  //   défausse/pioche — retiré des instances). `name` sert aux « jetons portant
+  //   le même nom ». FIDÈLE : un jeton n'a AUCUN effet d'apparition.
+  z.object({
+    op: z.literal("createToken"),
+    name: z.string(),
+    force: z.number(),
+    element: z.string().optional(),
+    sub: z.string().optional(),
+  }),
   z.object({ op: z.literal("destroySelf") }),
   z.object({
     op: z.literal("loseStatTurn"),
@@ -521,6 +537,23 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     what: z.enum(["Allié", "Zone", "Équipement", "Dofus", "Salle"]).optional(),
     sub: z.string().optional(),
     from: z.enum(["defausse", "main", "self"]).optional(),
+  }),
+  // COÛT de pouvoir payé « Recyclez un <Allié|Famille> de votre choix : … »
+  //   (Vampyro) : op de CIBLAGE (première op d'une séquence cost:"paidOps", comme
+  //   costTapControlled/costDestroyControlled). Le joueur choisit une de SES
+  //   créatures EN JEU (Monde / Havre-Sac) correspondant au filtre, qui est alors
+  //   RECYCLÉE — remise sous la Pioche de son propriétaire (glossaire « Recycler »).
+  //   Si l'éligibilité est vide, le coût ne peut pas être payé → la frame est
+  //   abandonnée (corps non exécuté), comme les autres coûts payés. `sub` :
+  //   Famille requise (« un Monstre de votre choix » → sub Monstre). `heroes` :
+  //   le coût accepte aussi un Héros. `excludeSource` : « un AUTRE de vos … ».
+  z.object({
+    op: z.literal("costRecycleControlled"),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    maxLevel: z.number().optional(),
+    excludeSource: z.boolean().optional(),
+    zones: zonesSchema,
   }),
 ]);
 

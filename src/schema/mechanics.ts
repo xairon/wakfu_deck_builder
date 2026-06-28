@@ -19,6 +19,7 @@ export const mechanicTagSchema = z.enum([
   "discard-from-hand",
   "search-deck",
   "put-in-play",
+  "create-token",
   "shuffle-deck",
   "destroy-self",
   "lose-stat-turn",
@@ -47,6 +48,7 @@ export const mechanicTagSchema = z.enum([
   "cost-tap-controlled",
   "cost-destroy-controlled",
   "cost-recycle",
+  "cost-recycle-controlled",
   "conditional",
 ]);
 

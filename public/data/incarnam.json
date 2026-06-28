@@ -163,7 +163,20 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Arakne",
+              "force": 1,
+              "sub": "Arakne",
+              "element": "Terre"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["create-token"]
       },
       {
         "description": "La restriction d'utilisation ne s'applique qu'à un seul Abraknyde donné. Si vous contrôlez deux exemplaires de l'Abraknyde, vous pouvez utiliser le pouvoir de chacun une fois.",
@@ -14908,7 +14921,25 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycleControlled",
+              "sub": "monstre",
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "createToken",
+              "name": "Monstre - Vampyre",
+              "force": 1,
+              "sub": "Vampyre"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle-controlled", "create-token"]
       },
       {
         "description": "Quand Vampyro est sur le point d'être détruit, vous pouvez détruire un de vos Monstres pour le reprendre en main à la place.",

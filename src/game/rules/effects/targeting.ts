@@ -38,6 +38,7 @@ export type TargetingOp = Extract<
   | { op: "returnToHand" }
   | { op: "costTapControlled" }
   | { op: "costDestroyControlled" }
+  | { op: "costRecycleControlled" }
   // OPS « LE JOUEUR DE VOTRE CHOIX … » : on choisit un JOUEUR en CIBLANT son
   // Héros (éligibilité = tous les Héros en jeu, les deux contrôleurs). L'effet
   // s'applique au contrôleur du Héros choisi (résolu dans effectTargetChoose).
@@ -61,6 +62,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "returnToHand" ||
     op.op === "costTapControlled" ||
     op.op === "costDestroyControlled" ||
+    op.op === "costRecycleControlled" ||
     op.op === "playerDraw" ||
     op.op === "playerLoseStatTurn" ||
     op.op === "playerGainStat"
@@ -85,7 +87,11 @@ export function isPlayerChoiceOp(op: CompiledEffectOp): op is PlayerChoiceOp {
  * de vos X : … ») ? Si son éligibilité est vide, la frame doit être ABANDONNÉE
  * (le corps ne s'exécute pas — le coût n'est pas payé), au lieu de continuer. */
 export function isCostTargetingOp(op: CompiledEffectOp): boolean {
-  return op.op === "costTapControlled" || op.op === "costDestroyControlled";
+  return (
+    op.op === "costTapControlled" ||
+    op.op === "costDestroyControlled" ||
+    op.op === "costRecycleControlled"
+  );
 }
 
 /**
@@ -107,7 +113,11 @@ export function effectTargetIds(
   // Héros si `heroes`), matchant `sub`/`maxLevel`, hors source si `excludeSource`,
   // et — pour le coût d'inclinaison — actuellement DRESSÉES (on ne peut pas
   // incliner une carte déjà inclinée).
-  if (op.op === "costTapControlled" || op.op === "costDestroyControlled") {
+  if (
+    op.op === "costTapControlled" ||
+    op.op === "costDestroyControlled" ||
+    op.op === "costRecycleControlled"
+  ) {
     if (actor === undefined) return [];
     const out: InstanceId[] = [];
     for (const inst of Object.values(ctx.state.instances)) {
@@ -340,6 +350,36 @@ export function resolveDestroyTarget(
     );
   }
   return { events, log };
+}
+
+/**
+ * COÛT « Recyclez un <X> de votre choix » (Vampyro) : RECYCLE la créature choisie
+ * — la remet SOUS la Pioche de son PROPRIÉTAIRE, face cachée (glossaire
+ * « Recycler »). Distinct de la destruction : pas de défausse, pas d'XP à
+ * l'adversaire (la carte n'est pas détruite, elle change de zone). Un JETON
+ * choisi (cas dégénéré) cesse d'exister en quittant le jeu (géré par le reducer
+ * sur le MOVE vers la Pioche) — fidèle.
+ */
+export function resolveRecycleControlled(
+  ctx: RulesCtx,
+  _actor: Seat,
+  targetId: InstanceId,
+): EffectResolution {
+  const inst = ctx.state.instances[targetId];
+  if (!inst) return { events: [], log: [] };
+  return {
+    events: [
+      move(inst.owner, {
+        instanceId: targetId,
+        from: inst.location,
+        to: { zone: "pioche", owner: inst.owner },
+        position: { at: "bottom" },
+        visibility: { faceDown: true, visibleTo: "none" },
+        preservesIdentity: false,
+      }),
+    ],
+    log: [`${nameOf(ctx, targetId)} est recyclé sous la Pioche.`],
+  };
 }
 
 /**

@@ -851,15 +851,28 @@ describe("rules/effects — DSL putInPlay (« Mettez en jeu … de votre main / 
     ]);
   });
 
-  it("NÉGATIF : la création de jeton (« Invoquez … », « un jeton … ») n'est PAS captée", () => {
+  it("la création de jeton « Mettez en jeu un jeton de Force N » EST captée (createToken)", () => {
+    // Désormais fidèlement automatisée : un jeton est une créature synthétique
+    // (carte de registre) participant au combat. Sur une Action, c'est un onPlay.
     const token = Object.assign(
       cardWith(
         "Abraknyde",
-        'Mettez en jeu un jeton "Monstre — Arakne" de Force 1.',
+        'Mettez en jeu un jeton "Monstre — Arakne" de Force 1 Terre.',
       ),
       { mainType: "Action" },
     );
-    expect(playEffects(token)).toEqual([]);
+    expect(playEffects(token)[0]?.ops).toEqual([
+      {
+        op: "createToken",
+        name: "Monstre - Arakne",
+        force: 1,
+        sub: "Arakne",
+        element: "Terre",
+      },
+    ]);
+  });
+
+  it("NÉGATIF : « Invoquez … » (forme non modélisée) n'est PAS captée", () => {
     const invoke = Object.assign(cardWith("Invocation", "Invoquez un Tofu."), {
       mainType: "Action",
     });

@@ -27,6 +27,7 @@ export {
 export { permutationFromSeed, makeRng } from "./engine/rng";
 export {
   move,
+  createToken,
   drawTop,
   recycleToPiocheTop,
   playToWorld,

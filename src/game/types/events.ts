@@ -109,9 +109,26 @@ export interface SetCombatPayload {
   recordedAttackBy?: Seat;
 }
 
+/**
+ * Mise en jeu d'un JETON de créature (« Mettez en jeu un jeton "Monstre - X" de
+ * Force N [Élément] »). MINTE une nouvelle instance dans le Monde du contrôleur,
+ * référençant un `cardId` SYNTHÉTIQUE (registre de jetons) — pas de carte de
+ * deck. `instanceId` est fourni dans l'event (déterministe côté appelant), pour
+ * que le reducer pur reste sans aléa.
+ */
+export interface CreateTokenPayload {
+  instanceId: InstanceId;
+  /** cardId synthétique du gabarit (préfixe __token__). */
+  cardId: string;
+  controller: Seat;
+  /** Orientation à l'entrée (les jetons arrivent dressés, 106.3). */
+  orientation?: "upright" | "tapped";
+}
+
 export type EventType =
   | "GAME_STARTED"
   | "MOVE"
+  | "CREATE_TOKEN"
   | "SHUFFLE"
   | "SET_ORIENTATION"
   | "SET_LEVEL"

@@ -10,12 +10,14 @@ import { computed, ref } from "vue";
 import type { Card, CompiledEffect, CondSpec } from "@/types/cards";
 import type { DraftEvent, GameState, Position, Seat, ZoneRef } from "@/game";
 import {
+  createToken as createTokenVerb,
   incCounter as incCounterVerb,
   move,
   otherSeat,
   say,
   setCounter as setCounterVerb,
 } from "@/game";
+import { ensureTokenCard, tokenCardId } from "./tokens";
 import type {
   EffectOp,
   RulesCtx,
@@ -46,6 +48,7 @@ import {
   resolveGrantKeywordTarget,
   resolveHealHeroTarget,
   resolveGrantResistanceTarget,
+  resolveRecycleControlled,
   resolveReturnToHand,
   resolveTapTarget,
   resolveUntapTarget,
@@ -891,6 +894,35 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "createToken") {
+        // « Mettez en jeu un jeton "Monstre - <Famille>" de Force N [Élément]. »
+        // MINTE une créature SYNTHÉTIQUE dans le Monde du contrôleur (carte de
+        // registre, pas de carte de deck) : participant de combat à part entière.
+        // Un jeton n'a AUCUN effet d'apparition → on n'appelle PAS
+        // queueArrivalEffects (fidèle). En revanche son apparition VEILLE les
+        // autres cartes (« Quand un Allié [Famille] apparaît ») exactement comme
+        // une mise en jeu normale (queueAppearanceWatchers).
+        const cardId = tokenCardId({
+          name: op.name,
+          force: op.force,
+          ...(op.element ? { element: op.element } : {}),
+          ...(op.sub ? { sub: op.sub } : {}),
+        });
+        const tokenCard = ensureTokenCard({
+          name: op.name,
+          force: op.force,
+          ...(op.element ? { element: op.element } : {}),
+          ...(op.sub ? { sub: op.sub } : {}),
+        });
+        const instanceId = mintTokenInstanceId(seat);
+        deps.dispatch(
+          createTokenVerb(seat, { instanceId, cardId, controller: seat }),
+          say(
+            seat,
+            `${cardName} : un jeton « ${op.name} » (Force ${op.force}) entre en jeu.`,
+          ),
+        );
+        queueAppearanceWatchers(seat, tokenCard, instanceId);
       } else if (op.op === "draw") {
         deps.draw(seat, op.n);
       } else if (op.op === "eachPlayerDraws") {
@@ -1381,6 +1413,24 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     return card ? effectSourceElement(card) : undefined;
   }
 
+  /**
+   * Forge un `instanceId` UNIQUE pour un nouveau jeton. Déterministe à partir de
+   * l'état courant : `tok_<seat>_<N>` où N est le plus petit entier libre (aucune
+   * instance existante ne porte cet id). L'id est capturé DANS l'event
+   * CREATE_TOKEN → le rejeu du journal reste fidèle (l'id ne dépend pas du moment
+   * de génération). Sans collision avec les `ci_*` du setup ni les autres jetons.
+   */
+  function mintTokenInstanceId(seat: Seat): string {
+    const instances = deps.getState().instances;
+    let n = 1;
+    let id = `tok_${seat}_${n}`;
+    while (instances[id]) {
+      n += 1;
+      id = `tok_${seat}_${n}`;
+    }
+    return id;
+  }
+
   /** Le joueur clique une cible légale : résout l'op puis continue l'effet. */
   function effectTargetChoose(instanceId: string): void {
     const t = effectTargeting.value;
@@ -1483,80 +1533,97 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         ? // COÛT « Détruisez un de vos X » : même résolution que destroyTarget
           // (un Allié détruit rapporte son XP à l'adversaire, 415.1).
           resolveDestroyTarget(deps.rulesCtx(), t.seat, instanceId)
-        : t.op.op === "costTapControlled"
-          ? // COÛT « Inclinez un de vos X » : incline la cible choisie (déjà
-            // garantie dressée par l'éligibilité).
-            resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
-          : t.op.op === "healHeroTarget"
-            ? resolveHealHeroTarget(deps.rulesCtx(), t.seat, instanceId, t.op.n)
-            : t.op.op === "buffForceTarget"
-              ? resolveBuffForceTarget(
+        : t.op.op === "costRecycleControlled"
+          ? // COÛT « Recyclez un <X> de votre choix » (Vampyro) : recycle la
+            // créature choisie sous la Pioche de son propriétaire.
+            resolveRecycleControlled(deps.rulesCtx(), t.seat, instanceId)
+          : t.op.op === "costTapControlled"
+            ? // COÛT « Inclinez un de vos X » : incline la cible choisie (déjà
+              // garantie dressée par l'éligibilité).
+              resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
+            : t.op.op === "healHeroTarget"
+              ? resolveHealHeroTarget(
                   deps.rulesCtx(),
                   t.seat,
                   instanceId,
                   t.op.n,
                 )
-              : t.op.op === "grantKeywordTarget"
-                ? resolveGrantKeywordTarget(
+              : t.op.op === "buffForceTarget"
+                ? resolveBuffForceTarget(
                     deps.rulesCtx(),
                     t.seat,
                     instanceId,
-                    t.op.keyword,
+                    t.op.n,
                   )
-                : t.op.op === "grantResistanceTarget"
-                  ? resolveGrantResistanceTarget(
+                : t.op.op === "grantKeywordTarget"
+                  ? resolveGrantKeywordTarget(
                       deps.rulesCtx(),
                       t.seat,
                       instanceId,
-                      t.op.resist,
+                      t.op.keyword,
                     )
-                  : t.op.op === "tapTarget"
-                    ? resolveTapTarget(
+                  : t.op.op === "grantResistanceTarget"
+                    ? resolveGrantResistanceTarget(
                         deps.rulesCtx(),
                         t.seat,
                         instanceId,
-                        // « … ne peut pas se redresser jusqu'au début de votre
-                        // prochain tour » : jeton noUntapUntilTurn = tour + 2 (même
-                        // borne que la Trêve), posé sur la cible choisie.
-                        t.op.cannotRedress
-                          ? deps.getState().turn.number + 2
-                          : undefined,
+                        t.op.resist,
                       )
-                    : t.op.op === "untapTarget"
-                      ? resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId)
-                      : t.op.op === "returnToHand"
-                        ? resolveReturnToHand(
+                    : t.op.op === "tapTarget"
+                      ? resolveTapTarget(
+                          deps.rulesCtx(),
+                          t.seat,
+                          instanceId,
+                          // « … ne peut pas se redresser jusqu'au début de votre
+                          // prochain tour » : jeton noUntapUntilTurn = tour + 2 (même
+                          // borne que la Trêve), posé sur la cible choisie.
+                          t.op.cannotRedress
+                            ? deps.getState().turn.number + 2
+                            : undefined,
+                        )
+                      : t.op.op === "untapTarget"
+                        ? resolveUntapTarget(
                             deps.rulesCtx(),
                             t.seat,
                             instanceId,
                           )
-                        : t.op.op === "damageTargetByForce"
-                          ? resolveDamageTargetByForce(
+                        : t.op.op === "returnToHand"
+                          ? resolveReturnToHand(
                               deps.rulesCtx(),
                               t.seat,
                               instanceId,
-                              // Élément des Dommages = Élément de la SOURCE liée
-                              // (410.1), lu sur la carte de l'instance source vivante
-                              // (acteur lié pour l'actor-binding) ; repli sur l'Élément
-                              // figé à la compilation si la source est absente.
-                              liveSourceElement(t.sourceId) ?? t.op.element,
-                              {
-                                mods: activeGlobalMods(deps.rulesCtx()),
-                                ...(t.sourceId ? { sourceId: t.sourceId } : {}),
-                              },
                             )
-                          : resolveDamageTarget(
-                              deps.rulesCtx(),
-                              t.seat,
-                              instanceId,
-                              t.op.n,
-                              // idem : Dommages de l'Élément de la source liée.
-                              liveSourceElement(t.sourceId) ?? t.op.element,
-                              {
-                                mods: activeGlobalMods(deps.rulesCtx()),
-                                ...(t.sourceId ? { sourceId: t.sourceId } : {}),
-                              },
-                            );
+                          : t.op.op === "damageTargetByForce"
+                            ? resolveDamageTargetByForce(
+                                deps.rulesCtx(),
+                                t.seat,
+                                instanceId,
+                                // Élément des Dommages = Élément de la SOURCE liée
+                                // (410.1), lu sur la carte de l'instance source vivante
+                                // (acteur lié pour l'actor-binding) ; repli sur l'Élément
+                                // figé à la compilation si la source est absente.
+                                liveSourceElement(t.sourceId) ?? t.op.element,
+                                {
+                                  mods: activeGlobalMods(deps.rulesCtx()),
+                                  ...(t.sourceId
+                                    ? { sourceId: t.sourceId }
+                                    : {}),
+                                },
+                              )
+                            : resolveDamageTarget(
+                                deps.rulesCtx(),
+                                t.seat,
+                                instanceId,
+                                t.op.n,
+                                // idem : Dommages de l'Élément de la source liée.
+                                liveSourceElement(t.sourceId) ?? t.op.element,
+                                {
+                                  mods: activeGlobalMods(deps.rulesCtx()),
+                                  ...(t.sourceId
+                                    ? { sourceId: t.sourceId }
+                                    : {}),
+                                },
+                              );
     // ACTOR-BINDING par coût : la créature qu'on vient de choisir au COÛT devient
     // le sujet (sourceId) du CORPS resté en tête de file (holdRest). On réécrit la
     // frame en attente AVANT de la reprendre, pour que buffForceSelf /

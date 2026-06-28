@@ -21,11 +21,13 @@ import type {
   LookRevealPayload,
   UndonePayload,
   SetCombatPayload,
+  CreateTokenPayload,
   Position,
   InstanceId,
 } from "../types/events";
 import type { CardInstance, GameState } from "../types/state";
 import type { ZoneRef } from "../types/zones";
+import { isTokenCardId } from "../rules/effects/tokens.ts";
 
 export class EngineError extends Error {
   constructor(
@@ -104,6 +106,17 @@ function applyMove(s: GameState, p: MovePayload): void {
   const inst = getInstance(s, p.instanceId);
   removeFromZone(s, inst);
 
+  // JETON quittant le jeu (502.x / glossaire « jeton ») : un jeton n'a pas de
+  // carte de deck — il CESSE D'EXISTER dès qu'il quitte le Monde / un Havre-Sac
+  // (jamais de Défausse, Pioche, Exil…). On le retire complètement des instances
+  // au lieu de l'insérer dans la zone cible. (Les déplacements EN JEU — échange
+  // Monde↔Havre-Sac — restent normaux, gérés par la branche standard ci-dessous.)
+  const arrivesInPlayZone = p.to.zone === "monde" || p.to.zone === "havreSac";
+  if (isTokenCardId(inst.cardId) && !arrivesInPlayZone) {
+    delete s.instances[p.instanceId];
+    return;
+  }
+
   const isWorldHavenSwap =
     (p.from.zone === "monde" && p.to.zone === "havreSac") ||
     (p.from.zone === "havreSac" && p.to.zone === "monde");
@@ -133,6 +146,31 @@ function applyMove(s: GameState, p: MovePayload): void {
 
   inst.location = p.to;
   insertIntoZone(s, inst, p.to, p.position);
+}
+
+/**
+ * Mise en jeu d'un JETON : minte une instance dans le Monde du contrôleur,
+ * référençant le `cardId` synthétique du registre de jetons. Le jeton arrive
+ * dressé (par défaut), public, propriétaire = contrôleur (un jeton n'a pas de
+ * propriétaire de deck — owner = controller). Idempotent au niveau reducer :
+ * une `instanceId` déjà présente n'est pas écrasée (rejouer = même état).
+ */
+function applyCreateToken(s: GameState, p: CreateTokenPayload): void {
+  if (s.instances[p.instanceId]) return;
+  const inst: CardInstance = {
+    instanceId: p.instanceId,
+    cardId: p.cardId,
+    owner: p.controller,
+    controller: p.controller,
+    location: { zone: "monde" },
+    face: "recto",
+    orientation: p.orientation ?? "upright",
+    counters: {},
+    attachments: [],
+    revealedTo: ["A", "B"],
+  };
+  s.instances[p.instanceId] = inst;
+  s.monde.push(p.instanceId);
 }
 
 function applyShuffle(s: GameState, p: ShufflePayload): void {
@@ -194,6 +232,9 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
   switch (ev.type) {
     case "MOVE":
       applyMove(next, ev.payload as MovePayload);
+      break;
+    case "CREATE_TOKEN":
+      applyCreateToken(next, ev.payload as CreateTokenPayload);
       break;
     case "SHUFFLE":
       applyShuffle(next, ev.payload as ShufflePayload);

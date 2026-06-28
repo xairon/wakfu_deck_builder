@@ -128,6 +128,20 @@ export const MECHANICS: Mechanic[] = [
       "Met en jeu une carte existante choisie dans la main ou la Défausse ; ses effets d'apparition se déclenchent.",
   },
   {
+    id: "create-token",
+    label: "Création de jeton",
+    category: "tempo",
+    glossary:
+      "Met en jeu un jeton de créature (« Monstre - X » de Force N) sans carte de deck ; il cesse d'exister en quittant le jeu.",
+    relatesTo: [
+      {
+        tag: "put-in-play",
+        kind: "synergizes",
+        note: "Mise en jeu d'une créature, mais sans carte de deck (jeton synthétique).",
+      },
+    ],
+  },
+  {
     id: "shuffle-deck",
     label: "Mélange de Pioche",
     category: "autre",
@@ -326,6 +340,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : recyclez une carte (Défausse au choix, votre main, ou la carte source depuis le jeu) — remise sous la Pioche — pour payer l'effet.",
   },
   {
+    id: "cost-recycle-controlled",
+    label: "Coût : recyclage d'une de vos créatures",
+    category: "autre",
+    glossary:
+      "Coût d'un pouvoir : recyclez une de vos créatures en jeu (au choix) — remise sous la Pioche de son propriétaire — pour payer l'effet.",
+  },
+  {
     id: "player-draw",
     label: "Pioche du joueur choisi",
     category: "ressource",
@@ -375,6 +396,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   discardFromHand: "discard-from-hand",
   searchDeck: "search-deck",
   putInPlay: "put-in-play",
+  createToken: "create-token",
   shuffleDeck: "shuffle-deck",
   destroySelf: "destroy-self",
   loseStatTurn: "lose-stat-turn",
@@ -400,6 +422,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
   costRecycle: "cost-recycle",
+  costRecycleControlled: "cost-recycle-controlled",
   playerDraw: "player-draw",
   playerLoseStatTurn: "player-lose-stat-turn",
   playerGainStat: "player-gain-stat",

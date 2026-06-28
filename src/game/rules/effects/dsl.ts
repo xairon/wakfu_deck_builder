@@ -158,6 +158,52 @@ function parseResistClause(
   return elements.map((element) => ({ element, n }));
 }
 
+/** Élément final d'une création de jeton → forme canonique (capitalisée), ou null. */
+const TOKEN_ELEMENTS: Record<string, string> = {
+  air: "Air",
+  eau: "Eau",
+  feu: "Feu",
+  terre: "Terre",
+  neutre: "Neutre",
+};
+
+/**
+ * Parse « Mettez en jeu un jeton "Monstre - <Famille>" de Force N [Élément] »
+ * (phrase déjà normalisée) → op `createToken`, ou null. STRICT :
+ *  - le nom du jeton doit être « monstre <sep> <famille> » (sep = tiret « - » ou
+ *    « — », ou même une espace selon le scrape) ; les guillemets (« " ») sont
+ *    facultatifs ;
+ *  - la Famille doit être une Famille de créature non ambiguë (ALLIED_FAMILIES) ;
+ *  - l'Élément final est facultatif (un seul Élément reconnu) — absent → Neutre ;
+ *  - le `$` rejette toute clause résiduelle ou forme dynamique.
+ * Le `name` conservé est « Monstre - <Famille> » (forme canonique, tiret simple,
+ * Famille capitalisée) pour « les jetons portant le même nom ».
+ */
+function parseCreateToken(sentence: string): EffectOp | null {
+  // (1) Famille ; (2) Élément éventuel. Guillemets/tiret/espaces tolérants.
+  const m = sentence.match(
+    /^mett(?:ez|re) en jeu (?:un |une )?jeton "?monstre\s*[-—]?\s*([a-zéèêàùûôîç]+)"?(?: de force (\d+))?(?: \(?([a-z]+)\)?)?$/,
+  );
+  if (!m) return null;
+  // La Force est requise pour un participant de combat fidèle (« de Force N »).
+  if (!m[2]) return null;
+  const fam = m[1].replace(/s$/, "");
+  if (!ALLIED_FAMILIES.has(fam)) return null;
+  const force = toNumber(m[2]);
+  const elRaw = m[3];
+  const element = elRaw ? TOKEN_ELEMENTS[elRaw] : undefined;
+  // Un mot final non reconnu comme Élément = clause résiduelle → manuel.
+  if (elRaw && !element) return null;
+  const famCap = fam.charAt(0).toUpperCase() + fam.slice(1);
+  return {
+    op: "createToken",
+    name: `Monstre - ${famCap}`,
+    force,
+    sub: famCap,
+    ...(element ? { element } : {}),
+  };
+}
+
 /**
  * Mot-type d'une recherche / mise-en-jeu → `{ what, sub? }`, ou null si le mot
  * n'est ni un type racine connu (Allié/Zone/Salle/Équipement/Dofus/Action) ni
@@ -479,6 +525,16 @@ function parseSentence(
       ...(tapped ? { tapped: true } : {}),
     };
   }
+  // « Mettez en jeu un jeton "Monstre - <Famille>" de Force N [Élément]. »
+  //   (Abraknyde, Vampyro) → createToken. Le nom du jeton est « Monstre -
+  //   <Famille> » (guillemets et tiret — ou — facultatifs, le scrape varie) ;
+  //   la Famille (subType d'Allié) DOIT être une Famille de créature non ambiguë
+  //   (ALLIED_FAMILIES), sinon manuel (pas de devinette de type). L'Élément final
+  //   est facultatif (Vampyro n'en a pas → Neutre). STRICT : le `$` rejette toute
+  //   clause résiduelle ; les formes dynamiques (« le même nombre de jetons » —
+  //   Classe de Vampyro) ne correspondent pas → manuel (SKIP fidèle).
+  const tok = parseCreateToken(sentence);
+  if (tok) return tok;
   m = sentence.match(/^melangez(?:[- ]la)? votre pioche$/);
   if (m) return { op: "shuffleDeck" };
   m = sentence.match(/^votre heros regagne (\d+) (?:pv|points? de vie)$/);
@@ -1500,9 +1556,14 @@ export function compileTapEffectText(
   // l'inclinaison → on la retire (fidèle). Les chemins coût-payé/recyclage
   // gèrent le `:` eux-mêmes et ne sont pas concernés (la clause est en fin de
   // CORPS, captée par compileBody qui appelle ici la version déjà dénudée).
-  const normalized = requiresIncline
-    ? stripTapOncePerTurn(norm(text))
-    : norm(text);
+  // CAS DU JETON (Abraknyde) : `requiresIncline` est absent des données, mais la
+  // clause once-per-turn EST le verrou d'inclinaison sur un pouvoir « Mettez en
+  // jeu un jeton … » sans `:` (isTokenTapPowerText) — on la retire alors aussi
+  // (l'activation incline la source, qui ne se redresse qu'au tour suivant).
+  const normalized =
+    requiresIncline || isTokenTapPowerText(text)
+      ? stripTapOncePerTurn(norm(text))
+      : norm(text);
   const recycleTrigger: CompiledEffect["trigger"] = asAction
     ? "onPlay"
     : "onTap";
@@ -1579,6 +1640,25 @@ export function isPaidCostText(text: string): boolean {
   return /^(?:inclinez|detruisez) (?:un|l['’ ]?\s?un) (?:autre )?de vos allies/.test(
     norm(text),
   );
+}
+
+/**
+ * Le texte a-t-il la forme d'un POUVOIR À INCLINAISON DE SOI « Mettez en jeu un
+ * jeton … » verrouillé par « N'utilisez ce pouvoir qu'une (seule) fois par
+ * tour » ? (Abraknyde : le `requiresIncline` est absent des données scrapées,
+ * mais la clause once-per-turn EST le verrou d'inclinaison — le pouvoir s'active
+ * en inclinant la source, qui ne se redresse qu'au tour suivant.) Sert à ROUTER
+ * ce pouvoir vers le parseur tap (compileTapEffectText) même sans
+ * `requiresIncline`. La compilation effective reste STRICTE : le corps (sans la
+ * clause) doit être un `createToken` entièrement compris (sinon → manuel). On
+ * exige la clause once-per-turn pour ne PAS capter une création de jeton
+ * d'apparition (« Quand X apparaît, mettez en jeu un jeton … » → onArrive).
+ */
+export function isTokenTapPowerText(text: string): boolean {
+  const n = norm(text);
+  if (!TAP_ONCE_PER_TURN.test(n)) return false;
+  const body = stripTapOncePerTurn(n).replace(/\.$/, "").trim();
+  return parseCreateToken(body) !== null;
 }
 
 /**
@@ -1725,6 +1805,43 @@ function compileRecyclePaidCost(
   cardName: string,
   sourceElement: string,
 ): CompiledEffect | null {
+  // « Recyclez un <Allié|Famille> [de votre choix] : CORPS » (Vampyro) → coût de
+  //   CIBLAGE costRecycleControlled (op à cible, première op d'une séquence
+  //   paidOps). Le joueur choisit une de SES créatures EN JEU correspondant au
+  //   type/Famille, recyclée sous la Pioche. Le mot-type est « allie » (Allié) ou
+  //   une Famille non ambiguë (ALLIED_FAMILIES → Allié + sub) ; « carte » est
+  //   exclu ici (« Recyclez une carte de votre Défausse/main » = forme à pile,
+  //   gérée plus bas). « il/elle … » (actor-binding) non modélisé → manuel.
+  const controlled = text.match(
+    /^recyclez un (allie|[a-zéèêàùûôîç]+)(?: de votre choix)?\s*:\s*(.+)$/,
+  );
+  if (controlled) {
+    const word = controlled[1] === "allie" ? "allie" : controlled[1];
+    const sub = word === "allie" ? undefined : word.replace(/s$/, "");
+    // Famille requise non ambiguë (sinon manuel). « allie » nu = sans Famille.
+    if (sub === undefined || ALLIED_FAMILIES.has(sub)) {
+      const bodyText = controlled[2].trim();
+      if (!/^(?:il|elle)\s/.test(bodyText)) {
+        const body = compileBody(bodyText, cardName, sourceElement);
+        if (body) {
+          // `sub` reste NORMALISÉ (minuscules, sans accents) : l'éligibilité le
+          // compare via normWord(subType) (cf. effectTargetIds, coûts payés).
+          return {
+            trigger: "onTap",
+            cost: "paidOps",
+            ops: [
+              {
+                op: "costRecycleControlled",
+                ...(sub ? { sub } : {}),
+                zones: ["monde", "havreSac"],
+              },
+              ...body,
+            ],
+          };
+        }
+      }
+    }
+  }
   let from: "defausse" | "main" | "self" | null = null;
   let bodyText: string | null = null;
   // « Recyclez une carte de votre Défausse : CORPS »
@@ -2636,7 +2753,8 @@ export function tapPowers(card: Card | null): EffectAtom[] {
         isPaidCostText(text) ||
         isInclineCostText(text) ||
         isSacrificeCostText(text) ||
-        isRecycleCostText(text))
+        isRecycleCostText(text) ||
+        isTokenTapPowerText(text))
         ? compileTapEffectText(
             text,
             card.name,

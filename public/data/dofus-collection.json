@@ -85,7 +85,20 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "createToken",
+              "name": "Monstre - Arakne",
+              "force": 1,
+              "sub": "Arakne",
+              "element": "Terre"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["create-token"]
       },
       {
         "description": "La restriction d'utilisation ne s'applique qu'à un seul Abraknyde donné. Si vous contrôlez deux exemplaires de l'Abraknyde, vous pouvez utiliser le pouvoir de chacun une fois.",

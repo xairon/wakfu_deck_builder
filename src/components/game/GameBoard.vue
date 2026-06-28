@@ -402,23 +402,27 @@
                       ? "coût : choisis une de tes créatures à incliner"
                       : store.effectTargeting.op.op === "costDestroyControlled"
                         ? "coût : choisis une de tes créatures à détruire"
-                        : store.effectTargeting.op.op === "damageTargetByForce"
-                          ? "choisis la cible qui subit la Force en Dommages"
-                          : store.effectTargeting.op.op === "playerDraw" ||
-                              store.effectTargeting.op.op ===
-                                "playerLoseStatTurn" ||
-                              store.effectTargeting.op.op === "playerGainStat"
-                            ? "choisis le Héros du joueur concerné"
-                            : store.effectTargeting.op.op ===
-                                "grantKeywordTarget"
-                              ? `choisis la cible qui gagne ${store.effectTargeting.op.keyword}`
+                        : store.effectTargeting.op.op ===
+                            "costRecycleControlled"
+                          ? "coût : choisis une de tes créatures à recycler"
+                          : store.effectTargeting.op.op ===
+                              "damageTargetByForce"
+                            ? "choisis la cible qui subit la Force en Dommages"
+                            : store.effectTargeting.op.op === "playerDraw" ||
+                                store.effectTargeting.op.op ===
+                                  "playerLoseStatTurn" ||
+                                store.effectTargeting.op.op === "playerGainStat"
+                              ? "choisis le Héros du joueur concerné"
                               : store.effectTargeting.op.op ===
-                                  "grantResistanceTarget"
-                                ? "choisis la cible qui gagne de la Résistance"
+                                  "grantKeywordTarget"
+                                ? `choisis la cible qui gagne ${store.effectTargeting.op.keyword}`
                                 : store.effectTargeting.op.op ===
-                                    "damageMultiTarget"
-                                  ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                                  : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                                    "grantResistanceTarget"
+                                  ? "choisis la cible qui gagne de la Résistance"
+                                  : store.effectTargeting.op.op ===
+                                      "damageMultiTarget"
+                                    ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                    : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

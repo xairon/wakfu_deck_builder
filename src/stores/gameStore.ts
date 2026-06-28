@@ -75,6 +75,7 @@ import {
   createEffectEngine,
   matchesPickFilter,
 } from "@/game/rules/effects/engine";
+import { getTokenCard } from "@/game/rules/effects/tokens";
 
 function rndSeed(): string {
   return Math.random().toString(36).slice(2);
@@ -304,7 +305,12 @@ export const useGameStore = defineStore("game", () => {
     return m;
   });
   function getCard(cardId: string | null): Card | null {
-    return cardId ? (cardIndex.value.get(cardId) ?? null) : null;
+    if (!cardId) return null;
+    // Carte de deck (catalogue), sinon carte SYNTHÉTIQUE de jeton (registre) :
+    // un jeton n'a pas de carte de deck — sa carte vit dans le registre de
+    // jetons, indexée par un cardId synthétique. Tous les lecteurs de stats /
+    // combat passant par getCard honorent alors le jeton sans modification.
+    return cardIndex.value.get(cardId) ?? getTokenCard(cardId);
   }
   function rulesCtx(): RulesCtx {
     return { state: state.value, getCard };
