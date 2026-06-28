@@ -217,7 +217,15 @@ function compileEffects(
       isRecycleCostText(text)
         ? // Un coût de RECYCLAGE sur une Action (Parchemins) compile en "onPlay"
           // (résolution au jeu) plutôt qu'en "onTap" — cf. compileTapEffectText.
-          compileTapEffectText(text, cardName, sourceElement, isAction)
+          // `requiresIncline` propagé : il autorise le retrait de la clause
+          // once-per-turn redondante (inclinaison de soi = verrou once-per-turn).
+          compileTapEffectText(
+            text,
+            cardName,
+            sourceElement,
+            isAction,
+            !!e.requiresIncline,
+          )
         : isAction
           ? compileActionEffectText(text, cardName, sourceElement)
           : (compileCombatTriggerText(text, cardName, sourceElement) ??

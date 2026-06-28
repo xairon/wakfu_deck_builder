@@ -1450,6 +1450,31 @@ export function compileEffectText(
 }
 
 /**
+ * Clause RÉSIDUELLE « N'utilisez ce pouvoir qu'une (seule) fois par tour » —
+ * éventuellement suivie de « et uniquement pendant (votre|ce) tour » (rider de
+ * timing). REDONDANTE sur un POUVOIR À INCLINAISON DE SOI : l'inclinaison de la
+ * source est le verrou « une fois par tour » (on incline pour activer ; la
+ * carte ne se redresse qu'au début du tour suivant), et la table n'autorise
+ * l'activation que pendant le tour du contrôleur (gameStore `activateTapPower` :
+ * « Ce n'est pas votre tour. ») → le rider « pendant votre tour » est lui aussi
+ * garanti. La retirer puis compiler le corps est donc FIDÈLE pour un pouvoir à
+ * inclinaison de soi, pas une approximation. Match strict (texte normalisé,
+ * point final retiré) — toute clause à condition réelle (« et uniquement si …
+ * dans le Monde », « après un combat … ») n'est PAS captée → reste manuelle. */
+const TAP_ONCE_PER_TURN =
+  /\s*n['’ ]?\s?utilisez ce pouvoir qu['’]une (?:seule )?fois par tour(?: et uniquement pendant (?:votre|ce) tour)?\s*\.?\s*$/;
+
+/**
+ * Retire de `body` (normalisé, sans point final garanti par l'appelant) la
+ * clause once-per-turn redondante d'un pouvoir à inclinaison de soi, si présente.
+ * À n'appeler QUE sur un corps dont la source est inclinée/sacrifiée à
+ * l'activation (verrou once-per-turn) ; sinon ce serait une approximation.
+ */
+function stripTapOncePerTurn(body: string): string {
+  return body.replace(TAP_ONCE_PER_TURN, "").trim();
+}
+
+/**
  * Compile un POUVOIR À INCLINAISON (`requiresIncline`) : pas de préfixe de
  * déclencheur, le texte est directement la suite d'opérations. Strict :
  * toute phrase incomprise (condition, restriction…) → pas de compilation.
@@ -1464,8 +1489,20 @@ export function compileTapEffectText(
   // en relèvent. N'affecte QUE les coûts de recyclage (les autres formes onTap —
   // inclinaison/sacrifice — ne s'appliquent pas aux Actions). Défaut false.
   asAction = false,
+  // La SOURCE est-elle inclinée à l'activation (`requiresIncline`) ? Seul ce cas
+  // (inclinaison de soi) garantit le verrou once-per-turn : on retire alors la
+  // clause résiduelle « N'utilisez ce pouvoir qu'une fois par tour » avant de
+  // compiler le corps (cf. TAP_ONCE_PER_TURN). NON appliqué aux coûts payés
+  // (« Inclinez un de vos … » — la source n'est pas inclinée) ni aux Actions.
+  requiresIncline = false,
 ): CompiledEffect | null {
-  const normalized = norm(text);
+  // Pouvoir à inclinaison de soi : la clause once-per-turn est garantie par
+  // l'inclinaison → on la retire (fidèle). Les chemins coût-payé/recyclage
+  // gèrent le `:` eux-mêmes et ne sont pas concernés (la clause est en fin de
+  // CORPS, captée par compileBody qui appelle ici la version déjà dénudée).
+  const normalized = requiresIncline
+    ? stripTapOncePerTurn(norm(text))
+    : norm(text);
   const recycleTrigger: CompiledEffect["trigger"] = asAction
     ? "onPlay"
     : "onTap";
@@ -1508,7 +1545,10 @@ export function compileTapEffectText(
   if (inclineCost) {
     if (!subjectIsSelfRef(inclineCost[1].trim(), cardName)) return null;
     if (/^(?:il|elle)\s/.test(inclineCost[2].trim())) return null;
-    const inclineOps = compileBody(inclineCost[2], cardName, sourceElement);
+    // L'inclinaison de soi explicite garantit le verrou once-per-turn → la
+    // clause résiduelle en fin de CORPS est redondante (fidèle à retirer).
+    const inclineBody = stripTapOncePerTurn(inclineCost[2].trim());
+    const inclineOps = compileBody(inclineBody, cardName, sourceElement);
     if (!inclineOps) return null;
     return { trigger: "onTap", ops: inclineOps };
   }
@@ -1519,7 +1559,9 @@ export function compileTapEffectText(
   if (costMatch) {
     if (!subjectIsSelf(costMatch[1].trim(), cardName)) return null;
     cost = "sacrificeSelf";
-    body = costMatch[2];
+    // La SOURCE est sacrifiée → elle ne peut pas réactiver le pouvoir ce tour
+    // (ni aucun autre) : la clause once-per-turn est redondante (fidèle).
+    body = stripTapOncePerTurn(costMatch[2].trim());
   }
   const ops = compileBody(body, cardName, sourceElement);
   if (!ops) return null;
@@ -2595,7 +2637,13 @@ export function tapPowers(card: Card | null): EffectAtom[] {
         isInclineCostText(text) ||
         isSacrificeCostText(text) ||
         isRecycleCostText(text))
-        ? compileTapEffectText(text, card.name, effectSourceElement(card))
+        ? compileTapEffectText(
+            text,
+            card.name,
+            effectSourceElement(card),
+            false,
+            !!e?.requiresIncline,
+          )
         : null);
     if (compiled && compiled.trigger === "onTap")
       atoms.push({ ...compiled, text });

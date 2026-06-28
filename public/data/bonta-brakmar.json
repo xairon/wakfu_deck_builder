@@ -1411,7 +1411,22 @@
           "description": "Cherchez un Monstre dans votre Pioche, révélez-le et prenez-le en main, puis mélangez votre Pioche. N'utilisez ce pouvoir qu'une seule fois par tour.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "searchDeck",
+                "what": "Allié",
+                "sub": "monstre",
+                "dest": "main"
+              },
+              {
+                "op": "shuffleDeck"
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["search-deck", "shuffle-deck"]
         },
         {
           "description": "Votre Pioche étant une zone privée, vous pouvez décider de ne trouver aucun Monstre même si votre Pioche en contient.",
