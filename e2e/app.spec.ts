@@ -85,7 +85,9 @@ test.describe("Navigation principale", () => {
   test("devrait afficher la page d'accueil", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/Wakfu/);
-    await expect(page.getByText("Compagnon du TCG Wakfu")).toBeVisible();
+    await expect(
+      page.getByText("Wakfu TCG — Constructeur de deck"),
+    ).toBeVisible();
   });
 
   test("devrait naviguer vers la collection", async ({ page }) => {

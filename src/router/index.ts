@@ -16,7 +16,9 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
-      meta: { guest: true },
+      // Landing pleine largeur : la HomeView gère ses propres marges/bandes
+      // (hero 100vh, bandes sombres bord à bord) → on retire le conteneur.
+      meta: { guest: true, fullBleed: true },
     },
     {
       path: "/auth",

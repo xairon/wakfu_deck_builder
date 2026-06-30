@@ -131,7 +131,7 @@
     <main
       id="main-content"
       v-if="!isLoading && !error && !isBackendMissing"
-      class="container mx-auto px-4 py-8 sm:px-6 sm:py-10"
+      :class="isFullBleed ? '' : 'container mx-auto px-4 py-8 sm:px-6 sm:py-10'"
     >
       <router-view />
     </main>
@@ -170,6 +170,7 @@ const isLoading = computed(() => cardStore.loading);
 const error = computed(() => cardStore.error);
 const isSyncing = computed(() => cardStore.isSyncing);
 const isBackendMissing = computed(() => !isSupabaseConfigured());
+const isFullBleed = computed(() => route.meta.fullBleed === true);
 
 const syncState = computed(() =>
   cardStore.syncState === "error" || deckStore.syncState === "error"
