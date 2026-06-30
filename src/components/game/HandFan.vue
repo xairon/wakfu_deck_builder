@@ -69,7 +69,10 @@ function cardStyle(i: number): CSSProperties {
   const off = i - mid;
   const maxRot = Math.min(5, 30 / Math.max(n, 1));
   const rot = off * maxRot * (props.mine ? 1 : -1);
-  const lift = Math.pow(Math.abs(off), 1.6) * Math.min(4, 22 / Math.max(n, 1));
+  // Arc plus plat (exposant 1.4, coeff réduit) : limite la « plongée » des
+  // cartes extérieures sous la zone de main, qui rognait la main de bas en
+  // haut sur les écrans courts (overflow:hidden du plateau).
+  const lift = Math.pow(Math.abs(off), 1.4) * Math.min(3, 14 / Math.max(n, 1));
   const ty = props.mine ? lift : -lift;
   return {
     "--rot": `${rot.toFixed(2)}deg`,
@@ -93,7 +96,12 @@ function cardStyle(i: number): CSSProperties {
 .hand-fan__card {
   width: var(--card-hand, 130px);
   flex: 0 0 auto;
-  transform: rotate(var(--rot, 0deg)) translateY(var(--ty, 0px));
+  /* --fan-scale (par défaut 1) aplatit l'éventail — rotation ET plongée
+     verticale — sur les écrans courts (cf. GameBoard @media max-height) sans
+     toucher au JS. La rotation pivote au bas-centre : sans aplatissement, le
+     coin bas des cartes extérieures plonge sous la zone et était rogné. */
+  transform: rotate(calc(var(--rot, 0deg) * var(--fan-scale, 1)))
+    translateY(calc(var(--ty, 0px) * var(--fan-scale, 1)));
   transform-origin: 50% 100%;
   transition:
     transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.1),

@@ -1157,12 +1157,16 @@ function manaBonus(seat: Seat): boolean {
 
 <style scoped>
 .gtable {
-  --card-field: clamp(82px, 6.9vw, 126px);
-  --card-wide: clamp(74px, 6vw, 110px);
-  --card-hand: clamp(100px, 8.6vw, 152px);
-  --card-opp: clamp(56px, 4.6vw, 84px);
-  --card-havre: clamp(84px, 6.9vw, 126px);
-  --pile: clamp(58px, 5vw, 90px);
+  /* Largeur des cartes : bornée à la fois par la largeur (vw) ET la hauteur
+     (vh) du viewport. Sur grand écran le terme vw (ou le plafond du clamp)
+     l'emporte ; sur écran de portable court, le terme vh fait rétrécir les
+     cartes pour que la main ne soit plus rognée (cf. overflow:hidden). */
+  --card-field: clamp(78px, min(6.9vw, 9.4vh), 126px);
+  --card-wide: clamp(70px, min(6vw, 8vh), 110px);
+  --card-hand: clamp(92px, min(8.6vw, 11.5vh), 152px);
+  --card-opp: clamp(54px, min(4.6vw, 6vh), 84px);
+  --card-havre: clamp(80px, min(6.9vw, 9.4vh), 126px);
+  --pile: clamp(56px, min(5vw, 6.5vh), 90px);
   position: relative;
   height: 100%;
   min-height: 0;
@@ -1202,6 +1206,16 @@ function manaBonus(seat: Seat): boolean {
   gap: 4px;
   flex: 1;
   min-height: 0;
+}
+/* Réserve sous la main du joueur : l'éventail fait « plonger » les cartes
+   extérieures (rotation au bas-centre) sous la zone de main. Comme la zone de
+   terrain est flex:1 et remplit toujours le plateau, sans réserve cette
+   plongée serait rognée par l'overflow:hidden, quelle que soit la hauteur
+   d'écran. La réserve rend de la place au terrain (qui se contracte) et fait
+   remonter la main pour que l'éventail tienne entièrement. Proportionnelle à
+   la taille des cartes (donc à l'amplitude de la plongée). */
+.gseat:not(.gseat--opp) {
+  padding-bottom: calc(var(--card-hand) * 0.2 + 10px);
 }
 
 /* ── Bande de siège : HUD · socle · main · piles ── */
@@ -1748,6 +1762,24 @@ function manaBonus(seat: Seat): boolean {
   }
   .gseat__strip {
     grid-template-columns: 1fr;
+  }
+}
+/* Écrans larges mais pas assez HAUTS (portables 1366×768, mais aussi le
+   1080p de bureau) : le plateau garde sa disposition paysage (la bascule
+   mobile n'arrive qu'à ≤1024px) mais la hauteur manque → on resserre les
+   marges verticales et on aplatit l'éventail pour que la main tienne
+   entièrement dans le plateau (overflow:hidden). Au-delà de 1100px (écrans
+   1440p type 28″), il y a assez de place : éventail complet conservé. */
+@media (min-width: 1025px) and (max-height: 1300px) {
+  .gzone {
+    padding: 13px 12px 5px;
+  }
+  .gzone--field {
+    padding: 6px 12px 5px;
+    min-height: calc(var(--card-field) * 88 / 63);
+  }
+  .gseat {
+    gap: 2px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
