@@ -26,9 +26,10 @@ export interface FilterCriteria {
   /** Filtre par rareté */
   rarity: string;
   /**
-   * Filtre par élément — ATTENTION : les données stockent les éléments en
-   * minuscules ("feu", "eau", etc.) ; comparer avec card.stats.niveau.element
-   * ou card.stats.force.element (déjà en minuscules dans la source).
+   * Filtre par élément — la comparaison est insensible à la casse : les
+   * données sont capitalisées ("Feu", "Eau"…) mais les appelants passent
+   * parfois la valeur en minuscules. Comparé à card.stats.niveau.element
+   * ou card.stats.force.element.
    */
   element: string;
   /** Niveau minimum (stats.niveau.value) */
@@ -155,12 +156,14 @@ export const filterCards = useMemoize(
       filtered = filtered.filter((card) => card.rarity === rarity);
     }
 
-    // Élément — les valeurs dans les données sont en minuscules
+    // Élément — comparaison insensible à la casse : les données sont
+    // capitalisées ("Feu"), les appelants passent parfois en minuscules.
     if (element) {
+      const el = element.toLowerCase();
       filtered = filtered.filter(
         (card) =>
-          card.stats?.niveau?.element === element ||
-          card.stats?.force?.element === element,
+          card.stats?.niveau?.element?.toLowerCase() === el ||
+          card.stats?.force?.element?.toLowerCase() === el,
       );
     }
 

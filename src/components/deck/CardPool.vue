@@ -239,14 +239,11 @@ const filterRarities = computed(() => {
   return Array.from(set).sort();
 });
 const filterElements = computed(() => {
+  // Valeurs telles que stockées dans les données ("Feu", "Eau"…) ; le filtre
+  // est insensible à la casse (cf. filterCards), l'affichage reste capitalisé.
   const set = new Set(
     cardStore.cards
-      .map(
-        (c) =>
-          c.stats?.niveau?.element?.toLowerCase() ||
-          c.stats?.force?.element?.toLowerCase() ||
-          "",
-      )
+      .map((c) => c.stats?.niveau?.element || c.stats?.force?.element || "")
       .filter(Boolean),
   );
   return Array.from(set).sort();

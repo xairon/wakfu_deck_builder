@@ -135,4 +135,27 @@ describe("useCardFilter — filterCards", () => {
       }).map((c) => c.id),
     ).toEqual(["a", "b"]);
   });
+
+  it("element : filtre insensible à la casse (critère minuscule vs donnée capitalisée)", () => {
+    // Régression : les données stockent "Feu", mais le sélecteur d'élément
+    // (CardPool/CollectionView) passe la valeur en minuscules. Un === strict
+    // ne matchait plus rien → « aucune carte » pour chaque élément.
+    const feu = createMockAllyCard({
+      id: "feu",
+      stats: {
+        niveau: { value: 1, element: "Feu" },
+        force: { value: 2, element: "Feu" },
+      },
+    });
+    const eau = createMockAllyCard({
+      id: "eau",
+      stats: {
+        niveau: { value: 1, element: "Eau" },
+        force: { value: 2, element: "Eau" },
+      },
+    });
+    expect(
+      filterCards([feu, eau], { ...base, element: "feu" }).map((c) => c.id),
+    ).toEqual(["feu"]);
+  });
 });
