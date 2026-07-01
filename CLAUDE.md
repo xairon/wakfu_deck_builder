@@ -15,9 +15,9 @@ la collection / aux decks.
 - **Styling**: Tailwind CSS 3 + DaisyUI 4 + Headless UI
 - **Auth**: Supabase (REQUIS — application cloud-only)
 - **Desktop**: Tauri 2.7 (Rust backend)
-- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~617 tests unitaires, 40 fichiers
+- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~1664 tests unitaires, 134 fichiers
 - **Type-check**: `npm run type-check` (`vue-tsc --noEmit`) — **seul garde-fou de types** (le build esbuild ne type-check pas) ; branché en CI (job « Lint & Types »)
-- **E2E**: Playwright + Chromium — 26 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat)
+- **E2E**: Playwright + Chromium — ~30 tests, 2 fichiers (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat)
 - **PWA**: vite-plugin-pwa + Workbox (cache offline, install prompt)
 - **Linting**: ESLint 9 + Prettier
 - **Déploiement web**: Vercel (SPA)
@@ -38,7 +38,7 @@ src/
 ├── types/          # Types TypeScript canoniques (cards.ts = source unique)
 ├── utils/          # Utilitaires (errors, logger, performance, imagePaths, deckSharing)
 ├── validators/     # Validation (règles de deck)
-└── views/          # Pages (Home, Collection, DeckBuilder, Decks, Auth, SharedDeck, OfficialDecks, PlayTable, Rules)
+└── views/          # Pages (Home, Collection, DeckBuilder, Decks, DeckDetail, Official(Decks|DeckDetail), CommunityDecks, SharedDeck, Auth, Profile, PlayTable, Rules, FirstSteps, About, Credits, LegalNotice, Terms)
 ```
 
 ## Commandes
@@ -48,7 +48,7 @@ src/
 - `npm run type-check` — Vérif TypeScript (`vue-tsc --noEmit`) — le seul gate de types
 - `npm run test` — Tests unitaires (watch)
 - `npm run test:unit` — Tests unitaires jsdom
-- `npx vitest run` — Tests en mode CI (~424 tests)
+- `npx vitest run` — Tests en mode CI (~1664 tests)
 - `npm run coverage` — Rapport de couverture
 - `npm run tauri:dev` — Dev desktop Tauri
 - `npm run tauri:build` — Build desktop (.exe/.msi)
@@ -103,7 +103,9 @@ src/
 
 - **Interopérabilité des réimpressions** : limite de copies canonique (par nom, toutes éditions) + sélecteur d'édition sur chaque ligne de deck (`DeckCardRow`/`ReserveRow`, affiché si >1 impression) pilotant `deckStore.setEntryEdition` (permute l'art en gardant la quantité, fusionne si l'édition cible existe déjà). Collection et partage base64 inchangés (stockent l'impression concrète).
 - **Partage de deck** : URL avec deck encodé en base64 (`/deck/share?deck=...`)
-- **Decks officiels** : Page de parcours et import de decks starter par extension (`/decks/official`)
+- **Decks officiels** : Page de parcours et import de decks starter par extension (`/decks/official`), incluant les listes recensées des **Dofus Mag** (OCR, cf. `src/data/dofusMagDecks.ts`)
+- **Decks de la communauté** : publication d'un deck par **snapshot** découplé (table `deck_publications`, migration 0009) avec fiche éditoriale (catégorie, accroche, guide) + galerie publique (`/decks/community`)
+- **Table de jeu** : moteur event-sourced (`src/game/`) pour jouer une partie en **solo** (tutoriel / bac à sable) ou **1 v 1 en ligne** (temps réel, serveur autoritatif via Edge Functions), avec résolution auto des effets compilés + rappels manuels pour les effets non couverts
 - **PWA** : Installation native, cache offline via Workbox, prompt d'installation
 - **Optimisation d'images** : Pipeline WebP + thumbnails via sharp (`scripts/optimizeImages.ts`)
 - **Accessibilité** : Skip nav, labels ARIA, `lang="fr"`, meta descriptions, contraste thèmes
@@ -118,7 +120,7 @@ src/
 ## E2E Tests (Playwright)
 
 - Config : `playwright.config.ts` — Chromium, `vite preview` sur `127.0.0.1:4173`
-- Tests : `e2e/app.spec.ts` — 26 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, **table de jeu** : lobby→plateau, tutoriel, combat). Auth e2e via injection user Pinia + nav SPA ; build CI avec `VITE_SUPABASE_*` factices (sinon overlay « Configuration requise »)
+- Tests : `e2e/app.spec.ts` (~29) + `e2e/a11y.spec.ts` — ~30 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, **table de jeu** : lobby→plateau, tutoriel, combat). Auth e2e via injection user Pinia + nav SPA ; build CI avec `VITE_SUPABASE_*` factices (sinon overlay « Configuration requise »)
 - Lancer : `npm run build && npm run test:e2e` (CI : `workers:1`)
 
 ## Aliases

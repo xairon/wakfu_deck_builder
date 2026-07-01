@@ -27,6 +27,11 @@ Dans **SQL Editor → New query**, exécutez **dans l'ordre** chaque fichier de 
 3. [`0003_public_decks.sql`](supabase/migrations/0003_public_decks.sql) — galerie de decks publics (`decks.is_public`, lecture publique opt-in).
 4. [`0004_profiles.sql`](supabase/migrations/0004_profiles.sql) — pseudos publics (auteur affiché sur les decks publiés).
 5. [`0005_deck_publication.sql`](supabase/migrations/0005_deck_publication.sql) — fiche éditoriale d'un deck publié (catégorie, accroche, guide).
+6. [`0006_realtime_authorization.sql`](supabase/migrations/0006_realtime_authorization.sql) — canaux Realtime **privés par siège** (un joueur ne reçoit que le topic de son siège).
+7. [`0007_game_assisted.sql`](supabase/migrations/0007_game_assisted.sql) — colonne `games.assisted` (mode « règles assistées » partagé, choisi par l'hôte).
+8. [`0007b_game_cleanup.sql`](supabase/migrations/0007b_game_cleanup.sql) — filet de sécurité de nettoyage des parties (pg_cron ; **peut nécessiter l'activation de l'extension `pg_cron`** — voir l'en-tête du fichier).
+9. [`0008_cards.sql`](supabase/migrations/0008_cards.sql) — table `cards` (données de cartes côté serveur) pour la validation **autoritative** des règles par les Edge Functions ; seed via `service_role`.
+10. [`0009_deck_publications.sql`](supabase/migrations/0009_deck_publications.sql) — publication de deck par **snapshot** découplé (fige une copie ; éditer le deck de travail ne touche plus la galerie tant qu'on ne « met à jour »). Remplace la publication « en direct » de 0003/0005.
 
 Chaque script active la Row Level Security et garantit que chaque utilisateur
 n'accède qu'à ses propres données.
