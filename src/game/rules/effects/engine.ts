@@ -7,7 +7,13 @@
  * docs/superpowers/plans/2026-06-18-effect-engine-extraction.md.
  */
 import { computed, ref } from "vue";
-import type { Card, CompiledEffect, CondSpec } from "@/types/cards";
+import type {
+  Card,
+  CompiledEffect,
+  CondSpec,
+  CountSpec,
+  ValueExpr,
+} from "@/types/cards";
 import type { DraftEvent, GameState, Position, Seat, ZoneRef } from "@/game";
 import {
   createToken as createTokenVerb,
@@ -528,15 +534,64 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   );
 
   /**
-   * Magnitude EFFECTIVE d'une op à valeur scalaire, en tenant compte de la
-   * liaison au COÛT « Recyclez jusqu'à N … » : si l'op porte `fromCount:true`, la
-   * magnitude est le nombre de cartes recyclées (frame.boundCount, défaut 0)
-   * multiplié par `perCount` (défaut 1, « N PV par carte recyclée »). Sinon `n`.
+   * Nombre d'instances EN JEU (Monde + Havre-Sac) contrôlées par `seat` qui
+   * matchent le `countSpec` (« … que vous contrôlez ») : type `what` et Famille
+   * `sub` éventuelle. Un Équipement attaché est co-localisé avec son Porteur
+   * (ATTACH → equip.location = bearer.location), donc bien compté. Miroir de la
+   * condition `controlsAlly` (compte exact, aucune approximation).
+   */
+  function countControlled(spec: CountSpec, seat: Seat): number {
+    const sub = spec.sub ? normWord(spec.sub) : undefined;
+    let count = 0;
+    for (const inst of Object.values(deps.getState().instances)) {
+      if (inst.controller !== seat) continue;
+      const zone = inst.location.zone;
+      if (zone !== "monde" && zone !== "havreSac") continue;
+      const card = deps.getCard(inst.cardId);
+      if (!card || card.mainType !== spec.what) continue;
+      if (sub && !(card.subTypes ?? []).some((s) => normWord(s) === sub))
+        continue;
+      count++;
+    }
+    return count;
+  }
+
+  /**
+   * ÉVALUATEUR UNIQUE d'une `ValueExpr` (représentation canonique d'une valeur
+   * dynamique, modèle Forge « Count$ ») à la résolution. Un `switch` exhaustif
+   * sur `kind` — chaque nœud a une sémantique fidèle et déterministe :
+   *  - `fixed` : le littéral porté par le nœud ;
+   *  - `count` : compte d'état « … que vous contrôlez » (countControlled).
+   * Les futurs nœuds (boundCount / statOf / mirror / plus) s'ajoutent ici avec
+   * leur effet consommateur.
+   */
+  function evalValue(expr: ValueExpr, frame: EffectFrame): number {
+    switch (expr.kind) {
+      case "fixed":
+        return expr.n;
+      case "count":
+        return countControlled(expr.of, frame.seat);
+    }
+  }
+
+  /**
+   * Magnitude EFFECTIVE d'une op à valeur scalaire, résolue à la résolution :
+   *  - `value` (ValueExpr) → évaluateur canonique `evalValue`, prioritaire ;
+   *  - `fromCount` (COÛT « Recyclez jusqu'à N … », forme LEGACY) → nombre
+   *    recyclé lié à la frame (boundCount, défaut 0) × `perCount` (défaut 1) —
+   *    sera replié en `value:{kind:"boundCount"}` dans un incrément ultérieur ;
+   *  - sinon la valeur fixe `n`.
    */
   function opMagnitude(
-    op: { n?: number; fromCount?: boolean; perCount?: number },
+    op: {
+      n?: number;
+      fromCount?: boolean;
+      perCount?: number;
+      value?: ValueExpr;
+    },
     frame: EffectFrame,
   ): number {
+    if (op.value) return evalValue(op.value, frame);
     if (op.fromCount) return (frame.boundCount ?? 0) * (op.perCount ?? 1);
     return op.n ?? 0;
   }
@@ -1076,7 +1131,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           queueAppearanceWatchers(seat, tokenCard, instanceId);
         }
       } else if (op.op === "draw") {
-        deps.draw(seat, op.n);
+        // « Piochez N cartes » ou « … un nombre égal au nombre de <X> que vous
+        // contrôlez » (count) → magnitude dynamique via opMagnitude.
+        deps.draw(seat, opMagnitude(op, frame));
       } else if (op.op === "eachPlayerDraws") {
         // « Chaque joueur pioche N carte(s). » — joueur actif (la source) d'abord.
         deps.draw(seat, op.n);

@@ -297,7 +297,18 @@
         "description": "Tant qu'Allister, Roi d'Amakna est dans le Monde, tous les Dommages sur le point d'être infligés à votre Héros sont réduits à 0.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "damagePreventionAura",
+            "all": true,
+            "to": {
+              "kind": "controllerHero"
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -1666,7 +1677,14 @@
         "description": "Les Dommages infligés par le Chevalier Ténèbres ne peuvent pas être réduits.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "damageUnpreventable"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -2712,7 +2730,19 @@
         "description": "Tous les Dommages sur le point d'être infligés à vos Craqueleurs sont réduits de 1.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "damagePreventionAura",
+            "n": 1,
+            "to": {
+              "kind": "controlledAllies",
+              "sub": "Craqueleur"
+            }
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],

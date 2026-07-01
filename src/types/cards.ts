@@ -14,6 +14,8 @@ import {
   compiledEffectOpSchema,
   compiledEffectSchema,
   condSpecSchema,
+  countSpecSchema,
+  valueExprSchema,
   dofusCardSchema,
   effectCoverageSchema,
   elementalAllyCardSchema,
@@ -46,6 +48,8 @@ export type ExtensionInfo = z.infer<typeof extensionInfoSchema>;
 // ── Effets & mécaniques ────────────────────────────────────────────────────
 export type CompiledEffectOp = z.infer<typeof compiledEffectOpSchema>;
 export type CondSpec = z.infer<typeof condSpecSchema>;
+export type CountSpec = z.infer<typeof countSpecSchema>;
+export type ValueExpr = z.infer<typeof valueExprSchema>;
 export type StaticAbility = z.infer<typeof staticAbilitySchema>;
 export type CompiledEffect = z.infer<typeof compiledEffectSchema>;
 export type EffectCoverage = z.infer<typeof effectCoverageSchema>;

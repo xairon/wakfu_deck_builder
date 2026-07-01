@@ -13135,7 +13135,24 @@
         "description": "Piochez un nombre de cartes égal au nombre d'Équipements que vous contrôlez.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 0,
+              "value": {
+                "kind": "count",
+                "of": {
+                  "source": "controlled",
+                  "what": "Équipement"
+                }
+              }
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       },
       {
         "description": "Cet effet prend en compte les Équipements portés par votre Héros ainsi que ceux portés par vos Alliés, mais ni ceux dans votre Main ni dans votre Défausse.",

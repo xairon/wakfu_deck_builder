@@ -268,6 +268,38 @@ function pickType(word: string): {
 }
 
 /**
+ * Mot-type PLURIEL d'un compte « … que vous contrôlez » (« Équipements », «
+ * Alliés », « Kitsous ») → `{ what, sub? }` pour un `countSpec`, ou null si le
+ * mot n'est ni un type racine COMPTABLE (Allié/Zone/Équipement/Dofus/Salle — pas
+ * Action, qui ne reste pas « en jeu ») ni une Famille de créature non ambiguë
+ * (→ Allié + sub). `word` est déjà normalisé (pluriel toléré).
+ */
+function countType(word: string): {
+  what: "Allié" | "Zone" | "Équipement" | "Dofus" | "Salle";
+  sub?: string;
+} | null {
+  const ROOT: Record<
+    string,
+    "Allié" | "Zone" | "Équipement" | "Dofus" | "Salle"
+  > = {
+    allie: "Allié",
+    allies: "Allié",
+    zone: "Zone",
+    zones: "Zone",
+    equipement: "Équipement",
+    equipements: "Équipement",
+    dofus: "Dofus",
+    salle: "Salle",
+    salles: "Salle",
+  };
+  if (ROOT[word]) return { what: ROOT[word] };
+  const sing = word.replace(/s$/, "");
+  if (ALLIED_FAMILIES.has(sing))
+    return { what: "Allié", sub: sing.charAt(0).toUpperCase() + sing.slice(1) };
+  return null;
+}
+
+/**
  * Une phrase → une op sûre, ou null (l'effet entier est alors abandonné).
  * Accepte l'impératif (« piochez ») et, après « vous pouvez », l'infinitif
  * (« piocher »). `sourceElement` = Élément de la carte source (410.1), figé
@@ -291,6 +323,23 @@ function parseSentence(
   if (m) return { op: "gainXp", n: toNumber(m[1]) };
   m = sentence.match(/^pioche[zr] (une|deux|trois|\d+) cartes?$/);
   if (m) return { op: "draw", n: toNumber(m[1]) };
+  // « Piochez un nombre de cartes égal au nombre de <X> que vous contrôlez »
+  //   → draw à magnitude DYNAMIQUE (countSpec « controlled »). Le mot-type est
+  //   pluriel (« Équipements », « Alliés », « Kitsous ») → countType. STRICT : le
+  //   `$` rejette toute clause résiduelle (« … Si vous contrôlez au moins trois …
+  //   à la place » reste manuel). L'article élidé accepte « d' » / « de ».
+  m = sentence.match(
+    /^pioche[zr] un nombre de cartes egal au nombre d(?:e |['’ ]?\s?)([a-z]+) que vous controlez$/,
+  );
+  if (m) {
+    const ct = countType(m[1]);
+    if (ct)
+      return {
+        op: "draw",
+        n: 0,
+        value: { kind: "count", of: { source: "controlled", ...ct } },
+      };
+  }
   // « Chaque joueur pioche N carte(s). » / « Tous les joueurs piochent N carte(s). »
   // — pioche symétrique (joueur actif d'abord).
   m = sentence.match(/^chaque joueur pioche (une|deux|trois|\d+) cartes?$/);
@@ -2520,6 +2569,65 @@ export function compileStaticEffectText(
     return {
       trigger: "static",
       static: { kind: "combatDamageReduction", n: toNumber(m[2]) },
+      ops: [],
+    };
+  // AURA DE PRÉVENTION DE DOMMAGES (effet de remplacement continu, primitive #3) :
+  //   « [Tant que <self> est dans le Monde,] tous les Dommages sur le point d'être
+  //     infligés à (votre Héros | vos [Famille]) sont réduits (à 0 | de N). »
+  //   → static damagePreventionAura. Le préfixe « Tant que <self> est dans le
+  //   Monde, » est OPTIONNEL (Allister le porte ; le Donjon des Craqueleurs, une
+  //   Zone, l'omet — sa seule présence en jeu suffit) ; s'il est présent, le sujet
+  //   doit être la carte elle-même. Bénéficiaire : « votre Héros » → controllerHero ;
+  //   « vos Alliés » → controlledAllies (tous) ; « vos <Famille> » → controlledAllies
+  //   + sub (Famille non ambiguë ALLIED_FAMILIES). Montant : « à 0 / à zéro » → all ;
+  //   « de N » → n. STRICT : le sens SORTANT, la durée TOUR, la cible CHOISIE et la
+  //   redirection « à la place » ne correspondent PAS (→ manuel).
+  m = body.match(
+    /^(?:tant qu(?:e |['’]\s?)(.{1,60}?) est dans le monde\s*,\s*)?tous les dommages sur le point d['’]\s?etre infliges a (votre heros|vos ([a-z-]+)) sont reduits (?:a (?:0|zero)|de (\d+))$/,
+  );
+  if (m && (m[1] === undefined || subjectIsSelf(m[1], cardName))) {
+    let to:
+      | { kind: "controllerHero" }
+      | { kind: "controlledAllies"; sub?: string }
+      | null;
+    if (m[2] === "votre heros") {
+      to = { kind: "controllerHero" };
+    } else {
+      const fam = m[3]!;
+      if (fam === "allies") {
+        to = { kind: "controlledAllies" };
+      } else {
+        const sing = fam.replace(/s$/, "");
+        to = ALLIED_FAMILIES.has(sing)
+          ? {
+              kind: "controlledAllies",
+              sub: sing.charAt(0).toUpperCase() + sing.slice(1),
+            }
+          : null;
+      }
+    }
+    if (to)
+      return {
+        trigger: "static",
+        static: {
+          kind: "damagePreventionAura",
+          ...(m[4] ? { n: toNumber(m[4]) } : { all: true }),
+          to,
+        },
+        ops: [],
+      };
+  }
+  // Dommages IMPRÉVENABLES (self, sens dealer, primitive #3) : « Les Dommages
+  //   infligés par <self> ne peuvent pas être réduits. » → static damageUnpreventable.
+  //   STRICT : on EXCLUT « le Porteur de … » (forme bearer, manuelle) — subjectIsSelf
+  //   accepterait la chaîne car elle contient le nom de la carte.
+  m = body.match(
+    /^les dommages infliges par (.{1,60}?) ne peuvent pas etre reduits$/,
+  );
+  if (m && !/\bporteur\b/.test(m[1]) && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "damageUnpreventable" },
       ops: [],
     };
   // RÉDUCTION DE COÛT DE SOI gated par la CLASSE du Héros (~12 Dopeuls) :

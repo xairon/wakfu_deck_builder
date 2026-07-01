@@ -14,11 +14,42 @@
  * (410.3/410.6) : elles ne passent jamais ici.
  */
 import type { InstanceId } from "../../types/events";
+import type { StaticAbility } from "@/types/cards";
 import type { CombatStance, DamageMod, RulesCtx } from "../types";
-import { normElement } from "../cardAttrs.ts";
+import { normElement, normWord } from "../cardAttrs.ts";
 import { staticAbilitiesOf } from "../modifiers.ts";
 import { stanceBlockers } from "../stats.ts";
 import { effectiveKeywords, preventDamage } from "./keywords.ts";
+
+type PreventionAura = Extract<StaticAbility, { kind: "damagePreventionAura" }>;
+
+/**
+ * L'aura de prévention `a` (portée par une source contrôlée par `auraController`)
+ * s'applique-t-elle aux Dommages ENTRANTS sur `targetId` ? Bénéficiaire relatif
+ * au contrôleur de la source (« votre Héros » / « vos [Famille] »).
+ */
+function preventionApplies(
+  ctx: RulesCtx,
+  a: PreventionAura,
+  auraController: string,
+  targetId: InstanceId,
+): boolean {
+  if (a.to.kind === "controllerHero") {
+    return (
+      targetId === ctx.state.seats[auraController as "A" | "B"].heroInstanceId
+    );
+  }
+  // controlledAllies : un de VOS Alliés (Famille `sub` éventuelle).
+  const target = ctx.state.instances[targetId];
+  if (!target || target.controller !== auraController) return false;
+  const card = ctx.getCard(target.cardId);
+  if (!card || card.mainType !== "Allié") return false;
+  // Capture hors closure (le narrowing de `a.to` ne persiste pas dans `.some`).
+  const sub = a.to.sub;
+  if (sub && !(card.subTypes ?? []).some((s) => normWord(s) === normWord(sub)))
+    return false;
+  return true;
+}
 
 /** Une infliction de Dommages sur le point d'être appliquée (811). */
 export interface DamageHit {
@@ -56,6 +87,19 @@ export function reduceDamage(
 ): number {
   let amount = hit.amount;
   if (amount <= 0) return 0;
+  // Statics du sens DEALER (portées par la SOURCE du hit). « Les Dommages
+  // infligés par <self> ne peuvent pas être réduits » → BYPASS total : on renvoie
+  // le montant brut AVANT toute réduction (Résistance / prévention / Trêve).
+  const srcInst = hit.sourceId ? ctx.state.instances[hit.sourceId] : null;
+  const srcDealer = srcInst ? ctx.getCard(srcInst.cardId) : null;
+  const dealerStatics = srcDealer
+    ? staticAbilitiesOf(
+        srcDealer,
+        srcInst!.face === "verso" ? "verso" : "recto",
+      )
+    : [];
+  if (dealerStatics.some((s) => s.kind === "damageUnpreventable"))
+    return amount;
   // 1. Résistance de la cible (7469)
   amount = preventDamage(
     effectiveKeywords(ctx, hit.targetId),
@@ -70,6 +114,24 @@ export function reduceDamage(
     const side = inst?.face === "verso" ? "verso" : "recto";
     for (const s of staticAbilitiesOf(card, side)) {
       if (s.kind === "combatDamageReduction") amount -= s.n;
+    }
+  }
+  // 2bis. AURAS DE PRÉVENTION continues (effet de remplacement, primitive #3) :
+  // chaque source EN JEU portant une `damagePreventionAura` dont le bénéficiaire
+  // matche la cible du hit réduit les Dommages — HORS combat aussi (« tous les
+  // Dommages … à votre Héros »). `all` → prévention totale (0). Les auras se
+  // cumulent (plancher 0 en fin de passe).
+  for (const src of Object.values(ctx.state.instances)) {
+    const zone = src.location.zone;
+    if (zone !== "monde" && zone !== "havreSac") continue;
+    const srcCard = ctx.getCard(src.cardId);
+    if (!srcCard) continue;
+    const srcSide = src.face === "verso" ? "verso" : "recto";
+    for (const s of staticAbilitiesOf(srcCard, srcSide)) {
+      if (s.kind !== "damagePreventionAura") continue;
+      if (!preventionApplies(ctx, s, src.controller, hit.targetId)) continue;
+      if (s.all) return 0; // prévention totale
+      amount -= s.n ?? 0;
     }
   }
   // 3. modificateurs globaux — Trêve absorbe tout (seul mod du lot C)

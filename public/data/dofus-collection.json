@@ -1510,7 +1510,14 @@
         "description": "Les Dommages infligés par le Chevalier Ténèbres ne peuvent pas être réduits.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "damageUnpreventable"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [

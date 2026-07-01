@@ -61,6 +61,42 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
   }),
 ]);
 
+// ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────
+// Modèle état-de-l'art (Forge « Count$ » / MTG) : toute magnitude numérique d'op
+// est soit un LITTÉRAL (`n`), soit une `ValueExpr` — un petit AST de valeur
+// évalué À LA RÉSOLUTION par UN SEUL évaluateur moteur (`evalValue`). Cela
+// unifie les magnitudes dynamiques (au lieu d'un champ ad-hoc par cas) et rend
+// chaque nœud composable. STRICT : on n'admet QUE des sources fidèlement
+// évaluables depuis l'état ; toute valeur dynamique non calculable exactement
+// reste manuelle. « an approximation of gameplay is worse than a manual effect ».
+//
+// `countSpec` = un ENSEMBLE comptable de l'état (« … que vous contrôlez »).
+export const countSpecSchema = z.object({
+  // « … que vous contrôlez » : nombre d'instances EN JEU (Monde + Havre-Sac)
+  // contrôlées par l'acteur, du type `what` (et Famille `sub` éventuelle). Un
+  // Équipement attaché est co-localisé avec son Porteur (zone Monde/Havre-Sac),
+  // donc compté — fidèle au ruling « portés par votre Héros / vos Alliés » et
+  // aux Équipements posés en standalone.
+  source: z.literal("controlled"),
+  what: z.enum(["Allié", "Zone", "Équipement", "Dofus", "Salle"]),
+  sub: z.string().optional(),
+});
+
+// AST de valeur. Variantes câblées AUJOURD'HUI (chacune a un évaluateur réel +
+// un consommateur réel — ZÉRO code mort) :
+//   - `fixed`  : littéral (composable, ex. base d'un futur `plus`) ;
+//   - `count`  : « … égal au nombre de <X> que vous contrôlez » (countSpec).
+// Nœuds prévus (ajoutés incrément par incrément AVEC leur effet consommateur,
+// jamais spéculativement) : `boundCount` (remplace le legacy fromCount/perCount
+// des coûts « Recyclez jusqu'à N … »), `statOf` (généralise damageTargetByForce
+// : Force/Niveau d'une cible ou de soi), `mirror` (« le même nombre »), `plus`
+// (« 1 plus le nombre de … »). Plat pour l'instant (pas de récursion → typage
+// exact sans z.lazy) ; on passera à z.lazy quand un nœud imbriquera une ValueExpr.
+export const valueExprSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("fixed"), n: z.number() }),
+  z.object({ kind: z.literal("count"), of: countSpecSchema }),
+]);
+
 // Le corps d'un op `conditional` est une séquence d'ops standard (récursive).
 // On le valide via `z.lazy` pour casser la référence circulaire avec
 // `compiledEffectOpSchema`. La référence paresseuse est annotée explicitement
@@ -99,7 +135,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
       .min(2),
   }),
   z.object({ op: z.literal("gainXp"), n: z.number() }),
-  z.object({ op: z.literal("draw"), n: z.number() }),
+  z.object({
+    op: z.literal("draw"),
+    n: z.number(),
+    // « Piochez un nombre de cartes égal au nombre de <X> que vous contrôlez »
+    // → magnitude dynamique via `value` (ValueExpr). Absent = `n` fixe.
+    value: valueExprSchema.optional(),
+  }),
   z.object({
     op: z.literal("heroGainPv"),
     n: z.number(),
@@ -741,6 +783,40 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
     // « vos AUTRES Alliés … » : la SOURCE elle-même ne bénéficie pas de l'aura.
     excludeSource: z.boolean().optional(),
   }),
+  // AURA DE PRÉVENTION DE DOMMAGES (effet de REMPLACEMENT continu, modèle MTG
+  // 614/616 — primitive #3). Tant que la SOURCE est en jeu (Monde/Havre-Sac),
+  // les Dommages ENTRANTS sur un bénéficiaire (relatif au contrôleur de la
+  // source) sont réduits. Lu au point de passage UNIQUE `reduceDamage` (après
+  // Résistance/combatDamageReduction, avant le plancher 0) → s'applique aux
+  // Dommages de COMBAT comme d'EFFET (contrairement à `combatDamageReduction`,
+  // gaté combat).
+  //  - `all:true` (« réduits à 0 ») → prévention TOTALE ; sinon `n` (« réduits
+  //    de N »). Exactement l'un des deux.
+  //  - `to` : bénéficiaire des Dommages entrants, relatif au contrôleur de la
+  //    source — `controllerHero` (« à votre Héros ») ou `controlledAllies`
+  //    (« à vos [Famille] » ; `sub` = Famille sur subTypes, absente = tous vos
+  //    Alliés).
+  // STRICT : le sens SORTANT (« que devrait infliger … »), la durée TOUR
+  // (« jusqu'à la fin du tour »), la cible CHOISIE et la REDIRECTION (« à la
+  // place ») ne sont PAS ce nœud → restent manuels (incréments ultérieurs).
+  z.object({
+    kind: z.literal("damagePreventionAura"),
+    n: z.number().optional(),
+    all: z.boolean().optional(),
+    to: z.discriminatedUnion("kind", [
+      z.object({ kind: z.literal("controllerHero") }),
+      z.object({
+        kind: z.literal("controlledAllies"),
+        sub: z.string().optional(),
+      }),
+    ]),
+  }),
+  // Dommages IMPRÉVENABLES, sens dealer (primitive #3) : « Les Dommages infligés
+  // par <self> ne peuvent pas être réduits. » Les Dommages de la SOURCE contournent
+  // TOUTE réduction (Résistance 7469, prévention, Trêve) — reduceDamage renvoie le
+  // montant BRUT. STRICT : la forme PORTEUR (« infligés par le Porteur de … »,
+  // bearer) et la forme par-INSTANCE (« Ces Dommages … ») restent manuelles.
+  z.object({ kind: z.literal("damageUnpreventable") }),
 ]);
 
 // « Quand un Allié [Famille]? [adverse]? apparaît … » : descripteur de VEILLE
