@@ -141,6 +141,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // « Piochez un nombre de cartes égal au nombre de <X> que vous contrôlez »
     // → magnitude dynamique via `value` (ValueExpr). Absent = `n` fixe.
     value: valueExprSchema.optional(),
+    // « Piochez le même nombre de cartes » (lié à un coût « Recyclez jusqu'à N … »)
+    // → magnitude = nombre recyclé (frame.boundCount), comme heroGainPv/damageTarget.
+    fromCount: z.boolean().optional(),
   }),
   z.object({
     op: z.literal("heroGainPv"),

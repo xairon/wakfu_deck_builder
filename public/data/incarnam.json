@@ -11314,7 +11314,25 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse",
+              "n": 3,
+              "max": true
+            },
+            {
+              "op": "draw",
+              "n": 0,
+              "fromCount": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "draw"]
       }
     ],
     "keywords": [],

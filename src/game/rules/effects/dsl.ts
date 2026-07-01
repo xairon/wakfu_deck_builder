@@ -2282,6 +2282,10 @@ function compileRecycleCountBody(
   // « Votre Héros regagne X PV » (X = compte recyclé, forme « Recyclez X … : … X PV »).
   m = body.match(/^votre heros regagne x (?:pv|points? de vie)$/);
   if (m) return [{ op: "heroGainPv", n: 0, fromCount: true }];
+  // « Piochez le même nombre de cartes » (Parchemin de Chance) → pioche = compte
+  // recyclé (draw fromCount, lu sur frame.boundCount).
+  m = body.match(/^piochez le meme nombre de cartes$/);
+  if (m) return [{ op: "draw", n: 0, fromCount: true }];
   // « Infligez le même nombre de Dommages à l'Allié (ou Héros) de votre choix »
   // ou « <self> inflige le même nombre … » → Dommages ciblés = compte recyclé.
   m = body.match(
@@ -2366,7 +2370,7 @@ function compileRecycleCountCost(
   // (1) quantité : « jusqu'à N » (cap N) OU « X » (compte libre, cap pratique) ;
   // (2) le nombre N (forme « jusqu'à ») ; (3) le mot-type (Monstres/Alliés/cartes).
   const m = text.match(
-    /^recyclez (?:jusqu['’]a (une|deux|trois|\d+)|(x)) ([a-zéèêàùûôîç]+?)s? de votre defausse\s*:\s*(.+)$/,
+    /^recycle[zr] (?:jusqu['’]a (une|deux|trois|\d+)|(x)) ([a-zéèêàùûôîç]+?)s? de votre defausse\s*:\s*(.+)$/,
   );
   if (!m) return null;
   const filter = recycleTypeFilter(m[3]);
