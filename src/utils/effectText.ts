@@ -42,6 +42,39 @@ export function isEffectAnnotation(
   return e?.kind === "ruling" || e?.kind === "errata";
 }
 
+/** Une note d'affichage (annotation) = son texte + son libellé (Note/Errata). */
+export interface EffectNote {
+  description: string;
+  label: string;
+}
+
+/**
+ * Sépare une liste d'entrées d'effet en effets de jeu RÉELS (ordre préservé) et
+ * ANNOTATIONS (rulings/errata) libellées. Source unique pour l'affichage :
+ * consommée par la fiche (CardZoomInner) ET le panneau de la Collection, afin
+ * que les rulings/errata soient toujours regroupés sous « Notes » et jamais
+ * rendus comme des effets.
+ */
+export function splitEffectsAndNotes<
+  T extends { description: string; kind?: string | null },
+>(
+  entries: readonly T[] | null | undefined,
+): { effects: T[]; notes: EffectNote[] } {
+  const effects: T[] = [];
+  const notes: EffectNote[] = [];
+  for (const e of entries ?? []) {
+    if (isEffectAnnotation(e)) {
+      notes.push({
+        description: e.description,
+        label: EFFECT_KIND_LABELS[e.kind as EffectAnnotationKind],
+      });
+    } else {
+      effects.push(e);
+    }
+  }
+  return { effects, notes };
+}
+
 /** Retire les artefacts de tête et normalise les espaces. */
 export function cleanEffectText(s: string | undefined | null): string {
   return (s || "")

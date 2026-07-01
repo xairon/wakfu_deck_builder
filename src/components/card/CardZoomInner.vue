@@ -160,8 +160,7 @@ import type { Card } from "@/types/cards";
 import type { ErrataEntry } from "@/services/errataService";
 import {
   highlightEffectHtml,
-  isEffectAnnotation,
-  EFFECT_KIND_LABELS,
+  splitEffectsAndNotes,
   type EffectAnnotationKind,
 } from "@/utils/effectText";
 
@@ -182,19 +181,13 @@ const emit = defineEmits<{
 }>();
 
 // Sépare les vrais effets de jeu des annotations (rulings/errata) : ces
-// dernières ne sont pas des effets et sont affichées à part sous « Notes ».
-const realEffects = computed(() =>
-  props.displayEffects.filter((e) => !isEffectAnnotation(e)),
+// dernières ne sont pas des effets et sont affichées à part sous « Notes »
+// (logique partagée avec le panneau de la Collection).
+const realEffects = computed(
+  () => splitEffectsAndNotes(props.displayEffects).effects,
 );
-const noteEffects = computed(() =>
-  props.displayEffects
-    .filter((e): e is Required<Pick<DisplayEffect, "kind">> & DisplayEffect =>
-      isEffectAnnotation(e),
-    )
-    .map((e) => ({
-      description: e.description,
-      label: EFFECT_KIND_LABELS[e.kind],
-    })),
+const noteEffects = computed(
+  () => splitEffectsAndNotes(props.displayEffects).notes,
 );
 
 const statRows = computed(() => {

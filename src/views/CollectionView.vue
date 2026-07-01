@@ -321,12 +321,15 @@
               </div>
 
               <!-- Effets -->
-              <p v-if="displayedEffects?.length" class="section-rule eyebrow">
+              <p
+                v-if="displayedRealEffects.length"
+                class="section-rule eyebrow"
+              >
                 Effets
               </p>
-              <div v-if="displayedEffects?.length" class="space-y-3">
+              <div v-if="displayedRealEffects.length" class="space-y-3">
                 <div
-                  v-for="(effect, index) in displayedEffects"
+                  v-for="(effect, index) in displayedRealEffects"
                   :key="index"
                   class="border border-base-content/15 bg-base-200 p-4"
                 >
@@ -367,6 +370,30 @@
                       </span>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <!-- Notes (rulings / errata) : précisions rattachées à la carte,
+                   PAS des effets de jeu — labellisées et regroupées à part. -->
+              <p v-if="displayedNotes.length" class="section-rule eyebrow">
+                Notes
+              </p>
+              <div v-if="displayedNotes.length" class="space-y-3">
+                <div
+                  v-for="(note, index) in displayedNotes"
+                  :key="index"
+                  class="border border-base-content/15 bg-base-200/60 p-4"
+                >
+                  <p
+                    class="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-base-content/50"
+                  >
+                    {{ note.label }}
+                  </p>
+                  <!-- eslint-disable-next-line vue/no-v-html -->
+                  <p
+                    class="text-sm leading-relaxed text-base-content/70"
+                    v-html="highlightEffectHtml(note.description)"
+                  ></p>
                 </div>
               </div>
 
@@ -595,7 +622,7 @@ import CollectionFilters from "@/components/collection/CollectionFilters.vue";
 import CollectionGrid from "@/components/collection/CollectionGrid.vue";
 import CollectionCompletion from "@/components/collection/CollectionCompletion.vue";
 import QuickAddModal from "@/components/collection/QuickAddModal.vue";
-import { highlightEffectHtml } from "@/utils/effectText";
+import { highlightEffectHtml, splitEffectsAndNotes } from "@/utils/effectText";
 import { fetchErrata, type ErrataEntry } from "@/services/errataService";
 import OptimizedImage from "@/components/common/OptimizedImage.vue";
 
@@ -704,6 +731,15 @@ const displayedEffects = computed(() => {
   }
   return selectedCard.value.effects;
 });
+
+// Sépare les vrais effets des annotations (rulings/errata) : ces dernières ne
+// sont pas des effets et s'affichent à part sous « Notes » (cf. splitEffectsAndNotes).
+const displayedRealEffects = computed(
+  () => splitEffectsAndNotes(displayedEffects.value).effects,
+);
+const displayedNotes = computed(
+  () => splitEffectsAndNotes(displayedEffects.value).notes,
+);
 
 const displayedKeywords = computed(() => {
   if (!selectedCard.value) return null;
