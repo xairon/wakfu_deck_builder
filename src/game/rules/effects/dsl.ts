@@ -975,6 +975,20 @@ function parseSentence(
       zones,
     };
   }
+  // « Détruisez l'Allié de votre choix qui ne porte aucun Équipement » (Noob) →
+  //   destroyTarget Allié + filtre noEquipment (cible sans attachement Équipement,
+  //   lu sur inst.attachments). Placé AVANT la forme mono-type nue (son `$`
+  //   rejetterait la clause « qui ne porte… »).
+  m = sentence.match(
+    /^detrui(?:sez|re) l['’ ]?\s?allie de votre choix qui ne porte aucun equipement( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m)
+    return {
+      op: "destroyTarget",
+      what: "Allié",
+      noEquipment: true,
+      zones: m[1] ? ["monde", "havreSac"] : ["monde"],
+    };
   m = sentence.match(
     /^detrui(?:sez|re) (l['’ ]?\s?allie|la zone|l['’ ]?\s?equipement|le dofus) de votre choix( dans le monde)?( ou dans un havre ?-?sac)?$/,
   );
@@ -1102,6 +1116,19 @@ function parseSentence(
       ...(m[2] ? { heroes: true } : {}),
       orientation: m[3] === "incline" ? "tapped" : "upright",
       zones: m[4] ? ["monde", "havreSac"] : ["monde"],
+    };
+  // « Inclinez l'Allié (ou Héros) qui ne porte aucun Équipement de votre choix »
+  //   (Boon Attitude) → tapTarget + filtre noEquipment (cible sans attachement
+  //   Équipement). Placé AVANT la forme générique (dont le `$` rejette la clause).
+  m = sentence.match(
+    /^inclinez l['’ ]?\s?allie( ou heros)? qui ne porte aucun equipement de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m)
+    return {
+      op: "tapTarget",
+      ...(m[1] ? { heroes: true } : {}),
+      noEquipment: true,
+      zones: m[3] ? ["monde", "havreSac"] : ["monde"],
     };
   // « Inclinez / Redressez l'Allié (ou Héros) [adverse] de votre choix
   //   [dans le Monde][ ou dans un Havre-Sac] » → tapTarget / untapTarget.

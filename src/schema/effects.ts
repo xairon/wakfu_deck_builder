@@ -177,6 +177,8 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     orientation: orientationFilterSchema.optional(),
     // Rôle de combat (« l'Allié ou Héros attaquant / bloqueur de votre choix »).
     combatRole: combatRoleSchema.optional(),
+    // « … qui ne porte aucun Équipement » : cible sans attachement Équipement.
+    noEquipment: z.boolean().optional(),
     zones: zonesSchema,
   }),
   // « Bannissez l'Allié [Famille] [de Niveau ≤ N] de votre choix [dans le Monde] »
@@ -518,6 +520,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // SAUTER son redressement de début de tour tant que le jeton est actif (cf.
     // nextTurnEvents). Inclinaison + interdiction portent sur la MÊME cible.
     cannotRedress: z.boolean().optional(),
+    // « … qui ne porte aucun Équipement » : la cible ne doit avoir AUCUN
+    // attachement de mainType Équipement (les Dofus attachés ne comptent pas).
+    noEquipment: z.boolean().optional(),
     zones: zonesSchema,
   }),
   z.object({

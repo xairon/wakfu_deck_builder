@@ -310,6 +310,21 @@ export function effectTargetIds(
     ) {
       ok = (inst.attachments?.length ?? 0) > 0;
     }
+    // « … qui ne porte aucun Équipement » (destroyTarget / tapTarget) : la cible
+    // ne doit avoir AUCUN attachement de mainType Équipement (les Dofus attachés
+    // ne comptent pas — « aucun Équipement » vise spécifiquement les Équipements).
+    if (
+      ok &&
+      (op.op === "destroyTarget" || op.op === "tapTarget") &&
+      "noEquipment" in op &&
+      op.noEquipment
+    ) {
+      ok = !(inst.attachments ?? []).some(
+        (aid) =>
+          ctx.getCard(ctx.state.instances[aid]?.cardId ?? null)?.mainType ===
+          "Équipement",
+      );
+    }
     // filtre de contrôleur (« un de vos … » / « … adverse »)
     if (ok && controller && actor !== undefined) {
       const want = controller === "self" ? actor : otherSeat(actor);

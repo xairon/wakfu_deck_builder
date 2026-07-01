@@ -1954,7 +1954,19 @@
         "description": "Inclinez l'Allié ou Héros qui ne porte aucun Équipement de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "tapTarget",
+              "heroes": true,
+              "noEquipment": true,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-target"]
       }
     ],
     "keywords": [],
@@ -14375,7 +14387,20 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfDestroyed",
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Air",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       }
     ],
     "keywords": [],

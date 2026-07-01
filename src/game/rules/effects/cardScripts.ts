@@ -626,4 +626,24 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   "ile-des-wabbits-ile-des-wabbits": {
     0: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
   },
+
+  // ── Deck-driven (starters Incarnam) ──
+  // « Quand le Tofu Mutant est détruit, il inflige 1 Dommage à l'Allié ou Héros
+  //   de votre choix. » — onSelfDestroyed ; « il » = la source détruite (sourceId
+  //   fourni par le bus), Dommages de l'Élément de la source (Air). Le DSL ne lie
+  //   pas le pronom « il » au sujet → script direct.
+  "tofu-mutant-incarnam": {
+    0: {
+      trigger: "onSelfDestroyed",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 1,
+          element: "Air",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
 };

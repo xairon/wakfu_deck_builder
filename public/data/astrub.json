@@ -5441,7 +5441,19 @@
         "description": "Détruisez l'Allié de votre choix qui ne porte aucun Équipement.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Allié",
+              "noEquipment": true,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       }
     ],
     "keywords": [],
