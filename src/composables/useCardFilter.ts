@@ -11,6 +11,7 @@ import { useMemoize } from "@vueuse/core";
 import type { Card } from "@/types/cards";
 import { isHeroCard } from "@/types/cards";
 import { matchesSearch } from "@/utils/text";
+import { isEffectAnnotation } from "@/utils/effectText";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -55,18 +56,25 @@ export interface FilterCriteria {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /**
- * Collecte tous les textes d'effets d'une carte.
+ * Collecte les textes des effets RÉELS d'une carte pour la recherche plein-texte.
+ * Les annotations (rulings/errata, `kind` renseigné) sont EXCLUES : ce ne sont
+ * pas des effets de jeu, et un mot n'y figurant que là ne doit pas faire remonter
+ * la carte (cf. isEffectAnnotation).
  * Pour les Héros, lit recto.effects et verso.effects (pas card.effects qui
  * n'existe pas sur HeroCard).
  */
 function cardEffectTexts(card: Card): string[] {
   if (isHeroCard(card)) {
     const texts: string[] = [];
-    for (const e of card.recto?.effects ?? []) texts.push(e.description);
-    for (const e of card.verso?.effects ?? []) texts.push(e.description);
+    for (const e of card.recto?.effects ?? [])
+      if (!isEffectAnnotation(e)) texts.push(e.description);
+    for (const e of card.verso?.effects ?? [])
+      if (!isEffectAnnotation(e)) texts.push(e.description);
     return texts;
   }
-  return (card.effects ?? []).map((e) => e.description);
+  return (card.effects ?? [])
+    .filter((e) => !isEffectAnnotation(e))
+    .map((e) => e.description);
 }
 
 /**

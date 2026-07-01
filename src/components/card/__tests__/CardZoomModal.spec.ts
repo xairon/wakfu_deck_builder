@@ -8,10 +8,12 @@ vi.mock("@/services/errataService", () => ({
   fetchErrata: async () => [],
 }));
 
-// Stub highlightEffectHtml to return the description as-is (easier assertion)
-vi.mock("@/utils/effectText", () => ({
-  highlightEffectHtml: (s: string) => s,
-}));
+// Stub highlightEffectHtml to return the description as-is (easier assertion),
+// mais conserve les vrais helpers (isEffectAnnotation, EFFECT_KIND_LABELS).
+vi.mock("@/utils/effectText", async (importActual) => {
+  const actual = await importActual<typeof import("@/utils/effectText")>();
+  return { ...actual, highlightEffectHtml: (s: string) => s };
+});
 
 beforeEach(() => {
   vi.clearAllMocks();

@@ -58,16 +58,36 @@
       </dl>
 
       <!-- Effets -->
-      <div v-if="displayEffects.length" class="mt-4">
+      <div v-if="realEffects.length" data-testid="card-effects" class="mt-4">
         <p class="eyebrow mb-2">Effets</p>
         <ul class="space-y-2">
           <!-- eslint-disable-next-line vue/no-v-html -->
           <li
-            v-for="(e, i) in displayEffects"
+            v-for="(e, i) in realEffects"
             :key="i"
             class="border-l-2 border-base-content/20 pl-3 text-sm leading-relaxed"
             v-html="highlightEffectHtml(e.description)"
           ></li>
+        </ul>
+      </div>
+
+      <!-- Notes (rulings / errata) : précisions rattachées à la carte, PAS des
+           effets de jeu — labellisées et regroupées à part. -->
+      <div v-if="noteEffects.length" data-testid="card-notes" class="mt-4">
+        <p class="eyebrow mb-2 text-base-content/60">Notes</p>
+        <ul class="space-y-2">
+          <li
+            v-for="(n, i) in noteEffects"
+            :key="i"
+            class="border-l-2 border-base-content/15 pl-3 text-sm leading-relaxed text-base-content/70"
+          >
+            <span
+              class="mr-1.5 border border-base-content/25 px-1.5 py-0.5 align-middle font-mono text-[10px] uppercase tracking-wider text-base-content/55"
+              >{{ n.label }}</span
+            >
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <span v-html="highlightEffectHtml(n.description)"></span>
+          </li>
         </ul>
       </div>
 
@@ -138,12 +158,19 @@
 import { computed } from "vue";
 import type { Card } from "@/types/cards";
 import type { ErrataEntry } from "@/services/errataService";
-import { highlightEffectHtml } from "@/utils/effectText";
+import {
+  highlightEffectHtml,
+  isEffectAnnotation,
+  EFFECT_KIND_LABELS,
+  type EffectAnnotationKind,
+} from "@/utils/effectText";
+
+type DisplayEffect = { description: string; kind?: EffectAnnotationKind };
 
 const props = defineProps<{
   card: Card;
   errata: ErrataEntry[];
-  displayEffects: { description: string }[];
+  displayEffects: DisplayEffect[];
   elementColor: string;
   cardImg: string;
   showClose?: boolean;
@@ -153,6 +180,22 @@ const emit = defineEmits<{
   (e: "close"): void;
   (e: "imgError", event: Event): void;
 }>();
+
+// Sépare les vrais effets de jeu des annotations (rulings/errata) : ces
+// dernières ne sont pas des effets et sont affichées à part sous « Notes ».
+const realEffects = computed(() =>
+  props.displayEffects.filter((e) => !isEffectAnnotation(e)),
+);
+const noteEffects = computed(() =>
+  props.displayEffects
+    .filter((e): e is Required<Pick<DisplayEffect, "kind">> & DisplayEffect =>
+      isEffectAnnotation(e),
+    )
+    .map((e) => ({
+      description: e.description,
+      label: EFFECT_KIND_LABELS[e.kind],
+    })),
+);
 
 const statRows = computed(() => {
   const s = props.card?.stats;

@@ -112,6 +112,30 @@ describe("useCardFilter — filterCards", () => {
     ).toEqual([]);
   });
 
+  it("effectQuery : ignore le texte des rulings/errata (kind), ne cherche que les effets réels", () => {
+    // Régression Bouftou Dance I-Volution : un ruling mentionnant « Chi-Fu-Mi »
+    // (kind:"ruling") faisait remonter la carte alors que ce n'est pas un effet
+    // de jeu. La recherche ne doit porter que sur les effets réels.
+    const card = createMockAllyCard({
+      id: "c",
+      effects: [
+        { description: "Piochez une carte." },
+        {
+          description: "En tournoi, la résolution se fait au hasard.",
+          kind: "ruling",
+        },
+      ],
+    });
+    // « tournoi » n'apparaît que dans le ruling → aucune correspondance
+    expect(
+      filterCards([card], { ...base, effectQuery: "tournoi" }).map((c) => c.id),
+    ).toEqual([]);
+    // « piochez » est dans l'effet réel → correspondance
+    expect(
+      filterCards([card], { ...base, effectQuery: "piochez" }).map((c) => c.id),
+    ).toEqual(["c"]);
+  });
+
   it("hideNotOwned : un changement de ownedIds n'est PAS masqué par le cache mémoïsé", () => {
     // Régression : ownedIds est un Set ; la clé JSON par défaut le sérialise en
     // `{}`, donc deux appels aux mêmes critères mais ownedIds différents

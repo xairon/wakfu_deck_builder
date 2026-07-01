@@ -62,7 +62,7 @@ import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
 import { isHeroCard } from "@/types/cards";
 import { elementColor } from "@/config/elementColors";
-import { highlightEffectHtml } from "@/utils/effectText";
+import { highlightEffectHtml, isEffectAnnotation } from "@/utils/effectText";
 
 const { card, mouseX, mouseY, hide } = useCardPreview();
 
@@ -125,10 +125,12 @@ const statRows = computed(() => {
 const effects = computed(() => {
   const c = card.value;
   if (!c) return [] as { description: string }[];
-  if (isHeroCard(c)) {
-    return [...(c.recto?.effects ?? []), ...(c.verso?.effects ?? [])];
-  }
-  return c.effects ?? [];
+  // Aperçu = lecture rapide des effets RÉELS ; on masque les annotations
+  // (rulings/errata), visibles dans la modale (section « Notes »).
+  const all = isHeroCard(c)
+    ? [...(c.recto?.effects ?? []), ...(c.verso?.effects ?? [])]
+    : (c.effects ?? []);
+  return all.filter((e) => !isEffectAnnotation(e));
 });
 
 // La hauteur de la fenêtre varie selon le contenu : on la mesure après rendu

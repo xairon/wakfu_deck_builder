@@ -16,6 +16,32 @@ const ELEMENT_KEYS: Record<string, string> = {
   Neutre: "neutre",
 };
 
+/**
+ * Types d'ANNOTATION d'une entrée d'effet (champ `kind`) : ce ne sont pas des
+ * effets de jeu mais des précisions rattachées à la carte.
+ *  - "ruling" : éclaircissement de règle (résolution en tournoi, interactions…) ;
+ *  - "errata" : correction officielle de la carte.
+ */
+export type EffectAnnotationKind = "ruling" | "errata";
+
+/** Libellé d'affichage (UI FR) par type d'annotation. */
+export const EFFECT_KIND_LABELS: Record<EffectAnnotationKind, string> = {
+  ruling: "Note",
+  errata: "Errata",
+};
+
+/**
+ * Vrai si l'entrée d'effet est une ANNOTATION (ruling/errata) plutôt qu'un
+ * effet de jeu réel. Source unique de vérité pour séparer les vrais effets des
+ * précisions : utilisée par la recherche plein-texte (qui les ignore) et par
+ * l'affichage (qui les regroupe sous « Notes », pas sous « Effets »).
+ */
+export function isEffectAnnotation(
+  e: { kind?: string | null; [k: string]: unknown } | null | undefined,
+): boolean {
+  return e?.kind === "ruling" || e?.kind === "errata";
+}
+
 /** Retire les artefacts de tête et normalise les espaces. */
 export function cleanEffectText(s: string | undefined | null): string {
   return (s || "")
