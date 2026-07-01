@@ -50,6 +50,7 @@ export const mechanicTagSchema = z.enum([
   "destroy-all",
   "cost-tap-controlled",
   "cost-destroy-controlled",
+  "cost-discard",
   "cost-recycle",
   "cost-recycle-controlled",
   "conditional",

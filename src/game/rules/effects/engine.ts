@@ -888,6 +888,62 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         holdRest(frame, ops.slice(i + 1));
         return true;
       }
+      if (op.op === "costDiscard") {
+        // COÛT « Défaussez [jusqu'à] N carte(s) : CORPS » — défausse depuis la
+        // MAIN (première op d'une séquence paidOps). Miroir de costRecycle{max}
+        // mais zone=main / action=discard. `max` → défausse OPTIONNELLE 0..N
+        // (toujours payée ; boundCount = nombre réellement défaussé, lu par les
+        // ops `fromCount`). Sans `max` : défausse IMPOSÉE de `n` (abandon si la
+        // main n'a pas assez — le corps ne s'exécute pas).
+        const hand = deps.getState().seats[seat].main;
+        if (op.max) {
+          if (hand.length === 0) {
+            holdRest(frame, [...ops.slice(i + 1)]);
+            effectQueue.value = [
+              { ...effectQueue.value[0], boundCount: 0 },
+              ...effectQueue.value.slice(1),
+            ];
+            deps.dispatch(
+              say(
+                seat,
+                `${cardName} : aucune carte à défausser (0 défaussée).`,
+              ),
+            );
+            continue;
+          }
+          effectPicking.value = {
+            seat,
+            cardName,
+            zone: "main",
+            action: "discard",
+            upTo: true,
+            picked: 0,
+            remaining: op.n ?? 1,
+            sourceId,
+          };
+          holdRest(frame, ops.slice(i + 1));
+          return true;
+        }
+        if (hand.length < (op.n ?? 1)) {
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} : pas assez de cartes en main pour payer le coût, pouvoir annulé.`,
+            ),
+          );
+          return false; // coût impayable → corps non exécuté
+        }
+        effectPicking.value = {
+          seat,
+          cardName,
+          zone: "main",
+          action: "discard",
+          remaining: op.n ?? 1,
+          sourceId,
+        };
+        holdRest(frame, ops.slice(i + 1));
+        return true;
+      }
       if (op.op === "costRecycle") {
         // COÛT « Recyclez … : CORPS » — première op d'une séquence cost:"paidOps".
         // Recycler = remettre une carte SOUS la Pioche de son propriétaire. Le

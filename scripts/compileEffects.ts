@@ -26,6 +26,7 @@ import {
   compileTapEffectText,
   compileTurnStartEffectText,
   isBanishCostText,
+  isDiscardCostText,
   isInclineCostText,
   isPaidCostText,
   isRecycleCostText,
@@ -219,6 +220,7 @@ function compileEffects(
       isSacrificeCostText(text) ||
       isBanishCostText(text) ||
       isRecycleCostText(text) ||
+      isDiscardCostText(text) ||
       isTokenTapPowerText(text)
         ? // Un coût de RECYCLAGE sur une Action (Parchemins) compile en "onPlay"
           // (résolution au jeu) plutôt qu'en "onTap" — cf. compileTapEffectText.

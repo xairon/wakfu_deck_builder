@@ -674,6 +674,17 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     sub: z.string().optional(),
     from: z.enum(["defausse", "main", "self"]).optional(),
   }),
+  // COÛT « Défaussez [jusqu'à] N carte(s) : CORPS » — défausse depuis la MAIN
+  // (première op d'une séquence cost:"paidOps"). Miroir de costRecycle mais la
+  // pile source est la MAIN et l'action « défausse » (→ Défausse). `max` :
+  // « jusqu'à N » (0..N, toujours payé ; frame.boundCount = nombre RÉELLEMENT
+  // défaussé, lu par les ops `fromCount`). Sans `max` : défausse IMPOSÉE de `n`
+  // (abandon si la main n'a pas assez). Aucun filtre de type (« N cartes »).
+  z.object({
+    op: z.literal("costDiscard"),
+    n: z.number().optional(),
+    max: z.boolean().optional(),
+  }),
   // COÛT de pouvoir payé « Recyclez un <Allié|Famille> de votre choix : … »
   //   (Vampyro) : op de CIBLAGE (première op d'une séquence cost:"paidOps", comme
   //   costTapControlled/costDestroyControlled). Le joueur choisit une de SES

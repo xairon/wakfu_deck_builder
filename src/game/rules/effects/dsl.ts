@@ -1888,6 +1888,15 @@ export function compileTapEffectText(
     sourceElement,
   );
   if (recycleCount) return { ...recycleCount, trigger: recycleTrigger };
+  // COÛT DE DÉFAUSSE « Défaussez [jusqu'à] N cartes : … le même nombre … »
+  // (défausse depuis la main → costDiscard, magnitude du corps = compte réel via
+  // fromCount). Miroir du coût de recyclage à valeur.
+  const discardCount = compileDiscardCountCost(
+    normalized,
+    cardName,
+    sourceElement,
+  );
+  if (discardCount) return { ...discardCount, trigger: recycleTrigger };
   // COÛT DE RECYCLAGE « Recyclez … : CORPS » (Défausse / main / soi-depuis-le-
   // Monde) → cost:"paidOps" avec costRecycle en première op. Testé avant la
   // forme incline/sacrifice (le préfixe « Recyclez » ne capte ni l'un ni l'autre).
@@ -2394,6 +2403,42 @@ function compileRecycleCountCost(
         ...(filter.what ? { what: filter.what } : {}),
         ...(filter.sub ? { sub: filter.sub } : {}),
       },
+      ...body,
+    ],
+  };
+}
+
+/** « Défaussez [jusqu'à] N carte(s) : … » = coût de défausse (avec « : »). */
+export function isDiscardCostText(text: string): boolean {
+  return /^defaussez [^:]{1,60}:/.test(norm(text));
+}
+
+/**
+ * Parse un POUVOIR À COÛT DE DÉFAUSSE « Défaussez [jusqu'à] N carte(s) : CORPS »
+ * → `{ trigger, cost:"paidOps", ops:[costDiscard{n,[max]}, ...body] }`, ou null.
+ * Miroir de compileRecycleCountCost mais pile = MAIN. « jusqu'à N » → max (0..N,
+ * boundCount = compte réel) ; « N » nu → défausse imposée. Le CORPS est un
+ * scalaire « nombre défaussé » (compileRecycleCountBody, ops `fromCount`) ; toute
+ * autre forme → manuel. `text` déjà normalisé.
+ */
+function compileDiscardCountCost(
+  text: string,
+  cardName: string,
+  sourceElement: string,
+): CompiledEffect | null {
+  const m = text.match(
+    /^defaussez (jusqu['’]a )?(une|deux|trois|\d+) cartes?(?: de votre main)?\s*:\s*(.+)$/,
+  );
+  if (!m) return null;
+  const bodyText = m[3].replace(/\.$/, "").trim();
+  if (/^(?:il|elle)\s/.test(bodyText)) return null; // actor-binding non modélisé
+  const body = compileRecycleCountBody(bodyText, cardName, sourceElement);
+  if (!body) return null;
+  return {
+    trigger: "onTap",
+    cost: "paidOps",
+    ops: [
+      { op: "costDiscard", n: toNumber(m[2]), ...(m[1] ? { max: true } : {}) },
       ...body,
     ],
   };

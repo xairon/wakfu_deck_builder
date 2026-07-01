@@ -3836,7 +3836,27 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costDiscard",
+              "n": 3,
+              "max": true
+            },
+            {
+              "op": "damageTarget",
+              "n": 0,
+              "fromCount": true,
+              "element": "Eau",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-discard", "damage-target"]
       },
       {
         "description": "Un joueur ne peut pas avoir moins de 0 PA. Si les PA d'un joueur devraient être inférieurs à 0 suite à l'utilisation du pouvoir de Comte Harebourg, ils deviennent égaux à 0 a la place.",
@@ -6348,7 +6368,27 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costDiscard",
+              "n": 3,
+              "max": true
+            },
+            {
+              "op": "damageTarget",
+              "n": 0,
+              "fromCount": true,
+              "element": "Neutre",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-discard", "damage-target"]
       }
     ],
     "keywords": [],

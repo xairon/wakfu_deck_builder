@@ -354,6 +354,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : détruisez une de vos créatures éligibles (au choix) pour payer l'effet.",
   },
   {
+    id: "cost-discard",
+    label: "Coût : défausse",
+    category: "autre",
+    glossary:
+      "Coût d'un pouvoir : défaussez une ou plusieurs cartes de votre main (imposé, ou « jusqu'à N » — le nombre défaussé alimente la magnitude du corps).",
+  },
+  {
     id: "cost-recycle",
     label: "Coût : recyclage",
     category: "autre",
@@ -452,6 +459,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   destroyAll: "destroy-all",
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
+  costDiscard: "cost-discard",
   costRecycle: "cost-recycle",
   costRecycleControlled: "cost-recycle-controlled",
   playerDraw: "player-draw",
