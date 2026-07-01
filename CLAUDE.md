@@ -4,9 +4,9 @@
 
 Application web de gestion de collection et construction de decks pour le TCG Wakfu.
 **Cloud-only** : authentification et données (collection + decks) via Supabase
-(requis). Un cache localStorage par utilisateur sert d'affichage immédiat / lecture
-hors-ligne, mais Supabase est la source de vérité. Auth obligatoire pour accéder à
-la collection / aux decks.
+(requis). Un cache localStorage par utilisateur sert d'affichage immédiat, mais
+Supabase est la source de vérité. Auth obligatoire pour accéder à la collection /
+aux decks.
 
 ## Stack technique
 
@@ -14,11 +14,10 @@ la collection / aux decks.
 - **State**: Pinia 3
 - **Styling**: Tailwind CSS 3 + DaisyUI 4 + Headless UI
 - **Auth**: Supabase (REQUIS — application cloud-only)
-- **Desktop**: Tauri 2.7 (Rust backend)
 - **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~1664 tests unitaires, 134 fichiers
 - **Type-check**: `npm run type-check` (`vue-tsc --noEmit`) — **seul garde-fou de types** (le build esbuild ne type-check pas) ; branché en CI (job « Lint & Types »)
 - **E2E**: Playwright + Chromium — ~30 tests, 2 fichiers (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat)
-- **PWA**: vite-plugin-pwa + Workbox (cache offline, install prompt)
+- **PWA**: vite-plugin-pwa + Workbox (installable, cache d'assets, install prompt)
 - **Linting**: ESLint 9 + Prettier
 - **Déploiement web**: Vercel (SPA)
 
@@ -50,8 +49,6 @@ src/
 - `npm run test:unit` — Tests unitaires jsdom
 - `npx vitest run` — Tests en mode CI (~1664 tests)
 - `npm run coverage` — Rapport de couverture
-- `npm run tauri:dev` — Dev desktop Tauri
-- `npm run tauri:build` — Build desktop (.exe/.msi)
 - `npm run test:e2e` — Tests E2E Playwright (build + preview requis)
 - `npm run optimize-images` — Optimisation WebP + thumbnails (sharp)
 - `npm run lint` — Linting ESLint
@@ -89,7 +86,7 @@ src/
 - **Supabase REQUIS** (config via `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`) ; sans config → écran « Configuration requise »
 - Auth obligatoire pour collection / decks (router guards `requiresAuth`) ; redirection vers `/auth?redirect=`
 - Confirmation e-mail gérée (signup → « Vérifiez votre e-mail »)
-- Source de vérité : Supabase. Cache localStorage par utilisateur (clé `wakfu-*:<userId>`) pour affichage immédiat / lecture hors-ligne
+- Source de vérité : Supabase. Cache localStorage par utilisateur (clé `wakfu-*:<userId>`) pour affichage immédiat
 - Sync : `hydrateForUser` (pull à la connexion) ; push différé sur modification (collection + decks) ; voir `src/services/cloudSync.ts`
 - RLS (Row Level Security) activé sur toutes les tables — voir `supabase/migrations/0001_init.sql`
 
@@ -106,15 +103,13 @@ src/
 - **Decks officiels** : Page de parcours et import de decks starter par extension (`/decks/official`), incluant les listes recensées des **Dofus Mag** (OCR, cf. `src/data/dofusMagDecks.ts`)
 - **Decks de la communauté** : publication d'un deck par **snapshot** découplé (table `deck_publications`, migration 0009) avec fiche éditoriale (catégorie, accroche, guide) + galerie publique (`/decks/community`)
 - **Table de jeu** : moteur event-sourced (`src/game/`) pour jouer une partie en **solo** (tutoriel / bac à sable) ou **1 v 1 en ligne** (temps réel, serveur autoritatif via Edge Functions), avec résolution auto des effets compilés + rappels manuels pour les effets non couverts
-- **PWA** : Installation native, cache offline via Workbox, prompt d'installation
+- **PWA** : Application installable (écran d'accueil), cache d'assets via Workbox, prompt d'installation
 - **Optimisation d'images** : Pipeline WebP + thumbnails via sharp (`scripts/optimizeImages.ts`)
 - **Accessibilité** : Skip nav, labels ARIA, `lang="fr"`, meta descriptions, contraste thèmes
 
 ## CI/CD
 
 - GitHub Actions CI : lint + type-check (vue-tsc) + tests + build + E2E sur push/PR (`.github/workflows/ci.yml`)
-- GitHub Actions Release : automatique sur tag `v*` (Windows, Node 20, Rust)
-- Génère des installeurs .exe (NSIS) et .msi (Wix) via Tauri
 - Vercel : déploiement web SPA (`vercel.json` configuré)
 
 ## E2E Tests (Playwright)

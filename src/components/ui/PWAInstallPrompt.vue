@@ -14,8 +14,8 @@
           <div class="flex-1 min-w-0">
             <h3 class="font-bold text-sm">Installer Wakfu Deck Builder</h3>
             <p class="text-xs text-base-content/70 mt-1">
-              Installez l'application pour un acces rapide et une utilisation
-              hors-ligne.
+              Installez l'application pour la lancer en un tap depuis votre
+              écran d'accueil.
             </p>
           </div>
           <button

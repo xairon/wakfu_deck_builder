@@ -1,10 +1,9 @@
 # Wakfu Deck Builder
 
-Application web (et desktop) de gestion de collection, de construction de decks
-et de **jeu** pour le TCG **Wakfu**. Application **cloud** : inscription /
-connexion et synchronisation des données (collection + decks) via **Supabase**,
-accessibles depuis tous vos appareils. Configuration : voir
-[DEPLOYMENT.md](DEPLOYMENT.md).
+Application web de gestion de collection, de construction de decks et de **jeu**
+pour le TCG **Wakfu**. Application **cloud** : inscription / connexion et
+synchronisation des données (collection + decks) via **Supabase**, accessibles
+depuis tous vos appareils. Configuration : voir [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## 🚀 Fonctionnalités
 
@@ -13,8 +12,7 @@ accessibles depuis tous vos appareils. Configuration : voir
 - **🔐 Comptes cloud** : authentification Supabase (e-mail / mot de passe),
   confirmation d'e-mail gérée.
 - **☁️ Synchronisation multi-appareils** : collection et decks stockés dans le
-  cloud (source de vérité), avec cache local pour l'affichage immédiat et la
-  lecture hors-ligne.
+  cloud (source de vérité), avec cache local pour un affichage immédiat.
 - **📚 Collection de cartes** : ~1585 cartes des 11 extensions, gestion des
   exemplaires normaux et foil, fiche détaillée (effets, mots-clés, notes /
   errata).
@@ -45,9 +43,8 @@ accessibles depuis tous vos appareils. Configuration : voir
 
 ### Plateforme
 
-- **📱 Interface responsive + PWA** : desktop et mobile, installation native,
-  cache hors-ligne via Workbox.
-- **🖥️ Desktop (Tauri)** : installeurs Windows `.exe` (NSIS) / `.msi` (Wix).
+- **📱 Interface responsive + PWA** : desktop et mobile, installable en un clic
+  sur l'écran d'accueil.
 - **🎨 Interface moderne** : Tailwind CSS + DaisyUI, thèmes clair / sombre,
   accessibilité (skip-nav, labels ARIA, `lang="fr"`).
 
@@ -55,7 +52,7 @@ accessibles depuis tous vos appareils. Configuration : voir
 
 Vue 3 (`<script setup>` + Composition API) · TypeScript · Vite 6 · Pinia 3 ·
 Tailwind CSS 3 + DaisyUI 4 · Supabase (auth + Postgres + Realtime + Edge
-Functions) · Tauri 2 · Vitest + @vue/test-utils · Playwright (E2E) ·
+Functions) · Vitest + @vue/test-utils · Playwright (E2E) ·
 vite-plugin-pwa (Workbox).
 
 > Architecture détaillée, conventions de code et règles métier : voir
@@ -86,24 +83,17 @@ vite-plugin-pwa (Workbox).
    npm run dev          # http://localhost:3000
    ```
 
-5. **Lancer la version Desktop (Tauri)**
-
-   ```bash
-   npm run tauri:dev
-   ```
-
 ## 🛠️ Commandes principales
 
-| Commande              | Description                                              |
-| --------------------- | -------------------------------------------------------- |
-| `npm run dev`         | Serveur de dev (port 3000)                               |
-| `npm run build`       | Build production (~10 s, **ne type-check pas**)          |
-| `npm run type-check`  | Vérif TypeScript (`vue-tsc`) — **le seul gate de types** |
-| `npm run test:unit`   | Tests unitaires (Vitest / jsdom)                         |
-| `npx vitest run`      | Tests unitaires en mode CI                               |
-| `npm run test:e2e`    | Tests E2E Playwright (build + preview requis)            |
-| `npm run lint`        | Linting ESLint                                           |
-| `npm run tauri:build` | Installeurs desktop `.exe` / `.msi`                      |
+| Commande             | Description                                              |
+| -------------------- | -------------------------------------------------------- |
+| `npm run dev`        | Serveur de dev (port 3000)                               |
+| `npm run build`      | Build production (~10 s, **ne type-check pas**)          |
+| `npm run type-check` | Vérif TypeScript (`vue-tsc`) — **le seul gate de types** |
+| `npm run test:unit`  | Tests unitaires (Vitest / jsdom)                         |
+| `npx vitest run`     | Tests unitaires en mode CI                               |
+| `npm run test:e2e`   | Tests E2E Playwright (build + preview requis)            |
+| `npm run lint`       | Linting ESLint                                           |
 
 ## ⚖️ Règles du deck (validation)
 
@@ -121,31 +111,10 @@ avec erreurs et avertissements détaillés, et conservent la réserve.
 - **Source de vérité : Supabase.** Collection et decks sont chargés depuis le
   cloud à la connexion et repoussés (différé, best-effort) à chaque modification.
 - **Cache local (PWA)** : copie par utilisateur (clé `wakfu-*:<userId>`) pour
-  l'affichage immédiat et la lecture hors-ligne ; le cloud reste prioritaire au
-  rechargement.
+  un affichage immédiat ; le cloud reste prioritaire au rechargement.
 - **Données de cartes** : `public/data/*.json` (une base par extension, servie
   statiquement) + images optimisées WebP / vignettes. Les effets sont **compilés**
   depuis ces JSON (`npm run compile-effects`) pour alimenter le moteur de jeu.
-
-## 🖥️ Desktop & releases
-
-Des installeurs Windows sont générés via Tauri :
-
-```bash
-npm run tauri:build   # .exe (NSIS) / .msi (Wix) dans src-tauri/target/release/bundle/
-```
-
-> Les exécutables signés localement peuvent être détectés par certains
-> antivirus. Pour une distribution publique, la signature de code est
-> recommandée.
-
-**Publication automatique** : un workflow GitHub Actions publie une release avec
-les binaires lors d'un tag `v*` :
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
 
 ## 🌐 Déploiement web (Vercel)
 

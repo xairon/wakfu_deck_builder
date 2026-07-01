@@ -22,7 +22,6 @@ export default tseslint.config(
       "test-results/",
       "raw-card-data/",
       "data/",
-      "src-tauri/",
       "**/*.min.js",
       "**/*.config.js",
       "**/*.config.ts",

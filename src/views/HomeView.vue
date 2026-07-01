@@ -25,8 +25,7 @@
           class="mb-9 max-w-[500px] text-[clamp(16px,1.5vw,20px)] leading-[1.55] text-ink-muted"
         >
           Cataloguez votre collection, montez des decks valides en un instant,
-          et retrouvez-les sur tous vos appareils — synchronisés dans le cloud,
-          jouables hors-ligne.
+          et retrouvez-les sur tous vos appareils — synchronisés dans le cloud.
         </p>
         <div data-reveal class="mb-11 flex flex-wrap items-center gap-3.5">
           <router-link :to="primaryCta.to" class="cta-primary">
@@ -349,9 +348,8 @@
           <p
             class="mx-auto mb-14 max-w-[580px] text-[18px] leading-[1.6] text-ink-faint"
           >
-            Compte cloud, synchronisation instantanée et lecture hors-ligne.
-            Ouvrez votre collection sur le bureau, continuez sur mobile — sans
-            rien perdre.
+            Compte cloud et synchronisation instantanée. Ouvrez votre collection
+            sur le bureau, continuez sur mobile — sans rien perdre.
           </p>
         </div>
         <div
@@ -617,8 +615,8 @@ const cloudCards = [
   },
   {
     icon: "⤓",
-    title: "PWA hors-ligne",
-    desc: "Installez l'application comme une appli native. Consultez vos cartes même sans connexion.",
+    title: "Installation en un clic",
+    desc: "Ajoutez Wakfu Deck Builder à votre écran d'accueil et lancez-le en un tap, sans passer par un store.",
   },
   {
     icon: "↗",

@@ -32,6 +32,6 @@ export const CREDITS: CreditEntry[] = [
     name: "Technologies",
     role: "Outils open source",
     description:
-      "Application construite avec Vue 3, Pinia, Vite, Tailwind CSS & DaisyUI, Supabase et Tauri.",
+      "Application construite avec Vue 3, Pinia, Vite, Tailwind CSS & DaisyUI et Supabase.",
   },
 ];

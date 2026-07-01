@@ -181,7 +181,7 @@ const syncLabel = computed(() => {
   if (isSyncing.value) return "Sauvegarde…";
   if (authStore.isAuthenticated && syncState.value === "error")
     return "Non synchronisé";
-  return authStore.isAuthenticated ? "Synchronisé" : "Hors-ligne";
+  return authStore.isAuthenticated ? "Synchronisé" : "Déconnecté";
 });
 const syncSquareClass = computed(() => {
   if (isSyncing.value) return "bg-primary";

@@ -90,11 +90,10 @@ variables (Production + Preview), puis **redeploy**.
   sont chargés depuis le cloud ; à chaque modification, ils y sont repoussés
   (best-effort, différé).
 - **Cache local (PWA) :** une copie est conservée dans le navigateur (clé par
-  utilisateur) pour l'affichage immédiat et un usage hors-ligne en lecture. Le
-  cloud reste prioritaire au rechargement (stratégie « dernier écrit gagne » via
-  `updated_at`).
-- **Conflit hors-ligne :** des modifications faites hors-ligne peuvent être
-  écrasées par le cloud au prochain chargement en ligne (limite assumée v1).
+  utilisateur) pour l'affichage immédiat. Le cloud reste prioritaire au
+  rechargement (stratégie « dernier écrit gagne » via `updated_at`).
+- **Conflit multi-appareils :** des modifications concurrentes sur deux appareils
+  peuvent s'écraser mutuellement au prochain chargement (limite assumée v1).
 
 ## Sécurité
 
@@ -102,11 +101,3 @@ variables (Production + Preview), puis **redeploy**.
 - La sécurité des données repose sur la **RLS** : ne désactivez pas les policies
   du script SQL.
 - En-têtes de sécurité définis dans `vercel.json`.
-
-## Desktop (optionnel, Tauri)
-
-```bash
-npm run tauri:build   # installeurs .exe (NSIS) / .msi (Wix)
-```
-
-Les variables `VITE_SUPABASE_*` sont injectées au build, comme pour le web.

@@ -30,10 +30,7 @@
     "parse-cards": "tsx scripts/parseCardsV2.ts",
     "analyze-types": "tsx scripts/analyzeTypes.ts",
     "migrate-images": "tsx scripts/migrateImages.ts",
-    "download-images": "tsx scripts/downloadMissingImages.ts",
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "download-images": "tsx scripts/downloadMissingImages.ts"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
@@ -49,7 +46,6 @@
     "@pinia/testing": "^1.0.0",
     "@playwright/test": "^1.58.2",
     "@rushstack/eslint-patch": "^1.3.3",
-    "@tauri-apps/cli": "^2.7.1",
     "@testing-library/vue": "^8.1.0",
     "@tsconfig/node18": "^18.2.4",
     "@types/cheerio": "^0.22.35",
