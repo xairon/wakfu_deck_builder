@@ -185,9 +185,11 @@ import {
   communityDeckToText,
   type SourcedDeck,
 } from "@/services/communityDeckService";
-import { loadPublicDecks } from "@/services/publicDeckService";
+import {
+  loadPublicDecks,
+  type PublishedDeck,
+} from "@/services/publicDeckService";
 import { getUsernames } from "@/services/profileService";
-import type { CloudDeck } from "@/services/cloudSync";
 
 const router = useRouter();
 const deckStore = useDeckStore();
@@ -242,8 +244,16 @@ function onImgError(e: Event, deck?: SourcedDeck) {
 function onImport(deck: SourcedDeck) {
   importing.value.add(deck.id);
   try {
-    const text = communityDeckToText(deck);
-    const result = deckStore.importDeck(text);
+    // Decks publiés (galerie dynamique) : import fidèle par IDs (impressions +
+    // réserve). Decks curatés : import texte par nom.
+    const result = deck.published
+      ? deckStore.importPublishedDeck({
+          name: deck.name,
+          heroId: deck.published.heroId,
+          havreSacId: deck.published.havreSacId,
+          cards: deck.published.cards,
+        })
+      : deckStore.importDeck(communityDeckToText(deck));
     if (result.success && result.deckId) {
       if (result.warnings?.length)
         toast.warning(result.warnings.slice(0, 3).join("\n"), {
@@ -263,28 +273,37 @@ function onImport(deck: SourcedDeck) {
   }
 }
 
-/** Convertit un deck publié (CloudDeck, ids de cartes) en SourcedDeck pour la galerie. */
+/** Convertit un deck publié (snapshot, ids de cartes) en SourcedDeck pour la galerie. */
 function publicToSourced(
-  cloud: CloudDeck,
+  pub: PublishedDeck,
   names: Record<string, string>,
 ): SourcedDeck {
   const nameOf = (id: string | null) =>
     id ? (cardStore.cards.find((c) => c.id === id)?.name ?? "") : "";
-  const pub = cloud.publication ?? {};
   return {
-    id: `pub-${cloud.id}-${cloud.user_id.slice(0, 8)}`,
-    name: cloud.name,
+    id: `pub-${pub.deck_id}-${pub.user_id.slice(0, 8)}`,
+    name: pub.name,
     source: "Communauté",
-    author: names[cloud.user_id] || undefined,
+    author: names[pub.user_id] || undefined,
     event: pub.source || undefined,
     description: pub.tagline || undefined,
     guide: pub.guide || undefined,
-    hero: nameOf(cloud.hero_id) || undefined,
-    havreSac: nameOf(cloud.havre_sac_id) || undefined,
-    cards: (cloud.cards ?? [])
-      .filter((c) => !c.isReserve)
-      .map((c) => ({ name: nameOf(c.cardId), quantity: c.quantity }))
+    hero: nameOf(pub.hero_id) || undefined,
+    havreSac: nameOf(pub.havre_sac_id) || undefined,
+    // Affichage : nom + réserve conservée (décomptée à part par deckCardCount).
+    cards: (pub.cards ?? [])
+      .map((c) => ({
+        name: nameOf(c.cardId),
+        quantity: c.quantity,
+        ...(c.isReserve ? { isReserve: true } : {}),
+      }))
       .filter((c) => c.name),
+    // Snapshot brut pour un import fidèle par IDs (impressions + réserve).
+    published: {
+      heroId: pub.hero_id,
+      havreSacId: pub.havre_sac_id,
+      cards: pub.cards ?? [],
+    },
   };
 }
 

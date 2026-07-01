@@ -941,6 +941,83 @@ export const useDeckStore = defineStore("deck", () => {
   }
 
   /**
+   * Importe un deck publié (galerie communautaire) par IDs de cartes : restaure
+   * les impressions exactes ET la réserve (contrairement à l'import texte, qui
+   * résout par nom et ignore la réserve). Best-effort : les cartes introuvables
+   * sont signalées en warning.
+   */
+  function importPublishedDeck(input: {
+    name: string;
+    heroId?: string | null;
+    havreSacId?: string | null;
+    cards: Array<{ cardId: string; quantity: number; isReserve?: boolean }>;
+  }): ImportResult {
+    const result: ImportResult = {
+      success: false,
+      errors: [],
+      warnings: [],
+      stats: {
+        totalLines: input.cards.length,
+        processedLines: 0,
+        cardsAdded: 0,
+        heroSet: false,
+        havreSacSet: false,
+      },
+    };
+    try {
+      const deckId = createDeck(input.name);
+      const deck = decks.value.find((d) => d.id === deckId);
+      if (!deck) {
+        result.errors.push("Impossible de créer le deck");
+        return result;
+      }
+      result.deckId = deckId;
+
+      if (input.heroId) {
+        const hero = cardStore.getCardByIdSync(input.heroId);
+        if (hero) {
+          deck.hero = prepareCardForDeck(hero);
+          result.stats.heroSet = true;
+        } else result.warnings.push(`Héros introuvable (${input.heroId})`);
+      }
+      if (input.havreSacId) {
+        const hs = cardStore.getCardByIdSync(input.havreSacId);
+        if (hs) {
+          deck.havreSac = prepareCardForDeck(hs);
+          result.stats.havreSacSet = true;
+        } else
+          result.warnings.push(`Havre-Sac introuvable (${input.havreSacId})`);
+      }
+
+      for (const c of input.cards) {
+        result.stats.processedLines++;
+        const card = cardStore.getCardByIdSync(c.cardId);
+        if (!card) {
+          result.warnings.push(`Carte introuvable (${c.cardId})`);
+          continue;
+        }
+        deck.cards.push({
+          card: prepareCardForDeck(card),
+          quantity: c.quantity,
+          ...(c.isReserve ? { isReserve: true } : {}),
+        });
+        result.stats.cardsAdded += c.quantity;
+      }
+
+      deck.updatedAt = new Date().toISOString();
+      saveDecks();
+      result.success = true;
+      return result;
+    } catch (error) {
+      console.error("Erreur lors de l'import du deck publié:", error);
+      result.errors.push(
+        `Erreur système: ${error instanceof Error ? error.message : "Erreur inconnue"}`,
+      );
+      return result;
+    }
+  }
+
+  /**
    * Exporte un deck au format texte
    * @param id ID du deck à exporter
    * @returns Texte représentant le deck
@@ -1032,6 +1109,7 @@ export const useDeckStore = defineStore("deck", () => {
     removeHavreSac,
     clearDeck,
     importDeck,
+    importPublishedDeck,
     exportDeck,
     findCardByName,
     normalizeText,

@@ -11,6 +11,20 @@ export interface SourcedDeckCard {
   name: string;
   quantity: number;
   type?: string;
+  /** Réserve (decks publiés) — exclue du décompte principal, restaurée à l'import. */
+  isReserve?: boolean;
+}
+
+/**
+ * Snapshot brut d'un deck publié (IDs de cartes), présent uniquement sur les
+ * decks issus de la galerie dynamique. Permet un import fidèle (impressions +
+ * réserve) via `deckStore.importPublishedDeck`, là où les decks curatés n'ont
+ * que des noms.
+ */
+export interface PublishedSnapshot {
+  heroId: string | null;
+  havreSacId: string | null;
+  cards: Array<{ cardId: string; quantity: number; isReserve?: boolean }>;
 }
 
 export interface SourcedDeck {
@@ -29,6 +43,8 @@ export interface SourcedDeck {
   hero?: string;
   havreSac?: string;
   cards: SourcedDeckCard[];
+  /** Présent si le deck vient de la galerie dynamique (import fidèle par IDs). */
+  published?: PublishedSnapshot;
 }
 
 let cache: SourcedDeck[] | null = null;
@@ -68,9 +84,9 @@ export function groupBySource(
     .map((source) => ({ source, decks: map.get(source)! }));
 }
 
-/** Nombre total de cartes (hors héros/havre-sac). */
+/** Nombre de cartes du deck principal (hors héros/havre-sac ET hors réserve). */
 export function deckCardCount(deck: SourcedDeck): number {
-  return deck.cards.reduce((acc, c) => acc + c.quantity, 0);
+  return deck.cards.reduce((acc, c) => acc + (c.isReserve ? 0 : c.quantity), 0);
 }
 
 /**

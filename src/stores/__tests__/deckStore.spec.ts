@@ -984,4 +984,53 @@ describe("deckStore", () => {
       expect(deckStore.elementDistribution).toEqual({});
     });
   });
+
+  // ---- importPublishedDeck (import par IDs, réserve incluse) ----
+
+  describe("importPublishedDeck()", () => {
+    it("reconstruit le deck par IDs et restaure la réserve", () => {
+      const res = deckStore.importPublishedDeck({
+        name: "Deck publié",
+        heroId: "hero-1",
+        havreSacId: "hs-1",
+        cards: [
+          { cardId: "ally-1", quantity: 3 },
+          { cardId: "action-1", quantity: 2, isReserve: true },
+        ],
+      });
+
+      expect(res.success).toBe(true);
+      const deck = deckStore.decks.find((d) => d.id === res.deckId)!;
+      expect(deck.name).toBe("Deck publié");
+      expect(deck.hero?.id).toBe("hero-1");
+      expect(deck.havreSac?.id).toBe("hs-1");
+
+      const main = deck.cards.filter((c) => !c.isReserve);
+      const reserve = deck.cards.filter((c) => c.isReserve);
+      expect(main).toHaveLength(1);
+      expect(main[0].card.id).toBe("ally-1");
+      expect(main[0].quantity).toBe(3);
+      expect(reserve).toHaveLength(1);
+      expect(reserve[0].card.id).toBe("action-1");
+      expect(reserve[0].quantity).toBe(2);
+    });
+
+    it("signale les cartes introuvables sans échouer", () => {
+      const res = deckStore.importPublishedDeck({
+        name: "Deck",
+        heroId: null,
+        havreSacId: null,
+        cards: [
+          { cardId: "ally-1", quantity: 1 },
+          { cardId: "inconnue", quantity: 2 },
+        ],
+      });
+
+      expect(res.success).toBe(true);
+      const deck = deckStore.decks.find((d) => d.id === res.deckId)!;
+      expect(deck.cards).toHaveLength(1);
+      expect(deck.cards[0].card.id).toBe("ally-1");
+      expect(res.warnings.some((w) => w.includes("inconnue"))).toBe(true);
+    });
+  });
 });

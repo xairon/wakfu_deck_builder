@@ -79,7 +79,13 @@
         </button>
         <button
           class="btn gap-2"
-          :class="deck.isPublic ? 'btn-primary' : 'btn-ghost'"
+          :class="
+            hasPendingChanges
+              ? 'btn-warning'
+              : isPublished
+                ? 'btn-primary'
+                : 'btn-ghost'
+          "
           @click="openPublishModal"
         >
           <svg
@@ -96,7 +102,7 @@
               d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"
             />
           </svg>
-          {{ deck.isPublic ? "Publié — gérer" : "Publier" }}
+          {{ publishLabel }}
         </button>
         <button
           class="btn btn-ghost gap-2"
@@ -441,6 +447,20 @@
         <p v-else class="mb-4 text-sm text-base-content/65">
           Auteur : <span class="font-medium">{{ myPseudo }}</span>
         </p>
+        <p
+          v-if="!isDeckValid"
+          class="mb-4 border border-error/40 bg-error/10 p-3 text-sm"
+        >
+          Deck incomplet — il faut un héros, un havre-sac et 48 cartes pour
+          publier.
+        </p>
+        <p
+          v-else-if="hasPendingChanges"
+          class="mb-4 border border-warning/40 bg-warning/10 p-3 text-sm"
+        >
+          Des modifications de ce deck ne sont pas encore publiées. « Mettre à
+          jour » remplacera la version visible dans la galerie.
+        </p>
         <div class="space-y-3">
           <label class="block">
             <span class="eyebrow">Catégorie</span>
@@ -476,7 +496,7 @@
         </div>
         <div class="modal-action">
           <button
-            v-if="deck?.isPublic"
+            v-if="isPublished"
             class="btn btn-ghost text-error"
             :disabled="publishing"
             @click="submitPublish(false)"
@@ -485,12 +505,10 @@
           </button>
           <button
             class="btn btn-primary"
-            :disabled="publishing || !myPseudo"
+            :disabled="publishing || !myPseudo || !isDeckValid"
             @click="submitPublish(true)"
           >
-            {{
-              publishing ? "…" : deck?.isPublic ? "Mettre à jour" : "Publier"
-            }}
+            {{ publishing ? "…" : isPublished ? "Mettre à jour" : "Publier" }}
           </button>
           <button class="btn btn-ghost" @click="showPublishModal = false">
             Annuler
@@ -511,7 +529,14 @@ import { useDeckStore } from "@/stores/deckStore";
 import { validateDeck } from "@/validators/deck";
 import { useToast } from "@/composables/useToast";
 import { generateShareUrl } from "@/utils/deckSharing";
-import { publishDeck } from "@/services/publicDeckService";
+import {
+  publishDeck,
+  unpublishDeck,
+  getMyPublication,
+  snapshotCards,
+  type PublishedDeck,
+} from "@/services/publicDeckService";
+import { publicationSnapshotHash } from "@/utils/publicationSnapshot";
 import { getMyProfile } from "@/services/profileService";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
@@ -621,6 +646,7 @@ const reserveGroups = computed<DeckGalleryGroup[]>(() => {
 
 onMounted(() => {
   deckStore.initialize();
+  void refreshPublication();
   watchEffect(() => {
     if (deckStore.decks.length >= 0) {
       loading.value = false;
@@ -669,39 +695,92 @@ async function shareDeck() {
   }
 }
 
-// ── Publication dans la galerie communautaire (fiche) ──
+// ── Publication dans la galerie communautaire (snapshot découplé) ──
 const publishing = ref(false);
 const showPublishModal = ref(false);
 const pubSource = ref("Création");
 const pubTagline = ref("");
 const pubGuide = ref("");
 const myPseudo = ref<string | null>(null);
+const myPublication = ref<PublishedDeck | null>(null);
+
+const isPublished = computed(() => !!myPublication.value);
+
+/** Empreinte du deck de travail (état courant). */
+const workingHash = computed(() =>
+  deck.value
+    ? publicationSnapshotHash({
+        name: deck.value.name,
+        heroId: deck.value.hero?.id ?? null,
+        havreSacId: deck.value.havreSac?.id ?? null,
+        cards: snapshotCards(deck.value),
+      })
+    : "",
+);
+/** Empreinte du snapshot publié. */
+const publishedHash = computed(() =>
+  myPublication.value
+    ? publicationSnapshotHash({
+        name: myPublication.value.name,
+        heroId: myPublication.value.hero_id,
+        havreSacId: myPublication.value.havre_sac_id,
+        cards: myPublication.value.cards,
+      })
+    : "",
+);
+/** Le deck de travail a divergé du snapshot publié → « modifs en attente ». */
+const hasPendingChanges = computed(
+  () => isPublished.value && workingHash.value !== publishedHash.value,
+);
+
+/** Libellé du bouton de publication selon l'état. */
+const publishLabel = computed(() => {
+  if (!isPublished.value) return "Publier";
+  return hasPendingChanges.value
+    ? "Mettre à jour · modifs en attente"
+    : "Publié ✓ — gérer";
+});
+
+async function refreshPublication(): Promise<void> {
+  myPublication.value = deckId.value
+    ? await getMyPublication(deckId.value)
+    : null;
+}
 
 async function openPublishModal(): Promise<void> {
   if (!deck.value) return;
-  const p = deck.value.publication ?? {};
-  pubSource.value = p.source || "Création";
-  pubTagline.value = p.tagline || deck.value.description || "";
-  pubGuide.value = p.guide || "";
+  await refreshPublication();
+  const p = myPublication.value;
+  pubSource.value = p?.source || "Création";
+  pubTagline.value = p?.tagline || deck.value.description || "";
+  pubGuide.value = p?.guide || "";
   myPseudo.value = (await getMyProfile())?.username ?? null;
   showPublishModal.value = true;
 }
 
 async function submitPublish(makePublic: boolean): Promise<void> {
   if (!deck.value || publishing.value) return;
+
+  // Garde-fou : un deck incomplet ne peut pas être publié (blocage dur).
+  if (makePublic && !isDeckValid.value) {
+    toast.error(
+      "Deck incomplet (héros + havre-sac + 48 cartes requis) — complète-le pour publier.",
+      { duration: 4000 },
+    );
+    return;
+  }
+
   publishing.value = true;
-  const publication = makePublic
-    ? {
-        source: pubSource.value.trim() || undefined,
-        tagline: pubTagline.value.trim() || undefined,
-        guide: pubGuide.value.trim() || undefined,
-      }
-    : undefined;
   try {
-    const ok = await publishDeck(deck.value.id, makePublic, publication);
+    const ok = makePublic
+      ? await publishDeck(deck.value, {
+          source: pubSource.value.trim() || undefined,
+          tagline: pubTagline.value.trim() || undefined,
+          guide: pubGuide.value.trim() || undefined,
+        })
+      : await unpublishDeck(deck.value.id);
     if (ok) {
-      deck.value.isPublic = makePublic;
-      if (publication) deck.value.publication = publication;
+      await refreshPublication();
       showPublishModal.value = false;
       toast.success(
         makePublic
