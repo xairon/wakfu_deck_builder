@@ -247,6 +247,10 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     orientation: orientationFilterSchema.optional(),
     // Rôle de combat (« … à l'Allié ou Héros attaquant / bloqueur »).
     combatRole: combatRoleSchema.optional(),
+    // « … à l'Allié ou Héros ADVERSE de votre choix » : restreint la cible aux
+    // créatures du contrôleur adverse (opponent) ; absent = n'importe quel
+    // contrôleur (cible libre). Lu par effectTargetIds comme pour destroy/tap.
+    controller: controllerSchema.optional(),
     zones: zonesSchema,
   }),
   // « [X] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix » :

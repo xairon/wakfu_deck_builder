@@ -170,6 +170,7 @@ export function effectTargetIds(
     op.op === "tapTarget" ||
     op.op === "untapTarget" ||
     op.op === "returnToHand" ||
+    op.op === "damageTarget" ||
     op.op === "damageTargetByForce" ||
     op.op === "grantKeywordTarget" ||
     op.op === "grantResistanceTarget" ||

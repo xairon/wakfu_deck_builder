@@ -1271,11 +1271,16 @@ function parseSentence(
   // La Famille (« à l'Allié Bouftou ») et « ou Héros » sont mutuellement
   // exclusifs ici (un Héros n'a pas de Famille) → groupes alternés.
   m = sentence.match(
-    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? a l['’ ]?\s?allie(?:( ou heros)|( [a-z-]+))? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? a l['’ ]?\s?allie(?:( ou heros)|( [a-z-]+))?( adverse)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
   );
   if (m) {
     if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
-    const sub = m[4]?.trim();
+    let sub: string | undefined = m[4]?.trim();
+    // « à l'Allié ADVERSE … » : « adverse » capté soit par la classe famille
+    //   (m[4], « à l'Allié adverse »), soit par son groupe dédié (m[5], après
+    //   « ou Héros ») → filtre de contrôleur opponent, pas une Famille.
+    const controller = m[5] || sub === "adverse" ? "opponent" : undefined;
+    if (sub === "adverse") sub = undefined;
     // mots de liaison captés par la classe famille → pas une vraie Famille
     if (sub && ["ou", "non", "de", "et", "dans"].includes(sub)) return null;
     return {
@@ -1284,7 +1289,8 @@ function parseSentence(
       element: sourceElement,
       heroes: !!m[3],
       ...(sub ? { sub } : {}),
-      zones: targetZones(m[5], m[6]),
+      ...(controller ? { controller: controller as "opponent" } : {}),
+      zones: targetZones(m[6], m[7]),
     };
   }
   // « [self] inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix
