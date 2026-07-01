@@ -21,8 +21,10 @@
 
 create table if not exists public.deck_publications (
   id           uuid        primary key default gen_random_uuid(),
-  deck_id      uuid        not null references public.decks (id)  on delete cascade,
-  user_id      uuid        not null references auth.users (id)    on delete cascade,
+  -- decks.id est un TEXT généré côté client ; sa PK est composite (user_id, id),
+  -- d'où la FK composite (deck_id, user_id) ci-dessous.
+  deck_id      text        not null,
+  user_id      uuid        not null references auth.users (id) on delete cascade,
   name         text        not null,
   hero_id      text,
   havre_sac_id text,
@@ -35,7 +37,9 @@ create table if not exists public.deck_publications (
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now(),
   -- Un seul snapshot courant par deck (re-publier = upsert, pas d'accumulation).
-  unique (deck_id)
+  unique (deck_id, user_id),
+  -- Supprimer le deck retire sa publication (cascade sur la PK composite decks).
+  foreign key (deck_id, user_id) references public.decks (id, user_id) on delete cascade
 );
 
 -- Galerie triée par fraîcheur.

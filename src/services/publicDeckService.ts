@@ -62,7 +62,7 @@ export async function publishDeck(
 
   const { error } = await supabase
     .from("deck_publications")
-    .upsert(row, { onConflict: "deck_id" });
+    .upsert(row, { onConflict: "deck_id,user_id" });
   if (error) {
     console.error("Publication du deck impossible:", error.message ?? error);
     return false;
@@ -96,10 +96,13 @@ export async function getMyPublication(
   if (!supabase) return null;
   const auth = useAuthStore();
   if (!auth.userId) return null;
+  // Filtre aussi par user_id : la lecture est publique (RLS select=true), donc
+  // sans ça un deck_id homonyme d'un autre auteur ferait échouer maybeSingle.
   const { data, error } = await supabase
     .from("deck_publications")
     .select("*")
     .eq("deck_id", deckId)
+    .eq("user_id", auth.userId)
     .maybeSingle();
   if (error) {
     console.warn(

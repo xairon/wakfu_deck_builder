@@ -51,7 +51,7 @@ describe("publicDeckService", () => {
     ]);
   });
 
-  it("publishDeck upsert un snapshot sur onConflict 'deck_id'", async () => {
+  it("publishDeck upsert un snapshot sur onConflict 'deck_id,user_id'", async () => {
     const upsert = vi.fn().mockResolvedValue({ error: null });
     supabaseStub = { from: vi.fn(() => ({ upsert })) };
 
@@ -64,7 +64,7 @@ describe("publicDeckService", () => {
     expect(ok).toBe(true);
     expect(supabaseStub.from).toHaveBeenCalledWith("deck_publications");
     const [row, opts] = upsert.mock.calls[0];
-    expect(opts).toEqual({ onConflict: "deck_id" });
+    expect(opts).toEqual({ onConflict: "deck_id,user_id" });
     expect(row).toMatchObject({
       deck_id: "deck-1",
       user_id: "user-1",
