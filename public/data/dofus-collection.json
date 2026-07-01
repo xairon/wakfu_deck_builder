@@ -3062,7 +3062,16 @@
         "description": "Goultard le Barbare apparaît incliné dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "tapSelf"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["tap-self"]
       },
       {
         "description": "Quand Goultard le Barbare apparaît, il détruit tous les autres Alliés et Zones dans le Monde. Vous ne gagnez pas d'XP.",

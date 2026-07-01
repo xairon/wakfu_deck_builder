@@ -726,7 +726,16 @@
         "description": "L'Île des Wabbits apparaît inclinée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "tapSelf"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["tap-self"]
       },
       {
         "description": "Au début de votre tour, recyclez une carte de votre Défausse ou détruisez l'Île des Wabbits.",

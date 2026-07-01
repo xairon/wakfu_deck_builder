@@ -3023,7 +3023,16 @@
         "description": "L'industrie Magique apparaît inclinée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "tapSelf"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["tap-self"]
       },
       {
         "description": "Produisez une Ressource de l'élément de votre Héros ou de votre Havre Sac.",

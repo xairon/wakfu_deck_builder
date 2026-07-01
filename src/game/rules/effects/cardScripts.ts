@@ -610,4 +610,20 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   "goultard-le-barbare-incarnam": {
     0: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
   },
+
+  // ── Prototype « authoring par lot » (2026-07-01) : reliquat 100 %-sûr du
+  //   patron « <self> apparaît/apparaissent incliné(e/s) » → onArrive tapSelf
+  //   (jumeaux de goultard/mines/forets). Mesure : ce patron sûr est désormais
+  //   quasi épuisé (3 restants) ; le reste des uncovered exige du vocabulaire
+  //   moteur manquant, pas de l'authoring — cf. doc SOTA (accélérateur LLM utile
+  //   surtout pour la queue « phrasé raté » + le backlog de mécaniques manquantes).
+  "industrie-magique-chaos-dogrest": {
+    0: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
+  },
+  "goultard-le-barbare-dofus-collection": {
+    0: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
+  },
+  "ile-des-wabbits-ile-des-wabbits": {
+    0: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },
+  },
 };
