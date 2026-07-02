@@ -25,6 +25,14 @@ export const baseCardSchema = z.object({
   metier: z
     .array(z.enum(["Bricoleur", "Forgeron", "Bijoutier", "Armurier"]))
     .optional(),
+  // ÉLÉMENT DE RESSOURCE PRODUIT (dérivé — 4261). Un producteur COLORÉ
+  // (« Produisez une Ressource [X] », un seul Élément) produit cet Élément en
+  // s'inclinant, indépendamment de son Élément imprimé (les Pious sont Neutre en
+  // Niveau/Force mais produisent Eau/Air/Feu/Terre). Peuplé par compileEffects
+  // (promoteResourceProducerTrait) et lu par `resourceElement` (resources).
+  // DISTINCT de l'Élément de Dommages de combat (producedElement = Élément
+  // imprimé). Absent = producteur générique (produit son Élément imprimé).
+  producesElement: cardElementSchema.optional(),
   artists: z.array(z.string()),
   notes: z.array(z.string()).optional(),
   flavor: z

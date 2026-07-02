@@ -45,6 +45,9 @@ export function requiredElement(card: Card): string | null {
 /**
  * Élément produit quand la carte s'incline (1337/8764), normalisé :
  * l'Élément de la carte = symbole de Force ; repli sur l'élément de Niveau.
+ * NB : c'est AUSSI l'Élément des Dommages de combat (410.1, `damageElementOf`)
+ * et l'Élément imprimé pour les filtres de pile (« une carte [X] ») — il reste
+ * l'Élément IMPRIMÉ, sans override de production colorée (cf. `resourceElement`).
  */
 export function producedElement(card: Card): string {
   if (isHeroCard(card)) {
@@ -53,6 +56,22 @@ export function producedElement(card: Card): string {
     );
   }
   return normElement(card.stats?.force?.element ?? card.stats?.niveau?.element);
+}
+
+/**
+ * Élément de la RESSOURCE produite quand la carte s'incline pour PAYER (4261).
+ * Un producteur COLORÉ (« Produisez une Ressource [X] », un seul Élément —
+ * `card.producesElement`, peuplé par compileEffects) produit CET Élément, même
+ * si son Élément imprimé diffère : les Pious sont Neutre en Niveau/Force mais
+ * produisent Eau/Air/Feu/Terre (color-fixing). Sans override → producteur
+ * générique (son Élément imprimé, `producedElement`). DISTINCT de `producedElement`
+ * (Dommages de combat / filtres de pile) : l'override ne s'applique QU'À la
+ * production de Ressources (resourceProducers), jamais au combat.
+ */
+export function resourceElement(card: Card): string {
+  return card.producesElement
+    ? normElement(card.producesElement)
+    : producedElement(card);
 }
 
 /** Force de combat (204.4). Pour un Héros : selon sa face courante. */

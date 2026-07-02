@@ -13,8 +13,8 @@ import {
   elementLabel,
   levelCost,
   normWord,
-  producedElement,
   requiredElement,
+  resourceElement,
 } from "./cardAttrs.ts";
 import { staticAbilitiesOf } from "./modifiers.ts";
 import { isUniqueCard } from "@/utils/cardRules";
@@ -40,7 +40,9 @@ export function resourceProducers(
     if (!card || !canProduceResource(card)) continue;
     const producer = {
       instanceId: inst.instanceId,
-      element: producedElement(card),
+      // Élément de RESSOURCE (override coloré des Pious pris en compte), distinct
+      // de l'Élément de combat (producedElement).
+      element: resourceElement(card),
     };
     out.push(producer);
     // Bonus à USAGE UNIQUE : une fois le Havre-Sac incliné ce tour (token posé

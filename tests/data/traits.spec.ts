@@ -23,7 +23,9 @@ interface RawEffect {
 }
 interface RawCard {
   id?: string;
+  mainType?: string;
   metier?: string[];
+  producesElement?: string;
   effects?: RawEffect[];
   recto?: { effects?: RawEffect[] };
   verso?: { effects?: RawEffect[] };
@@ -93,6 +95,30 @@ describe("couche traits", () => {
     }
   });
 
+  it("devrait reclasser le producteur coloré « Produisez une Ressource [X] » en trait + producesElement", () => {
+    // W46 : les Pious (Allié, un seul Élément coloré) → coverage:trait +
+    // card.producesElement (color-fixing modélisé par resourceElement).
+    const bad: string[] = [];
+    for (const c of cards) {
+      if (c.mainType !== "Allié") continue;
+      for (const e of c.effects ?? []) {
+        if (!/^produisez une ressource\b/.test(norm(e.description ?? "")))
+          continue;
+        // n'exige la promotion QUE pour les mono-Élément (l'invariant complet est
+        // dans compileEffects ; ici on vérifie la cohérence trait ⇔ producesElement)
+        if (e.coverage === "trait" && !c.producesElement)
+          bad.push(`${c.id}: trait sans producesElement`);
+        if (c.producesElement && e.coverage !== "trait")
+          bad.push(`${c.id}: producesElement mais coverage=${e.coverage}`);
+      }
+    }
+    expect(bad, bad.slice(0, 5).join(" | ")).toHaveLength(0);
+    // au moins les 8 Pious (incarnam + chaos-dogrest) sont promus
+    expect(
+      cards.filter((c) => c.producesElement).length,
+    ).toBeGreaterThanOrEqual(8);
+  });
+
   it("ne devrait PAS reclasser un trait noyé dans une phrase", () => {
     for (const c of cards) {
       for (const e of effects(c)) {
@@ -100,7 +126,10 @@ describe("couche traits", () => {
         const t = norm(e.description ?? "");
         const isToken =
           ["bricoleur", "forgeron", "bijoutier", "armurier"].includes(t) ||
-          /^heros\s*:\s*.+$/.test(t);
+          /^heros\s*:\s*.+$/.test(t) ||
+          // trait de PRODUCTEUR coloré (« Produisez une Ressource [X] ») — promu
+          // en card.producesElement, lu par resourceElement.
+          (/^produisez une ressource\b/.test(t) && !!c.producesElement);
         if (!isToken)
           throw new Error(`fausse promotion trait: '${e.description}'`);
       }

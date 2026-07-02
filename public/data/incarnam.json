@@ -11680,7 +11680,7 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Le pouvoir du Piou Bleu est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
@@ -11700,7 +11700,8 @@
       "attribution": "vous remarqué comme ce piou ressemble au Piou Vert, mais en beaucoup plus Bleu ?"
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Eau"
   },
   {
     "id": "piou-jaune-incarnam",
@@ -11729,7 +11730,7 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Le pouvoir du Piou Jaune est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
@@ -11749,7 +11750,8 @@
       "attribution": "Célèbre dicton Iop."
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Air"
   },
   {
     "id": "piou-rouge-incarnam",
@@ -11778,7 +11780,7 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Le pouvoir du Piou Rouge est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
@@ -11798,7 +11800,8 @@
       "attribution": "Dernière paroles de Térophyle le Iop sur le monde d'Oto Mustam."
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Feu"
   },
   {
     "id": "piou-vert-incarnam",
@@ -11827,7 +11830,7 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       },
       {
         "description": "Le pouvoir du Piou Vert est un pouvoir à resource : ce type de pouvoir ne passe pas par la file d'attente, la ressource est produite immédiatement. Il n'est donc pas possible de jouer une réaction à l'effet de ce pouvoir ou à la production de ressource.",
@@ -11846,7 +11849,8 @@
       "text": "Le Piou Vert à l'avantage de pouvoir se camoufler dans l'herbe pour passer inaperçu… ou se faire piétiner."
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Terre"
   },
   {
     "id": "piou-incarnam",

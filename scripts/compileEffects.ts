@@ -105,6 +105,9 @@ interface RawEffect {
   kind?: "ruling" | "errata";
   coverage?: "auto" | "manual" | "uncovered" | "ruling" | "keyword" | "trait";
   mechanics?: string[];
+  // Élément(s) récupéré(s) du scrape (« Produisez une Ressource [Eau] » →
+  // ["Eau"]) : lu par promoteResourceProducerTrait pour l'override coloré.
+  elements?: string[];
 }
 interface RawStats {
   niveau?: { element?: string };
@@ -112,7 +115,11 @@ interface RawStats {
 }
 interface RawCard {
   name?: string;
+  mainType?: string;
   metier?: string[];
+  // Override d'Élément de Ressource produit (dérivé — Pious colorés). Cf.
+  // promoteResourceProducerTrait / resourceElement (runtime).
+  producesElement?: string;
   stats?: RawStats;
   keywords?: RawKeyword[];
   effects?: RawEffect[];
@@ -382,6 +389,35 @@ function promoteTraits(card: RawCard): void {
 }
 
 /**
+ * Promeut le TRAIT DE PRODUCTEUR COLORÉ (« Produisez une Ressource [X] », 4261)
+ * en champ typé `card.producesElement`, et marque l'effet `coverage:"trait"` —
+ * son abilité (produire cet Élément en s'inclinant) est DÉJÀ modélisée par le
+ * système de Ressources (resourceProducers/planCost lisent `resourceElement`),
+ * exactement comme un métier promu. STRICT :
+ *  - mainType Allié UNIQUEMENT (fiablement dans resourceProducers quand en jeu :
+ *    Monde/Havre-Sac contrôlé dressé). Zone/Équipement/Héros producteurs = à
+ *    valider séparément (l'Équipement attaché n'est pas garanti itéré) → laissés
+ *    manuels (jamais d'approximation) ;
+ *  - EXACTEMENT UN Élément déclaré (`elements`). Les producteurs BI-ÉLÉMENT
+ *    (Otomaï : « [Terre][Feu] » = CHOIX) ne sont pas modélisables ici → manuels ;
+ *  - le texte doit commencer par « Produisez une Ressource ».
+ * Idempotent : `producesElement` re-dérivé à chaque run.
+ */
+function promoteResourceProducerTrait(card: RawCard): void {
+  delete card.producesElement;
+  if (card.mainType !== "Allié") return;
+  for (const e of card.effects ?? []) {
+    if (e.kind) continue;
+    if (!/^produisez une ressource\b/.test(normText(e?.description))) continue;
+    if (!Array.isArray(e.elements) || e.elements.length !== 1) continue;
+    const el = String(e.elements[0] ?? "").trim();
+    if (!el) continue;
+    card.producesElement = el;
+    e.coverage = "trait";
+  }
+}
+
+/**
  * Passe finale : pose un statut de couverture EXPLICITE sur chaque effet et
  * dérive ses mécaniques depuis les ops compilées. La couverture persistée est
  * effacée en amont dans `classifyKinds`, donc le seul `manual` présent ici est
@@ -434,6 +470,7 @@ for (const file of EXTENSION_FILES) {
     classifyKinds(card);
     promoteKeywords(card);
     promoteTraits(card);
+    promoteResourceProducerTrait(card);
     const name = String(card.name ?? "");
     const element = sourceElementOf(card);
     compileEffects(

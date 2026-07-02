@@ -6196,7 +6196,7 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       }
     ],
     "keywords": [],
@@ -6207,7 +6207,8 @@
       "attribution": "vous remarqué comme ce Piou Bleu ressemble au Piou Vrt, mais en beaucoup plus Bleu ?"
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Eau"
   },
   {
     "id": "piou-jaune-chaos-dogrest",
@@ -6236,7 +6237,7 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       }
     ],
     "keywords": [],
@@ -6247,7 +6248,8 @@
       "attribution": "Célèbre diction Iop."
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Air"
   },
   {
     "id": "piou-rouge-chaos-dogrest",
@@ -6276,7 +6278,7 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       }
     ],
     "keywords": [],
@@ -6287,7 +6289,8 @@
       "attribution": "Dernières paroles de Térophyle le Iop sur le monde d'Oto Mustam."
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Feu"
   },
   {
     "id": "piou-vert-chaos-dogrest",
@@ -6316,7 +6319,7 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "coverage": "trait"
       }
     ],
     "keywords": [],
@@ -6326,7 +6329,8 @@
       "text": "Le Piou Vert a l'avantage de pouvoir se camoufler dans l'herbe pour passer inaperçu… ou se faire piétiner."
     },
     "race": "Monstre",
-    "tribe": "Piou"
+    "tribe": "Piou",
+    "producesElement": "Terre"
   },
   {
     "id": "poulpy-chaos-dogrest",

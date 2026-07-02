@@ -2571,7 +2571,15 @@ export function printedEffects(card: Card | null): CardEffect[] {
  * static/onSelfAttacks). Sert au rappel manuel non bloquant de la table.
  */
 export function manualEffects(card: Card | null): CardEffect[] {
-  return printedEffects(card).filter((e) => !e.compiled);
+  // Un effet `coverage:"trait"` décrit une caractéristique DÉJÀ MODÉLISÉE, pas un
+  // effet de jeu à appliquer à la main : métier (Artisan → card.metier),
+  // restriction de classe (« Héros : X » → subTypes) ou trait de PRODUCTEUR
+  // coloré (« Produisez une Ressource [X] » → card.producesElement, lu par
+  // resourceElement). Aucun rappel manuel — sinon on signalerait à tort un effet
+  // « non couvert » alors qu'il est structurellement pris en charge.
+  return printedEffects(card).filter(
+    (e) => !e.compiled && e.coverage !== "trait",
+  );
 }
 
 export function arrivalEffects(card: Card | null): EffectAtom[] {
