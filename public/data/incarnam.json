@@ -5215,7 +5215,27 @@
         "description": "Au début de votre tour, si Dollarawan le Banquier se trouve dans votre Havre Sac, vous pouvez piocher une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTurnStart",
+          "ops": [
+            {
+              "op": "conditional",
+              "cond": {
+                "cond": "selfInZone",
+                "zone": "havreSac"
+              },
+              "optional": true,
+              "ops": [
+                {
+                  "op": "draw",
+                  "n": 1
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["conditional"]
       }
     ],
     "keywords": [],

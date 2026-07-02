@@ -119,6 +119,12 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     op: z.literal("conditional"),
     cond: condSpecSchema,
     ops: conditionalBodySchema,
+    // « Si <cond>, vous POUVEZ <corps> » : quand la condition est vraie, le corps
+    // n'est pas exécuté d'office — il est PROPOSÉ (effectChoices Oui/Non). Décliner
+    // saute le corps mais poursuit le reste de la frame. La condition GARDE l'offre :
+    // si elle est fausse, aucune proposition (pas de prompt inutile). Absent = corps
+    // exécuté d'office quand la condition est vraie (comportement historique).
+    optional: z.boolean().optional(),
   }),
   // CHOIX EXCLUSIF « A ou B » (« L'Allié de votre choix gagne Géant ou +2 en
   // Force… ») : le joueur choisit UNE option, dont les ops s'exécutent ; les

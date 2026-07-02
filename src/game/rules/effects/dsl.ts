@@ -3322,13 +3322,30 @@ export function compileTurnStartEffectText(
   if (condM) {
     const cond = parseCond(condM[1], cardName);
     if (!cond) return null;
-    const inner = condM[2].replace(/\.$/, "").trim();
-    if (/^vous pouvez /.test(inner)) return null;
+    let inner = condM[2].replace(/\.$/, "").trim();
+    // « … si <cond>, vous POUVEZ <corps> » : la condition GARDE une offre
+    // optionnelle (conditional{optional} → la proposition n'apparaît que si la
+    // condition est vraie). STRICT : un optionnel MULTI-PHRASES (« … Si vous le
+    // faites, … ») reste ambigu → manuel (comme compileEffectText).
+    let optional = false;
+    const opt = inner.match(/^vous pouvez (.+)$/);
+    if (opt) {
+      optional = true;
+      inner = opt[1];
+      if (/\.\s+\S/.test(inner)) return null;
+    }
     const innerOps = compileBody(inner, cardName, sourceElement);
     if (!innerOps) return null;
     return {
       trigger: "onTurnStart",
-      ops: [{ op: "conditional", cond, ops: innerOps }],
+      ops: [
+        {
+          op: "conditional",
+          cond,
+          ...(optional ? { optional: true } : {}),
+          ops: innerOps,
+        },
+      ],
     };
   }
   let orElse: "destroySelf" | undefined;

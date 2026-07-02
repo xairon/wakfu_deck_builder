@@ -383,7 +383,7 @@
               @click="store.effectChoiceResolve(false)"
             >
               {{
-                store.effectChoice.declineOps?.length
+                store.effectChoice.declineDestroysSelf
                   ? "Refuser (la carte est détruite)"
                   : "Décliner"
               }}

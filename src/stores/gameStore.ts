@@ -923,6 +923,7 @@ export const useGameStore = defineStore("game", () => {
                 atom.orElse === "destroySelf"
                   ? [{ op: "destroySelf" }]
                   : undefined,
+              declineDestroysSelf: atom.orElse === "destroySelf",
               sourceId: inst.instanceId,
             },
           ];

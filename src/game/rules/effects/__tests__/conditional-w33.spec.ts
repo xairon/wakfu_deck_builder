@@ -58,12 +58,21 @@ describe("DSL conditionnel (W33) — compileTurnStartEffectText", () => {
     expect(c).toBeNull();
   });
 
-  it("REJETTE un corps optionnel « vous pouvez … » sous condition → manuel", () => {
+  it("corps optionnel « vous pouvez … » sous condition → conditional{optional} (W47)", () => {
+    // W47 a levé le rejet W33 : la condition GARDE une offre optionnelle
+    // (cf. conditional-optional-w47.spec.ts). Le corps est proposé, pas exécuté d'office.
     const c = compileTurnStartEffectText(
       "Au début de votre tour, si Dollarawan le Banquier se trouve dans son Havre Sac, vous pouvez piocher une carte.",
       "Dollarawan le Banquier",
     );
-    expect(c).toBeNull();
+    expect(c?.ops).toEqual([
+      {
+        op: "conditional",
+        cond: { cond: "selfInZone", zone: "havreSac" },
+        optional: true,
+        ops: [{ op: "draw", n: 1 }],
+      },
+    ]);
   });
 
   it("REJETTE une condition non évaluable (sujet hors self) → manuel", () => {

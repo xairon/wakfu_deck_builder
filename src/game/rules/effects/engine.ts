@@ -172,8 +172,21 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       cardName: string;
       text: string;
       ops: EffectOp[];
-      /** Branche exécutée si le joueur décline (« ou détruisez X »). */
+      /**
+       * Branche exécutée si le joueur décline. Trois provenances : (1) chooseOne
+       * branche B (avec `optionLabels`) ; (2) coût d'entretien « X ou détruisez
+       * [cette carte] » (`declineDestroysSelf`) ; (3) conditional{optional} — le
+       * RESTE de la frame après le corps conditionnel sauté. Le libellé du bouton
+       * de refus ne dépend donc PAS de `declineOps` mais du seul `declineDestroysSelf`.
+       */
       declineOps?: EffectOp[];
+      /**
+       * Le refus DÉTRUIT la source (coût d'entretien « … ou détruisez cette carte »,
+       * onTurnStart orElse:"destroySelf"). Distinct de declineOps (qui, pour un
+       * conditional{optional}, n'est que le reste de la frame — aucune destruction).
+       * Pilote le libellé « Refuser (la carte est détruite) ».
+       */
+      declineDestroysSelf?: boolean;
       /**
        * CHOIX EXCLUSIF « A ou B » (op chooseOne) : étiquettes des deux boutons
        * (`[label A, label B]`). `ops` = branche A (bouton 0, accept=true),
@@ -658,7 +671,26 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // Si fausse, le corps est sauté (no-op fidèle), on poursuit.
         if (evalCond(op.cond, seat, sourceId)) {
           const body = op.ops as EffectOp[];
-          holdRest(frame, [...body, ...ops.slice(i + 1)]);
+          const rest = ops.slice(i + 1);
+          // « Si <cond>, vous POUVEZ <corps> » : la condition étant remplie, on
+          // PROPOSE le corps (effectChoices Oui/Non) au lieu de l'exécuter d'office.
+          // Accepter → corps + reste ; décliner → reste seul (corps sauté). La frame
+          // courante est CONSOMMÉE (return false) : sa continuation vit dans le choix.
+          if (op.optional) {
+            effectChoices.value = [
+              ...effectChoices.value,
+              {
+                seat,
+                cardName,
+                text: `${cardName} — condition remplie : appliquer l'effet ?`,
+                ops: [...body, ...rest],
+                declineOps: [...rest],
+                ...(sourceId ? { sourceId } : {}),
+              },
+            ];
+            return false;
+          }
+          holdRest(frame, [...body, ...rest]);
           return runFrame(effectQueue.value[0]);
         }
         deps.dispatch(
