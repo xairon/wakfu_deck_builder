@@ -3239,6 +3239,79 @@ export function selfDestroyedEffects(card: Card | null): EffectAtom[] {
 }
 
 /**
+ * Compile un DÉCLENCHÉ DE DOMMAGES SUBIS PAR SOI (bus damageDealt, 804.7) :
+ * « Chaque fois que <self> subit des Dommages, [vous pouvez] CORPS. »
+ * → `{ trigger:"onDamageToSelf", [optional,] ops }` (Wa Wabbit). Le déclenché
+ * part à CHAQUE événement de Dommages effectivement infligés (811.4 — jamais à
+ * 0) dont la CIBLE est la source, TOUTE provenance (combat, pouvoir, riposte :
+ * le texte ne restreint pas la source des Dommages).
+ *
+ * STRICT et NARROW : le sujet doit être la carte elle-même (« le Porteur de X »
+ * ou une veille d'autrui → manuel) ; toute clause résiduelle sur les Dommages
+ * (« des Dommages de combat », « 2 Dommages ou plus », « par un adversaire »)
+ * fait échouer le match (le libellé exact est exigé) ; « vous pouvez » →
+ * `optional` (une seule phrase, sinon ambigu) ; le CORPS doit compiler
+ * entièrement (compileBody).
+ */
+export function compileDamagedSelfText(
+  text: string,
+  cardName: string,
+  sourceElement = "Neutre",
+): CompiledEffect | null {
+  const m = norm(text).match(
+    /^chaque fois que (.{1,60}?) subit des dommages\s*,?\s*(.+)$/,
+  );
+  if (!m) return null;
+  const subject = m[1].trim();
+  if (/\bporteur\b/.test(subject)) return null;
+  if (!subjectIsSelf(subject, cardName)) return null;
+  let body = m[2].replace(/\.$/, "").trim();
+  let optional = false;
+  const opt = body.match(/^vous pouvez (.+)$/);
+  if (opt) {
+    optional = true;
+    body = opt[1];
+  }
+  if (optional && /\.\s+\S/.test(body)) return null;
+  const ops = compileBody(body, cardName, sourceElement);
+  if (!ops) return null;
+  // GARDE STRUCTURELLE ANTI-BOUCLE (revue W51) : un corps qui INFLIGE des
+  // Dommages pourrait re-déclencher onDamageToSelf (l'auto-ciblage est légal)
+  // → boucle infinie potentielle. On ne compile JAMAIS un corps dommageant sur
+  // ce trigger — il reste MANUEL jusqu'à validation explicite du flux (une
+  // approximation potentiellement bouclante est pire qu'un rappel).
+  if (ops.some((o) => o.op.startsWith("damage"))) return null;
+  return {
+    trigger: "onDamageToSelf",
+    ...(optional ? { optional: true } : {}),
+    ops,
+  };
+}
+
+/**
+ * Effets « Chaque fois que [self] subit des Dommages » de cette carte (trigger
+ * onDamageToSelf). Consommé par le bus (`collectTriggeredEffects` via
+ * l'événement `damageDealt`, cf. selfDamagedFrames). Pendant de
+ * `selfDestroyedEffects`.
+ */
+export function selfDamagedEffects(card: Card | null): EffectAtom[] {
+  if (!card) return [];
+  const atoms: EffectAtom[] = [];
+  for (const e of card.effects ?? []) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      (text && !e?.requiresIncline
+        ? compileDamagedSelfText(text, card.name, effectSourceElement(card))
+        : null);
+    if (compiled && compiled.trigger === "onDamageToSelf")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
+}
+
+/**
  * Compile un DÉCLENCHÉ D'APPARITION NON-SOI (804) : « Quand / Chaque fois
  * qu'un Allié [Famille]? [adverse]? apparaît [dans le Monde], CORPS. » où le
  * CORPS a pour sujet le contrôleur de la carte qui VEILLE (ops génériques :

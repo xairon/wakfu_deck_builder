@@ -955,6 +955,11 @@ export const compiledEffectSchema = z.object({
     "onOtherAppears",
     "onSelfDestroyed",
     "onDamageToBearer",
+    // « Chaque fois que <self> subit des Dommages, [vous pouvez] <corps> »
+    // (Wa Wabbit) : déclenché quand la CARTE ELLE-MÊME subit des Dommages
+    // (bus damageDealt, toute source — combat, pouvoir, riposte : le texte ne
+    // restreint pas). Émis par selfDamagedFrames (triggers.ts).
+    "onDamageToSelf",
   ]),
   optional: z.boolean().optional(),
   // "sacrificeSelf" : le coût est de sacrifier la SOURCE (« Détruisez [cette

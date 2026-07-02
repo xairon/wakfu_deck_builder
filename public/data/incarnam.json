@@ -15533,7 +15533,18 @@
         "description": "Chaque fois que le Wa Wabbit subit des Dommages vous pouvez piocher une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onDamageToSelf",
+          "optional": true,
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       },
       {
         "description": "Le Wa Wabbit inflige 2 Dommages à l'Allié ou Héros de votre choix.",

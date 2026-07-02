@@ -21,6 +21,7 @@ import {
   compileBearerBonusText,
   compileBearerRiposteText,
   compileCombatTriggerText,
+  compileDamagedSelfText,
   compileEffectText,
   compileSelfDestroyedText,
   compileStaticEffectText,
@@ -245,6 +246,7 @@ function compileEffects(
           ? compileActionEffectText(text, cardName, sourceElement)
           : (compileCombatTriggerText(text, cardName, sourceElement) ??
             compileSelfDestroyedText(text, cardName, sourceElement) ??
+            compileDamagedSelfText(text, cardName, sourceElement) ??
             compileAppearanceTriggerText(text, cardName, sourceElement) ??
             compileEffectText(text, cardName, sourceElement) ??
             compileTurnStartEffectText(text, cardName, sourceElement) ??

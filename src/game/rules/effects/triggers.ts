@@ -13,7 +13,12 @@ import type { CompiledEffectOp } from "@/types/cards";
 import type { InstanceId } from "../../types/events";
 import type { Seat } from "../../types/zones";
 import type { RuleEvent, RulesCtx } from "../types";
-import { bearerEffects, selfAttackEffects, selfDestroyedEffects } from "./dsl";
+import {
+  bearerEffects,
+  selfAttackEffects,
+  selfDamagedEffects,
+  selfDestroyedEffects,
+} from "./dsl";
 
 /** Frame déclenchée, prête pour `enqueueEffect` du store. */
 export interface TriggeredFrame {
@@ -110,6 +115,37 @@ function bearerFrames(
 }
 
 /**
+ * damageDealt → effets « Chaque fois que [self] subit des Dommages » de la
+ * CIBLE des Dommages (Wa Wabbit, 804.7). Toute provenance (combat, pouvoir,
+ * riposte : le texte ne restreint pas la source — contrairement à la riposte de
+ * Porteur qui, elle, exige un damager Allié/Héros). Émis seulement si la cible
+ * est ENCORE EN JEU (Monde/Havre-Sac) : une cible détruite par ces mêmes
+ * Dommages est en Défausse à la collecte → pas de déclenché (omission
+ * conservatrice, cohérente avec bearerFrames — jamais d'approximation).
+ * Pas de boucle possible aujourd'hui : le seul corps compilé (draw) n'inflige
+ * pas de Dommages ; un futur corps damageant devra être validé à ce moment-là.
+ */
+function selfDamagedFrames(
+  ctx: RulesCtx,
+  evt: Extract<RuleEvent, { kind: "damageDealt" }>,
+): TriggeredFrame[] {
+  const inst = ctx.state.instances[evt.target];
+  if (!inst) return [];
+  const zone = inst.location.zone;
+  if (zone !== "monde" && zone !== "havreSac") return [];
+  const card = ctx.getCard(inst.cardId);
+  if (!card) return [];
+  return selfDamagedEffects(card).map((atom) => ({
+    seat: inst.controller,
+    sourceId: evt.target,
+    cardName: card.name,
+    text: atom.text,
+    ops: atom.ops,
+    ...(atom.optional ? { optional: true } : {}),
+  }));
+}
+
+/**
  * destroyed → effets « Quand [self] est détruit » de la carte détruite (804.7).
  * L'instance détruite est lue dans le contexte FOURNI : l'appelant collecte les
  * frames AU MOMENT de la destruction (avant que le déplacement vers la Défausse
@@ -146,8 +182,10 @@ export function collectTriggeredEffects(
   for (const evt of evts) {
     if (evt.kind === "attackerDeclared")
       frames.push(...attackerFrames(ctx, evt));
-    else if (evt.kind === "damageDealt") frames.push(...bearerFrames(ctx, evt));
-    else if (evt.kind === "destroyed")
+    else if (evt.kind === "damageDealt") {
+      frames.push(...bearerFrames(ctx, evt));
+      frames.push(...selfDamagedFrames(ctx, evt));
+    } else if (evt.kind === "destroyed")
       frames.push(...destroyedFrames(ctx, evt));
   }
   const active = ctx.state.turn.active;
