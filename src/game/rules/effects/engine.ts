@@ -60,6 +60,7 @@ import {
   resolveReturnToHand,
   resolveTapTarget,
   resolveUntapTarget,
+  xpValue,
   resistanceLabel,
 } from "@/game/rules";
 
@@ -1837,6 +1838,23 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       return;
     }
     effectTargeting.value = null;
+    // MAGNITUDE DYNAMIQUE À CIBLE (« Piochez un nombre de cartes égal à la valeur
+    // d'XP de l'Allié de votre choix ») : on pioche la valeur d'XP (xpValue,
+    // card.experience) de la cible choisie.
+    if (t.op.op === "drawTargetXp") {
+      const chosen = deps.getState().instances[instanceId];
+      const card = chosen ? deps.getCard(chosen.cardId) : null;
+      const xp = card ? xpValue(card) : 0;
+      if (xp) deps.draw(t.seat, xp);
+      deps.dispatch(
+        say(
+          t.seat,
+          `${t.cardName} : pioche ${xp} carte(s) (valeur d'XP de la cible).`,
+        ),
+      );
+      pumpEffects();
+      return;
+    }
     // OPS « LE JOUEUR DE VOTRE CHOIX … » : la cible choisie est un HÉROS ; l'effet
     // s'applique au CONTRÔLEUR de ce Héros (vous ou l'adversaire). Résolution via
     // deps.draw / jeton paMod·pmMod (purgé en fin de tour), pas un resolve* pur.

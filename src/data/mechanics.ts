@@ -415,6 +415,7 @@ export const MECHANICS: Mechanic[] = [
 export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   gainXp: "gain-xp",
   draw: "draw",
+  drawTargetXp: "draw",
   heroGainPv: "hero-gain-pv",
   heroLosePv: "hero-lose-pv",
   damageOppHero: "damage-opp-hero",

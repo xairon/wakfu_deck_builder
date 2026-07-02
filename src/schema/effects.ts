@@ -558,6 +558,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     fromCount: z.boolean().optional(),
     zones: zonesSchema,
   }),
+  // MAGNITUDE DYNAMIQUE À CIBLE (« Piochez un nombre de cartes égal à la valeur
+  // d'XP de l'Allié [dans le Monde] de votre choix ») : op de CIBLAGE (choisir un
+  // Allié en jeu) dont le nombre de cartes piochées = valeur d'XP (card.experience,
+  // xpValue) de la cible choisie, résolu au clic. Éligibilité = Allié seul
+  // (heroes:false) dans `zones`.
+  z.object({
+    op: z.literal("drawTargetXp"),
+    zones: zonesSchema,
+  }),
   z.object({
     op: z.literal("returnToHand"),
     heroes: z.boolean().optional(),

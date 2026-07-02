@@ -432,7 +432,10 @@
                                         : store.effectTargeting.op.op ===
                                             "untapMultiTarget"
                                           ? `choisis une créature à redresser (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                                          : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                                          : store.effectTargeting.op.op ===
+                                              "drawTargetXp"
+                                            ? "choisis l'Allié dont tu piocheras la valeur d'XP"
+                                            : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

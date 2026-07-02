@@ -38,6 +38,7 @@ export type TargetingOp = Extract<
   | { op: "untapTarget" }
   | { op: "tapMultiTarget" }
   | { op: "untapMultiTarget" }
+  | { op: "drawTargetXp" }
   | { op: "returnToHand" }
   | { op: "costTapControlled" }
   | { op: "costDestroyControlled" }
@@ -65,6 +66,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "untapTarget" ||
     op.op === "tapMultiTarget" ||
     op.op === "untapMultiTarget" ||
+    op.op === "drawTargetXp" ||
     op.op === "returnToHand" ||
     op.op === "costTapControlled" ||
     op.op === "costDestroyControlled" ||
@@ -216,7 +218,9 @@ export function effectTargetIds(
                 op.op === "damageTarget" && op.targetHeroOnly
                 ? card.mainType === "Héros"
                 : card.mainType === "Allié" ||
-                  (op.heroes && card.mainType === "Héros");
+                  // `heroes` absent (ex. drawTargetXp = Allié seul) → false.
+                  (("heroes" in op ? op.heroes : false) &&
+                    card.mainType === "Héros");
     // famille requise (« le Monstre de votre choix »)
     if (
       ok &&

@@ -340,6 +340,14 @@ function parseSentence(
         value: { kind: "count", of: { source: "controlled", ...ct } },
       };
   }
+  // « Piochez un nombre de cartes égal à la valeur d'XP de l'Allié [dans le
+  //   Monde] de votre choix » (Prospection) → op de ciblage drawTargetXp (choisir
+  //   un Allié en jeu, piocher sa valeur d'XP). Cible dans le Monde (« dans le
+  //   Monde » explicite, ou défaut Monde comme les ciblages d'Allié).
+  m = sentence.match(
+    /^pioche[zr] un nombre de cartes egal a la valeur d['’ ]?\s?xp de l['’ ]?\s?allie( dans le monde)? de votre choix$/,
+  );
+  if (m) return { op: "drawTargetXp", zones: ["monde"] };
   // « Chaque joueur pioche N carte(s). » / « Tous les joueurs piochent N carte(s). »
   // — pioche symétrique (joueur actif d'abord).
   m = sentence.match(/^chaque joueur pioche (une|deux|trois|\d+) cartes?$/);

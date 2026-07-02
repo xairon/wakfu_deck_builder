@@ -12636,7 +12636,17 @@
         "description": "Piochez un nombre de cartes égal à la valeur d'XP de l'Allié dans le Monde de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "drawTargetXp",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       },
       {
         "description": "Si le choix de l'Allié est devenu illégal à la résolution de la Prospection, l'effet de l'Action est entièrement annulé et le joueur ne pioche donc pas de carte.",
