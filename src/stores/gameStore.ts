@@ -1377,6 +1377,13 @@ export const useGameStore = defineStore("game", () => {
       return rejectMove("Vous ne contrôlez pas cette carte.");
     const seat = perspective.value;
     const atom = atoms[0];
+    // VERROU « N'utilisez ce pouvoir qu'une seule fois par tour » (pouvoir dont
+    // l'activation n'incline PAS la source — ex. Bwork Mage, coût de défausse) :
+    // un jeton `powerUses0` > 0 sur la source rend le pouvoir inactivable ce
+    // tour. Le jeton est posé à l'activation et purgé en fin de tour
+    // (isTurnToken, préfixe "powerUses").
+    if (atom.oncePerTurn && (inst.counters.tokens?.powerUses0 ?? 0) > 0)
+      return rejectMove("Pouvoir déjà utilisé ce tour.");
     // COÛT « Bannissez [cette carte] depuis votre Défausse : … » — la SOURCE
     // doit être dans la DÉFAUSSE (pas en jeu) ; elle est BANNIE (déplacée vers
     // l'Exil de son propriétaire), AUCUN XP, AUCUNE destruction. Traité AVANT le
@@ -1417,6 +1424,35 @@ export const useGameStore = defineStore("game", () => {
     if (atom.cost === "paidOps") {
       if (state.value.turn.active !== perspective.value)
         return rejectMove("Ce n'est pas votre tour.");
+      // COÛT DE DÉFAUSSE IMPOSÉ impayable (main insuffisante) : refuser AVANT
+      // de consommer l'inclinaison (tapsSource) ou le verrou once-per-turn —
+      // sinon l'activation brûlerait le coût sans que le corps ne tourne.
+      // (La variante « jusqu'à N » (max) est toujours payable : 0 est licite.)
+      const firstOp = atom.ops[0];
+      if (
+        firstOp?.op === "costDiscard" &&
+        !firstOp.max &&
+        state.value.seats[seat].main.length < (firstOp.n ?? 1)
+      )
+        return rejectMove(
+          "Pas assez de cartes en main pour payer le coût de défausse.",
+        );
+      // COÛT COMPOSÉ (`tapsSource` — Amulette Akwadala : requiresIncline + coût
+      // de défausse) : l'activation incline AUSSI la source → elle doit être
+      // dressée, et l'inclinaison est dispatchée AVANT l'enfilage du coût.
+      if (atom.tapsSource) {
+        if (inst.orientation !== "upright")
+          return rejectMove("La carte est déjà inclinée.");
+        dispatch({
+          actor: seat,
+          type: "SET_ORIENTATION",
+          payload: { instanceId, orientation: "tapped" },
+        });
+      }
+      // Verrou once-per-turn (émis uniquement sur les coûts de défausse paidOps,
+      // cf. compileDiscardCountCost) : pose le jeton powerUses0 sur la source.
+      if (atom.oncePerTurn)
+        dispatch(incCounterVerb(seat, instanceId, "powerUses0", 1, true));
       dispatch(say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`));
       engine.enqueueEffect({
         seat,

@@ -878,6 +878,16 @@ export const compiledEffectSchema = z.object({
   cost: z
     .enum(["sacrificeSelf", "banishSelf", "banishSelfFromDiscard", "paidOps"])
     .optional(),
+  // VERROU « N'utilisez ce pouvoir qu'une seule fois par tour » sur un pouvoir
+  // dont l'activation N'INCLINE PAS la source (sinon l'inclinaison est déjà le
+  // verrou et la clause est strippée comme redondante). L'activation pose un
+  // jeton `powerUses0` sur la source (purgé en fin de tour, cf. isTurnToken) ;
+  // un jeton > 0 rend le pouvoir inactivable ce tour.
+  oncePerTurn: z.boolean().optional(),
+  // COÛT COMPOSÉ : pouvoir `paidOps` dont l'activation INCLINE AUSSI la source
+  // (`requiresIncline` + coût payé — Amulette Akwadala : inclinaison + défausse).
+  // Sans ce flag, le chemin paidOps n'incline pas la source.
+  tapsSource: z.boolean().optional(),
   orElse: z.literal("destroySelf").optional(),
   static: staticAbilitySchema.optional(),
   // Présent uniquement pour trigger:"onOtherAppears".

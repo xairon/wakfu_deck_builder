@@ -945,7 +945,26 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "oncePerTurn": true,
+          "ops": [
+            {
+              "op": "costDiscard",
+              "n": 1
+            },
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Feu",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-discard", "damage-target"]
       }
     ],
     "keywords": [],

@@ -644,7 +644,23 @@
         "description": "Défaussez une carte : Piochez une carte.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costDiscard",
+              "n": 1
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ],
+          "tapsSource": true
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-discard", "draw"]
       },
       {
         "description": "Si vous n'avez aucune carte en Main à la résolution du pouvoir, aucune carte ne peut être défaussée. Dans ce cas, vous ne piochez pas de carte car la pioche est une action conditionnelle.",
@@ -2607,7 +2623,26 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "oncePerTurn": true,
+          "ops": [
+            {
+              "op": "costDiscard",
+              "n": 1
+            },
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Feu",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-discard", "damage-target"]
       }
     ],
     "keywords": [],
@@ -3853,7 +3888,8 @@
               "heroes": true,
               "zones": ["monde", "havreSac"]
             }
-          ]
+          ],
+          "tapsSource": true
         },
         "coverage": "auto",
         "mechanics": ["cost-discard", "damage-target"]

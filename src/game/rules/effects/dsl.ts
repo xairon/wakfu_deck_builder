@@ -1896,7 +1896,17 @@ export function compileTapEffectText(
     cardName,
     sourceElement,
   );
-  if (discardCount) return { ...discardCount, trigger: recycleTrigger };
+  // COÛT COMPOSÉ (Amulette Akwadala) : `requiresIncline` + coût de défausse →
+  // l'activation doit AUSSI incliner la source (flag tapsSource, lu par
+  // activateTapPower sur le chemin paidOps). L'inclinaison étant alors le
+  // verrou once-per-turn, le flag oncePerTurn éventuel serait redondant — mais
+  // normalized a déjà été strippé en amont pour requiresIncline, donc exclusifs.
+  if (discardCount)
+    return {
+      ...discardCount,
+      trigger: recycleTrigger,
+      ...(requiresIncline ? { tapsSource: true } : {}),
+    };
   // COÛT DE RECYCLAGE « Recyclez … : CORPS » (Défausse / main / soi-depuis-le-
   // Monde) → cost:"paidOps" avec costRecycle en première op. Testé avant la
   // forme incline/sacrifice (le préfixe « Recyclez » ne capte ni l'un ni l'autre).
@@ -2426,17 +2436,30 @@ function compileDiscardCountCost(
   cardName: string,
   sourceElement: string,
 ): CompiledEffect | null {
-  const m = text.match(
+  // Clause « N'utilisez ce pouvoir qu'une seule fois par tour » en fin de texte :
+  // sur un pouvoir à coût de DÉFAUSSE (qui n'incline pas la source), elle EST le
+  // verrou → strippée ET traduite en flag `oncePerTurn` (jeton powerUses0 à
+  // l'activation). ≠ des pouvoirs à inclinaison de soi, où elle est redondante.
+  const oncePerTurn = TAP_ONCE_PER_TURN.test(text);
+  const cleaned = oncePerTurn
+    ? text.replace(TAP_ONCE_PER_TURN, "").trim()
+    : text;
+  const m = cleaned.match(
     /^defaussez (jusqu['’]a )?(une|deux|trois|\d+) cartes?(?: de votre main)?\s*:\s*(.+)$/,
   );
   if (!m) return null;
   const bodyText = m[3].replace(/\.$/, "").trim();
   if (/^(?:il|elle)\s/.test(bodyText)) return null; // actor-binding non modélisé
-  const body = compileRecycleCountBody(bodyText, cardName, sourceElement);
+  // Corps « le même nombre » (fromCount) d'abord ; sinon corps FIXE ordinaire
+  // (« Piochez une carte », « <self> inflige N Dommages … ») via compileBody.
+  const body =
+    compileRecycleCountBody(bodyText, cardName, sourceElement) ??
+    compileBody(bodyText, cardName, sourceElement);
   if (!body) return null;
   return {
     trigger: "onTap",
     cost: "paidOps",
+    ...(oncePerTurn ? { oncePerTurn: true } : {}),
     ops: [
       { op: "costDiscard", n: toNumber(m[2]), ...(m[1] ? { max: true } : {}) },
       ...body,
@@ -3320,6 +3343,7 @@ export function tapPowers(card: Card | null): EffectAtom[] {
         isSacrificeCostText(text) ||
         isBanishCostText(text) ||
         isRecycleCostText(text) ||
+        isDiscardCostText(text) ||
         isTokenTapPowerText(text))
         ? compileTapEffectText(
             text,

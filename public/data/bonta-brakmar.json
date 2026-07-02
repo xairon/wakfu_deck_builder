@@ -3943,7 +3943,23 @@
         "description": "Défaussez une carte de votre main : Le Héros de votre choix regagne 2 PV.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costDiscard",
+              "n": 1
+            },
+            {
+              "op": "healHeroTarget",
+              "n": 2
+            }
+          ],
+          "tapsSource": true
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-discard", "heal-hero-target"]
       }
     ],
     "keywords": [],
