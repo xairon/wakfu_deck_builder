@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-01.** État : **437 / 1802 effets imprimés structurés (24,3 %)** — `auto 391 · manual 46 · uncovered 1365 · ruling 452 · keyword 256 · trait 60`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-01.** État : **443 / 1802 effets imprimés structurés (24,6 %)** — `auto 397 · manual 46 · uncovered 1359 · ruling 452 · keyword 256 · trait 60`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
@@ -27,9 +27,9 @@ Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complèt
 
 ---
 
-## 3. Deck-driven — worklist des 4 starters Incarnam (39 restants)
+## 3. Deck-driven — worklist des 4 starters Incarnam (36 restants)
 
-Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter.mjs` (à recréer — voir §6). **48 → 39** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource, W41 tap/untap-multi, W42 drawTargetXp). Restants, groupés par **sous-système à bâtir** :
+Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter.mjs` (à recréer — voir §6). **48 → 36** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource, W41 tap/untap-multi, W42 drawTargetXp, W43 team-combat-reduction/glyphe-revigorant, W44 each-player-optional/coffre+djakky). Restants, groupés par **sous-système à bâtir** :
 
 | Sous-système à bâtir                              | Effets starters concernés                                                                                             | Notes                                                                                                                                                                                             |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -38,7 +38,7 @@ Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/offi
 | **Magnitude dynamique** (X-cost / statOf)         | repos (X PV), merelyne (Niveau X), coup-critique (Force doublée), colere-de-iop (X répartis) ; ~~prospection~~ ✅ W42 | prospection FAIT (op `drawTargetXp`). Reste = coût-**X** (payé) + Ether + double-Force → chacun son sous-système.                                                                                 |
 | **Porteur / riposte** (`onDamageToBearer`)        | cape-du-prespic, anneau-du-prespic, dora                                                                              | Bus dormant existant, données à parser.                                                                                                                                                           |
 | **Récence** (« qui vient de subir / s'incliner ») | fleche-d-immolation, wa-wabbit, crapaud-mufle                                                                         | counters.damage est TURN-scoped, pas combat-scoped → besoin d'un marqueur de récence fidèle.                                                                                                      |
-| **Each-player optionnel**                         | coffre-malveillant, djakky-chwan, smare                                                                               | « chaque joueur PEUT … » (par-joueur optionnel).                                                                                                                                                  |
+| ~~Each-player optionnel~~ **FAIT (W44)**          | ~~coffre-malveillant~~ ✅ ~~djakky-chwan~~ ✅ ; reste smare (« payer pour »)                                          | « chaque joueur PEUT … » (par-joueur optionnel).                                                                                                                                                  |
 | **Placement en combat**                           | bond, exclusion                                                                                                       | Déclarer bloqueur / retirer du combat.                                                                                                                                                            |
 | **Annulation / File** (réaction)                  | echec-critique (« Annulez … qui vient d'être joué »)                                                                  | Interaction avec la file d'attente.                                                                                                                                                               |
 | **Look-N pile**                                   | bonne-affaire (« Regardez les 2 premières… »)                                                                         | Révélation ordonnée + choix.                                                                                                                                                                      |

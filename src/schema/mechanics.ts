@@ -48,11 +48,13 @@ export const mechanicTagSchema = z.enum([
   "untap-all",
   "damage-all",
   "destroy-all",
+  "team-combat-dmg-reduction",
   "cost-tap-controlled",
   "cost-destroy-controlled",
   "cost-discard",
   "cost-recycle",
   "cost-recycle-controlled",
+  "each-player-optional",
   "conditional",
   "choose-one",
 ]);

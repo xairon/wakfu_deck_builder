@@ -2474,7 +2474,17 @@
         "description": "Jusqu'à la fin du combat, tous les Dommages sur le point d'être infligés à vos Alliés ou Héros attaquants ou bloqueurs sont réduits de 1.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "teamCombatDmgReduction",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["team-combat-dmg-reduction"]
       }
     ],
     "keywords": [],

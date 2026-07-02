@@ -115,6 +115,15 @@ export function reduceDamage(
     for (const s of staticAbilitiesOf(card, side)) {
       if (s.kind === "combatDamageReduction") amount -= s.n;
     }
+    // RÉDUCTION DE COMBAT D'ÉQUIPE (« Jusqu'à la fin du combat, vos attaquants/
+    // bloqueurs subissent −N » — Glyphe Revigorant) : jeton teamDmgRedCombatMod
+    // sur le Héros du CONTRÔLEUR de la cible ; s'applique à toute cible de ce
+    // siège en rôle de combat.
+    if (inst) {
+      const heroId = ctx.state.seats[inst.controller].heroInstanceId;
+      const hero = heroId ? ctx.state.instances[heroId] : null;
+      amount -= hero?.counters.tokens?.teamDmgRedCombatMod ?? 0;
+    }
   }
   // 2bis. AURAS DE PRÉVENTION continues (effet de remplacement, primitive #3) :
   // chaque source EN JEU portant une `damagePreventionAura` dont le bénéficiaire

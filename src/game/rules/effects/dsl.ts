@@ -321,6 +321,42 @@ function parseSentence(
 ): EffectOp | null {
   let m = sentence.match(/^gagne[zr] (\d+) xp$/);
   if (m) return { op: "gainXp", n: toNumber(m[1]) };
+  // « Jusqu'à la fin du combat, tous les Dommages sur le point d'être infligés à
+  //   vos Alliés ou Héros attaquants ou bloqueurs sont réduits de N » (Glyphe
+  //   Revigorant) → teamCombatDmgReduction (jeton sur le Héros, lu par reduceDamage
+  //   pour vos cibles en rôle de combat).
+  m = sentence.match(
+    /^jusqu['’]a la fin du combat,? tous les dommages sur le point d['’]\s?etre infliges a vos allies ou heros attaquants ou bloqueurs sont reduits de (\d+)$/,
+  );
+  if (m) return { op: "teamCombatDmgReduction", n: toNumber(m[1]) };
+  // « Chaque joueur peut piocher N carte(s). » (Coffre Malveillant) →
+  //   eachPlayerOptional{ draw } : chaque joueur confirme indépendamment.
+  m = sentence.match(
+    /^chaque joueur peut piocher (une|deux|trois|\d+) cartes?$/,
+  );
+  if (m)
+    return {
+      op: "eachPlayerOptional",
+      ops: [{ op: "draw", n: toNumber(m[1]) }],
+    };
+  // « Chaque joueur peut redresser un Allié [ou Héros] de son choix. » (Djakky
+  //   Chwan) → eachPlayerOptional{ untapTarget controller:self } : chaque joueur
+  //   redresse une de SES créatures (Monde ou Havre-Sac, cf. ruling).
+  m = sentence.match(
+    /^chaque joueur peut redresser un allie( ou heros)? de son choix$/,
+  );
+  if (m)
+    return {
+      op: "eachPlayerOptional",
+      ops: [
+        {
+          op: "untapTarget",
+          ...(m[1] ? { heroes: true } : {}),
+          controller: "self",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    };
   m = sentence.match(/^pioche[zr] (une|deux|trois|\d+) cartes?$/);
   if (m) return { op: "draw", n: toNumber(m[1]) };
   // « Piochez un nombre de cartes égal au nombre de <X> que vous contrôlez »

@@ -435,7 +435,22 @@
         "description": "Quand le Coffre Malveillant est détruit, chaque joueur peut piocher une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfDestroyed",
+          "ops": [
+            {
+              "op": "eachPlayerOptional",
+              "ops": [
+                {
+                  "op": "draw",
+                  "n": 1
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["each-player-optional"]
       }
     ],
     "keywords": [],

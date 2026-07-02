@@ -287,6 +287,13 @@ export const MECHANICS: Mechanic[] = [
     glossary: "Réduit tous les Dommages à 0 temporairement.",
   },
   {
+    id: "team-combat-dmg-reduction",
+    label: "Réduction de Dommages d'équipe (combat)",
+    category: "contrôle",
+    glossary:
+      "Jusqu'à la fin du combat, réduit de N les Dommages infligés à vos Alliés ou Héros attaquants ou bloqueurs.",
+  },
+  {
     id: "tap-target",
     label: "Inclinaison (cible)",
     category: "tempo",
@@ -403,6 +410,13 @@ export const MECHANICS: Mechanic[] = [
       "« Si <condition>, … » : un corps d'effet ne s'exécute que si une condition lisible de l'état de jeu est vraie à la résolution.",
   },
   {
+    id: "each-player-optional",
+    label: "Chaque joueur peut (optionnel)",
+    category: "autre",
+    glossary:
+      "« Chaque joueur peut <action> » : chaque joueur choisit indépendamment d'exécuter (ou non) l'action, de son point de vue.",
+  },
+  {
     id: "choose-one",
     label: "Choix exclusif « A ou B »",
     category: "autre",
@@ -451,6 +465,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   grantResistanceTarget: "grant-resistance-target",
   buffForceAlliesMondeTurn: "buff-force-allies-monde",
   globalDamageShield: "global-damage-shield",
+  teamCombatDmgReduction: "team-combat-dmg-reduction",
   tapTarget: "tap-target",
   untapTarget: "untap-target",
   tapMultiTarget: "tap-target",
@@ -470,6 +485,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   playerGainStat: "player-gain-stat",
   conditional: "conditional",
   chooseOne: "choose-one",
+  eachPlayerOptional: "each-player-optional",
 };
 
 /** Tags uniques dérivés d'une liste d'ops, dans l'ordre d'apparition. */

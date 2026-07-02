@@ -134,6 +134,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
       .array(z.object({ label: z.string(), ops: conditionalBodySchema }))
       .min(2),
   }),
+  // « CHAQUE JOUEUR PEUT <corps> » (« … peut piocher une carte », « … peut
+  // redresser un Allié de son choix ») : chaque joueur reçoit une CONFIRMATION
+  // indépendante (effectChoices) pour exécuter `ops` DE SON POINT DE VUE (le corps
+  // se résout avec le siège du joueur — un ciblage `controller:"self"` vise SES
+  // créatures). Le « peut » est réel (un joueur peut décliner, ex. deck-out) →
+  // pas une exécution d'office (≠ eachPlayerDraws mandatory). Ops récursives.
+  z.object({
+    op: z.literal("eachPlayerOptional"),
+    ops: conditionalBodySchema,
+  }),
   z.object({ op: z.literal("gainXp"), n: z.number() }),
   z.object({
     op: z.literal("draw"),
@@ -509,6 +519,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     n: z.union([z.number(), z.literal("heroLevel")]),
   }),
   z.object({ op: z.literal("globalDamageShield") }),
+  // RÉDUCTION DE COMBAT D'ÉQUIPE (« Jusqu'à la fin du combat, tous les Dommages
+  // sur le point d'être infligés à vos Alliés ou Héros attaquants ou bloqueurs
+  // sont réduits de N ») : pose un jeton `teamDmgRedCombatMod` = N sur le Héros
+  // du contrôleur ; `reduceDamage` le lit pour toute cible EN RÔLE DE COMBAT
+  // (attaquant/bloqueur) contrôlée par ce siège. Portée COMBAT (jeton *CombatMod
+  // purgé en fin de tour ; le filtre combatRole le rend de facto combat-scoped).
+  z.object({ op: z.literal("teamCombatDmgReduction"), n: z.number() }),
   z.object({
     op: z.literal("tapTarget"),
     heroes: z.boolean().optional(),

@@ -3725,7 +3725,22 @@
         "description": "Quand le Coffre Malveillant est détruit, chaque joueur peut piocher une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfDestroyed",
+          "ops": [
+            {
+              "op": "eachPlayerOptional",
+              "ops": [
+                {
+                  "op": "draw",
+                  "n": 1
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["each-player-optional"]
       }
     ],
     "keywords": [],
@@ -4896,7 +4911,23 @@
         "description": "Quand Djakky Chwan apparaît, chaque joueur peut redresser un Allié de son choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "eachPlayerOptional",
+              "ops": [
+                {
+                  "op": "untapTarget",
+                  "controller": "self",
+                  "zones": ["monde", "havreSac"]
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["each-player-optional"]
       },
       {
         "description": "Chaque joueur peut choisir un Allié qu'il contrôle aussi bien dans le Monde que dans son Havre Sac, car les Règles de Choix s'appliquent à chaque joueur et non au Djakky Chwan.",
@@ -7134,7 +7165,17 @@
         "description": "Jusqu'à la fin du combat, tous les Dommages sur le point d'être infligés à vos Alliés ou Héros attaquants ou bloqueurs sont réduits de 1.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "teamCombatDmgReduction",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["team-combat-dmg-reduction"]
       }
     ],
     "keywords": [],

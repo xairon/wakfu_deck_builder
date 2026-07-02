@@ -691,6 +691,26 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         ];
         return false;
       }
+      if (op.op === "eachPlayerOptional") {
+        // « CHAQUE JOUEUR PEUT <corps> » : une confirmation INDÉPENDANTE par
+        // siège (joueur actif d'abord), chacune exécutant le corps DE SON POINT
+        // DE VUE (effectChoiceResolve enfile une frame avec choice.seat → un
+        // ciblage controller:"self" vise SES créatures). Le reste de la frame
+        // (ops après) continue immédiatement (les confirmations sont hors-bande).
+        const body = op.ops as EffectOp[];
+        for (const s of [seat, otherSeat(seat)]) {
+          effectChoices.value = [
+            ...effectChoices.value,
+            {
+              seat: s,
+              cardName,
+              text: `${cardName} — ${deps.playerName(s)} : peut agir`,
+              ops: body,
+            },
+          ];
+        }
+        continue;
+      }
       if (isTargetingOp(op)) {
         // VALEUR DYNAMIQUE liée au coût « Recyclez jusqu'à N … » : pour les ops à
         // cible à magnitude (damageTarget/buffForceTarget/healHeroTarget) marquées
@@ -1317,6 +1337,21 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             say(
               seat,
               `Votre Héros gagne +${op.n} en Force jusqu'à la fin du tour.`,
+            ),
+          );
+        }
+      } else if (op.op === "teamCombatDmgReduction") {
+        // « Jusqu'à la fin du combat, vos Alliés/Héros attaquants ou bloqueurs
+        // subissent −N Dommages » : jeton teamDmgRedCombatMod sur le Héros (suffixe
+        // *CombatMod → purgé en fin de tour ; reduceDamage le lit pour les cibles
+        // en rôle de combat de ce siège). CUMUL si joué plusieurs fois (incCounter).
+        const heroId = deps.getState().seats[seat].heroInstanceId;
+        if (heroId) {
+          deps.dispatch(
+            incCounterVerb(seat, heroId, "teamDmgRedCombatMod", op.n, true),
+            say(
+              seat,
+              `${cardName} : vos attaquants/bloqueurs subissent ${op.n} Dommage(s) de moins jusqu'à la fin du combat.`,
             ),
           );
         }
