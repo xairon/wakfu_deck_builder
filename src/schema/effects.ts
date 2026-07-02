@@ -986,7 +986,13 @@ export const compiledEffectSchema = z.object({
   //    frame en attente vers l'instance choisie au moment du paiement du coût.
   // Les ops du corps (damageTargetByForce/buffForceSelf) lisent alors ce
   // sourceId réécrit (Force et Élément calculés sur la créature liée).
-  actor: z.enum(["appeared", "costTarget"]).optional(),
+  //  - "target"     : la créature CHOISIE par le PREMIER op de ciblage régulier du
+  //    corps (« Redressez l'Allié de votre choix. Il gagne +2 en Force… ») ; le
+  //    moteur réécrit le sourceId de la frame en attente vers cette cible quand
+  //    l'op de ciblage se résout, puis la lie UNE fois (les ops « Il/Elle … »
+  //    suivantes, self-bound, s'y appliquent). Jumeau de "costTarget" mais sur un
+  //    op de ciblage NON payé.
+  actor: z.enum(["appeared", "costTarget", "target"]).optional(),
   ops: z.array(compiledEffectOpSchema),
 });
 

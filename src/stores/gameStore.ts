@@ -1328,7 +1328,14 @@ export const useGameStore = defineStore("game", () => {
       // → queueArrivalEffects, qui pousse les rappels.
       for (const atom of actionAtoms) {
         dispatch(say(seat, `Action résolue — ${card.name} : « ${atom.text} »`));
-        engine.enqueueEffect({ seat, cardName: card.name, ops: atom.ops });
+        engine.enqueueEffect({
+          seat,
+          cardName: card.name,
+          ops: atom.ops,
+          // ACTOR-BINDING « … de votre choix. Il/Elle … » : le moteur réécrira
+          // sourceId vers la créature choisie par l'op de ciblage (sujet du corps lié).
+          ...(atom.actor === "target" ? { actorBind: "target" as const } : {}),
+        });
       }
     } else {
       engine.queueArrivalEffects(seat, card, instanceId);

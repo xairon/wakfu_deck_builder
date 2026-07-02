@@ -78,7 +78,7 @@ export interface EffectFrame {
    * (actor:"appeared") est résolue en amont — la frame est enfilée directement
    * avec sourceId = instance apparue, sans ce marqueur.
    */
-  actorBind?: "costTarget";
+  actorBind?: "costTarget" | "target";
   /**
    * VALEUR LIÉE AU COÛT « Recyclez jusqu'à N … » (costRecycle{max:true}) : nombre
    * de cartes RÉELLEMENT recyclées au paiement du coût. Les ops du corps marquées
@@ -2108,15 +2108,24 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                                   // (dans TargetingOp) sont résolus dans leur branche
                                   // dédiée EN AMONT (return). Repli défensif typé.
                                   { events: [], log: [] };
-    // ACTOR-BINDING par coût : la créature qu'on vient de choisir au COÛT devient
-    // le sujet (sourceId) du CORPS resté en tête de file (holdRest). On réécrit la
-    // frame en attente AVANT de la reprendre, pour que buffForceSelf /
-    // damageTargetByForce y lisent la bonne créature.
-    if (isCostTargetingOp(t.op)) {
+    // ACTOR-BINDING : la créature qu'on vient de choisir devient le sujet (sourceId)
+    // du CORPS resté en tête de file (holdRest). On réécrit la frame en attente AVANT
+    // de la reprendre, pour que buffForceSelf / damageTargetByForce y lisent la bonne
+    // créature. Deux origines :
+    //  - "costTarget" : la créature choisie au COÛT (op de ciblage de coût) ;
+    //  - "target"     : la créature choisie par un op de ciblage RÉGULIER (« Redressez
+    //    X. Il gagne +2 … »). On lie UNE fois (actorBind effacé) — le corps « Il … »
+    //    ne suit qu'un unique op de ciblage.
+    {
       const head = effectQueue.value[0];
-      if (head?.actorBind === "costTarget")
+      if (isCostTargetingOp(t.op) && head?.actorBind === "costTarget")
         effectQueue.value = [
           { ...head, sourceId: instanceId },
+          ...effectQueue.value.slice(1),
+        ];
+      else if (head?.actorBind === "target")
+        effectQueue.value = [
+          { ...head, sourceId: instanceId, actorBind: undefined },
           ...effectQueue.value.slice(1),
         ];
     }

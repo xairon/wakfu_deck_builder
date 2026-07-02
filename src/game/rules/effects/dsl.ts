@@ -1144,7 +1144,9 @@ function parseSentence(
           : role === "bloqueur"
             ? "blocking"
             : "inCombat",
-      zones: m[4] ? ["monde", "havreSac"] : ["monde"],
+      // `heroes` ⇒ inclure le Havre-Sac : le Héros y réside (setup.ts), sinon
+      // « ou Héros » serait inciblable.
+      zones: m[2] || m[4] ? ["monde", "havreSac"] : ["monde"],
     };
   }
   // « Inclinez / Redressez l'Allié (ou Héros) INCLINÉ / DRESSÉ de votre choix »
@@ -1159,7 +1161,8 @@ function parseSentence(
       op: m[1] === "incline" ? "tapTarget" : "untapTarget",
       ...(m[2] ? { heroes: true } : {}),
       orientation: m[3] === "incline" ? "tapped" : "upright",
-      zones: m[4] ? ["monde", "havreSac"] : ["monde"],
+      // `heroes` ⇒ inclure le Havre-Sac (le Héros y réside).
+      zones: m[2] || m[4] ? ["monde", "havreSac"] : ["monde"],
     };
   // « Inclinez l'Allié (ou Héros) qui ne porte aucun Équipement de votre choix »
   //   (Boon Attitude) → tapTarget + filtre noEquipment (cible sans attachement
@@ -1172,7 +1175,8 @@ function parseSentence(
       op: "tapTarget",
       ...(m[1] ? { heroes: true } : {}),
       noEquipment: true,
-      zones: m[3] ? ["monde", "havreSac"] : ["monde"],
+      // `heroes` ⇒ inclure le Havre-Sac (le Héros y réside).
+      zones: m[1] || m[3] ? ["monde", "havreSac"] : ["monde"],
     };
   // « Inclinez / Redressez l'Allié (ou Héros) [adverse] de votre choix
   //   [dans le Monde][ ou dans un Havre-Sac] » → tapTarget / untapTarget.
@@ -1188,8 +1192,9 @@ function parseSentence(
       ...(m[2] ? { heroes: true } : {}),
       ...(m[3] ? { controller: "opponent" } : {}),
       // sans clause Havre-Sac, la cible inclinable est dans le Monde (comme
-      // destroyTarget) — pas le défaut « tout le jeu » de targetZones.
-      zones: m[5] ? ["monde", "havreSac"] : ["monde"],
+      // destroyTarget). MAIS `heroes` ⇒ inclure le Havre-Sac : le Héros y réside
+      // (setup.ts), sinon « ou Héros de votre choix » serait inciblable.
+      zones: m[2] || m[5] ? ["monde", "havreSac"] : ["monde"],
     };
   // « Inclinez / Redressez un de vos Alliés (ou Héros) [dans le Monde] … »
   // → tapTarget / untapTarget contrôleur self. Pas de famille ni de condition
@@ -1203,7 +1208,8 @@ function parseSentence(
       op: m[1] === "incline" ? "tapTarget" : "untapTarget",
       ...(m[2] ? { heroes: true } : {}),
       controller: "self",
-      zones: m[4] ? ["monde", "havreSac"] : ["monde"],
+      // `heroes` ⇒ inclure le Havre-Sac (votre Héros y réside).
+      zones: m[2] || m[4] ? ["monde", "havreSac"] : ["monde"],
     };
   // « Renvoyez l'Allié, la Zone ou l'Équipement de votre choix dans la main de
   //   son propriétaire » (TROIS types — Sablier de Xelor) → returnToHand multi-
@@ -3346,12 +3352,59 @@ export function appearanceTriggerEffects(
  * Compile l'effet d'une carte ACTION : pas de préfixe, le texte est ce qui
  * se résout quand la carte est jouée (302.1). Strict comme le reste.
  */
+// Ops de ciblage de CRÉATURE (mono-cible) admis comme TÊTE d'un actor-binding
+// « <op>. Il/Elle <corps> » : la créature choisie devient le sujet du corps lié.
+// Restreint aux ops mono-cible (pas de multi-cible : le référent serait ambigu).
+// NB (revue W49) : compileActorBoundBody peut produire un corps damageTarget /
+// damageTargetByForce — eux-mêmes des ops de ciblage. Sur une tête de ciblage,
+// « Il inflige N Dommages à l'Allié de votre choix » ouvrirait un SECOND ciblage :
+// sémantiquement correct (« Il » = sujet-source lié, la cible des Dommages est un
+// NOUVEAU choix ; l'Élément vivant est lu sur la créature liée), mais AUCUNE carte
+// réelle n'emprunte ce chemin aujourd'hui (seuls buffForceSelf en corps : Jeunesse
+// d'Ogrest, Furie). Si une telle carte apparaît, VALIDER ce flux à deux pickers
+// avant de laisser compiler (ne pas présumer).
+const ACTOR_BIND_HEAD_OPS = new Set([
+  "untapTarget",
+  "tapTarget",
+  "damageTarget",
+  "buffForceTarget",
+  "healHeroTarget",
+  "grantKeywordTarget",
+  "grantResistanceTarget",
+  "returnToHand",
+]);
+
 export function compileActionEffectText(
   text: string,
   cardName: string,
   sourceElement = "Neutre",
 ): CompiledEffect | null {
-  const ops = compileBody(norm(text), cardName, sourceElement);
+  const normed = norm(text);
+  // ACTOR-BINDING « <op de ciblage de créature>. Il/Elle <corps lié> » : la
+  // créature choisie par l'op de ciblage devient le sujet du corps « Il/Elle … »
+  // (actor:"target", le moteur réécrit sourceId à la résolution du ciblage). Ex.
+  // Jeunesse d'Ogrest : « Redressez X. Il gagne +2 en Force jusqu'à la fin du tour ».
+  // STRICT : la TÊTE doit être UN SEUL op de ciblage mono-cible, et le CORPS lié
+  // doit se compiler entièrement (compileActorBoundBody) — sinon on retombe sur le
+  // chemin normal (qui échouera → manuel).
+  const boundM = normed.match(/^(.+?)\.\s+(?:il|elle) (.+)$/);
+  if (boundM) {
+    const head = compileBody(boundM[1], cardName, sourceElement);
+    const boundOps = compileActorBoundBody(boundM[2], sourceElement);
+    if (
+      head &&
+      boundOps &&
+      head.length === 1 &&
+      ACTOR_BIND_HEAD_OPS.has(head[0].op)
+    ) {
+      return {
+        trigger: "onPlay",
+        actor: "target",
+        ops: [...head, ...boundOps],
+      };
+    }
+  }
+  const ops = compileBody(normed, cardName, sourceElement);
   if (!ops) return null;
   return { trigger: "onPlay", ops };
 }

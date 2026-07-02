@@ -64,7 +64,12 @@ describe("cannotRedress — DSL (clause résiduelle)", () => {
       "Pandrista",
     );
     expect(c?.ops).toEqual([
-      { op: "tapTarget", heroes: true, zones: ["monde"], cannotRedress: true },
+      {
+        op: "tapTarget",
+        heroes: true,
+        zones: ["monde", "havreSac"],
+        cannotRedress: true,
+      },
     ]);
   });
 

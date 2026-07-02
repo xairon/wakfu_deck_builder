@@ -293,7 +293,7 @@ describe("W11 — DSL orientation", () => {
         op: "tapTarget",
         heroes: true,
         orientation: "upright",
-        zones: ["monde"],
+        zones: ["monde", "havreSac"], // heroes ⇒ Havre-Sac inclus
       },
     ]);
   });
@@ -342,7 +342,7 @@ describe("W11 — DSL combatRole", () => {
         op: "tapTarget",
         heroes: true,
         combatRole: "inCombat",
-        zones: ["monde"],
+        zones: ["monde", "havreSac"], // heroes ⇒ Havre-Sac inclus
       },
     ]);
   });
@@ -437,7 +437,7 @@ describe("W11 — harvest (cartes débloquées par les filtres)", () => {
         op: "tapTarget",
         heroes: true,
         combatRole: "inCombat",
-        zones: ["monde"],
+        zones: ["monde", "havreSac"], // heroes ⇒ Havre-Sac inclus
       },
     ]);
   });

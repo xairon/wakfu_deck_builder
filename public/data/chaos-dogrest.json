@@ -4661,7 +4661,7 @@
               "op": "tapTarget",
               "heroes": true,
               "controller": "opponent",
-              "zones": ["monde"]
+              "zones": ["monde", "havreSac"]
             }
           ]
         },
@@ -7435,7 +7435,7 @@
               "op": "tapTarget",
               "heroes": true,
               "controller": "opponent",
-              "zones": ["monde"]
+              "zones": ["monde", "havreSac"]
             }
           ]
         },

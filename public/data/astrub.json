@@ -387,7 +387,7 @@
             {
               "op": "untapTarget",
               "heroes": true,
-              "zones": ["monde"]
+              "zones": ["monde", "havreSac"]
             }
           ]
         },

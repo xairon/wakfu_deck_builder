@@ -34,7 +34,12 @@ describe("DSL — filtre noEquipment", () => {
         "Inclinez l'Allié ou Héros qui ne porte aucun Équipement de votre choix.",
       ),
     ).toEqual([
-      { op: "tapTarget", heroes: true, noEquipment: true, zones: ["monde"] },
+      {
+        op: "tapTarget",
+        heroes: true,
+        noEquipment: true,
+        zones: ["monde", "havreSac"],
+      },
     ]);
   });
 });

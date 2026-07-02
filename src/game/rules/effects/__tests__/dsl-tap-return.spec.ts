@@ -18,9 +18,9 @@ describe("DSL — tapTarget / untapTarget / returnToHand", () => {
     ]);
   });
 
-  it("« Inclinez l'Allié ou Héros de votre choix » → tapTarget heroes", () => {
+  it("« Inclinez l'Allié ou Héros de votre choix » → tapTarget heroes (+ havreSac : le Héros y réside)", () => {
     expect(ops("Inclinez l'Allié ou Héros de votre choix.")).toEqual([
-      { op: "tapTarget", heroes: true, zones: ["monde"] },
+      { op: "tapTarget", heroes: true, zones: ["monde", "havreSac"] },
     ]);
   });
 
@@ -30,7 +30,7 @@ describe("DSL — tapTarget / untapTarget / returnToHand", () => {
         op: "tapTarget",
         heroes: true,
         controller: "opponent",
-        zones: ["monde"],
+        zones: ["monde", "havreSac"],
       },
     ]);
   });
@@ -41,9 +41,14 @@ describe("DSL — tapTarget / untapTarget / returnToHand", () => {
     ]);
   });
 
-  it("« Inclinez un de vos Alliés ou Héros » → tapTarget self+heroes", () => {
+  it("« Inclinez un de vos Alliés ou Héros » → tapTarget self+heroes (+ havreSac)", () => {
     expect(ops("Inclinez un de vos Alliés ou Héros.")).toEqual([
-      { op: "tapTarget", heroes: true, controller: "self", zones: ["monde"] },
+      {
+        op: "tapTarget",
+        heroes: true,
+        controller: "self",
+        zones: ["monde", "havreSac"],
+      },
     ]);
   });
 
@@ -53,9 +58,9 @@ describe("DSL — tapTarget / untapTarget / returnToHand", () => {
     ]);
   });
 
-  it("« Redressez l'Allié ou Héros de votre choix » → untapTarget heroes", () => {
+  it("« Redressez l'Allié ou Héros de votre choix » → untapTarget heroes (+ havreSac)", () => {
     expect(ops("Redressez l'Allié ou Héros de votre choix.")).toEqual([
-      { op: "untapTarget", heroes: true, zones: ["monde"] },
+      { op: "untapTarget", heroes: true, zones: ["monde", "havreSac"] },
     ]);
   });
 
