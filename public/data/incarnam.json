@@ -6371,7 +6371,22 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "damageAll",
+              "n": 2,
+              "element": "Air",
+              "controller": "any",
+              "heroes": true,
+              "zones": ["monde"],
+              "noXp": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["damage-all"]
       }
     ],
     "keywords": [],

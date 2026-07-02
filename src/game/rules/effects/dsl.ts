@@ -1407,7 +1407,7 @@ function parseSentence(
   if (m) return { op: "globalDamageShield" };
   // OPS DE MASSE (« tous les … » / « tous vos … » — pas de « de votre choix ») :
   // inclinaison / redressement / Dommages de masse. Parseur dédié.
-  const mass = parseMassOp(sentence, sourceElement);
+  const mass = parseMassOp(sentence, sourceElement, cardName);
   if (mass) return mass;
   return null;
 }
@@ -1464,7 +1464,11 @@ function parseMassSubject(subject: string): {
  * « de Force inférieure ou égale à N » devient `maxForce` ; « dans le Monde » →
  * zones ["monde"], absent → tout le jeu (targetZones). `sentence` est normalisé.
  */
-function parseMassOp(sentence: string, sourceElement: string): EffectOp | null {
+function parseMassOp(
+  sentence: string,
+  sourceElement: string,
+  cardName = "",
+): EffectOp | null {
   // « Inclinez / Redressez <sujet pluriel> [de Force inférieure ou égale à N]
   //   [dans le Monde]. »
   let m = sentence.match(
@@ -1483,23 +1487,32 @@ function parseMassOp(sentence: string, sourceElement: string): EffectOp | null {
     };
   }
   // « Infligez N Dommages à tous les Alliés [et Héros] [adverses] [dans le
-  //   Monde] » (et variantes « tous vos … ») → damageAll. L'Élément des Dommages
-  //   est celui de la source (410.1), figé à la compilation.
+  //   Monde] » (et variantes « tous vos … ») → damageAll. Forme SUJET-EN-TÊTE
+  //   admise (« La Flèche Blizzard inflige … ») si le sujet est la carte
+  //   elle-même. L'Élément des Dommages est le MOT D'ÉLÉMENT explicite du texte
+  //   (« 2 Dommages Air ») s'il est présent — prioritaire sur l'Élément de la
+  //   source (Flèche Blizzard est une carte Neutre aux Dommages Air) ; sinon
+  //   celui de la source (410.1), figé à la compilation.
   m = sentence.match(
-    /^infligez (\d+) dommages? a (tous (?:les|vos) [a-z -]+?)( de force inferieure ou egale a (\d+))?( dans le monde)?$/,
+    /^(?:infligez|(.{1,60}?) inflige) (\d+) dommages?( air| eau| feu| terre| neutre)? a (tous (?:les|vos) [a-z -]+?)( de force inferieure ou egale a (\d+))?( dans le monde)?$/,
   );
   if (m) {
-    const subj = parseMassSubject(m[2].trim());
+    // sujet-en-tête : seul « <self> inflige … » est admis (sujet ≠ soi → manuel).
+    if (m[1] && !subjectIsSelf(m[1].trim(), cardName)) return null;
+    const subj = parseMassSubject(m[4].trim());
     if (!subj) return null;
+    const elWord = m[3]?.trim();
     return {
       op: "damageAll",
-      n: toNumber(m[1]),
-      element: sourceElement,
+      n: toNumber(m[2]),
+      element: elWord
+        ? elWord.charAt(0).toUpperCase() + elWord.slice(1)
+        : sourceElement,
       controller: subj.controller,
       ...(subj.heroes ? { heroes: true } : {}),
       ...(subj.sub ? { sub: subj.sub } : {}),
-      ...(m[4] ? { maxForce: toNumber(m[4]) } : {}),
-      zones: m[5] ? ["monde"] : ["monde", "havreSac"],
+      ...(m[6] ? { maxForce: toNumber(m[6]) } : {}),
+      zones: m[7] ? ["monde"] : ["monde", "havreSac"],
     };
   }
   // « Détruisez <sujet pluriel> [de Niveau ≤ N | de Niveau N] [inclinés / dressés]
@@ -1667,6 +1680,24 @@ function compileBody(
         );
       if (tapOp) {
         tapOp.cannotRedress = true;
+        continue;
+      }
+      return null;
+    }
+    // CLAUSE RÉSIDUELLE « Vous ne gagnez pas d'XP » (Flèche Blizzard) : se
+    // rapporte aux Dommages de MASSE de la phrase précédente — les destructions
+    // en cascade ne rapportent pas d'XP au LANCEUR (celles au profit de
+    // l'adversaire restent accordées, la clause ne parle que de « vous »).
+    // STRICT : sans damageAll précédent, le référent est ambigu → manuel.
+    if (/^vous ne gagnez pas d['’ ]?\s?xp$/.test(s)) {
+      const dmgOp = [...ops]
+        .reverse()
+        .find(
+          (o): o is Extract<EffectOp, { op: "damageAll" }> =>
+            o.op === "damageAll",
+        );
+      if (dmgOp) {
+        dmgOp.noXp = true;
         continue;
       }
       return null;

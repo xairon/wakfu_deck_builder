@@ -657,6 +657,12 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     heroes: z.boolean().optional(),
     sub: z.string().optional(),
     maxForce: z.number().optional(),
+    // « Vous ne gagnez pas d'XP. » (Flèche Blizzard) : les destructions en
+    // CASCADE de ces Dommages ne rapportent pas d'XP au LANCEUR (415.1 aurait
+    // crédité l'adversaire du contrôleur de l'Allié détruit = le lanceur quand
+    // il tue un Allié adverse). Les XP de l'ADVERSAIRE (mes propres Alliés tués
+    // par ma carte) restent accordés — la clause ne parle que de « vous ».
+    noXp: z.boolean().optional(),
     zones: zonesSchema,
   }),
   // « Détruisez tous les Alliés [adverses] [et Héros] [de Niveau ≤ N | de Niveau

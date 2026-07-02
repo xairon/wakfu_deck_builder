@@ -398,6 +398,12 @@ export interface DamageOpts {
   stance?: CombatStance;
   /** Modificateurs globaux actifs (Trêve…). */
   mods?: DamageMod[];
+  /**
+   * « Vous ne gagnez pas d'XP » (damageAll{noXp}) : les destructions en CASCADE
+   * de ces Dommages ne créditent pas d'XP à CE siège (le lanceur). Les grants au
+   * profit de l'autre siège restent accordés (415.1 pour ses propres pertes).
+   */
+  noXpFor?: Seat;
 }
 
 function nameOf(ctx: RulesCtx, id: InstanceId): string {
@@ -405,18 +411,22 @@ function nameOf(ctx: RulesCtx, id: InstanceId): string {
   return ctx.getCard(inst?.cardId ?? null)?.name ?? "Carte";
 }
 
-/** Détruit la cible ; un Allié adverse détruit rapporte son XP (415.1). */
+/** Détruit la cible ; un Allié adverse détruit rapporte son XP (415.1).
+ * `noXpFor` : « Vous ne gagnez pas d'XP » — si le BÉNÉFICIAIRE du grant (415.1 :
+ * l'adversaire du contrôleur de l'Allié détruit) est CE siège, le grant est
+ * supprimé (les grants à l'autre siège restent accordés). */
 export function resolveDestroyTarget(
   ctx: RulesCtx,
   actor: Seat,
   targetId: InstanceId,
+  noXpFor?: Seat,
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   if (!inst) return { events: [], log: [] };
   const events: DraftEvent[] = [discard(inst.owner, targetId, inst.location)];
   const log = [`${nameOf(ctx, targetId)} est détruit.`];
   const card = ctx.getCard(inst.cardId);
-  if (card?.mainType === "Allié") {
+  if (card?.mainType === "Allié" && otherSeat(inst.controller) !== noXpFor) {
     const grant = grantXpEvents(ctx, otherSeat(inst.controller), xpValue(card));
     events.push(...grant.events);
     log.push(
@@ -546,7 +556,9 @@ export function resolveDamageTarget(
   const total = (inst.counters.damage ?? 0) + eff;
   const force = effectiveForce(ctx, targetId, opts.stance);
   if (force > 0 && total >= force) {
-    const destroy = resolveDestroyTarget(ctx, actor, targetId);
+    // « Vous ne gagnez pas d'XP » : la destruction en cascade supprime le grant
+    // au profit de `opts.noXpFor` (le lanceur) — cf. resolveDestroyTarget.
+    const destroy = resolveDestroyTarget(ctx, actor, targetId, opts.noXpFor);
     events.push(...destroy.events);
     log.push(...destroy.log);
   }

@@ -1572,6 +1572,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           // damageAll : chaque cible subit resolveDamageTarget (Résistance /
           // létalité / XP par cible), de l'Élément de la source vivante (410.1)
           // ou, à défaut, de l'Élément figé à la compilation.
+          // NB (revue W50) : pour une Action (pas d'instance source, frame sans
+          // sourceId), l'Élément EXPLICITE compilé (« 2 Dommages Air ») est bien
+          // utilisé. Si un futur damageAll était porté par une CRÉATURE en jeu
+          // avec un élément explicite ≠ son élément imprimé, liveSourceElement
+          // l'écraserait — à valider à ce moment-là (aucune carte actuelle).
           const element = liveSourceElement(sourceId) ?? op.element;
           const mods = activeGlobalMods(deps.rulesCtx());
           for (const id of ids) {
@@ -1581,7 +1586,13 @@ export function createEffectEngine(deps: EffectEngineDeps) {
               id,
               op.n,
               element,
-              { mods, ...(sourceId ? { sourceId } : {}) },
+              {
+                mods,
+                ...(sourceId ? { sourceId } : {}),
+                // « Vous ne gagnez pas d'XP » : les destructions en cascade ne
+                // créditent pas le lanceur (seat) — cf. DamageOpts.noXpFor.
+                ...(op.noXp ? { noXpFor: seat } : {}),
+              },
             );
             deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
             if (deps.isAssistEffects() && res.ruleEvents?.length)

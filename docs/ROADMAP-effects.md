@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-02.** État : **454 / 1794 effets imprimés structurés (25,3 %)** — `auto 408 · manual 46 · uncovered 1340 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-02.** État : **455 / 1794 effets imprimés structurés (25,4 %)** — `auto 409 · manual 46 · uncovered 1339 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
@@ -29,9 +29,9 @@ Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complèt
 
 ---
 
-## 3. Deck-driven — worklist des 4 starters Incarnam (27 restants)
+## 3. Deck-driven — worklist des 4 starters Incarnam (26 restants)
 
-Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter_triage.mjs` (lit officialDecks.ts × public/data/incarnam.json → uncovered restants ; recréé en W47). **48 → 27** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource, W41 tap/untap-multi, W42 drawTargetXp, W43 team-combat-reduction/glyphe-revigorant, W44 each-player-optional/coffre+djakky, W45 costTapResource/smare + 3 free riders, W46 production colorée/4 Pious + 4 free riders, W47 conditional{optional}/Dollarawan, W48 riposte de Porteur/Cape+Anneau du Prespic + 2 free riders, W49 actor-bind même-cible/Jeunesse d'Ogrest + Furie free rider + FIX zones Héros). Restants, groupés par **sous-système à bâtir** :
+Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter_triage.mjs` (lit officialDecks.ts × public/data/incarnam.json → uncovered restants ; recréé en W47). **48 → 27** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource, W41 tap/untap-multi, W42 drawTargetXp, W43 team-combat-reduction/glyphe-revigorant, W44 each-player-optional/coffre+djakky, W45 costTapResource/smare + 3 free riders, W46 production colorée/4 Pious + 4 free riders, W47 conditional{optional}/Dollarawan, W48 riposte de Porteur/Cape+Anneau du Prespic + 2 free riders, W49 actor-bind même-cible/Jeunesse d'Ogrest + Furie free rider + FIX zones Héros, W50 damageAll noXp + sujet-en-tête + élément explicite/Flèche Blizzard). Restants, groupés par **sous-système à bâtir** :
 
 | Sous-système à bâtir                              | Effets starters concernés                                                                                             | Notes                                                                                                                                                                                                                                                                                                                                                   |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
