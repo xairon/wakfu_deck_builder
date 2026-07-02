@@ -3670,7 +3670,25 @@
         "description": "Défaussez jusqu'à 3 cartes : Inclinez le même nombre d'Alliés ou Héros de votre choix, dans l'ordre de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costDiscard",
+              "n": 3,
+              "max": true
+            },
+            {
+              "op": "tapMultiTarget",
+              "heroes": true,
+              "fromCount": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-discard", "tap-target"]
       }
     ],
     "keywords": [],
@@ -11301,7 +11319,26 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costRecycle",
+              "from": "defausse",
+              "n": 3,
+              "max": true
+            },
+            {
+              "op": "untapMultiTarget",
+              "heroes": true,
+              "fromCount": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-recycle", "untap-target"]
       }
     ],
     "keywords": [],

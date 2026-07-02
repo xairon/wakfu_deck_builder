@@ -2323,6 +2323,22 @@ function compileRecycleCountBody(
       },
     ];
   }
+  // « Inclinez / Redressez LE MÊME NOMBRE d'Alliés (ou Héros) de votre choix
+  //   [, dans l'ordre de votre choix] » → tapMultiTarget / untapMultiTarget dont
+  //   le NOMBRE de cibles = compte lié (fromCount → boundCount). Ciblage répété
+  //   borné (cibles distinctes). « dans l'ordre de votre choix » = flavor.
+  m = body.match(
+    /^(inclinez|redressez) le meme nombre d['’ ]?\s?allies( ou heros)? de votre choix(?:,? dans l['’ ]?\s?ordre de votre choix)?$/,
+  );
+  if (m)
+    return [
+      {
+        op: m[1] === "inclinez" ? "tapMultiTarget" : "untapMultiTarget",
+        heroes: !!m[2],
+        fromCount: true,
+        zones: ["monde", "havreSac"],
+      },
+    ];
   // « La Force de l'Allié (ou Héros) de votre choix est augmentée du même nombre
   // jusqu'à la fin du tour » → bonus de Force ciblé = compte recyclé.
   m = body.match(

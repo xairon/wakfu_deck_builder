@@ -452,6 +452,8 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   globalDamageShield: "global-damage-shield",
   tapTarget: "tap-target",
   untapTarget: "untap-target",
+  tapMultiTarget: "tap-target",
+  untapMultiTarget: "untap-target",
   returnToHand: "return-to-hand",
   tapAll: "tap-all",
   untapAll: "untap-all",

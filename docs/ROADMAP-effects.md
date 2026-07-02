@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-01.** État : **434 / 1802 effets imprimés structurés (24,1 %)** — `auto 388 · manual 46 · uncovered 1368 · ruling 452 · keyword 256 · trait 60`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-01.** État : **436 / 1802 effets imprimés structurés (24,2 %)** — `auto 390 · manual 46 · uncovered 1366 · ruling 452 · keyword 256 · trait 60`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
@@ -27,9 +27,9 @@ Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complèt
 
 ---
 
-## 3. Deck-driven — worklist des 4 starters Incarnam (42 restants)
+## 3. Deck-driven — worklist des 4 starters Incarnam (40 restants)
 
-Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter.mjs` (à recréer — voir §6). **48 → 42** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource). Restants, groupés par **sous-système à bâtir** :
+Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter.mjs` (à recréer — voir §6). **48 → 40** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource, W41 tap/untap-multi fromCount). Restants, groupés par **sous-système à bâtir** :
 
 | Sous-système à bâtir                              | Effets starters concernés                                                                                               | Notes                                                                                                                                                                                             |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -44,10 +44,10 @@ Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/offi
 | **Look-N pile**                                   | bonne-affaire (« Regardez les 2 premières… »)                                                                           | Révélation ordonnée + choix.                                                                                                                                                                      |
 | **Actor-bind même-cible**                         | jeunesse-d-ogrest (« Redressez X. Il gagne +2 »)                                                                        | Deux ops sur la MÊME cible choisie.                                                                                                                                                               |
 | ~~Double coût~~ **FAIT (W40)**                    | ~~amulette-akwadala~~ ✅                                                                                                | Flag `tapsSource` (requiresIncline + paidOps → l'activation incline aussi la source). Garde : coût de défausse imposé impayable refusé AVANT de consommer inclinaison/verrou.                     |
-| **Tap-multi (fromCount)**                         | choc-temporel (« Inclinez le même nombre »)                                                                             | op « incline N cibles » liée à boundCount. Jumeau : parchemin-d-agilite (« Redressez le même nombre ») — UN sous-système = 2 starters.                                                            |
+| ~~Tap/untap-multi (fromCount)~~ **FAIT (W41)**    | ~~choc-temporel~~ ✅ + ~~parchemin-d-agilite~~ ✅                                                                       | Ops `tapMultiTarget`/`untapMultiTarget` (ciblage répété borné = boundCount, cibles distinctes ; jumeaux de damageMultiTarget mais SET_ORIENTATION). UN sous-système = 2 starters.                 |
 | **Icône perdue au scrape**                        | charge (« il gagne [.] en plus »)                                                                                       | Re-scrape source (wtcg-return.fr) avant d'encoder.                                                                                                                                                |
 
-> **ROI le plus propre à reprendre** : (a) `tap/untap-multi fromCount` → choc-temporel + parchemin-d-agilite (réutilise costDiscard/costRecycle + boundCount, **2 starters pour 1 sous-système**) ; (b) magnitude dynamique `statOf`/valeur-X (transverse, plusieurs cartes) ; (c) prévention à durée combat (glyphe-revigorant — extension directe de damagePreventionAura + jeton).
+> **ROI le plus propre à reprendre** : (a) **magnitude dynamique** `statOf`/valeur-X (transverse : repos, merelyne, coup-critique, prospection…) — étend `ValueExpr` déjà bâti ; (b) **prévention à durée combat** (glyphe-revigorant — extension directe de `damagePreventionAura` + jeton de combat) ; (c) **each-player optionnel** (coffre-malveillant/djakky/smare — « chaque joueur PEUT »).
 
 Après les 4 starters Incarnam : passer aux **starters Bonta-Brâkmar** (`bonta-brakmar-sadida/-sram`) puis aux decks Dofus Mag joués.
 

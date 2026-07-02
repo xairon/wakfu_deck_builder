@@ -426,7 +426,13 @@
                                     : store.effectTargeting.op.op ===
                                         "damageMultiTarget"
                                       ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                                      : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                                      : store.effectTargeting.op.op ===
+                                          "tapMultiTarget"
+                                        ? `choisis une créature à incliner (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                        : store.effectTargeting.op.op ===
+                                            "untapMultiTarget"
+                                          ? `choisis une créature à redresser (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                          : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

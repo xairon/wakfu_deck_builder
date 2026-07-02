@@ -132,12 +132,19 @@ describe("DSL — coût « Recyclez jusqu'à N … » à valeur dynamique (compi
   });
 
   // ── Négatifs (SKIP fidèles) ───────────────────────────────────────────────
-  it("REJET : multi-cible par compte « Redressez le même nombre d'Alliés … »", () => {
+  it("multi-cible par compte « Redressez le même nombre d'Alliés … » → untapMultiTarget{fromCount} (W41)", () => {
+    // Anciennement rejeté ; désormais compilé (op untapMultiTarget, ciblage
+    // répété borné dont le nombre = compte recyclé, boundCount).
     const c = compileTapEffectText(
       "Recyclez jusqu'à 3 cartes de votre Défausse : Redressez le même nombre d'Alliés ou Héros de votre choix.",
       "Parchemin d'Agilité",
     );
-    expect(c).toBeNull();
+    expect(c?.ops[1]).toEqual({
+      op: "untapMultiTarget",
+      heroes: true,
+      fromCount: true,
+      zones: ["monde", "havreSac"],
+    });
   });
 
   it("REJET : « Force cumulée des Monstres recyclés » (valeur dynamique non-compte)", () => {

@@ -538,6 +538,26 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
+  // INCLINAISON / REDRESSEMENT MULTI-CIBLES À COMPTE LIÉ (« Inclinez / Redressez
+  // LE MÊME NOMBRE d'Alliés ou Héros de votre choix ») : ciblage RÉPÉTÉ borné,
+  // le nombre de choix = compte lié à la frame (`fromCount` → boundCount, ex.
+  // cartes défaussées/recyclées). Cibles DISTINCTES (on n'incline pas deux fois
+  // la même). Jumeaux de damageMultiTarget mais l'action est SET_ORIENTATION
+  // (resolveTapTarget / resolveUntapTarget). « dans l'ordre de votre choix » =
+  // pur flavor (l'ordre n'a aucun effet mécanique). Éligibilité : Allié (+ Héros
+  // si `heroes`) en jeu (zones). Compte 0 → no-op fidèle (rien à incliner).
+  z.object({
+    op: z.literal("tapMultiTarget"),
+    heroes: z.boolean(),
+    fromCount: z.boolean().optional(),
+    zones: zonesSchema,
+  }),
+  z.object({
+    op: z.literal("untapMultiTarget"),
+    heroes: z.boolean(),
+    fromCount: z.boolean().optional(),
+    zones: zonesSchema,
+  }),
   z.object({
     op: z.literal("returnToHand"),
     heroes: z.boolean().optional(),

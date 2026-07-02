@@ -695,8 +695,23 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // cible à magnitude (damageTarget/buffForceTarget/healHeroTarget) marquées
         // `fromCount`, on FIGE `n` au nombre recyclé AVANT le ciblage (le clic du
         // joueur lit `t.op.n`). Recyclé 0 → n 0 (Dommages/soin/bonus de 0, fidèle).
-        if ("fromCount" in op && op.fromCount) {
+        // NB : uniquement les ops SCALAIRES (avec `n`) — tapMultiTarget/
+        // untapMultiTarget portent aussi `fromCount` mais n'ont pas de `n` (le
+        // compte pilote `multi.remaining`, calculé plus bas), on ne les fige pas.
+        if ("fromCount" in op && op.fromCount && "n" in op) {
           op = { ...op, n: opMagnitude(op, frame) };
+        }
+        // INCLINAISON/REDRESSEMENT MULTI-CIBLES À COMPTE LIÉ : si le compte
+        // (boundCount, ex. cartes défaussées/recyclées) est 0, aucun choix →
+        // no-op fidèle (rien à incliner/redresser), pas de picker vide.
+        if (
+          (op.op === "tapMultiTarget" || op.op === "untapMultiTarget") &&
+          opMagnitude(op, frame) === 0
+        ) {
+          deps.dispatch(
+            say(seat, `${cardName} : aucune cible (0), effet passé.`),
+          );
+          continue;
         }
         const eligible = effectTargetIds(deps.rulesCtx(), op, seat, sourceId);
         if (!eligible.length) {
@@ -733,7 +748,18 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                   chosen: [],
                 },
               }
-            : {}),
+            : op.op === "tapMultiTarget" || op.op === "untapMultiTarget"
+              ? {
+                  // Compte = boundCount (fromCount) ; cibles DISTINCTES (on
+                  // n'incline pas deux fois la même). « Jusqu'à » implicite : le
+                  // joueur peut s'arrêter (effectTargetSkip).
+                  multi: {
+                    remaining: opMagnitude(op, frame),
+                    distinct: true,
+                    chosen: [],
+                  },
+                }
+              : {}),
         };
         holdRest(frame, ops.slice(i + 1));
         return true;
@@ -1771,6 +1797,45 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       pumpEffects();
       return;
     }
+    // INCLINAISON / REDRESSEMENT MULTI-CIBLES À COMPTE LIÉ (« Inclinez / Redressez
+    // LE MÊME NOMBRE d'Alliés ou Héros de votre choix ») : chaque cible choisie
+    // est inclinée / redressée immédiatement, puis on RÉ-OUVRE le ciblage tant
+    // qu'il reste des choix (remaining) ET des cibles éligibles distinctes.
+    if (
+      (t.op.op === "tapMultiTarget" || t.op.op === "untapMultiTarget") &&
+      t.multi
+    ) {
+      const op = t.op;
+      const res =
+        op.op === "tapMultiTarget"
+          ? resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
+          : resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId);
+      deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+      const chosen = [...t.multi.chosen, instanceId];
+      const remaining = t.multi.remaining - 1;
+      // Cibles TOUJOURS distinctes (une créature déjà inclinée/redressée ne se
+      // repropose pas) — on exclut `chosen` de l'éligibilité recalculée.
+      const stillEligible =
+        remaining > 0
+          ? effectTargetIds(
+              deps.rulesCtx(),
+              op,
+              t.seat,
+              t.sourceId,
+              new Set(chosen),
+            )
+          : [];
+      if (remaining > 0 && stillEligible.length) {
+        effectTargeting.value = {
+          ...t,
+          multi: { remaining, distinct: true, chosen },
+        };
+        return;
+      }
+      effectTargeting.value = null;
+      pumpEffects();
+      return;
+    }
     effectTargeting.value = null;
     // OPS « LE JOUEUR DE VOTRE CHOIX … » : la cible choisie est un HÉROS ; l'effet
     // s'applique au CONTRÔLEUR de ce Héros (vous ou l'adversaire). Résolution via
@@ -1901,20 +1966,26 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                                       : {}),
                                   },
                                 )
-                              : resolveDamageTarget(
-                                  deps.rulesCtx(),
-                                  t.seat,
-                                  instanceId,
-                                  t.op.n,
-                                  // idem : Dommages de l'Élément de la source liée.
-                                  liveSourceElement(t.sourceId) ?? t.op.element,
-                                  {
-                                    mods: activeGlobalMods(deps.rulesCtx()),
-                                    ...(t.sourceId
-                                      ? { sourceId: t.sourceId }
-                                      : {}),
-                                  },
-                                );
+                              : t.op.op === "damageTarget"
+                                ? resolveDamageTarget(
+                                    deps.rulesCtx(),
+                                    t.seat,
+                                    instanceId,
+                                    t.op.n,
+                                    // idem : Dommages de l'Élément de la source liée.
+                                    liveSourceElement(t.sourceId) ??
+                                      t.op.element,
+                                    {
+                                      mods: activeGlobalMods(deps.rulesCtx()),
+                                      ...(t.sourceId
+                                        ? { sourceId: t.sourceId }
+                                        : {}),
+                                    },
+                                  )
+                                : // Inatteignable : tapMultiTarget/untapMultiTarget
+                                  // (dans TargetingOp) sont résolus dans leur branche
+                                  // dédiée EN AMONT (return). Repli défensif typé.
+                                  { events: [], log: [] };
     // ACTOR-BINDING par coût : la créature qu'on vient de choisir au COÛT devient
     // le sujet (sourceId) du CORPS resté en tête de file (holdRest). On réécrit la
     // frame en attente AVANT de la reprendre, pour que buffForceSelf /
@@ -1977,7 +2048,12 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     // DOMMAGES MULTI-CIBLES « jusqu'à N » : passer = s'ARRÊTER avant la borne
     // (les cibles déjà touchées le restent) — l'effet n'est pas annulé, le corps
     // restant (holdRest) reprend normalement.
-    if (t.op.op === "damageMultiTarget" && t.multi) {
+    if (
+      (t.op.op === "damageMultiTarget" ||
+        t.op.op === "tapMultiTarget" ||
+        t.op.op === "untapMultiTarget") &&
+      t.multi
+    ) {
       deps.dispatch(
         say(
           t.seat,

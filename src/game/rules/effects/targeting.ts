@@ -36,6 +36,8 @@ export type TargetingOp = Extract<
   | { op: "grantResistanceTarget" }
   | { op: "tapTarget" }
   | { op: "untapTarget" }
+  | { op: "tapMultiTarget" }
+  | { op: "untapMultiTarget" }
   | { op: "returnToHand" }
   | { op: "costTapControlled" }
   | { op: "costDestroyControlled" }
@@ -61,6 +63,8 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "grantResistanceTarget" ||
     op.op === "tapTarget" ||
     op.op === "untapTarget" ||
+    op.op === "tapMultiTarget" ||
+    op.op === "untapMultiTarget" ||
     op.op === "returnToHand" ||
     op.op === "costTapControlled" ||
     op.op === "costDestroyControlled" ||
