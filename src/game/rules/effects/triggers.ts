@@ -13,7 +13,7 @@ import type { CompiledEffectOp } from "@/types/cards";
 import type { InstanceId } from "../../types/events";
 import type { Seat } from "../../types/zones";
 import type { RuleEvent, RulesCtx } from "../types";
-import { selfAttackEffects, selfDestroyedEffects } from "./dsl";
+import { bearerEffects, selfAttackEffects, selfDestroyedEffects } from "./dsl";
 
 /** Frame déclenchée, prête pour `enqueueEffect` du store. */
 export interface TriggeredFrame {
@@ -29,6 +29,12 @@ export interface TriggeredFrame {
    * l'exécuter d'office. Absent = exécution automatique (déclenchés obligatoires).
    */
   optional?: boolean;
+  /**
+   * RIPOSTE DE PORTEUR (onDamageToBearer) : cible PRÉ-LIÉE = la créature qui vient
+   * d'infliger les Dommages au Porteur (source de l'événement damageDealt). L'op
+   * `damageRiposteSource` la lit comme cible (aucun picker). Absent hors riposte.
+   */
+  riposteTargetId?: InstanceId;
 }
 
 function sideOf(ctx: RulesCtx, id: InstanceId): "recto" | "verso" {
@@ -54,19 +60,53 @@ function attackerFrames(
 
 /**
  * damageDealt → effets `onDamageToBearer` (riposte Prespic, 804.3).
- * DORMANT : le modèle de Porteur existe désormais (lot F : `attachments` +
- * `bearerBonuses`), mais AUCUN équipement des données n'a de riposte fidèlement
- * parseable « Quand le Porteur subit des Dommages, … » (les seuls déclenchés de
- * Porteur observés portent sur l'ATTAQUE / la DESTRUCTION, pas sur les Dommages
- * subis, et embarquent des clauses non modélisées). Activer ce bus sans donnée
- * fidèle serait une approximation : on le laisse dormant tant qu'aucun
- * `trigger:"onDamageToBearer"` compilé n'existe (cf. report bearer).
+ *
+ * Quand un Allié ou Héros (`evt.source`) inflige des Dommages à un Porteur
+ * (`evt.target`), chaque Équipement attaché au Porteur qui porte une riposte
+ * compilée (`bearerEffects`, trigger onDamageToBearer) enfile une frame qui
+ * inflige à son tour des Dommages À LA CRÉATURE QUI A FRAPPÉ (riposteTargetId =
+ * evt.source).
+ *
+ * GARDE ANTI-BOUCLE (fidèle au texte « un Allié ou Héros inflige ») : on n'émet
+ * QUE si le damager est un Allié ou un Héros. Une riposte est infligée par
+ * l'ÉQUIPEMENT (mainType Équipement, `sourceId`), donc elle ne re-déclenche
+ * jamais une riposte — pas de boucle. Un Porteur DÉTRUIT (déplacé en Défausse
+ * avant la collecte des déclenchés) n'a plus d'attachement en jeu → pas de
+ * riposte (omission conservatrice, jamais d'approximation).
  */
 function bearerFrames(
-  _ctx: RulesCtx,
-  _evt: Extract<RuleEvent, { kind: "damageDealt" }>,
+  ctx: RulesCtx,
+  evt: Extract<RuleEvent, { kind: "damageDealt" }>,
 ): TriggeredFrame[] {
-  return [];
+  const src = evt.source;
+  if (!src) return []; // Dommages sans source (jeton/effet) → pas de riposte
+  const srcCard = ctx.getCard(ctx.state.instances[src]?.cardId ?? null);
+  if (
+    !srcCard ||
+    (srcCard.mainType !== "Allié" && srcCard.mainType !== "Héros")
+  )
+    return []; // damager non Allié/Héros (ex. une autre riposte) → pas de re-déclenchement
+  const bearer = ctx.state.instances[evt.target];
+  if (!bearer) return [];
+  const zone = bearer.location.zone;
+  if (zone !== "monde" && zone !== "havreSac") return [];
+  const frames: TriggeredFrame[] = [];
+  for (const attId of bearer.attachments ?? []) {
+    const att = ctx.state.instances[attId];
+    const card = att ? ctx.getCard(att.cardId) : null;
+    if (!card || card.mainType !== "Équipement") continue;
+    for (const atom of bearerEffects(card)) {
+      frames.push({
+        seat: bearer.controller,
+        sourceId: attId,
+        cardName: card.name,
+        text: atom.text,
+        ops: atom.ops,
+        riposteTargetId: src,
+      });
+    }
+  }
+  return frames;
 }
 
 /**

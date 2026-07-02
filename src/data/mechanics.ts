@@ -382,6 +382,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : recyclez une de vos créatures en jeu (au choix) — remise sous la Pioche de son propriétaire — pour payer l'effet.",
   },
   {
+    id: "riposte-bearer",
+    label: "Riposte du Porteur",
+    category: "dégâts",
+    glossary:
+      "Quand une créature inflige des Dommages au Porteur de cet Équipement, ce dernier lui riposte des Dommages (à la créature qui a frappé). Seuls un Allié ou un Héros déclenchent la riposte — pas une autre riposte (pas de boucle).",
+  },
+  {
     id: "cost-tap-resource",
     label: "Coût : production d'une Ressource",
     category: "ressource",
@@ -475,6 +482,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   teamCombatDmgReduction: "team-combat-dmg-reduction",
   tapTarget: "tap-target",
   untapTarget: "untap-target",
+  damageRiposteSource: "riposte-bearer",
   tapMultiTarget: "tap-target",
   untapMultiTarget: "untap-target",
   returnToHand: "return-to-hand",

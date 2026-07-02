@@ -19,6 +19,7 @@ import {
   compileActionEffectText,
   compileAppearanceTriggerText,
   compileBearerBonusText,
+  compileBearerRiposteText,
   compileCombatTriggerText,
   compileEffectText,
   compileSelfDestroyedText,
@@ -248,7 +249,11 @@ function compileEffects(
             compileEffectText(text, cardName, sourceElement) ??
             compileTurnStartEffectText(text, cardName, sourceElement) ??
             compileStaticEffectText(text, cardName) ??
-            compileBearerBonusText(text, cardName));
+            compileBearerBonusText(text, cardName) ??
+            // Riposte de Porteur : l'Élément vient STRICTEMENT de l'icône RÉCUPÉRÉE
+            // (effect.elements) ; sans elle, compileBearerRiposteText renvoie null
+            // (pas de repli sur l'Élément imprimé — Neutre serait une approximation).
+            compileBearerRiposteText(text, cardName, e.elements?.[0]));
     if (compiled) {
       e.compiled = compiled;
       stats.compiled++;

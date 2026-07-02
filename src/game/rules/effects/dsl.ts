@@ -3065,6 +3065,63 @@ export function selfAttackEffects(
 }
 
 /**
+ * Compile une RIPOSTE DE PORTEUR (804.3) : « Chaque fois qu'un Allié ou Héros
+ * inflige des Dommages au Porteur de <self>, <self> lui inflige N Dommage [X]. »
+ * → `{ trigger:"onDamageToBearer", ops:[{op:"damageRiposteSource", n, element}] }`.
+ * La riposte frappe la créature qui vient d'infliger les Dommages au Porteur
+ * (cible pré-liée par `bearerFrames` = source de l'événement damageDealt).
+ * `element` = Élément de la riposte, RÉCUPÉRÉ de `effect.elements` (l'icône est
+ * DROPPÉE du texte — les Prespic sont Neutre imprimé mais ripostent en Feu).
+ * STRICT : les DEUX sujets (« Porteur de <self> » ET l'auteur « <self> lui
+ * inflige ») doivent être la carte elle-même ; toute clause résiduelle
+ * (condition, magnitude dynamique, « ou ») fait échouer le `$` → manuel. La garde
+ * anti-boucle est intrinsèque (le trigger n'accepte qu'un Allié/Héros comme
+ * damager — pas l'équipement source de la riposte, cf. bearerFrames).
+ */
+export function compileBearerRiposteText(
+  text: string,
+  cardName: string,
+  element?: string,
+): CompiledEffect | null {
+  // FIDÉLITÉ : l'Élément de la riposte est une ICÔNE, souvent DROPPÉE du texte et
+  // récupérée dans `effect.elements`. Sans Élément explicite, on NE fabrique PAS
+  // une valeur (« Neutre » serait faux) → l'effet reste MANUEL (approximation pire
+  // qu'un rappel). N'accepte donc que si l'appelant fournit l'Élément récupéré.
+  if (!element) return null;
+  const body = norm(text).replace(/\.$/, "").trim();
+  const m = body.match(
+    /^chaque fois qu['’]?\s?un allie ou heros inflige des dommages au porteur d(?:e |u |e la |e l['’]\s?)(.{1,40}?)\s*,\s*(.{1,40}?) (?:lui )?inflige (\d+) dommages?$/,
+  );
+  if (!m) return null;
+  if (!subjectIsSelf(m[1].trim(), cardName)) return null;
+  if (!subjectIsSelf(m[2].trim(), cardName)) return null;
+  return {
+    trigger: "onDamageToBearer",
+    ops: [{ op: "damageRiposteSource", n: toNumber(m[3]), element }],
+  };
+}
+
+/** Effets de RIPOSTE DE PORTEUR de cette carte (trigger onDamageToBearer). */
+export function bearerEffects(card: Card | null): EffectAtom[] {
+  if (!card) return [];
+  const atoms: EffectAtom[] = [];
+  for (const e of card.effects ?? []) {
+    if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
+    const text = String(e?.description ?? "").trim();
+    const compiled =
+      e?.compiled ??
+      // Élément STRICTEMENT depuis l'icône récupérée (effect.elements) : sans lui,
+      // compileBearerRiposteText renvoie null (pas de repli sur l'Élément imprimé).
+      (text && !e?.requiresIncline
+        ? compileBearerRiposteText(text, card.name, e.elements?.[0])
+        : null);
+    if (compiled && compiled.trigger === "onDamageToBearer")
+      atoms.push({ ...compiled, text });
+  }
+  return atoms;
+}
+
+/**
  * Compile un DÉCLENCHÉ DE MORT DE SOI (804.7) : « Quand / Lorsque <self> est
  * détruit(e), [vous pouvez] CORPS. » → `{ trigger:"onSelfDestroyed", ops }`.
  * Le déclenché part quand la SOURCE est DÉTRUITE (déplacée vers la Défausse

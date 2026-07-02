@@ -362,7 +362,18 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onDamageToBearer",
+          "ops": [
+            {
+              "op": "damageRiposteSource",
+              "n": 1,
+              "element": "Feu"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["riposte-bearer"]
       },
       {
         "description": "Le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
@@ -1000,7 +1011,18 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onDamageToBearer",
+          "ops": [
+            {
+              "op": "damageRiposteSource",
+              "n": 1,
+              "element": "Feu"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["riposte-bearer"]
       },
       {
         "description": "Famille \"Armure\" manquant sur la carte.",

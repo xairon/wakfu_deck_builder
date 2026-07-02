@@ -882,7 +882,18 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onDamageToBearer",
+          "ops": [
+            {
+              "op": "damageRiposteSource",
+              "n": 1,
+              "element": "Feu"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["riposte-bearer"]
       },
       {
         "description": "Cette carte a reçu un Errata Officiel : le bonus de Panoplie devient \"Vos gains d'XP sont augmentés de 1.\"",
@@ -2885,7 +2896,18 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onDamageToBearer",
+          "ops": [
+            {
+              "op": "damageRiposteSource",
+              "n": 1,
+              "element": "Feu"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["riposte-bearer"]
       },
       {
         "description": "Cette carte a reçu un errata officiel : Famille \"Armure\" manquant sur la carte.",

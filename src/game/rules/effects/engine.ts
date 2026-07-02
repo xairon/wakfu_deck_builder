@@ -88,6 +88,13 @@ export interface EffectFrame {
    * pour « jusqu'à »).
    */
   boundCount?: number;
+  /**
+   * RIPOSTE DE PORTEUR (onDamageToBearer) : cible PRÉ-LIÉE = la créature qui vient
+   * d'infliger les Dommages au Porteur (source de l'événement damageDealt
+   * déclencheur, posée par `bearerFrames`). L'op `damageRiposteSource` lit cet id
+   * comme cible (aucun ciblage interactif). Absent hors riposte.
+   */
+  riposteTargetId?: string;
 }
 
 /** Filtre de recherche dans une pile (type, famille, niveau max, élément). */
@@ -358,6 +365,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         cardName: f.cardName,
         ops: f.ops,
         sourceId: f.sourceId,
+        ...(f.riposteTargetId ? { riposteTargetId: f.riposteTargetId } : {}),
       });
     }
   }
@@ -1581,6 +1589,34 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                 collectTriggeredEffects(deps.rulesCtx(), res.ruleEvents),
               );
           }
+          deps.checkVictory();
+        }
+      } else if (op.op === "damageRiposteSource") {
+        // RIPOSTE DE PORTEUR (onDamageToBearer) : inflige N Dommages [op.element]
+        // à la créature PRÉ-LIÉE (frame.riposteTargetId = celle qui vient de
+        // frapper le Porteur). Cible déjà résolue → aucun picker. L'Élément est
+        // celui de la RIPOSTE (op.element, icône récupérée), PAS celui de la source
+        // (l'équipement). sourceId = l'équipement (attribution/XP). Les déclenchés
+        // des Dommages de riposte sont collectés (une riposte peut tuer et déclencher
+        // une mort) ; la garde anti-boucle est dans bearerFrames (damager Allié/Héros).
+        const targetId = frame.riposteTargetId;
+        if (targetId && deps.getState().instances[targetId]) {
+          const res = resolveDamageTarget(
+            deps.rulesCtx(),
+            seat,
+            targetId,
+            op.n,
+            op.element,
+            {
+              mods: activeGlobalMods(deps.rulesCtx()),
+              ...(sourceId ? { sourceId } : {}),
+            },
+          );
+          deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
+          if (deps.isAssistEffects() && res.ruleEvents?.length)
+            enqueueTriggered(
+              collectTriggeredEffects(deps.rulesCtx(), res.ruleEvents),
+            );
           deps.checkVictory();
         }
       }

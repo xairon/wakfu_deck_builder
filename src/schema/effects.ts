@@ -305,6 +305,21 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
+  // RIPOSTE DE PORTEUR (« Chaque fois qu'un Allié ou Héros inflige des Dommages
+  // au Porteur de <self>, <self> lui inflige N Dommage [X] » — Cape/Anneau du
+  // Prespic, 804.3). Op SANS CIBLE INTERACTIVE : la cible est PRÉ-LIÉE = la
+  // créature qui vient d'infliger les Dommages au Porteur (`frame.riposteTargetId`,
+  // = source de l'événement damageDealt déclencheur), posée par `bearerFrames`.
+  // Résolue directement dans runFrame (pas de picker). L'Élément est celui de la
+  // riposte (icône récupérée de `effect.elements`), pas l'Élément imprimé de la
+  // source. La garde anti-boucle est dans le trigger : bearerFrames n'émet que si
+  // le damager est un Allié ou Héros (l'équipement source de la riposte ne l'est
+  // pas → pas de re-déclenchement).
+  z.object({
+    op: z.literal("damageRiposteSource"),
+    n: z.number(),
+    element: z.string(),
+  }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({
     op: z.literal("healHeroTarget"),
