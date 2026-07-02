@@ -18,6 +18,7 @@ import {
   untap,
 } from "../../engine/verbs";
 import { normElement, normWord, xpValue } from "../cardAttrs";
+import { resourceProducers } from "../resources";
 import { effectiveForce } from "../stats";
 import { reduceDamage } from "./damageMods";
 import { grantXpEvents } from "../progress";
@@ -43,6 +44,7 @@ export type TargetingOp = Extract<
   | { op: "costTapControlled" }
   | { op: "costDestroyControlled" }
   | { op: "costRecycleControlled" }
+  | { op: "costTapResource" }
   // OPS « LE JOUEUR DE VOTRE CHOIX … » : on choisit un JOUEUR en CIBLANT son
   // Héros (éligibilité = tous les Héros en jeu, les deux contrôleurs). L'effet
   // s'applique au contrôleur du Héros choisi (résolu dans effectTargetChoose).
@@ -71,6 +73,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "costTapControlled" ||
     op.op === "costDestroyControlled" ||
     op.op === "costRecycleControlled" ||
+    op.op === "costTapResource" ||
     op.op === "playerDraw" ||
     op.op === "playerLoseStatTurn" ||
     op.op === "playerGainStat"
@@ -98,7 +101,8 @@ export function isCostTargetingOp(op: CompiledEffectOp): boolean {
   return (
     op.op === "costTapControlled" ||
     op.op === "costDestroyControlled" ||
-    op.op === "costRecycleControlled"
+    op.op === "costRecycleControlled" ||
+    op.op === "costTapResource"
   );
 }
 
@@ -116,6 +120,26 @@ export function effectTargetIds(
   // damageMultiTarget distinct : on ne re-propose pas une cible déjà touchée).
   excludeIds?: ReadonlySet<InstanceId>,
 ): InstanceId[] {
+  // COÛT « payer une Ressource » (costTapResource) : éligibilité = TOUTE carte
+  // productrice de `resourceProducers` (contrôlée, dressée, Monde/Havre-Sac, sauf
+  // Protecteur), pas seulement un Allié. On DÉDUPLIQUE par instanceId : au tour 2
+  // du joueur qui n'a pas commencé, `resourceProducers` émet un DOUBLON du même
+  // instanceId (Havre-Sac valant deux Ressources, 2342) — mais on ne peut incliner
+  // qu'une carte réelle une seule fois, donc le ciblage ne doit pas la proposer
+  // deux fois. `element` : filtre optionnel (aucune carte du périmètre ne l'exige).
+  if (op.op === "costTapResource") {
+    if (actor === undefined) return [];
+    const want = op.element ? normElement(op.element) : null;
+    const seen = new Set<InstanceId>();
+    const out: InstanceId[] = [];
+    for (const p of resourceProducers(ctx, actor)) {
+      if (seen.has(p.instanceId)) continue;
+      if (want && normElement(p.element) !== want) continue;
+      seen.add(p.instanceId);
+      out.push(p.instanceId);
+    }
+    return out;
+  }
   // COÛTS payés (« Inclinez/Détruisez un de vos X : … ») : éligibilité dédiée —
   // VOS créatures (controller === acteur), dans op.zones, de mainType Allié (ou
   // Héros si `heroes`), matchant `sub`/`maxLevel`, hors source si `excludeSource`,

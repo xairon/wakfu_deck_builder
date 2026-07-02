@@ -13752,7 +13752,21 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "costTapResource"
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "draw"]
       },
       {
         "description": "L'évenement d'apparition se déclenche dès que le Smare entre en jeu, après son eventuel coût. Vous pouvez donc payez le pouvoir du Smare en produissant une ressource avec le Smare lui-même.",

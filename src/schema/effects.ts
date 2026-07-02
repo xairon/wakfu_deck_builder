@@ -748,6 +748,24 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     excludeSource: z.boolean().optional(),
     zones: zonesSchema,
   }),
+  // COÛT de pouvoir payé « payer pour … : CORPS » (« Ressource » du glossaire,
+  // 4261) : op de CIBLAGE de COÛT (première op d'une séquence cost:"paidOps").
+  // « Produire une Ressource » = INCLINER une carte en jeu contrôlée et dressée
+  // (Monde / Havre-Sac, sauf Protecteur) ; « payer une Ressource » = dépenser
+  // cette production. Le moteur n'a PAS de pool : la Ressource disponible reste
+  // DÉRIVÉE de `resourceProducers` (orientation), et la seule mutation au
+  // paiement est SET_ORIENTATION (upright→tapped) sur le producteur choisi —
+  // comme costTapControlled, mais l'éligibilité est TOUTE carte productrice (pas
+  // seulement un Allié). Si aucun producteur dressé n'existe, le coût ne peut pas
+  // être payé → la frame est ABANDONNÉE (corps non exécuté), comme les autres
+  // coûts payés. `element` : filtre optionnel (« payer une Ressource [Feu] ») —
+  // capacité latente, aucune carte du périmètre actuel ne l'exige (« payer pour »
+  // = 1 Ressource générique de n'importe quel Élément). Aucun `zones` : la portée
+  // (Monde / Havre-Sac, contrôlées, dressées) est fixée par `resourceProducers`.
+  z.object({
+    op: z.literal("costTapResource"),
+    element: z.string().optional(),
+  }),
 ]);
 
 export const staticAbilitySchema = z.discriminatedUnion("kind", [

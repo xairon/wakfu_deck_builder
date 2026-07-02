@@ -1602,7 +1602,19 @@ function compileBody(
   if (!sentences.length) return null;
   const ops: EffectOp[] = [];
   for (let si = 0; si < sentences.length; si++) {
-    const s = sentences[si];
+    let s = sentences[si];
+    // COÛT DE RESSOURCE « payer pour <corps> » (Smare, Tofu Céleste…) : le clou
+    // « payer pour » = payer 1 Ressource générique (glossaire « Ressource »/4261 :
+    // incliner une carte productrice contrôlée) AVANT d'exécuter <corps>. On émet
+    // l'op de coût `costTapResource` (première op d'une séquence payée : abandon si
+    // aucun producteur dressé, décline possible), puis on compile <corps> comme
+    // une phrase normale. STRICT : si <corps> ne compile pas, compileBody renvoie
+    // null (l'effet reste manuel) — jamais de coût encodé sans corps fidèle.
+    const pay = s.match(/^payer pour (.+)$/);
+    if (pay) {
+      ops.push({ op: "costTapResource" });
+      s = pay[1];
+    }
     // DOMMAGES MULTI-CIBLES BORNÉS, sur DEUX phrases (« Choisissez jusqu'à N
     // Alliés ou Héros [attaquants ou bloqueurs]? [différents]?. [La source] leur
     // inflige X Dommages. ») → un seul op `damageMultiTarget`. La 1re phrase porte

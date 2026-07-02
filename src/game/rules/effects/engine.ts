@@ -1946,9 +1946,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ? // COÛT « Recyclez un <X> de votre choix » (Vampyro) : recycle la
               // créature choisie sous la Pioche de son propriétaire.
               resolveRecycleControlled(deps.rulesCtx(), t.seat, instanceId)
-            : t.op.op === "costTapControlled"
-              ? // COÛT « Inclinez un de vos X » : incline la cible choisie (déjà
-                // garantie dressée par l'éligibilité).
+            : t.op.op === "costTapControlled" || t.op.op === "costTapResource"
+              ? // COÛT « Inclinez un de vos X » / « payer une Ressource » : incline
+                // la cible choisie (déjà garantie dressée par l'éligibilité — un
+                // producteur de resourceProducers pour costTapResource).
                 resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
               : t.op.op === "healHeroTarget"
                 ? resolveHealHeroTarget(

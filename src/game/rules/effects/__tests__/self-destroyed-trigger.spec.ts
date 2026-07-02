@@ -105,13 +105,21 @@ describe("compileSelfDestroyedText — frontière (NE compile PAS)", () => {
     ).toBeNull();
   });
 
-  it("CORPS de PAIEMENT « vous pouvez payer pour … » → null", () => {
+  it("CORPS de PAIEMENT « vous pouvez payer pour piocher » → costTapResource + draw (W45)", () => {
+    // W45 (sous-système Ressources) : « payer pour <corps> » est désormais encodé
+    // — costTapResource (incliner un producteur contrôlé) + le corps. Optionnel
+    // (« vous pouvez »). La carte détruite n'est plus productrice (en Défausse) →
+    // on paie avec un autre producteur, fidèle.
     expect(
       compileSelfDestroyedText(
         "Quand Marlène Frimeur est détruite, vous pouvez payer pour piocher une carte.",
         "Marlène Frimeur",
       ),
-    ).toBeNull();
+    ).toEqual({
+      trigger: "onSelfDestroyed",
+      optional: true,
+      ops: [{ op: "costTapResource" }, { op: "draw", n: 1 }],
+    });
   });
 
   it("auto-apparition (déclencheur ≠ mort) → null", () => {

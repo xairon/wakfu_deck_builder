@@ -382,6 +382,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : recyclez une de vos créatures en jeu (au choix) — remise sous la Pioche de son propriétaire — pour payer l'effet.",
   },
   {
+    id: "cost-tap-resource",
+    label: "Coût : production d'une Ressource",
+    category: "ressource",
+    glossary:
+      "Coût d'un pouvoir (« payer pour … ») : inclinez une carte contrôlée dressée (Monde ou Havre-Sac, sauf Protecteur) pour produire et dépenser une Ressource (rulebook 4261). Aucune réserve stockée : la Ressource est produite et dépensée dans le même geste.",
+  },
+  {
     id: "player-draw",
     label: "Pioche du joueur choisi",
     category: "ressource",
@@ -480,6 +487,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   costDiscard: "cost-discard",
   costRecycle: "cost-recycle",
   costRecycleControlled: "cost-recycle-controlled",
+  costTapResource: "cost-tap-resource",
   playerDraw: "player-draw",
   playerLoseStatTurn: "player-lose-stat-turn",
   playerGainStat: "player-gain-stat",

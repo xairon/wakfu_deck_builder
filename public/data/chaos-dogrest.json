@@ -4894,7 +4894,21 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onSelfDestroyed",
+          "optional": true,
+          "ops": [
+            {
+              "op": "costTapResource"
+            },
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "draw"]
       }
     ],
     "keywords": [],
