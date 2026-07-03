@@ -4887,6 +4887,7 @@
               "element": "Eau",
               "heroes": true,
               "targetHeroOnly": true,
+              "pvLoss": true,
               "zones": ["monde", "havreSac"]
             }
           ]

@@ -7624,7 +7624,17 @@
         "description": "Les Dommages infligés par les pouvoirs de vos Alliés sont augmentés de 1 jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffTeamPowerDamageTurn",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["team-power-damage-boost"]
       }
     ],
     "keywords": [],

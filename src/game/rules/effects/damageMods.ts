@@ -24,6 +24,38 @@ import { effectiveKeywords, preventDamage } from "./keywords.ts";
 type PreventionAura = Extract<StaticAbility, { kind: "damagePreventionAura" }>;
 
 /**
+ * BONUS DE POUVOIR D'ALLIÉ (« Les Dommages infligés par les POUVOIRS de vos
+ * Alliés sont augmentés de N jusqu'à la fin du tour » — Guma Bobeule, W54).
+ * `powerSourceId` = la carte dont le POUVOIR imprimé se résout (posé à
+ * l'enfilage des frames de pouvoir, JAMAIS réécrit — contrairement à sourceId,
+ * corrompu par l'actor-binding). Le bonus s'applique si cette carte est un
+ * ALLIÉ (glossaire « Pouvoir » : à paiement/continu/déclenché d'une carte en
+ * jeu — Actions/Héros/Équipements exclus) : on lit alors le jeton de tour
+ * `teamPowerDmgMod` sur le Héros de SON contrôleur (cumulatif, purgé en fin de
+ * tour). Absent / non-Allié / pas de jeton → 0. Les Dommages de COMBAT ne
+ * passent jamais ici (pas un pouvoir). Une AUGMENTATION n'est pas une
+ * prévention : elle s'applique AVANT Résistance/préventions, et le bypass
+ * `damageUnpreventable` renvoie le montant AUGMENTÉ.
+ */
+export function allyPowerDamageBonus(
+  ctx: RulesCtx,
+  powerSourceId?: InstanceId | null,
+): number {
+  if (!powerSourceId) return 0;
+  const inst = ctx.state.instances[powerSourceId];
+  const card = inst ? ctx.getCard(inst.cardId) : null;
+  if (
+    !inst ||
+    !card ||
+    (card.mainType !== "Allié" && card.mainType !== "Allié Élémentaire")
+  )
+    return 0;
+  const heroId = ctx.state.seats[inst.controller].heroInstanceId;
+  const hero = heroId ? ctx.state.instances[heroId] : null;
+  return hero?.counters.tokens?.teamPowerDmgMod ?? 0;
+}
+
+/**
  * L'aura de prévention `a` (portée par une source contrôlée par `auraController`)
  * s'applique-t-elle aux Dommages ENTRANTS sur `targetId` ? Bénéficiaire relatif
  * au contrôleur de la source (« votre Héros » / « vos [Famille] »).

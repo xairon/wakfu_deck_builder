@@ -940,6 +940,7 @@ export const useGameStore = defineStore("game", () => {
               cardName: card.name,
               ops: [{ op: "destroySelf" }],
               sourceId: inst.instanceId,
+              powerSourceId: inst.instanceId,
             });
             continue;
           }
@@ -956,6 +957,8 @@ export const useGameStore = defineStore("game", () => {
                   : undefined,
               declineDestroysSelf: atom.orElse === "destroySelf",
               sourceId: inst.instanceId,
+              // provenance de POUVOIR : la carte au déclenché de début de tour (W54).
+              powerSourceId: inst.instanceId,
             },
           ];
           continue;
@@ -968,6 +971,8 @@ export const useGameStore = defineStore("game", () => {
           cardName: card.name,
           ops: atom.ops,
           sourceId: inst.instanceId,
+          // provenance de POUVOIR : la carte au déclenché de début de tour (W54).
+          powerSourceId: inst.instanceId,
         });
       }
     }
@@ -1485,6 +1490,8 @@ export const useGameStore = defineStore("game", () => {
         cardName: card.name,
         ops: atom.ops,
         sourceId: instanceId,
+        // provenance de POUVOIR : la source du pouvoir activé (W54).
+        powerSourceId: instanceId,
       });
       return true;
     }
@@ -1582,6 +1589,9 @@ export const useGameStore = defineStore("game", () => {
         cardName: card.name,
         ops: atom.ops,
         sourceId: instanceId,
+        // provenance de POUVOIR : la source du pouvoir activé (W54) — jamais
+        // réécrite, contrairement à sourceId (actor-binding ci-dessous).
+        powerSourceId: instanceId,
         // ACTOR-BINDING « Inclinez un de vos X : il/elle … » : le moteur réécrira
         // sourceId vers la créature choisie au paiement du coût (sujet du corps).
         ...(atom.actor === "costTarget"
@@ -1636,6 +1646,8 @@ export const useGameStore = defineStore("game", () => {
       cardName: card.name,
       ops: atom.ops,
       sourceId: instanceId,
+      // provenance de POUVOIR : la source du pouvoir activé (W54).
+      powerSourceId: instanceId,
     });
     return true;
   }

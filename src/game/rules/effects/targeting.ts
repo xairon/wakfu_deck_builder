@@ -20,7 +20,7 @@ import {
 import { normElement, normWord, xpValue } from "../cardAttrs";
 import { resourceProducers } from "../resources";
 import { effectiveForce } from "../stats";
-import { reduceDamage } from "./damageMods";
+import { allyPowerDamageBonus, reduceDamage } from "./damageMods";
 import { grantXpEvents } from "../progress";
 import { GRANT_KEYWORD_TOKEN, resistanceLabel } from "./keywords";
 
@@ -407,6 +407,15 @@ export interface DamageOpts {
    * profit de l'autre siège restent accordés (415.1 pour ses propres pertes).
    */
   noXpFor?: Seat;
+  /**
+   * PROVENANCE DE POUVOIR (W54) : la carte dont le POUVOIR imprimé se résout —
+   * posée à l'enfilage des frames de pouvoir, jamais réécrite (≠ sourceId,
+   * réécrit par l'actor-binding). Si c'est un Allié contrôlé dont le Héros
+   * porte `teamPowerDmgMod` (Guma Bobeule), le paquet de Dommages est AUGMENTÉ
+   * d'autant avant Résistance/préventions (cf. allyPowerDamageBonus). Absent
+   * (Action, combat, non-pouvoir) → pas d'augmentation.
+   */
+  powerSourceId?: InstanceId | null;
 }
 
 function nameOf(ctx: RulesCtx, id: InstanceId): string {
@@ -519,6 +528,12 @@ export function resolveDamageTarget(
   const inst = ctx.state.instances[targetId];
   const card = inst ? ctx.getCard(inst.cardId) : null;
   if (!inst || !card) return { events: [], log: [] };
+  // BONUS DE POUVOIR D'ALLIÉ (W54, Guma Bobeule) : augmentation PAR PAQUET,
+  // AVANT Résistance/préventions (une augmentation n'est pas une prévention ;
+  // le bypass damageUnpreventable renvoie le montant augmenté), UNIQUEMENT si
+  // le paquet de base > 0 (un pouvoir qui inflige 0 Dommage n'inflige rien).
+  const inc = n > 0 ? allyPowerDamageBonus(ctx, opts.powerSourceId) : 0;
+  const base = n + inc;
   // Passe unique A2 : toute infliction de Dommages traverse reduceDamage
   // (Résistance, puis Poum/Trêve si la posture/les mods s'appliquent — hors
   // combat, sans posture ni mod, seule la Résistance 7469 joue).
@@ -526,7 +541,7 @@ export function resolveDamageTarget(
     ctx,
     {
       targetId,
-      amount: n,
+      amount: base,
       element,
       combat: false,
       sourceId: opts.sourceId ?? null,
@@ -536,7 +551,9 @@ export function resolveDamageTarget(
   );
   const events: DraftEvent[] = [];
   const log: string[] = [];
-  if (eff < n) log.push(`Prévention : ${n - eff} Dommage(s) prévenu(s).`);
+  if (inc > 0)
+    log.push(`Dommages augmentés de ${inc} (pouvoirs de vos Alliés).`);
+  if (eff < base) log.push(`Prévention : ${base - eff} Dommage(s) prévenu(s).`);
   if (eff <= 0) return { events, log };
   // 811.4 : Dommages effectivement infligés → événement de bus (jamais à ≤ 0)
   const ruleEvents: RuleEvent[] = [

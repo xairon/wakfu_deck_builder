@@ -53,6 +53,7 @@ describe("W27 — Héros « du joueur » de votre choix : dommages (damageTarget
       {
         op: "damageTarget",
         n: 1,
+        pvLoss: true,
         element: "Feu",
         heroes: true,
         targetHeroOnly: true,
@@ -76,7 +77,7 @@ describe("W27 — Héros « du joueur » de votre choix : dommages (damageTarget
 
   it("« au Héros adverse » reste damageOppHero (déterministe, non interactif)", () => {
     expect(actOps("Infligez 2 Dommages au Héros adverse.")).toEqual([
-      { op: "damageOppHero", n: 2 },
+      { op: "damageOppHero", n: 2, isDamage: true },
     ]);
   });
 
@@ -226,6 +227,7 @@ describe("W27 — harvest (échantillon de données réelles)", () => {
       {
         op: "damageTarget",
         n: 1,
+        pvLoss: true,
         element: "Eau",
         heroes: true,
         targetHeroOnly: true,

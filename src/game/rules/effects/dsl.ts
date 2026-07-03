@@ -470,7 +470,15 @@ function parseSentence(
   m = sentence.match(
     /^(?:inflige[zr] (\d+) dommages? au heros adverse|le heros adverse perd (\d+) (?:pv|points? de vie))$/,
   );
-  if (m) return { op: "damageOppHero", n: toNumber(m[1] ?? m[2]) };
+  // `isDamage` : seule la forme « inflige N Dommages » (m[1]) est de vrais
+  // DOMMAGES (bonus de pouvoir d'Allié applicable, W54) ; « perd N PV » (m[2])
+  // est une perte directe (410.3), jamais augmentée.
+  if (m)
+    return {
+      op: "damageOppHero",
+      n: toNumber(m[1] ?? m[2]),
+      ...(m[1] !== undefined ? { isDamage: true } : {}),
+    };
   m = sentence.match(/^gagne[zr] (\d+) (?:points? de )?resistance$/);
   if (m) return { op: "havreSacGainResistance", n: toNumber(m[1]) };
   m = sentence.match(
@@ -1360,6 +1368,9 @@ function parseSentence(
       element: sourceElement,
       heroes: true,
       targetHeroOnly: true,
+      // PERTE DIRECTE de PV (410.3), pas des Dommages : jamais augmentée par le
+      // bonus de pouvoir d'Allié (W54).
+      pvLoss: true,
       zones: ["monde", "havreSac"],
     };
   // « Infligez N Dommages à l'Allié [Famille] de votre choix » (impératif) ou
@@ -1424,6 +1435,15 @@ function parseSentence(
     /^jusqu['’]au debut de votre prochain tour\s*,?\s*tous les dommages sont reduits a 0$/,
   );
   if (m) return { op: "globalDamageShield" };
+  // « Les Dommages infligés par les POUVOIRS de vos Alliés sont augmentés de N
+  //   jusqu'à la fin du tour. » (Guma Bobeule — occurrence unique du corpus) →
+  //   jeton de tour teamPowerDmgMod sur le Héros, lu par allyPowerDamageBonus.
+  //   STRICT (`^…$`) : la variante continue de la Dragodinde Ivoire (« Tant que
+  //   le Porteur … sur le point d'être infligés … ») ne matche pas → manuelle.
+  m = sentence.match(
+    /^les dommages infliges par les pouvoirs de vos allies sont augmentes de (\d+) jusqu['’]a la fin du tour$/,
+  );
+  if (m) return { op: "buffTeamPowerDamageTurn", n: toNumber(m[1]) };
   // OPS DE MASSE (« tous les … » / « tous vos … » — pas de « de votre choix ») :
   // inclinaison / redressement / Dommages de masse. Parseur dédié.
   const mass = parseMassOp(sentence, sourceElement, cardName);

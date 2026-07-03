@@ -30,6 +30,10 @@ const TURN_TOKENS = new Set([
   "tacleTurnMod",
   "coupCritique",
   "teamForceMod",
+  // « Les Dommages infligés par les pouvoirs de vos Alliés sont augmentés de N
+  // jusqu'à la fin du tour » (Guma Bobeule, W54) — jeton de siège sur le Héros,
+  // lu par allyPowerDamageBonus (damageMods).
+  "teamPowerDmgMod",
 ]);
 
 const TURN_TOKEN_PREFIXES = ["resMod_", "powerUses", "metier_"];

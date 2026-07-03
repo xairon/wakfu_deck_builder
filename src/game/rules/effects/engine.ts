@@ -33,6 +33,7 @@ import type {
 } from "@/game/rules";
 import {
   activeGlobalMods,
+  allyPowerDamageBonus,
   appearanceTriggerEffects,
   arrivalEffects,
   collectTriggeredEffects,
@@ -95,6 +96,17 @@ export interface EffectFrame {
    * comme cible (aucun ciblage interactif). Absent hors riposte.
    */
   riposteTargetId?: string;
+  /**
+   * PROVENANCE DE POUVOIR (W54) : la carte dont le POUVOIR imprimé est résolu
+   * par cette frame — posée à l'ENFILAGE (pouvoir-tap, apparition, veilleur,
+   * déclenché de bus, début de tour), JAMAIS réécrite (≠ sourceId, réécrit par
+   * l'actor-binding). Absente pour une ACTION (pas un pouvoir — glossaire).
+   * Lue par allyPowerDamageBonus : si c'est un Allié dont le Héros porte
+   * `teamPowerDmgMod` (Guma Bobeule), les paquets de Dommages du corps sont
+   * augmentés d'autant. Une provenance non-Allié (Équipement, Zone, Héros)
+   * donne un bonus 0 — la discrimination se fait à la RÉSOLUTION, en live.
+   */
+  powerSourceId?: string;
 }
 
 /** Filtre de recherche dans une pile (type, famille, niveau max, élément). */
@@ -210,6 +222,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
        */
       optionLabels?: [string, string];
       sourceId?: string;
+      /** Provenance de POUVOIR de la frame d'origine (cf. EffectFrame). */
+      powerSourceId?: string;
     }[]
   >([]);
   const effectChoice = computed(() => effectChoices.value[0] ?? null);
@@ -220,6 +234,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     cardName: string;
     op: TargetingOp;
     sourceId?: string;
+    /** Provenance de POUVOIR de la frame (cf. EffectFrame.powerSourceId). */
+    powerSourceId?: string;
     /**
      * DOMMAGES MULTI-CIBLES BORNÉS (« Choisissez jusqu'à N … leur inflige X
      * Dommages », op damageMultiTarget) : état d'un ciblage RÉPÉTÉ. `remaining`
@@ -363,6 +379,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             text: f.text,
             ops: f.ops,
             sourceId: f.sourceId,
+            // provenance de POUVOIR : la carte porteuse du déclenché (W54).
+            powerSourceId: f.sourceId,
           },
         ];
         continue;
@@ -373,6 +391,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         ops: f.ops,
         sourceId: f.sourceId,
         ...(f.riposteTargetId ? { riposteTargetId: f.riposteTargetId } : {}),
+        // provenance de POUVOIR : la carte porteuse du déclenché (W54).
+        powerSourceId: f.sourceId,
       });
     }
   }
@@ -701,6 +721,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                 ops: [...body, ...rest],
                 declineOps: [...rest],
                 ...(sourceId ? { sourceId } : {}),
+                ...(frame.powerSourceId
+                  ? { powerSourceId: frame.powerSourceId }
+                  : {}),
               },
             ];
             return false;
@@ -734,6 +757,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             declineOps: [...(b.ops as EffectOp[]), ...rest],
             optionLabels: [a.label, b.label],
             ...(sourceId ? { sourceId } : {}),
+            ...(frame.powerSourceId
+              ? { powerSourceId: frame.powerSourceId }
+              : {}),
           },
         ];
         return false;
@@ -753,6 +779,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
               cardName,
               text: `${cardName} — ${deps.playerName(s)} : peut agir`,
               ops: body,
+              ...(frame.powerSourceId
+                ? { powerSourceId: frame.powerSourceId }
+                : {}),
             },
           ];
         }
@@ -805,6 +834,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           cardName,
           op,
           sourceId,
+          ...(frame.powerSourceId
+            ? { powerSourceId: frame.powerSourceId }
+            : {}),
           // DOMMAGES MULTI-CIBLES BORNÉS : ouvre un ciblage RÉPÉTÉ (jusqu'à
           // op.count cibles). effectTargetChoose ré-ouvre tant que `remaining > 0`
           // et qu'il reste des cibles ; effectTargetSkip clôt (« jusqu'à »).
@@ -1309,8 +1341,18 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) deps.adjustCounter(heroId, "hp", -op.n);
       } else if (op.op === "damageOppHero") {
+        // `isDamage` (« inflige N Dommages au Héros adverse ») : de vrais
+        // DOMMAGES → bonus de pouvoir d'Allié applicable (W54). Sans le flag
+        // (« le Héros adverse perd N PV ») : perte directe (410.3), jamais
+        // augmentée. NB : ce chemin court-circuite reduceDamage (pas de
+        // Résistance/damageDealt) — infidélité PRÉEXISTANTE hors périmètre, le
+        // hook n'ajoute que l'augmentation.
         const oppHeroId = deps.getState().seats[otherSeat(seat)].heroInstanceId;
-        if (oppHeroId) deps.adjustCounter(oppHeroId, "hp", -op.n);
+        const bonus =
+          op.isDamage && op.n > 0
+            ? allyPowerDamageBonus(deps.rulesCtx(), frame.powerSourceId)
+            : 0;
+        if (oppHeroId) deps.adjustCounter(oppHeroId, "hp", -(op.n + bonus));
       } else if (op.op === "havreSacGainResistance") {
         const sacId = deps.getState().seats[seat].havreSacInstanceId;
         if (sacId) deps.adjustCounter(sacId, "resistance", op.n);
@@ -1484,6 +1526,22 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "buffTeamPowerDamageTurn") {
+        // « Les Dommages infligés par les POUVOIRS de vos Alliés sont augmentés
+        // de N jusqu'à la fin du tour » (Guma Bobeule, W54) : jeton de SIÈGE
+        // teamPowerDmgMod sur le Héros (cumulatif — deux Gumas = +2 ; purgé en
+        // fin de tour, TURN_TOKENS), lu par allyPowerDamageBonus au point de
+        // résolution des Dommages d'effet.
+        const heroId = deps.getState().seats[seat].heroInstanceId;
+        if (heroId) {
+          deps.dispatch(
+            incCounterVerb(seat, heroId, "teamPowerDmgMod", op.n, true),
+            say(
+              seat,
+              `Les Dommages des pouvoirs de vos Alliés sont augmentés de ${op.n} jusqu'à la fin du tour.`,
+            ),
+          );
+        }
       } else if (op.op === "globalDamageShield") {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) {
@@ -1599,6 +1657,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                 // « Vous ne gagnez pas d'XP » : les destructions en cascade ne
                 // créditent pas le lanceur (seat) — cf. DamageOpts.noXpFor.
                 ...(op.noXp ? { noXpFor: seat } : {}),
+                // bonus de pouvoir d'Allié (W54) — par PAQUET, donc par cible.
+                ...(frame.powerSourceId
+                  ? { powerSourceId: frame.powerSourceId }
+                  : {}),
               },
             );
             deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
@@ -1628,6 +1690,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             {
               mods: activeGlobalMods(deps.rulesCtx()),
               ...(sourceId ? { sourceId } : {}),
+              // provenance = l'Équipement (riposte) → allyPowerDamageBonus rend 0
+              // (le bonus ne vise que les POUVOIRS D'ALLIÉS) ; passé par uniformité.
+              ...(frame.powerSourceId
+                ? { powerSourceId: frame.powerSourceId }
+                : {}),
             },
           );
           deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
@@ -1722,6 +1789,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             text: atom.text,
             ops: atom.ops,
             sourceId,
+            // provenance de POUVOIR : la carte qui apparaît (W54) — le bonus
+            // ne s'appliquera qu'à un Allié (allyPowerDamageBonus).
+            ...(sourceId ? { powerSourceId: sourceId } : {}),
           },
         ];
         continue;
@@ -1729,7 +1799,13 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       deps.dispatch(
         say(seat, `Effet automatique — ${card.name} : « ${atom.text} »`),
       );
-      enqueueEffect({ seat, cardName: card.name, ops: atom.ops, sourceId });
+      enqueueEffect({
+        seat,
+        cardName: card.name,
+        ops: atom.ops,
+        sourceId,
+        ...(sourceId ? { powerSourceId: sourceId } : {}),
+      });
     }
     // VEILLE non-soi (804) : d'AUTRES cartes en jeu déclenchent « Quand un Allié
     // [Famille]? [adverse]? apparaît … ». La carte qui apparaît (`card`,
@@ -1813,6 +1889,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
               text: atom.text,
               ops: atom.ops,
               sourceId: bodySourceId,
+              // provenance de POUVOIR = le VEILLEUR (pas l'apparu que
+              // l'actor-binding peut mettre en sourceId) — W54.
+              powerSourceId: watcherId,
             },
           ];
           continue;
@@ -1828,6 +1907,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           cardName: watcherCard.name,
           ops: atom.ops,
           sourceId: bodySourceId,
+          powerSourceId: watcherId,
         });
       }
     }
@@ -1884,6 +1964,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         {
           mods: activeGlobalMods(deps.rulesCtx()),
           ...(t.sourceId ? { sourceId: t.sourceId } : {}),
+          // bonus de pouvoir d'Allié (W54) — par PAQUET, donc par cible.
+          ...(t.powerSourceId ? { powerSourceId: t.powerSourceId } : {}),
         },
       );
       deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
@@ -2125,6 +2207,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                                     ...(t.sourceId
                                       ? { sourceId: t.sourceId }
                                       : {}),
+                                    // bonus de pouvoir d'Allié (W54).
+                                    ...(t.powerSourceId
+                                      ? { powerSourceId: t.powerSourceId }
+                                      : {}),
                                   },
                                 )
                               : t.op.op === "damageTarget"
@@ -2140,6 +2226,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                                       mods: activeGlobalMods(deps.rulesCtx()),
                                       ...(t.sourceId
                                         ? { sourceId: t.sourceId }
+                                        : {}),
+                                      // bonus de pouvoir d'Allié (W54) — JAMAIS
+                                      // sur une perte directe de PV (pvLoss, 410.3).
+                                      ...(t.powerSourceId && !t.op.pvLoss
+                                        ? { powerSourceId: t.powerSourceId }
                                         : {}),
                                     },
                                   )
@@ -2260,6 +2351,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           cardName: choice.cardName,
           ops: choice.declineOps,
           sourceId: choice.sourceId,
+          ...(choice.powerSourceId
+            ? { powerSourceId: choice.powerSourceId }
+            : {}),
         });
       }
       return;
@@ -2277,6 +2371,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       cardName: choice.cardName,
       ops: choice.ops,
       sourceId: choice.sourceId,
+      ...(choice.powerSourceId ? { powerSourceId: choice.powerSourceId } : {}),
     });
   }
 

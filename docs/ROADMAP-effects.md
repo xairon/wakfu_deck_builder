@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-03.** État : **458 / 1794 effets imprimés structurés (25,5 %)** — `auto 410 · manual 48 · uncovered 1336 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-03.** État : **459 / 1794 effets imprimés structurés (25,6 %)** — `auto 411 · manual 48 · uncovered 1335 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
@@ -29,9 +29,9 @@ Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complèt
 
 ---
 
-## 3. Deck-driven — worklist des 4 starters Incarnam (23 restants)
+## 3. Deck-driven — worklist des 4 starters Incarnam (22 restants)
 
-Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter_triage.mjs` (lit officialDecks.ts × public/data/incarnam.json → uncovered restants ; recréé en W47). **48 → 23** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource, W41 tap/untap-multi, W42 drawTargetXp, W43 team-combat-reduction/glyphe-revigorant, W44 each-player-optional/coffre+djakky, W45 costTapResource/smare + 3 free riders, W46 production colorée/4 Pious + 4 free riders, W47 conditional{optional}/Dollarawan, W48 riposte de Porteur/Cape+Anneau du Prespic + 2 free riders, W49 actor-bind même-cible/Jeunesse d'Ogrest + Furie free rider + FIX zones Héros, W50 damageAll noXp + sujet-en-tête + élément explicite/Flèche Blizzard, W51 onDamageToSelf/Wa Wabbit, W52 designs parallélisés : projection combat local [FIX préexistant] + Exclusion removeFromCombatTarget + Dora requiresBearerInCombat + Guy Yomtella verbatim [−1 faux-auto : le compilé sous-facturait, coût 1 Air récupéré du raw → démouvu manuel], W53 Guy Yomtella RE-COUVERT via CARD_SCRIPTS [tapsSource + costTapResource{Air} + garde coût-ressource-impayable dans activateTapPower ; le pouvoir 2 « [Air][Air] : Redressez » reste manuel — pas de voie d'activation payée sans incliner]). Restants, groupés par **sous-système à bâtir** :
+Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/officialDecks.ts`). Croisement decks × data : script jetable `/tmp/starter_triage.mjs` (lit officialDecks.ts × public/data/incarnam.json → uncovered restants ; recréé en W47). **48 → 22** (W37 noEquipment+tofu-mutant, W38 draw fromCount, W39 costDiscard, W40 oncePerTurn+tapsSource, W41 tap/untap-multi, W42 drawTargetXp, W43 team-combat-reduction/glyphe-revigorant, W44 each-player-optional/coffre+djakky, W45 costTapResource/smare + 3 free riders, W46 production colorée/4 Pious + 4 free riders, W47 conditional{optional}/Dollarawan, W48 riposte de Porteur/Cape+Anneau du Prespic + 2 free riders, W49 actor-bind même-cible/Jeunesse d'Ogrest + Furie free rider + FIX zones Héros, W50 damageAll noXp + sujet-en-tête + élément explicite/Flèche Blizzard, W51 onDamageToSelf/Wa Wabbit, W52 designs parallélisés : projection combat local [FIX préexistant] + Exclusion removeFromCombatTarget + Dora requiresBearerInCombat + Guy Yomtella verbatim [−1 faux-auto : le compilé sous-facturait, coût 1 Air récupéré du raw → démouvu manuel], W53 Guy Yomtella RE-COUVERT via CARD_SCRIPTS [tapsSource + costTapResource{Air} + garde coût-ressource-impayable dans activateTapPower ; le pouvoir 2 « [Air][Air] : Redressez » reste manuel — pas de voie d'activation payée sans incliner], W54 bonus de pouvoir d'Allié/Guma Bobeule [powerSourceId sur toutes les frames de pouvoir + jeton teamPowerDmgMod + discriminants isDamage/pvLoss Dommages≠perte-de-PV]). Restants, groupés par **sous-système à bâtir** :
 
 | Sous-système à bâtir                              | Effets starters concernés                                                                                             | Notes                                                                                                                                                                                                                                                                                                                                                   |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -52,6 +52,13 @@ Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/offi
 > **ROI le plus propre à reprendre** : (a) **Ressources — production** (`produceResource` no-op) : lève les 4 Pious d'un coup, purement additif, zéro régression (fondation `costTapResource` déjà là) ; (b) **Tofu Céleste** (`costTapResource` + `putInPlay from:main` — les deux ops existent ; seul point à vérifier : `putInPlay{sub:"Tofu"}` doit viser LE Tofu Céleste nommé, pas n'importe quel Tofu de la main) ; (c) **magnitude dynamique** `statOf`/valeur-X (transverse : repos, merelyne, coup-critique…) — étend `ValueExpr` déjà bâti.
 
 Après les 4 starters Incarnam : passer aux **starters Bonta-Brâkmar** (`bonta-brakmar-sadida/-sram`) puis aux decks Dofus Mag joués.
+
+---
+
+### Dettes de fidélité PRÉEXISTANTES relevées par les revues (à traiter en vagues dédiées)
+
+- **pvLoss traverse la Résistance** : « le Héros de votre choix perd N PV » (damageTarget{pvLoss}) route via resolveDamageTarget/reduceDamage — une perte de PV n'est PAS un Dommage (410.3), la Résistance ne devrait pas s'appliquer. W54 a posé le discriminant (le bonus ne s'y applique plus) sans corriger le routage.
+- **damageOppHero{isDamage} court-circuite reduceDamage** : « inflige N Dommages au Héros adverse » (adjustCounter direct) — pas de Résistance du Héros adverse, pas d'événement damageDealt (les déclenchés ne voient pas ces Dommages). 0 occurrence compilée aujourd'hui ; router la variante isDamage via resolveDamageTarget changerait le comportement de cartes couvertes → vague dédiée.
 
 ---
 

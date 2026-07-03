@@ -153,6 +153,7 @@ describe("DSL — pouvoirs à coût de recyclage (compileTapEffectText)", () => 
       {
         op: "damageTarget",
         n: 1,
+        pvLoss: true,
         element: "Eau",
         heroes: true,
         targetHeroOnly: true,

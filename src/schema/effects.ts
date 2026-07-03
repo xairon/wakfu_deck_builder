@@ -171,7 +171,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     perCount: z.number().optional(),
   }),
   z.object({ op: z.literal("heroLosePv"), n: z.number() }),
-  z.object({ op: z.literal("damageOppHero"), n: z.number() }),
+  // `isDamage` : DISCRIMINANT « inflige N Dommages au Héros adverse » (vrais
+  // DOMMAGES — bonus de pouvoir d'Allié applicable, W54) vs « le Héros adverse
+  // perd N PV » (PERTE DIRECTE de PV, 410.3 — jamais augmentée/réduite). Les
+  // deux formes compilent le même op (chemin adjustCounter direct) ; seul le
+  // flag distingue. Absent = perte de PV (conservateur).
+  z.object({
+    op: z.literal("damageOppHero"),
+    n: z.number(),
+    isDamage: z.boolean().optional(),
+  }),
   z.object({ op: z.literal("havreSacGainResistance"), n: z.number() }),
   z.object({
     op: z.literal("destroyTarget"),
@@ -246,6 +255,11 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("damageTarget"),
     n: z.number(),
+    // DISCRIMINANT « le Héros de votre choix PERD N PV » (perte directe, 410.3)
+    // compilé sur le même op que les vrais Dommages ciblés : `pvLoss` exclut la
+    // cible du bonus de pouvoir d'Allié (W54) — une perte de PV n'est ni
+    // augmentée ni réduite. Absent = vrais Dommages.
+    pvLoss: z.boolean().optional(),
     // « … le même nombre de Dommages … » (valeur dynamique liée au COÛT de
     // recyclage « Recyclez jusqu'à N … : … ») : la magnitude est le NOMBRE de
     // cartes effectivement recyclées (frame.boundCount), pas `n`. Quand présent,
@@ -335,6 +349,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
+  // « Les Dommages infligés par les POUVOIRS de vos Alliés sont augmentés de N
+  // jusqu'à la fin du tour » (Guma Bobeule) : jeton de tour `teamPowerDmgMod`
+  // sur le Héros du contrôleur (cumulatif — 2 Gumas = +2 ; purgé en fin de tour,
+  // TURN_TOKENS). Lu au point de résolution des Dommages d'EFFET
+  // (allyPowerDamageBonus) : appliqué PAR PAQUET de Dommages, AVANT
+  // Résistance/préventions, UNIQUEMENT si le paquet de base > 0 et si la
+  // provenance est un POUVOIR d'un Allié contrôlé (frame.powerSourceId —
+  // glossaire « Pouvoir » : à paiement/continu/déclenché d'une carte EN JEU ;
+  // Actions/Héros/Équipements exclus ; Dommages de COMBAT exclus).
+  z.object({ op: z.literal("buffTeamPowerDamageTurn"), n: z.number() }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({
     op: z.literal("healHeroTarget"),

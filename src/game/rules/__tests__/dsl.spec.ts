@@ -52,7 +52,7 @@ describe("rules/effects — DSL strict des effets d'apparition", () => {
         "Quand le Piou Rouge apparaît, infligez 2 Dommages au Héros adverse.",
       ),
     );
-    expect(atoms[0]?.ops).toEqual([{ op: "damageOppHero", n: 2 }]);
+    expect(atoms[0]?.ops).toEqual([{ op: "damageOppHero", n: 2, isDamage: true }]);
   });
 
   it("« vous pouvez » + op comprise → effet optionnel (infinitif accepté)", () => {
