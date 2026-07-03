@@ -1918,7 +1918,19 @@
         "description": "Regardez les deux premières cartes de votre Pioche. Prenez l'une de ces cartes en main, puis recyclez l'autre.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "lookTopPick",
+              "n": 2,
+              "dest": "main",
+              "rest": "recycle"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       }
     ],
     "keywords": [],

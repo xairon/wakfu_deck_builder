@@ -359,6 +359,21 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // glossaire « Pouvoir » : à paiement/continu/déclenché d'une carte EN JEU ;
   // Actions/Héros/Équipements exclus ; Dommages de COMBAT exclus).
   z.object({ op: z.literal("buffTeamPowerDamageTurn"), n: z.number() }),
+  // « Regardez les N premières cartes de votre Pioche. Prenez l'une de ces
+  // cartes en main, puis recyclez l'autre. » (Bonne Affaire !) : LOOK-N — le
+  // joueur VOIT les N cartes du dessus de sa Pioche (candidates du pick,
+  // révélées à lui seul), en PREND UNE en main (choix imposé — pas de
+  // « Passer »), et le RESTE est recyclé (remis SOUS la Pioche, glossaire
+  // « Recycler »). Pioche vide → effet passé ; une seule carte → il la voit et
+  // la prend (rien à recycler — dégénéré fidèle). STRICT côté DSL : n=2 et
+  // reste SINGULIER (« l'autre ») uniquement — les variantes multi-reste
+  // (« remettez les autres dans l'ordre de votre choix ») restent manuelles.
+  z.object({
+    op: z.literal("lookTopPick"),
+    n: z.number(),
+    dest: z.enum(["main"]),
+    rest: z.enum(["recycle"]),
+  }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({
     op: z.literal("healHeroTarget"),

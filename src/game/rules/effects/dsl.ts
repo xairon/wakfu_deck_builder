@@ -1673,6 +1673,29 @@ function compileBody(
       ops.push({ op: "costTapResource" });
       s = pay[1];
     }
+    // LOOK-N sur DEUX phrases (« Regardez les deux premières cartes de votre
+    // Pioche. Prenez l'une de ces cartes en main, puis recyclez l'autre. » —
+    // Bonne Affaire !) → un seul op lookTopPick. STRICT : n = 2 exigé (le reste
+    // est SINGULIER « l'autre ») ; toute variante (« Regardez les trois … »,
+    // « Recyclez les cartes de votre choix et remettez les autres … ») ne
+    // matche pas → l'effet entier reste manuel.
+    const look = s.match(
+      /^regardez les (?:deux|2) premieres cartes de votre pioche$/,
+    );
+    if (look) {
+      const next = sentences[si + 1];
+      if (
+        next &&
+        /^prenez l['’ ]?\s?une de ces cartes en main,? puis recyclez l['’ ]?\s?autre$/.test(
+          next,
+        )
+      ) {
+        ops.push({ op: "lookTopPick", n: 2, dest: "main", rest: "recycle" });
+        si++; // consomme aussi la phrase « Prenez … recyclez l'autre »
+        continue;
+      }
+      return null; // « Regardez … » sans suite comprise → manuel
+    }
     // DOMMAGES MULTI-CIBLES BORNÉS, sur DEUX phrases (« Choisissez jusqu'à N
     // Alliés ou Héros [attaquants ou bloqueurs]? [différents]?. [La source] leur
     // inflige X Dommages. ») → un seul op `damageMultiTarget`. La 1re phrase porte

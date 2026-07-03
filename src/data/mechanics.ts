@@ -382,6 +382,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : recyclez une de vos créatures en jeu (au choix) — remise sous la Pioche de son propriétaire — pour payer l'effet.",
   },
   {
+    id: "look-top",
+    label: "Regard sur la Pioche",
+    category: "ressource",
+    glossary:
+      "Regardez les premières cartes de votre Pioche, prenez-en une en main et recyclez le reste sous la Pioche.",
+  },
+  {
     id: "team-power-damage-boost",
     label: "Pouvoirs d'Alliés renforcés",
     category: "dégâts",
@@ -499,6 +506,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   damageRiposteSource: "riposte-bearer",
   removeFromCombatTarget: "remove-from-combat",
   buffTeamPowerDamageTurn: "team-power-damage-boost",
+  lookTopPick: "look-top",
   tapMultiTarget: "tap-target",
   untapMultiTarget: "untap-target",
   returnToHand: "return-to-hand",

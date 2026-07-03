@@ -265,6 +265,19 @@ export function createEffectEngine(deps: EffectEngineDeps) {
      */
     owner?: Seat;
     action: "recycle" | "discard" | "toHand" | "toMonde" | "banish";
+    /**
+     * LOOK-N (lookTopPick — Bonne Affaire !) : liste EXPLICITE des candidats
+     * (les N cartes du DESSUS de la Pioche au moment de l'ouverture), au lieu de
+     * la zone entière. effectPickIds la restreint aux cartes ENCORE dans la
+     * zone (robustesse). Le joueur VOIT ces cartes (c'est l'effet « Regardez »).
+     */
+    candidates?: string[];
+    /**
+     * Sort du RESTE des candidats à la clôture du pick (« … puis recyclez
+     * l'autre ») : "recycle" = remis SOUS la Pioche (glossaire « Recycler »).
+     * Uniquement avec `candidates`.
+     */
+    restAction?: "recycle";
     /** Filtre de la recherche dans la Pioche. */
     filter?: PickFilter;
     /** « Il apparaît incliné. » — la carte mise en jeu arrive inclinée. */
@@ -431,7 +444,12 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   const effectPickIds = computed(() => {
     const p = effectPicking.value;
     if (!p) return [];
-    const ids = [...deps.getState().seats[p.owner ?? p.seat][p.zone]];
+    const zoneIds = deps.getState().seats[p.owner ?? p.seat][p.zone];
+    // LOOK-N : candidats EXPLICITES (les N du dessus à l'ouverture), restreints
+    // aux cartes encore dans la zone.
+    const ids = p.candidates
+      ? p.candidates.filter((id) => zoneIds.includes(id))
+      : [...zoneIds];
     if (!p.filter) return ids;
     return ids.filter((id) =>
       matchesPickFilter(
@@ -515,6 +533,22 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       return;
     }
     effectPicking.value = null;
+    // LOOK-N (lookTopPick) : le RESTE des candidats — encore dans la zone (le
+    // pris vient d'en sortir) — est recyclé SOUS la Pioche (« … puis recyclez
+    // l'autre »), dans l'ordre des candidats.
+    if (p.restAction === "recycle" && p.candidates) {
+      const zoneIds = new Set(deps.getState().seats[p.owner ?? p.seat][p.zone]);
+      const rest = p.candidates.filter((id) => zoneIds.has(id));
+      for (const id of rest)
+        deps.moveTo(id, { zone: "pioche", owner: p.seat }, { at: "bottom" });
+      if (rest.length)
+        deps.dispatch(
+          say(
+            p.seat,
+            `${p.cardName} : ${rest.length} carte(s) recyclée(s) sous la Pioche.`,
+          ),
+        );
+    }
     // COÛT « Recyclez jusqu'à N … » (upTo) terminé (max atteint / pile épuisée) :
     // lie le nombre RÉELLEMENT recyclé à la frame retenue avant de reprendre le corps.
     if (p.upTo) bindCountToHeldFrame(picked);
@@ -1542,6 +1576,31 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "lookTopPick") {
+        // LOOK-N (« Regardez les N premières cartes de votre Pioche. Prenez
+        // l'une de ces cartes en main, puis recyclez l'autre. » — Bonne
+        // Affaire !) : ouvre un pick À CANDIDATS EXPLICITES (les N du DESSUS,
+        // index 0 = dessus, révélés au joueur — « regarder » EST l'effet),
+        // choix IMPOSÉ (mandatory — on prend une carte), le RESTE recyclé sous
+        // la Pioche à la clôture (restAction). Pioche vide → effet passé ; une
+        // seule carte → le joueur la voit et la prend (rien à recycler).
+        const pioche = deps.getState().seats[seat].pioche;
+        if (!pioche.length) {
+          deps.dispatch(say(seat, `${cardName} : Pioche vide, effet passé.`));
+          continue;
+        }
+        effectPicking.value = {
+          seat,
+          cardName,
+          zone: "pioche",
+          action: "toHand",
+          candidates: pioche.slice(0, op.n),
+          restAction: op.rest,
+          mandatory: true,
+          remaining: 1,
+        };
+        holdRest(frame, ops.slice(i + 1));
+        return true;
       } else if (op.op === "globalDamageShield") {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) {

@@ -58,6 +58,7 @@ export const mechanicTagSchema = z.enum([
   "riposte-bearer",
   "remove-from-combat",
   "team-power-damage-boost",
+  "look-top",
   "each-player-optional",
   "conditional",
   "choose-one",
