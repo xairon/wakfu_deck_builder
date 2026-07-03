@@ -1915,8 +1915,32 @@ function compileActorBoundBody(
   //   liée). buffForceSelf lit le sourceId réécrit par le moteur.
   m = body.match(/^gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/);
   if (m) return [{ op: "buffForceSelf", n: toNumber(m[1]) }];
+  // « gagne <Mot-clé> [en plus] [jusqu'à la fin du tour] » → grantKeywordSelf (sur
+  //   la créature liée). STRICT : seuls les mots-clés CÂBLÉS (grantKeywordSchema)
+  //   sont admis ; tout autre → null (manuel). Sert au tail « … il gagne Géant en
+  //   plus » (Charge). La durée « jusqu'à la fin du tour » du mot-clé de combat est
+  //   implicite (portée tour, purgée en fin de tour).
+  m = body.match(
+    /^gagne (géant|geant|agilité|agilite|agressivité|agressivite|tacle)( en plus)?( jusqu['’]a la fin d[ue] tour)?$/,
+  );
+  if (m) {
+    const kw = GRANT_KEYWORD_CANON[norm(m[1])];
+    if (kw) return [{ op: "grantKeywordSelf", keyword: kw }];
+  }
   return null;
 }
+
+// Mappe une Famille de mot-clé (sans accents/casse) vers son libellé canonique
+// admis par grantKeywordSchema.
+const GRANT_KEYWORD_CANON: Record<
+  string,
+  "Géant" | "Agilité" | "Agressivité" | "Tacle"
+> = {
+  geant: "Géant",
+  agilite: "Agilité",
+  agressivite: "Agressivité",
+  tacle: "Tacle",
+};
 
 /** Spécification de condition « Si <cond> » (cf. schéma effects). */
 type CondSpec = Extract<EffectOp, { op: "conditional" }>["cond"];
@@ -3666,6 +3690,40 @@ export function compileActionEffectText(
   // STRICT : la TÊTE doit être UN SEUL op de ciblage mono-cible, et le CORPS lié
   // doit se compiler entièrement (compileActorBoundBody) — sinon on retombe sur le
   // chemin normal (qui échouera → manuel).
+  // ACTOR-BINDING CONDITIONNEL « <op de ciblage>. S'il s'agit d'un [Famille], il
+  // <corps lié> » : la créature choisie par la tête est le sujet ; le corps n'est
+  // exécuté QUE si elle a la Famille (cond `selfIsFamily`, évaluée sur la créature
+  // LIÉE). Ex. Charge : « … gagne +2 en Force. S'il s'agit d'un Iop, il gagne
+  // Géant en plus. » STRICT : mêmes garde-fous que l'actor-binding simple (tête =
+  // un seul op de ciblage whitelisté, corps entièrement compilable) — sinon manuel.
+  const condBoundM = normed.match(
+    /^(.+?)\.\s+s['’]il s['’]agit d['’]un ([a-zç]+)\s*,\s*(?:il|elle) (.+)$/,
+  );
+  if (condBoundM) {
+    const head = compileBody(condBoundM[1], cardName, sourceElement);
+    const boundOps = compileActorBoundBody(condBoundM[3], sourceElement);
+    if (
+      head &&
+      boundOps &&
+      head.length === 1 &&
+      ACTOR_BIND_HEAD_OPS.has(head[0].op)
+    ) {
+      const fam = condBoundM[2];
+      const sub = fam.charAt(0).toUpperCase() + fam.slice(1);
+      return {
+        trigger: "onPlay",
+        actor: "target",
+        ops: [
+          ...head,
+          {
+            op: "conditional",
+            cond: { cond: "selfIsFamily", sub },
+            ops: boundOps,
+          },
+        ],
+      };
+    }
+  }
   const boundM = normed.match(/^(.+?)\.\s+(?:il|elle) (.+)$/);
   if (boundM) {
     const head = compileBody(boundM[1], cardName, sourceElement);

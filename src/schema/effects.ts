@@ -59,6 +59,15 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
     sub: z.string().optional(),
     min: z.number().optional(),
   }),
+  // « S'il s'agit d'un [Famille], … » : la SOURCE de l'effet (frame.sourceId —
+  // ici la créature LIÉE par l'actor-binding, ex. l'Allié ou Héros choisi par le
+  // buff qui précède) appartient-elle à la Famille `sub` (sur subTypes) ? FIDÈLE
+  // — lu EXACTEMENT sur les subTypes de la carte liée. Sert au tail conditionnel
+  // « … gagne +N en Force. S'il s'agit d'un Iop, il gagne <Kw> en plus » (Charge).
+  z.object({
+    cond: z.literal("selfIsFamily"),
+    sub: z.string(),
+  }),
 ]);
 
 // ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────

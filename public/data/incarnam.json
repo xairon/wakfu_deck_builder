@@ -610,7 +610,7 @@
     },
     "effects": [
       {
-        "description": "Amar Casto gagne le de votre choix jusqu'à la fin du tour.",
+        "description": "Amar Casto gagne le Métier de votre choix jusqu'à la fin du tour.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3440,10 +3440,36 @@
     },
     "effects": [
       {
-        "description": "L'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour. S'il s'agit d'un Iop, il gagne en plus.",
+        "description": "L'Allié ou Héros de votre choix gagne +2 en Force jusqu'à la fin du tour. S'il s'agit d'un Iop, il gagne Géant en plus.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "actor": "target",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "conditional",
+              "cond": {
+                "cond": "selfIsFamily",
+                "sub": "Iop"
+              },
+              "ops": [
+                {
+                  "op": "grantKeywordSelf",
+                  "keyword": "Géant"
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-target", "conditional"]
       }
     ],
     "keywords": [],

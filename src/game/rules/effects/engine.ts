@@ -729,6 +729,14 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         }
         return count >= min;
       }
+      case "selfIsFamily": {
+        // « S'il s'agit d'un [Famille], … » : la SOURCE (créature liée par
+        // l'actor-binding) a-t-elle la Famille `sub` sur ses subTypes ?
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        const card = src ? deps.getCard(src.cardId) : null;
+        const sub = normWord(cond.sub);
+        return !!card && (card.subTypes ?? []).some((s) => normWord(s) === sub);
+      }
     }
   }
 
