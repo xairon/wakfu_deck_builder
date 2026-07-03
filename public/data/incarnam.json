@@ -6541,7 +6541,7 @@
     },
     "effects": [
       {
-        "description": "La flèche d'Immolation inflige 2 Dommages à l'Allié ou Héros qui vient de sincliner.",
+        "description": "Réaction. La flèche d'Immolation inflige 2 Dommages [Feu] à l'Allié ou Héros qui vient de s'incliner.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -8541,7 +8541,7 @@
     },
     "effects": [
       {
-        "description": "Katsou Mee gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de de cette façon, détruisez Katsou Mee à la fin du tour.",
+        "description": "[Terre] : Katsou Mee gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de [Terre][Terre][Terre] de cette façon, détruisez Katsou Mee à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
