@@ -2337,7 +2337,12 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                       deps.rulesCtx(),
                       t.seat,
                       instanceId,
-                      t.op.n,
+                      // « Force DOUBLÉE » : +Force effective de la cible AU MOMENT
+                      // de la résolution (→ total ×2) ; sinon magnitude figée (n).
+                      t.op.doubleForce
+                        ? effectiveForce(deps.rulesCtx(), instanceId)
+                        : t.op.n,
+                      t.op.markTurnToken,
                     )
                   : t.op.op === "grantKeywordTarget"
                     ? resolveGrantKeywordTarget(

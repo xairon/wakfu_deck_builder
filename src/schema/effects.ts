@@ -418,6 +418,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // — magnitude = boundCount (× perCount). Voir damageTarget.fromCount.
     fromCount: z.boolean().optional(),
     perCount: z.number().optional(),
+    // « La Force … est DOUBLÉE jusqu'à la fin du tour » (Coup Critique) :
+    // magnitude = Force EFFECTIVE de la cible AU MOMENT DE LA RÉSOLUTION (le buff
+    // ajoute +Force_effective → total ×2, fidèle même en présence d'autres buffs
+    // de tour). Calculée après le choix de la cible (≠ n / fromCount pré-figés).
+    doubleForce: z.boolean().optional(),
+    // « Vous ne pouvez jouer qu'un seul <X> sur le même Allié/Héros par tour » :
+    // jeton TURN-scoped posé sur la cible à la résolution ; l'éligibilité exclut
+    // les cibles déjà marquées ce tour (limite par-cible-par-tour, Coup Critique).
+    markTurnToken: z.string().optional(),
     heroes: z.boolean(),
     sub: z.string().optional(),
     // Orientation imprimée (« l'Allié incliné / dressé de votre choix »).

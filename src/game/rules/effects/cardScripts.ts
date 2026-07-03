@@ -752,4 +752,43 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ops: [{ op: "costPayX" }, { op: "heroGainPv", n: 0, fromCount: true }],
     },
   },
+
+  // « La Force de l'Allié ou Héros de votre choix est doublée jusqu'à la fin du
+  //   tour. Vous ne pouvez jouer qu'un seul Coup critique sur le même Allié ou
+  //   Héros par tour. » — Action. Le DOUBLEMENT = buffForceTarget{doubleForce}
+  //   (magnitude = Force effective de la cible À LA RÉSOLUTION → +Force → total
+  //   ×2). La restriction « un seul … sur le même … par tour » = markTurnToken
+  //   "coupCritique" (jeton turn-scoped posé sur la cible ; l'éligibilité exclut
+  //   ensuite cette cible ce tour). Scriptée (la restriction se réfère à la carte
+  //   par son nom + le doublement dynamique dépasse le DSL). 2 éditions.
+  "coup-critique-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 0,
+          doubleForce: true,
+          markTurnToken: "coupCritique",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+  "coup-critique-dofus-collection": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 0,
+          doubleForce: true,
+          markTurnToken: "coupCritique",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
 };

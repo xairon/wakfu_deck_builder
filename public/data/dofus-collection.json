@@ -1821,7 +1821,21 @@
         "description": "La Force de l'Allié ou Héros de votre choix est doublée jusqu'à la fin du tour. Vous ne pouvez jouer qu'un seul Coup critique sur le même Allié ou Héros par tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 0,
+              "doubleForce": true,
+              "markTurnToken": "coupCritique",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["buff-force-target"]
       },
       {
         "description": "Une fois le Coup critique joué, le bonus de Force est fixé jusqu'à la fin du tour.",

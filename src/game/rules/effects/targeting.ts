@@ -300,6 +300,17 @@ export function effectTargetIds(
     ) {
       ok = card.stats?.niveau?.value === op.exactLevel;
     }
+    // « un seul <X> sur le même … par tour » (markTurnToken) : exclut les cibles
+    // déjà marquées ce tour (jeton turn-scoped posé à la résolution — Coup
+    // Critique ne peut pas doubler deux fois la même créature dans le tour).
+    if (
+      ok &&
+      op.op === "buffForceTarget" &&
+      op.markTurnToken &&
+      (inst.counters.tokens?.[op.markTurnToken] ?? 0) > 0
+    ) {
+      ok = false;
+    }
     // Type d'Équipement (« Détruisez l'Arme / l'Armure … de votre choix ») :
     // lu sur card.equipmentType (présent uniquement sur les Équipements). Une
     // carte sans equipmentType est inéligible.
@@ -773,11 +784,19 @@ export function resolveBuffForceTarget(
   actor: Seat,
   targetId: InstanceId,
   n: number,
+  // « … qu'un seul <X> sur le même … par tour » : jeton TURN-scoped posé sur la
+  // cible (l'éligibilité l'exclut ensuite ce tour).
+  markTurnToken?: string,
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   if (!inst) return { events: [], log: [] };
   return {
-    events: [incCounter(actor, targetId, "forceMod", n, true)],
+    events: [
+      incCounter(actor, targetId, "forceMod", n, true),
+      ...(markTurnToken
+        ? [incCounter(actor, targetId, markTurnToken, 1, true)]
+        : []),
+    ],
     log: [
       `${nameOf(ctx, targetId)} gagne +${n} en Force jusqu'à la fin du tour.`,
     ],
