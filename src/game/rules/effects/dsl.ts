@@ -853,6 +853,34 @@ function parseSentence(
   m = sentence.match(
     /^l['’ ]?\s?allie( ou heros)?(?: ([a-z-]+))?( bloque)? de votre choix gagne (resistance \d+(?: ?\([a-z]+\))+) jusqu['’]a la fin d[ue] tour$/,
   );
+  // RÉSISTANCE À ÉLÉMENT AU CHOIX (W56 — Temple Féca, icône « Résistance 1 »
+  //   récupérée du raw) : « L'Allié ou Héros de votre choix gagne Résistance N
+  //   dans l'élément de votre choix jusqu'à la fin du tour » → chooseOne à une
+  //   branche par Élément (les 5 du jeu — Air/Eau/Feu/Terre/Neutre, cf. liste
+  //   officielle) de grantResistanceTarget. Le joueur choisit l'ÉLÉMENT (bouton)
+  //   puis la CIBLE. Testé AVANT le parse à Éléments imprimés (regex disjointes).
+  const resChoice = sentence.match(
+    /^l['’ ]?\s?allie( ou heros)? de votre choix gagne resistance (\d+) dans l['’ ]?\s?element de votre choix jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (resChoice) {
+    const n = toNumber(resChoice[2]);
+    const heroes = !!resChoice[1];
+    return {
+      op: "chooseOne",
+      prompt: `Résistance ${n} : quel Élément ?`,
+      options: ["Air", "Eau", "Feu", "Terre", "Neutre"].map((el) => ({
+        label: el,
+        ops: [
+          {
+            op: "grantResistanceTarget" as const,
+            resist: [{ element: el, n }],
+            heroes,
+            zones: ["monde", "havreSac"] as ("monde" | "havreSac")[],
+          },
+        ],
+      })),
+    };
+  }
   if (m && (!m[2] || ALLIED_FAMILIES.has(m[2]))) {
     const resist = parseResistClause(m[4]);
     if (resist)
@@ -1373,6 +1401,46 @@ function parseSentence(
       pvLoss: true,
       zones: ["monde", "havreSac"],
     };
+  // DOMMAGES À ÉLÉMENT AU CHOIX (W56 — Tirlangue Portey verso) : « <self>
+  //   inflige N Dommages Air, Terre, Feu, Eau ou Neutre à l'Allié ou Héros de
+  //   votre choix » → chooseOne à UNE BRANCHE PAR ÉLÉMENT listé (le joueur
+  //   choisit le type de Dommages — ruling in-data : un seul type à la fois,
+  //   libre d'une fois sur l'autre — PUIS la cible). STRICT : liste explicite
+  //   d'Éléments (≥ 2), sujet self si sujet-en-tête. Placé AVANT la forme
+  //   mono-élément (plus spécifique).
+  m = sentence.match(
+    /^(?:inflige[zr]|(.{1,50}?) inflige) (\d+) dommages? ((?:air|eau|feu|terre|neutre)(?:, (?:air|eau|feu|terre|neutre))* ou (?:air|eau|feu|terre|neutre)) a l['’ ]?\s?allie( ou heros)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+  );
+  if (m) {
+    if (m[1] !== undefined && !subjectIsSelf(m[1], cardName)) return null;
+    const els = m[3]
+      .split(/,\s*| ou /)
+      .map((w) => w.trim())
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1));
+    if (new Set(els).size >= 2) {
+      const n = toNumber(m[2]);
+      const heroes = !!m[4];
+      const zones = targetZones(m[5], m[6]);
+      return {
+        op: "chooseOne",
+        prompt: `Dommages : ${els.join(" ou ")} ?`,
+        options: els.map((el) => ({
+          label: el,
+          ops: [
+            {
+              op: "damageTarget" as const,
+              n,
+              element: el,
+              explicitElement: true,
+              heroes,
+              zones,
+            },
+          ],
+        })),
+      };
+    }
+  }
   // « Infligez N Dommages à l'Allié [Famille] de votre choix » (impératif) ou
   // « [La carte] inflige N Dommages à l'Allié [ou Héros] de votre choix … »
   // La Famille (« à l'Allié Bouftou ») et « ou Héros » sont mutuellement
@@ -1547,6 +1615,7 @@ function parseMassOp(
       element: elWord
         ? elWord.charAt(0).toUpperCase() + elWord.slice(1)
         : sourceElement,
+      ...(elWord ? { explicitElement: true } : {}),
       controller: subj.controller,
       ...(subj.heroes ? { heroes: true } : {}),
       ...(subj.sub ? { sub: subj.sub } : {}),
@@ -3739,10 +3808,23 @@ export function playEffects(card: Card | null): EffectAtom[] {
 }
 
 /** Pouvoirs à inclinaison automatisables de cette carte (trigger onTap). */
-export function tapPowers(card: Card | null): EffectAtom[] {
+export function tapPowers(
+  card: Card | null,
+  // FACE ACTIVE d'un HÉROS (W56 — Tirlangue Portey) : le pouvoir-tap d'un Héros
+  // vit sur sa FACE courante (recto = niveau 1, verso = niveau 2 — les effets
+  // top-level d'un Héros mirroir(ent) le recto seulement). Ignoré pour les
+  // autres types (effets top-level).
+  side: "recto" | "verso" = "recto",
+): EffectAtom[] {
   if (!card) return [];
+  const face = isHeroCard(card)
+    ? side === "verso"
+      ? (card.verso ?? card.recto)
+      : card.recto
+    : null;
+  const effects: CardEffect[] = (face ? face.effects : card.effects) ?? [];
   const atoms: EffectAtom[] = [];
-  for (const e of card.effects ?? []) {
+  for (const e of effects) {
     if (e?.kind) continue; // note de règle / errata : pas un effet imprimé
     const text = String(e?.description ?? "").trim();
     // Repli (données non migrées / tests) : un pouvoir à coût d'inclinaison

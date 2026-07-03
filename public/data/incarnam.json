@@ -6413,6 +6413,7 @@
               "op": "damageAll",
               "n": 2,
               "element": "Air",
+              "explicitElement": true,
               "controller": "any",
               "heroes": true,
               "zones": ["monde"],
@@ -14295,10 +14296,102 @@
     },
     "effects": [
       {
-        "description": "L'Allié ou Héros de votre choix gagne dans l'élément de votre choix jusqu'à la fin du tour.",
+        "description": "L'Allié ou Héros de votre choix gagne Résistance 1 dans l'élément de votre choix jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "chooseOne",
+              "prompt": "Résistance 1 : quel Élément ?",
+              "options": [
+                {
+                  "label": "Air",
+                  "ops": [
+                    {
+                      "op": "grantResistanceTarget",
+                      "resist": [
+                        {
+                          "element": "Air",
+                          "n": 1
+                        }
+                      ],
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "Eau",
+                  "ops": [
+                    {
+                      "op": "grantResistanceTarget",
+                      "resist": [
+                        {
+                          "element": "Eau",
+                          "n": 1
+                        }
+                      ],
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "Feu",
+                  "ops": [
+                    {
+                      "op": "grantResistanceTarget",
+                      "resist": [
+                        {
+                          "element": "Feu",
+                          "n": 1
+                        }
+                      ],
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "Terre",
+                  "ops": [
+                    {
+                      "op": "grantResistanceTarget",
+                      "resist": [
+                        {
+                          "element": "Terre",
+                          "n": 1
+                        }
+                      ],
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                },
+                {
+                  "label": "Neutre",
+                  "ops": [
+                    {
+                      "op": "grantResistanceTarget",
+                      "resist": [
+                        {
+                          "element": "Neutre",
+                          "n": 1
+                        }
+                      ],
+                      "heroes": true,
+                      "zones": ["monde", "havreSac"]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["choose-one"]
       }
     ],
     "keywords": [
@@ -14525,7 +14618,84 @@
           "description": "Tirlangue Portey inflige 3 Dommages Air, Terre, Feu, Eau ou Neutre à l'Allié ou Héros de votre choix.",
           "isOncePerTurn": false,
           "requiresIncline": true,
-          "coverage": "uncovered"
+          "compiled": {
+            "trigger": "onTap",
+            "ops": [
+              {
+                "op": "chooseOne",
+                "prompt": "Dommages : Air ou Terre ou Feu ou Eau ou Neutre ?",
+                "options": [
+                  {
+                    "label": "Air",
+                    "ops": [
+                      {
+                        "op": "damageTarget",
+                        "n": 3,
+                        "element": "Air",
+                        "explicitElement": true,
+                        "heroes": true,
+                        "zones": ["monde", "havreSac"]
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Terre",
+                    "ops": [
+                      {
+                        "op": "damageTarget",
+                        "n": 3,
+                        "element": "Terre",
+                        "explicitElement": true,
+                        "heroes": true,
+                        "zones": ["monde", "havreSac"]
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Feu",
+                    "ops": [
+                      {
+                        "op": "damageTarget",
+                        "n": 3,
+                        "element": "Feu",
+                        "explicitElement": true,
+                        "heroes": true,
+                        "zones": ["monde", "havreSac"]
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Eau",
+                    "ops": [
+                      {
+                        "op": "damageTarget",
+                        "n": 3,
+                        "element": "Eau",
+                        "explicitElement": true,
+                        "heroes": true,
+                        "zones": ["monde", "havreSac"]
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Neutre",
+                    "ops": [
+                      {
+                        "op": "damageTarget",
+                        "n": 3,
+                        "element": "Neutre",
+                        "explicitElement": true,
+                        "heroes": true,
+                        "zones": ["monde", "havreSac"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "coverage": "auto",
+          "mechanics": ["choose-one"]
         },
         {
           "description": "Vous ne pouvez choisir qu'un seul type de Dommages à la fois : Air, Terre, Feu, Eau ou Neutre. Vous n'êtes pas obligé de choisir le même type de Dommages d'une fois sur l'autre.",

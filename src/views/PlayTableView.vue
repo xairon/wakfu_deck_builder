@@ -353,8 +353,23 @@
           </p>
           <!-- CHOIX EXCLUSIF « A ou B » : deux boutons étiquetés (bouton 0 →
                resolve(true), bouton 1 → resolve(false)). -->
+          <!-- CHOIX À N BRANCHES (chooseOne, N > 2 — ex. choix d'Élément) :
+               un bouton par branche, choix obligatoire. -->
           <div
-            v-if="store.effectChoice.optionLabels"
+            v-if="store.effectChoice.options"
+            class="mt-6 flex flex-wrap justify-center gap-3"
+          >
+            <button
+              v-for="(opt, i) in store.effectChoice.options"
+              :key="opt.label"
+              class="btn btn-primary"
+              @click="store.effectChoiceSelect(i)"
+            >
+              {{ opt.label }}
+            </button>
+          </div>
+          <div
+            v-else-if="store.effectChoice.optionLabels"
             class="mt-6 flex justify-center gap-3"
           >
             <button

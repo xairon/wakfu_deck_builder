@@ -221,6 +221,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
        * effets — l'UI rend deux boutons étiquetés au lieu d'Appliquer/Décliner.
        */
       optionLabels?: [string, string];
+      /**
+       * CHOIX EXCLUSIF À N BRANCHES (chooseOne, N > 2 — W56 : choix d'Élément,
+       * « inflige N Dommages Air, Terre, Feu, Eau ou Neutre … ») : liste des
+       * branches étiquetées. L'UI rend UN bouton par branche ; le clic appelle
+       * `effectChoiceSelect(index)` qui enfile les ops de la branche choisie
+       * (le RESTE de la frame y est déjà aplati). Exclusif avec `optionLabels`
+       * (le chemin historique à 2 branches, inchangé).
+       */
+      options?: { label: string; ops: EffectOp[] }[];
       sourceId?: string;
       /** Provenance de POUVOIR de la frame d'origine (cf. EffectFrame). */
       powerSourceId?: string;
@@ -780,6 +789,29 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // attente du clic du joueur (effectChoices n'est pas une barrière de pump,
         // résolu hors-bande via l'overlay). Les ops AVANT le choix ont déjà tourné.
         const rest = ops.slice(i + 1);
+        // CHOIX À N BRANCHES (W56 — choix d'Élément) : au-delà de deux options,
+        // l'UI rend un bouton par branche (effectChoiceSelect). Le chemin à
+        // DEUX branches (optionLabels / resolve true|false) reste inchangé.
+        if (op.options.length > 2) {
+          effectChoices.value = [
+            ...effectChoices.value,
+            {
+              seat,
+              cardName,
+              text: op.prompt ?? op.options.map((o) => o.label).join(" ou "),
+              ops: [], // non utilisé — la branche choisie vient d'`options`
+              options: op.options.map((o) => ({
+                label: o.label,
+                ops: [...(o.ops as EffectOp[]), ...rest],
+              })),
+              ...(sourceId ? { sourceId } : {}),
+              ...(frame.powerSourceId
+                ? { powerSourceId: frame.powerSourceId }
+                : {}),
+            },
+          ];
+          return false;
+        }
         const [a, b] = op.options;
         effectChoices.value = [
           ...effectChoices.value,
@@ -1701,7 +1733,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           // utilisé. Si un futur damageAll était porté par une CRÉATURE en jeu
           // avec un élément explicite ≠ son élément imprimé, liveSourceElement
           // l'écraserait — à valider à ce moment-là (aucune carte actuelle).
-          const element = liveSourceElement(sourceId) ?? op.element;
+          const element = op.explicitElement
+            ? op.element
+            : (liveSourceElement(sourceId) ?? op.element);
           const mods = activeGlobalMods(deps.rulesCtx());
           for (const id of ids) {
             const res = resolveDamageTarget(
@@ -2278,9 +2312,13 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                                     t.seat,
                                     instanceId,
                                     t.op.n,
-                                    // idem : Dommages de l'Élément de la source liée.
-                                    liveSourceElement(t.sourceId) ??
-                                      t.op.element,
+                                    // Élément EXPLICITE (choix d'Élément W56 /
+                                    // mot d'Élément) : jamais remplacé par la
+                                    // source vivante ; sinon 410.1 (source liée).
+                                    t.op.explicitElement
+                                      ? t.op.element
+                                      : (liveSourceElement(t.sourceId) ??
+                                          t.op.element),
                                     {
                                       mods: activeGlobalMods(deps.rulesCtx()),
                                       ...(t.sourceId
@@ -2391,6 +2429,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   function effectChoiceResolve(accept: boolean): void {
     const choice = effectChoices.value[0];
     if (!choice) return;
+    // CHOIX À N BRANCHES (options — W56) : seul effectChoiceSelect(index)
+    // résout. Garde défensive : un resolve binaire ici PERDRAIT la frame
+    // (ses ops vivent dans les branches, choice.ops est vide). No-op.
+    if (choice.options) return;
     effectChoices.value = effectChoices.value.slice(1);
     // CHOIX « A ou B » (optionLabels) : « décliner » n'est pas un refus mais le
     // choix de la branche B — on journalise l'option retenue, pas « décliné ».
@@ -2434,6 +2476,26 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     });
   }
 
+  /**
+   * CHOIX À N BRANCHES (chooseOne, N > 2 — W56) : le joueur clique la branche
+   * `index` ; ses ops (reste de la frame déjà aplati) sont enfilées. Le choix
+   * est OBLIGATOIRE (une branche doit être prise — pas de refus).
+   */
+  function effectChoiceSelect(index: number): void {
+    const choice = effectChoices.value[0];
+    const branch = choice?.options?.[index];
+    if (!choice || !branch) return;
+    effectChoices.value = effectChoices.value.slice(1);
+    deps.dispatch(say(choice.seat, `${choice.cardName} : ${branch.label}.`));
+    enqueueEffect({
+      seat: choice.seat,
+      cardName: choice.cardName,
+      ops: branch.ops,
+      sourceId: choice.sourceId,
+      ...(choice.powerSourceId ? { powerSourceId: choice.powerSourceId } : {}),
+    });
+  }
+
   /** Réinitialise tout l'état du moteur (nouvelle partie / sortie de match). */
   function reset(): void {
     effectChoices.value = [];
@@ -2466,6 +2528,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     effectTargetChoose,
     effectTargetSkip,
     effectChoiceResolve,
+    effectChoiceSelect,
     // cycle de vie
     reset,
   };

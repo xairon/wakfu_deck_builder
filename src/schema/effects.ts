@@ -255,6 +255,11 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("damageTarget"),
     n: z.number(),
+    // Élément EXPLICITE du texte (« Dommages Feu », choix d'Élément W56) : la
+    // résolution NE le remplace PAS par l'Élément de la source vivante (410.1
+    // ne s'applique qu'aux Dommages sans Élément imprimé propre). Ferme le
+    // latent W50 (liveSourceElement écrasait un Élément explicite).
+    explicitElement: z.boolean().optional(),
     // DISCRIMINANT « le Héros de votre choix PERD N PV » (perte directe, 410.3)
     // compilé sur le même op que les vrais Dommages ciblés : `pvLoss` exclut la
     // cible du bonus de pouvoir d'Allié (W54) — une perte de PV n'est ni
@@ -707,6 +712,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     op: z.literal("damageAll"),
     n: z.number(),
     element: z.string(),
+    // Élément EXPLICITE du texte (« 2 Dommages Air » — Flèche Blizzard) : non
+    // remplacé par l'Élément de la source vivante (cf. damageTarget).
+    explicitElement: z.boolean().optional(),
     controller: massControllerSchema.optional(),
     heroes: z.boolean().optional(),
     sub: z.string().optional(),

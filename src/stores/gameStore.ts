@@ -1448,7 +1448,9 @@ export const useGameStore = defineStore("game", () => {
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
     if (!inst || !card) return rejectMove("Carte inconnue.");
-    const atoms = tapPowers(card);
+    // FACE ACTIVE d'un Héros (W56) : le pouvoir-tap du verso (niveau 2) n'est
+    // activable que face verso, et réciproquement.
+    const atoms = tapPowers(card, inst.face === "verso" ? "verso" : "recto");
     if (!atoms.length)
       return rejectMove("Pas de pouvoir à inclinaison automatisé.");
     if (inst.controller !== perspective.value)
@@ -1656,7 +1658,10 @@ export const useGameStore = defineStore("game", () => {
   function hasTapPower(instanceId: string): boolean {
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
-    return !!card && tapPowers(card).length > 0;
+    return (
+      !!card &&
+      tapPowers(card, inst?.face === "verso" ? "verso" : "recto").length > 0
+    );
   }
 
   /** Le pouvoir-tap de cette carte exige-t-il un Porteur EN COMBAT (Dora) ?
@@ -1666,7 +1671,11 @@ export const useGameStore = defineStore("game", () => {
   function tapPowerNeedsCombat(instanceId: string): boolean {
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
-    return !!card && !!tapPowers(card)[0]?.requiresBearerInCombat;
+    return (
+      !!card &&
+      !!tapPowers(card, inst?.face === "verso" ? "verso" : "recto")[0]
+        ?.requiresBearerInCombat
+    );
   }
 
   function toggleTap(instanceId: string): void {
@@ -2439,6 +2448,7 @@ export const useGameStore = defineStore("game", () => {
     effectiveForceOf,
     effectChoice: engine.effectChoice,
     effectChoiceResolve: engine.effectChoiceResolve,
+    effectChoiceSelect: engine.effectChoiceSelect,
     effectTargeting: engine.effectTargeting,
     effectTargetIdsList: engine.effectTargetIdsList,
     effectTargetChoose: engine.effectTargetChoose,

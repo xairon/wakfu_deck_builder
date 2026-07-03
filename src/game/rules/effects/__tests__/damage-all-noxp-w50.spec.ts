@@ -41,6 +41,9 @@ describe("DSL — damageAll sujet-en-tête + élément explicite + noXp", () => 
           op: "damageAll",
           n: 2,
           element: "Air",
+          // W56 : l'Élément EXPLICITE du texte est marqué (jamais écrasé par
+          // la source vivante — ferme le latent W50).
+          explicitElement: true,
           controller: "any",
           heroes: true,
           zones: ["monde"],
