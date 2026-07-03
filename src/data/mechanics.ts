@@ -368,6 +368,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : défaussez une ou plusieurs cartes de votre main (imposé, ou « jusqu'à N » — le nombre défaussé alimente la magnitude du corps).",
   },
   {
+    id: "cost-mill-top",
+    label: "Coût : défausse du sommet de la Pioche",
+    category: "autre",
+    glossary:
+      "Coût d'un pouvoir : défaussez la (ou les N) première(s) carte(s) du sommet de votre Pioche (mill déterministe, sans choix) pour payer l'effet.",
+  },
+  {
     id: "cost-recycle",
     label: "Coût : recyclage",
     category: "autre",
@@ -517,6 +524,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
   costDiscard: "cost-discard",
+  costMillTop: "cost-mill-top",
   costRecycle: "cost-recycle",
   costRecycleControlled: "cost-recycle-controlled",
   costTapResource: "cost-tap-resource",

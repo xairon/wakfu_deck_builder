@@ -829,6 +829,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     n: z.number().optional(),
     max: z.boolean().optional(),
   }),
+  // COÛT « Défaussez la/les N première(s) carte(s) de votre Pioche : CORPS » —
+  // mill DÉTERMINISTE du SOMMET de la Pioche (pioche[0..n-1]) vers la Défausse,
+  // AUCUN choix (≠ costDiscard, qui défausse depuis la MAIN au choix). Impayable
+  // si la Pioche a < n cartes → frame ABANDONNÉE (corps non exécuté), comme les
+  // autres coûts payés. Aucun filtre de type (« la première carte »).
+  z.object({
+    op: z.literal("costMillTop"),
+    n: z.number(),
+  }),
   // COÛT de pouvoir payé « Recyclez un <Allié|Famille> de votre choix : … »
   //   (Vampyro) : op de CIBLAGE (première op d'une séquence cost:"paidOps", comme
   //   costTapControlled/costDestroyControlled). Le joueur choisit une de SES

@@ -2199,6 +2199,15 @@ function compileTapNormalized(
       trigger: recycleTrigger,
       ...(requiresIncline ? { tapsSource: true } : {}),
     };
+  // COÛT DE MILL « Défaussez la première carte de votre Pioche : … » (mill
+  // déterministe du sommet, ≠ défausse-main). Corps FIXE via compileBody.
+  const millTop = compileMillTopCost(normalized, cardName, sourceElement);
+  if (millTop)
+    return {
+      ...millTop,
+      trigger: recycleTrigger,
+      ...(requiresIncline ? { tapsSource: true } : {}),
+    };
   // COÛT DE RECYCLAGE « Recyclez … : CORPS » (Défausse / main / soi-depuis-le-
   // Monde) → cost:"paidOps" avec costRecycle en première op. Testé avant la
   // forme incline/sacrifice (le préfixe « Recyclez » ne capte ni l'un ni l'autre).
@@ -2729,6 +2738,47 @@ function compileRecycleCountCost(
 /** « Défaussez [jusqu'à] N carte(s) : … » = coût de défausse (avec « : »). */
 export function isDiscardCostText(text: string): boolean {
   return /^defaussez [^:]{1,60}:/.test(norm(text));
+}
+
+/** « Défaussez la première carte de votre Pioche : … » = coût de mill. */
+export function isMillTopCostText(text: string): boolean {
+  return /^defaussez la premiere carte de votre pioche\s*:/.test(norm(text));
+}
+
+/**
+ * Parse un POUVOIR À COÛT DE MILL « Défaussez la première carte de votre Pioche :
+ * CORPS » → `{ trigger:"onTap", cost:"paidOps", ops:[costMillTop{n:1}, ...body] }`.
+ * Mill DÉTERMINISTE du sommet (≠ costDiscard, pick depuis la main). Le CORPS doit
+ * se compiler ENTIÈREMENT (compileBody) — sinon manuel. `text` déjà normalisé.
+ * STRICT : seule la forme « la première carte » (n=1) est admise ; les variantes
+ * multi-cartes / « jusqu'à » restent manuelles (aucune du périmètre ne les exige).
+ */
+function compileMillTopCost(
+  text: string,
+  cardName: string,
+  sourceElement: string,
+): CompiledEffect | null {
+  // Clause « N'utilisez ce pouvoir qu'une seule fois par tour » : sur un pouvoir
+  // à coût de mill (qui n'incline pas la source), elle EST le verrou → strippée
+  // et traduite en flag `oncePerTurn` (jeton powerUses0 à l'activation).
+  const oncePerTurn = TAP_ONCE_PER_TURN.test(text);
+  const cleaned = oncePerTurn
+    ? text.replace(TAP_ONCE_PER_TURN, "").trim()
+    : text;
+  const m = cleaned.match(
+    /^defaussez la premiere carte de votre pioche\s*:\s*(.+)$/,
+  );
+  if (!m) return null;
+  const bodyText = m[1].replace(/\.$/, "").trim();
+  if (/^(?:il|elle)\s/.test(bodyText)) return null; // actor-binding non modélisé
+  const body = compileBody(bodyText, cardName, sourceElement);
+  if (!body) return null;
+  return {
+    trigger: "onTap",
+    cost: "paidOps",
+    ...(oncePerTurn ? { oncePerTurn: true } : {}),
+    ops: [{ op: "costMillTop", n: 1 }, ...body],
+  };
 }
 
 /**
@@ -3901,6 +3951,7 @@ export function tapPowers(
         isBanishCostText(text) ||
         isRecycleCostText(text) ||
         isDiscardCostText(text) ||
+        isMillTopCostText(text) ||
         isTokenTapPowerText(text))
         ? compileTapEffectText(
             text,

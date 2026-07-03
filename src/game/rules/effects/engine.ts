@@ -1144,6 +1144,33 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         holdRest(frame, ops.slice(i + 1));
         return true;
       }
+      if (op.op === "costMillTop") {
+        // COÛT « Défaussez la/les N première(s) carte(s) de votre Pioche : CORPS »
+        // — mill DÉTERMINISTE du SOMMET (pioche[0..n-1]) vers la Défausse, AUCUN
+        // choix. Impayable si la Pioche a < n cartes → frame abandonnée (corps non
+        // exécuté), comme les autres coûts payés.
+        const pioche = deps.getState().seats[seat].pioche;
+        if (pioche.length < op.n) {
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} : pas assez de cartes dans la Pioche pour payer le coût, pouvoir annulé.`,
+            ),
+          );
+          return false; // coût impayable → corps non exécuté
+        }
+        // Sommet figé AVANT toute mutation (moveTo décale la Pioche à chaque appel).
+        const topIds = pioche.slice(0, op.n);
+        for (const id of topIds)
+          deps.moveTo(id, { zone: "defausse", owner: seat });
+        deps.dispatch(
+          say(
+            seat,
+            `${cardName} : ${op.n === 1 ? "la première carte" : `les ${op.n} premières cartes`} de la Pioche défaussée${op.n === 1 ? "" : "s"}.`,
+          ),
+        );
+        continue;
+      }
       if (op.op === "costRecycle") {
         // COÛT « Recyclez … : CORPS » — première op d'une séquence cost:"paidOps".
         // Recycler = remettre une carte SOUS la Pioche de son propriétaire. Le

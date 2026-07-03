@@ -4324,7 +4324,23 @@
         "description": "Défaussez la première carte de votre Pioche : le Crapaud Mufle gagne +2 en Force jusqu'à la fin du tour. N'utilisez ce pouvoir qu'une seule fois par tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "oncePerTurn": true,
+          "ops": [
+            {
+              "op": "costMillTop",
+              "n": 1
+            },
+            {
+              "op": "buffForceSelf",
+              "n": 2
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-mill-top", "buff-force-self"]
       }
     ],
     "keywords": [],

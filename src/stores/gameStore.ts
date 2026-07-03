@@ -1549,6 +1549,15 @@ export const useGameStore = defineStore("game", () => {
         return rejectMove(
           "Pas assez de cartes en main pour payer le coût de défausse.",
         );
+      // COÛT DE MILL impayable (Pioche insuffisante) : refuser AVANT de consommer
+      // le verrou once-per-turn — même garde que le coût de défausse imposé.
+      if (
+        firstOp?.op === "costMillTop" &&
+        state.value.seats[seat].pioche.length < firstOp.n
+      )
+        return rejectMove(
+          "Pas assez de cartes dans la Pioche pour payer le coût.",
+        );
       // COÛT DE RESSOURCE impayable (Guy Yomtella : « [Incliner], [Air] : … ») :
       // refuser AVANT de consommer l'inclinaison (tapsSource) — sinon
       // l'activation brûlerait l'inclinaison sans que le corps ne tourne.
