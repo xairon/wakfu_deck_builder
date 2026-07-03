@@ -12,6 +12,7 @@ export const mechanicTagSchema = z.enum([
   "banish-from-zone",
   "damage-target",
   "damage-multi-target",
+  "distribute-damage",
   "damage-target-by-force",
   "each-player-draws",
   "heal-hero-target",

@@ -791,4 +791,28 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // « La colère de Iop inflige X Dommages répartis librement entre les Alliés ou
+  //   Héros attaquants ou bloqueurs de votre choix. » — Action à coût variable
+  //   « Niveau : X ». Le X payé (costPayX — incliner X producteurs) est ensuite
+  //   RÉPARTI librement (distributeDamage) entre les cibles de combat (≥1
+  //   chacune, répétables, appliqué en bloc). Élément imprimé = Terre. X=0 →
+  //   no-op (jouable hors combat, ruling). Le DSL ne gère ni le X ni la
+  //   répartition → script direct.
+  "colere-de-iop-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        { op: "costPayX" },
+        {
+          op: "distributeDamage",
+          element: "Terre",
+          heroes: true,
+          combatRole: "inCombat",
+          zones: ["monde", "havreSac"],
+          fromCount: true,
+        },
+      ],
+    },
+  },
 };

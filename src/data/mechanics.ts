@@ -78,6 +78,13 @@ export const MECHANICS: Mechanic[] = [
       "Inflige des Dommages à plusieurs cibles choisies (jusqu'à un nombre fixé).",
   },
   {
+    id: "distribute-damage",
+    label: "Dégâts répartis librement",
+    category: "dégâts",
+    glossary:
+      "Répartit X points de Dommages (X = montant payé) entre des cibles de combat au choix (répétables, ≥1 chacune) ; assignation accumulée puis appliquée en bloc.",
+  },
+  {
     id: "damage-target-by-force",
     label: "Dégâts ciblés (Force)",
     category: "dégâts",
@@ -488,6 +495,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   banishFromZone: "banish-from-zone",
   damageTarget: "damage-target",
   damageMultiTarget: "damage-multi-target",
+  distributeDamage: "distribute-damage",
   damageTargetByForce: "damage-target-by-force",
   eachPlayerDraws: "each-player-draws",
   healHeroTarget: "heal-hero-target",

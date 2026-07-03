@@ -443,7 +443,11 @@
                                                 : store.effectTargeting.op
                                                       .op === "costPayX"
                                                   ? `incline une carte pour payer (${store.effectTargeting.multi?.chosen?.length ?? 0} Ressource(s) payée(s)) — « Passer » pour arrêter`
-                                                  : `choisis l'Allié qui subit ${"n" in store.effectTargeting.op ? store.effectTargeting.op.n : 0} Dommage(s)`
+                                                  : store.effectTargeting.op
+                                                        .op ===
+                                                      "distributeDamage"
+                                                    ? `répartis les Dommages (${store.effectTargeting.multi?.remaining ?? 0} point(s) restant(s)) — clique une cible par point`
+                                                    : `choisis l'Allié qui subit ${"n" in store.effectTargeting.op ? store.effectTargeting.op.n : 0} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

@@ -257,6 +257,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       remaining: number;
       distinct: boolean;
       chosen: string[];
+      // RÉPARTITION LIBRE (distributeDamage) : accumulateur cible→points assignés.
+      // Chaque clic incrémente ; à `remaining` 0 (ou effectTargetSkip), les
+      // Dommages sont appliqués EN BLOC. Absent pour les autres multi.
+      assign?: Record<string, number>;
     };
   } | null>(null);
 
@@ -890,7 +894,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // (boundCount, ex. cartes défaussées/recyclées) est 0, aucun choix →
         // no-op fidèle (rien à incliner/redresser), pas de picker vide.
         if (
-          (op.op === "tapMultiTarget" || op.op === "untapMultiTarget") &&
+          (op.op === "tapMultiTarget" ||
+            op.op === "untapMultiTarget" ||
+            // RÉPARTITION LIBRE : X=0 (aucune Ressource payée) → rien à répartir
+            // (no-op fidèle, jouable hors combat — ruling Colère de Iop).
+            op.op === "distributeDamage") &&
           opMagnitude(op, frame) === 0
         ) {
           deps.dispatch(
@@ -959,7 +967,19 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                       chosen: [],
                     },
                   }
-                : {}),
+                : op.op === "distributeDamage"
+                  ? {
+                      // RÉPARTITION LIBRE : X points à assigner (= boundCount) ;
+                      // cibles RÉPÉTABLES (distinct false) ; accumulateur `assign`
+                      // (rien infligé avant la clôture → application EN BLOC).
+                      multi: {
+                        remaining: opMagnitude(op, frame),
+                        distinct: false,
+                        chosen: [],
+                        assign: {},
+                      },
+                    }
+                  : {}),
         };
         holdRest(frame, ops.slice(i + 1));
         return true;
@@ -2099,6 +2119,42 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     return id;
   }
 
+  /**
+   * RÉPARTITION LIBRE — application EN BLOC des Dommages accumulés (Colère de
+   * Iop). Chaque cible reçoit la SOMME assignée en UN paquet (resolveDamageTarget
+   * → Résistance/destruction/XP fidèles) ; les déclenchés (804.7, ex. mort) sont
+   * collectés sur TOUS les paquets et enfilés APRÈS l'application (aucune cascade
+   * pendant la répartition, décidée d'un bloc). `element` = Élément imprimé (une
+   * Action n'a pas de source vivante → pas de liveSourceElement).
+   */
+  function applyDistributedDamage(
+    op: { element: string },
+    seat: Seat,
+    sourceId: string | undefined,
+    assign: Record<string, number>,
+  ): void {
+    const allRuleEvents: RuleEvent[] = [];
+    for (const [targetId, amount] of Object.entries(assign)) {
+      if (amount <= 0) continue;
+      const res = resolveDamageTarget(
+        deps.rulesCtx(),
+        seat,
+        targetId,
+        amount,
+        op.element,
+        {
+          mods: activeGlobalMods(deps.rulesCtx()),
+          ...(sourceId ? { sourceId } : {}),
+        },
+      );
+      deps.dispatch(...res.events, ...res.log.map((l) => say(seat, l)));
+      if (res.ruleEvents?.length) allRuleEvents.push(...res.ruleEvents);
+    }
+    if (deps.isAssistEffects() && allRuleEvents.length)
+      enqueueTriggered(collectTriggeredEffects(deps.rulesCtx(), allRuleEvents));
+    deps.checkVictory();
+  }
+
   /** Le joueur clique une cible légale : résout l'op puis continue l'effet. */
   function effectTargetChoose(instanceId: string): void {
     const t = effectTargeting.value;
@@ -2107,6 +2163,28 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     // Dommages ») : chaque cible choisie subit X Dommages immédiatement, puis on
     // RÉ-OUVRE le ciblage tant qu'il reste des choix (remaining) ET des cibles
     // éligibles. Le joueur peut s'arrêter avant via effectTargetSkip (« jusqu'à »).
+    // RÉPARTITION LIBRE (distributeDamage) : chaque clic ACCUMULE +1 point sur la
+    // cible choisie SANS rien infliger (cibles répétables). Quand les X points
+    // sont tous assignés (remaining → 0), on applique EN BLOC (cf.
+    // applyDistributedDamage) — fidèle au ruling « la répartition est effectuée
+    // au moment où le joueur joue le Sort » (aucune destruction en cascade ne
+    // change la répartition déjà décidée).
+    if (t.op.op === "distributeDamage" && t.multi) {
+      const assign = { ...(t.multi.assign ?? {}) };
+      assign[instanceId] = (assign[instanceId] ?? 0) + 1;
+      const remaining = t.multi.remaining - 1;
+      if (remaining > 0) {
+        effectTargeting.value = {
+          ...t,
+          multi: { ...t.multi, remaining, assign },
+        };
+        return;
+      }
+      effectTargeting.value = null;
+      applyDistributedDamage(t.op, t.seat, t.sourceId, assign);
+      pumpEffects();
+      return;
+    }
     if (t.op.op === "damageMultiTarget" && t.multi) {
       const op = t.op;
       const res = resolveDamageTarget(
@@ -2515,6 +2593,34 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           `${t.cardName} : ${t.multi.chosen.length} cible(s) choisie(s).`,
         ),
       );
+      pumpEffects();
+      return;
+    }
+    // RÉPARTITION LIBRE (distributeDamage) : « inflige X Dommages » est une
+    // répartition OBLIGATOIRE (≠ « jusqu'à N ») — tant qu'il reste des points ET
+    // au moins une cible de combat éligible, « Passer » est ILLÉGAL (ignoré, le
+    // ciblage reste ouvert). On n'applique EN BLOC que si plus aucune cible n'est
+    // disponible (impossible de répartir le reste → le surplus se perd, fidèle).
+    if (t.op.op === "distributeDamage" && t.multi) {
+      const stillEligible = effectTargetIds(
+        deps.rulesCtx(),
+        t.op,
+        t.seat,
+        t.sourceId,
+      );
+      if (t.multi.remaining > 0 && stillEligible.length) {
+        // « Passer » illégal : le ciblage a été nullifié en tête de fonction ;
+        // on le RESTAURE tel quel (la répartition doit se poursuivre).
+        effectTargeting.value = t;
+        deps.dispatch(
+          say(
+            t.seat,
+            `${t.cardName} : répartis tous les points de Dommages avant de continuer.`,
+          ),
+        );
+        return;
+      }
+      applyDistributedDamage(t.op, t.seat, t.sourceId, t.multi.assign ?? {});
       pumpEffects();
       return;
     }

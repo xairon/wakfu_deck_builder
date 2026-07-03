@@ -3870,7 +3870,24 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "costPayX"
+            },
+            {
+              "op": "distributeDamage",
+              "element": "Terre",
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"],
+              "fromCount": true
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cost-pay-x", "distribute-damage"]
       },
       {
         "description": "Vous pouvez jouer cette Action même si X=0, auquel cas la Colère de Iop ne fera rien. La répartition des Dommages est effectuée au moment où le joueur joue le Sort. Chaque Héros ou Allié choisi doit se voir assigner au moins 1 Dommage.",

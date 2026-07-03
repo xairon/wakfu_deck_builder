@@ -30,6 +30,7 @@ export type TargetingOp = Extract<
   | { op: "banishTarget" }
   | { op: "damageTarget" }
   | { op: "damageMultiTarget" }
+  | { op: "distributeDamage" }
   | { op: "damageTargetByForce" }
   | { op: "healHeroTarget" }
   | { op: "buffForceTarget" }
@@ -61,6 +62,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "banishTarget" ||
     op.op === "damageTarget" ||
     op.op === "damageMultiTarget" ||
+    op.op === "distributeDamage" ||
     op.op === "damageTargetByForce" ||
     op.op === "healHeroTarget" ||
     op.op === "buffForceTarget" ||
@@ -343,6 +345,7 @@ export function effectTargetIds(
       (op.op === "destroyTarget" ||
         op.op === "damageTarget" ||
         op.op === "damageMultiTarget" ||
+        op.op === "distributeDamage" ||
         op.op === "buffForceTarget" ||
         op.op === "grantKeywordTarget" ||
         op.op === "grantResistanceTarget" ||

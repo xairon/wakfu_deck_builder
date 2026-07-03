@@ -347,6 +347,25 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
+  // « inflige X Dommages RÉPARTIS LIBREMENT entre les Alliés ou Héros attaquants
+  // ou bloqueurs de votre choix » (Colère de Iop). X = montant payé (coût
+  // variable costPayX → boundCount, via `fromCount`). Le joueur assigne X points
+  // de Dommages, un par un, aux cibles de combat de son choix (cibles
+  // RÉPÉTABLES ; chaque cible choisie reçoit ≥1). La répartition est ACCUMULÉE
+  // sans rien infliger, PUIS appliquée EN BLOC quand les X points sont assignés
+  // (fidèle au ruling « la répartition est effectuée au moment où le joueur joue
+  // le Sort » : aucune destruction en cascade ne modifie la répartition). X=0 →
+  // no-op (jouable hors combat). `element` = Élément IMPRIMÉ (Action sans source
+  // vivante). `combatRole`/`heroes`/`zones` : filtre d'éligibilité des cibles.
+  z.object({
+    op: z.literal("distributeDamage"),
+    element: z.string(),
+    heroes: z.boolean().optional(),
+    combatRole: combatRoleSchema.optional(),
+    zones: zonesSchema,
+    // X = nombre de points à répartir = boundCount (coût variable qui précède).
+    fromCount: z.boolean().optional(),
+  }),
   // RIPOSTE DE PORTEUR (« Chaque fois qu'un Allié ou Héros inflige des Dommages
   // au Porteur de <self>, <self> lui inflige N Dommage [X] » — Cape/Anneau du
   // Prespic, 804.3). Op SANS CIBLE INTERACTIVE : la cible est PRÉ-LIÉE = la
