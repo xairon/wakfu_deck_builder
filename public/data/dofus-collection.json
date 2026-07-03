@@ -3225,7 +3225,26 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "tapsSource": true,
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Air"
+            },
+            {
+              "op": "damageTarget",
+              "n": 1,
+              "element": "Air",
+              "heroes": false,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cost-tap-resource", "damage-target"]
       },
       {
         "description": "[Air][Air] : Redressez Guy Yomtella.",

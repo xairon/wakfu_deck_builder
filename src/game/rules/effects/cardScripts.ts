@@ -646,4 +646,52 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // « [Incliner], [Air] : Guy Yomtella inflige 1 Dommage [Air] à l'Allié de
+  //   votre choix. » — coûts RÉCUPÉRÉS verbatim du raw (W52 : le scrape avait
+  //   perdu « , [Air] » et le compilé auto SOUS-FACTURAIT → démouvu). Pouvoir à
+  //   COÛT COMPOSÉ : inclinaison de soi (requiresIncline → flag tapsSource sur
+  //   le chemin paidOps, comme Amulette Akwadala) + paiement d'1 Ressource AIR
+  //   (costTapResource{element:"Air"} — le filtre d'Élément W45, 1ʳᵉ utilisation).
+  //   Guy, inclinée par l'activation, ne peut pas payer l'Air elle-même (déjà
+  //   inclinée → hors resourceProducers) : le payeur naturel est un producteur
+  //   Air (ex. Piou Jaune, production colorée W46). La garde coût-ressource-
+  //   impayable d'activateTapPower refuse AVANT de consommer l'inclinaison si
+  //   aucun producteur Air n'est disponible. L'effet [1] (« [Air][Air] :
+  //   Redressez Guy Yomtella. », 2ᵉ pouvoir SANS incliner) reste manuel : le
+  //   pipeline n'a pas de voie d'activation payée sans inclinaison.
+  "guy-yomtella-incarnam": {
+    0: {
+      trigger: "onTap",
+      cost: "paidOps",
+      tapsSource: true,
+      ops: [
+        { op: "costTapResource", element: "Air" },
+        {
+          op: "damageTarget",
+          n: 1,
+          element: "Air",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+  "guy-yomtella-dofus-collection": {
+    0: {
+      trigger: "onTap",
+      cost: "paidOps",
+      tapsSource: true,
+      ops: [
+        { op: "costTapResource", element: "Air" },
+        {
+          op: "damageTarget",
+          n: 1,
+          element: "Air",
+          heroes: false,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
 };

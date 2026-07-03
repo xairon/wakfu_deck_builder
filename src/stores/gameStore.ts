@@ -55,6 +55,7 @@ import {
   grantsBearerBonus,
   forceValue,
   havreSacHasRoom,
+  normElement,
   planCost,
   playDestination,
   playEffects,
@@ -1539,6 +1540,26 @@ export const useGameStore = defineStore("game", () => {
         return rejectMove(
           "Pas assez de cartes en main pour payer le coût de défausse.",
         );
+      // COÛT DE RESSOURCE impayable (Guy Yomtella : « [Incliner], [Air] : … ») :
+      // refuser AVANT de consommer l'inclinaison (tapsSource) — sinon
+      // l'activation brûlerait l'inclinaison sans que le corps ne tourne.
+      // Producteurs = resourceProducers dédupliqués, filtrés par Élément,
+      // SANS la source si tapsSource (inclinée par l'activation même, elle ne
+      // peut pas AUSSI produire — une carte ne s'incline qu'une fois).
+      if (firstOp?.op === "costTapResource") {
+        const want = firstOp.element ? normElement(firstOp.element) : null;
+        const payable = resourceProducers(rulesCtx(), seat).some(
+          (p) =>
+            !(atom.tapsSource && p.instanceId === instanceId) &&
+            (!want || normElement(p.element) === want),
+        );
+        if (!payable)
+          return rejectMove(
+            firstOp.element
+              ? `Aucune Ressource ${firstOp.element} disponible pour payer le coût.`
+              : "Aucune Ressource disponible pour payer le coût.",
+          );
+      }
       // COÛT COMPOSÉ (`tapsSource` — Amulette Akwadala : requiresIncline + coût
       // de défausse) : l'activation incline AUSSI la source → elle doit être
       // dressée, et l'inclinaison est dispatchée AVANT l'enfilage du coût.
