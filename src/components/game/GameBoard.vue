@@ -440,7 +440,10 @@
                                               : store.effectTargeting.op.op ===
                                                   "drawTargetXp"
                                                 ? "choisis l'Allié dont tu piocheras la valeur d'XP"
-                                                : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                                                : store.effectTargeting.op
+                                                      .op === "costPayX"
+                                                  ? `incline une carte pour payer (${store.effectTargeting.multi?.chosen?.length ?? 0} Ressource(s) payée(s)) — « Passer » pour arrêter`
+                                                  : `choisis l'Allié qui subit ${"n" in store.effectTargeting.op ? store.effectTargeting.op.n : 0} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

@@ -46,6 +46,7 @@ export type TargetingOp = Extract<
   | { op: "costDestroyControlled" }
   | { op: "costRecycleControlled" }
   | { op: "costTapResource" }
+  | { op: "costPayX" }
   // OPS « LE JOUEUR DE VOTRE CHOIX … » : on choisit un JOUEUR en CIBLANT son
   // Héros (éligibilité = tous les Héros en jeu, les deux contrôleurs). L'effet
   // s'applique au contrôleur du Héros choisi (résolu dans effectTargetChoose).
@@ -76,6 +77,7 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "costDestroyControlled" ||
     op.op === "costRecycleControlled" ||
     op.op === "costTapResource" ||
+    op.op === "costPayX" ||
     op.op === "playerDraw" ||
     op.op === "playerLoseStatTurn" ||
     op.op === "playerGainStat"
@@ -137,6 +139,21 @@ export function effectTargetIds(
     for (const p of resourceProducers(ctx, actor)) {
       if (seen.has(p.instanceId)) continue;
       if (want && normElement(p.element) !== want) continue;
+      seen.add(p.instanceId);
+      out.push(p.instanceId);
+    }
+    return out;
+  }
+  // COÛT VARIABLE « X : … » (costPayX) : éligibilité = TOUTES vos cartes
+  // productrices dressées (comme costTapResource, générique — aucun filtre
+  // d'Élément), dédupliquées par instanceId (doublon Havre-Sac 2342 = une seule
+  // carte inclinable). Le joueur en incline autant qu'il veut ; X = compte réel.
+  if (op.op === "costPayX") {
+    if (actor === undefined) return [];
+    const seen = new Set<InstanceId>();
+    const out: InstanceId[] = [];
+    for (const p of resourceProducers(ctx, actor)) {
+      if (seen.has(p.instanceId)) continue;
       seen.add(p.instanceId);
       out.push(p.instanceId);
     }

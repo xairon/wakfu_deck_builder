@@ -375,6 +375,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : défaussez la (ou les N) première(s) carte(s) du sommet de votre Pioche (mill déterministe, sans choix) pour payer l'effet.",
   },
   {
+    id: "cost-pay-x",
+    label: "Coût variable X",
+    category: "autre",
+    glossary:
+      "Coût variable « X : … » : le joueur paie X Ressources (X au choix, 0..producteurs disponibles) en inclinant X de ses cartes productrices ; X pilote la magnitude du corps (Dommages/soin/Niveau de la cible…).",
+  },
+  {
     id: "cost-recycle",
     label: "Coût : recyclage",
     category: "autre",
@@ -525,6 +532,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   costDestroyControlled: "cost-destroy-controlled",
   costDiscard: "cost-discard",
   costMillTop: "cost-mill-top",
+  costPayX: "cost-pay-x",
   costRecycle: "cost-recycle",
   costRecycleControlled: "cost-recycle-controlled",
   costTapResource: "cost-tap-resource",

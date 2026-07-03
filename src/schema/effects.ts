@@ -207,6 +207,11 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // Niveau EXACT (« … de Niveau N ») — distinct de maxLevel (≤). Cible sans
     // Niveau = inéligible.
     exactLevel: z.number().optional(),
+    // Niveau EXACT DYNAMIQUE « … de Niveau X » où X = montant payé (coût X, lié
+    // à la frame via `boundCount`). Résolu à l'ouverture du ciblage : exactLevel
+    // = frame.boundCount. Sert « X : Détruisez l'Équipement de Niveau X … »
+    // (Merelyne Manro). Exclusif avec `exactLevel` littéral.
+    exactLevelFromCount: z.boolean().optional(),
     // Type d'Équipement requis (« Détruisez l'Arme / l'Armure … de votre
     // choix ») — lu sur card.equipmentType.
     equipType: z.string().optional(),
@@ -837,6 +842,17 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("costMillTop"),
     n: z.number(),
+  }),
+  // COÛT VARIABLE « X : CORPS » (X-cost, 4262) — le joueur paie X Ressources, X
+  // étant CHOISI (0..producteurs disponibles). Modèle SANS POOL : payer X =
+  // INCLINER X de ses cartes productrices dressées (au choix, comme
+  // costTapResource mais RÉPÉTÉ « jusqu'à » tout produire). X = nombre réellement
+  // incliné → posé sur la frame via `boundCount`, lu par les ops `fromCount` du
+  // corps (magnitude) et par `exactLevelFromCount` (filtre de Niveau). X=0 est
+  // LÉGAL (aucun producteur → paiement nul, corps résolu avec magnitude 0). Op de
+  // CIBLAGE multi (première op d'une séquence cost:"paidOps"), skippable.
+  z.object({
+    op: z.literal("costPayX"),
   }),
   // COÛT de pouvoir payé « Recyclez un <Allié|Famille> de votre choix : … »
   //   (Vampyro) : op de CIBLAGE (première op d'une séquence cost:"paidOps", comme

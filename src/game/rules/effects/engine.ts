@@ -872,6 +872,13 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         if ("fromCount" in op && op.fromCount && "n" in op) {
           op = { ...op, n: opMagnitude(op, frame) };
         }
+        // NIVEAU EXACT DYNAMIQUE « … de Niveau X » (destroyTarget) : X = montant
+        // payé (frame.boundCount, coût X). On FIGE exactLevel AVANT le ciblage
+        // pour que l'éligibilité (et le clic) filtrent sur le bon Niveau. X=0 →
+        // exactLevel 0 (Équipement de Niveau 0 = généralement aucun → no-op).
+        if (op.op === "destroyTarget" && op.exactLevelFromCount) {
+          op = { ...op, exactLevel: frame.boundCount ?? 0 };
+        }
         // INCLINAISON/REDRESSEMENT MULTI-CIBLES À COMPTE LIÉ : si le compte
         // (boundCount, ex. cartes défaussées/recyclées) est 0, aucun choix →
         // no-op fidèle (rien à incliner/redresser), pas de picker vide.
@@ -933,7 +940,19 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                     chosen: [],
                   },
                 }
-              : {}),
+              : op.op === "costPayX"
+                ? {
+                    // COÛT VARIABLE X : incline « jusqu'à » tous les producteurs
+                    // (borne = leur nombre) ; X = nombre réellement incliné →
+                    // boundCount à la clôture (effectTargetChoose/Skip). Les
+                    // producteurs inclinés quittent l'éligibilité au fil de l'eau.
+                    multi: {
+                      remaining: eligible.length,
+                      distinct: true,
+                      chosen: [],
+                    },
+                  }
+                : {}),
         };
         holdRest(frame, ops.slice(i + 1));
         return true;
@@ -2168,6 +2187,37 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       pumpEffects();
       return;
     }
+    // COÛT VARIABLE X (costPayX) : chaque clic INCLINE un producteur (paiement
+    // d'1 Ressource) ; on ré-ouvre tant qu'il reste des producteurs dressés. À la
+    // clôture (plus de producteur / effectTargetSkip), X = nombre incliné est LIÉ
+    // à la frame retenue (boundCount), lu par le corps (fromCount / Niveau X).
+    if (t.op.op === "costPayX" && t.multi) {
+      const res = resolveTapTarget(deps.rulesCtx(), t.seat, instanceId);
+      deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+      const chosen = [...t.multi.chosen, instanceId];
+      const remaining = t.multi.remaining - 1;
+      const stillEligible =
+        remaining > 0
+          ? effectTargetIds(
+              deps.rulesCtx(),
+              t.op,
+              t.seat,
+              t.sourceId,
+              new Set(chosen),
+            )
+          : [];
+      if (remaining > 0 && stillEligible.length) {
+        effectTargeting.value = {
+          ...t,
+          multi: { remaining, distinct: true, chosen },
+        };
+        return;
+      }
+      effectTargeting.value = null;
+      bindCountToHeldFrame(chosen.length);
+      pumpEffects();
+      return;
+    }
     effectTargeting.value = null;
     // MAGNITUDE DYNAMIQUE À CIBLE (« Piochez un nombre de cartes égal à la valeur
     // d'XP de l'Allié de votre choix ») : on pioche la valeur d'XP (xpValue,
@@ -2453,6 +2503,20 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           `${t.cardName} : ${t.multi.chosen.length} cible(s) choisie(s).`,
         ),
       );
+      pumpEffects();
+      return;
+    }
+    // COÛT VARIABLE X (costPayX) : s'arrêter FIXE X = nombre déjà incliné
+    // (boundCount sur la frame retenue) et reprend le corps. X peut être 0
+    // (le joueur choisit de ne rien payer — coût variable, 4262).
+    if (t.op.op === "costPayX" && t.multi) {
+      deps.dispatch(
+        say(
+          t.seat,
+          `${t.cardName} : ${t.multi.chosen.length} Ressource(s) payée(s).`,
+        ),
+      );
+      bindCountToHeldFrame(t.multi.chosen.length);
       pumpEffects();
       return;
     }

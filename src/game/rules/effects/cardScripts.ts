@@ -694,4 +694,47 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // « [Incliner], X[Neutre] : Détruisez l'Équipement de Niveau X de votre choix. »
+  //   — coûts RÉCUPÉRÉS verbatim du raw (W60 : le scrape avait perdu « [Incliner], »
+  //   et « [Neutre] », l'incarnam ne gardait que « X : … » et dofus-collection rien
+  //   du coût). Pouvoir à COÛT COMPOSÉ : inclinaison de soi (tapsSource, comme
+  //   Yomtella) + coût VARIABLE X (costPayX — le joueur incline X producteurs, X =
+  //   boundCount). Le corps détruit un Équipement de Niveau EXACTEMENT X
+  //   (destroyTarget{exactLevelFromCount} — exactLevel figé au boundCount à
+  //   l'ouverture du ciblage). X=0 est légal (aucun Équipement de Niveau 0 →
+  //   no-op). Merelyne, inclinée par l'activation, est hors resourceProducers →
+  //   ne peut pas se payer elle-même. Effet [1] (index 0 = trait « Forgeron »).
+  "merelyne-manro-incarnam": {
+    1: {
+      trigger: "onTap",
+      cost: "paidOps",
+      tapsSource: true,
+      ops: [
+        { op: "costPayX" },
+        {
+          op: "destroyTarget",
+          what: "Équipement",
+          exactLevelFromCount: true,
+          zones: ["monde"],
+        },
+      ],
+    },
+  },
+  "merelyne-manro-dofus-collection": {
+    1: {
+      trigger: "onTap",
+      cost: "paidOps",
+      tapsSource: true,
+      ops: [
+        { op: "costPayX" },
+        {
+          op: "destroyTarget",
+          what: "Équipement",
+          exactLevelFromCount: true,
+          zones: ["monde"],
+        },
+      ],
+    },
+  },
 };

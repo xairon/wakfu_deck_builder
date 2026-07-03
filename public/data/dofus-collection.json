@@ -3782,11 +3782,28 @@
         "coverage": "trait"
       },
       {
-        "description": "Détruisez l'Équipement de Niveau X de votre choix.",
+        "description": "[Incliner], X[Neutre] : Détruisez l'Équipement de Niveau X de votre choix.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "tapsSource": true,
+          "ops": [
+            {
+              "op": "costPayX"
+            },
+            {
+              "op": "destroyTarget",
+              "what": "Équipement",
+              "exactLevelFromCount": true,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cost-pay-x", "destroy-target"]
       }
     ],
     "keywords": [],
