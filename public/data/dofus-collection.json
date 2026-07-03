@@ -3221,27 +3221,14 @@
     },
     "effects": [
       {
-        "description": "Guy Yomtella inflige 1 Dommage à l'Allié de votre choix.",
+        "description": "[Incliner], [Air] : Guy Yomtella inflige 1 Dommage [Air] à l'Allié de votre choix.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "compiled": {
-          "trigger": "onTap",
-          "ops": [
-            {
-              "op": "damageTarget",
-              "n": 1,
-              "element": "Air",
-              "heroes": false,
-              "zones": ["monde", "havreSac"]
-            }
-          ]
-        },
-        "coverage": "auto",
-        "mechanics": ["damage-target"]
+        "coverage": "uncovered"
       },
       {
-        "description": "Redressez Guy Yomtella.",
+        "description": "[Air][Air] : Redressez Guy Yomtella.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,

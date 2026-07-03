@@ -165,6 +165,13 @@ export interface EffectEngineDeps {
   adjustCounter: (instanceId: string, counter: string, delta: number) => void;
   /** Fin de partie immédiate (gainXp gagnant) : pose winner + matchPhase. */
   onMatchWon: (seat: Seat) => void;
+  /**
+   * RETRAIT DU COMBAT (op removeFromCombatTarget — Exclusion) : retire
+   * l'instance du combat EN COURS (attackers / blocks / strikes / ripostes du
+   * ref local du store). Optionnelle : absente (tests isolés / contexte sans
+   * combat), le retrait est un no-op — l'inclinaison journalisée reste émise.
+   */
+  removeFromCombat?: (instanceId: string) => void;
 }
 
 /**
@@ -1966,6 +1973,27 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           `${t.cardName} : pioche ${xp} carte(s) (valeur d'XP de la cible).`,
         ),
       );
+      pumpEffects();
+      return;
+    }
+    // RETRAIT DU COMBAT (Exclusion) : la cible choisie (attaquant ou bloqueur du
+    // combat en cours) CESSE de participer au combat (ruling in-data — mutation
+    // du combat local via deps.removeFromCombat, non journalisée comme les
+    // blocks/strikes locaux) PUIS retourne inclinée (SET_ORIENTATION journalisé,
+    // no-op si déjà inclinée). Aucun déplacement de zone (le combat a lieu dans
+    // le Monde).
+    if (t.op.op === "removeFromCombatTarget") {
+      deps.removeFromCombat?.(instanceId);
+      const res = resolveTapTarget(deps.rulesCtx(), t.seat, instanceId);
+      deps.dispatch(
+        say(
+          t.seat,
+          `${deps.getCard(deps.getState().instances[instanceId]?.cardId ?? null)?.name ?? "La cible"} quitte le combat.`,
+        ),
+        ...res.events,
+        ...res.log.map((l) => say(t.seat, l)),
+      );
+      deps.checkVictory();
       pumpEffects();
       return;
     }

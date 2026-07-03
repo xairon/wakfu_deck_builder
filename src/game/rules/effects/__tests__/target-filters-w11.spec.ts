@@ -397,13 +397,21 @@ describe("W11 — DSL négatifs (pas de sur-capture)", () => {
     ]);
   });
 
-  it("forme à condition résiduelle reste non compilée (combatRole + suite)", () => {
-    // « … retourne incliné dans le Monde » n'est PAS une op connue → manuel.
+  it("« … retourne incliné dans le Monde » → removeFromCombatTarget (W52)", () => {
+    // Anciennement rejeté (op inconnue) ; W52 a bâti le retrait du combat
+    // (Exclusion) — cf. remove-from-combat-w52.spec.ts.
     expect(
       action(
         "L'Allié ou Héros attaquant ou bloqueur de votre choix retourne incliné dans le Monde.",
       ),
-    ).toBeNull();
+    ).toEqual([
+      {
+        op: "removeFromCombatTarget",
+        heroes: true,
+        combatRole: "inCombat",
+        zones: ["monde", "havreSac"],
+      },
+    ]);
   });
 });
 

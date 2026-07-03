@@ -5455,7 +5455,18 @@
         "description": "Piochez une carte. N'utilisez ce pouvoir que si le Porteur de la Dora est attaquant ou bloqueur.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ],
+          "requiresBearerInCombat": true
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       }
     ],
     "keywords": [
@@ -6104,7 +6115,19 @@
         "description": "L'Allié ou Héros attaquant ou bloqueur de votre choix retourne incliné dans le Monde.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "removeFromCombatTarget",
+              "heroes": true,
+              "combatRole": "inCombat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["remove-from-combat"]
       },
       {
         "description": "Le combat a lieu dans le Monde. La formulation \"… retourne dans le Monde\" ici signifie que l'Allié choisi cesse d'être attaquant ou bloqueur et ne participe plus au combat en cours.",
@@ -7636,27 +7659,14 @@
     },
     "effects": [
       {
-        "description": "Guy Yomtella inflige 1 Dommage à l'Allié de votre choix.",
+        "description": "[Incliner], [Air] : Guy Yomtella inflige 1 Dommage [Air] à l'Allié de votre choix.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "compiled": {
-          "trigger": "onTap",
-          "ops": [
-            {
-              "op": "damageTarget",
-              "n": 1,
-              "element": "Air",
-              "heroes": false,
-              "zones": ["monde", "havreSac"]
-            }
-          ]
-        },
-        "coverage": "auto",
-        "mechanics": ["damage-target"]
+        "coverage": "uncovered"
       },
       {
-        "description": "Redressez Guy Yomtella.",
+        "description": "[Air][Air] : Redressez Guy Yomtella.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,

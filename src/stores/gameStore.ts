@@ -313,7 +313,37 @@ export const useGameStore = defineStore("game", () => {
     return cardIndex.value.get(cardId) ?? getTokenCard(cardId);
   }
   function rulesCtx(): RulesCtx {
-    return { state: state.value, getCard };
+    const st = state.value;
+    // PROJECTION DU COMBAT LOCAL (fix W52) : en partie locale, le combat vit
+    // dans le ref `combat.value` (jamais journalisé — SET_COMBAT n'est émis que
+    // par le serveur en ligne, où st.combat est déjà peuplé par le journal).
+    // Les règles pures lisent ctx.state.combat (filtres combatRole
+    // d'effectTargetIds, fenêtre Défense/Renfort de legality) : sans projection,
+    // tous les ops à rôle de combat étaient SANS CIBLE en partie locale (bug
+    // préexistant). On ne projette qu'un combat DÉCLARÉ (step ≠ "attackers" et
+    // cible posée) — une sélection d'attaquants encore annulable n'est pas un
+    // combat (703). Mapping : les curseurs d'UI du ref (strikeFor,
+    // pendingBlocker…) ne font pas partie du CombatState de règles.
+    const c = combat.value;
+    if (!st.combat && c && c.step !== "attackers" && c.target) {
+      return {
+        state: {
+          ...st,
+          combat: {
+            attackerSeat: st.turn.active,
+            step: c.step === "blockers" ? "blockers" : "resolve",
+            target: c.target,
+            attackers: c.attackers,
+            blocks: c.blocks,
+            strikes: c.strikes,
+            ripostes: c.ripostes,
+            reactingSeat: c.reactingSeat,
+          },
+        },
+        getCard,
+      };
+    }
+    return { state: st, getCard };
   }
   function rejectMove(reason: string): false {
     ruleError.value = reason;
@@ -1367,7 +1397,41 @@ export const useGameStore = defineStore("game", () => {
       winner.value = s;
       matchPhase.value = "finished";
     },
+    removeFromCombat,
   });
+
+  /**
+   * RETRAIT DU COMBAT (op removeFromCombatTarget — Exclusion) : la cible cesse
+   * d'être attaquant ou bloqueur du combat EN COURS (ruling in-data). Mutation
+   * du ref LOCAL `combat.value` (jamais journalisée — même niveau d'autorité
+   * que les blocks/strikes locaux) ; l'inclinaison, elle, est journalisée par
+   * l'op. Sémantique (intention tranchée, revue W52) : attaquant retiré → ses
+   * blocks déclarés RESTENT — le bloqueur orphelin n'échange aucun coup (le
+   * duel de resolveCombat ignore les blocks dont l'attaquant a disparu) mais
+   * S'INCLINE en fin de combat (708.3 : il s'est engagé en déclarant le
+   * blocage, comme face à un attaquant mort en combat — le retrait ne
+   * « dé-déclare » pas le blocage) ; bloqueur retiré → son block est levé
+   * (l'attaquant redevient libre et frappe la cible). On purge
+   * strikes/ripostes/curseurs le référençant. EN LIGNE : no-op (l'automation
+   * d'effets est OFF en ligne ; le
+   * jour venu, le retrait devra passer par un intent serveur émettant
+   * SET_COMBAT — ne jamais muter le combat côté client en ligne).
+   */
+  function removeFromCombat(instanceId: string): void {
+    const c = combat.value;
+    if (!c || online.value) return;
+    c.attackers = c.attackers.filter((id) => id !== instanceId);
+    delete c.blocks[instanceId];
+    delete c.strikes[instanceId];
+    for (const [k, v] of Object.entries(c.strikes))
+      if (v === instanceId) delete c.strikes[k];
+    for (const [k, v] of Object.entries(c.ripostes))
+      if (k === instanceId || v === instanceId) delete c.ripostes[k];
+    if (c.strikeFor === instanceId) c.strikeFor = null;
+    if (c.riposteFrom === instanceId) c.riposteFrom = null;
+    c.riposteCandidates = c.riposteCandidates.filter((id) => id !== instanceId);
+    if (c.pendingBlocker === instanceId) c.pendingBlocker = null;
+  }
 
   /**
    * Active un pouvoir à inclinaison compilé : incline la carte puis exécute
@@ -1425,12 +1489,42 @@ export const useGameStore = defineStore("game", () => {
     }
     if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
       return rejectMove("La carte doit être en jeu.");
+    // CONDITION D'ACTIVATION « N'utilisez ce pouvoir que si le Porteur de
+    // <self> est attaquant ou bloqueur » (Dora) : vérifiée AVANT toute
+    // consommation (inclinaison, verrou, coût). Porteur = l'instance dont
+    // `attachments` contient la source ; le combat doit être DÉCLARÉ
+    // (step ≠ "attackers" — une sélection encore annulable n'est pas un combat,
+    // 703) et le Porteur y être attaquant ou bloqueur (clé de blocks).
+    if (atom.requiresBearerInCombat) {
+      const bearer = Object.values(state.value.instances).find((i) =>
+        (i.attachments ?? []).includes(instanceId),
+      );
+      if (!bearer) return rejectMove(`${card.name} n'a pas de Porteur.`);
+      const c = combat.value;
+      const declared = !!c && c.step !== "attackers" && !!c.target;
+      if (
+        !declared ||
+        !(
+          c.attackers.includes(bearer.instanceId) ||
+          c.blocks[bearer.instanceId] !== undefined
+        )
+      )
+        return rejectMove(
+          `Le Porteur de ${card.name} doit être attaquant ou bloqueur.`,
+        );
+    }
     // COÛT PAYÉ (« Inclinez/Détruisez un de vos X : … ») : la SOURCE n'est NI
     // inclinée NI sacrifiée automatiquement, et n'a PAS à être dressée — le coût
     // est la première op (ciblage), qui met l'effet en pause pour le choix du
     // joueur. On enfile directement les ops (cost + corps).
     if (atom.cost === "paidOps") {
-      if (state.value.turn.active !== perspective.value)
+      // 706.5 — FENÊTRE DE RÉACTION : le siège réagissant (défenseur du combat)
+      // peut activer un pouvoir HORS de son tour (même idiome que playFromHand).
+      // Nécessaire pour Dora côté bloqueur.
+      if (
+        combat.value?.reactingSeat !== seat &&
+        state.value.turn.active !== perspective.value
+      )
         return rejectMove("Ce n'est pas votre tour.");
       // COÛT DE DÉFAUSSE IMPOSÉ impayable (main insuffisante) : refuser AVANT
       // de consommer l'inclinaison (tapsSource) ou le verrou once-per-turn —
@@ -1477,7 +1571,11 @@ export const useGameStore = defineStore("game", () => {
     }
     if (inst.orientation !== "upright")
       return rejectMove("La carte est déjà inclinée.");
-    if (state.value.turn.active !== perspective.value)
+    // 706.5 — FENÊTRE DE RÉACTION : idem chemin paidOps (Dora côté bloqueur).
+    if (
+      combat.value?.reactingSeat !== seat &&
+      state.value.turn.active !== perspective.value
+    )
       return rejectMove("Ce n'est pas votre tour.");
     if (atom.cost === "sacrificeSelf" || atom.cost === "banishSelf") {
       // « Détruisez [cette carte] : … » (sacrifice → Défausse) OU « Bannissez
@@ -1526,6 +1624,16 @@ export const useGameStore = defineStore("game", () => {
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
     return !!card && tapPowers(card).length > 0;
+  }
+
+  /** Le pouvoir-tap de cette carte exige-t-il un Porteur EN COMBAT (Dora) ?
+   * Sert à l'UI : autoriser le bouton d'activation PENDANT un combat pour ce
+   * seul cas (la légalité fine — tour/réaction/rôle du Porteur — reste jugée
+   * par activateTapPower, refus expliqué en toast). */
+  function tapPowerNeedsCombat(instanceId: string): boolean {
+    const inst = state.value.instances[instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    return !!card && !!tapPowers(card)[0]?.requiresBearerInCombat;
   }
 
   function toggleTap(instanceId: string): void {
@@ -2304,6 +2412,7 @@ export const useGameStore = defineStore("game", () => {
     effectTargetSkip: engine.effectTargetSkip,
     activateTapPower,
     hasTapPower,
+    tapPowerNeedsCombat,
     effectPicking: engine.effectPicking,
     effectPickIds: engine.effectPickIds,
     effectPick: engine.effectPick,

@@ -320,6 +320,21 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     n: z.number(),
     element: z.string(),
   }),
+  // RETRAIT DU COMBAT (« L'Allié ou Héros attaquant ou bloqueur de votre choix
+  // retourne incliné dans le Monde » — Exclusion, ruling in-data : la cible
+  // CESSE d'être attaquant/bloqueur et ne participe plus au combat en cours ;
+  // aucun déplacement de zone, le combat a lieu dans le Monde). Op de CIBLAGE :
+  // éligibilité = participants du combat DÉCLARÉ (combatRole, via la projection
+  // du combat local dans rulesCtx). Résolution : (1) retrait de combat.attackers
+  // / blocks (mutation du combat local — non journalisée, comme blocks/strikes
+  // locaux ; en ligne l'automation est OFF, l'op ne s'exécute jamais) puis
+  // (2) SET_ORIENTATION tapped (journalisé). Hors combat : aucune cible → passé.
+  z.object({
+    op: z.literal("removeFromCombatTarget"),
+    heroes: z.boolean().optional(),
+    combatRole: combatRoleSchema.optional(),
+    zones: zonesSchema,
+  }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({
     op: z.literal("healHeroTarget"),
@@ -980,6 +995,12 @@ export const compiledEffectSchema = z.object({
   // jeton `powerUses0` sur la source (purgé en fin de tour, cf. isTurnToken) ;
   // un jeton > 0 rend le pouvoir inactivable ce tour.
   oncePerTurn: z.boolean().optional(),
+  // CONDITION D'ACTIVATION « N'utilisez ce pouvoir que si le Porteur de <self>
+  // est attaquant ou bloqueur » (Dora) : vérifiée par activateTapPower AVANT de
+  // consommer l'inclinaison — Porteur = instance dont `attachments` contient la
+  // source ; attaquant/bloqueur du combat DÉCLARÉ (ref combat du store, step ≠
+  // "attackers" : une sélection annulable n'est pas un combat, 703).
+  requiresBearerInCombat: z.boolean().optional(),
   // COÛT COMPOSÉ : pouvoir `paidOps` dont l'activation INCLINE AUSSI la source
   // (`requiresIncline` + coût payé — Amulette Akwadala : inclinaison + défausse).
   // Sans ce flag, le chemin paidOps n'incline pas la source.

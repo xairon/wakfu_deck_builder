@@ -56,6 +56,7 @@ export const mechanicTagSchema = z.enum([
   "cost-recycle-controlled",
   "cost-tap-resource",
   "riposte-bearer",
+  "remove-from-combat",
   "each-player-optional",
   "conditional",
   "choose-one",

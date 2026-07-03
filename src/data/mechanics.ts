@@ -382,6 +382,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir : recyclez une de vos créatures en jeu (au choix) — remise sous la Pioche de son propriétaire — pour payer l'effet.",
   },
   {
+    id: "remove-from-combat",
+    label: "Retrait du combat",
+    category: "contrôle",
+    glossary:
+      "La cible (attaquant ou bloqueur du combat en cours) cesse de participer au combat et revient inclinée dans le Monde — elle n'inflige ni ne subit les Dommages de la résolution.",
+  },
+  {
     id: "riposte-bearer",
     label: "Riposte du Porteur",
     category: "dégâts",
@@ -483,6 +490,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   tapTarget: "tap-target",
   untapTarget: "untap-target",
   damageRiposteSource: "riposte-bearer",
+  removeFromCombatTarget: "remove-from-combat",
   tapMultiTarget: "tap-target",
   untapMultiTarget: "untap-target",
   returnToHand: "return-to-hand",

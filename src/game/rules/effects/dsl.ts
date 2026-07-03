@@ -1149,6 +1149,25 @@ function parseSentence(
       zones: m[2] || m[4] ? ["monde", "havreSac"] : ["monde"],
     };
   }
+  // « L'Allié ou Héros attaquant ou bloqueur de votre choix retourne incliné
+  //   dans le Monde » (Exclusion) → removeFromCombatTarget : la cible CESSE
+  //   d'être attaquant/bloqueur (ruling in-data — retrait du combat en cours,
+  //   aucun déplacement de zone) et revient inclinée. Éligibilité = participants
+  //   du combat déclaré ; hors combat, aucune cible (effet passé). STRICT : le
+  //   `$` rejette toute clause résiduelle (une 2ᵉ phrase non compilable fait
+  //   échouer compileBody entier — les variantes multi-phrases restent
+  //   manuelles) ; « Cet Allié … retourne incliné » (référent d'une phrase
+  //   précédente) ne matche pas (« de votre choix » exigé).
+  m = sentence.match(
+    /^l['’ ]?\s?allie ou heros (?:attaquant ou bloqueur|bloqueur ou attaquant) de votre choix retourne incline dans le monde$/,
+  );
+  if (m)
+    return {
+      op: "removeFromCombatTarget",
+      heroes: true,
+      combatRole: "inCombat",
+      zones: ["monde", "havreSac"],
+    };
   // « Inclinez / Redressez l'Allié (ou Héros) INCLINÉ / DRESSÉ de votre choix »
   //   → tapTarget / untapTarget + filtre orientation. « Redressez l'Allié
   //   incliné » / « Inclinez l'Allié dressé » : seule la cible de l'orientation
@@ -1924,6 +1943,17 @@ function stripTapOncePerTurn(body: string): string {
   return body.replace(TAP_ONCE_PER_TURN, "").trim();
 }
 
+/** Clause résiduelle « N'utilisez ce pouvoir que si le Porteur de <self> est
+ * attaquant ou bloqueur » (Dora) — CONDITION D'ACTIVATION d'un pouvoir à
+ * inclinaison d'Équipement. Contrairement à once-per-turn elle n'est PAS
+ * redondante : strippée, elle DEVIENT le flag `requiresBearerInCombat`
+ * (vérifié par activateTapPower avant de consommer l'inclinaison). Match strict
+ * en fin de texte normalisé ; le sujet (m[1]) doit être la carte elle-même.
+ * Toute autre condition (« … est dans le Monde », « … porte des Équipements »,
+ * sujet ≠ Porteur-de-soi) n'est pas captée → reste manuelle. */
+const TAP_BEARER_IN_COMBAT =
+  /\s*n['’ ]?\s?utilisez ce pouvoir que si le porteur (?:de la |de l['’]\s?|du |des |de )(.{1,40}?) est attaquant ou bloqueur\s*\.?\s*$/;
+
 /**
  * Compile un POUVOIR À INCLINAISON (`requiresIncline`) : pas de préfixe de
  * déclencheur, le texte est directement la suite d'opérations. Strict :
@@ -1954,10 +1984,43 @@ export function compileTapEffectText(
   // clause once-per-turn EST le verrou d'inclinaison sur un pouvoir « Mettez en
   // jeu un jeton … » sans `:` (isTokenTapPowerText) — on la retire alors aussi
   // (l'activation incline la source, qui ne se redresse qu'au tour suivant).
-  const normalized =
+  let normalized =
     requiresIncline || isTokenTapPowerText(text)
       ? stripTapOncePerTurn(norm(text))
       : norm(text);
+  // CONDITION D'ACTIVATION « … que si le Porteur de <self> est attaquant ou
+  // bloqueur » (Dora) : strippée UNIQUEMENT sur un pouvoir à inclinaison
+  // (requiresIncline) et si le sujet est la carte elle-même → flag
+  // requiresBearerInCombat sur le compilé (cf. TAP_BEARER_IN_COMBAT).
+  let bearerInCombat = false;
+  if (requiresIncline) {
+    const bm = normalized.match(TAP_BEARER_IN_COMBAT);
+    if (bm && subjectIsSelf(bm[1].trim(), cardName)) {
+      bearerInCombat = true;
+      normalized = normalized.replace(TAP_BEARER_IN_COMBAT, "").trim();
+    }
+  }
+  const compiled = compileTapNormalized(
+    normalized,
+    cardName,
+    sourceElement,
+    asAction,
+    requiresIncline,
+  );
+  return compiled && bearerInCombat
+    ? { ...compiled, requiresBearerInCombat: true }
+    : compiled;
+}
+
+/** Corps de compileTapEffectText, sur texte DÉJÀ normalisé et dénudé des
+ * clauses résiduelles (once-per-turn, Porteur-en-combat). */
+function compileTapNormalized(
+  normalized: string,
+  cardName: string,
+  sourceElement: string,
+  asAction: boolean,
+  requiresIncline: boolean,
+): CompiledEffect | null {
   const recycleTrigger: CompiledEffect["trigger"] = asAction
     ? "onPlay"
     : "onTap";

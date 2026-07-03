@@ -400,45 +400,47 @@
                     ? "choisis la cible à redresser"
                     : store.effectTargeting.op.op === "returnToHand"
                       ? "choisis la cible à renvoyer en main"
-                      : store.effectTargeting.op.op === "costTapControlled"
-                        ? "coût : choisis une de tes créatures à incliner"
-                        : store.effectTargeting.op.op === "costTapResource"
-                          ? "coût : choisis une carte à incliner pour produire une Ressource"
-                          : store.effectTargeting.op.op ===
-                              "costDestroyControlled"
-                            ? "coût : choisis une de tes créatures à détruire"
+                      : store.effectTargeting.op.op === "removeFromCombatTarget"
+                        ? "choisis l'attaquant ou bloqueur à retirer du combat"
+                        : store.effectTargeting.op.op === "costTapControlled"
+                          ? "coût : choisis une de tes créatures à incliner"
+                          : store.effectTargeting.op.op === "costTapResource"
+                            ? "coût : choisis une carte à incliner pour produire une Ressource"
                             : store.effectTargeting.op.op ===
-                                "costRecycleControlled"
-                              ? "coût : choisis une de tes créatures à recycler"
+                                "costDestroyControlled"
+                              ? "coût : choisis une de tes créatures à détruire"
                               : store.effectTargeting.op.op ===
-                                  "damageTargetByForce"
-                                ? "choisis la cible qui subit la Force en Dommages"
+                                  "costRecycleControlled"
+                                ? "coût : choisis une de tes créatures à recycler"
                                 : store.effectTargeting.op.op ===
-                                      "playerDraw" ||
-                                    store.effectTargeting.op.op ===
-                                      "playerLoseStatTurn" ||
-                                    store.effectTargeting.op.op ===
-                                      "playerGainStat"
-                                  ? "choisis le Héros du joueur concerné"
+                                    "damageTargetByForce"
+                                  ? "choisis la cible qui subit la Force en Dommages"
                                   : store.effectTargeting.op.op ===
-                                      "grantKeywordTarget"
-                                    ? `choisis la cible qui gagne ${store.effectTargeting.op.keyword}`
+                                        "playerDraw" ||
+                                      store.effectTargeting.op.op ===
+                                        "playerLoseStatTurn" ||
+                                      store.effectTargeting.op.op ===
+                                        "playerGainStat"
+                                    ? "choisis le Héros du joueur concerné"
                                     : store.effectTargeting.op.op ===
-                                        "grantResistanceTarget"
-                                      ? "choisis la cible qui gagne de la Résistance"
+                                        "grantKeywordTarget"
+                                      ? `choisis la cible qui gagne ${store.effectTargeting.op.keyword}`
                                       : store.effectTargeting.op.op ===
-                                          "damageMultiTarget"
-                                        ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                          "grantResistanceTarget"
+                                        ? "choisis la cible qui gagne de la Résistance"
                                         : store.effectTargeting.op.op ===
-                                            "tapMultiTarget"
-                                          ? `choisis une créature à incliner (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                            "damageMultiTarget"
+                                          ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
                                           : store.effectTargeting.op.op ===
-                                              "untapMultiTarget"
-                                            ? `choisis une créature à redresser (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                              "tapMultiTarget"
+                                            ? `choisis une créature à incliner (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
                                             : store.effectTargeting.op.op ===
-                                                "drawTargetXp"
-                                              ? "choisis l'Allié dont tu piocheras la valeur d'XP"
-                                              : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
+                                                "untapMultiTarget"
+                                              ? `choisis une créature à redresser (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
+                                              : store.effectTargeting.op.op ===
+                                                  "drawTargetXp"
+                                                ? "choisis l'Allié dont tu piocheras la valeur d'XP"
+                                                : `choisis l'Allié qui subit ${store.effectTargeting.op.n} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">
@@ -957,7 +959,14 @@ function select(instanceId: string): void {
     } else if (store.combat.step === "riposte") {
       store.combatChooseRiposte(instanceId);
     } else {
-      // blockers : si un bloqueur attend, le clic sur un attaquant l'assigne
+      // blockers : un Équipement à pouvoir CONDITIONNÉ au combat (Dora) reste
+      // SÉLECTIONNABLE pendant la fenêtre (l'action-bar propose l'activation) —
+      // sans quoi tous les clics plateau seraient consommés par le blocage.
+      if (store.tapPowerNeedsCombat(instanceId)) {
+        selectedId.value = selectedId.value === instanceId ? null : instanceId;
+        return;
+      }
+      // si un bloqueur attend, le clic sur un attaquant l'assigne
       if (
         store.combat.pendingBlocker &&
         store.combat.attackers.includes(instanceId)
@@ -1077,9 +1086,13 @@ const canActivateSelected = computed(() => {
   const inst = selectedInst.value;
   return (
     store.assist &&
-    !store.combat &&
     !store.effectTargeting &&
     !!inst &&
+    // EN COMBAT, seuls les pouvoirs CONDITIONNÉS au combat (Dora : « … que si le
+    // Porteur est attaquant ou bloqueur ») restent proposés — la légalité fine
+    // (tour / fenêtre de réaction / rôle du Porteur) est jugée par
+    // activateTapPower, refus expliqué en toast.
+    (!store.combat || store.tapPowerNeedsCombat(inst.instanceId)) &&
     inst.controller === me.value &&
     inst.orientation === "upright" &&
     (inst.location.zone === "monde" || inst.location.zone === "havreSac") &&
