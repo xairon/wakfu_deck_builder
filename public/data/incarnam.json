@@ -13100,7 +13100,25 @@
         "description": "Votre Héros regagne X PV. Ne jouez cette carte que si votre Héros se trouve dans son Havre Sac.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "playCondition": {
+            "cond": "heroInZone",
+            "zone": "havreSac"
+          },
+          "ops": [
+            {
+              "op": "costPayX"
+            },
+            {
+              "op": "heroGainPv",
+              "n": 0,
+              "fromCount": true
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cost-pay-x", "hero-gain-pv"]
       }
     ],
     "keywords": [],

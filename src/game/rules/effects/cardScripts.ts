@@ -737,4 +737,19 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // « Votre Héros regagne X PV. Ne jouez cette carte que si votre Héros se
+  //   trouve dans son Havre-Sac. » — Action à COÛT VARIABLE X (« Niveau : X »
+  //   au raw). Le X payé (costPayX — incliner X producteurs) est soigné en PV au
+  //   Héros (heroGainPv{fromCount} = boundCount). RESTRICTION DE JEU : la carte
+  //   n'est jouable que si votre Héros est dans son Havre-Sac (playCondition
+  //   heroInZone, évaluée au play-time par whyCannotPlay). Le DSL ne gère ni le X
+  //   payé à la mise en jeu ni la restriction → script direct.
+  "repos-incarnam": {
+    0: {
+      trigger: "onPlay",
+      playCondition: { cond: "heroInZone", zone: "havreSac" },
+      ops: [{ op: "costPayX" }, { op: "heroGainPv", n: 0, fromCount: true }],
+    },
+  },
 };

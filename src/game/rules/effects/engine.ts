@@ -737,6 +737,13 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const sub = normWord(cond.sub);
         return !!card && (card.subTypes ?? []).some((s) => normWord(s) === sub);
       }
+      case "heroInZone": {
+        // « si votre Héros se trouve dans son Havre-Sac / dans le Monde » : zone
+        // courante du Héros de l'acteur.
+        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const hero = heroId ? deps.getState().instances[heroId] : null;
+        return !!hero && hero.location.zone === cond.zone;
+      }
     }
   }
 

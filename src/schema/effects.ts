@@ -68,6 +68,15 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
     cond: z.literal("selfIsFamily"),
     sub: z.string(),
   }),
+  // « si votre Héros se trouve dans son Havre-Sac / dans le Monde » : le Héros de
+  // l'acteur est-il dans la zone donnée ? FIDÈLE — lu sur l'instance du Héros
+  // (seats[seat].heroInstanceId → location.zone). Distinct de `selfInZone` (qui
+  // vise la SOURCE de l'effet). Sert surtout aux RESTRICTIONS DE JEU
+  // (« Ne jouez cette carte que si votre Héros … » — Repos), évaluées au play-time.
+  z.object({
+    cond: z.literal("heroInZone"),
+    zone: z.enum(["monde", "havreSac"]),
+  }),
 ]);
 
 // ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────
@@ -1106,6 +1115,12 @@ export const compiledEffectSchema = z.object({
   //    suivantes, self-bound, s'y appliquent). Jumeau de "costTarget" mais sur un
   //    op de ciblage NON payé.
   actor: z.enum(["appeared", "costTarget", "target"]).optional(),
+  // RESTRICTION DE JEU « Ne jouez cette carte que si <cond> » : condition de
+  // LÉGALITÉ évaluée au PLAY-TIME (whyCannotPlay), pas à la résolution. Si la
+  // condition est fausse, la carte ne peut pas être jouée (rejet). N'affecte PAS
+  // la résolution des ops (qui suivent une fois la carte jouée). Sert Repos
+  // (« … que si votre Héros se trouve dans son Havre-Sac » → heroInZone).
+  playCondition: condSpecSchema.optional(),
   ops: z.array(compiledEffectOpSchema),
 });
 

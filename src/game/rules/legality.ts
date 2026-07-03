@@ -63,6 +63,31 @@ function combatPlayWindow(ctx: RulesCtx, seat: Seat, card: Card): boolean {
  * Pourquoi `seat` ne peut PAS jouer cette carte de sa main — `null` si légal.
  * Vérifie : main, tour, phase, restriction du premier tour (4943), coût.
  */
+/**
+ * RESTRICTION DE JEU « Ne jouez cette carte que si <cond> » (playCondition,
+ * évaluée au PLAY-TIME). Renvoie une raison de refus en français, ou null si
+ * toutes les conditions sont remplies. Aujourd'hui : `heroInZone` (Repos —
+ * « … que si votre Héros se trouve dans son Havre-Sac »). Les autres condSpecs
+ * ne portent pas de sémantique de play-time → ignorés (aucune restriction).
+ */
+function playConditionReason(
+  ctx: RulesCtx,
+  seat: Seat,
+  card: Card,
+): string | null {
+  for (const e of card.effects ?? []) {
+    const pc = e.compiled?.playCondition;
+    if (pc?.cond !== "heroInZone") continue;
+    const heroId = ctx.state.seats[seat].heroInstanceId;
+    const hero = heroId ? ctx.state.instances[heroId] : null;
+    if (!hero || hero.location.zone !== pc.zone)
+      return pc.zone === "havreSac"
+        ? "Votre Héros doit être dans son Havre-Sac pour jouer cette carte."
+        : "Votre Héros doit être dans le Monde pour jouer cette carte.";
+  }
+  return null;
+}
+
 export function whyCannotPlay(
   ctx: RulesCtx,
   seat: Seat,
@@ -97,6 +122,9 @@ export function whyCannotPlay(
     return "Le Havre-Sac est plein (Taille atteinte).";
   const plan = planCost(ctx, seat, card);
   if (!plan.ok) return plan.reason;
+  // RESTRICTION DE JEU « Ne jouez cette carte que si <cond> » (Repos, heroInZone).
+  const pcReason = playConditionReason(ctx, seat, card);
+  if (pcReason) return pcReason;
   return null;
 }
 
