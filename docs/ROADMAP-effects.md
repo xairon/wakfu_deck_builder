@@ -49,7 +49,33 @@ Cible en cours : `incarnam-feca / -cra / -iop / -xelor` (ids dans `src/data/offi
 | ~~Tap/untap-multi (fromCount)~~ **FAIT (W41)**    | ~~choc-temporel~~ ✅ + ~~parchemin-d-agilite~~ ✅                                                                    | Ops `tapMultiTarget`/`untapMultiTarget` (ciblage répété borné = boundCount, cibles distinctes ; jumeaux de damageMultiTarget mais SET_ORIENTATION). UN sous-système = 2 starters.                                                                                                                                                                                                                                       |
 | **Icône perdue au scrape**                        | charge (« il gagne [.] en plus »)                                                                                    | Re-scrape source (wtcg-return.fr) avant d'encoder.                                                                                                                                                                                                                                                                                                                                                                      |
 
-> **ROI le plus propre à reprendre** : (a) **Ressources — production** (`produceResource` no-op) : lève les 4 Pious d'un coup, purement additif, zéro régression (fondation `costTapResource` déjà là) ; (b) **Tofu Céleste** (`costTapResource` + `putInPlay from:main` — les deux ops existent ; seul point à vérifier : `putInPlay{sub:"Tofu"}` doit viser LE Tofu Céleste nommé, pas n'importe quel Tofu de la main) ; (c) **magnitude dynamique** `statOf`/valeur-X (transverse : repos, merelyne, coup-critique…) — étend `ValueExpr` déjà bâti.
+### Classification de complétion des 15 restants (après W61, 2026-07-03)
+
+Décision de complétion du /goal : chaque effet doit finir **AUTO** (fidèle) ou **MANUEL-LÉGITIME** (automatisation = approximation → pire qu'un rappel). Tri rigoureux du reliquat :
+
+**Buildables (vagues dédiées à venir, fidélité atteignable) :**
+
+| Carte                     | Sous-système                      | Notes de faisabilité                                                                                                                                         |
+| ------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Colère de Iop             | `distributeDamage` (répartir X)   | Réutilise `costPayX` (W60) + projection combat (W52). NOUVEL op interactif : assigner X Dommages aux attaquants/bloqueurs (≥1 chacun). X=0 = no-op (ruling). |
+| Coup Critique             | `statOf` (Force doublée)          | Nœud `ValueExpr` `statOf{stat:force,of:target}` — magnitude calculée À LA RÉSOLUTION (cible choisie). + restriction « 1 par cible/tour » (à modéliser).      |
+| Bond                      | bloqueur forcé                    | Réutilise projection combat W52 + `deps.addBlock`. RISQUE : timing/légalité de la fenêtre de blocage. À valider AVANT d'encoder (sinon manuel).              |
+| Glyphe Incandescent       | trigger combat sur inclinaison    | Bus « chaque fois qu'un attaquant/bloqueur s'incline dans ce combat » — trigger flottant combat-scoped. Medium.                                              |
+| Tofu Céleste, Polter Tofu | activation depuis la MAIN         | Pouvoir activable sur une carte EN MAIN (met la carte en jeu). Nouvelle surface d'activation + UI. `putInPlay from:main` existe.                             |
+| Guy Yomtella pwr2         | pay-sans-incliner + multi-pouvoir | « [Air][Air] : Redressez » = payer 2 Air sans incliner + `untapSelf`. Bloqueur = UI de sélection d'un 2ᵉ pouvoir (activateTapPower ne gère que atoms[0]).    |
+| Katsou Mee                | coût-ressource répétable + seuil  | « [Terre] : +1 Force. Si > [Terre]×3 dépensés → détruire. » Compteur cumulatif + auto-destruction conditionnelle.                                            |
+
+**Manuels-légitimes (le moteur n'a PAS le système ; automatiser = approximation) :**
+
+| Carte                         | Pourquoi manuel est fidèle                                                                                                                                                                                                                                                        |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Amar Casto                    | Octroi de **Métier** (profession) de votre choix — système de métiers non modélisé mécaniquement.                                                                                                                                                                                 |
+| Défi                          | **Négociation** avec l'adversaire (« si le joueur adverse accepte ») — interaction sociale non automatisable.                                                                                                                                                                     |
+| Kanigrou                      | **Chi-Fu-Mi** (RNG interactif) + fenêtre de réaction.                                                                                                                                                                                                                             |
+| Flèche d'Immolation, Fécaline | **« Réaction. »** = jeu EN RÉPONSE à un événement (inclinaison / carte jouée). Le moteur n'a pas de système de PRIORITÉ/pile de réaction général (seule la fenêtre défenseur-en-combat existe). Automatiser exigerait un système de réaction complet → rappel manuel plus fidèle. |
+| Échec Critique                | **« Annulez … qui vient d'être joué »** = contre/annulation. Le moteur résout les effets IMMÉDIATEMENT (pas de pile) → annuler un effet déjà résolu est architecturalement impossible sans pile.                                                                                  |
+
+> Note : « manuel-légitime » = l'app le montre en **rappel manuel** (déjà fonctionnel à la table). Les buildables ci-dessus se font UNE VAGUE À LA FOIS (chaque sous-système = son incrément fidèle + revue adversariale) — pas de précipitation sur un contexte surchargé.
 
 Après les 4 starters Incarnam : passer aux **starters Bonta-Brâkmar** (`bonta-brakmar-sadida/-sram`) puis aux decks Dofus Mag joués.
 
