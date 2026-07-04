@@ -695,6 +695,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // marqueur (reactionOnly) : l'annulation est effectuée par le store (fenêtre
   // pendingResolution), pas par le moteur d'effets.
   z.object({ op: z.literal("cancelLastPlayed") }),
+  // ── KANIGROU (W75) — « Quand le Kanigrou est sur le point de recevoir un ou
+  // plusieurs Dommages, vous pouvez jouer à Chi-Fu-Mi. Si vous gagnez, réduisez à 0
+  // ces Dommages. Sinon, détruisez le Kanigrou. » Op MARQUEUR d'une prévention
+  // interactive (jamais exécutée par le moteur) : sa présence sur une carte EN JEU
+  // signale au store qu'avant qu'un paquet de Dommages ne l'atteigne, son contrôleur
+  // peut jouer à Chi-Fu-Mi (mini-jeu 2 joueurs déterministe). Gain → jeton
+  // `chifumiShield` (lu par reduceDamage → 0) sur le prochain paquet ; défaite →
+  // destruction du Kanigrou (auto-infligée, sans XP adverse, ruling).
+  z.object({ op: z.literal("chifumiPrevention") }),
   // « Le Porteur de <self> gagne <Mot-clé> jusqu'à la fin du tour. » (Scarature
   // Blanche, via chooseOne « Agilité ou Tacle ») — la SOURCE est un Équipement ;
   // le mot-clé TURN-scoped (`<kw>TurnMod`) est posé sur SON PORTEUR (la créature

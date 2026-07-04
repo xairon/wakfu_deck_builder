@@ -46,6 +46,7 @@ import {
   attackPmBonus,
   cannotBlock,
   collectTriggeredEffects,
+  resolveDestroyTarget,
   combatKeywords,
   effectiveForce,
   eligibleAttackers,
@@ -1335,6 +1336,173 @@ export const useGameStore = defineStore("game", () => {
     return true;
   }
 
+  // ── KANIGROU (W75) — CHI-FU-MI + PRÉVENTION PRÉ-DÉGÂTS (mini-jeu déterministe).
+  // « Quand le Kanigrou est sur le point de recevoir des Dommages, vous pouvez jouer
+  // à Chi-Fu-Mi ; si vous gagnez, réduisez-les à 0, sinon détruisez le Kanigrou. »
+  // Intercepté à la résolution du COMBAT (doResolveCombat, dry-run pur) : avant de
+  // dispatcher, si un Kanigrou EN COMBAT prendrait des Dommages, on ouvre le mini-jeu.
+  // BORNÉ : sans Kanigrou concerné, le flux de combat est inchangé (0 régression).
+  type ChifumiChoice = "pierre" | "feuille" | "ciseaux";
+  const pendingChifumi = ref<{
+    kanigrouId: string;
+    controller: Seat; // contrôleur du Kanigrou (choisit ; « vous »)
+    opponent: Seat; // l'adversaire (l'autre main du Chi-Fu-Mi)
+    phase: "offer" | "reveal"; // offer = jouer/subir ; reveal = pierre-feuille-ciseaux
+    oppChoice: ChifumiChoice | null; // engagement caché de l'adversaire
+  } | null>(null);
+  // Kanigrous ayant DÉCLINÉ le Chi-Fu-Mi ce combat (ne pas re-proposer) — transitoire.
+  const chifumiDeclined = ref<Set<string>>(new Set());
+  // Kanigrous ayant PERDU leur Chi-Fu-Mi : détruits APRÈS la résolution du combat
+  // (le blocage reste valide → l'attaquant n'est PAS redirigé vers le Héros ; ils
+  // sont blindés pour ne pas subir les Dommages de combat, puis détruits par leur
+  // propre pouvoir, sans XP adverse). Transitoire (purgé en fin de combat).
+  const chifumiDoomed = ref<Set<string>>(new Set());
+
+  /** La carte porte-t-elle le pouvoir de prévention Chi-Fu-Mi (Kanigrou) ? */
+  function hasChifumiPower(
+    card: { effects?: { compiled?: { ops?: { op: string }[] } }[] } | null,
+  ): boolean {
+    return !!card?.effects?.some((e) =>
+      e.compiled?.ops?.some((o) => o.op === "chifumiPrevention"),
+    );
+  }
+
+  /**
+   * Kanigrous (en jeu, pouvoir présent, sans bouclier ni déclin) qui SUBIRAIENT des
+   * Dommages dans le combat courant — dry-run PUR de resolveCombat (aucun dispatch).
+   */
+  function kanigrouUnderFire(c: NonNullable<typeof combat.value>): string[] {
+    let result;
+    try {
+      result = resolveCombat(
+        rulesCtx(),
+        {
+          attackerSeat: turn.value.active,
+          target: c.target!,
+          attackers: c.attackers,
+          blocks: c.blocks,
+          strikes: c.strikes,
+          ripostes: c.ripostes,
+        },
+        activeGlobalMods(rulesCtx()),
+      );
+    } catch {
+      return [];
+    }
+    const out: string[] = [];
+    for (const ev of result.events) {
+      if (ev.type !== "INC_COUNTER") continue;
+      const p = ev.payload as {
+        instanceId: string;
+        counter: string;
+        delta: number;
+      };
+      if (p.counter !== "damage" || p.delta <= 0) continue;
+      const inst = state.value.instances[p.instanceId];
+      if (!inst) continue;
+      if ((inst.counters.tokens?.chifumiShield ?? 0) > 0) continue;
+      if (chifumiDeclined.value.has(p.instanceId)) continue;
+      if (hasChifumiPower(getCard(inst.cardId)) && !out.includes(p.instanceId))
+        out.push(p.instanceId);
+    }
+    return out;
+  }
+
+  /** Vainqueur d'un Chi-Fu-Mi (déterministe) du point de vue du CONTRÔLEUR. */
+  function chifumiWinner(
+    ctrl: ChifumiChoice,
+    opp: ChifumiChoice,
+  ): "controller" | "opponent" | "tie" {
+    if (ctrl === opp) return "tie";
+    const beats: Record<ChifumiChoice, ChifumiChoice> = {
+      pierre: "ciseaux",
+      ciseaux: "feuille",
+      feuille: "pierre",
+    };
+    return beats[ctrl] === opp ? "controller" : "opponent";
+  }
+
+  /** Ouvre le mini-jeu pour le Kanigrou `kid` (offre au contrôleur : jouer ou subir). */
+  function openChifumi(kid: string): void {
+    const inst = state.value.instances[kid];
+    const controller = inst.controller;
+    pendingChifumi.value = {
+      kanigrouId: kid,
+      controller,
+      opponent: otherSeat(controller),
+      phase: "offer",
+      oppChoice: null,
+    };
+    perspective.value = controller; // le contrôleur décide d'abord (« vous pouvez »)
+  }
+
+  /** Le contrôleur accepte de jouer à Chi-Fu-Mi → phase pierre-feuille-ciseaux. */
+  function chifumiAccept(): void {
+    const p = pendingChifumi.value;
+    if (!p || p.phase !== "offer") return;
+    p.phase = "reveal";
+    p.oppChoice = null;
+    perspective.value = p.opponent; // l'adversaire engage son choix en premier (caché)
+  }
+
+  /** Le contrôleur renonce (subit les Dommages) → le Kanigrou ne sera plus proposé. */
+  function chifumiDecline(): void {
+    const p = pendingChifumi.value;
+    if (!p) return;
+    chifumiDeclined.value = new Set(chifumiDeclined.value).add(p.kanigrouId);
+    pendingChifumi.value = null;
+    perspective.value = turn.value.active;
+    doResolveCombat(); // relance : ce Kanigrou est désormais exclu (subit)
+  }
+
+  /** Un joueur choisit pierre/feuille/ciseaux (adversaire puis contrôleur ; égalité → rejeu). */
+  function chifumiChoose(choice: ChifumiChoice): void {
+    const p = pendingChifumi.value;
+    if (!p || p.phase !== "reveal") return;
+    if (p.oppChoice === null) {
+      // engagement de l'adversaire → au tour du contrôleur de choisir.
+      p.oppChoice = choice;
+      perspective.value = p.controller;
+      return;
+    }
+    const w = chifumiWinner(choice, p.oppChoice);
+    if (w === "tie") {
+      // égalité → on rejoue (nouvel engagement de l'adversaire).
+      p.oppChoice = null;
+      perspective.value = p.opponent;
+      return;
+    }
+    const kid = p.kanigrouId;
+    const controller = p.controller;
+    pendingChifumi.value = null;
+    perspective.value = turn.value.active;
+    const kaniName =
+      getCard(state.value.instances[kid]?.cardId ?? null)?.name ??
+      "le Kanigrou";
+    // Dans les DEUX cas, on pose le bouclier one-shot (reduceDamage → 0) : le paquet
+    // de combat ne s'applique pas ET le blocage reste valide (l'attaquant n'est pas
+    // redirigé). En cas de défaite, le Kanigrou est en plus MARQUÉ pour destruction
+    // APRÈS la résolution (par son propre pouvoir, sans XP adverse — ruling).
+    dispatch(setCounterVerb(controller, kid, "chifumiShield", 1, true));
+    if (w === "controller") {
+      dispatch(
+        say(
+          controller,
+          `Chi-Fu-Mi gagné : les Dommages sur ${kaniName} sont réduits à 0.`,
+        ),
+      );
+    } else {
+      chifumiDoomed.value = new Set(chifumiDoomed.value).add(kid);
+      dispatch(
+        say(
+          controller,
+          `Chi-Fu-Mi perdu : ${kaniName} sera détruit après le combat.`,
+        ),
+      );
+    }
+    doResolveCombat(); // relance : le Kanigrou est blindé (0 dmg) → plus sous le feu.
+  }
+
   /** Annule le prompt de Porteur (clic ailleurs, passation). L'équipement reste en main. */
   function cancelBearerTargeting(): void {
     pendingBearer.value = null;
@@ -2533,6 +2701,17 @@ export const useGameStore = defineStore("game", () => {
   function doResolveCombat(): void {
     const c = combat.value;
     if (!c || !c.target) return;
+    // KANIGROU (W75) : avant de résoudre, si un Kanigrou EN COMBAT prendrait des
+    // Dommages (dry-run pur), on ouvre le mini-jeu Chi-Fu-Mi pour LE PREMIER — sa
+    // résolution (bouclier / destruction / déclin) relance doResolveCombat, jusqu'à
+    // ce qu'aucun ne soit plus « sur le point de recevoir des Dommages ».
+    if (assistEffects.value) {
+      const under = kanigrouUnderFire(c);
+      if (under.length) {
+        openChifumi(under[0]);
+        return;
+      }
+    }
     const result = resolveCombat(
       rulesCtx(),
       {
@@ -2556,6 +2735,36 @@ export const useGameStore = defineStore("game", () => {
       );
     attackedOnTurn.value = turn.value.number;
     combat.value = null;
+    // KANIGROU : les boucliers Chi-Fu-Mi sont ONE-SHOT (« ces Dommages / le prochain
+    // paquet ») → on les retire après la résolution, et on purge les déclins.
+    const shielded = Object.values(state.value.instances).filter(
+      (i) => (i.counters.tokens?.chifumiShield ?? 0) > 0,
+    );
+    if (shielded.length)
+      dispatch(
+        ...shielded.map((i) =>
+          setCounterVerb(i.controller, i.instanceId, "chifumiShield", 0, true),
+        ),
+      );
+    // KANIGROU : destruction APRÈS combat des Kanigrous ayant PERDU (blocage resté
+    // valide) — par leur propre pouvoir → aucun XP adverse (noXpFor = adversaire).
+    for (const kid of chifumiDoomed.value) {
+      const inst = state.value.instances[kid];
+      if (
+        inst &&
+        (inst.location.zone === "monde" || inst.location.zone === "havreSac")
+      ) {
+        const res = resolveDestroyTarget(
+          rulesCtx(),
+          inst.controller,
+          kid,
+          otherSeat(inst.controller),
+        );
+        dispatch(...res.events, ...res.log.map((l) => say(inst.controller, l)));
+      }
+    }
+    chifumiDeclined.value = new Set();
+    chifumiDoomed.value = new Set();
     // Fin de partie : on délègue TOUJOURS à checkVictory (sauvetage d'égalité
     // 103.3 + victoryFromState), JAMAIS à result.winner. Sur un double-KO
     // simultané (Héros↔Héros mutuellement létal, ex. riposte 707.1), result.winner
@@ -2564,8 +2773,32 @@ export const useGameStore = defineStore("game", () => {
     checkVictory();
   }
 
+  /**
+   * KANIGROU : purge TOTALE de l'état Chi-Fu-Mi (fenêtre ouverte + boucliers déjà
+   * posés + marques de destruction/déclin). Appelée quand un combat est annulé en
+   * plein mini-jeu — sinon un `chifumiShield` orphelin annulerait un paquet d'un
+   * combat FUTUR, ou un Kanigrou `chifumiDoomed` serait détruit plus tard.
+   */
+  function resetChifumiState(): void {
+    const shielded = Object.values(state.value.instances).filter(
+      (i) => (i.counters.tokens?.chifumiShield ?? 0) > 0,
+    );
+    if (shielded.length)
+      dispatch(
+        ...shielded.map((i) =>
+          setCounterVerb(i.controller, i.instanceId, "chifumiShield", 0, true),
+        ),
+      );
+    pendingChifumi.value = null;
+    chifumiDeclined.value = new Set();
+    chifumiDoomed.value = new Set();
+  }
+
   function combatCancel(): void {
     const c = combat.value;
+    // KANIGROU : un combat annulé en plein Chi-Fu-Mi doit purger l'état du mini-jeu
+    // (fenêtre + boucliers/marques déjà posés) — sinon fuite sur un combat futur.
+    if (pendingChifumi.value) resetChifumiState();
     // EN LIGNE (P3) : si le combat est DÉJÀ déclaré côté serveur, on soumet
     // CANCEL_COMBAT (le serveur redresse les attaquants + clôt). S'il n'est
     // qu'en assemblage local (pas encore déclaré), on ferme juste le ref local.
@@ -2743,6 +2976,10 @@ export const useGameStore = defineStore("game", () => {
     cancelBearerTargeting,
     pendingResolution,
     passPendingResolution,
+    pendingChifumi,
+    chifumiAccept,
+    chifumiDecline,
+    chifumiChoose,
     attackedOnTurn,
     combat,
     combatAttackerIds,

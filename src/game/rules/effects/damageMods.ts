@@ -132,6 +132,12 @@ export function reduceDamage(
     : [];
   if (dealerStatics.some((s) => s.kind === "damageUnpreventable"))
     return amount;
+  // 0. BOUCLIER CHI-FU-MI (Kanigrou, W75) : la cible a GAGNÉ son Chi-Fu-Mi contre
+  // ce paquet → jeton `chifumiShield` posé par le store juste avant la résolution
+  // (prévention totale « réduisez à 0 ces Dommages »). One-shot : le store retire le
+  // jeton après la résolution. Prioritaire sur Résistance (le paquet entier tombe).
+  const tgtInst = ctx.state.instances[hit.targetId];
+  if ((tgtInst?.counters.tokens?.chifumiShield ?? 0) > 0) return 0;
   // 1. Résistance de la cible (7469)
   amount = preventDamage(
     effectiveKeywords(ctx, hit.targetId),

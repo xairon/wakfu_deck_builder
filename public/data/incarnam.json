@@ -8538,7 +8538,16 @@
         "description": "Quand le Kanigrou est sur le point de recevoir un ou plusieurs Dommages, vous pouvez jouer à Chi-Fu-Mi. Si vous gagnez, réduisez à 0 ces Dommages. Sinon, détruisez le Kanigrou.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "ops": [
+            {
+              "op": "chifumiPrevention"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["chifumi-prevention"]
       },
       {
         "description": "Vous n'êtes pas obligé d'utiliser ce pouvoir. Vous ne pouvez utiliser ce pouvoir que si le Kanigrou est sur le point de recevoir des Dommages, et seulement sur le prochain paquet de Dommages que le Kanigrou devrait subir.",
@@ -8558,7 +8567,7 @@
         "description": "Cette carte a reçu un Errata Officiel : Le pouvoir a été reformulé, sans impact pratique sur le fonctionnement de la carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "kind": "errata",
+        "kind": "ruling",
         "coverage": "ruling"
       }
     ],

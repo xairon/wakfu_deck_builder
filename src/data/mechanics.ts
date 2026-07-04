@@ -267,6 +267,13 @@ export const MECHANICS: Mechanic[] = [
       "« Annulez les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. » Réaction jouée dans la fenêtre d'annulation : les effets EN ATTENTE de la carte tout juste jouée sont annulés (jamais résolus). N'affecte PAS les pouvoirs déclenchés (« Quand … », apparition), qui ne sont pas « joués ».",
   },
   {
+    id: "chifumi-prevention",
+    label: "Prévention Chi-Fu-Mi (mini-jeu)",
+    category: "contrôle",
+    glossary:
+      "« Quand sur le point de recevoir des Dommages, vous pouvez jouer à Chi-Fu-Mi ; si vous gagnez, réduisez-les à 0, sinon détruisez la carte. » Prévention INTERACTIVE : avant qu'un paquet de Dommages ne l'atteigne, le contrôleur peut jouer un pierre-feuille-ciseaux contre l'adversaire (déterministe). Gagné → le paquet est réduit à 0 ; perdu → la carte est détruite (auto-infligée, sans XP adverse).",
+  },
+  {
     id: "grant-keyword-bearer-self",
     label: "Mot-clé conféré au Porteur de soi (jusqu'à la fin du tour)",
     category: "tempo",
@@ -567,6 +574,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   duelOffer: "duel-challenge",
   resolveDuel: "duel-challenge",
   cancelLastPlayed: "cancel-last-played",
+  chifumiPrevention: "chifumi-prevention",
   grantKeywordBearerSelf: "grant-keyword-bearer-self",
   grantKeywordTarget: "grant-keyword-target",
   grantResistanceSelf: "grant-resistance-self",

@@ -489,6 +489,46 @@
       </div>
     </Transition>
 
+    <!-- ════ Mini-jeu Chi-Fu-Mi (Kanigrou : prévention pré-dégâts) ════ -->
+    <Transition name="slidedown">
+      <div
+        v-if="store.pendingChifumi"
+        class="gcombat"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="gcombat__step">
+          <template v-if="store.pendingChifumi.phase === 'offer'">
+            Le Kanigrou est sur le point de recevoir des Dommages — jouer à
+            Chi-Fu-Mi ?
+          </template>
+          <template v-else-if="store.pendingChifumi.oppChoice === null">
+            Chi-Fu-Mi — l'adversaire choisit (en secret).
+          </template>
+          <template v-else> Chi-Fu-Mi — à votre tour de choisir. </template>
+        </span>
+        <div class="gcombat__btns">
+          <template v-if="store.pendingChifumi.phase === 'offer'">
+            <button class="gbtn" @click="store.chifumiAccept()">Jouer</button>
+            <button class="gbtn gbtn--ghost" @click="store.chifumiDecline()">
+              Subir
+            </button>
+          </template>
+          <template v-else>
+            <button class="gbtn" @click="store.chifumiChoose('pierre')">
+              ✊ Pierre
+            </button>
+            <button class="gbtn" @click="store.chifumiChoose('feuille')">
+              ✋ Feuille
+            </button>
+            <button class="gbtn" @click="store.chifumiChoose('ciseaux')">
+              ✌ Ciseaux
+            </button>
+          </template>
+        </div>
+      </div>
+    </Transition>
+
     <!-- ════════ Bandeau de combat (déclaration → blocage → résolution) ════════ -->
     <Transition name="slidedown">
       <div

@@ -1052,4 +1052,23 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
     },
     1: { kind: "ruling" },
   },
+
+  // ── Kanigrou (W75) — « Quand sur le point de recevoir des Dommages, vous pouvez
+  // jouer à Chi-Fu-Mi ; si vous gagnez, réduisez-les à 0, sinon détruisez-le. »
+  // Pouvoir PASSIF de prévention interactive : trigger "static" (jamais enfilé) +
+  // op marqueur chifumiPrevention (détecté par le store : hasChifumiPower → mini-jeu
+  // Chi-Fu-Mi à la résolution du combat). Effets [1..3] = rulings du site. Les 2
+  // éditions (incarnam + dofus-collection).
+  "kanigrou-incarnam": {
+    0: { trigger: "static", ops: [{ op: "chifumiPrevention" }] },
+    1: { kind: "ruling" },
+    2: { kind: "ruling" },
+    3: { kind: "ruling" },
+  },
+  "kanigrou-dofus-collection": {
+    0: { trigger: "static", ops: [{ op: "chifumiPrevention" }] },
+    1: { kind: "ruling" },
+    2: { kind: "ruling" },
+    3: { kind: "ruling" },
+  },
 };
