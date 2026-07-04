@@ -30,6 +30,28 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   "bond-incarnam": {
     0: { trigger: "onPlay", ops: [{ op: "grantBonusBlock", n: 1 }] },
   },
+  // « Réaction. La Flèche d'Immolation inflige 2 Dommages [Feu] à l'Allié ou Héros
+  //   qui vient de s'incliner. » — Action de RÉACTION (jouée par le défenseur en
+  //   fenêtre de réaction, juste après la déclaration d'attaque). Cible restreinte
+  //   aux créatures portant `justInclined` (attaquants s'inclinant à la
+  //   déclaration) via le filtre `recentlyInclined`. Élément EXPLICITE (Feu).
+  "fleche-d-immolation-incarnam": {
+    0: {
+      trigger: "onPlay",
+      reactionOnly: true,
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Feu",
+          explicitElement: true,
+          recentlyInclined: true,
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
   // « Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros
   //   attaquant ou bloqueur s'incline dans ce combat, le Glyphe Incandescent lui
   //   inflige 2 Dommages [Feu]. » — Action posant un MARQUEUR FLOTTANT

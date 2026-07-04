@@ -151,6 +151,11 @@ export function whyCannotPlay(
   // toutes les autres contraintes (main, coût, zone, 4943) restent vérifiées.
   const combatWindow = combatPlayWindow(ctx, seat, card);
   const bypassTurnPhase = reaction || combatWindow;
+  // « Réaction. … » (Flèche d'Immolation) : jouable UNIQUEMENT en fenêtre de
+  // réaction (706.5). Hors réaction (à son propre tour), refusée — sinon un
+  // marqueur périmé « qui vient de s'incliner » serait ciblable (approximation).
+  if (!reaction && (card.effects ?? []).some((e) => e.compiled?.reactionOnly))
+    return "Cette carte ne peut être jouée qu'en réaction.";
   // 706 — en fenêtre de réaction on joue HORS de son tour : ces deux contrôles
   // sont relâchés (les autres — main, coût, zone, 4943 — restent actifs).
   if (!bypassTurnPhase && state.turn.active !== seat)

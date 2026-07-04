@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-03.** État : **478 / 1794 effets imprimés structurés (26,6 %)** — `auto 416 · manual 62 · uncovered 1316 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-03.** État : **479 / 1794 effets imprimés structurés (26,7 %)** — `auto 416 · manual 63 · uncovered 1315 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
@@ -29,7 +29,9 @@ Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complèt
 
 ---
 
-## 3. Deck-driven — worklist des 4 starters Incarnam (5 restants)
+## 3. Deck-driven — worklist des 4 starters Incarnam (4 restants)
+
+> **Flèche d'Immolation FAITE (W71)** : jeton `justInclined` posé sur les attaquants s'inclinant à la déclaration (réinitialisé à chaque déclaration + purgé fin de tour) + filtre de ciblage `recentlyInclined` sur damageTarget + flag `reactionOnly` (Flèche jouable UNIQUEMENT en fenêtre de réaction, où le marqueur est frais — ferme l'over-permit relevé en revue). Omission conservatrice : inclinaisons de tap-power/bloqueur non marquées. **4 uncovered restants** — tous rigoureusement manuel-légitime (mécaniques interactives/sociales ou sous-systèmes majeurs) : Amar Casto (professions), Défi (négociation adverse), Kanigrou (Chi-Fu-Mi RNG interactif 2 joueurs), Échec Critique (pile de résolution — effets résolus immédiatement, rien à annuler).
 
 > **Glyphe Incandescent FAITE (W70)** : op `incHeroTurnToken` (marqueur flottant `glypheDamage` sur le Héros) + `glypheFrames` sur le bus `attackerDeclared` (2 Feu par Glyphe à chaque attaquant qui s'incline à la déclaration ; réutilise riposteTargetId/damageRiposteSource W48). Piggyback sur le bus existant → 0 nouvelle intégration online. Omission conservatrice : bloqueur mid-combat via pouvoir (rare). Les attaquants sont TOUJOURS dressés à la déclaration (eligibleAttackers gate) → glypheFrames ne tire jamais à tort. **5 uncovered restants** — tous rigoureusement manuel-légitime (mécaniques interactives/sociales ou sous-systèmes majeurs) : Amar Casto (professions), Défi (négociation adverse), Kanigrou (Chi-Fu-Mi RNG interactif), Échec Critique (pile de résolution — effets résolus immédiatement, rien à annuler), Flèche d'Immolation (contexte réaction-par-inclinaison absent).
 

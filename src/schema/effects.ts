@@ -325,6 +325,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     orientation: orientationFilterSchema.optional(),
     // Rôle de combat (« … à l'Allié ou Héros attaquant / bloqueur »).
     combatRole: combatRoleSchema.optional(),
+    // « … à l'Allié ou Héros QUI VIENT DE S'INCLINER » (Flèche d'Immolation,
+    // Réaction) : restreint la cible aux créatures portant le jeton `justInclined`
+    // (posé sur les attaquants qui s'inclinent à la déclaration, réinitialisé à
+    // chaque déclaration + purgé en fin de tour). OMISSION CONSERVATRICE : seules
+    // les inclinaisons de DÉCLARATION d'attaque sont marquées (pas les tap-powers
+    // ni les bloqueurs de fin de combat). Jouée en fenêtre de réaction locale.
+    recentlyInclined: z.boolean().optional(),
     // « … à l'Allié ou Héros ADVERSE de votre choix » : restreint la cible aux
     // créatures du contrôleur adverse (opponent) ; absent = n'importe quel
     // contrôleur (cible libre). Lu par effectTargetIds comme pour destroy/tap.
@@ -1214,6 +1221,12 @@ export const compiledEffectSchema = z.object({
   // la résolution des ops (qui suivent une fois la carte jouée). Sert Repos
   // (« … que si votre Héros se trouve dans son Havre-Sac » → heroInZone).
   playCondition: condSpecSchema.optional(),
+  // « Réaction. … » : la carte ne peut être jouée QU'EN FENÊTRE DE RÉACTION
+  // (706.5, `combat.reactingSeat === seat`), pas comme une Action normale de son
+  // tour. Sert à Flèche d'Immolation : « qui vient de s'incliner » n'est fidèle
+  // qu'immédiatement après la déclaration (le marqueur `justInclined` serait
+  // périmé si la carte était jouable à son propre tour hors réaction).
+  reactionOnly: z.boolean().optional(),
   // DÉCLENCHÉ DEPUIS LA MAIN (trigger onControlledDestroyedFromHand — Tofu
   // Céleste) : Famille (normalisée) de la créature DÉTRUITE à surveiller
   // (« un de vos Tofus » → "tofu"). handWatcherFrames n'émet que si le subType

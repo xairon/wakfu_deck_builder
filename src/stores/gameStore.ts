@@ -2172,6 +2172,20 @@ export const useGameStore = defineStore("game", () => {
       }),
     );
     if (taps.length) dispatch(...taps);
+    // « … qui vient de s'incliner » (Flèche d'Immolation) : marque les attaquants
+    // qui s'inclinent MAINTENANT avec `justInclined` (réinitialisé : on efface les
+    // marques d'une déclaration précédente, puis on pose sur les nouveaux). Purgé
+    // en fin de tour (TURN_TOKENS) ; la Réaction ne se joue qu'en fenêtre de
+    // réaction, juste après cette déclaration.
+    const justInc: DraftEvent[] = [];
+    for (const inst of Object.values(state.value.instances))
+      if (inst.counters.tokens?.justInclined)
+        justInc.push(
+          setCounterVerb(seat, inst.instanceId, "justInclined", 0, true),
+        );
+    for (const id of newlyInclined)
+      justInc.push(setCounterVerb(seat, id, "justInclined", 1, true));
+    if (justInc.length) dispatch(...justInc);
     c.step = "blockers";
     // 804.5 — bus de déclenchement : « Quand [self] attaque ».
     const declared: RuleEvent[] = c.attackers.map((id) => ({

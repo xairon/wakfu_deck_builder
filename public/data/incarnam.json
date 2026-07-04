@@ -6599,7 +6599,23 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "reactionOnly": true,
+          "ops": [
+            {
+              "op": "damageTarget",
+              "n": 2,
+              "element": "Feu",
+              "explicitElement": true,
+              "recentlyInclined": true,
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["damage-target"]
       },
       {
         "description": "La Flèche d'Immolation ne peut pas être jouée en réaction à l'inclinaison d'un Allié présent dans un Havre Sac adverse : les événements qui se produisent dans un Havre Sac ne sont pas visibles pour un joueur adverse.",

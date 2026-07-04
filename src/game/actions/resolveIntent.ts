@@ -429,9 +429,19 @@ export function resolveIntent(
       if (intent.attackers.length > cap)
         return { error: `Maximum ${cap} attaquant(s) — limite de PM (703).` };
       // 703/A6 : les attaquants s'inclinent dès la DÉCLARATION.
-      const events: DraftEvent[] = intent.attackers
-        .filter((id) => state.instances[id]?.orientation !== "tapped")
-        .map((id) => tap(seat, id));
+      const newlyInclined = intent.attackers.filter(
+        (id) => state.instances[id]?.orientation !== "tapped",
+      );
+      const events: DraftEvent[] = newlyInclined.map((id) => tap(seat, id));
+      // « … qui vient de s'incliner » (Flèche) : réinitialise `justInclined` puis
+      // le pose sur les nouveaux inclinés — miroir de gameStore.combatDeclareAttack.
+      for (const inst of Object.values(state.instances))
+        if (inst.counters.tokens?.justInclined)
+          events.push(
+            setCounter(seat, inst.instanceId, "justInclined", 0, true),
+          );
+      for (const id of newlyInclined)
+        events.push(setCounter(seat, id, "justInclined", 1, true));
       const combat: CombatState = {
         attackerSeat: seat,
         step: "blockers",

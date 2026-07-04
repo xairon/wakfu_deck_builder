@@ -391,6 +391,16 @@ export function effectTargetIds(
           "Équipement",
       );
     }
+    // « … qui vient de s'incliner » (Flèche d'Immolation) : la cible doit porter
+    // le jeton `justInclined` (posé sur les attaquants s'inclinant à la déclaration).
+    if (
+      ok &&
+      op.op === "damageTarget" &&
+      "recentlyInclined" in op &&
+      op.recentlyInclined
+    ) {
+      ok = (inst.counters.tokens?.justInclined ?? 0) > 0;
+    }
     // filtre de contrôleur (« un de vos … » / « … adverse »)
     if (ok && controller && actor !== undefined) {
       const want = controller === "self" ? actor : otherSeat(actor);

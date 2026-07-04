@@ -29,6 +29,10 @@ const TURN_TOKENS = new Set([
   // GLYPHE INCANDESCENT : marqueur flottant « jusqu'à la fin de la phase d'action »
   // (nombre de Glyphes actifs du Héros), purgé en début de tour.
   "glypheDamage",
+  // FLÈCHE D'IMMOLATION : « qui vient de s'incliner » — jeton posé sur les
+  // attaquants s'inclinant à la déclaration, purgé en début de tour (sécurité ;
+  // réinitialisé aussi à chaque déclaration).
+  "justInclined",
   // « gagne <Mot-clé> jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) —
   // jetons TURN-scoped purgés en fin de tour, comme forceMod (geantCombatMod, lui,
   // est couvert par le suffixe *CombatMod ⇒ portée combat). Un jeton par mot-clé
