@@ -20,6 +20,7 @@ import { useGameStore } from "@/stores/gameStore";
 import { useCardStore } from "@/stores/cardStore";
 import { OFFICIAL_DECKS } from "@/data/officialDecks";
 import { buildOfficialDeck } from "@/composables/useOfficialDeckImport";
+import { botStep } from "@/game/ai/botPolicy";
 
 // ── Chargement des vraies données de cartes (public/data/*.json) ──────────────
 function loadAllCards(): { all: Card[]; byName: Map<string, Card> } {
@@ -209,7 +210,18 @@ function mulberry32(seed: number): () => number {
  * Joue une partie complète bot-vs-bot avec un Math.random SEEDÉ (reproductible).
  * Renvoie {winner, turns, actions, combats}.
  */
-function playGame(deckA: Deck, deckB: Deck, seed: number) {
+/** Politique de bot : joue UN coup ; `true` = progressé, `false` = finir le tour. */
+type Policy = (store: Store, tried: Set<string>) => boolean;
+const GREEDY: Policy = (store, tried) => driveOnce(store, tried);
+const SMART: Policy = (store, tried) => botStep(store, tried, Math.random);
+
+function playGame(
+  deckA: Deck,
+  deckB: Deck,
+  seed: number,
+  policyA: Policy = GREEDY,
+  policyB: Policy = GREEDY,
+) {
   const realRandom = Math.random;
   Math.random = mulberry32(seed);
   try {
@@ -233,10 +245,17 @@ function playGame(deckA: Deck, deckB: Deck, seed: number) {
         tried = new Set();
         if (curTurn > MAX_TURNS) break;
       }
-      // compte les combats déclarés (transitions null → combat).
       if (store.combat && !inCombat) combats++;
       inCombat = !!store.combat;
-      const progressed = driveOnce(store, tried);
+      // Qui DÉCIDE ? Normalement l'acteur courant (perspective). MAIS le blocage
+      // appartient au DÉFENSEUR (≠ perspective = attaquant) — sinon la politique
+      // de l'attaquant déciderait des blocages adverses, faussant la comparaison.
+      let seat = store.perspective;
+      const cb = store.combat;
+      if (cb && cb.step === "blockers" && !Object.keys(cb.blocks).length)
+        seat = store.state.turn.active === "A" ? "B" : "A";
+      const policy = seat === "A" ? policyA : policyB;
+      const progressed = policy(store, tried);
       actions++;
       if (!progressed) {
         store.endTurn();
@@ -289,4 +308,38 @@ describe("Bot-vs-bot QA — les 4 decks starter Incarnam tournent de bout en bou
       expect(res.combats, "aucun combat déclaré").toBeGreaterThan(0);
     });
   }
+});
+
+describe("IA — le bot INTELLIGENT bat le bot glouton (validation heuristique)", () => {
+  // Chaque paire de decks distincts est jouée deux fois (l'intelligent en A puis
+  // en B) sur des graines variées ; on mesure le taux de victoire de l'intelligent.
+  const ids = INCARNAM_STARTERS.map((d) => d.id);
+  it("gagne nettement plus de la moitié des parties face au glouton", () => {
+    let smartWins = 0;
+    let games = 0;
+    let s = 1;
+    const SEEDS = 3; // ~48 parties → taux stable (faible variance)
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const dA = makeDeck(ids[i]);
+        const dB = makeDeck(ids[j]);
+        for (let k = 0; k < SEEDS; k++) {
+          // intelligent en A puis en B (équité de côté / premier joueur).
+          const r1 = playGame(dA, dB, s++, SMART, GREEDY);
+          if (r1.winner === "A") smartWins++;
+          games++;
+          const r2 = playGame(dA, dB, s++, GREEDY, SMART);
+          if (r2.winner === "B") smartWins++;
+          games++;
+        }
+      }
+    }
+    const rate = smartWins / games;
+    // l'heuristique (attaques non suicidaires, blocages qui tuent, ciblage) doit
+    // dominer nettement le jeu au 1er coup légal.
+    expect(
+      rate,
+      `taux de victoire IA = ${(rate * 100).toFixed(0)}% (${smartWins}/${games})`,
+    ).toBeGreaterThan(0.6);
+  }, 90000);
 });
