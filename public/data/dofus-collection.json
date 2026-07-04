@@ -3265,7 +3265,25 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Air"
+            },
+            {
+              "op": "costTapResource",
+              "element": "Air"
+            },
+            {
+              "op": "untapSelf"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cost-tap-resource", "untap-self"]
       },
       {
         "description": "Guy Yomtella inflige des Dommages et non des blessures (terme obsolète).",

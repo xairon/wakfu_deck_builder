@@ -1456,7 +1456,18 @@ export const useGameStore = defineStore("game", () => {
     if (inst.controller !== perspective.value)
       return rejectMove("Vous ne contrôlez pas cette carte.");
     const seat = perspective.value;
-    const atom = atoms[0];
+    // SÉLECTION MULTI-POUVOIRS (Guy Yomtella : pwr0 « [Incliner],[Air] : … »
+    // vs pwr1 « [Air][Air] : Redressez … ») : une carte peut porter plusieurs
+    // pouvoirs onTap. On active le PREMIER compatible avec l'orientation courante
+    // — un pouvoir qui INCLINE la source (incline par défaut, ou tapsSource W53)
+    // exige d'être dressé ; un pouvoir payé qui n'incline pas (ex. Redressez soi)
+    // reste activable une fois inclinée. Repli sur atoms[0] (aucune régression :
+    // mono-pouvoir dressé = comportement historique).
+    const inclinesSource = (a: (typeof atoms)[number]) =>
+      a.cost === "paidOps" ? !!a.tapsSource : a.cost == null;
+    const atom =
+      atoms.find((a) => !inclinesSource(a) || inst.orientation === "upright") ??
+      atoms[0];
     // VERROU « N'utilisez ce pouvoir qu'une seule fois par tour » (pouvoir dont
     // l'activation n'incline PAS la source — ex. Bwork Mage, coût de défausse) :
     // un jeton `powerUses0` > 0 sur la source rend le pouvoir inactivable ce
@@ -1558,25 +1569,43 @@ export const useGameStore = defineStore("game", () => {
         return rejectMove(
           "Pas assez de cartes dans la Pioche pour payer le coût.",
         );
-      // COÛT DE RESSOURCE impayable (Guy Yomtella : « [Incliner], [Air] : … ») :
-      // refuser AVANT de consommer l'inclinaison (tapsSource) — sinon
-      // l'activation brûlerait l'inclinaison sans que le corps ne tourne.
-      // Producteurs = resourceProducers dédupliqués, filtrés par Élément,
-      // SANS la source si tapsSource (inclinée par l'activation même, elle ne
-      // peut pas AUSSI produire — une carte ne s'incline qu'une fois).
-      if (firstOp?.op === "costTapResource") {
-        const want = firstOp.element ? normElement(firstOp.element) : null;
-        const payable = resourceProducers(rulesCtx(), seat).some(
-          (p) =>
-            !(atom.tapsSource && p.instanceId === instanceId) &&
-            (!want || normElement(p.element) === want),
+      // COÛT DE RESSOURCE impayable (Guy Yomtella pwr0 « [Incliner], [Air] : … » ;
+      // pwr1 « [Air][Air] : … » = DEUX coûts en tête) : refuser AVANT de consommer
+      // l'inclinaison (tapsSource). On compte les costTapResource EN TÊTE (séquence)
+      // par Élément et on exige autant de producteurs DISTINCTS que de paiements —
+      // sinon un paiement partiel brûlerait une Ressource sans que le corps tourne.
+      // Producteurs SANS la source si tapsSource (elle ne s'incline qu'une fois).
+      const leadResourceCosts: { element?: string }[] = [];
+      for (const o of atom.ops) {
+        if (o.op === "costTapResource") leadResourceCosts.push(o);
+        else break;
+      }
+      if (leadResourceCosts.length) {
+        const producers = resourceProducers(rulesCtx(), seat).filter(
+          (p) => !(atom.tapsSource && p.instanceId === instanceId),
         );
-        if (!payable)
-          return rejectMove(
-            firstOp.element
-              ? `Aucune Ressource ${firstOp.element} disponible pour payer le coût.`
-              : "Aucune Ressource disponible pour payer le coût.",
-          );
+        // besoin par Élément (les coûts génériques comptent dans « * ») ; on garde
+        // le libellé D'ORIGINE de l'Élément (« Air ») pour le message de refus.
+        const needByEl = new Map<string, { n: number; label: string }>();
+        for (const lc of leadResourceCosts) {
+          const k = lc.element ? normElement(lc.element) : "*";
+          const prev = needByEl.get(k);
+          needByEl.set(k, {
+            n: (prev?.n ?? 0) + 1,
+            label: lc.element ?? "",
+          });
+        }
+        for (const [el, { n: need, label }] of needByEl) {
+          const avail = producers.filter(
+            (p) => el === "*" || normElement(p.element) === el,
+          ).length;
+          if (avail < need)
+            return rejectMove(
+              el === "*"
+                ? "Pas assez de Ressources disponibles pour payer le coût."
+                : `Pas assez de Ressources ${label} disponibles pour payer le coût.`,
+            );
+        }
       }
       // COÛT COMPOSÉ (`tapsSource` — Amulette Akwadala : requiresIncline + coût
       // de défausse) : l'activation incline AUSSI la source → elle doit être

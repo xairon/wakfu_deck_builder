@@ -660,6 +660,12 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   //   aucun producteur Air n'est disponible. L'effet [1] (« [Air][Air] :
   //   Redressez Guy Yomtella. », 2ᵉ pouvoir SANS incliner) reste manuel : le
   //   pipeline n'a pas de voie d'activation payée sans inclinaison.
+  // pwr0 « [Incliner], [Air] : … inflige 1 Dommage [Air] … » (tapsSource + coût
+  //   Air). pwr1 « [Air][Air] : Redressez Guy Yomtella. » = SECOND pouvoir onTap,
+  //   coût 2 Air SANS inclinaison (n'incline pas la source → activable une fois
+  //   Guy incliné, redresse-soi). activateTapPower choisit pwr1 quand Guy est
+  //   incliné (pwr0 exige d'être dressé). Coût 2 Air = deux costTapResource en
+  //   tête (garde de payabilité par séquence dans activateTapPower).
   "guy-yomtella-incarnam": {
     0: {
       trigger: "onTap",
@@ -674,6 +680,15 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
           heroes: false,
           zones: ["monde", "havreSac"],
         },
+      ],
+    },
+    1: {
+      trigger: "onTap",
+      cost: "paidOps",
+      ops: [
+        { op: "costTapResource", element: "Air" },
+        { op: "costTapResource", element: "Air" },
+        { op: "untapSelf" },
       ],
     },
   },
@@ -691,6 +706,15 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
           heroes: false,
           zones: ["monde", "havreSac"],
         },
+      ],
+    },
+    1: {
+      trigger: "onTap",
+      cost: "paidOps",
+      ops: [
+        { op: "costTapResource", element: "Air" },
+        { op: "costTapResource", element: "Air" },
+        { op: "untapSelf" },
       ],
     },
   },
