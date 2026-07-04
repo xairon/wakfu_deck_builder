@@ -850,8 +850,18 @@ export const useGameStore = defineStore("game", () => {
     turnStartFiredOn.value = null;
   }
 
-  /** Démarrage direct en partie (tests / bac à sable rapide). */
-  function startSandbox(deckA: Deck, deckB: Deck, first: Seat = "A"): void {
+  /**
+   * Démarrage direct en partie (tests / bac à sable rapide / vs-bot). Saute le
+   * mulligan. `opts.openingHand` : distribue la main de départ (= PA) aux deux
+   * joueurs — INDISPENSABLE pour une vraie partie (sinon on démarre main vide).
+   * Le tutoriel place ses cartes à la main → laisse `openingHand` à false.
+   */
+  function startSandbox(
+    deckA: Deck,
+    deckB: Deck,
+    first: Seat = "A",
+    opts: { openingHand?: boolean } = {},
+  ): void {
     firstPlayer.value = first;
     players.value = { A: { name: "Joueur 1" }, B: { name: "Joueur 2" } };
     initEngine(deckA, deckB, first);
@@ -860,6 +870,11 @@ export const useGameStore = defineStore("game", () => {
     perspective.value = first;
     matchPhase.value = "playing";
     passPending.value = false;
+    if (opts.openingHand) {
+      // Main de départ = PA de chaque joueur (comme startMatch après le mulligan).
+      draw("A", paOf("A"));
+      draw("B", paOf("B"));
+    }
     // Hygiène d'état : repartir d'un combat/effets/victoire vierges, sinon une
     // partie précédente fuit (ex. `attackedOnTurn` bloquant « 1 attaque/tour »).
     winner.value = null;

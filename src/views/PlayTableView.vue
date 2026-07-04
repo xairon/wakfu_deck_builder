@@ -737,7 +737,7 @@ function startVsBot(): void {
     });
     return;
   }
-  store.startSandbox(mine, opp, "A");
+  store.startSandbox(mine, opp, "A", { openingHand: true });
   store.botSeat = "B"; // l'IA pilote le siège B (useBotOpponent, monté ci-dessous)
 }
 // Driver IA : actif dès que store.botSeat est renseigné (gate interne).

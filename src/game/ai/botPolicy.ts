@@ -245,26 +245,33 @@ function resolveInteraction(
   return false;
 }
 
-/** Coup de PHASE PRINCIPALE (jouer / activer / attaquer). `false` = finir le tour. */
+/** Coup de PHASE PRINCIPALE. Ordre CRUCIAL : ATTAQUER D'ABORD (avec les créatures
+ *  prêtes), AVANT de jouer des cartes — car payer une carte INCLINE des créatures
+ *  productrices, qui ne pourraient alors plus attaquer (le bot restait passif à
+ *  s'auto-tapper). Puis développer (jouer cartes) + activer les pouvoirs.
+ *  `false` = plus rien à faire → finir le tour. */
 function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
-  for (const id of [...(store.state.seats[me]?.main ?? [])]) {
-    if (tried.has(id)) continue;
-    tried.add(id);
-    if (store.playFromHand(id)) return true;
-  }
-  for (const i of Object.values(store.state.instances)) {
-    if (i.controller !== me) continue;
-    if (i.location.zone !== "monde" && i.location.zone !== "havreSac") continue;
-    if (tried.has("pw:" + i.instanceId)) continue;
-    tried.add("pw:" + i.instanceId);
-    if (store.activateTapPower(i.instanceId)) return true;
-  }
+  // 1. ATTAQUE (une fois) — avec les attaquants rentables encore dressés.
   if (store.canDeclareAttack && !tried.has("__atk__")) {
     tried.add("__atk__");
     const good = store.eligibleAttackerIds.filter((id) =>
       worthAttacking(store, me, id),
     );
     if (good.length && store.beginCombat(good[0])) return true;
+  }
+  // 2. Jouer les cartes de la main (développement / effets).
+  for (const id of [...(store.state.seats[me]?.main ?? [])]) {
+    if (tried.has(id)) continue;
+    tried.add(id);
+    if (store.playFromHand(id)) return true;
+  }
+  // 3. Activer les pouvoirs à inclinaison (valeur gratuite).
+  for (const i of Object.values(store.state.instances)) {
+    if (i.controller !== me) continue;
+    if (i.location.zone !== "monde" && i.location.zone !== "havreSac") continue;
+    if (tried.has("pw:" + i.instanceId)) continue;
+    tried.add("pw:" + i.instanceId);
+    if (store.activateTapPower(i.instanceId)) return true;
   }
   return false;
 }

@@ -1,20 +1,25 @@
 /**
- * DRIVER « jouer contre l'ordinateur » — pilote automatiquement le siège
- * `store.botSeat` via l'IA heuristique (botLiveStep), en LOCAL. Modèle de POLLING
- * (comme le `tick` du tutoriel) : une boucle se re-planifie en continu et, à
- * chaque battement, si le jeu attend une décision du bot, joue UN coup. Robuste
- * par construction — aucune dépendance à un watcher pour « redémarrer » (un état
- * bloqué est corrigé au battement suivant).
+ * DRIVER « jouer contre l'ordinateur » — pilote le siège `store.botSeat` via l'IA
+ * heuristique (botLiveStep), en LOCAL, avec une boucle de POLLING robuste.
  *
- * Le bot ne RÉSOUT jamais le combat : en local le combat est mono-écran, donc
- * c'est l'humain (seul présent) qui clique « Résoudre » — pour l'attaque du bot
- * ET pour la sienne. Aucune passation d'appareil n'est nécessaire.
+ * PASSATION D'ÉCRAN (le point délicat en solo). Le combat local n'a AUCUN gate de
+ * siège (n'importe quel écran peut déclarer blocages/résolution — la perspective
+ * ne cache que les mains). Donc :
+ *  - Tour du bot, phase principale / déclaration d'attaque → écran au BOT
+ *    (perspective = bot, overlay « Tour adverse »).
+ *  - Dès que le bot a DÉCLARÉ son attaque (combat.step ≠ "attackers"), l'écran
+ *    passe à l'HUMAIN (perspective = humain, overlay masqué) pour qu'il défende et
+ *    clique « Résoudre » — sinon l'humain resterait bloqué derrière l'overlay.
+ *  - Après résolution (combat = null), l'écran revient au bot pour finir son tour.
+ *  - Tour de l'humain : le bot ne fait que DÉFENDRE (déclare ses blocages), puis
+ *    l'humain résout sur son propre écran.
  */
 import { botLiveStep } from "@/game/ai/botPolicy";
 import type { useGameStore } from "@/stores/gameStore";
 
 type Store = ReturnType<typeof useGameStore>;
 type Seat = "A" | "B";
+const other = (s: Seat): Seat => (s === "A" ? "B" : "A");
 
 export function useBotOpponent(
   store: Store,
@@ -25,12 +30,96 @@ export function useBotOpponent(
   let lastTurn = -1;
   let stopped = false;
 
-  /** Le jeu attend-il une décision du bot maintenant ? */
-  function shouldAct(): boolean {
-    const bot = store.botSeat;
+  function step(): void {
+    const bot = store.botSeat as Seat | null;
     if (!bot || store.online || store.winner || store.matchPhase !== "playing")
-      return false;
-    if (store.mulliganSeat === bot) return true;
+      return;
+    const human = other(bot);
+    const active = store.state.turn.active as Seat;
+    const c = store.combat;
+    if (store.state.turn.number !== lastTurn) {
+      lastTurn = store.state.turn.number;
+      tried = new Set();
+    }
+
+    // ── CHOIX destinés au BOT (eachPlayerOptional / Défi) : ces ops NE basculent
+    // PAS la perspective — on route par le siège du choix (sinon l'humain devrait
+    // répondre pour le bot, ou la partie se fige). ──────────────────────────────
+    const choice = store.effectChoice as {
+      seat?: Seat;
+      options?: unknown[];
+    } | null;
+    if (choice && choice.seat === bot) {
+      if (choice.options?.length) store.effectChoiceSelect(0);
+      else store.effectChoiceResolve(true);
+      return;
+    }
+
+    // ── FENÊTRE DE RÉACTION offerte au bot (défenseur) : la clore (sinon freeze
+    // si l'humain a cliqué « Laisser réagir l'adversaire »). ────────────────────
+    if (c && c.reactingSeat === bot) {
+      botLiveStep(store, bot, tried);
+      return;
+    }
+
+    // ── LE BOT EST L'ATTAQUANT (son tour, combat en cours) ────────────────────
+    if (active === bot && c) {
+      if (c.step === "attackers") {
+        // le bot déclare ses attaquants → il lui faut l'écran.
+        if (store.perspective !== bot) {
+          store.perspective = bot;
+          store.passPending = true;
+        }
+        botLiveStep(store, bot, tried);
+        return;
+      }
+      // attaque DÉCLARÉE → l'humain défend et résout (écran rendu, overlay masqué).
+      if (store.perspective !== human) {
+        store.perspective = human;
+        store.passPending = false;
+      }
+      return; // on attend la résolution humaine (combat → null)
+    }
+
+    // ── Le bot a fini d'attaquer, l'humain a résolu → rendre la main au bot ────
+    if (active === bot && !c && store.perspective !== bot) {
+      store.perspective = bot;
+      store.passPending = true;
+      return;
+    }
+
+    // ── TOUR DU BOT, phase principale (perspective = bot) ─────────────────────
+    if (active === bot && store.perspective === bot) {
+      if (store.mulliganSeat === bot) {
+        store.keepHand();
+        return;
+      }
+      const acted = botLiveStep(store, bot, tried);
+      // Rien à jouer → finir le tour. NE PAS réinitialiser `tried` ici : si endTurn
+      // est refusé (ex. main pleine → défausse d'abord), on ne doit pas re-tenter
+      // toutes les actions ; le reset se fait au vrai changement de tour (en tête).
+      if (!acted && !store.combat) store.endTurn();
+      return;
+    }
+
+    // ── TOUR DE L'HUMAIN : le bot DÉFEND (déclare ses blocages, UNE fois) ──────
+    if (c && c.step === "blockers" && active === human) {
+      const def = other(active); // = bot
+      // jeton par ensemble d'attaquants : si le bot décide de ne PAS bloquer
+      // (aucun bloqueur rentable), on ne re-tente pas chaque battement (anti-spin).
+      const tok = "__blk__" + c.attackers.join(",");
+      if (def === bot && !Object.keys(c.blocks).length && !tried.has(tok)) {
+        tried.add(tok);
+        botLiveStep(store, bot, tried);
+      }
+      return;
+    }
+
+    // ── Mulligan du bot / interactions du bot (le moteur met perspective=bot) ──
+    if (store.mulliganSeat === bot) {
+      store.keepHand();
+      return;
+    }
     if (
       store.perspective === bot &&
       (store.pendingChifumi ||
@@ -39,42 +128,8 @@ export function useBotOpponent(
         store.effectTargeting ||
         store.effectPicking ||
         store.pendingBearer)
-    )
-      return true;
-    const c = store.combat;
-    if (c) {
-      const def: Seat = store.state.turn.active === "A" ? "B" : "A";
-      if (c.step === "blockers" && def === bot && !Object.keys(c.blocks).length)
-        return true;
-      if (store.state.turn.active === bot && store.perspective === bot)
-        return true;
-    }
-    if (store.state.turn.active === bot && store.perspective === bot)
-      return true;
-    return false;
-  }
-
-  function step(): void {
-    const bot = store.botSeat;
-    if (!bot || !shouldAct()) return;
-    if (store.state.turn.number !== lastTurn) {
-      lastTurn = store.state.turn.number;
-      tried = new Set();
-    }
-    if (store.mulliganSeat === bot) {
-      store.keepHand();
-      return;
-    }
-    const acted = botLiveStep(store, bot, tried);
-    // finir le tour SI c'est proprement le tour du bot, hors combat, rien à jouer.
-    if (
-      !acted &&
-      store.state.turn.active === bot &&
-      store.perspective === bot &&
-      !store.combat
     ) {
-      store.endTurn();
-      tried = new Set();
+      botLiveStep(store, bot, tried);
     }
   }
 
@@ -84,7 +139,6 @@ export function useBotOpponent(
     try {
       step();
     } catch (e) {
-      // un coup illégal ne doit jamais figer la boucle — on trace et on continue.
       console.warn("[useBotOpponent] step a échoué :", e);
     }
   }
