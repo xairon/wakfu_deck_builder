@@ -1123,6 +1123,12 @@ export const compiledEffectSchema = z.object({
     // l'expose via une action « activer » sur la carte en main (activateTapPower
     // route les cartes en main portant ce trigger).
     "onHandActivate",
+    // DÉCLENCHÉ DEPUIS LA MAIN (Tofu Céleste : « Quand un de vos Tofus est détruit,
+    // vous pouvez payer … pour mettre en jeu le Tofu Céleste de votre main ») : la
+    // SOURCE (dans la MAIN) réagit à la destruction d'une de VOS créatures de la
+    // Famille `watchSub`. Émis par handWatcherFrames (triggers.ts) sur le bus
+    // `destroyed`, en scannant la main du contrôleur. `optional` (« vous pouvez »).
+    "onControlledDestroyedFromHand",
   ]),
   optional: z.boolean().optional(),
   // "sacrificeSelf" : le coût est de sacrifier la SOURCE (« Détruisez [cette
@@ -1179,6 +1185,11 @@ export const compiledEffectSchema = z.object({
   // la résolution des ops (qui suivent une fois la carte jouée). Sert Repos
   // (« … que si votre Héros se trouve dans son Havre-Sac » → heroInZone).
   playCondition: condSpecSchema.optional(),
+  // DÉCLENCHÉ DEPUIS LA MAIN (trigger onControlledDestroyedFromHand — Tofu
+  // Céleste) : Famille (normalisée) de la créature DÉTRUITE à surveiller
+  // (« un de vos Tofus » → "tofu"). handWatcherFrames n'émet que si le subType
+  // de la carte détruite matche `watchSub` (via normWord).
+  watchSub: z.string().optional(),
   ops: z.array(compiledEffectOpSchema),
 });
 

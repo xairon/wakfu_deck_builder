@@ -15003,11 +15003,32 @@
         "coverage": "keyword"
       },
       {
-        "description": "Quand un de vos Tofus est détruit, vous pouvez payer pour mettre en jeu le Tofu Céleste de votre main. Il apparaît incliné.",
+        "description": "Réaction. Quand un de vos Tofus est détruit, vous pouvez payer [Air][Air] pour mettre en jeu le Tofu Céleste de votre main. Il apparaît incliné.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onControlledDestroyedFromHand",
+          "watchSub": "tofu",
+          "optional": true,
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Air"
+            },
+            {
+              "op": "costTapResource",
+              "element": "Air"
+            },
+            {
+              "op": "putSelfInPlay",
+              "tapped": true
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cost-tap-resource", "put-in-play"]
       }
     ],
     "keywords": [

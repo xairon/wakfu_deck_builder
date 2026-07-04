@@ -52,6 +52,25 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+  // « Réaction. Quand un de vos Tofus est détruit, vous pouvez payer [Air][Air]
+  //   pour mettre en jeu le Tofu Céleste de votre main. Il apparaît incliné. »
+  //   (icône [Air][Air] récupérée du raw) — DÉCLENCHÉ DEPUIS LA MAIN
+  //   (onControlledDestroyedFromHand, watchSub tofu) : quand un Tofu contrôlé est
+  //   détruit, offre OPTIONNELLE (« vous pouvez ») de payer 2 Air (costTapResource
+  //   ×2, W64) puis putSelfInPlay incliné (W66). effect[0] = Géant (keyword).
+  "tofu-celeste-incarnam": {
+    1: {
+      trigger: "onControlledDestroyedFromHand",
+      watchSub: "tofu",
+      optional: true,
+      cost: "paidOps",
+      ops: [
+        { op: "costTapResource", element: "Air" },
+        { op: "costTapResource", element: "Air" },
+        { op: "putSelfInPlay", tapped: true },
+      ],
+    },
+  },
   // « Le Léopardo gagne +3 en Force [.] jusqu'à la fin du tour.
   //   N'utilisez ce pouvoir qu'une seule fois par tour. »
   // → pouvoir activé : l'inclinaison garantit l'unique utilisation par tour.

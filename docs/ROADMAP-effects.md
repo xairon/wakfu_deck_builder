@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-03.** État : **474 / 1794 effets imprimés structurés (26,4 %)** — `auto 416 · manual 58 · uncovered 1320 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-03.** État : **475 / 1794 effets imprimés structurés (26,5 %)** — `auto 416 · manual 59 · uncovered 1319 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 

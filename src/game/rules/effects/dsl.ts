@@ -3984,3 +3984,20 @@ export function handPowers(card: Card | null): EffectAtom[] {
   }
   return atoms;
 }
+
+/**
+ * Déclenchés DEPUIS LA MAIN (trigger onControlledDestroyedFromHand — Tofu
+ * Céleste). Forme compilée uniquement (CARD_SCRIPTS). Émis par handWatcherFrames
+ * quand une créature contrôlée de la Famille `watchSub` est détruite.
+ */
+export function handWatcherEffects(card: Card | null): EffectAtom[] {
+  if (!card) return [];
+  const effects: CardEffect[] = card.effects ?? [];
+  const atoms: EffectAtom[] = [];
+  for (const e of effects) {
+    if (e?.kind) continue;
+    if (e.compiled && e.compiled.trigger === "onControlledDestroyedFromHand")
+      atoms.push({ ...e.compiled, text: String(e.description ?? "").trim() });
+  }
+  return atoms;
+}

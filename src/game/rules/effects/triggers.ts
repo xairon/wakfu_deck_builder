@@ -18,7 +18,9 @@ import {
   selfAttackEffects,
   selfDamagedEffects,
   selfDestroyedEffects,
+  handWatcherEffects,
 } from "./dsl";
+import { normWord } from "../cardAttrs";
 
 /** Frame déclenchée, prête pour `enqueueEffect` du store. */
 export interface TriggeredFrame {
@@ -171,6 +173,47 @@ function destroyedFrames(
 }
 
 /**
+ * DÉCLENCHÉS DEPUIS LA MAIN (Tofu Céleste) : quand une créature contrôlée par
+ * `evt.controller` de la Famille `watchSub` est détruite, on scanne la MAIN de ce
+ * joueur pour les cartes portant un trigger `onControlledDestroyedFromHand`
+ * matchant la Famille. Émet une frame OPTIONNELLE (« vous pouvez payer … »),
+ * sourceId = la carte en main (qui se met en jeu via putSelfInPlay). L'instance
+ * détruite est encore lisible (collectée AVANT le dispatch, cf. destroyedFrames).
+ */
+function handWatcherFrames(
+  ctx: RulesCtx,
+  evt: Extract<RuleEvent, { kind: "destroyed" }>,
+): TriggeredFrame[] {
+  const destroyed = ctx.getCard(
+    ctx.state.instances[evt.instanceId]?.cardId ?? null,
+  );
+  if (!destroyed) return [];
+  const destroyedSubs = (destroyed.subTypes ?? []).map((s) => normWord(s));
+  const frames: TriggeredFrame[] = [];
+  const hand = ctx.state.seats?.[evt.controller]?.main ?? [];
+  for (const id of hand) {
+    // une carte ne réagit pas à SA PROPRE destruction depuis la main (elle est
+    // en main, pas détruite) ; mais on exclut l'instance détruite par sûreté.
+    if (id === evt.instanceId) continue;
+    const card = ctx.getCard(ctx.state.instances[id]?.cardId ?? null);
+    if (!card) continue;
+    for (const atom of handWatcherEffects(card)) {
+      const sub = atom.watchSub ? normWord(atom.watchSub) : null;
+      if (sub && !destroyedSubs.includes(sub)) continue;
+      frames.push({
+        seat: evt.controller,
+        sourceId: id,
+        cardName: card.name,
+        text: atom.text,
+        ops: atom.ops,
+        optional: true,
+      });
+    }
+  }
+  return frames;
+}
+
+/**
  * Frames déclenchées par une rafale d'événements de règles — joueur actif
  * d'abord (804.6 approx.), ordre d'émission préservé par ailleurs.
  */
@@ -185,8 +228,10 @@ export function collectTriggeredEffects(
     else if (evt.kind === "damageDealt") {
       frames.push(...bearerFrames(ctx, evt));
       frames.push(...selfDamagedFrames(ctx, evt));
-    } else if (evt.kind === "destroyed")
+    } else if (evt.kind === "destroyed") {
       frames.push(...destroyedFrames(ctx, evt));
+      frames.push(...handWatcherFrames(ctx, evt));
+    }
   }
   const active = ctx.state.turn.active;
   return [
