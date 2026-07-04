@@ -466,6 +466,29 @@
       </div>
     </Transition>
 
+    <!-- ════ Fenêtre d'annulation (Échec Critique) : l'adversaire réagit ════ -->
+    <Transition name="slidedown">
+      <div
+        v-if="store.pendingResolution"
+        class="gcombat"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="gcombat__step">
+          {{ store.pendingResolution.cardName }} vient d'être joué — jouez Échec
+          Critique pour en annuler les effets, ou passez.
+        </span>
+        <div class="gcombat__btns">
+          <button
+            class="gbtn gbtn--ghost"
+            @click="store.passPendingResolution()"
+          >
+            Passer
+          </button>
+        </div>
+      </div>
+    </Transition>
+
     <!-- ════════ Bandeau de combat (déclaration → blocage → résolution) ════════ -->
     <Transition name="slidedown">
       <div

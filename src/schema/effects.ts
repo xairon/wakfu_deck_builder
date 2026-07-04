@@ -686,6 +686,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     duelistId: z.string().optional(),
     challengedId: z.string().optional(),
   }),
+  // ── ÉCHEC CRITIQUE (W74) — « Annulez les effets de l'Action, du Sort ou du
+  // pouvoir qui vient d'être joué. » RÉACTION jouée dans la fenêtre d'annulation
+  // (pendingResolution) : la SOURCE (Échec Critique) annule les effets EN ATTENTE
+  // de l'Action/pouvoir tout juste joué (jamais enfilés → jamais résolus). Le
+  // ruling EXCLUT les pouvoirs DÉCLENCHÉS (« Quand … », apparition) : seule la
+  // résolution d'une carte ACTIVEMENT jouée est en attente, donc annulable. Op
+  // marqueur (reactionOnly) : l'annulation est effectuée par le store (fenêtre
+  // pendingResolution), pas par le moteur d'effets.
+  z.object({ op: z.literal("cancelLastPlayed") }),
   // « Le Porteur de <self> gagne <Mot-clé> jusqu'à la fin du tour. » (Scarature
   // Blanche, via chooseOne « Agilité ou Tacle ») — la SOURCE est un Équipement ;
   // le mot-clé TURN-scoped (`<kw>TurnMod`) est posé sur SON PORTEUR (la créature

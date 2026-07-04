@@ -5909,7 +5909,17 @@
         "description": "Annulez les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "reactionOnly": true,
+          "ops": [
+            {
+              "op": "cancelLastPlayed"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cancel-last-played"]
       },
       {
         "description": "Échec Critique annule les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. Les pouvoirs déclenchés (ce qui inclus les pouvoirs d'apparition), généralement de la forme « Quand …, » sont déclenchés suite à un événement mais ne sont pas comme joués. Échec Critique ne permet donc pas de les annuler.",

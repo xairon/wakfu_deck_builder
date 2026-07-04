@@ -1037,4 +1037,19 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // ── Échec Critique (W74) — « Annulez les effets de l'Action/Sort/pouvoir qui vient
+  // d'être joué. » RÉACTION (reactionOnly) : jouable UNIQUEMENT dans la fenêtre
+  // d'annulation ouverte par le store (pendingResolution) quand l'adversaire vient de
+  // jouer une carte à effets et que ce joueur tient Échec Critique. L'op marqueur
+  // cancelLastPlayed déclenche l'annulation côté store (les effets en attente ne sont
+  // jamais enfilés). L'effet[1] est un ruling (déclenchés « Quand … » non annulables).
+  "echec-critique-incarnam": {
+    0: {
+      trigger: "onPlay",
+      reactionOnly: true,
+      ops: [{ op: "cancelLastPlayed" }],
+    },
+    1: { kind: "ruling" },
+  },
 };

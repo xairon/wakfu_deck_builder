@@ -260,6 +260,13 @@ export const MECHANICS: Mechanic[] = [
       "« Inclinez l'un de vos Alliés ou Héros et proposez un défi à l'Allié ou Héros de votre choix : si l'adversaire accepte, les deux cartes s'infligent simultanément leur Force en Dommages ; s'il refuse, vous gagnez 1 XP. » Le duel exige le CONSENTEMENT de l'adversaire (choix Accepter/Refuser).",
   },
   {
+    id: "cancel-last-played",
+    label: "Annulation de l'effet joué (contre-sort)",
+    category: "contrôle",
+    glossary:
+      "« Annulez les effets de l'Action, du Sort ou du pouvoir qui vient d'être joué. » Réaction jouée dans la fenêtre d'annulation : les effets EN ATTENTE de la carte tout juste jouée sont annulés (jamais résolus). N'affecte PAS les pouvoirs déclenchés (« Quand … », apparition), qui ne sont pas « joués ».",
+  },
+  {
     id: "grant-keyword-bearer-self",
     label: "Mot-clé conféré au Porteur de soi (jusqu'à la fin du tour)",
     category: "tempo",
@@ -559,6 +566,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   duelChooseChallenged: "duel-challenge",
   duelOffer: "duel-challenge",
   resolveDuel: "duel-challenge",
+  cancelLastPlayed: "cancel-last-played",
   grantKeywordBearerSelf: "grant-keyword-bearer-self",
   grantKeywordTarget: "grant-keyword-target",
   grantResistanceSelf: "grant-resistance-self",

@@ -80,6 +80,7 @@ import {
   createEffectEngine,
   matchesPickFilter,
 } from "@/game/rules/effects/engine";
+import type { EffectFrame } from "@/game/rules/effects/engine";
 import { getTokenCard } from "@/game/rules/effects/tokens";
 
 function rndSeed(): string {
@@ -1218,6 +1219,122 @@ export const useGameStore = defineStore("game", () => {
     eligible: string[];
   } | null>(null);
 
+  // ── ÉCHEC CRITIQUE (W74) — FENÊTRE D'ANNULATION (pile de résolution profondeur 1).
+  // Quand un joueur joue une Action/Sort/pouvoir À EFFETS et que l'adversaire tient
+  // Échec Critique (LOCAL uniquement), les effets sont mis EN ATTENTE (frames) au lieu
+  // d'être résolus ; la perspective bascule vers l'adversaire, qui peut jouer Échec
+  // Critique (annule → frames jamais enfilées) ou passer (frames résolues). Borné :
+  // la fenêtre ne s'ouvre QUE si l'adversaire tient réellement Échec Critique → les
+  // ~1850 tests existants (sans Échec en main adverse) gardent la résolution immédiate.
+  const pendingResolution = ref<{
+    seat: Seat; // le lanceur (dont les effets sont en attente)
+    reactor: Seat; // l'adversaire (qui peut annuler)
+    cardName: string;
+    frames: EffectFrame[]; // effets en attente, enfilés tels quels si « passer »
+  } | null>(null);
+
+  /** La carte porte-t-elle un effet d'annulation (Échec Critique) ? */
+  function isCancelCard(
+    card: { effects?: { compiled?: { ops?: { op: string }[] } }[] } | null,
+  ): boolean {
+    return !!card?.effects?.some((e) =>
+      e.compiled?.ops?.some((o) => o.op === "cancelLastPlayed"),
+    );
+  }
+
+  /** Id d'un Échec Critique JOUABLE dans la main de l'adversaire de `seat` (local). */
+  function opponentCancelCardId(seat: Seat): string | null {
+    if (online.value || !assistEffects.value) return null;
+    if (combat.value?.reactingSeat || pendingResolution.value) return null; // pas d'imbrication
+    const opp = otherSeat(seat);
+    for (const id of state.value.seats[opp].main) {
+      if (isCancelCard(getCard(state.value.instances[id]?.cardId ?? null)))
+        return id;
+    }
+    return null;
+  }
+
+  /**
+   * Enfile les effets d'une carte ACTIVEMENT jouée (Action/pouvoir), SAUF si
+   * l'adversaire peut l'annuler (Échec Critique en main) : les frames sont alors
+   * mises en attente et l'adversaire reçoit la main (fenêtre d'annulation). Les
+   * effets DÉCLENCHÉS (apparition, bus « Quand … ») n'appellent PAS ce chemin —
+   * ils ne sont pas « joués » et ne sont donc pas annulables (ruling Échec Critique).
+   */
+  function enqueuePlayed(
+    seat: Seat,
+    frames: EffectFrame[],
+    cardName: string,
+  ): void {
+    if (opponentCancelCardId(seat)) {
+      pendingResolution.value = {
+        seat,
+        reactor: otherSeat(seat),
+        cardName,
+        frames,
+      };
+      perspective.value = otherSeat(seat);
+      dispatch(
+        say(
+          seat,
+          `${cardName} : ${players.value[otherSeat(seat)].name} peut jouer Échec Critique pour en annuler les effets (ou passer).`,
+        ),
+      );
+      return;
+    }
+    for (const f of frames) engine.enqueueEffect(f);
+  }
+
+  /** « Passer » : l'adversaire renonce à annuler → les effets en attente se résolvent. */
+  function passPendingResolution(): boolean {
+    const p = pendingResolution.value;
+    if (!p) return false;
+    perspective.value = p.seat; // les effets se résolvent du point de vue du lanceur
+    pendingResolution.value = null;
+    for (const f of p.frames) engine.enqueueEffect(f);
+    return true;
+  }
+
+  /**
+   * L'adversaire joue Échec Critique dans la fenêtre : paie son coût, la carte va
+   * en Défausse, et les effets EN ATTENTE sont ANNULÉS (jamais enfilés).
+   */
+  function resolveEchecCancel(instanceId: string): boolean {
+    const p = pendingResolution.value;
+    if (!p) return rejectMove("Aucune carte à annuler.");
+    const seat = p.reactor;
+    const inst = state.value.instances[instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    if (!inst || !card) return rejectMove("Carte inconnue.");
+    if (inst.location.zone !== "main" || inst.controller !== seat)
+      return rejectMove("Échec Critique doit être dans votre main.");
+    const plan = planCost(rulesCtx(), seat, card);
+    if (!plan.ok) return rejectMove(plan.reason);
+    const drafts: DraftEvent[] = plan.producers.map((id) => ({
+      actor: seat,
+      type: "SET_ORIENTATION" as const,
+      payload: { instanceId: id, orientation: "tapped" },
+    }));
+    drafts.push(
+      move(seat, {
+        instanceId,
+        from: inst.location,
+        to: { zone: "defausse", owner: seat },
+        position: { at: "top" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: false,
+      }),
+      say(
+        seat,
+        `${card.name} annule les effets de ${p.cardName} (qui vient d'être joué).`,
+      ),
+    );
+    dispatch(...drafts);
+    perspective.value = p.seat;
+    pendingResolution.value = null; // frames en attente ABANDONNÉES (annulées)
+    return true;
+  }
+
   /** Annule le prompt de Porteur (clic ailleurs, passation). L'équipement reste en main. */
   function cancelBearerTargeting(): void {
     pendingBearer.value = null;
@@ -1258,6 +1375,20 @@ export const useGameStore = defineStore("game", () => {
       return true;
     }
     const ctx = rulesCtx();
+    // ÉCHEC CRITIQUE (W74) — RÉACTION d'annulation : jouable UNIQUEMENT dans la
+    // fenêtre pendingResolution, par le réacteur (l'adversaire du lanceur). Traité
+    // AVANT whyCannotPlay/coût (le réacteur joue hors de son tour ; resolveEchecCancel
+    // paie le coût lui-même). Hors fenêtre → refus (reactionOnly).
+    {
+      const c0 = getCard(state.value.instances[instanceId]?.cardId ?? null);
+      if (isCancelCard(c0)) {
+        if (pendingResolution.value && seat === pendingResolution.value.reactor)
+          return resolveEchecCancel(instanceId);
+        return rejectMove(
+          "Échec Critique ne peut être joué qu'en réaction à une Action, un Sort ou un pouvoir tout juste joué.",
+        );
+      }
+    }
     // 706.5 — en fenêtre de réaction, ce siège joue hors de son tour.
     const reaction = combat.value?.reactingSeat === seat;
     const reason = whyCannotPlay(ctx, seat, instanceId, reaction);
@@ -1387,17 +1518,23 @@ export const useGameStore = defineStore("game", () => {
       // (playAtoms.length === effectsCount) : il n'y a donc aucun effet manuel
       // à signaler ici. Une Action partielle/non couverte tombe dans le `else`
       // → queueArrivalEffects, qui pousse les rappels.
-      for (const atom of actionAtoms) {
-        dispatch(say(seat, `Action résolue — ${card.name} : « ${atom.text} »`));
-        engine.enqueueEffect({
-          seat,
-          cardName: card.name,
-          ops: atom.ops,
-          // ACTOR-BINDING « … de votre choix. Il/Elle … » : le moteur réécrira
-          // sourceId vers la créature choisie par l'op de ciblage (sujet du corps lié).
-          ...(atom.actor === "target" ? { actorBind: "target" as const } : {}),
-        });
+      const frames: EffectFrame[] = actionAtoms.map((atom) => ({
+        seat,
+        cardName: card.name,
+        ops: atom.ops,
+        // ACTOR-BINDING « … de votre choix. Il/Elle … » : le moteur réécrira
+        // sourceId vers la créature choisie par l'op de ciblage (sujet du corps lié).
+        ...(atom.actor === "target" ? { actorBind: "target" as const } : {}),
+      }));
+      // Log « Action résolue » seulement si elle se résout vraiment maintenant (pas
+      // mise en attente pour une fenêtre d'annulation Échec Critique).
+      if (!opponentCancelCardId(seat)) {
+        for (const atom of actionAtoms)
+          dispatch(
+            say(seat, `Action résolue — ${card.name} : « ${atom.text} »`),
+          );
       }
+      enqueuePlayed(seat, frames, card.name);
     } else {
       engine.queueArrivalEffects(seat, card, instanceId);
     }
@@ -1513,13 +1650,19 @@ export const useGameStore = defineStore("game", () => {
           `Pouvoir activé (depuis la main) — ${card.name} : « ${atom.text} »`,
         ),
       );
-      engine.enqueueEffect({
+      enqueuePlayed(
         seat,
-        cardName: card.name,
-        ops: atom.ops,
-        sourceId: instanceId,
-        powerSourceId: instanceId,
-      });
+        [
+          {
+            seat,
+            cardName: card.name,
+            ops: atom.ops,
+            sourceId: instanceId,
+            powerSourceId: instanceId,
+          },
+        ],
+        card.name,
+      );
       return true;
     }
     // FACE ACTIVE d'un Héros (W56) : le pouvoir-tap du verso (niveau 2) n'est
@@ -1569,14 +1712,20 @@ export const useGameStore = defineStore("game", () => {
           `Pouvoir activé (bannissement depuis la Défausse) — ${card.name} : « ${atom.text} »`,
         ),
       );
-      engine.enqueueEffect({
+      enqueuePlayed(
         seat,
-        cardName: card.name,
-        ops: atom.ops,
-        sourceId: instanceId,
-        // provenance de POUVOIR : la source du pouvoir activé (W54).
-        powerSourceId: instanceId,
-      });
+        [
+          {
+            seat,
+            cardName: card.name,
+            ops: atom.ops,
+            sourceId: instanceId,
+            // provenance de POUVOIR : la source du pouvoir activé (W54).
+            powerSourceId: instanceId,
+          },
+        ],
+        card.name,
+      );
       return true;
     }
     if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
@@ -1706,20 +1855,26 @@ export const useGameStore = defineStore("game", () => {
       if (atom.oncePerTurn)
         dispatch(incCounterVerb(seat, instanceId, "powerUses0", 1, true));
       dispatch(say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`));
-      engine.enqueueEffect({
+      enqueuePlayed(
         seat,
-        cardName: card.name,
-        ops: atom.ops,
-        sourceId: instanceId,
-        // provenance de POUVOIR : la source du pouvoir activé (W54) — jamais
-        // réécrite, contrairement à sourceId (actor-binding ci-dessous).
-        powerSourceId: instanceId,
-        // ACTOR-BINDING « Inclinez un de vos X : il/elle … » : le moteur réécrira
-        // sourceId vers la créature choisie au paiement du coût (sujet du corps).
-        ...(atom.actor === "costTarget"
-          ? { actorBind: "costTarget" as const }
-          : {}),
-      });
+        [
+          {
+            seat,
+            cardName: card.name,
+            ops: atom.ops,
+            sourceId: instanceId,
+            // provenance de POUVOIR : la source du pouvoir activé (W54) — jamais
+            // réécrite, contrairement à sourceId (actor-binding ci-dessous).
+            powerSourceId: instanceId,
+            // ACTOR-BINDING « Inclinez un de vos X : il/elle … » : le moteur réécrira
+            // sourceId vers la créature choisie au paiement du coût (sujet du corps).
+            ...(atom.actor === "costTarget"
+              ? { actorBind: "costTarget" as const }
+              : {}),
+          },
+        ],
+        card.name,
+      );
       return true;
     }
     if (inst.orientation !== "upright")
@@ -1763,14 +1918,20 @@ export const useGameStore = defineStore("game", () => {
         say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`),
       );
     }
-    engine.enqueueEffect({
+    enqueuePlayed(
       seat,
-      cardName: card.name,
-      ops: atom.ops,
-      sourceId: instanceId,
-      // provenance de POUVOIR : la source du pouvoir activé (W54).
-      powerSourceId: instanceId,
-    });
+      [
+        {
+          seat,
+          cardName: card.name,
+          ops: atom.ops,
+          sourceId: instanceId,
+          // provenance de POUVOIR : la source du pouvoir activé (W54).
+          powerSourceId: instanceId,
+        },
+      ],
+      card.name,
+    );
     return true;
   }
 
@@ -2580,6 +2741,8 @@ export const useGameStore = defineStore("game", () => {
     pendingBearer,
     attachToBearer,
     cancelBearerTargeting,
+    pendingResolution,
+    passPendingResolution,
     attackedOnTurn,
     combat,
     combatAttackerIds,
