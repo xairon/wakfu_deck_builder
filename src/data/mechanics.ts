@@ -124,6 +124,13 @@ export const MECHANICS: Mechanic[] = [
       "Incrémente un compteur temporaire sur la carte source (ex. dépense cumulée, flag d'auto-destruction de fin de tour), purgé en début de tour.",
   },
   {
+    id: "inc-hero-turn-token",
+    label: "Marqueur de tour (Héros)",
+    category: "autre",
+    glossary:
+      "Pose/incrémente un marqueur temporaire sur votre Héros (ex. Glyphe Incandescent actif jusqu'à la fin de la phase d'action), purgé en début de tour.",
+  },
+  {
     id: "recycle-from-discard",
     label: "Recyclage de Défausse",
     category: "ressource",
@@ -516,6 +523,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   buffForceTarget: "buff-force-target",
   buffForceSelf: "buff-force-self",
   incTurnCounterSelf: "inc-turn-counter-self",
+  incHeroTurnToken: "inc-hero-turn-token",
   recycleFromDiscard: "recycle-from-discard",
   discardFromHand: "discard-from-hand",
   searchDeck: "search-deck",

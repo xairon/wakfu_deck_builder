@@ -1365,6 +1365,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           (src.location.zone === "monde" || src.location.zone === "havreSac");
         if (inPlay)
           deps.dispatch(incCounterVerb(seat, sourceId!, op.counter, 1, true));
+      } else if (op.op === "incHeroTurnToken") {
+        // Marqueur flottant sur le HÉROS de l'acteur (Glyphe : `glypheDamage`).
+        const heroId = deps.getState().seats[seat].heroInstanceId;
+        if (heroId)
+          deps.dispatch(incCounterVerb(seat, heroId, op.token, op.n, true));
       } else if (op.op === "grantKeywordSelf") {
         // « [self] gagne <Mot-clé> jusqu'à la fin du tour. » (Ouassingue : Géant) —
         // jeton TURN-scoped `<kw>TurnMod` (geantTurnMod / agiliteTurnMod /

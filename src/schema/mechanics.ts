@@ -19,6 +19,7 @@ export const mechanicTagSchema = z.enum([
   "buff-force-target",
   "buff-force-self",
   "inc-turn-counter-self",
+  "inc-hero-turn-token",
   "recycle-from-discard",
   "discard-from-hand",
   "search-deck",

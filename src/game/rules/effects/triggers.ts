@@ -214,6 +214,53 @@ function handWatcherFrames(
 }
 
 /**
+ * attackerDeclared → GLYPHE INCANDESCENT (« chaque fois qu'un attaquant s'incline
+ * dans ce combat, le Glyphe lui inflige 2 Dommages [Feu] »). Les attaquants
+ * s'inclinent à la DÉCLARATION (attackerDeclared) : c'est exactement l'inclinaison
+ * de PHASE D'ACTION visée. Le ruling EXCLUT les inclinaisons de FIN de combat
+ * (bloqueurs à la résolution) — non représentées par cet événement. Marqueur
+ * flottant = jeton `glypheDamage` du Héros (nombre de Glyphes actifs), posé au jeu
+ * (incHeroTurnToken), purgé en début de tour. On somme les Glyphes des DEUX
+ * joueurs (« chaque fois qu'un attaquant s'incline » vise tout attaquant, y
+ * compris les vôtres). Chaque Glyphe = un PAQUET de 2 Feu (Résistance par paquet)
+ * infligé à l'attaquant (riposteTargetId, aucun picker). OMISSION CONSERVATRICE
+ * (jamais d'approximation qui agit à tort) : une inclinaison de BLOQUEUR en cours
+ * de combat via un pouvoir (rare, aucune carte du périmètre) n'est pas couverte.
+ */
+function glypheFrames(
+  ctx: RulesCtx,
+  evt: Extract<RuleEvent, { kind: "attackerDeclared" }>,
+): TriggeredFrame[] {
+  // Ne se déclenche QUE sur une VRAIE inclinaison (l'attaquant était dressé). Un
+  // attaquant déjà incliné (tapé par un effet tiers avant la déclaration)
+  // « attaque » mais ne « s'incline » pas → Glyphe ne le touche pas. `inclined`
+  // absent = comportement historique (traité comme incliné).
+  if (evt.inclined === false) return [];
+  let count = 0;
+  for (const s of Object.values(ctx.state.seats ?? {})) {
+    const hero = s?.heroInstanceId
+      ? ctx.state.instances[s.heroInstanceId]
+      : null;
+    count += hero?.counters.tokens?.glypheDamage ?? 0;
+  }
+  if (count <= 0) return [];
+  const attacker = ctx.state.instances[evt.instanceId];
+  if (!attacker) return [];
+  const frames: TriggeredFrame[] = [];
+  for (let i = 0; i < count; i++) {
+    frames.push({
+      seat: evt.seat,
+      sourceId: evt.instanceId,
+      cardName: "Glyphe Incandescent",
+      text: "Glyphe Incandescent inflige 2 Dommages Feu à l'attaquant qui s'incline.",
+      ops: [{ op: "damageRiposteSource", n: 2, element: "Feu" }],
+      riposteTargetId: evt.instanceId,
+    });
+  }
+  return frames;
+}
+
+/**
  * Frames déclenchées par une rafale d'événements de règles — joueur actif
  * d'abord (804.6 approx.), ordre d'émission préservé par ailleurs.
  */
@@ -223,9 +270,10 @@ export function collectTriggeredEffects(
 ): TriggeredFrame[] {
   const frames: TriggeredFrame[] = [];
   for (const evt of evts) {
-    if (evt.kind === "attackerDeclared")
+    if (evt.kind === "attackerDeclared") {
       frames.push(...attackerFrames(ctx, evt));
-    else if (evt.kind === "damageDealt") {
+      frames.push(...glypheFrames(ctx, evt));
+    } else if (evt.kind === "damageDealt") {
       frames.push(...bearerFrames(ctx, evt));
       frames.push(...selfDamagedFrames(ctx, evt));
     } else if (evt.kind === "destroyed") {

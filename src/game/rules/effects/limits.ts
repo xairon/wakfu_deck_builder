@@ -26,6 +26,9 @@ const TURN_TOKENS = new Set([
   // tour — purgés en début de tour (le seuil et la destruction sont turn-scoped).
   "katsouSpend",
   "destroyAtTurnEnd",
+  // GLYPHE INCANDESCENT : marqueur flottant « jusqu'à la fin de la phase d'action »
+  // (nombre de Glyphes actifs du Héros), purgé en début de tour.
+  "glypheDamage",
   // « gagne <Mot-clé> jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) —
   // jetons TURN-scoped purgés en fin de tour, comme forceMod (geantCombatMod, lui,
   // est couvert par le suffixe *CombatMod ⇒ portée combat). Un jeton par mot-clé

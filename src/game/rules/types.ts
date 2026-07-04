@@ -75,7 +75,17 @@ export type RuleEvent =
       /** Dommages de combat (duels/frappes) vs effet ciblé. */
       combat: boolean;
     } // jamais émis à ≤ 0 (811.4)
-  | { kind: "attackerDeclared"; seat: Seat; instanceId: InstanceId }
+  // `inclined` : l'attaquant s'est-il INCLINÉ à cette déclaration (était dressé
+  // avant) ? Vrai pour un attaquant normal ; faux s'il était déjà incliné (tapé
+  // par un effet tiers avant la confirmation). Sépare « attaque » (attackerFrames,
+  // tout attaquant) de « s'incline » (glypheFrames, seulement les nouveaux
+  // inclinés). Absent = comportement historique (traité comme incliné).
+  | {
+      kind: "attackerDeclared";
+      seat: Seat;
+      instanceId: InstanceId;
+      inclined?: boolean;
+    }
   // DESTRUCTION RÉELLE (→ Défausse) d'une carte en jeu (415.1 / 1414 / 3019 /
   // sacrifice). Émis au moment exact de la destruction : l'instance détruite
   // est encore lisible dans le contexte (controller / cardName) pour collecter

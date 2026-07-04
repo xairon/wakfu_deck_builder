@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-03.** État : **477 / 1794 effets imprimés structurés (26,6 %)** — `auto 416 · manual 61 · uncovered 1317 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-03.** État : **478 / 1794 effets imprimés structurés (26,6 %)** — `auto 416 · manual 62 · uncovered 1316 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
@@ -29,7 +29,9 @@ Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complèt
 
 ---
 
-## 3. Deck-driven — worklist des 4 starters Incarnam (6 restants)
+## 3. Deck-driven — worklist des 4 starters Incarnam (5 restants)
+
+> **Glyphe Incandescent FAITE (W70)** : op `incHeroTurnToken` (marqueur flottant `glypheDamage` sur le Héros) + `glypheFrames` sur le bus `attackerDeclared` (2 Feu par Glyphe à chaque attaquant qui s'incline à la déclaration ; réutilise riposteTargetId/damageRiposteSource W48). Piggyback sur le bus existant → 0 nouvelle intégration online. Omission conservatrice : bloqueur mid-combat via pouvoir (rare). Les attaquants sont TOUJOURS dressés à la déclaration (eligibleAttackers gate) → glypheFrames ne tire jamais à tort. **5 uncovered restants** — tous rigoureusement manuel-légitime (mécaniques interactives/sociales ou sous-systèmes majeurs) : Amar Casto (professions), Défi (négociation adverse), Kanigrou (Chi-Fu-Mi RNG interactif), Échec Critique (pile de résolution — effets résolus immédiatement, rien à annuler), Flèche d'Immolation (contexte réaction-par-inclinaison absent).
 
 > **Katsou Mee FAITE (W69)** : compteur de dépense (`incTurnCounterSelf`) + condSpec `selfCounterAtLeast` + flag `destroyAtTurnEnd` + balayage de fin de tour `turnEndDestroyEvents` (destruction fidèle XP/415.1, câblée local `nextTurn` + online `resolveIntent END_TURN`). La refonte modèle-données était ÉVITABLE. **6 uncovered restants** (tous manuel-légitime rigoureux) : Amar Casto (professions), Défi (négociation adverse), Kanigrou (Chi-Fu-Mi RNG interactif), Échec Critique (pile de résolution / annulation), Flèche d'Immolation (contexte réaction-par-inclinaison absent — confirmé W69). **Glyphe Incandescent RE-CHALLENGÉE (W69) : BUILDABLE** — les attaquants s'inclinent à la DÉCLARATION (gameStore ~2158) et émettent déjà un RuleEvent `attackerDeclared` (bus attackerFrames) ; le ruling EXCLUT justement les inclinaisons de fin de combat (bloqueurs à la résolution) = exactement ce que le bus sépare. Donc Glyphe = un marqueur flottant `glypheDamage` (jeton turn-scoped posé au jeu) + un collecteur `glypheFrames` sur `attackerDeclared` infligeant les Dommages à l'attaquant. OMISSION CONSERVATRICE documentée : les inclinaisons de bloqueur EN COURS de combat via tap-power (rare) ne sont pas couvertes. Vague moyenne (intégration bus + online) → prochaine cible. Chacun des 4 autres exige un système que le moteur n'a pas OU une mécanique interactive/sociale ; les automatiser serait une approximation. Le jeu les gère par rappel manuel fidèle.
 

@@ -30,6 +30,18 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   "bond-incarnam": {
     0: { trigger: "onPlay", ops: [{ op: "grantBonusBlock", n: 1 }] },
   },
+  // « Jusqu'à la fin de la phase d'action, chaque fois qu'un Allié ou Héros
+  //   attaquant ou bloqueur s'incline dans ce combat, le Glyphe Incandescent lui
+  //   inflige 2 Dommages [Feu]. » — Action posant un MARQUEUR FLOTTANT
+  //   `glypheDamage` sur le Héros (jeton turn-scoped = « fin de la phase d'action »).
+  //   glypheFrames (bus attackerDeclared) inflige 2 Feu à chaque attaquant qui
+  //   s'incline (déclaration). Le DSL ne gère pas les effets flottants → script.
+  "glyphe-incandescent-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [{ op: "incHeroTurnToken", token: "glypheDamage", n: 1 }],
+    },
+  },
   // « [Terre] : Katsou Mee gagne +1 en Force jusqu'à la fin du tour. Si vous
   //   dépensez plus de [Terre][Terre][Terre] de cette façon, détruisez Katsou Mee
   //   à la fin du tour. » — pouvoir RÉPÉTABLE : payer 1 Terre → +1 Force, +1 au

@@ -487,6 +487,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // franchi). Le jeton doit être reconnu par isTurnToken (purge en début de tour).
   // Lu par condSpec `selfCounterAtLeast` et le balayage de fin de tour.
   z.object({ op: z.literal("incTurnCounterSelf"), counter: z.string() }),
+  // Incrémente de `n` un jeton TURN-scoped sur le HÉROS de l'acteur (≠
+  // incTurnCounterSelf, qui vise la source). Glyphe Incandescent : marqueur
+  // flottant `glypheDamage` (nombre de Glyphes actifs) posé au jeu, lu par
+  // glypheFrames sur le bus attackerDeclared, purgé en début de tour.
+  z.object({
+    op: z.literal("incHeroTurnToken"),
+    token: z.string(),
+    n: z.number(),
+  }),
   z.object({
     op: z.literal("recycleFromDiscard"),
     n: z.number(),

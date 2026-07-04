@@ -7330,7 +7330,18 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "incHeroTurnToken",
+              "token": "glypheDamage",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["inc-hero-turn-token"]
       },
       {
         "description": "Cet effet ne s'applique pas aux Alliés ou Héros inclinés durant la Phase de Fin de Combat car celle-ci se déroule après la Phase d'Actions.",

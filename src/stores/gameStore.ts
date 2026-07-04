@@ -2155,15 +2155,22 @@ export const useGameStore = defineStore("game", () => {
     // 703 / A6 — l'inclinaison des attaquants part de la DÉCLARATION (et non
     // de la résolution) : les jetons posés par « Quand [self] attaque »
     // (Bruss) doivent l'être AVANT les frappes.
-    const taps: DraftEvent[] = c.attackers
-      .filter((id) => state.value.instances[id]?.orientation !== "tapped")
-      .map(
-        (id): DraftEvent => ({
-          actor: seat,
-          type: "SET_ORIENTATION",
-          payload: { instanceId: id, orientation: "tapped" },
-        }),
-      );
+    // Attaquants qui s'inclinent RÉELLEMENT à cette déclaration (dressés AVANT le
+    // dispatch des inclinaisons). Un attaquant déjà incliné (tapé par un effet
+    // tiers avant la confirmation) « attaque » mais ne « s'incline » pas — la
+    // distinction sert à Glyphe (glypheFrames ne vise que les nouveaux inclinés).
+    const newlyInclined = new Set(
+      c.attackers.filter(
+        (id) => state.value.instances[id]?.orientation !== "tapped",
+      ),
+    );
+    const taps: DraftEvent[] = [...newlyInclined].map(
+      (id): DraftEvent => ({
+        actor: seat,
+        type: "SET_ORIENTATION",
+        payload: { instanceId: id, orientation: "tapped" },
+      }),
+    );
     if (taps.length) dispatch(...taps);
     c.step = "blockers";
     // 804.5 — bus de déclenchement : « Quand [self] attaque ».
@@ -2171,6 +2178,7 @@ export const useGameStore = defineStore("game", () => {
       kind: "attackerDeclared",
       seat,
       instanceId: id,
+      inclined: newlyInclined.has(id),
     }));
     if (assistEffects.value)
       engine.enqueueTriggered(collectTriggeredEffects(rulesCtx(), declared));
