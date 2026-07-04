@@ -340,7 +340,11 @@
          perspective suit le joueur actif (toujours visible) ; en ligne, seul le
          joueur actif le voit. -->
     <button
-      v-show="store.turn.active === store.perspective"
+      v-show="
+        store.turn.active === store.perspective &&
+        !store.pendingChifumi &&
+        !store.pendingResolution
+      "
       type="button"
       class="gendturn"
       aria-label="Finir le tour"

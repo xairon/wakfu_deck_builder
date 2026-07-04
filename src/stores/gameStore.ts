@@ -865,6 +865,14 @@ export const useGameStore = defineStore("game", () => {
     ruleError.value = null;
     engine.reset();
     turnStartFiredOn.value = null;
+    // Fenêtres d'interaction locales (Échec Critique / Kanigrou Chi-Fu-Mi) : purge
+    // défensive pour qu'une partie abandonnée en pleine fenêtre ne fuie pas dans la
+    // suivante.
+    pendingResolution.value = null;
+    pendingChifumi.value = null;
+    chifumiDeclined.value = new Set();
+    chifumiDoomed.value = new Set();
+    pendingBearer.value = null;
   }
 
   /** Recycle toute la main du joueur, re-mélange, re-pioche (−1). */
@@ -987,6 +995,18 @@ export const useGameStore = defineStore("game", () => {
   /** Finit le tour : pioche jusqu'aux PA (règle Wakfu) puis passe la main. */
   function endTurn(): void {
     const active = state.value.turn.active;
+    // Une fenêtre d'interaction locale OUVERTE (Kanigrou Chi-Fu-Mi / Échec Critique)
+    // doit être résolue AVANT de finir le tour — sinon on abandonnerait le combat en
+    // cours en laissant un état orphelin (jeton chifumiShield/pendingChifumi) qui
+    // fuirait dans les tours suivants. NB : pour un Kanigrou ATTAQUANT sous le feu,
+    // la perspective du mini-jeu = le joueur actif, donc le bouton « Fin du tour »
+    // pourrait apparaître ; on refuse ici (et l'UI le masque aussi).
+    if (pendingChifumi.value || pendingResolution.value) {
+      rejectMove(
+        "Résous d'abord la fenêtre en cours (Chi-Fu-Mi / Échec Critique).",
+      );
+      return;
+    }
     // En ligne, seul le joueur DONT c'est le tour peut le finir (en local
     // hot-seat, la perspective suit le joueur actif, donc la garde est neutre).
     if (online.value && active !== mySeat.value) {
@@ -1091,6 +1111,13 @@ export const useGameStore = defineStore("game", () => {
     ruleError.value = null;
     engine.reset();
     turnStartFiredOn.value = null;
+    // Purge défensive des fenêtres d'interaction locales (comme startSandbox) :
+    // quitter en pleine fenêtre ne doit rien laisser fuir vers la partie suivante.
+    pendingResolution.value = null;
+    pendingChifumi.value = null;
+    chifumiDeclined.value = new Set();
+    chifumiDoomed.value = new Set();
+    pendingBearer.value = null;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -1266,6 +1293,10 @@ export const useGameStore = defineStore("game", () => {
     seat: Seat,
     frames: EffectFrame[],
     cardName: string,
+    // Journal « effet résolu / pouvoir activé » : émis UNIQUEMENT si l'effet se
+    // résout vraiment maintenant (pas mis en attente pour une fenêtre d'annulation
+    // Échec Critique) — sinon le log affirmerait à tort qu'un effet annulé a eu lieu.
+    activatedLog?: string,
   ): void {
     if (opponentCancelCardId(seat)) {
       pendingResolution.value = {
@@ -1283,6 +1314,7 @@ export const useGameStore = defineStore("game", () => {
       );
       return;
     }
+    if (activatedLog) dispatch(say(seat, activatedLog));
     for (const f of frames) engine.enqueueEffect(f);
   }
 
@@ -1812,12 +1844,6 @@ export const useGameStore = defineStore("game", () => {
       if (!reaction && state.value.turn.phase !== "principale")
         return rejectMove("On ne joue des cartes qu'en Phase Principale.");
       const atom = hand[0];
-      dispatch(
-        say(
-          seat,
-          `Pouvoir activé (depuis la main) — ${card.name} : « ${atom.text} »`,
-        ),
-      );
       enqueuePlayed(
         seat,
         [
@@ -1830,6 +1856,7 @@ export const useGameStore = defineStore("game", () => {
           },
         ],
         card.name,
+        `Pouvoir activé (depuis la main) — ${card.name} : « ${atom.text} »`,
       );
       return true;
     }
@@ -1875,10 +1902,6 @@ export const useGameStore = defineStore("game", () => {
           visibility: { faceDown: false, visibleTo: "all" },
           preservesIdentity: false,
         }),
-        say(
-          seat,
-          `Pouvoir activé (bannissement depuis la Défausse) — ${card.name} : « ${atom.text} »`,
-        ),
       );
       enqueuePlayed(
         seat,
@@ -1893,6 +1916,7 @@ export const useGameStore = defineStore("game", () => {
           },
         ],
         card.name,
+        `Pouvoir activé (bannissement depuis la Défausse) — ${card.name} : « ${atom.text} »`,
       );
       return true;
     }
@@ -2022,7 +2046,6 @@ export const useGameStore = defineStore("game", () => {
       // cf. compileDiscardCountCost) : pose le jeton powerUses0 sur la source.
       if (atom.oncePerTurn)
         dispatch(incCounterVerb(seat, instanceId, "powerUses0", 1, true));
-      dispatch(say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`));
       enqueuePlayed(
         seat,
         [
@@ -2042,6 +2065,7 @@ export const useGameStore = defineStore("game", () => {
           },
         ],
         card.name,
+        `Pouvoir activé — ${card.name} : « ${atom.text} »`,
       );
       return true;
     }
@@ -2071,21 +2095,20 @@ export const useGameStore = defineStore("game", () => {
           visibility: { faceDown: false, visibleTo: "all" },
           preservesIdentity: false,
         }),
-        say(
-          seat,
-          `Pouvoir activé (${isBanish ? "bannissement" : "sacrifice"}) — ${card.name} : « ${atom.text} »`,
-        ),
       );
     } else {
-      dispatch(
-        {
-          actor: seat,
-          type: "SET_ORIENTATION",
-          payload: { instanceId, orientation: "tapped" },
-        },
-        say(seat, `Pouvoir activé — ${card.name} : « ${atom.text} »`),
-      );
+      dispatch({
+        actor: seat,
+        type: "SET_ORIENTATION",
+        payload: { instanceId, orientation: "tapped" },
+      });
     }
+    // Journal du pouvoir activé — émis seulement s'il se résout (pas mis en attente
+    // pour une fenêtre d'annulation Échec Critique), via enqueuePlayed.
+    const activatedLog =
+      atom.cost === "sacrificeSelf" || atom.cost === "banishSelf"
+        ? `Pouvoir activé (${atom.cost === "banishSelf" ? "bannissement" : "sacrifice"}) — ${card.name} : « ${atom.text} »`
+        : `Pouvoir activé — ${card.name} : « ${atom.text} »`;
     enqueuePlayed(
       seat,
       [
@@ -2099,6 +2122,7 @@ export const useGameStore = defineStore("game", () => {
         },
       ],
       card.name,
+      activatedLog,
     );
     return true;
   }

@@ -161,6 +161,19 @@ describe("Kanigrou — Chi-Fu-Mi (prévention pré-dégâts en combat)", () => {
     ).toBe(0);
   });
 
+  it("finir le tour est REFUSÉ tant que le Chi-Fu-Mi n'est pas résolu (pas de fuite)", () => {
+    const { store, kani } = setupCombat();
+    store.combatResolve();
+    expect(store.pendingChifumi).not.toBeNull();
+    store.endTurn();
+    // refusé : la fenêtre reste ouverte, aucun état orphelin, tour inchangé.
+    expect(store.ruleError).toContain("Chi-Fu-Mi");
+    expect(store.pendingChifumi).not.toBeNull();
+    expect(
+      store.state.instances[kani].counters.tokens?.chifumiShield ?? 0,
+    ).toBe(0);
+  });
+
   it("sans pouvoir Chi-Fu-Mi : combat résolu normalement (aucun mini-jeu)", () => {
     const { store, kani } = setupCombat("plain-test"); // bloqueur sans le pouvoir
     store.combatResolve();
