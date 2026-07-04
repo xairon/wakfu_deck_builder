@@ -21,6 +21,15 @@ import type { CompiledEffect } from "@/types/cards";
 export type CardScriptEntry = CompiledEffect | { kind: "ruling" | "errata" };
 
 export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
+  // « Placez l'un de vos Alliés ou Héros en bloqueur devant l'Allié ou Héros
+  //   attaquant de votre choix. » (Bond, Action jouée par le défenseur en fenêtre
+  //   de réaction) → accorde 1 bloqueur BONUS au-delà des PM (grantBonusBlock) ;
+  //   le joueur déclare ensuite ce bloqueur via l'UI de blocage (légalité Agilité
+  //   704 conservée par eligibleBlockers). Le DSL ne gère pas la manipulation de
+  //   combat → script direct.
+  "bond-incarnam": {
+    0: { trigger: "onPlay", ops: [{ op: "grantBonusBlock", n: 1 }] },
+  },
   // « Le Léopardo gagne +3 en Force [.] jusqu'à la fin du tour.
   //   N'utilisez ce pouvoir qu'une seule fois par tour. »
   // → pouvoir activé : l'inclinaison garantit l'unique utilisation par tour.

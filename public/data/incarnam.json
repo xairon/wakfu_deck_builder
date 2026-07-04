@@ -1868,7 +1868,17 @@
         "description": "Placez l'un de vos Alliés ou Héros en bloqueur devant l'Allié ou Héros attaquant de votre choix.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "grantBonusBlock",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["grant-bonus-block"]
       },
       {
         "description": "Bond peut amener le nombre de bloqueurs à dépasser les PM du Héros sans pour autant rendre la Phase de Déclaration des Bloqueurs illégale. Un Héros ou Allié ne possédant pas Agilité ne peut pas être placé en bloqueur d'un Héros ou Allié possédant Agilité.",

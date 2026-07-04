@@ -396,6 +396,18 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
+  // « Placez l'un de vos Alliés ou Héros en bloqueur devant l'attaquant de votre
+  // choix. » (Bond) : accorde N bloqueur(s) BONUS au-delà de la limite de PM du
+  // combat en cours (ruling : Bond peut dépasser les PM). Op SANS cible
+  // interactive : le joueur DÉCLARE ensuite le bloqueur via l'UI de blocage
+  // normale (combatToggleBlock/combatChooseBlockTarget — légalité Agilité 704
+  // conservée). Effet LOCAL sur le combat (deps.grantBonusBlock ; no-op en ligne,
+  // combat serveur-autoritatif). Portée combat (l'objet combat est recréé à
+  // chaque combat). Sans combat déclaré → no-op fidèle.
+  z.object({
+    op: z.literal("grantBonusBlock"),
+    n: z.number(),
+  }),
   // « Les Dommages infligés par les POUVOIRS de vos Alliés sont augmentés de N
   // jusqu'à la fin du tour » (Guma Bobeule) : jeton de tour `teamPowerDmgMod`
   // sur le Héros du contrôleur (cumulatif — 2 Gumas = +2 ; purgé en fin de tour,

@@ -1404,6 +1404,7 @@ export const useGameStore = defineStore("game", () => {
       matchPhase.value = "finished";
     },
     removeFromCombat,
+    grantBonusBlock,
   });
 
   /**
@@ -1437,6 +1438,17 @@ export const useGameStore = defineStore("game", () => {
     if (c.riposteFrom === instanceId) c.riposteFrom = null;
     c.riposteCandidates = c.riposteCandidates.filter((id) => id !== instanceId);
     if (c.pendingBlocker === instanceId) c.pendingBlocker = null;
+  }
+
+  /**
+   * BLOQUEUR BONUS (op grantBonusBlock — Bond) : relève de N la limite de
+   * bloqueurs du combat en cours (combatToggleBlock lit `pm + bonusBlocks`).
+   * Local uniquement (en ligne, le combat est serveur-autoritatif → no-op).
+   */
+  function grantBonusBlock(n: number): void {
+    const c = combat.value;
+    if (!c || online.value) return;
+    c.bonusBlocks = (c.bonusBlocks ?? 0) + n;
   }
 
   /**
@@ -1767,6 +1779,13 @@ export const useGameStore = defineStore("game", () => {
     pendingBlocker: string | null;
     /** 706.5 : siège qui réagit HORS de son tour (fenêtre de réaction). */
     reactingSeat: Seat | null;
+    /**
+     * Bloqueurs BONUS accordés ce combat AU-DELÀ de la limite de PM (Bond,
+     * ruling : « peut amener le nombre de bloqueurs à dépasser les PM »). La
+     * limite effective de combatToggleBlock devient `pm + bonusBlocks`. Portée
+     * combat (l'objet est recréé à chaque combat, remis à null en fin).
+     */
+    bonusBlocks?: number;
   } | null>(null);
 
   /** Attaquants à duel multi-bloqueurs (sans Géant) sans frappe choisie. */
@@ -2112,9 +2131,10 @@ export const useGameStore = defineStore("game", () => {
       }
       return;
     }
-    const pm = pmOf(rulesCtx(), def);
-    if (Object.keys(c.blocks).length >= pm) {
-      ruleError.value = `Maximum ${pm} bloqueur(s) — limite de PM (704).`;
+    // Limite de PM (704) + bloqueurs BONUS accordés ce combat (Bond, 706.5).
+    const limit = pmOf(rulesCtx(), def) + (c.bonusBlocks ?? 0);
+    if (Object.keys(c.blocks).length >= limit) {
+      ruleError.value = `Maximum ${limit} bloqueur(s) — limite de PM (704).`;
       return;
     }
     // 704 — assignation : 1 seul attaquant → auto ; sinon le défenseur choisit

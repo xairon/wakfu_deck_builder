@@ -424,6 +424,13 @@ export const MECHANICS: Mechanic[] = [
       "La cible (attaquant ou bloqueur du combat en cours) cesse de participer au combat et revient inclinée dans le Monde — elle n'inflige ni ne subit les Dommages de la résolution.",
   },
   {
+    id: "grant-bonus-block",
+    label: "Bloqueur bonus (au-delà des PM)",
+    category: "contrôle",
+    glossary:
+      "Accorde un bloqueur supplémentaire au-delà de la limite de PM pour le combat en cours (Bond) ; le joueur déclare ensuite ce bloqueur via l'interface de blocage habituelle (légalité Agilité conservée).",
+  },
+  {
     id: "riposte-bearer",
     label: "Riposte du Porteur",
     category: "dégâts",
@@ -527,6 +534,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   untapTarget: "untap-target",
   damageRiposteSource: "riposte-bearer",
   removeFromCombatTarget: "remove-from-combat",
+  grantBonusBlock: "grant-bonus-block",
   buffTeamPowerDamageTurn: "team-power-damage-boost",
   lookTopPick: "look-top",
   tapMultiTarget: "tap-target",

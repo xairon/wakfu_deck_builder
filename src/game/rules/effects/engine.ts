@@ -184,6 +184,12 @@ export interface EffectEngineDeps {
    * combat), le retrait est un no-op — l'inclinaison journalisée reste émise.
    */
   removeFromCombat?: (instanceId: string) => void;
+  /**
+   * BLOQUEUR BONUS (op grantBonusBlock — Bond) : accorde N bloqueur(s) au-delà de
+   * la limite de PM du combat EN COURS (ref local du store). Optionnelle : absente
+   * (tests isolés / sans combat) → no-op fidèle.
+   */
+  grantBonusBlock?: (n: number) => void;
 }
 
 /**
@@ -1529,6 +1535,17 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             payload: { instanceId: sourceId!, orientation: "upright" },
           });
         }
+      } else if (op.op === "grantBonusBlock") {
+        // « Placez … en bloqueur … » (Bond) : accorde N bloqueur(s) BONUS au-delà
+        // des PM pour le combat en cours (ref local). Le joueur déclare ensuite le
+        // bloqueur via l'UI habituelle. Sans combat → no-op fidèle.
+        deps.grantBonusBlock?.(op.n);
+        deps.dispatch(
+          say(
+            seat,
+            `${cardName} : un bloqueur supplémentaire peut être déclaré (au-delà des PM).`,
+          ),
+        );
       } else if (op.op === "loseStatTurn") {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) {
