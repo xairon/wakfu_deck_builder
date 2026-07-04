@@ -56,6 +56,7 @@ import {
   forceValue,
   havreSacHasRoom,
   normElement,
+  normWord,
   planCost,
   playDestination,
   playEffects,
@@ -70,6 +71,7 @@ import {
   turnStartEffects,
   victoryFromState,
   whyCannotDeclareAttack,
+  powerConditionReason,
   whyCannotPlay,
 } from "@/game/rules";
 import { useCardStore } from "@/stores/cardStore";
@@ -1357,6 +1359,27 @@ export const useGameStore = defineStore("game", () => {
         "une créature";
       drafts.push(say(seat, `${card.name} est équipé(e) sur ${bearerName}.`));
     }
+    // RÉCENCE DE JEU (Fécaline : « … que lorsque vous venez de jouer une carte
+    // Quête ou Parchemin ») : jeton TURN-scoped `recentQuestParch` sur le Héros,
+    // ÉCRASÉ à CHAQUE jeu (1 si la carte jouée est Quête/Parchemin, 0 sinon →
+    // stricte récence), purgé en début de tour. Lu par le gate d'activation
+    // (recentlyPlayedQuestParch).
+    const recentHeroId = state.value.seats[seat].heroInstanceId;
+    if (recentHeroId) {
+      const isQuestParch = (card.subTypes ?? []).some((s) => {
+        const n = normWord(s);
+        return n === "quete" || n === "parchemin";
+      });
+      drafts.push(
+        setCounterVerb(
+          seat,
+          recentHeroId,
+          "recentQuestParch",
+          isQuestParch ? 1 : 0,
+          true,
+        ),
+      );
+    }
     dispatch(...drafts);
     if (actionAtoms.length) {
       // actionAtoms n'est rempli que si TOUS les effets imprimés se compilent
@@ -1557,6 +1580,17 @@ export const useGameStore = defineStore("game", () => {
     }
     if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
       return rejectMove("La carte doit être en jeu.");
+    // RESTRICTION DE POUVOIR « Ne jouez ce pouvoir que lorsque … » (Fécaline :
+    // récence Quête/Parchemin) : vérifiée AVANT toute consommation (inclinaison,
+    // verrou, coût). Réutilise l'évaluateur des restrictions de jeu (playCondition).
+    if (atom.playCondition) {
+      const pcReason = powerConditionReason(
+        rulesCtx(),
+        seat,
+        atom.playCondition,
+      );
+      if (pcReason) return rejectMove(pcReason);
+    }
     // CONDITION D'ACTIVATION « N'utilisez ce pouvoir que si le Porteur de
     // <self> est attaquant ou bloqueur » (Dora) : vérifiée AVANT toute
     // consommation (inclinaison, verrou, coût). Porteur = l'instance dont

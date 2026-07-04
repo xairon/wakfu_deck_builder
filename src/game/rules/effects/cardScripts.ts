@@ -30,6 +30,19 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   "bond-incarnam": {
     0: { trigger: "onPlay", ops: [{ op: "grantBonusBlock", n: 1 }] },
   },
+  // « Réaction. [Incliner] : Gagnez 1 XP. Ne jouez ce pouvoir que lorsque vous
+  //   venez de jouer une carte Quête ou Parchemin. » (Fécaline la Sage) —
+  //   pouvoir-tap gagnant 1 XP, GATÉ par une restriction de RÉCENCE de jeu
+  //   (playCondition recentlyPlayedQuestParch, jugée à l'activation par
+  //   powerConditionReason ; jeton posé par playFromHand). Le DSL ne gère pas la
+  //   récence de jeu → script direct.
+  "fecaline-la-sage-incarnam": {
+    0: {
+      trigger: "onTap",
+      playCondition: { cond: "recentlyPlayedQuestParch" },
+      ops: [{ op: "gainXp", n: 1 }],
+    },
+  },
   // « Détruisez un de vos Tofus : Mettez en jeu le Polter Tofu gratuitement de
   //   votre main. Il apparaît incliné. » — pouvoir ACTIVÉ DEPUIS LA MAIN
   //   (onHandActivate) : coût = détruire un de vos Tofus (costDestroyControlled,

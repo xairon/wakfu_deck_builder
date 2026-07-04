@@ -19,6 +19,9 @@ const TURN_TOKENS = new Set([
   "paMod",
   "pmMod",
   "geantMod",
+  // RÉCENCE DE JEU (Fécaline) : « venez de jouer une Quête/Parchemin » — jeton
+  // posé sur le Héros à chaque playFromHand, purgé en début de tour.
+  "recentQuestParch",
   // « gagne <Mot-clé> jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) —
   // jetons TURN-scoped purgés en fin de tour, comme forceMod (geantCombatMod, lui,
   // est couvert par le suffixe *CombatMod ⇒ portée combat). Un jeton par mot-clé

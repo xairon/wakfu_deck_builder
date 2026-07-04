@@ -77,6 +77,13 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
     cond: z.literal("heroInZone"),
     zone: z.enum(["monde", "havreSac"]),
   }),
+  // « … que lorsque vous VENEZ DE JOUER une carte Quête ou Parchemin » (Fécaline) :
+  // RÉCENCE de jeu — la DERNIÈRE carte jouée ce tour par l'acteur était-elle une
+  // Quête ou un Parchemin ? Lu sur le jeton TURN-scoped `recentQuestParch` du
+  // Héros, posé à CHAQUE playFromHand (1 si Quête/Parchemin, 0 sinon → stricte
+  // récence : rejouer autre chose annule), purgé en début de tour. Restriction de
+  // POUVOIR (gate d'activation dans activateTapPower), pas de résolution.
+  z.object({ cond: z.literal("recentlyPlayedQuestParch") }),
 ]);
 
 // ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────

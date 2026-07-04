@@ -6306,10 +6306,23 @@
     },
     "effects": [
       {
-        "description": "Gagnez 1 XP. Ne jouez ce pouvoir que lorsque vous venez de jouer une carte Quête ou Parchemin.",
+        "description": "Réaction. [Incliner] : Gagnez 1 XP. Ne jouez ce pouvoir que lorsque vous venez de jouer une carte Quête ou Parchemin.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "playCondition": {
+            "cond": "recentlyPlayedQuestParch"
+          },
+          "ops": [
+            {
+              "op": "gainXp",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["gain-xp"]
       }
     ],
     "keywords": [],

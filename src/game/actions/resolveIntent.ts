@@ -47,6 +47,7 @@ import {
   pmOf,
 } from "../rules/legality.ts";
 import { planCost } from "../rules/resources.ts";
+import { normWord } from "../rules/cardAttrs.ts";
 import { attackPmBonus, cannotCarryEquipment } from "../rules/modifiers.ts";
 import { resolveCombat } from "../rules/combat.ts";
 import { activeGlobalMods } from "../rules/effects/damageMods.ts";
@@ -186,6 +187,26 @@ export function resolveIntent(
         plan.producers.includes(sacId)
       ) {
         events.push(setCounter(seat, sacId, "sacBonusUsed", 1, true));
+      }
+      // RÉCENCE DE JEU (Fécaline) : jeton `recentQuestParch` sur le Héros (1 si la
+      // carte jouée est Quête/Parchemin, 0 sinon), écrasé à chaque jeu — MIROIR du
+      // chemin local (gameStore playFromHand). Sans ça, le pouvoir de Fécaline
+      // serait injouable en ligne (le gate lit ce jeton).
+      const heroId = state.seats[seat].heroInstanceId;
+      if (heroId) {
+        const isQuestParch = (card.subTypes ?? []).some((s) => {
+          const n = normWord(s);
+          return n === "quete" || n === "parchemin";
+        });
+        events.push(
+          setCounter(
+            seat,
+            heroId,
+            "recentQuestParch",
+            isQuestParch ? 1 : 0,
+            true,
+          ),
+        );
       }
       return { events };
     }

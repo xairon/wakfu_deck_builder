@@ -70,6 +70,26 @@ function combatPlayWindow(ctx: RulesCtx, seat: Seat, card: Card): boolean {
  * « … que si votre Héros se trouve dans son Havre-Sac »). Les autres condSpecs
  * ne portent pas de sémantique de play-time → ignorés (aucune restriction).
  */
+/** Un `playCondition` de restriction est-il SATISFAIT ? (heroInZone, récence). */
+function playConditionOk(
+  ctx: RulesCtx,
+  seat: Seat,
+  pc: NonNullable<
+    NonNullable<Card["effects"]>[number]["compiled"]
+  >["playCondition"],
+): boolean {
+  const heroId = ctx.state.seats[seat].heroInstanceId;
+  const hero = heroId ? ctx.state.instances[heroId] : null;
+  if (pc?.cond === "heroInZone")
+    return !!hero && hero.location.zone === pc.zone;
+  if (pc?.cond === "recentlyPlayedQuestParch")
+    return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
+  return true; // condSpec sans sémantique de restriction → aucune contrainte
+}
+
+/** Message de refus si une restriction de PLAY (carte jouée) n'est pas remplie.
+ * N'examine QUE les effets de mise en jeu (onPlay/onArrive) — les restrictions
+ * de POUVOIR (onTap : Fécaline) sont jugées à l'activation (powerConditionReason). */
 function playConditionReason(
   ctx: RulesCtx,
   seat: Seat,
@@ -77,15 +97,38 @@ function playConditionReason(
 ): string | null {
   for (const e of card.effects ?? []) {
     const pc = e.compiled?.playCondition;
-    if (pc?.cond !== "heroInZone") continue;
-    const heroId = ctx.state.seats[seat].heroInstanceId;
-    const hero = heroId ? ctx.state.instances[heroId] : null;
-    if (!hero || hero.location.zone !== pc.zone)
-      return pc.zone === "havreSac"
-        ? "Votre Héros doit être dans son Havre-Sac pour jouer cette carte."
-        : "Votre Héros doit être dans le Monde pour jouer cette carte.";
+    if (!pc || e.compiled?.trigger === "onTap") continue;
+    if (!playConditionOk(ctx, seat, pc)) return reasonFor(pc);
   }
   return null;
+}
+
+/** Message de refus si le playCondition d'un POUVOIR (atom onTap) n'est pas
+ * rempli — Fécaline (« Ne jouez ce pouvoir que lorsque vous venez de jouer une
+ * Quête ou un Parchemin »). Appelé par activateTapPower. */
+export function powerConditionReason(
+  ctx: RulesCtx,
+  seat: Seat,
+  pc: NonNullable<
+    NonNullable<Card["effects"]>[number]["compiled"]
+  >["playCondition"],
+): string | null {
+  if (!pc) return null;
+  return playConditionOk(ctx, seat, pc) ? null : reasonFor(pc);
+}
+
+function reasonFor(
+  pc: NonNullable<
+    NonNullable<Card["effects"]>[number]["compiled"]
+  >["playCondition"],
+): string {
+  if (pc?.cond === "heroInZone")
+    return pc.zone === "havreSac"
+      ? "Votre Héros doit être dans son Havre-Sac pour jouer cette carte."
+      : "Votre Héros doit être dans le Monde pour jouer cette carte.";
+  if (pc?.cond === "recentlyPlayedQuestParch")
+    return "Vous devez venir de jouer une carte Quête ou Parchemin.";
+  return "Condition de jeu non remplie.";
 }
 
 export function whyCannotPlay(

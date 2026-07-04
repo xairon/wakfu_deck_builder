@@ -754,6 +754,14 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const hero = heroId ? deps.getState().instances[heroId] : null;
         return !!hero && hero.location.zone === cond.zone;
       }
+      case "recentlyPlayedQuestParch": {
+        // « vous venez de jouer une Quête ou un Parchemin » : jeton de récence du
+        // Héros (posé par playFromHand). Sert de restriction de POUVOIR (Fécaline,
+        // évaluée à l'activation) ; ce cas couvre aussi un usage en `conditional`.
+        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const hero = heroId ? deps.getState().instances[heroId] : null;
+        return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
+      }
     }
   }
 
