@@ -12375,7 +12375,24 @@
         "description": "Détruisez un de vos Tofus : Mettez en jeu le Polter Tofu gratuitement de votre main. Il apparaît incliné.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onHandActivate",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costDestroyControlled",
+              "sub": "tofu",
+              "excludeSource": true,
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "putSelfInPlay",
+              "tapped": true
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["cost-destroy-controlled", "put-in-play"]
       },
       {
         "description": "Vous pouvez utiliser ce pouvoir à chaque moment où vous pourriez jouer une Action. Le pouvoir du Polter Tofu ne peut être utilisé que depuis la Main.",

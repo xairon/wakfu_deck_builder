@@ -30,6 +30,28 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   "bond-incarnam": {
     0: { trigger: "onPlay", ops: [{ op: "grantBonusBlock", n: 1 }] },
   },
+  // « Détruisez un de vos Tofus : Mettez en jeu le Polter Tofu gratuitement de
+  //   votre main. Il apparaît incliné. » — pouvoir ACTIVÉ DEPUIS LA MAIN
+  //   (onHandActivate) : coût = détruire un de vos Tofus (costDestroyControlled,
+  //   sub Tofu, hors la source qui est en main) ; effet = putSelfInPlay incliné.
+  //   Le DSL ne gère pas l'activation-en-main → script direct. « Vous pouvez
+  //   utiliser ce pouvoir à chaque moment où vous pourriez jouer une Action »
+  //   (ruling [1]) → gate tour/réaction dans activateTapPower.
+  "polter-tofu-incarnam": {
+    0: {
+      trigger: "onHandActivate",
+      cost: "paidOps",
+      ops: [
+        {
+          op: "costDestroyControlled",
+          sub: "tofu",
+          excludeSource: true,
+          zones: ["monde", "havreSac"],
+        },
+        { op: "putSelfInPlay", tapped: true },
+      ],
+    },
+  },
   // « Le Léopardo gagne +3 en Force [.] jusqu'à la fin du tour.
   //   N'utilisez ce pouvoir qu'une seule fois par tour. »
   // → pouvoir activé : l'inclinaison garantit l'unique utilisation par tour.

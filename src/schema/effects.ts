@@ -509,6 +509,17 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     levelIn: z.array(z.number()).optional(),
     tapped: z.boolean().optional(),
   }),
+  // « Mettez en jeu <self> [gratuitement] de votre main. Il apparaît incliné. »
+  //   (Polter Tofu / Tofu Céleste) : la SOURCE de l'effet (dans la MAIN) se met
+  //   ELLE-MÊME en jeu (Monde), inclinée si `tapped`. Ses effets d'apparition
+  //   partent en cascade (queueArrivalEffects), jeton d'arrivée posé (mal
+  //   d'invocation). No-op fidèle si la source n'est pas/plus en main. Distinct de
+  //   putInPlay (qui PIOCHE une carte au choix dans une pile) : ici la cible EST
+  //   la source, pas un pick.
+  z.object({
+    op: z.literal("putSelfInPlay"),
+    tapped: z.boolean().optional(),
+  }),
   z.object({ op: z.literal("shuffleDeck") }),
   // « Mettez en jeu un jeton "Monstre - <Famille>" de Force N [Élément]. »
   //   (Abraknyde, Vampyro…) → createToken : MINTE une nouvelle créature en jeu
@@ -1105,6 +1116,13 @@ export const compiledEffectSchema = z.object({
     // (bus damageDealt, toute source — combat, pouvoir, riposte : le texte ne
     // restreint pas). Émis par selfDamagedFrames (triggers.ts).
     "onDamageToSelf",
+    // POUVOIR ACTIVÉ DEPUIS LA MAIN (Polter Tofu : « … : Mettez en jeu le Polter
+    // Tofu … de votre main ») : un pouvoir dont la SOURCE est dans la MAIN et qui
+    // se met elle-même en jeu (putSelfInPlay). Activable au moment où l'on
+    // pourrait jouer une Action ; distinct de onTap (source EN JEU). Le store
+    // l'expose via une action « activer » sur la carte en main (activateTapPower
+    // route les cartes en main portant ce trigger).
+    "onHandActivate",
   ]),
   optional: z.boolean().optional(),
   // "sacrificeSelf" : le coût est de sacrifier la SOURCE (« Détruisez [cette

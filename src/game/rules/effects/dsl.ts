@@ -3966,3 +3966,21 @@ export function tapPowers(
   }
   return atoms;
 }
+
+/**
+ * Pouvoirs ACTIVÉS DEPUIS LA MAIN d'une carte (trigger onHandActivate — Polter
+ * Tofu). Ne lit QUE la forme compilée (CARD_SCRIPTS) : aucun re-parse de texte
+ * (ces pouvoirs sont scriptés). Le store les propose via une action « activer »
+ * sur la carte en main.
+ */
+export function handPowers(card: Card | null): EffectAtom[] {
+  if (!card) return [];
+  const effects: CardEffect[] = card.effects ?? [];
+  const atoms: EffectAtom[] = [];
+  for (const e of effects) {
+    if (e?.kind) continue;
+    if (e.compiled && e.compiled.trigger === "onHandActivate")
+      atoms.push({ ...e.compiled, text: String(e.description ?? "").trim() });
+  }
+  return atoms;
+}

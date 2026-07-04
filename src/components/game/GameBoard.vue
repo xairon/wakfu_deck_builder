@@ -1091,16 +1091,18 @@ function attackWithSelected(): void {
 }
 const canActivateSelected = computed(() => {
   const inst = selectedInst.value;
+  if (!store.assist || store.effectTargeting || !inst) return false;
+  if (inst.controller !== me.value) return false;
+  // POUVOIR DEPUIS LA MAIN (Polter Tofu) : carte en main portant un pouvoir
+  // activable depuis la main — orientation non pertinente ; la légalité de timing
+  // (tour / réaction) est jugée par activateTapPower (refus expliqué en toast).
+  if (inst.location.zone === "main") return store.hasHandPower(inst.instanceId);
   return (
-    store.assist &&
-    !store.effectTargeting &&
-    !!inst &&
     // EN COMBAT, seuls les pouvoirs CONDITIONNÉS au combat (Dora : « … que si le
     // Porteur est attaquant ou bloqueur ») restent proposés — la légalité fine
     // (tour / fenêtre de réaction / rôle du Porteur) est jugée par
     // activateTapPower, refus expliqué en toast.
     (!store.combat || store.tapPowerNeedsCombat(inst.instanceId)) &&
-    inst.controller === me.value &&
     inst.orientation === "upright" &&
     (inst.location.zone === "monde" || inst.location.zone === "havreSac") &&
     store.hasTapPower(inst.instanceId)

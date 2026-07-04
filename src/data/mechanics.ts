@@ -512,6 +512,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   discardFromHand: "discard-from-hand",
   searchDeck: "search-deck",
   putInPlay: "put-in-play",
+  putSelfInPlay: "put-in-play",
   createToken: "create-token",
   shuffleDeck: "shuffle-deck",
   destroySelf: "destroy-self",

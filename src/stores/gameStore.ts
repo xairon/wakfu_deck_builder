@@ -65,6 +65,7 @@ import {
   havreSacBanishEvents,
   resourceProducers,
   stateBasedDestroyEvents,
+  handPowers,
   tapPowers,
   turnStartEffects,
   victoryFromState,
@@ -1460,14 +1461,48 @@ export const useGameStore = defineStore("game", () => {
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
     if (!inst || !card) return rejectMove("Carte inconnue.");
+    if (inst.controller !== perspective.value)
+      return rejectMove("Vous ne contrôlez pas cette carte.");
+    const seat = perspective.value;
+    // POUVOIR ACTIVÉ DEPUIS LA MAIN (Polter Tofu : « Détruisez un de vos Tofus :
+    // Mettez en jeu le Polter Tofu … de votre main ») : la source, EN MAIN, se met
+    // elle-même en jeu (putSelfInPlay). Timing = « quand on pourrait jouer une
+    // Action » : même garde tour / fenêtre de réaction que playFromHand. Le coût
+    // payé (détruire un Tofu, 1re op) s'abandonne SANS cible → la carte reste en
+    // main (aucune pré-consommation à protéger).
+    if (inst.location.zone === "main") {
+      const hand = handPowers(card);
+      if (!hand.length)
+        return rejectMove("Pas de pouvoir activable depuis la main.");
+      const reaction = combat.value?.reactingSeat === seat;
+      if (!reaction && state.value.turn.active !== perspective.value)
+        return rejectMove("Ce n'est pas votre tour.");
+      // Cohérence avec whyCannotPlay : hors fenêtre de réaction, on ne joue
+      // qu'en Phase Principale (les autres phases sont vestigiales aujourd'hui,
+      // mais on garde la garde alignée sur playFromHand).
+      if (!reaction && state.value.turn.phase !== "principale")
+        return rejectMove("On ne joue des cartes qu'en Phase Principale.");
+      const atom = hand[0];
+      dispatch(
+        say(
+          seat,
+          `Pouvoir activé (depuis la main) — ${card.name} : « ${atom.text} »`,
+        ),
+      );
+      engine.enqueueEffect({
+        seat,
+        cardName: card.name,
+        ops: atom.ops,
+        sourceId: instanceId,
+        powerSourceId: instanceId,
+      });
+      return true;
+    }
     // FACE ACTIVE d'un Héros (W56) : le pouvoir-tap du verso (niveau 2) n'est
     // activable que face verso, et réciproquement.
     const atoms = tapPowers(card, inst.face === "verso" ? "verso" : "recto");
     if (!atoms.length)
       return rejectMove("Pas de pouvoir à inclinaison automatisé.");
-    if (inst.controller !== perspective.value)
-      return rejectMove("Vous ne contrôlez pas cette carte.");
-    const seat = perspective.value;
     // SÉLECTION MULTI-POUVOIRS (Guy Yomtella : pwr0 « [Incliner],[Air] : … »
     // vs pwr1 « [Air][Air] : Redressez … ») : une carte peut porter plusieurs
     // pouvoirs onTap. On active le PREMIER compatible avec l'orientation courante
@@ -1712,6 +1747,13 @@ export const useGameStore = defineStore("game", () => {
       !!card &&
       tapPowers(card, inst?.face === "verso" ? "verso" : "recto").length > 0
     );
+  }
+
+  /** Cette carte porte-t-elle un pouvoir ACTIVABLE DEPUIS LA MAIN (Polter Tofu) ?
+   * Sert à l'UI : proposer le bouton « activer » sur une carte en main. */
+  function hasHandPower(instanceId: string): boolean {
+    const card = getCard(state.value.instances[instanceId]?.cardId ?? null);
+    return !!card && handPowers(card).length > 0;
   }
 
   /** Le pouvoir-tap de cette carte exige-t-il un Porteur EN COMBAT (Dora) ?
@@ -2513,6 +2555,7 @@ export const useGameStore = defineStore("game", () => {
     effectTargetSkip: engine.effectTargetSkip,
     activateTapPower,
     hasTapPower,
+    hasHandPower,
     tapPowerNeedsCombat,
     effectPicking: engine.effectPicking,
     effectPickIds: engine.effectPickIds,

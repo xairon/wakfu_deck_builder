@@ -1535,6 +1535,30 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             payload: { instanceId: sourceId!, orientation: "upright" },
           });
         }
+      } else if (op.op === "putSelfInPlay") {
+        // « Mettez en jeu <self> de votre main. Il apparaît incliné. » (Polter
+        // Tofu) : la source, DANS LA MAIN, entre en Monde (inclinée si tapped),
+        // pose son jeton d'arrivée (mal d'invocation) et déclenche ses effets
+        // d'apparition. No-op fidèle si la source n'est pas/plus en main.
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        if (src && src.location.zone === "main") {
+          // deps.moveTo pose déjà le jeton d'arrivée (mal d'invocation) à l'entrée
+          // en Monde (cf. gameStore moveTo → arrivedTurn).
+          deps.moveTo(sourceId!, { zone: "monde" });
+          if (op.tapped)
+            deps.dispatch({
+              actor: seat,
+              type: "SET_ORIENTATION",
+              payload: { instanceId: sourceId!, orientation: "tapped" },
+            });
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} entre en jeu${op.tapped ? " (incliné)" : ""}.`,
+            ),
+          );
+          queueArrivalEffects(seat, deps.getCard(src.cardId), sourceId!);
+        }
       } else if (op.op === "grantBonusBlock") {
         // « Placez … en bloqueur … » (Bond) : accorde N bloqueur(s) BONUS au-delà
         // des PM pour le combat en cours (ref local). Le joueur déclare ensuite le
