@@ -170,6 +170,9 @@ export const useGameStore = defineStore("game", () => {
   // re-dérivation pure du journal redacté.
   const revealed = ref<Record<string, string>>({});
   const gameId = ref("local");
+  // Siège piloté par l'IA en mode « jouer contre l'ordinateur » (null hors mode
+  // bot). Lu par l'UI (masquer « passe l'appareil ») et le driver useBotOpponent.
+  const botSeat = ref<Seat | null>(null);
   // ── Jeu en ligne (clients de confiance) ─────────────────────────────────
   const online = ref(false);
   const mySeat = ref<Seat>("A");
@@ -873,6 +876,7 @@ export const useGameStore = defineStore("game", () => {
     chifumiDeclined.value = new Set();
     chifumiDoomed.value = new Set();
     pendingBearer.value = null;
+    botSeat.value = null;
   }
 
   /** Recycle toute la main du joueur, re-mélange, re-pioche (−1). */
@@ -1118,6 +1122,7 @@ export const useGameStore = defineStore("game", () => {
     chifumiDeclined.value = new Set();
     chifumiDoomed.value = new Set();
     pendingBearer.value = null;
+    botSeat.value = null;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -2973,6 +2978,7 @@ export const useGameStore = defineStore("game", () => {
     assistEffects,
     online,
     mySeat,
+    botSeat,
     gameId: () => gameId.value,
     connectOnline,
     disconnectOnline,

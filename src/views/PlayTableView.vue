@@ -57,6 +57,71 @@
     </section>
 
     <!-- Jeu en ligne (bêta) -->
+    <!-- Jouer contre l'ordinateur (IA locale) -->
+    <section class="border border-secondary/30 bg-secondary/[0.04] p-5">
+      <div>
+        <p class="eyebrow text-secondary">Jouer contre l'ordinateur</p>
+        <p class="mt-1 text-sm text-base-content/65">
+          Affronte une IA en local (règles assistées). Idéal pour tester les
+          decks starter — le bot joue, attaque et bloque tout seul.
+        </p>
+      </div>
+      <div class="mt-4 flex flex-wrap items-end gap-4">
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="text-base-content/60">Ton deck</span>
+          <select
+            v-model="botMyDeckId"
+            class="select select-bordered select-sm w-56 bg-base-200"
+            data-testid="vsbot-my-deck"
+          >
+            <optgroup label="Decks starter">
+              <option
+                v-for="d in INCARNAM_STARTERS"
+                :key="'s' + d.id"
+                :value="'starter:' + d.id"
+              >
+                {{ d.name }}
+              </option>
+            </optgroup>
+            <optgroup v-if="decks.length" label="Mes decks">
+              <option
+                v-for="d in decks"
+                :key="'d' + d.id"
+                :value="'deck:' + d.id"
+              >
+                {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+              </option>
+            </optgroup>
+          </select>
+        </label>
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="text-base-content/60">Deck de l'ordinateur</span>
+          <select
+            v-model="botOppDeckId"
+            class="select select-bordered select-sm w-56 bg-base-200"
+            data-testid="vsbot-opp-deck"
+          >
+            <option
+              v-for="d in INCARNAM_STARTERS"
+              :key="'o' + d.id"
+              :value="d.id"
+            >
+              {{ d.name }}
+            </option>
+          </select>
+        </label>
+        <button
+          class="btn btn-secondary btn-sm"
+          :disabled="!cardStore.cards.length || !botMyDeckId || !botOppDeckId"
+          data-testid="vsbot-start"
+          @click="startVsBot"
+        >
+          🤖 Jouer contre l'ordinateur
+        </button>
+      </div>
+    </section>
+    <div class="h-px w-full bg-base-content/20"></div>
+
     <section
       v-if="ONLINE_PLAY_ENABLED"
       class="border border-primary/30 bg-primary/[0.04] p-5"
@@ -575,6 +640,9 @@ import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
 import TutorialCoach from "@/components/game/TutorialCoach.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
+import { OFFICIAL_DECKS } from "@/data/officialDecks";
+import { buildOfficialDeck } from "@/composables/useOfficialDeckImport";
+import { useBotOpponent } from "@/composables/useBotOpponent";
 import { validateDeck } from "@/validators/deck";
 import { useToast } from "@/composables/useToast";
 import { useAuthStore } from "@/stores/authStore";
@@ -627,6 +695,53 @@ function concedeClick(): void {
 }
 
 const decks = computed<Deck[]>(() => deckStore.decks ?? []);
+
+// ── Jouer contre l'ordinateur (mode LOCAL vs IA heuristique) ─────────────────
+const INCARNAM_STARTERS = OFFICIAL_DECKS.filter(
+  (d) => d.extension === "incarnam",
+);
+// valeurs "starter:<id>" (deck officiel) ou "deck:<id>" (deck du joueur).
+const botMyDeckId = ref<string>("starter:" + (INCARNAM_STARTERS[0]?.id ?? ""));
+const botOppDeckId = ref<string>(INCARNAM_STARTERS[1]?.id ?? "");
+function resolveCardByName(name: string): Card | null {
+  return cardStore.cards.find((c) => c.name === name) ?? null;
+}
+function starterToDeck(id: string): Deck | null {
+  const od = INCARNAM_STARTERS.find((d) => d.id === id);
+  if (!od) return null;
+  const b = buildOfficialDeck(od, resolveCardByName);
+  if (b.heroMissing || b.havreMissing || b.missing.length) return null;
+  return {
+    id: "vsbot-" + od.id,
+    name: od.name,
+    hero: b.heroCard,
+    havreSac: b.havreSacCard,
+    cards: b.deckCards.map((dc) => ({ card: dc.card, quantity: dc.quantity })),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+function resolveMyBotDeck(): Deck | null {
+  const v = botMyDeckId.value;
+  if (v.startsWith("deck:"))
+    return decks.value.find((d) => d.id === v.slice(5)) ?? null;
+  if (v.startsWith("starter:")) return starterToDeck(v.slice(8));
+  return null;
+}
+function startVsBot(): void {
+  const mine = resolveMyBotDeck();
+  const opp = starterToDeck(botOppDeckId.value);
+  if (!mine || !opp) {
+    toast.addToast("Deck indisponible (cartes non chargées ?).", {
+      type: "warning",
+    });
+    return;
+  }
+  store.startSandbox(mine, opp, "A");
+  store.botSeat = "B"; // l'IA pilote le siège B (useBotOpponent, monté ci-dessous)
+}
+// Driver IA : actif dès que store.botSeat est renseigné (gate interne).
+const botDriver = useBotOpponent(store);
 // Masqué par défaut : le plateau occupe toute la largeur (cartes plus grandes).
 // Le joueur ouvre le journal à la demande via le bouton « Journal ».
 const showJournal = ref(false);
@@ -919,7 +1034,9 @@ const perspectivePortrait = computed<string | null>(() => {
 /** Tour de l'adversaire auto-piloté (tutoriel : joueur = siège A, bot = B).
  * On remplace la passation « passe l'appareil » par un discret « L'adversaire
  * joue… » et le bot finit son tour sans révéler son plateau. */
-const botTurn = computed(() => tutorial.active && store.perspective === "B");
+const botTurn = computed(
+  () => (tutorial.active || !!store.botSeat) && store.perspective === "B",
+);
 
 // ── Tirage au sort ANIMÉ : qui commence ? ────────────────────────────────────
 // Le premier joueur est décidé CÔTÉ SERVEUR (coin flip de join_game, ou pile/face
@@ -1061,6 +1178,7 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("visibilitychange", onVisibilityChange);
   clearDiceTimers();
+  botDriver.stop(); // arrête la boucle de polling de l'IA (pas de fuite de timer)
   // Navigation hors de la table : on coupe proprement le transport en ligne.
   // Ce n'est PAS un forfait — la reprise au montage (findMyActiveGame) permet de
   // revenir dans une partie encore `active`.

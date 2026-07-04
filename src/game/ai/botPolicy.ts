@@ -110,111 +110,102 @@ function worthAttacking(
   return myAtk > blk.length;
 }
 
+/** Déclare l'attaque (une étape par appel) : cible manquante → viser ; sinon
+ *  sélectionner les attaquants rentables et confirmer (ou renoncer). */
+function declareAttack(store: Store, atkSeat: Seat): void {
+  const c = store.combat;
+  if (!c) return;
+  if (!c.target) {
+    const tids = store.combatTargetIds;
+    if (!tids.length) return void store.combatCancel();
+    const tgt = [...tids].sort(
+      (a, b) =>
+        heroHp(store, instOf(store, a)?.controller as Seat) -
+        heroHp(store, instOf(store, b)?.controller as Seat),
+    )[0];
+    store.combatChooseTarget(tgt);
+    return;
+  }
+  const good = store.combatAttackerIds.filter((id) =>
+    worthAttacking(store, atkSeat, id),
+  );
+  for (const id of [...c.attackers])
+    if (!good.includes(id)) store.combatToggleAttacker(id);
+  for (const id of good)
+    if (!store.combat?.attackers.includes(id)) store.combatToggleAttacker(id);
+  if (!store.combat?.attackers.length) return void store.combatCancel();
+  store.combatConfirmAttackers();
+}
+
+/** Sélectionne les blocages du DÉFENSEUR (tue l'attaquant si possible, sinon
+ *  chump uniquement si le Héros mourrait). Ne RÉSOUT PAS (l'humain/attaquant résout). */
+function selectBlocks(store: Store, defSeat: Seat): void {
+  const c = store.combat;
+  if (!c || Object.keys(c.blocks).length) return;
+  const incoming = [...c.attackers].sort(
+    (a, b) => forceOf(store, b) - forceOf(store, a),
+  );
+  const legal = store.combatBlockerIds;
+  const totalDmg = incoming.reduce((s, a) => s + forceOf(store, a), 0);
+  const heroLethal = heroHp(store, defSeat) <= totalDmg;
+  const used = new Set<string>();
+  for (const atk of incoming) {
+    const af = forceOf(store, atk);
+    const free = legal.filter((b) => !used.has(b));
+    const killer = free
+      .sort((a, b) => forceOf(store, b) - forceOf(store, a))
+      .find((b) => forceOf(store, b) >= af);
+    const blocker = killer ?? (heroLethal ? free[0] : undefined);
+    if (blocker) {
+      used.add(blocker);
+      store.combatToggleBlock(blocker);
+      if (store.combat?.pendingBlocker) store.combatChooseBlockTarget(atk);
+    }
+  }
+}
+
+function chooseStrike(store: Store): void {
+  const s = store.combatStrikeIds;
+  if (s.length)
+    store.combatChooseStrike(
+      [...s].sort((a, b) => forceOf(store, a) - forceOf(store, b))[0],
+    );
+  else store.combatResolve();
+}
+function chooseRiposte(store: Store): void {
+  const r = store.combatRiposteIds;
+  if (r.length)
+    store.combatChooseRiposte(
+      [...r].sort((a, b) => forceOf(store, b) - forceOf(store, a))[0],
+    );
+  else store.combatResolve();
+}
+
+/** Combat AUTONOME (harnais bot-vs-bot) : un seul pilote résout tout, RÉSOUT compris. */
 function driveCombat(store: Store): void {
   const c = store.combat;
   if (!c) return;
-  if (c.reactingSeat) {
-    store.combatEndReaction(); // v1 : l'IA ne joue pas de cartes Réaction
-    return;
-  }
+  if (c.reactingSeat) return void store.combatEndReaction();
   const atkSeat = store.state.turn.active as Seat;
-  const defSeat = other(atkSeat);
-
-  if (c.step === "attackers") {
-    if (!c.target) {
-      const tids = store.combatTargetIds;
-      if (!tids.length) return void store.combatCancel();
-      // viser le Héros adverse le plus bas en PV.
-      const tgt = [...tids].sort(
-        (a, b) =>
-          heroHp(store, instOf(store, a)?.controller as Seat) -
-          heroHp(store, instOf(store, b)?.controller as Seat),
-      )[0];
-      store.combatChooseTarget(tgt);
-      return;
-    }
-    const good = store.combatAttackerIds.filter((id) =>
-      worthAttacking(store, atkSeat, id),
-    );
-    for (const id of [...c.attackers])
-      if (!good.includes(id)) store.combatToggleAttacker(id);
-    for (const id of good)
-      if (!store.combat?.attackers.includes(id)) store.combatToggleAttacker(id);
-    if (!store.combat?.attackers.length) return void store.combatCancel();
-    store.combatConfirmAttackers();
-    return;
-  }
-
+  if (c.step === "attackers") return declareAttack(store, atkSeat);
   if (c.step === "blockers") {
-    // Décision de blocage POUR LE DÉFENSEUR (indépendante de la perspective).
-    if (!Object.keys(c.blocks).length) {
-      const incoming = [...c.attackers].sort(
-        (a, b) => forceOf(store, b) - forceOf(store, a),
-      );
-      const legal = store.combatBlockerIds;
-      const totalDmg = incoming.reduce((s, a) => s + forceOf(store, a), 0);
-      const heroLethal = heroHp(store, defSeat) <= totalDmg;
-      const used = new Set<string>();
-      for (const atk of incoming) {
-        const af = forceOf(store, atk);
-        const killer = legal
-          .filter((b) => !used.has(b))
-          .sort((a, b) => forceOf(store, b) - forceOf(store, a))
-          .find((b) => forceOf(store, b) >= af);
-        const chump = heroLethal
-          ? legal.filter((b) => !used.has(b))[0]
-          : undefined;
-        const blocker = killer ?? chump;
-        if (blocker) {
-          used.add(blocker);
-          store.combatToggleBlock(blocker);
-          if (store.combat?.pendingBlocker) store.combatChooseBlockTarget(atk);
-        }
-      }
-    }
-    store.combatResolve();
-    return;
+    selectBlocks(store, other(atkSeat));
+    return void store.combatResolve();
   }
-
-  if (c.step === "strikes") {
-    const s = store.combatStrikeIds;
-    if (s.length)
-      store.combatChooseStrike(
-        [...s].sort((a, b) => forceOf(store, a) - forceOf(store, b))[0],
-      );
-    else store.combatResolve();
-    return;
-  }
-  if (c.step === "riposte") {
-    const r = store.combatRiposteIds;
-    if (r.length)
-      store.combatChooseRiposte(
-        [...r].sort((a, b) => forceOf(store, b) - forceOf(store, a))[0],
-      );
-    else store.combatResolve();
-    return;
-  }
+  if (c.step === "strikes") return chooseStrike(store);
+  if (c.step === "riposte") return chooseRiposte(store);
   store.combatCancel();
 }
 
-// ── point d'entrée ────────────────────────────────────────────────────────────
-/**
- * Exécute UNE décision de l'IA pour l'acteur courant (`store.perspective`).
- * `true` = un coup joué (rappeler) ; `false` = il ne reste qu'à finir le tour.
- * `rng` injectable (Chi-Fu-Mi) pour la reproductibilité des tests.
- */
-export function botStep(
+/** Résout une FENÊTRE d'interaction ouverte pour l'acteur ; `true` si traitée. */
+function resolveInteraction(
   store: Store,
-  tried: Set<string> = new Set(),
-  rng: () => number = Math.random,
+  me: Seat,
+  rng: () => number,
 ): boolean {
-  const me = store.perspective as Seat;
-
   if (store.pendingChifumi) {
     const p = store.pendingChifumi;
     if (p.phase === "offer") {
-      // parier au Chi-Fu-Mi seulement si le Kanigrou vaut la peine (Force ≥ 3,
-      // intact) ; sinon subir (éviter les 2/3 d'auto-destruction).
       const f = forceOf(store, p.kanigrouId);
       const dmg = instOf(store, p.kanigrouId)?.counters.damage ?? 0;
       if (f >= 3 && dmg === 0) store.chifumiAccept();
@@ -225,7 +216,7 @@ export function botStep(
     return true;
   }
   if (store.pendingResolution) {
-    store.passPendingResolution(); // v1 : ne pas gaspiller Échec Critique
+    store.passPendingResolution();
     return true;
   }
   if (store.pendingBearer) {
@@ -248,21 +239,18 @@ export function botStep(
   }
   if (store.effectChoice) {
     if (store.effectChoice.options?.length) store.effectChoiceSelect(0);
-    else store.effectChoiceResolve(true); // prendre l'effet (souvent bénéfique)
+    else store.effectChoiceResolve(true);
     return true;
   }
-  if (store.combat) {
-    driveCombat(store);
-    return true;
-  }
+  return false;
+}
 
-  // Phase principale — seulement si c'est mon tour. `tried` évite de re-tenter
-  // une carte injouable / un prompt annulé en boucle (vidé à chaque tour).
-  if (store.state.turn.active !== me) return false;
+/** Coup de PHASE PRINCIPALE (jouer / activer / attaquer). `false` = finir le tour. */
+function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
   for (const id of [...(store.state.seats[me]?.main ?? [])]) {
     if (tried.has(id)) continue;
     tried.add(id);
-    if (store.playFromHand(id)) return true; // peut ouvrir une interaction
+    if (store.playFromHand(id)) return true;
   }
   for (const i of Object.values(store.state.instances)) {
     if (i.controller !== me) continue;
@@ -278,5 +266,82 @@ export function botStep(
     );
     if (good.length && store.beginCombat(good[0])) return true;
   }
+  return false;
+}
+
+// ── point d'entrée ────────────────────────────────────────────────────────────
+/**
+ * Exécute UNE décision de l'IA pour l'acteur courant (`store.perspective`).
+ * `true` = un coup joué (rappeler) ; `false` = il ne reste qu'à finir le tour.
+ * `rng` injectable (Chi-Fu-Mi) pour la reproductibilité des tests.
+ */
+export function botStep(
+  store: Store,
+  tried: Set<string> = new Set(),
+  rng: () => number = Math.random,
+): boolean {
+  const me = store.perspective as Seat;
+  if (resolveInteraction(store, me, rng)) return true;
+  if (store.combat) {
+    driveCombat(store);
+    return true;
+  }
+  if (store.state.turn.active !== me) return false;
+  return mainPhase(store, me, tried);
+}
+
+/**
+ * Décision de l'IA en LIVE (mode « jouer contre l'ordinateur »), pour le siège
+ * `botSeat` — RÔLE-CONSCIENT et NON RÉSOLVANT : le bot déclare ses attaques (en
+ * tant qu'attaquant) et ses blocages (en tant que défenseur), mais ne RÉSOUT
+ * jamais le combat — c'est l'humain (seul présent) qui clique « Résoudre » dans
+ * les deux cas (le combat local est mono-écran, sans passation d'appareil).
+ * `true` = un coup joué (rappeler) ; `false` = rien à faire (attendre l'humain
+ * ou finir le tour, décidé par l'appelant `useBotOpponent`).
+ */
+export function botLiveStep(
+  store: Store,
+  botSeat: Seat,
+  tried: Set<string>,
+  rng: () => number = Math.random,
+): boolean {
+  // Fenêtres d'interaction : le moteur met `perspective` sur le décideur.
+  if (store.perspective === botSeat && resolveInteraction(store, botSeat, rng))
+    return true;
+
+  const c = store.combat;
+  if (c) {
+    if (c.reactingSeat === botSeat) {
+      store.combatEndReaction();
+      return true;
+    }
+    const atk = store.state.turn.active as Seat;
+    const def = other(atk);
+    if (c.step === "attackers" && atk === botSeat) {
+      declareAttack(store, botSeat);
+      return true;
+    }
+    if (
+      c.step === "blockers" &&
+      def === botSeat &&
+      !Object.keys(c.blocks).length
+    ) {
+      selectBlocks(store, botSeat);
+      return true;
+    }
+    if (c.step === "strikes" && atk === botSeat) {
+      chooseStrike(store);
+      return true;
+    }
+    if (c.step === "riposte" && atk === botSeat) {
+      chooseRiposte(store);
+      return true;
+    }
+    return false; // sinon : attendre que l'humain bloque / résolve
+  }
+
+  // Phase principale du bot (uniquement quand c'est son tour et sa vue).
+  if (store.state.turn.active === botSeat && store.perspective === botSeat)
+    return mainPhase(store, botSeat, tried);
   return false;
 }
