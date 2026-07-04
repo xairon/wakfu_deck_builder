@@ -39,6 +39,7 @@ export const mechanicTagSchema = z.enum([
   "combat-mod-self",
   "grant-keyword-self",
   "set-metier-self",
+  "duel-challenge",
   "grant-keyword-bearer-self",
   "grant-keyword-target",
   "grant-resistance-self",

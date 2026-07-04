@@ -4704,7 +4704,22 @@
         "description": "Inclinez l'un de vos Alliés ou Héros et proposez un défi à l'Allié ou Héros de votre choix : Si le joueur adverse accepte, les deux cartes s'infligent simultanément leur Force en Dommages. Si le joueur adverse refuse, vous gagnez 1 XP.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "duelTapDuelist"
+            },
+            {
+              "op": "duelChooseChallenged"
+            },
+            {
+              "op": "duelOffer"
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["duel-challenge"]
       }
     ],
     "keywords": [],

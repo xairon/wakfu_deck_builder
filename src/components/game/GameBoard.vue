@@ -447,7 +447,15 @@
                                                         .op ===
                                                       "distributeDamage"
                                                     ? `répartis les Dommages (${store.effectTargeting.multi?.remaining ?? 0} point(s) restant(s)) — clique une cible par point`
-                                                    : `choisis l'Allié qui subit ${"n" in store.effectTargeting.op ? store.effectTargeting.op.n : 0} Dommage(s)`
+                                                    : store.effectTargeting.op
+                                                          .op ===
+                                                        "duelTapDuelist"
+                                                      ? "choisis l'un de tes Alliés ou Héros dressés à incliner (le duelliste)"
+                                                      : store.effectTargeting.op
+                                                            .op ===
+                                                          "duelChooseChallenged"
+                                                        ? "choisis l'Allié ou Héros adverse à défier en duel"
+                                                        : `choisis l'Allié qui subit ${"n" in store.effectTargeting.op ? store.effectTargeting.op.n : 0} Dommage(s)`
           }}
         </span>
         <div class="gcombat__btns">

@@ -109,6 +109,13 @@ export interface EffectFrame {
    * donne un bonus 0 — la discrimination se fait à la RÉSOLUTION, en live.
    */
   powerSourceId?: string;
+  /**
+   * DÉFI (W73) : ids liés pendant la séquence de duel — le DUELLISTE incliné
+   * (duelTapDuelist) et le DÉFIÉ adverse (duelChooseChallenged). Lus par duelOffer
+   * (qui les fige dans l'op resolveDuel avant de proposer le duel à l'adversaire).
+   */
+  duelistId?: string;
+  challengedId?: string;
 }
 
 /** Filtre de recherche dans une pile (type, famille, niveau max, élément). */
@@ -899,6 +906,39 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ];
         }
         continue;
+      }
+      if (op.op === "duelOffer") {
+        // DÉFI (W73) — le duel est PROPOSÉ à l'adversaire (effectChoices, deux
+        // boutons). No-op fidèle si un id lié manque (adverse sans cible, ou
+        // duelliste non désigné). La frame de décision garde seat = LANCEUR pour
+        // que la branche « refus » (gainXp) crédite bien « vous » ; le duel
+        // lui-même (accept) est symétrique (resolveDuel lit les ids EMBARQUÉS dans
+        // l'op — le choix crée une frame neuve sans les champs liés de la frame).
+        if (!frame.duelistId || !frame.challengedId) continue;
+        const rest = ops.slice(i + 1);
+        effectChoices.value = [
+          ...effectChoices.value,
+          {
+            seat,
+            cardName,
+            text: `${cardName} — l'adversaire accepte-t-il le défi ?`,
+            ops: [
+              {
+                op: "resolveDuel" as const,
+                duelistId: frame.duelistId,
+                challengedId: frame.challengedId,
+              },
+              ...rest,
+            ],
+            declineOps: [{ op: "gainXp" as const, n: 1 }, ...rest],
+            optionLabels: ["Accepter", "Refuser"],
+            ...(sourceId ? { sourceId } : {}),
+            ...(frame.powerSourceId
+              ? { powerSourceId: frame.powerSourceId }
+              : {}),
+          },
+        ];
+        return false;
       }
       if (isTargetingOp(op)) {
         // VALEUR DYNAMIQUE liée au coût « Recyclez jusqu'à N … » : pour les ops à
@@ -1973,6 +2013,53 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             );
           deps.checkVictory();
         }
+      } else if (op.op === "resolveDuel") {
+        // DÉFI (W73) — les deux cartes liées s'infligent SIMULTANÉMENT leur Force
+        // en Dommages. Les deux paquets sont calculés depuis la Force AVANT toute
+        // application (resolveDamageTargetByForce est PUR : lit effectiveForce(source),
+        // non affectée par les Dommages ≠ PV), puis dispatchés ENSEMBLE et les morts
+        // résolues une seule fois (checkVictory) → « simultanément » fidèle (double
+        // KO possible). Élément = Force imprimée de chaque carte (liveSourceElement,
+        // 410.1). L'XP de mise à mort est auto-crédité par CONTRÔLEUR dans
+        // resolveDestroyTarget (l'adversaire du contrôleur du mort), donc correct
+        // des deux côtés quel que soit le `seat` qui résout.
+        const dId = op.duelistId;
+        const cId = op.challengedId;
+        const st = deps.getState().instances;
+        if (dId && cId && st[dId] && st[cId]) {
+          const ctx = deps.rulesCtx();
+          const mods = activeGlobalMods(ctx);
+          // Chaque paquet est attribué au CONTRÔLEUR de la carte qui frappe (le
+          // duelliste frappe le défié, le défié frappe le duelliste) → mods/journal
+          // corrects de chaque côté. L'XP de mort reste dérivé du contrôleur du mort
+          // (resolveDestroyTarget), indépendant de `actor`.
+          const r1 = resolveDamageTargetByForce(
+            ctx,
+            st[dId].controller,
+            cId,
+            liveSourceElement(dId) ?? "Neutre",
+            { mods, sourceId: dId },
+          );
+          const r2 = resolveDamageTargetByForce(
+            ctx,
+            st[cId].controller,
+            dId,
+            liveSourceElement(cId) ?? "Neutre",
+            { mods, sourceId: cId },
+          );
+          deps.dispatch(
+            ...r1.events,
+            ...r2.events,
+            ...r1.log.map((l) => say(seat, l)),
+            ...r2.log.map((l) => say(seat, l)),
+          );
+          if (deps.isAssistEffects()) {
+            const re = [...(r1.ruleEvents ?? []), ...(r2.ruleEvents ?? [])];
+            if (re.length)
+              enqueueTriggered(collectTriggeredEffects(deps.rulesCtx(), re));
+          }
+          deps.checkVictory();
+        }
       }
     }
     return false;
@@ -2434,6 +2521,41 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         ...res.log.map((l) => say(t.seat, l)),
       );
       deps.checkVictory();
+      pumpEffects();
+      return;
+    }
+    // DÉFI (W73) — désignation du DUELLISTE (« Inclinez l'un de vos Alliés ou
+    // Héros ») : la cible dressée choisie s'incline (coût) et est LIÉE à la frame
+    // retenue (duelistId), pour le duel résolu plus tard (resolveDuel).
+    if (t.op.op === "duelTapDuelist") {
+      const res = resolveTapTarget(deps.rulesCtx(), t.seat, instanceId);
+      deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+      const head = effectQueue.value[0];
+      if (head)
+        effectQueue.value = [
+          { ...head, duelistId: instanceId },
+          ...effectQueue.value.slice(1),
+        ];
+      deps.checkVictory();
+      pumpEffects();
+      return;
+    }
+    // DÉFI (W73) — désignation du DÉFIÉ (« proposez un défi à l'Allié ou Héros de
+    // votre choix ») : la cible adverse choisie est LIÉE à la frame (challengedId) ;
+    // le duel est ensuite PROPOSÉ à l'adversaire (op duelOffer, plus loin dans la frame).
+    if (t.op.op === "duelChooseChallenged") {
+      const head = effectQueue.value[0];
+      if (head)
+        effectQueue.value = [
+          { ...head, challengedId: instanceId },
+          ...effectQueue.value.slice(1),
+        ];
+      deps.dispatch(
+        say(
+          t.seat,
+          `${t.cardName} : défi lancé à ${deps.getCard(deps.getState().instances[instanceId]?.cardId ?? null)?.name ?? "la cible"}.`,
+        ),
+      );
       pumpEffects();
       return;
     }

@@ -661,6 +661,31 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // Métier = Artisan). `métier` est choisi par le joueur : Amar Casto est compilé en
   // chooseOne à 4 branches (une par Métier), chacune enfilant ce op avec un `metier`.
   z.object({ op: z.literal("setMetierSelf"), metier: metierSchema }),
+  // ── DÉFI (W73) — duel avec CONSENTEMENT ADVERSE. Séquence de 4 ops (Défi,
+  // Action) : le lanceur incline un duelliste, désigne un défié adverse, l'adversaire
+  // accepte (dégâts mutuels de Force) ou refuse (le lanceur gagne 1 XP).
+  // (1) « Inclinez l'un de vos Alliés ou Héros » — op de ciblage-COÛT : incline la
+  // créature dressée choisie (contrôlée par le lanceur) et la LIE à la frame
+  // (duelistId). Aucune cible dressée → coût impayable, effet abandonné.
+  z.object({ op: z.literal("duelTapDuelist") }),
+  // (2) « proposez un défi à l'Allié ou Héros de votre choix » — op de ciblage : LIE
+  // le défié adverse à la frame (challengedId). Aucun adverse → le duel avorte.
+  z.object({ op: z.literal("duelChooseChallenged") }),
+  // (3) « Si l'adversaire accepte / refuse » — PROPOSE le duel à l'adversaire
+  // (effectChoices, deux boutons). Accepter → resolveDuel (dégâts mutuels) ; refuser
+  // → le LANCEUR gagne 1 XP (la frame de décision garde seat = lanceur pour que
+  // « vous » crédite bien le lanceur). No-op fidèle si un id lié manque.
+  z.object({ op: z.literal("duelOffer") }),
+  // (4) résolution du duel : les deux cartes liées s'infligent SIMULTANÉMENT leur
+  // Force en Dommages (paquets calculés depuis la Force AVANT application, appliqués
+  // ensemble → morts résolues après, fidèle à « simultanément »). Les ids sont
+  // EMBARQUÉS dans l'op par duelOffer (le choix crée une nouvelle frame sans les
+  // champs liés — on les fige donc dans l'op). Élément = Force imprimée de chaque carte.
+  z.object({
+    op: z.literal("resolveDuel"),
+    duelistId: z.string().optional(),
+    challengedId: z.string().optional(),
+  }),
   // « Le Porteur de <self> gagne <Mot-clé> jusqu'à la fin du tour. » (Scarature
   // Blanche, via chooseOne « Agilité ou Tacle ») — la SOURCE est un Équipement ;
   // le mot-clé TURN-scoped (`<kw>TurnMod`) est posé sur SON PORTEUR (la créature

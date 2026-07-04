@@ -48,6 +48,9 @@ export type TargetingOp = Extract<
   | { op: "costRecycleControlled" }
   | { op: "costTapResource" }
   | { op: "costPayX" }
+  // DÉFI (W73) : désignation du duelliste (soi, dressé) et du défié (adverse).
+  | { op: "duelTapDuelist" }
+  | { op: "duelChooseChallenged" }
   // OPS « LE JOUEUR DE VOTRE CHOIX … » : on choisit un JOUEUR en CIBLANT son
   // Héros (éligibilité = tous les Héros en jeu, les deux contrôleurs). L'effet
   // s'applique au contrôleur du Héros choisi (résolu dans effectTargetChoose).
@@ -80,6 +83,8 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "costRecycleControlled" ||
     op.op === "costTapResource" ||
     op.op === "costPayX" ||
+    op.op === "duelTapDuelist" ||
+    op.op === "duelChooseChallenged" ||
     op.op === "playerDraw" ||
     op.op === "playerLoseStatTurn" ||
     op.op === "playerGainStat"
@@ -108,7 +113,10 @@ export function isCostTargetingOp(op: CompiledEffectOp): boolean {
     op.op === "costTapControlled" ||
     op.op === "costDestroyControlled" ||
     op.op === "costRecycleControlled" ||
-    op.op === "costTapResource"
+    op.op === "costTapResource" ||
+    // Défi : « Inclinez l'un de vos Alliés ou Héros » est un coût — aucune créature
+    // dressée à incliner ⇒ effet abandonné (le duel ne peut être lancé).
+    op.op === "duelTapDuelist"
   );
 }
 
@@ -158,6 +166,27 @@ export function effectTargetIds(
       if (seen.has(p.instanceId)) continue;
       seen.add(p.instanceId);
       out.push(p.instanceId);
+    }
+    return out;
+  }
+  // DÉFI (W73) : désignation des deux duellistes. duelTapDuelist = VOS créatures
+  // (Allié/Héros) DRESSÉES (on les incline) en Monde/Havre-Sac ; duelChooseChallenged
+  // = les créatures ADVERSES (Allié/Héros), toute orientation. Éligibilité dédiée
+  // (pas de filtre combatRole/Niveau/etc. — le texte ne restreint qu'au contrôleur).
+  if (op.op === "duelTapDuelist" || op.op === "duelChooseChallenged") {
+    if (actor === undefined) return [];
+    const want = op.op === "duelTapDuelist" ? actor : otherSeat(actor);
+    const out: InstanceId[] = [];
+    for (const inst of Object.values(ctx.state.instances)) {
+      if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
+        continue;
+      if (inst.controller !== want) continue;
+      const card = ctx.getCard(inst.cardId);
+      if (card?.mainType !== "Allié" && card?.mainType !== "Héros") continue;
+      // le duelliste doit être DRESSÉ (on l'incline en coût).
+      if (op.op === "duelTapDuelist" && inst.orientation !== "upright")
+        continue;
+      out.push(inst.instanceId);
     }
     return out;
   }

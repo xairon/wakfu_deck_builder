@@ -253,6 +253,13 @@ export const MECHANICS: Mechanic[] = [
       "« <self> gagne le Métier de votre choix jusqu'à la fin du tour » : la source acquiert l'un des 4 Métiers (Forgeron, Armurier, Bijoutier, Bricoleur) et devient un Artisan pour le tour. Sert de support aux effets qui référencent la possession d'un Métier (Artisans).",
   },
   {
+    id: "duel-challenge",
+    label: "Défi (duel avec consentement adverse)",
+    category: "dégâts",
+    glossary:
+      "« Inclinez l'un de vos Alliés ou Héros et proposez un défi à l'Allié ou Héros de votre choix : si l'adversaire accepte, les deux cartes s'infligent simultanément leur Force en Dommages ; s'il refuse, vous gagnez 1 XP. » Le duel exige le CONSENTEMENT de l'adversaire (choix Accepter/Refuser).",
+  },
+  {
     id: "grant-keyword-bearer-self",
     label: "Mot-clé conféré au Porteur de soi (jusqu'à la fin du tour)",
     category: "tempo",
@@ -548,6 +555,10 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   combatModSelf: "combat-mod-self",
   grantKeywordSelf: "grant-keyword-self",
   setMetierSelf: "set-metier-self",
+  duelTapDuelist: "duel-challenge",
+  duelChooseChallenged: "duel-challenge",
+  duelOffer: "duel-challenge",
+  resolveDuel: "duel-challenge",
   grantKeywordBearerSelf: "grant-keyword-bearer-self",
   grantKeywordTarget: "grant-keyword-target",
   grantResistanceSelf: "grant-resistance-self",

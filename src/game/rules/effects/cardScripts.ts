@@ -1023,4 +1023,18 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // ── Défi (W73) — duel avec consentement adverse (Action). Séquence : incliner un
+  // duelliste (coût), désigner un défié adverse, l'adversaire accepte (dégâts mutuels
+  // de Force) ou refuse (le lanceur gagne 1 XP). Voir les ops duel* dans engine.ts.
+  "defi-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        { op: "duelTapDuelist" },
+        { op: "duelChooseChallenged" },
+        { op: "duelOffer" },
+      ],
+    },
+  },
 };
