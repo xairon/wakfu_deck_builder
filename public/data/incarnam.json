@@ -8617,7 +8617,45 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Terre"
+            },
+            {
+              "op": "buffForceSelf",
+              "n": 1
+            },
+            {
+              "op": "incTurnCounterSelf",
+              "counter": "katsouSpend"
+            },
+            {
+              "op": "conditional",
+              "cond": {
+                "cond": "selfCounterAtLeast",
+                "counter": "katsouSpend",
+                "n": 4
+              },
+              "ops": [
+                {
+                  "op": "incTurnCounterSelf",
+                  "counter": "destroyAtTurnEnd"
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": [
+          "cost-tap-resource",
+          "buff-force-self",
+          "inc-turn-counter-self",
+          "conditional"
+        ]
       }
     ],
     "keywords": [],

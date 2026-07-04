@@ -762,6 +762,12 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const hero = heroId ? deps.getState().instances[heroId] : null;
         return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
       }
+      case "selfCounterAtLeast": {
+        // « Si vous dépensez plus de N … » (Katsou) : jeton `counter` de la SOURCE
+        // ≥ n ? Lu sur la frame.sourceId (la carte dont le pouvoir se résout).
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        return (src?.counters.tokens?.[cond.counter] ?? 0) >= cond.n;
+      }
     }
   }
 
@@ -1350,6 +1356,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "incTurnCounterSelf") {
+        // Incrémente un jeton TURN-scoped sur la SOURCE (Katsou : compteur de
+        // dépense / flag `destroyAtTurnEnd`). Uniquement en jeu.
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay)
+          deps.dispatch(incCounterVerb(seat, sourceId!, op.counter, 1, true));
       } else if (op.op === "grantKeywordSelf") {
         // « [self] gagne <Mot-clé> jusqu'à la fin du tour. » (Ouassingue : Géant) —
         // jeton TURN-scoped `<kw>TurnMod` (geantTurnMod / agiliteTurnMod /

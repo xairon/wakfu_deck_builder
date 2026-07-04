@@ -29,6 +29,7 @@ import {
   drawTop,
   move,
   nextTurnEvents,
+  turnEndDestroyEvents,
   otherSeat,
   redactStateFor,
   say,
@@ -2447,6 +2448,11 @@ export const useGameStore = defineStore("game", () => {
 
   /** Passe au joueur suivant : redresse ses cartes + retire les Dommages. */
   function nextTurn(): void {
+    // DESTRUCTIONS DE FIN DE TOUR (Katsou : « détruisez … à la fin du tour ») :
+    // AVANT la transition (donc avant la purge des jetons), on détruit fidèlement
+    // (Défausse + XP) les créatures flaggées `destroyAtTurnEnd`. Miroir online :
+    // resolveIntent END_TURN.
+    dispatch(...turnEndDestroyEvents(rulesCtx()));
     // Transition de tour PURE et partagée (cf. `nextTurnEvents`) : SET_PHASE +
     // purge des jetons de tour + redressement/effacement des dégâts du joueur
     // entrant. Même chemin que l'autorité serveur (`resolveIntent` END_TURN).

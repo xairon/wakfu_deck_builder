@@ -35,7 +35,7 @@ import {
   setCombat,
   say,
 } from "../engine/verbs.ts";
-import { nextTurnEvents } from "../engine/turn.ts";
+import { nextTurnEvents, turnEndDestroyEvents } from "../engine/turn.ts";
 import {
   whyCannotPlay,
   playDestination,
@@ -387,7 +387,9 @@ export function resolveIntent(
       // + purge des jetons de tour + redressement/effacement des dégâts du joueur
       // entrant. Les `need` pioches du joueur SORTANT sont appliquées par
       // `submit_event` après ces events (l'acteur des pioches reste le siège).
-      const events = nextTurnEvents(state);
+      // DESTRUCTIONS DE FIN DE TOUR (Katsou : « détruisez … à la fin du tour ») :
+      // AVANT la transition (avant la purge des jetons) — miroir de gameStore.nextTurn.
+      const events = [...turnEndDestroyEvents(ctx), ...nextTurnEvents(state)];
       return { events, draws: need };
     }
 

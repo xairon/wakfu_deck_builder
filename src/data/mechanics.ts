@@ -117,6 +117,13 @@ export const MECHANICS: Mechanic[] = [
     glossary: "La carte source gagne un bonus de Force temporaire.",
   },
   {
+    id: "inc-turn-counter-self",
+    label: "Compteur de tour (soi)",
+    category: "autre",
+    glossary:
+      "Incrémente un compteur temporaire sur la carte source (ex. dépense cumulée, flag d'auto-destruction de fin de tour), purgé en début de tour.",
+  },
+  {
     id: "recycle-from-discard",
     label: "Recyclage de Défausse",
     category: "ressource",
@@ -508,6 +515,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   healHeroTarget: "heal-hero-target",
   buffForceTarget: "buff-force-target",
   buffForceSelf: "buff-force-self",
+  incTurnCounterSelf: "inc-turn-counter-self",
   recycleFromDiscard: "recycle-from-discard",
   discardFromHand: "discard-from-hand",
   searchDeck: "search-deck",

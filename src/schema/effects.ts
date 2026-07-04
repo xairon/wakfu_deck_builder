@@ -84,6 +84,14 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
   // récence : rejouer autre chose annule), purgé en début de tour. Restriction de
   // POUVOIR (gate d'activation dans activateTapPower), pas de résolution.
   z.object({ cond: z.literal("recentlyPlayedQuestParch") }),
+  // « Si vous dépensez PLUS DE N … » (Katsou Mee) : le jeton `counter` de la
+  // SOURCE (frame.sourceId) est-il ≥ `n` ? Lu sur les compteurs de l'instance
+  // source. Sert au flag d'auto-destruction (seuil de dépense franchi).
+  z.object({
+    cond: z.literal("selfCounterAtLeast"),
+    counter: z.string(),
+    n: z.number(),
+  }),
 ]);
 
 // ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────
@@ -474,6 +482,11 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     zones: zonesSchema,
   }),
   z.object({ op: z.literal("buffForceSelf"), n: z.number() }),
+  // Incrémente un jeton TURN-scoped sur la SOURCE (Katsou Mee : compteur de
+  // dépense `katsouSpend`, et flag `destroyAtTurnEnd` posé quand le seuil est
+  // franchi). Le jeton doit être reconnu par isTurnToken (purge en début de tour).
+  // Lu par condSpec `selfCounterAtLeast` et le balayage de fin de tour.
+  z.object({ op: z.literal("incTurnCounterSelf"), counter: z.string() }),
   z.object({
     op: z.literal("recycleFromDiscard"),
     n: z.number(),

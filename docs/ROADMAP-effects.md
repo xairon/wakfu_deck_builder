@@ -1,6 +1,6 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-03.** État : **476 / 1794 effets imprimés structurés (26,5 %)** — `auto 416 · manual 60 · uncovered 1318 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-03.** État : **477 / 1794 effets imprimés structurés (26,6 %)** — `auto 416 · manual 61 · uncovered 1317 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
@@ -29,7 +29,9 @@ Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complèt
 
 ---
 
-## 3. Deck-driven — worklist des 4 starters Incarnam (7 restants)
+## 3. Deck-driven — worklist des 4 starters Incarnam (6 restants)
+
+> **Katsou Mee FAITE (W69)** : compteur de dépense (`incTurnCounterSelf`) + condSpec `selfCounterAtLeast` + flag `destroyAtTurnEnd` + balayage de fin de tour `turnEndDestroyEvents` (destruction fidèle XP/415.1, câblée local `nextTurn` + online `resolveIntent END_TURN`). La refonte modèle-données était ÉVITABLE. **6 uncovered restants** (tous manuel-légitime rigoureux) : Amar Casto (professions), Défi (négociation adverse), Kanigrou (Chi-Fu-Mi RNG interactif), Échec Critique (pile de résolution / annulation), Glyphe Incandescent (trigger flottant sur inclinaison + durée phase — aucun bus d'inclinaison ni registre d'effets flottants), Flèche d'Immolation (contexte réaction-par-inclinaison absent — confirmé W69). Chacun exige un système que le moteur n'a pas OU une mécanique interactive/sociale ; les automatiser serait une approximation. Le jeu les gère par rappel manuel fidèle.
 
 > **État W68 (2026-07-03)** : **Fécaline FAITE (W68)** — récence de jeu (condSpec `recentlyPlayedQuestParch` + jeton `recentQuestParch` posé par playFromHand + gate `powerConditionReason` sur activateTapPower + gainXp). Elle était mal classée « manuel-légitime » : la récence = un jeton borné + le sous-système playCondition (W61), PAS un tracking d'historique complet. Leçon : re-challenger chaque « manuel-légitime » — certains sont des marqueurs bornés, pas de vrais systèmes.
 >

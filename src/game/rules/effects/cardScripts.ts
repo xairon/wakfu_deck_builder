@@ -30,6 +30,29 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   "bond-incarnam": {
     0: { trigger: "onPlay", ops: [{ op: "grantBonusBlock", n: 1 }] },
   },
+  // « [Terre] : Katsou Mee gagne +1 en Force jusqu'à la fin du tour. Si vous
+  //   dépensez plus de [Terre][Terre][Terre] de cette façon, détruisez Katsou Mee
+  //   à la fin du tour. » — pouvoir RÉPÉTABLE : payer 1 Terre → +1 Force, +1 au
+  //   compteur de dépense `katsouSpend`. À la 4e utilisation (spend ≥ 4 = « plus
+  //   de 3 »), pose le flag `destroyAtTurnEnd` → un balayage de fin de tour
+  //   (turnEndDestroyEvents) détruit fidèlement Katsou (Défausse + XP). Le DSL ne
+  //   gère ni le compteur ni le seuil → script direct.
+  "katsou-mee-incarnam": {
+    0: {
+      trigger: "onTap",
+      cost: "paidOps",
+      ops: [
+        { op: "costTapResource", element: "Terre" },
+        { op: "buffForceSelf", n: 1 },
+        { op: "incTurnCounterSelf", counter: "katsouSpend" },
+        {
+          op: "conditional",
+          cond: { cond: "selfCounterAtLeast", counter: "katsouSpend", n: 4 },
+          ops: [{ op: "incTurnCounterSelf", counter: "destroyAtTurnEnd" }],
+        },
+      ],
+    },
+  },
   // « Réaction. [Incliner] : Gagnez 1 XP. Ne jouez ce pouvoir que lorsque vous
   //   venez de jouer une carte Quête ou Parchemin. » (Fécaline la Sage) —
   //   pouvoir-tap gagnant 1 XP, GATÉ par une restriction de RÉCENCE de jeu
