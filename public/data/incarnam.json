@@ -614,7 +614,55 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "chooseOne",
+              "prompt": "Amar Casto gagne le Métier de votre choix.",
+              "options": [
+                {
+                  "label": "Forgeron",
+                  "ops": [
+                    {
+                      "op": "setMetierSelf",
+                      "metier": "Forgeron"
+                    }
+                  ]
+                },
+                {
+                  "label": "Armurier",
+                  "ops": [
+                    {
+                      "op": "setMetierSelf",
+                      "metier": "Armurier"
+                    }
+                  ]
+                },
+                {
+                  "label": "Bijoutier",
+                  "ops": [
+                    {
+                      "op": "setMetierSelf",
+                      "metier": "Bijoutier"
+                    }
+                  ]
+                },
+                {
+                  "label": "Bricoleur",
+                  "ops": [
+                    {
+                      "op": "setMetierSelf",
+                      "metier": "Bricoleur"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["choose-one"]
       }
     ],
     "keywords": [],

@@ -24,6 +24,14 @@ const combatRoleSchema = z.enum(["attacking", "blocking", "inCombat"]);
 // d'invocation). Tacle : pouvoir continu de combat — les Alliés/Héros bloquant
 // un possesseur de Tacle ne s'inclinent pas en fin de combat (resolveCombat).
 const grantKeywordSchema = z.enum(["Géant", "Agilité", "Agressivité", "Tacle"]);
+// Les 4 Métiers (glossaire « Métier ») ; un personnage en possédant un est un Artisan.
+export const metierSchema = z.enum([
+  "Forgeron",
+  "Armurier",
+  "Bijoutier",
+  "Bricoleur",
+]);
+export type Metier = z.infer<typeof metierSchema>;
 
 // ── CONDITIONS « Si <condition>, <corps> » (sous-système conditionnel) ────────
 // Une `CondSpec` est une condition FAITHFULLY évaluable depuis l'état de jeu à
@@ -92,6 +100,9 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
     counter: z.string(),
     n: z.number(),
   }),
+  // « … un personnage possédant un Métier (Artisan) » : la SOURCE (frame.sourceId)
+  // possède-t-elle un Métier ? Lu par `metierOf` (jeton metier_* ou subType Métier).
+  z.object({ cond: z.literal("selfIsArtisan") }),
 ]);
 
 // ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────
@@ -643,6 +654,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // fin de tour (isTurnToken), lu par effectiveKeywords. Distinct de combatModSelf
   // (jeton `geantCombatMod`, portée COMBAT « jusqu'à la fin du combat »).
   z.object({ op: z.literal("grantKeywordSelf"), keyword: grantKeywordSchema }),
+  // « <self> gagne le Métier de votre choix jusqu'à la fin du tour. » (Amar Casto) —
+  // pose un jeton TURN-scoped `metier_<métier>` sur la SOURCE (uniquement en jeu),
+  // purgé en fin de tour (préfixe metier_ dans isTurnToken). La possession de Métier
+  // est LUE par `metierOf`/condSpec `selfIsArtisan` (un personnage possédant un
+  // Métier = Artisan). `métier` est choisi par le joueur : Amar Casto est compilé en
+  // chooseOne à 4 branches (une par Métier), chacune enfilant ce op avec un `metier`.
+  z.object({ op: z.literal("setMetierSelf"), metier: metierSchema }),
   // « Le Porteur de <self> gagne <Mot-clé> jusqu'à la fin du tour. » (Scarature
   // Blanche, via chooseOne « Agilité ou Tacle ») — la SOURCE est un Équipement ;
   // le mot-clé TURN-scoped (`<kw>TurnMod`) est posé sur SON PORTEUR (la créature

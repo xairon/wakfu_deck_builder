@@ -959,4 +959,68 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
+
+  // ── Amar Casto (W72) — « gagne le Métier de votre choix jusqu'à la fin du tour »
+  // À l'apparition (onPlay), le joueur choisit l'un des 4 Métiers (chooseOne à 4
+  // branches, W56) ; la branche pose setMetierSelf → jeton metier_<métier> sur Amar
+  // Casto, qui devient Artisan pour le tour (metierOf / selfIsArtisan). Deux éditions
+  // (le texte dofus-collection a perdu le mot « Métier » au scrape — même intention).
+  "amar-casto-incarnam": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "chooseOne",
+          prompt: "Amar Casto gagne le Métier de votre choix.",
+          options: [
+            {
+              label: "Forgeron",
+              ops: [{ op: "setMetierSelf", metier: "Forgeron" }],
+            },
+            {
+              label: "Armurier",
+              ops: [{ op: "setMetierSelf", metier: "Armurier" }],
+            },
+            {
+              label: "Bijoutier",
+              ops: [{ op: "setMetierSelf", metier: "Bijoutier" }],
+            },
+            {
+              label: "Bricoleur",
+              ops: [{ op: "setMetierSelf", metier: "Bricoleur" }],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  "amar-casto-dofus-collection": {
+    0: {
+      trigger: "onPlay",
+      ops: [
+        {
+          op: "chooseOne",
+          prompt: "Amar Casto gagne le Métier de votre choix.",
+          options: [
+            {
+              label: "Forgeron",
+              ops: [{ op: "setMetierSelf", metier: "Forgeron" }],
+            },
+            {
+              label: "Armurier",
+              ops: [{ op: "setMetierSelf", metier: "Armurier" }],
+            },
+            {
+              label: "Bijoutier",
+              ops: [{ op: "setMetierSelf", metier: "Bijoutier" }],
+            },
+            {
+              label: "Bricoleur",
+              ops: [{ op: "setMetierSelf", metier: "Bricoleur" }],
+            },
+          ],
+        },
+      ],
+    },
+  },
 };

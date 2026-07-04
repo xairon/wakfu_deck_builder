@@ -278,6 +278,48 @@ export const GRANT_KEYWORD_TOKEN: Record<
 };
 
 /**
+ * Les 4 Métiers (glossaire « Métier »). Un personnage possédant un Métier est un
+ * Artisan (glossaire « Artisan »). La possession est soit INNÉE (un Métier dans
+ * `subTypes`), soit OCTROYÉE le temps d'un tour (jeton `metier_<métier>`, posé par
+ * setMetierSelf / Amar Casto, purgé en fin de tour via le préfixe `metier_`).
+ */
+export const METIERS = [
+  "Forgeron",
+  "Armurier",
+  "Bijoutier",
+  "Bricoleur",
+] as const;
+
+/** Clé du jeton TURN-scoped de possession d'un Métier (`metier_forgeron`, …). */
+export function metierToken(metier: string): string {
+  return "metier_" + metier.toLowerCase();
+}
+
+/**
+ * Métiers possédés par une instance : innés (`subTypes`) ∪ octroyés (jetons
+ * `metier_*` > 0). Source unique de vérité pour « possède un Métier » (Artisan) —
+ * lu par condSpec `selfIsArtisan` et tout futur consommateur (aura Artisan).
+ */
+export function metierOf(
+  inst: { counters?: { tokens?: Record<string, number> } } | null | undefined,
+  card: { subTypes?: readonly string[] } | null | undefined,
+): string[] {
+  const out = new Set<string>();
+  // Comparaison NORMALISÉE (minuscules + accents retirés) : la casse des subTypes
+  // varie dans les données scrapées (cf. normWord dans engine.ts). On normalise les
+  // deux côtés par robustesse, puis on stocke la forme canonique (METIERS).
+  const norm = (s: string) =>
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  for (const st of card?.subTypes ?? []) {
+    const hit = METIERS.find((m) => norm(m) === norm(st));
+    if (hit) out.add(hit);
+  }
+  const tokens = inst?.counters?.tokens ?? {};
+  for (const m of METIERS) if ((tokens[metierToken(m)] ?? 0) > 0) out.add(m);
+  return [...out];
+}
+
+/**
  * Étiquette « Résistance N (élément)[(élément)…] » pour le JOURNAL d'un octroi de
  * Résistance (grantResistance{Self,Target}). Regroupe les Éléments par valeur N
  * (la majorité des cartes accordent la même valeur à plusieurs Éléments :

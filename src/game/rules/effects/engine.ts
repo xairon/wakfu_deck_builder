@@ -47,6 +47,8 @@ import {
   isPlayerChoiceOp,
   isTargetingOp,
   manualEffects,
+  metierOf,
+  metierToken,
   normElement,
   producedElement,
   resolveBanishTarget,
@@ -768,6 +770,12 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const src = sourceId ? deps.getState().instances[sourceId] : null;
         return (src?.counters.tokens?.[cond.counter] ?? 0) >= cond.n;
       }
+      case "selfIsArtisan": {
+        // « un personnage possédant un Métier » : la SOURCE possède-t-elle un Métier
+        // (inné via subTypes, ou octroyé via jeton metier_*) ? Lu par metierOf.
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        return metierOf(src, deps.getCard(src?.cardId ?? null)).length > 0;
+      }
     }
   }
 
@@ -1392,6 +1400,24 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             say(
               seat,
               `${cardName} gagne ${op.keyword} jusqu'à la fin du tour.`,
+            ),
+          );
+        }
+      } else if (op.op === "setMetierSelf") {
+        // « <self> gagne le Métier <op.metier> jusqu'à la fin du tour. » (Amar Casto,
+        // branche choisie du chooseOne à 4 Métiers) — jeton TURN-scoped
+        // `metier_<métier>` sur la SOURCE (uniquement en jeu), purgé en fin de tour
+        // (préfixe metier_). Rend la SOURCE Artisan (metierOf/selfIsArtisan).
+        const src = sourceId ? deps.getState().instances[sourceId] : null;
+        const inPlay =
+          src &&
+          (src.location.zone === "monde" || src.location.zone === "havreSac");
+        if (inPlay) {
+          deps.dispatch(
+            setCounterVerb(seat, sourceId!, metierToken(op.metier), 1, true),
+            say(
+              seat,
+              `${cardName} gagne le Métier ${op.metier} jusqu'à la fin du tour.`,
             ),
           );
         }

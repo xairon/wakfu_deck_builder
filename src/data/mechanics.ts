@@ -246,6 +246,13 @@ export const MECHANICS: Mechanic[] = [
     ],
   },
   {
+    id: "set-metier-self",
+    label: "Métier conféré (soi, jusqu'à la fin du tour)",
+    category: "tempo",
+    glossary:
+      "« <self> gagne le Métier de votre choix jusqu'à la fin du tour » : la source acquiert l'un des 4 Métiers (Forgeron, Armurier, Bijoutier, Bricoleur) et devient un Artisan pour le tour. Sert de support aux effets qui référencent la possession d'un Métier (Artisans).",
+  },
+  {
     id: "grant-keyword-bearer-self",
     label: "Mot-clé conféré au Porteur de soi (jusqu'à la fin du tour)",
     category: "tempo",
@@ -540,6 +547,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   untapSelf: "untap-self",
   combatModSelf: "combat-mod-self",
   grantKeywordSelf: "grant-keyword-self",
+  setMetierSelf: "set-metier-self",
   grantKeywordBearerSelf: "grant-keyword-bearer-self",
   grantKeywordTarget: "grant-keyword-target",
   grantResistanceSelf: "grant-resistance-self",
