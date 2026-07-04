@@ -1,6 +1,8 @@
 # Roadmap — Encodage des effets (à reprendre ensemble)
 
-**Dernière mise à jour : 2026-07-03.** État : **479 / 1794 effets imprimés structurés (26,7 %)** — `auto 416 · manual 63 · uncovered 1315 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+**Dernière mise à jour : 2026-07-04.** État : **482 / 1794 effets imprimés structurés (26,9 %)** — `auto 416 · manual 66 · uncovered 1312 · ruling 452 · keyword 256 · trait 68`. Mesure : `npm run report-coverage`.
+
+> **2026-07-04 — l'utilisateur a AUTORISÉ la construction des vrais sous-systèmes** pour les 4 derniers effets starter (les verdicts « manuel-légitime » sont levés). **Faits (W72–W73)** : **Amar Casto** → système Métier/Artisan (op `setMetierSelf` + `metierOf`/condSpec `selfIsArtisan`) ; **Défi** → décision adverse (ops `duelTapDuelist`/`duelChooseChallenged`/`duelOffer`/`resolveDuel`, dégâts mutuels simultanés). **Restent 2, en sessions dédiées** (décision utilisateur — trop invasifs pour un thread long) : **Kanigrou** (mini-jeu Chi-Fu-Mi interactif + prévention pré-dégâts — bloqueur : 2 pipelines de dégâts, `resolveCombat` atomique/hors-effectQueue/serveur-autoritatif → prévention interactive de combat injouable en ligne) ; **Échec Critique** (pile de résolution — effets résolus eagerly, rien de pending à annuler). Voir `memory/effect-encoding-campaign.md`.
 
 Ce document liste **tout ce qui reste** et **comment le reprendre**. Il complète le backlog d'origine (`docs/superpowers/plans/2026-06-27-effect-encoding-backlog.md`) et la note d'architecture SOTA (`docs/superpowers/specs/2026-07-01-effect-value-expressions-sota-design.md`).
 
