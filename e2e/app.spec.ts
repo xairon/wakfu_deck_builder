@@ -353,7 +353,7 @@ test.describe("Table de jeu (/play/table)", () => {
 
     const progress = page.getByTestId("tutorial-progress");
     await expect(progress).toBeVisible();
-    await expect(progress).toContainText("/ 12");
+    await expect(progress).toContainText("/ 11");
 
     // On peut quitter la phase guidée via « Passer le tutoriel ».
     await page.getByTestId("tutorial-skip").click();

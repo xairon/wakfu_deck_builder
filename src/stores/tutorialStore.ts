@@ -78,11 +78,9 @@ export const useTutorialStore = defineStore("tutorial", () => {
   // « aucune carte ne peut entrer au premier tour ».
   const guidedSteps: TutorialStep[] = [
     {
-      anchor: ".overlay .btn-primary",
-      text: "Bienvenue dans le Wakfu TCG ! But : réduire les PV du Héros adverse à 0, OU monter ton Héros au Niveau 3 (18 XP). Tu joues en bas, contre l'ordinateur (qui commence). Clique « Je suis prêt » pour voir ta main.",
-      advanceWhen: () =>
-        !game.passPending &&
-        (game.mulliganSeat === "A" || game.matchPhase === "playing"),
+      anchor: ".gseat:not(.gseat--opp)",
+      manual: true,
+      text: "Bienvenue dans le Wakfu TCG ! But : réduire les PV du Héros adverse à 0, OU monter ton Héros au Niveau 3 (18 XP). Tu joues en bas, contre l'ordinateur (qui commence). Clique « Suivant ».",
     },
     {
       anchor: ".overlay--mulligan",
@@ -98,19 +96,11 @@ export const useTutorialStore = defineStore("tutorial", () => {
     {
       anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
       manual: true,
-      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique (règles assistées). Une carte JOUABLE maintenant s'illumine ; une carte grisée est trop chère ou interdite dans la phase courante.",
-    },
-    {
-      anchor: ".overlay .btn-primary",
-      text: "L'ordinateur a passé le 1er tour : la règle interdit de poser une carte au TOUT premier tour de la partie. À TOI maintenant (ton 1er tour) — clique « Je suis prêt ».",
-      advanceWhen: () =>
-        !game.passPending &&
-        game.matchPhase === "playing" &&
-        game.turn.active === "A",
+      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique. Les cartes JOUABLES maintenant s'illuminent (liseré doré) ; les grisées sont trop chères ou interdites dans la phase/tour courant.",
     },
     {
       anchor: ".gzone--play",
-      text: "À toi : GLISSE un Allié JOUABLE (illuminé) de ta main sur ton champ de bataille. Son coût est payé automatiquement (regarde tes cartes s'incliner).",
+      text: "L'ordinateur a passé le 1er tour (règle : aucune carte ne peut entrer au tout premier tour de la partie). À TOI, ton 1er tour : GLISSE un Allié illuminé de ta main sur ton champ de bataille.",
       advanceWhen: () => myAllies() >= 1,
     },
     {
@@ -119,17 +109,14 @@ export const useTutorialStore = defineStore("tutorial", () => {
       advanceWhen: () => game.turn.number >= 3,
     },
     {
-      anchor: ".overlay .btn-primary",
-      text: "L'ordinateur a joué son tour. En partie locale, l'écran de passation cache la main de celui qui ne joue pas. Reclique « Je suis prêt » quand c'est à toi.",
+      anchor: ".gseat--opp",
+      text: "L'ordinateur joue son tour (le bandeau « Tour adverse » masque sa main, comme sur une vraie table). Patiente — la main te revient tout de suite après.",
       advanceWhen: () =>
-        !game.passPending &&
-        game.matchPhase === "playing" &&
-        game.turn.active === "A" &&
-        game.turn.number >= 4,
+        game.turn.active === "A" && game.turn.number >= 4 && !game.passPending,
     },
     {
       anchor: ".gzone--play",
-      text: "Ton Allié est redressé et prêt. CLIQUE-le, puis « ⚔ Attaquer » ; désigne une CIBLE adverse (le Héros en haut), « Confirmer l'attaque », puis « Résoudre le combat ». Attaquer le Héros entame d'abord son Havre-Sac (bouclier).",
+      text: "À ton tour, ton Allié est redressé et prêt. CLIQUE-le, puis « ⚔ Attaquer » ; désigne une CIBLE adverse (le Héros en haut), « Confirmer l'attaque », puis « Résoudre le combat ». Attaquer le Héros entame d'abord son Havre-Sac (bouclier).",
       advanceWhen: () => game.attackedOnTurn !== null,
     },
     {

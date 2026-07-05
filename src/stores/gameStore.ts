@@ -913,15 +913,19 @@ export const useGameStore = defineStore("game", () => {
     if (!seat) return;
     mulliganDone.value = { ...mulliganDone.value, [seat]: true };
     const other = otherSeat(seat);
+    // vs-bot (solo) : pas d'écran « Passe l'appareil » pour le JOUEUR — seul le
+    // mulligan / 1er tour du BOT affiche l'overlay (« Tour adverse », masque sa main).
+    const passFor = (s: Seat): boolean =>
+      botSeat.value ? s === botSeat.value : true;
     if (!mulliganDone.value[other]) {
       mulliganSeat.value = other;
       perspective.value = other;
-      passPending.value = true;
+      passPending.value = passFor(other);
     } else {
       mulliganSeat.value = null;
       matchPhase.value = "playing";
       perspective.value = firstPlayer.value;
-      passPending.value = true; // passe l'appareil au premier joueur
+      passPending.value = passFor(firstPlayer.value);
     }
   }
 
@@ -1054,8 +1058,12 @@ export const useGameStore = defineStore("game", () => {
     // actif + écran de passation. En ligne (repli sans transport d'intentions),
     // le tour avance via l'echo SET_PHASE — pas de bascule de perspective.
     if (!online.value) {
-      perspective.value = state.value.turn.active;
-      passPending.value = true;
+      const next = state.value.turn.active;
+      perspective.value = next;
+      // Hot-seat 2 joueurs : écran de passation à chaque tour. En SOLO (vs bot),
+      // pas de « Passe l'appareil » — un seul humain — SAUF au tour du BOT (le
+      // bandeau « Tour adverse » masque sa main). Le tour du joueur s'ouvre direct.
+      passPending.value = botSeat.value ? next === botSeat.value : true;
     }
   }
 
