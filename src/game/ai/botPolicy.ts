@@ -251,8 +251,13 @@ function resolveInteraction(
  *  s'auto-tapper). Puis développer (jouer cartes) + activer les pouvoirs.
  *  `false` = plus rien à faire → finir le tour. */
 function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
-  // 1. ATTAQUE (une fois) — avec les attaquants rentables encore dressés.
-  if (store.canDeclareAttack && !tried.has("__atk__")) {
+  // 1. ATTAQUE (une fois) — avec les attaquants rentables encore dressés. Bot
+  // « doux » (botAggressive=false, phase guidée du tutoriel) → ne déclare pas.
+  if (
+    store.botAggressive !== false &&
+    store.canDeclareAttack &&
+    !tried.has("__atk__")
+  ) {
     tried.add("__atk__");
     const good = store.eligibleAttackerIds.filter((id) =>
       worthAttacking(store, me, id),

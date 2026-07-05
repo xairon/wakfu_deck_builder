@@ -173,6 +173,9 @@ export const useGameStore = defineStore("game", () => {
   // Siège piloté par l'IA en mode « jouer contre l'ordinateur » (null hors mode
   // bot). Lu par l'UI (masquer « passe l'appareil ») et le driver useBotOpponent.
   const botSeat = ref<Seat | null>(null);
+  // L'IA déclare-t-elle des attaques ? Mis à false pendant la phase GUIDÉE du
+  // tutoriel (bot « doux »), true en jeu libre (vrai adversaire). Lu par botPolicy.
+  const botAggressive = ref(true);
   // ── Jeu en ligne (clients de confiance) ─────────────────────────────────
   const online = ref(false);
   const mySeat = ref<Seat>("A");
@@ -2994,6 +2997,7 @@ export const useGameStore = defineStore("game", () => {
     online,
     mySeat,
     botSeat,
+    botAggressive,
     gameId: () => gameId.value,
     connectOnline,
     disconnectOnline,

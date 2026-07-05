@@ -1,14 +1,20 @@
 /**
- * tutorialStore — leçons interactives sur la vraie table. Registre de leçons :
- *  - `decouverte` = « Apprendre à jouer » (la boucle de base) ;
- *  - `combat` = leçon de combat complète (attaque + blocage + résolution).
- * Machinerie partagée : pilotage du `TutorialCoach` (spotlight), étapes ancrées
- * + `advanceWhen`, adversaire auto-piloté (bot), `tick` de rattrapage.
- * Réf. docs/superpowers/specs/2026-06-16-tutoriels-par-mecanique-design.md.
+ * tutorialStore — « Apprendre en jouant ». UNE vraie partie contre l'IA
+ * intelligente (pilotée par `gameStore.botSeat` via useBotOpponent), GUIDÉE pas à
+ * pas au début (mulligan → jouer un Allié → attaquer → défendre → niveau), puis
+ * LIBRE dès que les étapes sont terminées : le coach se retire et `RuleAssistant`
+ * prend le relais. Le deck est CHOISI par le joueur → les étapes restent
+ * GÉNÉRIQUES (aucune carte nommée). Règles assistées FORCÉES.
+ *
+ * Ne contient plus de bot maison : l'adversaire est l'IA heuristique
+ * (`useBotOpponent`, montée par PlayTableView, active dès `botSeat` renseigné).
+ * Pendant la phase guidée, le bot est « doux » (ne déclare pas d'attaque —
+ * `game.botAggressive=false`) pour ne pas parasiter les explications ; il devient
+ * un vrai adversaire une fois le tutoriel terminé.
  */
 import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
-import type { Card, Deck, HeroCard } from "@/types/cards";
+import type { Deck } from "@/types/cards";
 import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
 
@@ -21,20 +27,8 @@ export interface TutorialStep {
   text: string | (() => string);
   /** Étape informative : avance via le bouton « Suivant ». */
   manual?: boolean;
-  /** Étape validée par l'état du jeu. */
+  /** Étape validée par l'état du jeu (conditions MONOTONES de préférence). */
   advanceWhen?: () => boolean;
-}
-
-export interface Lesson {
-  id: string;
-  title: string;
-  /** Une ligne pour le sélecteur du lobby. */
-  summary: string;
-  /** Arrange le plateau (decks + placement + tour). `false` si impossible. */
-  setup: () => boolean;
-  steps: TutorialStep[];
-  /** Comportement du bot adverse propre à la leçon. */
-  botPolicy?: { blocks?: boolean };
 }
 
 export const useTutorialStore = defineStore("tutorial", () => {
@@ -43,8 +37,6 @@ export const useTutorialStore = defineStore("tutorial", () => {
 
   const active = ref(false);
   const stepIndex = ref(0);
-  const activeLesson = ref<Lesson | null>(null);
-  let botTimer: ReturnType<typeof setTimeout> | null = null;
   let tickTimer: ReturnType<typeof setInterval> | null = null;
 
   // ── Aides d'état ───────────────────────────────────────────────────────────
@@ -76,189 +68,14 @@ export const useTutorialStore = defineStore("tutorial", () => {
         : cheap === 1
           ? " Ici : 1 seul Allié jouable tôt — gardable, mais juste."
           : " Ici : aucun Allié jouable tôt — sur un vrai deck, tu la referais.";
-    return `${base}${verdict} Tu peux cliquer « Mulligan » pour refaire ta main (une carte de moins), ou « Garder » pour la conserver.`;
+    return `${base}${verdict} Clique « Mulligan » pour refaire ta main (une carte de moins), ou « Garder ».`;
   }
 
-  // ── Decks du tutoriel (cartes réelles, simples, sans effets compilés) ──────
-  function clone<T>(v: T): T {
-    return JSON.parse(JSON.stringify(v)) as T;
-  }
-  function buildDecks(): { a: Deck; b: Deck } | null {
-    const all = cardStore.cards;
-    const heroes = all.filter((c): c is HeroCard => c.mainType === "Héros");
-    const sacs = all.filter((c) => c.mainType === "Havre-Sac");
-    if (!heroes.length || !sacs.length) return null;
-    for (const el of ["Feu", "Eau", "Terre", "Air"]) {
-      const hero = heroes.find(
-        (h) =>
-          (h.recto?.stats?.force?.element ??
-            h.recto?.stats?.niveau?.element) === el,
-      );
-      const pool = all.filter(
-        (c) =>
-          c.mainType === "Allié" &&
-          c.stats?.niveau?.value === 1 &&
-          c.stats?.niveau?.element === el &&
-          (c.stats?.force?.value ?? 0) >= 1 &&
-          (c.effects ?? []).every((e) => !e.compiled) &&
-          !(c.subTypes ?? []).includes("Unique"),
-      );
-      if (!hero || pool.length < 8) continue;
-      const mk = (id: string, h: Card, s: Card): Deck => ({
-        id,
-        name: id,
-        hero: clone(h) as Deck["hero"],
-        havreSac: clone(s) as Deck["havreSac"],
-        cards: pool.slice(0, 16).map((card) => ({
-          card: clone(card),
-          quantity: 3,
-          isReserve: false,
-        })),
-        createdAt: "",
-        updatedAt: "",
-      });
-      return {
-        a: mk("tutoriel-toi", hero, sacs[0]),
-        b: mk("tutoriel-adversaire", hero, sacs[1] ?? sacs[0]),
-      };
-    }
-    return null;
-  }
-
-  // ── Setups de leçon ────────────────────────────────────────────────────────
-  /** « Apprendre à jouer » : partie complète depuis le mulligan, B commence. */
-  function setupDecouverte(): boolean {
-    const decks = buildDecks();
-    if (!decks) return false;
-    game.assist = true;
-    // v1 « Cockatrice » : règles gérées, effets de cartes résolus à la main.
-    game.assistEffects = false;
-    game.startMatch(decks.a, decks.b, {
-      nameA: "Toi",
-      nameB: "L'adversaire",
-      first: "B",
-    });
-    // L'adversaire (B, 1er joueur) résout son pré-jeu INSTANTANÉMENT : sinon
-    // l'écran clignote entre passation et mulligan adverses au lancement.
-    game.reveal();
-    game.keepHand();
-    return true;
-  }
-
-  /** Sommet de la Pioche d'un siège = un Allié (les decks tuto n'ont que ça). */
-  function firstAlly(seat: "A" | "B"): string | undefined {
-    return game.state.seats[seat].pioche[0];
-  }
-
-  /** Decks de la leçon combat : ton attaquant (Force max, sans Résistance, qui
-   * survivra) et un bloqueur adverse (Force 1 qui rapporte de l'XP en tombant). */
-  function buildCombatLessonDecks(): { a: Deck; b: Deck } | null {
-    const all = cardStore.cards;
-    const hero = all.find((c): c is HeroCard => c.mainType === "Héros");
-    const sac = all.find((c) => c.mainType === "Havre-Sac");
-    const hasRes = (c: Card) =>
-      (c.keywords ?? []).some((k) => k.name === "Résistance");
-    const lvl1 = all.filter(
-      (c) =>
-        c.mainType === "Allié" &&
-        c.stats?.niveau?.value === 1 &&
-        (c.stats?.force?.value ?? 0) >= 1 &&
-        (c.effects ?? []).every((e) => !e.compiled) &&
-        !(c.subTypes ?? []).includes("Unique"),
-    );
-    const attacker = [...lvl1]
-      .filter((c) => !hasRes(c))
-      .sort(
-        (a, b) => (b.stats?.force?.value ?? 0) - (a.stats?.force?.value ?? 0),
-      )[0];
-    const blocker = lvl1.find(
-      (c) =>
-        c !== attacker &&
-        (c.stats?.force?.value ?? 0) === 1 &&
-        (c.experience ?? 0) >= 1 &&
-        !hasRes(c),
-    );
-    if (!hero || !sac || !attacker || !blocker) return null;
-    const mk = (id: string, ally: Card): Deck => ({
-      id,
-      name: id,
-      hero: clone(hero) as Deck["hero"],
-      havreSac: clone(sac) as Deck["havreSac"],
-      cards: [{ card: clone(ally), quantity: 3, isReserve: false }],
-      createdAt: "",
-      updatedAt: "",
-    });
-    return { a: mk("lecon-toi", attacker), b: mk("lecon-adv", blocker) };
-  }
-
-  /** Leçon « Combat » : plateau pré-arrangé, ton attaquant prêt, un bloqueur adverse. */
-  function setupCombat(): boolean {
-    const decks = buildCombatLessonDecks();
-    if (!decks) return false;
-    game.assist = true;
-    game.assistEffects = false;
-    game.startSandbox(decks.a, decks.b, "A");
-    const aAlly = firstAlly("A");
-    const bAlly = firstAlly("B");
-    if (!aAlly || !bAlly) return false;
-    game.moveTo(aAlly, { zone: "monde" }); // arrivé tour 1 → attaque légale ensuite
-    game.nextTurn(); // tour 2 (B)
-    game.nextTurn(); // tour 3 (A) — l'attaque devient légale
-    // un Allié adverse fraîchement arrivé PEUT bloquer (le mal d'invocation ne
-    // concerne que l'ATTAQUE), donc on le pose maintenant.
-    game.moveTo(bAlly, { zone: "monde" });
-    game.attackedOnTurn = null;
-    return true;
-  }
-
-  /** Texte du résultat du duel, calculé sur l'état réel (XP gagné, survie). */
-  function combatResultText(): string {
-    const heroA = game.state.seats.A.heroInstanceId;
-    const xp = heroA ? (game.state.instances[heroA]?.counters.xp ?? 0) : 0;
-    const sacA = game.state.seats.A.havreSacInstanceId;
-    const aAlive = game.state.monde.some(
-      (id) => game.state.instances[id]?.controller === "A" && id !== sacA,
-    );
-    const base =
-      "Duel résolu ! Chaque Allié inflige sa Force à l'autre, simultanément. Un Allié est DÉTRUIT quand les dégâts reçus ≥ sa Force (sa Résistance en retire d'abord). ";
-    const parts: string[] = [];
-    if (xp > 0)
-      parts.push(
-        `tu as détruit l'Allié adverse → +${xp} XP pour ton Héros (6 XP = Niveau 2, 18 XP = victoire)`,
-      );
-    parts.push(
-      aAlive
-        ? "ton attaquant a encaissé sans tomber, il survit"
-        : "ton attaquant est tombé aussi — un échange",
-    );
-    return `${base}${parts.join(", ")}. Le détail est dans le journal. Tu sais te battre !`;
-  }
-
-  /** Leçon « Montée de niveau » : comme le combat, mais ton Héros démarre à
-   * 5 XP → détruire le bloqueur (+1 XP) le fait passer Niveau 2 (face verso). */
-  function setupLeveling(): boolean {
-    if (!setupCombat()) return false;
-    const heroA = game.state.seats.A.heroInstanceId;
-    if (heroA) game.adjustCounter(heroA, "xp", 5); // 5 XP → 6 après la destruction
-    return true;
-  }
-  function levelingResultText(): string {
-    const heroA = game.state.seats.A.heroInstanceId;
-    const inst = heroA ? game.state.instances[heroA] : null;
-    const leveled = (inst?.counters.level ?? 1) >= 2 || inst?.face === "verso";
-    return leveled
-      ? "BRAVO ! 6 XP atteint → ton Héros passe NIVEAU 2 : sa carte se retourne (verso) et ses stats changent (regarde « NIV » et sa carte). À 18 XP, victoire par l'Expérience !"
-      : "Tu as gagné de l'XP. À 6 XP ton Héros passe Niveau 2 (verso), à 18 tu gagnes. Continue à détruire des Alliés !";
-  }
-
-  // ── Étapes ─────────────────────────────────────────────────────────────────
-  const decouverteSteps: TutorialStep[] = [
+  // ── Séquence guidée (générique, tolérante à l'IA) ──────────────────────────
+  const guidedSteps: TutorialStep[] = [
     {
       anchor: ".overlay .btn-primary",
-      text: "Bienvenue dans le Wakfu TCG ! Le but : réduire les PV du Héros adverse à 0, ou monter ton Héros au Niveau 3 (18 XP). Ici tu joues « Toi » — l'adversaire est piloté automatiquement. Clique « Je suis prêt ».",
-      // conditions MONOTONES : restent vraies une fois atteintes, le tick de
-      // rattrapage peut donc traverser plusieurs étapes si une fenêtre a été
-      // manquée (les étapes auto n'ont pas de bouton, seul l'état avance).
+      text: "Bienvenue dans le Wakfu TCG ! But : réduire les PV du Héros adverse à 0, OU monter ton Héros au Niveau 3 (18 XP). Tu joues en bas, contre l'ordinateur. Clique « Je suis prêt » pour voir ta main.",
       advanceWhen: () =>
         !game.passPending &&
         (game.mulliganSeat === "A" || game.matchPhase === "playing"),
@@ -266,181 +83,69 @@ export const useTutorialStore = defineStore("tutorial", () => {
     {
       anchor: ".overlay--mulligan",
       text: evaluateMulligan,
-      advanceWhen: () => game.matchPhase === "playing",
-    },
-    {
-      anchor: ".overlay .btn-primary",
-      text: "L'adversaire a joué son premier tour. À toi ! En partie locale, l'écran de passation cache la main de celui qui ne joue pas. Clique « Je suis prêt ».",
       advanceWhen: () =>
-        !game.passPending &&
-        game.matchPhase === "playing" &&
-        game.turn.active === "A",
+        game.mulliganSeat !== "A" || game.matchPhase === "playing",
     },
     {
       anchor: ".gseat:not(.gseat--opp) .ghud",
       manual: true,
-      text: "Ton Héros : PV (à 0, c'est la défaite), PA (ta taille de main MAXIMALE : en fin de tour tu repioches jusqu'à ce nombre), PM (nombre maximal d'attaquants ou de bloqueurs), XP et Niveau (6 XP → Niveau 2 et face verso, 18 XP → victoire).",
+      text: "Ton Héros : PV (à 0 = défaite), PA (ta taille de main MAX : en fin de tour tu repioches jusqu'à ce nombre), PM (nombre max d'attaquants/bloqueurs), XP et Niveau (6 XP → Niveau 2 et face verso, 18 XP → victoire).",
     },
     {
       anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
       manual: true,
-      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique ici.",
-    },
-    {
-      anchor: ".gseat:not(.gseat--opp) .ghud__mana",
-      manual: true,
-      text: "Tes Ressources (« mana ») par Élément : tes cartes en jeu (Héros, Havre-Sac, Alliés…) les produisent en s'inclinant. L'adversaire ayant commencé, tu joues en SECOND — à ton premier tour, ton Havre-Sac vaut 2 Ressources (badge « +1 » doré). C'est pour ça que tu as 3 mana et lui seulement 2.",
+      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique (règles assistées).",
     },
     {
       anchor: ".gzone--play",
-      text: "À toi de jouer : GLISSE un Allié de ta main sur ton champ de bataille. Son coût sera payé automatiquement (regarde tes cartes s'incliner).",
+      text: "À toi : GLISSE un Allié de ta main sur ton champ de bataille. Son coût est payé automatiquement (regarde tes cartes s'incliner).",
       advanceWhen: () => myAllies() >= 1,
     },
     {
       anchor: ".gendturn",
-      text: "Bien joué ! Ton Allié vient d'arriver : il ne pourra attaquer qu'à ton PROCHAIN tour (mal d'invocation). Clique « Fin du tour » — tu piocheras automatiquement jusqu'à tes PA.",
-      advanceWhen: () => game.turn.number >= 3,
+      text: "Bien joué ! Ton Allié vient d'arriver : il ne pourra attaquer qu'à ton PROCHAIN tour (mal d'invocation). Clique « Fin du tour » — tu piocheras jusqu'à tes PA, puis l'ordinateur jouera.",
+      advanceWhen: () => game.turn.active === "B" || game.turn.number >= 2,
     },
     {
       anchor: ".overlay .btn-primary",
-      text: "L'adversaire a fini son tour. Re-clique « Je suis prêt ».",
-      advanceWhen: () => !game.passPending && game.turn.number >= 4,
+      text: "L'ordinateur a joué son tour. En partie locale, l'écran de passation cache la main de celui qui ne joue pas. Reclique « Je suis prêt » quand c'est à toi.",
+      advanceWhen: () =>
+        !game.passPending &&
+        game.matchPhase === "playing" &&
+        game.turn.active === "A" &&
+        game.turn.number >= 3,
     },
     {
       anchor: ".gzone--play",
-      text: "Ton Allié est redressé et prêt au combat. CLIQUE-le, puis « ⚔ Attaquer » ; désigne le HÉROS adverse comme cible (en haut), puis « Confirmer l'attaque ». L'adversaire peut alors bloquer — ici il laisse passer : clique « Résoudre le combat ».",
+      text: "Ton Allié est redressé et prêt. CLIQUE-le, puis « ⚔ Attaquer » ; désigne une CIBLE adverse (le Héros en haut), « Confirmer l'attaque », puis « Résoudre le combat ». Attaquer le Héros entame d'abord son Havre-Sac (bouclier).",
       advanceWhen: () => game.attackedOnTurn !== null,
     },
     {
-      anchor: ".glayout__journal",
+      anchor: ".gcombat",
       manual: true,
-      text: "Touché ! Tout est tracé dans le journal. Les RÈGLES sont gérées pour toi (combat, coûts, PV, XP) ; les EFFETS des cartes, eux, se résolvent à la main — comme sur une vraie table. La table ne bloque jamais.",
-    },
-    {
-      anchor: ".gendturn",
-      manual: true,
-      text: "Tu sais jouer ! Inflige des dégâts pour faire tomber les PV adverses, détruis des Alliés pour gagner de l'XP. Continue cette partie librement, ou quitte via « Quitter ». Bon jeu !",
-    },
-  ];
-
-  const combatSteps: TutorialStep[] = [
-    {
-      anchor: ".gzone--play",
-      text: "Leçon de combat. Ton Allié (en bas) est redressé et prêt. CLIQUE-le, puis « ⚔ Attaquer ».",
-      advanceWhen: () => game.combat?.step === "attackers",
-    },
-    {
-      anchor: ".gseat--opp",
-      text: "Choisis ta CIBLE : le Héros adverse, en haut (il s'encadre quand il est ciblable).",
-      advanceWhen: () => game.combat?.target != null,
-    },
-    {
-      anchor: ".gcombat",
-      text: "Valide avec « Confirmer l'attaque ».",
-      advanceWhen: () => game.combat?.step === "blockers",
-    },
-    {
-      anchor: ".gcombat",
-      text: "L'adversaire BLOQUE avec son Allié : il intercepte ton attaquant. Le Héros est épargné — le duel se fera entre les deux Alliés.",
-      advanceWhen: () => Object.keys(game.combat?.blocks ?? {}).length > 0,
-    },
-    {
-      anchor: ".gcombat",
-      text: "Clique « Résoudre le combat » pour lancer le duel.",
-      advanceWhen: () => game.attackedOnTurn !== null,
-    },
-    {
-      anchor: ".glayout__journal",
-      manual: true,
-      text: combatResultText,
-    },
-  ];
-
-  const levelingSteps: TutorialStep[] = [
-    {
-      anchor: ".gseat:not(.gseat--opp) .ghud",
-      manual: true,
-      text: "Ton Héros a déjà 5 XP (vois « XP »). On gagne de l'XP en DÉTRUISANT des Alliés adverses ; à 6 XP, le Héros passe Niveau 2 (carte verso, stats améliorées), à 18 XP c'est la victoire ! Détruis l'Allié adverse pour décrocher ton 6ᵉ XP.",
-    },
-    {
-      anchor: ".gzone--play",
-      text: "Clique ton Allié, puis « ⚔ Attaquer ».",
-      advanceWhen: () => game.combat?.step === "attackers",
-    },
-    {
-      anchor: ".gseat--opp",
-      text: "Cible le Héros adverse (en haut).",
-      advanceWhen: () => game.combat?.target != null,
-    },
-    {
-      anchor: ".gcombat",
-      text: "Valide avec « Confirmer l'attaque ».",
-      advanceWhen: () => game.combat?.step === "blockers",
-    },
-    {
-      anchor: ".gcombat",
-      text: "L'adversaire bloque — tu vas détruire son Allié et empocher l'XP.",
-      advanceWhen: () => Object.keys(game.combat?.blocks ?? {}).length > 0,
-    },
-    {
-      anchor: ".gcombat",
-      text: "« Résoudre le combat ».",
-      advanceWhen: () => game.attackedOnTurn !== null,
+      text: "Défense : quand l'ORDINATEUR attaque, tu peux BLOQUER — pendant la phase de blocage, clique un de tes Alliés dressés pour intercepter un attaquant (le duel se fait entre les deux Alliés, ton Héros est épargné), ou laisse passer. Puis « Résoudre le combat ».",
     },
     {
       anchor: ".gseat:not(.gseat--opp) .ghud",
       manual: true,
-      text: levelingResultText,
+      text: "XP & Niveau : DÉTRUIS des Alliés adverses (dégâts ≥ leur Force) pour gagner de l'XP. 6 XP → Niveau 2 (ton Héros se retourne, stats améliorées) ; 18 XP → victoire directe. Réduire les PV du Héros adverse à 0 gagne aussi.",
+    },
+    {
+      anchor: ".glayout__journal",
+      manual: true,
+      text: "Tout est tracé dans le journal, et les RÈGLES sont gérées pour toi (combat, coûts, PV, XP). Les EFFETS des cartes, eux, se résolvent à la main — l'assistant de règles (à droite) te guide. Tu sais jouer : continue cette partie LIBREMENT contre l'ordinateur. Bon jeu !",
     },
   ];
 
-  // ── Registre des leçons ────────────────────────────────────────────────────
-  const LESSONS: Record<string, Lesson> = {
-    decouverte: {
-      id: "decouverte",
-      title: "Apprendre à jouer",
-      summary: "La partie de A à Z : mulligan, jouer un Allié, attaquer.",
-      setup: setupDecouverte,
-      steps: decouverteSteps,
-      botPolicy: { blocks: false },
-    },
-    combat: {
-      id: "combat",
-      title: "Le combat",
-      summary: "Attaquer, se faire bloquer, résoudre un duel (létalité, XP).",
-      setup: setupCombat,
-      steps: combatSteps,
-      botPolicy: { blocks: true },
-    },
-    leveling: {
-      id: "leveling",
-      title: "Monter de niveau",
-      summary:
-        "Gagner de l'XP en détruisant un Allié → passer Niveau 2 (verso).",
-      setup: setupLeveling,
-      steps: levelingSteps,
-      botPolicy: { blocks: true },
-    },
-  };
-
-  // ── Coach (dérive de la leçon active) ──────────────────────────────────────
+  // ── Coach ──────────────────────────────────────────────────────────────────
   const step = computed(() =>
-    active.value && activeLesson.value
-      ? (activeLesson.value.steps[stepIndex.value] ?? null)
-      : null,
+    active.value ? (guidedSteps[stepIndex.value] ?? null) : null,
   );
   const stepText = computed(() => {
     const t = step.value?.text;
     return typeof t === "function" ? t() : (t ?? "");
   });
-  const total = computed(() => activeLesson.value?.steps.length ?? 0);
-
-  /** Liste des leçons de mécanique (hors « Apprendre à jouer ») pour le lobby. */
-  const mechanicLessons = computed(() =>
-    Object.values(LESSONS)
-      .filter((l) => l.id !== "decouverte")
-      .map((l) => ({ id: l.id, title: l.title, summary: l.summary })),
-  );
+  const total = computed(() => guidedSteps.length);
 
   // ── Cycle ──────────────────────────────────────────────────────────────────
   /** Rattrapage : traverse toutes les étapes auto déjà satisfaites. */
@@ -465,33 +170,35 @@ export const useTutorialStore = defineStore("tutorial", () => {
     stepIndex.value += 1;
   }
 
-  /** Lance une leçon par son id (`decouverte`, `combat`, …). */
-  function startLesson(id: string): boolean {
-    const lesson = LESSONS[id];
-    if (!lesson || !lesson.setup()) return false;
-    activeLesson.value = lesson;
+  /**
+   * Démarre « Apprendre en jouant » : partie complète (mulligan inclus) contre
+   * l'IA, deck du joueur = `deckA`, deck de l'ordinateur = `deckB`. Règles
+   * assistées forcées ; bot « doux » pendant la phase guidée.
+   */
+  function startGuidedGame(deckA: Deck, deckB: Deck): void {
+    game.assist = true;
+    game.assistEffects = true;
+    game.botAggressive = false; // doux pendant l'intro guidée
+    game.startMatch(deckA, deckB, {
+      nameA: "Toi",
+      nameB: "L'ordinateur",
+      first: "A",
+    });
+    game.botSeat = "B"; // l'IA pilote le siège B (useBotOpponent, monté par la vue)
     stepIndex.value = 0;
     active.value = true;
     if (tickTimer) clearInterval(tickTimer);
     tickTimer = setInterval(tick, 400);
-    return true;
-  }
-  /** Compat : le bouton « Apprendre à jouer » / `?tutorial=1` lancent la découverte. */
-  function start(): boolean {
-    return startLesson("decouverte");
   }
 
   function stop(markDone: boolean): void {
     active.value = false;
-    activeLesson.value = null;
-    if (botTimer) {
-      clearTimeout(botTimer);
-      botTimer = null;
-    }
     if (tickTimer) {
       clearInterval(tickTimer);
       tickTimer = null;
     }
+    // Fin de la phase guidée → le bot devient un vrai adversaire (attaque).
+    game.botAggressive = true;
     if (markDone) {
       try {
         localStorage.setItem(DONE_KEY, "1");
@@ -500,9 +207,8 @@ export const useTutorialStore = defineStore("tutorial", () => {
       }
     }
   }
-  // Seule « Apprendre à jouer » marque le tutoriel de base comme vu.
-  const finish = (): void => stop(activeLesson.value?.id === "decouverte");
-  const skip = (): void => stop(activeLesson.value?.id === "decouverte");
+  const finish = (): void => stop(true);
+  const skip = (): void => stop(true);
 
   function isDone(): boolean {
     try {
@@ -512,56 +218,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     }
   }
 
-  // ── Adversaire auto-piloté ─────────────────────────────────────────────────
-  watch(
-    () =>
-      [
-        active.value,
-        game.matchPhase,
-        game.passPending,
-        game.perspective,
-        game.mulliganSeat,
-        game.turn.active,
-        game.combat?.step,
-      ] as const,
-    () => {
-      if (!active.value || botTimer) return;
-      const c = game.combat;
-      // (1) Blocage du bot (leçon combat) : pendant TON attaque, l'adversaire
-      // déclare un bloqueur. Pas conditionné à perspective === 'B'.
-      if (
-        activeLesson.value?.botPolicy?.blocks &&
-        c?.step === "blockers" &&
-        Object.keys(c.blocks).length === 0
-      ) {
-        botTimer = setTimeout(() => {
-          botTimer = null;
-          if (!active.value) return;
-          const blocker = game.combatBlockerIds[0];
-          if (blocker) game.combatToggleBlock(blocker);
-        }, 650);
-        return;
-      }
-      // (2) Tour de l'adversaire (siège B) : mulligan de sécurité / fin de tour.
-      const itsB =
-        game.perspective === "B" &&
-        (game.mulliganSeat === "B" || game.turn.active === "B");
-      if (!itsB) return;
-      botTimer = setTimeout(() => {
-        botTimer = null;
-        if (!active.value || game.perspective !== "B") return;
-        if (game.matchPhase === "mulligan") {
-          if (game.passPending) game.reveal();
-          else game.keepHand();
-        } else if (game.matchPhase === "playing" && game.turn.active === "B") {
-          // Finit son tour SANS révéler son plateau (pas de game.reveal()).
-          game.endTurn();
-        }
-      }, 650);
-    },
-  );
-
-  // ── Avance automatique des étapes validées par l'état ──────────────────────
+  // ── Avance auto des étapes validées par l'état ─────────────────────────────
   watch(
     () => [
       active.value,
@@ -583,14 +240,12 @@ export const useTutorialStore = defineStore("tutorial", () => {
     },
   );
 
-  // Fin de partie atteinte pendant le tuto → leçon terminée (« Apprendre à
-  // jouer » marquée vue) ; quitter en cours (lobby sans passer par finished) ne
-  // marque rien. finished précède toujours lobby, donc pas de double-stop.
+  // Fin de partie / retour lobby pendant le tuto → clore la phase guidée.
   watch(
     () => game.matchPhase,
     (phase) => {
       if (!active.value) return;
-      if (phase === "finished") stop(activeLesson.value?.id === "decouverte");
+      if (phase === "finished") stop(true);
       else if (phase === "lobby") stop(false);
     },
   );
@@ -601,9 +256,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     total,
     step,
     stepText,
-    start,
-    startLesson,
-    mechanicLessons,
+    startGuidedGame,
     next,
     skip,
     isDone,

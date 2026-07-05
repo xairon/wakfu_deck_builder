@@ -339,23 +339,23 @@ test.describe("Table de jeu (/play/table)", () => {
     await expect(page.getByText("En attente de l'adversaire")).toBeVisible();
   });
 
-  test("devrait lancer le tutoriel interactif (découverte)", async ({
+  test("devrait lancer « Apprendre en jouant » (partie guidée vs IA)", async ({
     page,
   }) => {
     await page.goto("/play/table");
     await waitForCatalog(page);
 
-    // Bouton « Apprendre à jouer » du lobby (actif une fois le catalogue prêt).
-    const startBtn = page.getByTestId("lobby-start-tutorial");
+    // Le lanceur « Apprendre en jouant » démarre une vraie partie guidée (decks
+    // pré-sélectionnés). Le coach apparaît sur la 1re étape.
+    const startBtn = page.getByTestId("vsbot-start");
     await expect(startBtn).toBeEnabled();
     await startBtn.click();
 
-    // Le coach apparaît sur la 1re étape de la leçon « découverte » (12 étapes).
     const progress = page.getByTestId("tutorial-progress");
     await expect(progress).toBeVisible();
-    await expect(progress).toContainText("/ 12");
+    await expect(progress).toContainText("/ 11");
 
-    // On peut quitter le tutoriel via « Passer le tutoriel ».
+    // On peut quitter la phase guidée via « Passer le tutoriel ».
     await page.getByTestId("tutorial-skip").click();
     await expect(progress).toBeHidden();
   });
@@ -366,18 +366,49 @@ test.describe("Table de jeu (/play/table)", () => {
     await page.goto("/play/table");
     await waitForCatalog(page);
 
-    // Plateau de combat légal via la leçon « combat » (attaquant prêt avec
-    // Force + bloqueur adverse), puis skip() pour retirer coach/bot/auto-
-    // avancement et piloter le combat de façon déterministe.
+    // Plateau de combat légal construit DIRECTEMENT via le store (sans bot ni
+    // coach) : deux decks minimaux (Héros + Havre-Sac + un Allié Niveau 1 Force≥1),
+    // startSandbox, on place un attaquant prêt + un bloqueur adverse, puis on pilote
+    // le combat de façon déterministe.
     const setup = await page.evaluate(() => {
       const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
         ?.globalProperties;
       const pinia = gp?.$pinia;
-      const tut = pinia?._s?.get("tutorial");
       const game = pinia?._s?.get("game");
-      const ok = tut?.startLesson?.("combat") ?? false;
-      tut?.skip?.();
-      return { ok, atkId: game?.eligibleAttackerIds?.[0] ?? null };
+      const cards = pinia?._s?.get("cards")?.cards ?? [];
+      const hero = cards.find((c: any) => c.mainType === "Héros");
+      const sac = cards.find((c: any) => c.mainType === "Havre-Sac");
+      const ally = cards.find(
+        (c: any) =>
+          c.mainType === "Allié" &&
+          c.stats?.niveau?.value === 1 &&
+          (c.stats?.force?.value ?? 0) >= 1 &&
+          !(c.subTypes ?? []).includes("Unique"),
+      );
+      if (!hero || !sac || !ally) return { ok: false, atkId: null };
+      const mk = (id: string) => ({
+        id,
+        name: id,
+        hero,
+        havreSac: sac,
+        cards: [{ card: ally, quantity: 48 }],
+        createdAt: "",
+        updatedAt: "",
+      });
+      game.botSeat = null; // pas de bot pour ce test déterministe
+      game.startSandbox(mk("a"), mk("b"), "A");
+      const find = (seat: string) =>
+        game.state.seats[seat].pioche.find(
+          (id: string) => game.state.instances[id]?.cardId === ally.id,
+        );
+      const aAlly = find("A");
+      const bAlly = find("B");
+      if (aAlly) game.moveTo(aAlly, { zone: "monde" });
+      game.nextTurn();
+      game.nextTurn(); // le mal d'invocation de l'attaquant est levé
+      if (bAlly) game.moveTo(bAlly, { zone: "monde" });
+      game.attackedOnTurn = null;
+      return { ok: true, atkId: game?.eligibleAttackerIds?.[0] ?? null };
     });
     expect(setup.ok).toBe(true);
     expect(setup.atkId).toBeTruthy();

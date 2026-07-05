@@ -32,7 +32,13 @@ export function useBotOpponent(
 
   function step(): void {
     const bot = store.botSeat as Seat | null;
-    if (!bot || store.online || store.winner || store.matchPhase !== "playing")
+    // Actif en mulligan (le bot garde sa main) ET en jeu.
+    if (
+      !bot ||
+      store.online ||
+      store.winner ||
+      (store.matchPhase !== "playing" && store.matchPhase !== "mulligan")
+    )
       return;
     const human = other(bot);
     const active = store.state.turn.active as Seat;
@@ -91,7 +97,9 @@ export function useBotOpponent(
     // ── TOUR DU BOT, phase principale (perspective = bot) ─────────────────────
     if (active === bot && store.perspective === bot) {
       if (store.mulliganSeat === bot) {
-        store.keepHand();
+        // mulligan du bot : lever l'écran de passation puis GARDER sa main.
+        if (store.passPending) store.reveal();
+        else store.keepHand();
         return;
       }
       const acted = botLiveStep(store, bot, tried);
@@ -117,7 +125,8 @@ export function useBotOpponent(
 
     // ── Mulligan du bot / interactions du bot (le moteur met perspective=bot) ──
     if (store.mulliganSeat === bot) {
-      store.keepHand();
+      if (store.perspective === bot && store.passPending) store.reveal();
+      else store.keepHand();
       return;
     }
     if (

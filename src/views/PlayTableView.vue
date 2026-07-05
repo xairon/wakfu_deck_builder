@@ -6,22 +6,9 @@
         <p class="eyebrow text-primary">La Table des Douze</p>
         <h1 class="mt-2 font-display text-3xl sm:text-4xl">Nouvelle partie</h1>
         <p class="mt-2 max-w-lg text-base-content/70">
-          Affronte un ami à distance : crée une partie et partage le code, ou
-          rejoins la sienne avec son code.
+          Apprends en jouant une vraie partie contre l'ordinateur, ou affronte
+          un ami à distance avec un code.
         </p>
-        <button
-          class="btn btn-outline btn-sm mt-4 gap-2"
-          :disabled="!cardStore.cards.length"
-          data-testid="lobby-start-tutorial"
-          @click="startTutorial"
-        >
-          🎓 Apprendre à jouer
-          <span
-            v-if="!tutorial.isDone()"
-            class="font-mono text-[10px] uppercase opacity-70"
-            >~5 min</span
-          >
-        </button>
       </div>
     </header>
     <div class="h-px w-full bg-base-content/20"></div>
@@ -57,13 +44,13 @@
     </section>
 
     <!-- Jeu en ligne (bêta) -->
-    <!-- Jouer contre l'ordinateur (IA locale) -->
+    <!-- Apprendre en jouant (partie guidée-puis-libre contre l'IA locale) -->
     <section class="border border-secondary/30 bg-secondary/[0.04] p-5">
       <div>
-        <p class="eyebrow text-secondary">Jouer contre l'ordinateur</p>
+        <p class="eyebrow text-secondary">Apprendre en jouant</p>
         <p class="mt-1 text-sm text-base-content/65">
-          Affronte une IA en local (règles assistées). Idéal pour tester les
-          decks starter — le bot joue, attaque et bloque tout seul.
+          Une vraie partie contre l'ordinateur, guidée pas à pas au début
+          (mulligan, jouer, attaquer, défendre), puis libre. Règles assistées.
         </p>
       </div>
       <div class="mt-4 flex flex-wrap items-end gap-4">
@@ -116,7 +103,7 @@
           data-testid="vsbot-start"
           @click="startVsBot"
         >
-          🤖 Jouer contre l'ordinateur
+          🎓 Apprendre en jouant
         </button>
       </div>
     </section>
@@ -667,13 +654,19 @@ const tutorial = useTutorialStore();
 const route = useRoute();
 
 const toast = useToast();
+// Deep-link `?tutorial=1` : lance « Apprendre en jouant » avec deux starters par
+// défaut (le joueur pourra rejouer avec le deck de son choix via le lobby).
 function startTutorial(): void {
-  if (!tutorial.start()) {
+  const mine = starterToDeck(INCARNAM_STARTERS[0]?.id ?? "");
+  const opp = starterToDeck(INCARNAM_STARTERS[1]?.id ?? "");
+  if (!mine || !opp) {
     toast.addToast(
       "Impossible de préparer le tutoriel (cartes indisponibles).",
       { type: "warning" },
     );
+    return;
   }
+  tutorial.startGuidedGame(mine, opp);
 }
 
 // ── Abandon (confirmation en deux temps) ─────────────────────────────────────
@@ -737,8 +730,9 @@ function startVsBot(): void {
     });
     return;
   }
-  store.startSandbox(mine, opp, "A", { openingHand: true });
-  store.botSeat = "B"; // l'IA pilote le siège B (useBotOpponent, monté ci-dessous)
+  // « Apprendre en jouant » : partie complète guidée-puis-libre vs l'IA (mulligan,
+  // règles assistées, bot doux pendant l'intro). startGuidedGame pose botSeat.
+  tutorial.startGuidedGame(mine, opp);
 }
 // Driver IA : actif dès que store.botSeat est renseigné (gate interne).
 const botDriver = useBotOpponent(store);
