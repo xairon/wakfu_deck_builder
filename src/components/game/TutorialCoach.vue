@@ -152,6 +152,12 @@ const bubbleStyle = computed<CSSProperties>(() => {
   transition:
     left 0.25s ease,
     top 0.25s ease;
+  /* La bulle NE DOIT PAS bloquer les clics du plateau (elle se pose parfois là où
+     on veut cliquer/glisser) : le corps laisse passer, seuls les BOUTONS captent. */
+  pointer-events: none;
+}
+.tcoach__actions {
+  pointer-events: auto;
 }
 .tcoach__progress {
   font-family: "Space Mono", ui-monospace, monospace;

@@ -12,6 +12,10 @@
       v-for="(item, i) in items"
       :key="item.key"
       class="hand-fan__card"
+      :class="{
+        'hand-fan__card--playable': mine && item.playable === true,
+        'hand-fan__card--unplayable': mine && item.playable === false,
+      }"
       :style="cardStyle(i)"
     >
       <GameCard
@@ -41,6 +45,9 @@ import GameCard from "./GameCard.vue";
 export interface HandItem {
   key: string;
   inst: RedactedInstance | null;
+  /** MA main : la carte est-elle jouable MAINTENANT (coût/phase/tour) ? undefined
+   *  = indéterminé (main adverse, ou hors partie) → aucun voile. */
+  playable?: boolean;
 }
 
 const props = defineProps<{
@@ -109,6 +116,16 @@ function cardStyle(i: number): CSSProperties {
 }
 .hand-fan__card + .hand-fan__card {
   margin-left: calc(var(--overlap, 0px) * -1);
+}
+/* Affordance « jouabilité » (comme MTGA) sur MA main : une carte injouable
+   maintenant (coût/phase/tour) est estompée ; une carte jouable a un liseré doré. */
+.hand-fan__card--unplayable {
+  opacity: 0.4;
+  filter: grayscale(0.55) brightness(0.85);
+}
+.hand-fan__card--playable {
+  filter: drop-shadow(0 0 6px rgba(240, 166, 43, 0.75))
+    drop-shadow(0 0 2px rgba(240, 166, 43, 0.9));
 }
 .hand-fan--opp .hand-fan__card {
   width: var(--card-opp, 72px);

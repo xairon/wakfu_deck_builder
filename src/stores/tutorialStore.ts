@@ -72,10 +72,14 @@ export const useTutorialStore = defineStore("tutorial", () => {
   }
 
   // ── Séquence guidée (générique, tolérante à l'IA) ──────────────────────────
+  // L'ORDINATEUR commence (first="B") : son tour 1 ne peut poser aucune carte
+  // (règle 4943), il le passe ; le 1er tour du JOUEUR est le tour 2, où poser une
+  // carte est autorisé. C'est pourquoi le joueur ne rencontre jamais le blocage
+  // « aucune carte ne peut entrer au premier tour ».
   const guidedSteps: TutorialStep[] = [
     {
       anchor: ".overlay .btn-primary",
-      text: "Bienvenue dans le Wakfu TCG ! But : réduire les PV du Héros adverse à 0, OU monter ton Héros au Niveau 3 (18 XP). Tu joues en bas, contre l'ordinateur. Clique « Je suis prêt » pour voir ta main.",
+      text: "Bienvenue dans le Wakfu TCG ! But : réduire les PV du Héros adverse à 0, OU monter ton Héros au Niveau 3 (18 XP). Tu joues en bas, contre l'ordinateur (qui commence). Clique « Je suis prêt » pour voir ta main.",
       advanceWhen: () =>
         !game.passPending &&
         (game.mulliganSeat === "A" || game.matchPhase === "playing"),
@@ -94,17 +98,25 @@ export const useTutorialStore = defineStore("tutorial", () => {
     {
       anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
       manual: true,
-      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique (règles assistées).",
+      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique (règles assistées). Une carte JOUABLE maintenant s'illumine ; une carte grisée est trop chère ou interdite dans la phase courante.",
+    },
+    {
+      anchor: ".overlay .btn-primary",
+      text: "L'ordinateur a passé le 1er tour : la règle interdit de poser une carte au TOUT premier tour de la partie. À TOI maintenant (ton 1er tour) — clique « Je suis prêt ».",
+      advanceWhen: () =>
+        !game.passPending &&
+        game.matchPhase === "playing" &&
+        game.turn.active === "A",
     },
     {
       anchor: ".gzone--play",
-      text: "À toi : GLISSE un Allié de ta main sur ton champ de bataille. Son coût est payé automatiquement (regarde tes cartes s'incliner).",
+      text: "À toi : GLISSE un Allié JOUABLE (illuminé) de ta main sur ton champ de bataille. Son coût est payé automatiquement (regarde tes cartes s'incliner).",
       advanceWhen: () => myAllies() >= 1,
     },
     {
       anchor: ".gendturn",
       text: "Bien joué ! Ton Allié vient d'arriver : il ne pourra attaquer qu'à ton PROCHAIN tour (mal d'invocation). Clique « Fin du tour » — tu piocheras jusqu'à tes PA, puis l'ordinateur jouera.",
-      advanceWhen: () => game.turn.active === "B" || game.turn.number >= 2,
+      advanceWhen: () => game.turn.number >= 3,
     },
     {
       anchor: ".overlay .btn-primary",
@@ -113,7 +125,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
         !game.passPending &&
         game.matchPhase === "playing" &&
         game.turn.active === "A" &&
-        game.turn.number >= 3,
+        game.turn.number >= 4,
     },
     {
       anchor: ".gzone--play",
@@ -182,7 +194,8 @@ export const useTutorialStore = defineStore("tutorial", () => {
     game.startMatch(deckA, deckB, {
       nameA: "Toi",
       nameB: "L'ordinateur",
-      first: "A",
+      first: "B", // l'ordinateur commence → le 1er tour du joueur (tour 2) autorise
+      // de poser une carte (règle 4943 : rien au tout premier tour de la partie).
     });
     game.botSeat = "B"; // l'IA pilote le siège B (useBotOpponent, monté par la vue)
     stepIndex.value = 0;

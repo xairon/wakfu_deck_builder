@@ -918,7 +918,16 @@ const queue = computed(() => instancesOf(view.value.fileAttente));
 function handList(seat: Seat): HandItem[] {
   const z = view.value.seats[seat].main;
   if (z.kind === "full")
-    return z.instances.map((i) => ({ key: i.instanceId, inst: i }));
+    return z.instances.map((i) => ({
+      key: i.instanceId,
+      inst: i,
+      // affordance MTGA : ma main uniquement (l'adverse est masquée) → jouable si
+      // aucune raison de refus (coût, phase, tour, 1er tour…).
+      playable:
+        seat === store.perspective
+          ? store.cannotPlayReason(i.instanceId) === null
+          : undefined,
+    }));
   return Array.from({ length: z.count }, (_, i) => ({
     key: `back-${seat}-${i}`,
     inst: null,

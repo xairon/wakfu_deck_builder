@@ -2901,6 +2901,23 @@ export const useGameStore = defineStore("game", () => {
     return { value, delta: value - printed };
   }
 
+  /**
+   * Affordance « la carte de MA main est-elle jouable MAINTENANT ? » (comme MTGA) :
+   * `null` = jouable ; sinon la raison (tour/phase/coût/1er tour…). Basé sur la
+   * MÊME légalité que le vrai jeu (whyCannotPlay), du point de vue du siège affiché.
+   * Ne se prononce que pour une carte de la main du joueur en cours de partie.
+   */
+  function cannotPlayReason(instanceId: string): string | null {
+    if (matchPhase.value !== "playing") return "Partie non en cours.";
+    const seat = perspective.value;
+    const inst = state.value.instances[instanceId];
+    if (!inst || inst.location.zone !== "main" || inst.controller !== seat)
+      return "Pas dans ta main.";
+    // En fenêtre de réaction locale (706.5), le réacteur joue hors de son tour.
+    const reaction = combat.value?.reactingSeat === seat;
+    return whyCannotPlay(rulesCtx(), seat, instanceId, reaction);
+  }
+
   function shufflePioche(seat: Seat = perspective.value): void {
     const size = state.value.seats[seat].pioche.length;
     if (size < 2) return;
@@ -3057,6 +3074,7 @@ export const useGameStore = defineStore("game", () => {
     combatChooseRiposte,
     combatCancel,
     effectiveForceOf,
+    cannotPlayReason,
     effectChoice: engine.effectChoice,
     effectChoiceResolve: engine.effectChoiceResolve,
     effectChoiceSelect: engine.effectChoiceSelect,
