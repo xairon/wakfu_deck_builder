@@ -319,8 +319,9 @@
       </aside>
     </div>
 
-    <CardPreviewLayer />
+    <CardHoverPreview />
     <DragLayer />
+    <EffectSpotlight />
     <TurnBanner />
     <ManualEffectReminders />
     <TutorialCoach />
@@ -620,8 +621,9 @@ import GameCard from "@/components/game/GameCard.vue";
 import HandFan from "@/components/game/HandFan.vue";
 import type { HandItem } from "@/components/game/HandFan.vue";
 import ActionLog from "@/components/game/ActionLog.vue";
-import CardPreviewLayer from "@/components/game/CardPreviewLayer.vue";
+import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
 import DragLayer from "@/components/game/DragLayer.vue";
+import EffectSpotlight from "@/components/game/EffectSpotlight.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
 import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";

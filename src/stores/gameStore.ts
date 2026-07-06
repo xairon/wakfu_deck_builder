@@ -851,6 +851,7 @@ export const useGameStore = defineStore("game", () => {
     ruleError.value = null;
     engine.reset();
     turnStartFiredOn.value = null;
+    clearEffectSpotlight();
   }
 
   /**
@@ -895,6 +896,7 @@ export const useGameStore = defineStore("game", () => {
     chifumiDoomed.value = new Set();
     pendingBearer.value = null;
     botSeat.value = null;
+    clearEffectSpotlight();
   }
 
   /** Recycle toute la main du joueur, re-mélange, re-pioche (−1). */
@@ -1149,6 +1151,7 @@ export const useGameStore = defineStore("game", () => {
     chifumiDoomed.value = new Set();
     pendingBearer.value = null;
     botSeat.value = null;
+    clearEffectSpotlight();
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -1291,6 +1294,48 @@ export const useGameStore = defineStore("game", () => {
     cardName: string;
     frames: EffectFrame[]; // effets en attente, enfilés tels quels si « passer »
   } | null>(null);
+
+  // ── PILE D'EFFETS (« spotlight ») ────────────────────────────────────────
+  // Quand une carte À EFFET est jouée (Action résolue, ou Allié/Zone… qui arrive
+  // avec un effet d'apparition), on la pousse dans une petite PILE flottante
+  // affichée sur le plateau : miniature + texte d'effet, pour que le joueur voie
+  // « ce qui se joue » — y compris les effets AUTO-résolus (sans overlay). Chaque
+  // entrée s'efface toute seule après quelques secondes. Purement cosmétique
+  // (aucune incidence sur l'état de jeu) ; désactivée en ligne (bruit inutile).
+  interface EffectSpotlightEntry {
+    id: number;
+    cardId: string;
+    name: string;
+    description: string;
+    seat: Seat;
+  }
+  const effectSpotlight = ref<EffectSpotlightEntry[]>([]);
+  let spotlightSeq = 0;
+  const spotlightTimers = new Map<number, ReturnType<typeof setTimeout>>();
+  function pushEffectSpotlight(seat: Seat, card: Card): void {
+    if (online.value) return;
+    const effs = printedEffects(card);
+    if (!effs.length) return;
+    const id = ++spotlightSeq;
+    const description = effs
+      .map((e) => e.description.trim())
+      .filter(Boolean)
+      .join(" ");
+    effectSpotlight.value = [
+      { id, cardId: card.id, name: card.name, description, seat },
+      ...effectSpotlight.value,
+    ].slice(0, 3);
+    const t = setTimeout(() => {
+      effectSpotlight.value = effectSpotlight.value.filter((e) => e.id !== id);
+      spotlightTimers.delete(id);
+    }, 5200);
+    spotlightTimers.set(id, t);
+  }
+  function clearEffectSpotlight(): void {
+    for (const t of spotlightTimers.values()) clearTimeout(t);
+    spotlightTimers.clear();
+    effectSpotlight.value = [];
+  }
 
   /** La carte porte-t-elle un effet d'annulation (Échec Critique) ? */
   function isCancelCard(
@@ -1769,6 +1814,8 @@ export const useGameStore = defineStore("game", () => {
     } else {
       engine.queueArrivalEffects(seat, card, instanceId);
     }
+    // Met en avant l'effet de la carte jouée (pile flottante cosmétique).
+    pushEffectSpotlight(seat, card);
     return true;
   }
 
@@ -2721,7 +2768,10 @@ export const useGameStore = defineStore("game", () => {
     const def = otherSeat(turn.value.active);
     c.reactingSeat = def;
     perspective.value = def;
-    passPending.value = true; // overlay de passation (cache l'écran)
+    // SOLO (vs bot) : pas de passation d'appareil pour l'humain — sa fenêtre de
+    // réaction s'ouvre direct sur son écran. Seul le tour du BOT garde l'overlay
+    // « Tour adverse » (masque sa main ; le driver la clôt). En hot-seat : toujours.
+    passPending.value = botSeat.value ? def === botSeat.value : true;
   }
 
   /** Fin de la réaction du défenseur : retour à l'attaquant pour résoudre. */
@@ -3049,6 +3099,7 @@ export const useGameStore = defineStore("game", () => {
     attachToBearer,
     cancelBearerTargeting,
     pendingResolution,
+    effectSpotlight,
     passPendingResolution,
     pendingChifumi,
     chifumiAccept,
