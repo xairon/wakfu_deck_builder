@@ -51,6 +51,7 @@ import {
   metierToken,
   normElement,
   producedElement,
+  reduceDamage,
   resolveBanishTarget,
   resolveBuffForceTarget,
   resolveDamageTarget,
@@ -1588,18 +1589,34 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) deps.adjustCounter(heroId, "hp", -op.n);
       } else if (op.op === "damageOppHero") {
-        // `isDamage` (« inflige N Dommages au Héros adverse ») : de vrais
-        // DOMMAGES → bonus de pouvoir d'Allié applicable (W54). Sans le flag
-        // (« le Héros adverse perd N PV ») : perte directe (410.3), jamais
-        // augmentée. NB : ce chemin court-circuite reduceDamage (pas de
-        // Résistance/damageDealt) — infidélité PRÉEXISTANTE hors périmètre, le
-        // hook n'ajoute que l'augmentation.
         const oppHeroId = deps.getState().seats[otherSeat(seat)].heroInstanceId;
-        const bonus =
-          op.isDamage && op.n > 0
-            ? allyPowerDamageBonus(deps.rulesCtx(), frame.powerSourceId)
-            : 0;
-        if (oppHeroId) deps.adjustCounter(oppHeroId, "hp", -(op.n + bonus));
+        if (oppHeroId) {
+          if (op.isDamage && op.n > 0) {
+            // VRAIS Dommages (« inflige N Dommages au Héros adverse ») : d'abord
+            // l'augmentation de pouvoir d'Allié (W54), PUIS la passe unique de
+            // prévention (reduceDamage : Résistance 7469, Trêve, boucliers/auras),
+            // comme resolveDamageTarget — sinon ces Dommages ignoraient la Trêve et
+            // les préventions. Élément = élément vivant de la source (à défaut Neutre).
+            const ctx = deps.rulesCtx();
+            const bonus = allyPowerDamageBonus(ctx, frame.powerSourceId);
+            const eff = reduceDamage(
+              ctx,
+              {
+                targetId: oppHeroId,
+                amount: op.n + bonus,
+                element: liveSourceElement(sourceId) ?? "Neutre",
+                combat: false,
+                sourceId: frame.powerSourceId ?? sourceId ?? null,
+              },
+              activeGlobalMods(ctx),
+            );
+            if (eff > 0) deps.adjustCounter(oppHeroId, "hp", -eff);
+          } else {
+            // « le Héros adverse perd N PV » : perte directe (410.3), jamais
+            // augmentée ni réduite (ne passe pas par reduceDamage).
+            deps.adjustCounter(oppHeroId, "hp", -op.n);
+          }
+        }
       } else if (op.op === "havreSacGainResistance") {
         const sacId = deps.getState().seats[seat].havreSacInstanceId;
         if (sacId) deps.adjustCounter(sacId, "resistance", op.n);

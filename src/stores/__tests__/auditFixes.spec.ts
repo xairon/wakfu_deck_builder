@@ -48,6 +48,35 @@ describe("audit — endTurn bloque tant qu'un effet est en cours", () => {
   });
 });
 
+describe("audit — damageOppHero{isDamage} passe par la prévention (Trêve)", () => {
+  it("de vrais Dommages au Héros adverse sont absorbés par une Trêve active ; une perte de PV directe non", () => {
+    const { store } = makeEffectSandbox({ first: "A", allAllies: true });
+    const heroB = store.state.seats.B.heroInstanceId!;
+    const hp0 = store.state.instances[heroB].counters.hp ?? 0;
+    // Trêve active (jeton treveUntilTurn > tour courant) → activeGlobalMods renvoie treve.
+    store.state.instances[heroB].counters.tokens = {
+      ...(store.state.instances[heroB].counters.tokens ?? {}),
+      treveUntilTurn: store.state.turn.number + 1,
+    };
+
+    // VRAIS Dommages : absorbés par la Trêve (PV inchangés).
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "Sort",
+      ops: [{ op: "damageOppHero", n: 3, isDamage: true }],
+    });
+    expect(store.state.instances[heroB].counters.hp).toBe(hp0);
+
+    // Perte de PV DIRECTE (410.3) : ne passe pas par la prévention → −3.
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "Sort",
+      ops: [{ op: "damageOppHero", n: 3 }],
+    });
+    expect(store.state.instances[heroB].counters.hp).toBe(hp0 - 3);
+  });
+});
+
 describe("audit — Agilité (704) à l'assignation du bloqueur", () => {
   it("un bloqueur sans Agilité ne peut pas être assigné à un attaquant Agilité", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
