@@ -2,17 +2,21 @@
  * DRIVER « jouer contre l'ordinateur » — pilote le siège `store.botSeat` via l'IA
  * heuristique (botLiveStep), en LOCAL, avec une boucle de POLLING robuste.
  *
- * PASSATION D'ÉCRAN (le point délicat en solo). Le combat local n'a AUCUN gate de
- * siège (n'importe quel écran peut déclarer blocages/résolution — la perspective
- * ne cache que les mains). Donc :
- *  - Tour du bot, phase principale / déclaration d'attaque → écran au BOT
- *    (perspective = bot, overlay « Tour adverse »).
- *  - Dès que le bot a DÉCLARÉ son attaque (combat.step ≠ "attackers"), l'écran
- *    passe à l'HUMAIN (perspective = humain, overlay masqué) pour qu'il défende et
- *    clique « Résoudre » — sinon l'humain resterait bloqué derrière l'overlay.
- *  - Après résolution (combat = null), l'écran revient au bot pour finir son tour.
- *  - Tour de l'humain : le bot ne fait que DÉFENDRE (déclare ses blocages), puis
- *    l'humain résout sur son propre écran.
+ * PHILOSOPHIE D'AFFICHAGE (solo) : le joueur REGARDE le bot jouer — pas de rideau
+ * « Tour adverse ». La vue reste TOUJOURS celle de l'humain (son plateau en bas,
+ * la main du bot masquée en haut). Le bot a pourtant besoin que `perspective`
+ * pointe sur son siège pour AGIR (playFromHand / activateTapPower / beginCombat
+ * lisent `perspective`). On concilie les deux ainsi :
+ *  - phase principale du bot : on bascule `perspective` sur le bot LE TEMPS
+ *    (synchrone, dans le même battement) d'exécuter UN coup + de résoudre toute
+ *    fenêtre d'effet qu'il ouvre, puis on REND la vue à l'humain avant que Vue ne
+ *    peigne → aucun basculement visible, le coup apparaît sur le plateau humain ;
+ *  - combat du bot : la DÉCLARATION d'attaque (toggle/cible/confirm) est
+ *    seat-agnostique → elle tourne directement en vue humaine ; l'humain voit les
+ *    flèches se former, puis défend et clique « Résoudre » (combat mono-écran, sans
+ *    gate de siège en local).
+ *  - tour de l'humain : le bot ne fait que DÉFENDRE (déclare ses blocages).
+ * On ne pose donc JAMAIS `passPending` pour le bot en jeu (plus de rideau).
  */
 import { botLiveStep } from "@/game/ai/botPolicy";
 import type { useGameStore } from "@/stores/gameStore";
@@ -29,6 +33,18 @@ export function useBotOpponent(
   let tried = new Set<string>();
   let lastTurn = -1;
   let stopped = false;
+
+  /** Une fenêtre d'interaction du bot est-elle ouverte (à résoudre par lui) ? */
+  function botHasPending(): boolean {
+    return !!(
+      store.pendingChifumi ||
+      store.pendingResolution ||
+      store.effectChoice ||
+      store.effectTargeting ||
+      store.effectPicking ||
+      store.pendingBearer
+    );
+  }
 
   function step(): void {
     const bot = store.botSeat as Seat | null;
@@ -51,10 +67,8 @@ export function useBotOpponent(
     // ── PHASE DE MULLIGAN : le bot ne gère QUE son propre mulligan, RIEN d'autre.
     // CRUCIAL : pendant le mulligan, `turn.active` vaut déjà le 1er joueur (le bot,
     // first="B"), mais la partie n'a PAS commencé. Sans ce court-circuit, les
-    // branches de tour/combat plus bas voyaient « active === bot && pas de combat »
-    // et (1) grabbaient l'écran pour le bot (perspective=bot + passation) PENDANT
-    // que l'HUMAIN mulliganait encore, puis (2) appelaient endTurn() pour le bot en
-    // pleine phase mulligan → partie corrompue + humain coincé derrière l'overlay.
+    // branches de tour/combat plus bas joueraient le tour du bot PENDANT que
+    // l'humain mulligane encore (endTurn en pleine phase mulligan → corruption).
     // On ne joue le tour du bot QUE lorsque matchPhase === "playing". ─────────────
     if (store.matchPhase === "mulligan") {
       if (store.mulliganSeat === bot) {
@@ -65,8 +79,7 @@ export function useBotOpponent(
     }
 
     // ── CHOIX destinés au BOT (eachPlayerOptional / Défi) : ces ops NE basculent
-    // PAS la perspective — on route par le siège du choix (sinon l'humain devrait
-    // répondre pour le bot, ou la partie se fige). ──────────────────────────────
+    // PAS la perspective — on route par le siège du choix. ────────────────────────
     const choice = store.effectChoice as {
       seat?: Seat;
       options?: unknown[];
@@ -77,54 +90,58 @@ export function useBotOpponent(
       return;
     }
 
-    // ── FENÊTRE DE RÉACTION offerte au bot (défenseur) : la clore (sinon freeze
-    // si l'humain a cliqué « Laisser réagir l'adversaire »). ────────────────────
+    // ── FENÊTRE DE RÉACTION offerte au bot (défenseur) : la clore. ────────────────
     if (c && c.reactingSeat === bot) {
       botLiveStep(store, bot, tried);
       return;
     }
 
-    // ── LE BOT EST L'ATTAQUANT (son tour, combat en cours) ────────────────────
+    // ── COMBAT PENDANT LE TOUR DU BOT (le bot attaque) ───────────────────────────
+    // Tout est visible côté HUMAIN : la déclaration d'attaque est seat-agnostique
+    // (toggle/cible/confirm agissent sur `combat`, pas sur `perspective`). On garde
+    // donc la vue humaine (aucun rideau) ; l'humain voit les flèches, défend, résout.
     if (active === bot && c) {
-      if (c.step === "attackers") {
-        // le bot déclare ses attaquants → il lui faut l'écran.
-        if (store.perspective !== bot) {
-          store.perspective = bot;
-          store.passPending = true;
-        }
-        botLiveStep(store, bot, tried);
-        return;
-      }
-      // attaque DÉCLARÉE → l'humain défend et résout (écran rendu, overlay masqué).
       if (store.perspective !== human) {
         store.perspective = human;
         store.passPending = false;
       }
-      return; // on attend la résolution humaine (combat → null)
-    }
-
-    // ── Le bot a fini d'attaquer, l'humain a résolu → rendre la main au bot ────
-    if (active === bot && !c && store.perspective !== bot) {
-      store.perspective = bot;
-      store.passPending = true;
+      botLiveStep(store, bot, tried); // déclare les attaquants si step="attackers"
       return;
     }
 
-    // ── TOUR DU BOT, phase principale (perspective = bot) ─────────────────────
-    if (active === bot && store.perspective === bot) {
+    // ── PHASE PRINCIPALE DU BOT (son tour, hors combat) ──────────────────────────
+    // On REGARDE le bot : la vue reste humaine. On bascule perspective sur le bot
+    // juste le temps (synchrone) d'exécuter son coup et de résoudre toute fenêtre
+    // d'effet ouverte, puis on rétablit la vue humaine avant le rendu.
+    if (active === bot) {
+      store.perspective = bot; // acteur = bot (playFromHand/… lisent perspective)
       const acted = botLiveStep(store, bot, tried);
-      // Rien à jouer → finir le tour. NE PAS réinitialiser `tried` ici : si endTurn
-      // est refusé (ex. main pleine → défausse d'abord), on ne doit pas re-tenter
-      // toutes les actions ; le reset se fait au vrai changement de tour (en tête).
+      // Résoudre SYNCHRONEMENT toute fenêtre que ce coup vient d'ouvrir (ciblage,
+      // choix, pick, porteur…) pour ne jamais laisser la vue coincée côté bot.
+      let guard = 0;
+      while (botHasPending() && guard++ < 40) {
+        if (!botLiveStep(store, bot, tried)) break;
+      }
+      // Rien à jouer et pas de combat déclaré → finir le tour (endTurn rend la vue
+      // au joueur suivant). NE PAS réinitialiser `tried` ici (reset au vrai
+      // changement de tour, en tête) sinon on re-tenterait tout après un refus.
       if (!acted && !store.combat) store.endTurn();
+      // Rendre la vue à l'humain (le bot vient de jouer, ou a déclenché un combat
+      // dont la déclaration se fera en vue humaine au prochain battement). Filet :
+      // si une fenêtre du bot restait ouverte (non résolue synchroniquement), on
+      // GARDE perspective=bot pour que le prochain battement la clôture (auto-répare).
+      if (store.perspective === bot && !botHasPending()) {
+        store.perspective = human;
+        store.passPending = false;
+      }
       return;
     }
 
-    // ── TOUR DE L'HUMAIN : le bot DÉFEND (déclare ses blocages, UNE fois) ──────
+    // ── TOUR DE L'HUMAIN : le bot DÉFEND (déclare ses blocages, UNE fois) ──────────
     if (c && c.step === "blockers" && active === human) {
       const def = other(active); // = bot
-      // jeton par ensemble d'attaquants : si le bot décide de ne PAS bloquer
-      // (aucun bloqueur rentable), on ne re-tente pas chaque battement (anti-spin).
+      // jeton par ensemble d'attaquants : si le bot décide de ne PAS bloquer, on ne
+      // re-tente pas chaque battement (anti-spin).
       const tok = "__blk__" + c.attackers.join(",");
       if (def === bot && !Object.keys(c.blocks).length && !tried.has(tok)) {
         tried.add(tok);
@@ -133,16 +150,8 @@ export function useBotOpponent(
       return;
     }
 
-    // ── Interactions du bot (le moteur met perspective=bot) ───────────────────
-    if (
-      store.perspective === bot &&
-      (store.pendingChifumi ||
-        store.pendingResolution ||
-        store.effectChoice ||
-        store.effectTargeting ||
-        store.effectPicking ||
-        store.pendingBearer)
-    ) {
+    // ── Interactions du bot ouvertes hors de son tour (le moteur met perspective=bot). ─
+    if (store.perspective === bot && botHasPending()) {
       botLiveStep(store, bot, tried);
     }
   }

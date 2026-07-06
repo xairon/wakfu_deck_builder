@@ -915,19 +915,26 @@ export const useGameStore = defineStore("game", () => {
     if (!seat) return;
     mulliganDone.value = { ...mulliganDone.value, [seat]: true };
     const other = otherSeat(seat);
-    // vs-bot (solo) : pas d'écran « Passe l'appareil » pour le JOUEUR — seul le
-    // mulligan / 1er tour du BOT affiche l'overlay (« Tour adverse », masque sa main).
-    const passFor = (s: Seat): boolean =>
-      botSeat.value ? s === botSeat.value : true;
+    // SOLO (vs bot) : la vue reste côté HUMAIN — pas d'écran « Passe l'appareil »
+    // ni « Tour adverse » ; le joueur regarde. Le bot mulligane/joue en coulisses
+    // (le driver bascule perspective le temps d'agir). Hot-seat : passation classique.
+    if (botSeat.value) {
+      const humanSeat = otherSeat(botSeat.value);
+      mulliganSeat.value = mulliganDone.value[other] ? null : other;
+      if (mulliganDone.value[other]) matchPhase.value = "playing";
+      perspective.value = humanSeat;
+      passPending.value = false;
+      return;
+    }
     if (!mulliganDone.value[other]) {
       mulliganSeat.value = other;
       perspective.value = other;
-      passPending.value = passFor(other);
+      passPending.value = true;
     } else {
       mulliganSeat.value = null;
       matchPhase.value = "playing";
       perspective.value = firstPlayer.value;
-      passPending.value = passFor(firstPlayer.value);
+      passPending.value = true;
     }
   }
 
@@ -1061,11 +1068,17 @@ export const useGameStore = defineStore("game", () => {
     // le tour avance via l'echo SET_PHASE — pas de bascule de perspective.
     if (!online.value) {
       const next = state.value.turn.active;
-      perspective.value = next;
-      // Hot-seat 2 joueurs : écran de passation à chaque tour. En SOLO (vs bot),
-      // pas de « Passe l'appareil » — un seul humain — SAUF au tour du BOT (le
-      // bandeau « Tour adverse » masque sa main). Le tour du joueur s'ouvre direct.
-      passPending.value = botSeat.value ? next === botSeat.value : true;
+      if (botSeat.value) {
+        // SOLO (vs bot) : la vue reste TOUJOURS côté humain — le joueur REGARDE le
+        // bot jouer sur son propre plateau, sans aucun rideau « Tour adverse » (le
+        // driver bascule perspective sur le bot le temps d'agir, puis la rend).
+        perspective.value = otherSeat(botSeat.value);
+        passPending.value = false;
+      } else {
+        // Hot-seat 2 joueurs : passation d'écran classique à chaque tour.
+        perspective.value = next;
+        passPending.value = true;
+      }
     }
   }
 

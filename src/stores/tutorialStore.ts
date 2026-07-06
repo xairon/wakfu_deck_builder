@@ -110,7 +110,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     },
     {
       anchor: ".gseat--opp",
-      text: "L'ordinateur joue son tour (le bandeau « Tour adverse » masque sa main, comme sur une vraie table). Patiente — la main te revient tout de suite après.",
+      text: "À l'ordinateur de jouer : REGARDE-le agir sur le plateau (il pose ses Alliés, active ses pouvoirs, attaque). Sa main reste cachée, mais tout ce qu'il fait est visible. La main te revient juste après.",
       advanceWhen: () =>
         game.turn.active === "A" && game.turn.number >= 4 && !game.passPending,
     },
@@ -185,6 +185,11 @@ export const useTutorialStore = defineStore("tutorial", () => {
       // de poser une carte (règle 4943 : rien au tout premier tour de la partie).
     });
     game.botSeat = "B"; // l'IA pilote le siège B (useBotOpponent, monté par la vue)
+    // La vue reste TOUJOURS côté humain (siège A) : on regarde le bot jouer, sans
+    // rideau. startMatch a posé perspective=B/passPending=true (1er joueur = bot) —
+    // on rétablit la vue humaine (le driver bascule perspective le temps d'agir).
+    game.perspective = "A";
+    game.passPending = false;
     stepIndex.value = 0;
     active.value = true;
     if (tickTimer) clearInterval(tickTimer);
