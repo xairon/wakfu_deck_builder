@@ -49,12 +49,14 @@ export const useTutorialStore = defineStore("tutorial", () => {
     ).length;
   }
 
-  /** Conseil de mulligan, calculé sur la main RÉELLEMENT tirée. */
+  /** Conseil de mulligan, calculé sur la main RÉELLEMENT tirée. Commence par un
+   *  bref mot de bienvenue (fusionné ici pour éviter DEUX écrans au démarrage : le
+   *  message d'accueil ET l'écran de mulligan s'affichaient en même temps). */
   function evaluateMulligan(): string {
     const zone = game.view.seats.A.main;
     const insts = zone.kind === "full" ? zone.instances : [];
     const base =
-      "Une bonne main permet d'AGIR TÔT : 1–2 Alliés bon marché (Niveau 1–2) et de quoi produire des Ressources, sans trop de cartes chères injouables d'entrée.";
+      "Bienvenue ! But : réduire les PV du Héros adverse à 0, ou monter ton Héros au Niveau 3. Tu joues en bas, contre l'ordinateur (qui commence). D'abord, ta MAIN DE DÉPART : une bonne main permet d'AGIR TÔT — 1–2 Alliés bon marché (Niveau 1–2) et de quoi produire des Ressources, sans trop de cartes chères injouables d'entrée.";
     let cheap = 0;
     for (const inst of insts) {
       const card = cardStore.cards.find((c) => c.id === inst.cardId);
@@ -78,15 +80,13 @@ export const useTutorialStore = defineStore("tutorial", () => {
   // « aucune carte ne peut entrer au premier tour ».
   const guidedSteps: TutorialStep[] = [
     {
-      anchor: ".gseat:not(.gseat--opp)",
-      manual: true,
-      text: "Bienvenue dans le Wakfu TCG ! But : réduire les PV du Héros adverse à 0, OU monter ton Héros au Niveau 3 (18 XP). Tu joues en bas, contre l'ordinateur (qui commence). Clique « Suivant ».",
-    },
-    {
       anchor: ".overlay--mulligan",
       text: evaluateMulligan,
-      advanceWhen: () =>
-        game.mulliganSeat !== "A" || game.matchPhase === "playing",
+      // On reste sur le conseil de mulligan JUSQU'À ce que la partie démarre (le
+      // joueur a gardé/refait sa main). NB : ne pas tester « mulliganSeat !== 'A' »
+      // — c'est vrai au tout début (le BOT mulligane, siège B) et l'étape sauterait
+      // avant même que le joueur voie son écran de mulligan.
+      advanceWhen: () => game.matchPhase === "playing",
     },
     {
       anchor: ".gseat:not(.gseat--opp) .ghud",

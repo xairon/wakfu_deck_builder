@@ -1123,7 +1123,10 @@ watch(
       diceShownFor !== store.gameId()
     ) {
       diceShownFor = store.gameId();
-      rollFirstPlayerDie();
+      // En mode « Apprendre en jouant », le 1er joueur est IMPOSÉ (l'ordinateur
+      // commence, pour la cohérence des étapes) : le tirage au sort animé serait
+      // trompeur (« L'adversaire commence » à chaque fois) et retarderait le début.
+      if (!tutorial.active) rollFirstPlayerDie();
     }
   },
 );

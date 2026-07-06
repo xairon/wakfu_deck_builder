@@ -1341,7 +1341,7 @@ export const useGameStore = defineStore("game", () => {
     const t = setTimeout(() => {
       effectSpotlight.value = effectSpotlight.value.filter((e) => e.id !== id);
       spotlightTimers.delete(id);
-    }, 5200);
+    }, 11000);
     spotlightTimers.set(id, t);
   }
   function clearEffectSpotlight(): void {

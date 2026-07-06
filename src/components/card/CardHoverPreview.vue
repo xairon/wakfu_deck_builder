@@ -44,6 +44,19 @@
               v-html="highlightEffectHtml(e.description)"
             ></li>
           </ul>
+          <!-- Définitions de mots-clés (glossaire) : Agilité, Tacle, Géant… -->
+          <dl v-if="keywords.length" class="cardhov__kw mt-2 space-y-1">
+            <div
+              v-for="(k, i) in keywords"
+              :key="`kw-${i}`"
+              class="rounded bg-base-content/5 px-2 py-1 text-[11px] leading-snug"
+            >
+              <dt class="font-bold text-primary">{{ k.label }}</dt>
+              <dd v-if="k.description" class="text-base-content/70">
+                {{ k.description }}
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
     </Transition>
@@ -131,6 +144,34 @@ const effects = computed(() => {
     ? [...(c.recto?.effects ?? []), ...(c.verso?.effects ?? [])]
     : (c.effects ?? []);
   return all.filter((e) => !isEffectAnnotation(e));
+});
+
+/** Définitions de mots-clés (glossaire) portées par la carte — « Agilité »,
+ *  « Tacle », « Géant », « Résistance »… : libellé (nom + valeur + éléments) +
+ *  texte de glossaire. Données mixtes : certains mots-clés (Tacle/Agilité…) ont
+ *  le VRAI texte de glossaire dans `description`, d'autres (Résistance…) y mettent
+ *  juste la VALEUR ("1"). On normalise : une description purement numérique
+ *  devient la valeur du libellé (pas une « définition »). Dédoublonné par nom. */
+const keywords = computed(() => {
+  const c = card.value;
+  if (!c) return [] as { label: string; description: string }[];
+  const all = isHeroCard(c)
+    ? [...(c.recto?.keywords ?? []), ...(c.verso?.keywords ?? [])]
+    : (c.keywords ?? []);
+  const seen = new Set<string>();
+  const out: { label: string; description: string }[] = [];
+  for (const k of all) {
+    if (!k?.name || seen.has(k.name)) continue;
+    seen.add(k.name);
+    const raw = (k.description ?? "").trim();
+    const numeric = /^\d+$/.test(raw);
+    const value = k.value ?? (numeric ? Number(raw) : undefined);
+    const els = (k.elements ?? []).join(", ");
+    const label =
+      k.name + (value != null ? ` ${value}` : "") + (els ? ` (${els})` : "");
+    out.push({ label, description: numeric ? "" : raw });
+  }
+  return out;
 });
 
 // La hauteur de la fenêtre varie selon le contenu : on la mesure après rendu
