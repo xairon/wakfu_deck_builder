@@ -47,6 +47,19 @@ export function bearerBonusOf(
   return null;
 }
 
+/**
+ * La carte DOIT-elle être portée par un personnage pour être jouée (305.x) ?
+ * Tout ÉQUIPEMENT s'attache à un Allié ou Héros — on ne pose jamais un
+ * équipement « tout seul » sur le plateau (contrairement à une Zone/Salle). Vrai
+ * indépendamment d'un éventuel bonus de Porteur MODÉLISÉ (`grantsBearerBonus`) :
+ * même une armure dont le bonus n'est pas encore câblé (ex. +PV) doit être équipée.
+ */
+export function requiresBearer(card: Card | null): boolean {
+  // Tout ÉQUIPEMENT (même sans bonus modélisé), OU toute carte à bonus de Porteur
+  // reconnu (ex. Monture-Allié « Le Porteur de X gagne +N en Force »).
+  return card?.mainType === "Équipement" || bearerBonusOf(card) !== null;
+}
+
 /** La carte confère-t-elle un bonus de Porteur (→ se joue en l'attachant) ? */
 export function grantsBearerBonus(card: Card | null): boolean {
   return bearerBonusOf(card) !== null;

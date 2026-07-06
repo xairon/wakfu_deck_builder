@@ -13,6 +13,7 @@ import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
 import { combatKeywords, effectiveKeywords } from "./effects/keywords.ts";
 import { planCost } from "./resources.ts";
+import { eligibleBearers, requiresBearer } from "./bearer.ts";
 
 /** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
 export function playDestination(card: Card, seat: Seat): ZoneRef {
@@ -170,6 +171,14 @@ export function whyCannotPlay(
     return "Le Havre-Sac est plein (Taille atteinte).";
   const plan = planCost(ctx, seat, card);
   if (!plan.ok) return plan.reason;
+  // 305.x — un ÉQUIPEMENT se joue ATTACHÉ à une créature : sans Porteur éligible
+  // en jeu (Allié non-Monstre / Héros contrôlé), il est injouable (jamais posé
+  // « tout seul »). Grise la carte dans la main (affordance) plutôt qu'un refus au clic.
+  if (
+    requiresBearer(card) &&
+    eligibleBearers(ctx, seat, instanceId).length === 0
+  )
+    return "Aucune créature en jeu ne peut porter cet Équipement.";
   // RESTRICTION DE JEU « Ne jouez cette carte que si <cond> » (Repos, heroInZone).
   const pcReason = playConditionReason(ctx, seat, card);
   if (pcReason) return pcReason;

@@ -55,6 +55,7 @@ import {
   eligibleTargets,
   equalityRescueEvents,
   grantsBearerBonus,
+  requiresBearer,
   forceValue,
   havreSacHasRoom,
   normElement,
@@ -1688,13 +1689,13 @@ export const useGameStore = defineStore("game", () => {
     const plan = planCost(ctx, seat, card);
     if (!plan.ok) return rejectMove(plan.reason);
 
-    // 305.x — ÉQUIPEMENT / MONTURE à BONUS DE PORTEUR : il se joue ATTACHÉ à une
-    // créature contrôlée (Allié non-Monstre / Héros en jeu), pas en standalone.
-    // Le bonus n'est vivant qu'une fois porté. Si aucun bearerId n'est fourni, on
-    // ouvre un prompt de ciblage (clic du Porteur sur le plateau) ; sans cible
-    // éligible, le jeu est illégal (rien à équiper). Un équipement SANS bonus
-    // reconnu garde le comportement standalone (branche ignorée → additif).
-    if (grantsBearerBonus(card)) {
+    // 305.x — TOUT ÉQUIPEMENT se joue ATTACHÉ à une créature contrôlée (Allié
+    // non-Monstre / Héros en jeu), jamais « tout seul » sur le plateau. Si aucun
+    // bearerId n'est fourni, on ouvre un prompt de ciblage (clic du Porteur) ;
+    // sans cible éligible, le jeu est ILLÉGAL (rien à équiper). NB : `requiresBearer`
+    // couvre TOUS les Équipements (y compris ceux dont le bonus n'est pas encore
+    // modélisé, ex. armure +PV) — ils ne se posent plus en standalone.
+    if (requiresBearer(card)) {
       const eligible = eligibleBearers(ctx, seat, instanceId);
       if (bearerId === undefined) {
         if (!eligible.length)
