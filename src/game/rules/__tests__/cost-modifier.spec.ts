@@ -259,6 +259,31 @@ describe("rules/costModifier — costAura dans planCost", () => {
     expect(costModifier(ctxOf(f), "A", plain)).toBe(0);
   });
 
+  it("418.5b — un ALLIÉ réduit à 0 dépense quand même 1 Ressource de son Élément", () => {
+    const aura: AllyCard = {
+      ...makeAlly("src", { niveau: 1, element: "Feu" }),
+      name: "Big Aura",
+      effects: [
+        {
+          description:
+            "Tant que Big Aura est dans le Monde, le coût de vos cartes Uniques est réduit de 5.",
+        },
+      ],
+    };
+    const target: AllyCard = {
+      ...makeAlly("tgt", { niveau: 1, element: "Feu" }),
+      subTypes: ["Unique"],
+    };
+    const f = fixture([aura, target]);
+    bringToMonde(f, "A", instId("A", 0)); // Big Aura en jeu = 1 producteur Feu
+    expect(costModifier(ctxOf(f), "A", target)).toBe(5); // 1 − 5 → réduit sous 0
+    const plan = planCost(ctxOf(f), "A", target);
+    expect(plan.ok).toBe(true);
+    // coût planché à 1 Ressource de l'Élément (Feu), PAS gratuit (contrairement à
+    // une Action réduite à 0 ci-dessous) — l'exigence élémentaire ne se réduit pas.
+    if (plan.ok) expect(plan.producers).toHaveLength(1);
+  });
+
   it("plancher à 0 : un coût réduit sous 0 reste payable sans Ressource", () => {
     const aura: AllyCard = {
       ...makeAlly("src", { niveau: 1, element: "Feu" }),

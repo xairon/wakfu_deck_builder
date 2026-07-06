@@ -127,9 +127,16 @@ export function costModifier(ctx: RulesCtx, seat: Seat, card: Card): number {
  *
  * Le coût de base (Niveau) est d'abord réduit par les pouvoirs continus de
  * réduction de coût (`costModifier`, 805) et planché à 0.
+ *
+ * 418.5b — un ALLIÉ dépense TOUJOURS au moins UNE Ressource de son Élément : cette
+ * exigence élémentaire ne se réduit pas. Si une réduction de coût ramène son Niveau
+ * sous 1, le coût reste planchéré à 1 (payé avec sa Ressource élémentaire). Les
+ * autres types (coût Neutre) tombent bien à 0 (gratuits).
  */
 export function planCost(ctx: RulesCtx, seat: Seat, card: Card): PlanCost {
-  const cost = Math.max(0, levelCost(card) - costModifier(ctx, seat, card));
+  const req = requiredElement(card);
+  const reduced = Math.max(0, levelCost(card) - costModifier(ctx, seat, card));
+  const cost = req ? Math.max(1, reduced) : reduced;
   if (cost <= 0) return { ok: true, producers: [] };
 
   const pool = resourceProducers(ctx, seat);
@@ -142,7 +149,6 @@ export function planCost(ctx: RulesCtx, seat: Seat, card: Card): PlanCost {
 
   const chosen: InstanceId[] = [];
   const remaining = [...pool];
-  const req = requiredElement(card);
   if (req) {
     const i = remaining.findIndex((p) => p.element === req);
     if (i === -1) {
