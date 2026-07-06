@@ -89,14 +89,14 @@ export const useTutorialStore = defineStore("tutorial", () => {
       advanceWhen: () => game.matchPhase === "playing",
     },
     {
+      anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
+      manual: true,
+      text: "Voici ta main (celle que tu viens de garder). Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique. Les cartes JOUABLES maintenant s'illuminent (liseré doré) ; les grisées sont trop chères ou interdites dans la phase/tour courant.",
+    },
+    {
       anchor: ".gseat:not(.gseat--opp) .ghud",
       manual: true,
       text: "Ton Héros : PV (à 0 = défaite), PA (ta taille de main MAX : en fin de tour tu repioches jusqu'à ce nombre), PM (nombre max d'attaquants/bloqueurs), XP et Niveau (6 XP → Niveau 2 et face verso, 18 XP → victoire).",
-    },
-    {
-      anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
-      manual: true,
-      text: "Ta main. Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique. Les cartes JOUABLES maintenant s'illuminent (liseré doré) ; les grisées sont trop chères ou interdites dans la phase/tour courant.",
     },
     {
       anchor: ".gzone--play",
