@@ -116,7 +116,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     },
     {
       anchor: ".gzone--play",
-      text: "À ton tour, ton Allié est redressé et prêt. CLIQUE-le, puis « ⚔ Attaquer » ; désigne une CIBLE adverse (le Héros en haut), « Confirmer l'attaque », puis « Résoudre le combat ». Attaquer le Héros entame d'abord son Havre-Sac (bouclier).",
+      text: "À ton tour, ton Allié est redressé et prêt. CLIQUE-le, puis « ⚔ Attaquer » ; désigne une CIBLE adverse, « Confirmer l'attaque », puis « Résoudre le combat ». Trois cibles possibles : le Héros (Dommages sur ses PV directement), un Allié, ou le Havre-Sac (Dommages sur sa Résistance ; à 0 il est banni). Le Havre-Sac ne protège PAS le Héros — c'est une cible à part.",
       advanceWhen: () => game.attackedOnTurn !== null,
     },
     {
