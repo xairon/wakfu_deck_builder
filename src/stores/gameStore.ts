@@ -74,6 +74,7 @@ import {
   turnStartEffects,
   victoryFromState,
   whyCannotDeclareAttack,
+  blockerBlockedByAgilite,
   powerConditionReason,
   whyCannotPlay,
 } from "@/game/rules";
@@ -1041,6 +1042,19 @@ export const useGameStore = defineStore("game", () => {
       rejectMove(
         "Résous d'abord la fenêtre en cours (Chi-Fu-Mi / Échec Critique).",
       );
+      return;
+    }
+    // Un EFFET EN COURS de résolution (ciblage / pioche-choix / choix / Porteur)
+    // doit être clos AVANT de finir le tour : sinon l'état d'interaction du moteur
+    // fuit dans le tour suivant (on pourrait appliquer un buff « jusqu'à la fin du
+    // tour » APRÈS la purge des jetons de tour, ou résoudre au mauvais tour).
+    if (
+      engine.effectTargeting.value ||
+      engine.effectPicking.value ||
+      engine.effectChoices.value.length > 0 ||
+      pendingBearer.value
+    ) {
+      rejectMove("Résous d'abord l'effet en cours avant de finir le tour.");
       return;
     }
     // En ligne, seul le joueur DONT c'est le tour peut le finir (en local
@@ -2696,6 +2710,18 @@ export const useGameStore = defineStore("game", () => {
     if (!c || c.step !== "blockers" || !c.pendingBlocker) return;
     if (online.value && otherSeat(turn.value.active) !== mySeat.value) return;
     if (!c.attackers.includes(attackerId)) return;
+    // 704/Agilité — la validation à la mise en attente (combatToggleBlock) ne teste
+    // que la cible (c.target), pas l'attaquant choisi ici. On revérifie donc que ce
+    // bloqueur peut LÉGALEMENT bloquer CET attaquant : un attaquant avec Agilité ne
+    // peut être bloqué que par un bloqueur possédant Agilité (sinon l'assignation
+    // multi-attaquants contournerait le mot-clé).
+    if (blockerBlockedByAgilite(rulesCtx(), c.pendingBlocker, attackerId)) {
+      const atkName = getCard(
+        state.value.instances[attackerId]?.cardId ?? null,
+      )?.name;
+      ruleError.value = `${atkName ?? "Cet attaquant"} a Agilité : seul un bloqueur avec Agilité peut le bloquer (704).`;
+      return;
+    }
     c.blocks = { ...c.blocks, [c.pendingBlocker]: attackerId };
     c.pendingBlocker = null;
   }
