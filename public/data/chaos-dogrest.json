@@ -272,6 +272,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "Neutre"
+      },
       "pv": 2
     },
     "effects": [],
@@ -1888,6 +1892,10 @@
     },
     "rarity": "Peu Commune",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 2
     },
     "effects": [
@@ -7502,6 +7510,10 @@
     },
     "rarity": "Rare",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 5
     },
     "effects": [

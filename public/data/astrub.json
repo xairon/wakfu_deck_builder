@@ -674,6 +674,10 @@
     },
     "rarity": "Rare",
     "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "Neutre"
+      },
       "pa": 1
     },
     "effects": [
@@ -805,6 +809,10 @@
     },
     "rarity": "Rare",
     "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "Neutre"
+      },
       "pm": 1
     },
     "effects": [
@@ -1018,6 +1026,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 1
     },
     "effects": [],
@@ -1501,6 +1513,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "Neutre"
+      },
       "pv": 2
     },
     "effects": [
@@ -2527,6 +2543,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "Neutre"
+      },
       "pa": 1
     },
     "effects": [
@@ -2643,6 +2663,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "Neutre"
+      },
       "pm": 1
     },
     "effects": [
@@ -4345,6 +4369,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 1
     },
     "effects": [],

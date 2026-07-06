@@ -88,6 +88,10 @@
     },
     "rarity": "Rare",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 4
     },
     "effects": [
@@ -291,6 +295,10 @@
     },
     "rarity": "Rare",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 4
     },
     "effects": [
@@ -474,6 +482,10 @@
     },
     "rarity": "Rare",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 4
     },
     "effects": [

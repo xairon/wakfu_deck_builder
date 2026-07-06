@@ -335,6 +335,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "Neutre"
+      },
       "pv": 2
     },
     "effects": [],
@@ -367,6 +371,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "Neutre"
+      },
       "pv": 2
     },
     "effects": [],
@@ -713,6 +721,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 1
     },
     "effects": [],
@@ -1211,6 +1223,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "Neutre"
+      },
       "pv": 2
     },
     "effects": [],
@@ -2386,6 +2402,10 @@
     },
     "rarity": "Peu Commune",
     "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "Neutre"
+      },
       "pv": 1
     },
     "effects": [
@@ -2476,6 +2496,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "Neutre"
+      },
       "pv": 6
     },
     "effects": [
@@ -2573,6 +2597,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 0,
+        "element": "Neutre"
+      },
       "pa": 1
     },
     "effects": [
@@ -3568,6 +3596,10 @@
     },
     "rarity": "Commune",
     "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      },
       "pv": 1
     },
     "effects": [],
@@ -4573,7 +4605,12 @@
       "shortUrl": "https://l.wtcg-return.fr/c/dofus-collection-91"
     },
     "rarity": "Rare",
-    "stats": {},
+    "stats": {
+      "niveau": {
+        "value": 3,
+        "element": "Neutre"
+      }
+    },
     "effects": [
       {
         "description": "Le Porteur de la Razielle gagne +1 en Force jusqu'à la fin du tour. Si vous dépensez plus de de cette façon, détruisez Razielle à la fin du tour.",

@@ -218,6 +218,10 @@
     },
     "rarity": "Rare",
     "stats": {
+      "niveau": {
+        "value": 1,
+        "element": "Neutre"
+      },
       "pa": 1
     },
     "effects": [
