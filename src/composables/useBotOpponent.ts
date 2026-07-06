@@ -48,6 +48,22 @@ export function useBotOpponent(
       tried = new Set();
     }
 
+    // ── PHASE DE MULLIGAN : le bot ne gère QUE son propre mulligan, RIEN d'autre.
+    // CRUCIAL : pendant le mulligan, `turn.active` vaut déjà le 1er joueur (le bot,
+    // first="B"), mais la partie n'a PAS commencé. Sans ce court-circuit, les
+    // branches de tour/combat plus bas voyaient « active === bot && pas de combat »
+    // et (1) grabbaient l'écran pour le bot (perspective=bot + passation) PENDANT
+    // que l'HUMAIN mulliganait encore, puis (2) appelaient endTurn() pour le bot en
+    // pleine phase mulligan → partie corrompue + humain coincé derrière l'overlay.
+    // On ne joue le tour du bot QUE lorsque matchPhase === "playing". ─────────────
+    if (store.matchPhase === "mulligan") {
+      if (store.mulliganSeat === bot) {
+        if (store.perspective === bot && store.passPending) store.reveal();
+        else store.keepHand();
+      }
+      return;
+    }
+
     // ── CHOIX destinés au BOT (eachPlayerOptional / Défi) : ces ops NE basculent
     // PAS la perspective — on route par le siège du choix (sinon l'humain devrait
     // répondre pour le bot, ou la partie se fige). ──────────────────────────────
@@ -96,12 +112,6 @@ export function useBotOpponent(
 
     // ── TOUR DU BOT, phase principale (perspective = bot) ─────────────────────
     if (active === bot && store.perspective === bot) {
-      if (store.mulliganSeat === bot) {
-        // mulligan du bot : lever l'écran de passation puis GARDER sa main.
-        if (store.passPending) store.reveal();
-        else store.keepHand();
-        return;
-      }
       const acted = botLiveStep(store, bot, tried);
       // Rien à jouer → finir le tour. NE PAS réinitialiser `tried` ici : si endTurn
       // est refusé (ex. main pleine → défausse d'abord), on ne doit pas re-tenter
@@ -123,12 +133,7 @@ export function useBotOpponent(
       return;
     }
 
-    // ── Mulligan du bot / interactions du bot (le moteur met perspective=bot) ──
-    if (store.mulliganSeat === bot) {
-      if (store.perspective === bot && store.passPending) store.reveal();
-      else store.keepHand();
-      return;
-    }
+    // ── Interactions du bot (le moteur met perspective=bot) ───────────────────
     if (
       store.perspective === bot &&
       (store.pendingChifumi ||
