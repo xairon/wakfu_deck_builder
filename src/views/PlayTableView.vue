@@ -287,8 +287,9 @@
     </div>
 
     <!-- Assistant de règles : coach contextuel (quoi faire / pourquoi un refus).
-         Masqué pendant le tutoriel : le TutorialCoach est alors le seul guide. -->
-    <RuleAssistant v-if="!tutorial.active" />
+         Visible PARTOUT, y compris en « Apprendre en jouant » : c'est LE guide du
+         mode d'apprentissage (plus de coach à étapes forcées). -->
+    <RuleAssistant />
 
     <!-- Adversaire déconnecté : bandeau de grâce + réclamation de victoire -->
     <div
@@ -327,7 +328,46 @@
     <EffectSpotlight />
     <TurnBanner />
     <ManualEffectReminders />
-    <TutorialCoach />
+
+    <!-- Accueil « Apprendre en jouant » : but + fonctionnement, une seule fois au
+         démarrage — affiché AU-DESSUS du mulligan, qu'il révèle en se fermant. -->
+    <Transition name="ovl">
+      <div
+        v-if="tutorial.welcomeVisible"
+        class="overlay overlay--welcome"
+        data-testid="tutorial-welcome"
+      >
+        <div class="overlay__card overlay__card--wide">
+          <p class="eyebrow text-primary">Apprendre en jouant</p>
+          <h2 class="mt-2 font-display text-3xl">Une vraie partie, guidée</h2>
+          <div class="welcome-body">
+            <p>
+              <strong>But :</strong> réduire les PV du Héros adverse à 0, ou
+              faire monter ton Héros au Niveau 3 (18 XP). Tu joues en bas ;
+              l'ordinateur commence.
+            </p>
+            <p>
+              <strong>Tout est automatisé pour toi</strong> — coûts en
+              Ressources, combat, victoire et effets des cartes. Un encart en
+              haut du plateau (l'assistant de règles) te dit à tout moment ce
+              que tu peux faire et pourquoi un coup est refusé.
+            </p>
+            <p>
+              On commence par ta <strong>main de départ</strong> : garde-la, ou
+              refais-la (une carte de moins). Ensuite, à toi de jouer —
+              librement.
+            </p>
+          </div>
+          <button
+            class="btn btn-primary mt-6"
+            data-testid="tutorial-welcome-start"
+            @click="tutorial.dismissWelcome()"
+          >
+            Commencer
+          </button>
+        </div>
+      </div>
+    </Transition>
 
     <!-- En ligne : attente de l'adversaire (hôte) -->
     <Transition name="ovl">
@@ -630,7 +670,6 @@ import EffectSpotlight from "@/components/game/EffectSpotlight.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
 import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
-import TutorialCoach from "@/components/game/TutorialCoach.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { OFFICIAL_DECKS } from "@/data/officialDecks";
 import { buildOfficialDeck } from "@/composables/useOfficialDeckImport";
@@ -1505,6 +1544,23 @@ onUnmounted(() => {
 /* ── Tirage au sort animé (qui commence) ── */
 .overlay--dice {
   z-index: 70; /* au-dessus du mulligan (60) qu'il révèle en disparaissant */
+}
+/* ── Accueil « Apprendre en jouant » (but + fonctionnement) ── */
+.overlay--welcome {
+  z-index: 80; /* au-dessus du mulligan (60) : on lit l'accueil, puis on garde/refait */
+}
+.welcome-body {
+  margin-top: 1rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #35322c;
+}
+.welcome-body strong {
+  color: #b3401b;
 }
 .dice-box {
   display: grid;

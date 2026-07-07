@@ -1,189 +1,45 @@
 /**
- * tutorialStore — « Apprendre en jouant ». UNE vraie partie contre l'IA
- * intelligente (pilotée par `gameStore.botSeat` via useBotOpponent), GUIDÉE pas à
- * pas au début (mulligan → jouer un Allié → attaquer → défendre → niveau), puis
- * LIBRE dès que les étapes sont terminées : le coach se retire et `RuleAssistant`
- * prend le relais. Le deck est CHOISI par le joueur → les étapes restent
- * GÉNÉRIQUES (aucune carte nommée). Règles assistées FORCÉES.
+ * tutorialStore — « Apprendre en jouant ». Une VRAIE partie contre l'IA locale,
+ * en règles ET effets automatisés, avec un GUIDE PASSIF.
  *
- * Ne contient plus de bot maison : l'adversaire est l'IA heuristique
- * (`useBotOpponent`, montée par PlayTableView, active dès `botSeat` renseigné).
- * Pendant la phase guidée, le bot est « doux » (ne déclare pas d'attaque —
- * `game.botAggressive=false`) pour ne pas parasiter les explications ; il devient
- * un vrai adversaire une fois le tutoriel terminé.
+ * Plus de séquence d'étapes forcées (spotlight + « fais exactement ça, maintenant »
+ * — trop directif, et parfois faux : « finis ton tour » alors qu'on pouvait encore
+ * jouer). À la place :
+ *  - un écran d'ACCUEIL au démarrage (but + fonctionnement, noir sur blanc) ;
+ *  - puis le `RuleAssistant` (encart contextuel « ce que tu peux faire / pourquoi
+ *    un coup est refusé »), visible pendant TOUTE la partie.
+ *
+ * Ce store ne fait donc plus que : lancer la partie vs IA (assist + assistEffects,
+ * bot « doux » les premiers tours), piloter l'écran d'accueil, et marquer le mode
+ * « déjà appris ».
  */
 import { defineStore } from "pinia";
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import type { Deck } from "@/types/cards";
-import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
 
 const DONE_KEY = "wakfu-tutorial-done";
-
-export interface TutorialStep {
-  /** Sélecteur CSS de l'élément à mettre en lumière (spotlight). Pour une étape
-   *  qui couvre DEUX zones (ex. glisser une carte de la main vers le champ), viser
-   *  un ancêtre commun (ex. `.gseat:not(.gseat--opp)` = tout ton camp) plutôt que
-   *  la seule cible, sinon la zone source reste sous le voile et sous la bulle. */
-  anchor: string;
-  /** Texte fixe, ou calculé à l'affichage (ex. conseil de mulligan). */
-  text: string | (() => string);
-  /** Étape informative : avance via le bouton « Suivant ». */
-  manual?: boolean;
-  /** Étape validée par l'état du jeu (conditions MONOTONES de préférence). */
-  advanceWhen?: () => boolean;
-}
+/** Tour à partir duquel le bot « doux » (aucune attaque, le temps de développer)
+ *  redevient un vrai adversaire. Tour 5 ≈ le 2e–3e tour du joueur. */
+const SOFT_UNTIL_TURN = 5;
 
 export const useTutorialStore = defineStore("tutorial", () => {
   const game = useGameStore();
-  const cardStore = useCardStore();
 
+  /** Partie guidée en cours (mode « Apprendre en jouant »). */
   const active = ref(false);
-  const stepIndex = ref(0);
-  let tickTimer: ReturnType<typeof setInterval> | null = null;
-
-  // ── Aides d'état ───────────────────────────────────────────────────────────
-  function myAllies(): number {
-    const s = game.state;
-    return s.monde.filter(
-      (id) =>
-        s.instances[id]?.controller === "A" &&
-        id !== s.seats.A.havreSacInstanceId,
-    ).length;
-  }
-
-  /** Conseil de mulligan, calculé sur la main RÉELLEMENT tirée. Commence par un
-   *  bref mot de bienvenue (fusionné ici pour éviter DEUX écrans au démarrage : le
-   *  message d'accueil ET l'écran de mulligan s'affichaient en même temps). */
-  function evaluateMulligan(): string {
-    const zone = game.view.seats.A.main;
-    const insts = zone.kind === "full" ? zone.instances : [];
-    const base =
-      "Bienvenue ! But : réduire les PV du Héros adverse à 0, ou monter ton Héros au Niveau 3. Tu joues en bas, contre l'ordinateur (qui commence). D'abord, ta MAIN DE DÉPART : une bonne main permet d'AGIR TÔT — 1–2 Alliés bon marché (Niveau 1–2) et de quoi produire des Ressources, sans trop de cartes chères injouables d'entrée.";
-    let cheap = 0;
-    for (const inst of insts) {
-      const card = cardStore.cards.find((c) => c.id === inst.cardId);
-      const lvl = card?.stats?.niveau?.value ?? 0;
-      if (card?.mainType === "Allié" && lvl > 0 && lvl <= 2) cheap++;
-    }
-    const verdict = !insts.length
-      ? ""
-      : cheap >= 2
-        ? ` Ici : ${cheap} Alliés jouables tôt — bonne main, garde-la.`
-        : cheap === 1
-          ? " Ici : 1 seul Allié jouable tôt — gardable, mais juste."
-          : " Ici : aucun Allié jouable tôt — sur un vrai deck, tu la referais.";
-    return `${base}${verdict} Clique « Mulligan » pour refaire ta main (une carte de moins), ou « Garder ».`;
-  }
-
-  // ── Séquence guidée (générique, tolérante à l'IA) ──────────────────────────
-  // L'ORDINATEUR commence (first="B") : son tour 1 ne peut poser aucune carte
-  // (règle 4943), il le passe ; le 1er tour du JOUEUR est le tour 2, où poser une
-  // carte est autorisé. C'est pourquoi le joueur ne rencontre jamais le blocage
-  // « aucune carte ne peut entrer au premier tour ».
-  const guidedSteps: TutorialStep[] = [
-    {
-      anchor: ".overlay--mulligan",
-      text: evaluateMulligan,
-      // On reste sur le conseil de mulligan JUSQU'À ce que la partie démarre (le
-      // joueur a gardé/refait sa main). NB : ne pas tester « mulliganSeat !== 'A' »
-      // — c'est vrai au tout début (le BOT mulligane, siège B) et l'étape sauterait
-      // avant même que le joueur voie son écran de mulligan.
-      advanceWhen: () => game.matchPhase === "playing",
-    },
-    {
-      anchor: ".gseat__handzone:not(.gseat__handzone--opp)",
-      manual: true,
-      text: "Voici ta main (celle que tu viens de garder). Jouer une carte coûte son Niveau en Ressources : tes cartes en jeu s'inclinent pour payer — c'est automatique. Les cartes JOUABLES maintenant s'illuminent (liseré doré) ; les grisées sont trop chères ou interdites dans la phase/tour courant.",
-    },
-    {
-      anchor: ".gseat:not(.gseat--opp) .ghud",
-      manual: true,
-      text: "Ton Héros : PV (à 0 = défaite), PA (ta taille de main MAX : en fin de tour tu repioches jusqu'à ce nombre), PM (nombre max d'attaquants/bloqueurs), XP et Niveau (6 XP → Niveau 2 et face verso, 18 XP → victoire).",
-    },
-    {
-      // Étape de glisser-déposer main → champ : on éclaire TOUT ton camp (main
-      // ET champ), sinon la main (source) resterait sous le voile sombre et
-      // derrière la bulle du coach — impossible d'attraper les cartes à glisser.
-      anchor: ".gseat:not(.gseat--opp)",
-      text: "L'ordinateur a passé le 1er tour (règle : aucune carte ne peut entrer au tout premier tour de la partie). À TOI, ton 1er tour : GLISSE un Allié illuminé de ta main sur ton champ de bataille.",
-      advanceWhen: () => myAllies() >= 1,
-    },
-    {
-      anchor: ".gendturn",
-      text: "Bien joué ! Ton Allié vient d'arriver : il ne pourra attaquer qu'à ton PROCHAIN tour (mal d'invocation). Clique « Fin du tour » — tu piocheras jusqu'à tes PA, puis l'ordinateur jouera.",
-      advanceWhen: () => game.turn.number >= 3,
-    },
-    {
-      anchor: ".gseat--opp",
-      text: "À l'ordinateur de jouer : REGARDE-le agir sur le plateau (il pose ses Alliés, active ses pouvoirs, attaque). Sa main reste cachée, mais tout ce qu'il fait est visible. La main te revient juste après.",
-      advanceWhen: () =>
-        game.turn.active === "A" && game.turn.number >= 4 && !game.passPending,
-    },
-    {
-      anchor: ".gzone--play",
-      text: "À ton tour, ton Allié est redressé et prêt. CLIQUE-le, puis « ⚔ Attaquer » ; désigne une CIBLE adverse, « Confirmer l'attaque », puis « Résoudre le combat ». Trois cibles possibles : le Héros (Dommages sur ses PV directement), un Allié, ou le Havre-Sac (Dommages sur sa Résistance ; à 0 il est banni). Le Havre-Sac ne protège PAS le Héros — c'est une cible à part.",
-      advanceWhen: () => game.attackedOnTurn !== null,
-    },
-    {
-      anchor: ".gcombat",
-      manual: true,
-      text: "Défense : quand l'ORDINATEUR attaque, tu peux BLOQUER — pendant la phase de blocage, clique un de tes Alliés dressés pour intercepter un attaquant (le duel se fait entre les deux Alliés, ton Héros est épargné), ou laisse passer. Puis « Résoudre le combat ».",
-    },
-    {
-      anchor: ".gseat:not(.gseat--opp) .ghud",
-      manual: true,
-      text: "XP & Niveau : DÉTRUIS des Alliés adverses (dégâts ≥ leur Force) pour gagner de l'XP. 6 XP → Niveau 2 (ton Héros se retourne, stats améliorées) ; 18 XP → victoire directe. Réduire les PV du Héros adverse à 0 gagne aussi.",
-    },
-    {
-      anchor: ".glayout__journal",
-      manual: true,
-      text: "Tout est tracé dans le journal, et les RÈGLES sont gérées pour toi (combat, coûts, PV, XP). Les EFFETS des cartes, eux, se résolvent à la main — l'assistant de règles (à droite) te guide. Tu sais jouer : continue cette partie LIBREMENT contre l'ordinateur. Bon jeu !",
-    },
-  ];
-
-  // ── Coach ──────────────────────────────────────────────────────────────────
-  const step = computed(() =>
-    active.value ? (guidedSteps[stepIndex.value] ?? null) : null,
-  );
-  const stepText = computed(() => {
-    const t = step.value?.text;
-    return typeof t === "function" ? t() : (t ?? "");
-  });
-  const total = computed(() => guidedSteps.length);
-
-  // ── Cycle ──────────────────────────────────────────────────────────────────
-  /** Rattrapage : traverse toutes les étapes auto déjà satisfaites. */
-  function tick(): void {
-    let guard = 0;
-    while (
-      active.value &&
-      step.value &&
-      !step.value.manual &&
-      step.value.advanceWhen?.() &&
-      guard++ < total.value
-    ) {
-      next();
-    }
-  }
-
-  function next(): void {
-    if (stepIndex.value >= total.value - 1) {
-      finish();
-      return;
-    }
-    stepIndex.value += 1;
-  }
+  /** Écran d'accueil (but + fonctionnement) affiché au tout début. */
+  const welcomeVisible = ref(false);
 
   /**
    * Démarre « Apprendre en jouant » : partie complète (mulligan inclus) contre
-   * l'IA, deck du joueur = `deckA`, deck de l'ordinateur = `deckB`. Règles
-   * assistées forcées ; bot « doux » pendant la phase guidée.
+   * l'IA. Deck du joueur = `deckA`, de l'ordinateur = `deckB`. Règles + effets
+   * assistés forcés ; bot « doux » les premiers tours (voir SOFT_UNTIL_TURN).
    */
   function startGuidedGame(deckA: Deck, deckB: Deck): void {
     game.assist = true;
     game.assistEffects = true;
-    game.botAggressive = false; // doux pendant l'intro guidée
+    game.botAggressive = false; // doux le temps que le joueur développe
     game.startMatch(deckA, deckB, {
       nameA: "Toi",
       nameB: "L'ordinateur",
@@ -196,20 +52,19 @@ export const useTutorialStore = defineStore("tutorial", () => {
     // on rétablit la vue humaine (le driver bascule perspective le temps d'agir).
     game.perspective = "A";
     game.passPending = false;
-    stepIndex.value = 0;
     active.value = true;
-    if (tickTimer) clearInterval(tickTimer);
-    tickTimer = setInterval(tick, 400);
+    welcomeVisible.value = true;
+  }
+
+  /** Ferme l'écran d'accueil → la partie (mulligan) devient visible. */
+  function dismissWelcome(): void {
+    welcomeVisible.value = false;
   }
 
   function stop(markDone: boolean): void {
     active.value = false;
-    if (tickTimer) {
-      clearInterval(tickTimer);
-      tickTimer = null;
-    }
-    // Fin de la phase guidée → le bot devient un vrai adversaire (attaque).
-    game.botAggressive = true;
+    welcomeVisible.value = false;
+    game.botAggressive = true; // fin du mode guidé → vrai adversaire
     if (markDone) {
       try {
         localStorage.setItem(DONE_KEY, "1");
@@ -218,8 +73,6 @@ export const useTutorialStore = defineStore("tutorial", () => {
       }
     }
   }
-  const finish = (): void => stop(true);
-  const skip = (): void => stop(true);
 
   function isDone(): boolean {
     try {
@@ -229,29 +82,16 @@ export const useTutorialStore = defineStore("tutorial", () => {
     }
   }
 
-  // ── Avance auto des étapes validées par l'état ─────────────────────────────
+  // Le bot « doux » (aucune attaque pendant l'intro) redevient un vrai adversaire
+  // dès que le joueur a eu quelques tours pour développer son plateau.
   watch(
-    () => [
-      active.value,
-      stepIndex.value,
-      game.matchPhase,
-      game.passPending,
-      game.mulliganSeat,
-      game.turn.number,
-      game.turn.active,
-      game.perspective,
-      game.attackedOnTurn,
-      game.combat?.step,
-      game.state.seq,
-    ],
-    () => {
-      const s = step.value;
-      if (!s || s.manual) return;
-      if (s.advanceWhen?.()) next();
+    () => game.turn.number,
+    (n) => {
+      if (active.value && n >= SOFT_UNTIL_TURN) game.botAggressive = true;
     },
   );
 
-  // Fin de partie / retour lobby pendant le tuto → clore la phase guidée.
+  // Fin de partie / retour lobby pendant le mode guidé → clore proprement.
   watch(
     () => game.matchPhase,
     (phase) => {
@@ -263,13 +103,9 @@ export const useTutorialStore = defineStore("tutorial", () => {
 
   return {
     active,
-    stepIndex,
-    total,
-    step,
-    stepText,
+    welcomeVisible,
     startGuidedGame,
-    next,
-    skip,
+    dismissWelcome,
     isDone,
   };
 });

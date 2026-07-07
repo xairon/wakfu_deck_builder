@@ -346,18 +346,18 @@ test.describe("Table de jeu (/play/table)", () => {
     await waitForCatalog(page);
 
     // Le lanceur « Apprendre en jouant » démarre une vraie partie guidée (decks
-    // pré-sélectionnés). Le coach apparaît sur la 1re étape.
+    // pré-sélectionnés). Un écran d'accueil (but + fonctionnement) s'affiche.
     const startBtn = page.getByTestId("vsbot-start");
     await expect(startBtn).toBeEnabled();
     await startBtn.click();
 
-    const progress = page.getByTestId("tutorial-progress");
-    await expect(progress).toBeVisible();
-    await expect(progress).toContainText("/ 10");
+    const welcome = page.getByTestId("tutorial-welcome");
+    await expect(welcome).toBeVisible();
 
-    // On peut quitter la phase guidée via « Passer le tutoriel ».
-    await page.getByTestId("tutorial-skip").click();
-    await expect(progress).toBeHidden();
+    // « Commencer » ferme l'accueil et révèle la partie (le guide passif, le
+    // RuleAssistant, prend le relais pendant le jeu).
+    await page.getByTestId("tutorial-welcome-start").click();
+    await expect(welcome).toBeHidden();
   });
 
   test("devrait dérouler un combat (attaque → résolution → dégâts)", async ({
