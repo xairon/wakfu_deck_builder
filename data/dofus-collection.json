@@ -195,7 +195,7 @@
     },
     "effects": [
       {
-        "description": "Amar Casto gagne le  de votre choix jusqu'à la fin du tour.",
+        "description": "Amar Casto gagne le Métier de votre choix jusqu'à la fin du tour.",
         "elements": ["neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false
