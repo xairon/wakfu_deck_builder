@@ -59,6 +59,28 @@ describe("tutorialStore — « Apprendre en jouant »", () => {
     expect(game.botAggressive).toBe(false);
   });
 
+  it("l'étape « poser une carte » éclaire tout le camp du joueur (main incluse)", () => {
+    // Régression : cette étape ne visait que le champ (.gzone--play), laissant la
+    // main sous le voile sombre et derrière la bulle du coach — impossible d'y
+    // attraper une carte à glisser. Elle doit viser le camp entier du joueur
+    // (.gseat:not(.gseat--opp)), qui englobe la main ET le champ.
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    useGameStore();
+    const t = useTutorialStore();
+    t.startGuidedGame(a.deck, b.deck);
+    // Étape 4 (index 3) : « GLISSE un Allié illuminé de ta main sur ton champ ».
+    t.next();
+    t.next();
+    t.next();
+    const s = t.step!;
+    expect(String(s.text)).toContain("GLISSE");
+    expect(s.anchor).toBe(".gseat:not(.gseat--opp)");
+    // Ne doit PAS retomber sur l'ancienne ancre « champ seul » (main sous le voile).
+    expect(s.anchor).not.toBe(".gzone--play");
+  });
+
   it("next() avance les étapes ; skip() clôt + marque terminé + rend l'IA agressive", () => {
     const a = makeDeck("A");
     const b = makeDeck("B");

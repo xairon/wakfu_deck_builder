@@ -21,7 +21,10 @@ import { useGameStore } from "@/stores/gameStore";
 const DONE_KEY = "wakfu-tutorial-done";
 
 export interface TutorialStep {
-  /** Sélecteur CSS de l'élément à mettre en lumière (spotlight). */
+  /** Sélecteur CSS de l'élément à mettre en lumière (spotlight). Pour une étape
+   *  qui couvre DEUX zones (ex. glisser une carte de la main vers le champ), viser
+   *  un ancêtre commun (ex. `.gseat:not(.gseat--opp)` = tout ton camp) plutôt que
+   *  la seule cible, sinon la zone source reste sous le voile et sous la bulle. */
   anchor: string;
   /** Texte fixe, ou calculé à l'affichage (ex. conseil de mulligan). */
   text: string | (() => string);
@@ -99,7 +102,10 @@ export const useTutorialStore = defineStore("tutorial", () => {
       text: "Ton Héros : PV (à 0 = défaite), PA (ta taille de main MAX : en fin de tour tu repioches jusqu'à ce nombre), PM (nombre max d'attaquants/bloqueurs), XP et Niveau (6 XP → Niveau 2 et face verso, 18 XP → victoire).",
     },
     {
-      anchor: ".gzone--play",
+      // Étape de glisser-déposer main → champ : on éclaire TOUT ton camp (main
+      // ET champ), sinon la main (source) resterait sous le voile sombre et
+      // derrière la bulle du coach — impossible d'attraper les cartes à glisser.
+      anchor: ".gseat:not(.gseat--opp)",
       text: "L'ordinateur a passé le 1er tour (règle : aucune carte ne peut entrer au tout premier tour de la partie). À TOI, ton 1er tour : GLISSE un Allié illuminé de ta main sur ton champ de bataille.",
       advanceWhen: () => myAllies() >= 1,
     },
