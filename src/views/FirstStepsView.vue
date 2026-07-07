@@ -39,6 +39,39 @@
       </ol>
     </section>
 
+    <section class="space-y-5">
+      <div>
+        <p class="eyebrow text-primary">Deux façons de jouer</p>
+        <h2 class="mt-3 font-display text-3xl">La table, deux modes</h2>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="border border-base-content/15 p-5">
+          <p class="eyebrow text-secondary">Apprendre en jouant</p>
+          <p class="mt-2 text-sm leading-relaxed text-base-content/80">
+            Une partie complète contre l'ordinateur, guidée pas à pas au début
+            puis libre.
+            <span class="font-semibold"
+              >Tout est automatisé pour vous : coûts, combat, victoire — et les
+              effets des cartes.</span
+            >
+            Seuls les decks starter d'Incarnam sont proposés : ce sont les seuls
+            dont chaque effet est programmé.
+          </p>
+        </div>
+        <div class="border border-base-content/15 p-5">
+          <p class="eyebrow text-primary">Jouer en ligne</p>
+          <p class="mt-2 text-sm leading-relaxed text-base-content/80">
+            Affrontez un ami à distance, en temps réel, avec le deck complet de
+            votre choix. Les règles peuvent être assistées,
+            <span class="font-semibold"
+              >mais les effets des cartes se jouent toujours à la main</span
+            >
+            : c'est à vous de les appliquer, comme sur une vraie table.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section
       class="flex flex-wrap items-center justify-between gap-4 border-t border-base-content/80 py-8"
     >

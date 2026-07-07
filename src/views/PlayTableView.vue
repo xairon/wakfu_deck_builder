@@ -43,14 +43,19 @@
       </div>
     </section>
 
-    <!-- Jeu en ligne (bêta) -->
     <!-- Apprendre en jouant (partie guidée-puis-libre contre l'IA locale) -->
     <section class="border border-secondary/30 bg-secondary/[0.04] p-5">
       <div>
         <p class="eyebrow text-secondary">Apprendre en jouant</p>
         <p class="mt-1 text-sm text-base-content/65">
-          Une vraie partie contre l'ordinateur, guidée pas à pas au début
-          (mulligan, jouer, attaquer, défendre), puis libre. Règles assistées.
+          Une partie complète contre l'ordinateur, guidée pas à pas au début
+          (mulligan, jouer, attaquer, défendre) puis libre.
+          <span class="font-semibold text-base-content/80"
+            >Ici, tout est automatisé pour toi : coûts, combat, victoire — et
+            les effets des cartes.</span
+          >
+          C'est pourquoi seuls les decks starter d'Incarnam sont proposés : ce
+          sont les seuls dont chaque effet est programmé.
         </p>
       </div>
       <div class="mt-4 flex flex-wrap items-end gap-4">
@@ -61,24 +66,13 @@
             class="select select-bordered select-sm w-56 bg-base-200"
             data-testid="vsbot-my-deck"
           >
-            <optgroup label="Decks starter">
-              <option
-                v-for="d in INCARNAM_STARTERS"
-                :key="'s' + d.id"
-                :value="'starter:' + d.id"
-              >
-                {{ d.name }}
-              </option>
-            </optgroup>
-            <optgroup v-if="decks.length" label="Mes decks">
-              <option
-                v-for="d in decks"
-                :key="'d' + d.id"
-                :value="'deck:' + d.id"
-              >
-                {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
-              </option>
-            </optgroup>
+            <option
+              v-for="d in INCARNAM_STARTERS"
+              :key="'s' + d.id"
+              :value="d.id"
+            >
+              {{ d.name }}
+            </option>
           </select>
         </label>
         <label class="flex flex-col gap-1 text-sm">
@@ -114,10 +108,16 @@
       class="border border-primary/30 bg-primary/[0.04] p-5"
     >
       <div>
-        <p class="eyebrow text-primary">Jouer en ligne (bêta)</p>
+        <p class="eyebrow text-primary">Jouer en ligne</p>
         <p class="mt-1 text-sm text-base-content/65">
-          Affronte un ami à distance — règles résolues à la main, comme sur une
-          vraie table.
+          Affronte un ami à distance, en temps réel, avec un code de salon —
+          avec le deck complet de ton choix. Tu peux activer les Règles
+          assistées (coûts, combat et victoire calculés pour vous deux),
+          <span class="font-semibold text-base-content/80"
+            >mais les effets des cartes se jouent toujours à la main</span
+          >
+          : c'est à toi de les lire et de les appliquer, comme sur une vraie
+          table.
         </p>
       </div>
 
@@ -174,6 +174,9 @@
             {{ onlineBusy ? "…" : "Créer la partie" }}
           </button>
         </div>
+        <p class="text-xs text-base-content/50">
+          Les effets des cartes se jouent à la main dans tous les cas.
+        </p>
 
         <!-- …ou rejoindre celle d'un ami avec son code. -->
         <div
@@ -695,8 +698,10 @@ const decks = computed<Deck[]>(() => deckStore.decks ?? []);
 const INCARNAM_STARTERS = OFFICIAL_DECKS.filter(
   (d) => d.extension === "incarnam",
 );
-// valeurs "starter:<id>" (deck officiel) ou "deck:<id>" (deck du joueur).
-const botMyDeckId = ref<string>("starter:" + (INCARNAM_STARTERS[0]?.id ?? ""));
+// Decks jouables : uniquement les starters Incarnam (les seuls dont TOUS les
+// effets sont automatisés) — valeur = id du deck officiel. « Apprendre en jouant »
+// tient ainsi sa promesse « tout est résolu pour toi » (cf. assistEffects=true).
+const botMyDeckId = ref<string>(INCARNAM_STARTERS[0]?.id ?? "");
 const botOppDeckId = ref<string>(INCARNAM_STARTERS[1]?.id ?? "");
 function resolveCardByName(name: string): Card | null {
   return cardStore.cards.find((c) => c.name === name) ?? null;
@@ -717,11 +722,7 @@ function starterToDeck(id: string): Deck | null {
   };
 }
 function resolveMyBotDeck(): Deck | null {
-  const v = botMyDeckId.value;
-  if (v.startsWith("deck:"))
-    return decks.value.find((d) => d.id === v.slice(5)) ?? null;
-  if (v.startsWith("starter:")) return starterToDeck(v.slice(8));
-  return null;
+  return starterToDeck(botMyDeckId.value);
 }
 function startVsBot(): void {
   const mine = resolveMyBotDeck();
@@ -761,11 +762,11 @@ const onlineTransport = {
   concede: concedeOnline,
   claimVictory: claimVictoryOnline,
 };
-// Jeu en ligne (bêta). Backend déployé et vérifié sur le projet Supabase
-// (tables games/game_players + Edge Functions create_game/join_game/submit_event
-// répondent en prod). Le câblage front (création/abonnement Realtime avant join,
-// overlay d'attente, application des events) est conforme au contrat backend.
-// À valider en conditions réelles : test à 2 clients connectés (diffusion serveur).
+// Jeu en ligne (stable). Backend déployé sur Supabase (tables games/game_players
+// + Edge Functions create_game/join_game/submit_event) et vérifié de bout en bout
+// à 2 clients connectés (création → join → mise en place → diffusion Realtime).
+// NB : les effets de cartes NE sont PAS automatisés en ligne (assistEffects reste
+// à false) — ils se jouent à la main, ce qui est écrit noir sur blanc dans le lobby.
 const ONLINE_PLAY_ENABLED = true;
 // Lobby « en ligne uniquement » : Créer et Rejoindre sont affichés ensemble (plus
 // de bascule), et le deck est pré-sélectionné (cf. watcher plus bas) pour que
