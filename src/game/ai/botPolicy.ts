@@ -264,10 +264,14 @@ function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
     );
     if (good.length && store.beginCombat(good[0])) return true;
   }
-  // 2. Jouer les cartes de la main (développement / effets).
+  // 2. Jouer les cartes de la main (développement / effets). On NE marque PLUS
+  //    « tried » une carte injouable : un échec par manque de Ressources est
+  //    RÉVERSIBLE — poser un Allié producteur rend jouable, au tick suivant, une
+  //    carte trop chère jusque-là (rampe multi-cartes ; avant, la 1re carte non
+  //    payable était blacklistée pour tout le tour → « le bot ne posait qu'une
+  //    carte »). Progrès garanti : un succès retire la carte de la main, donc pas
+  //    de boucle infinie (une passe sans aucun succès renvoie `false` → fin de tour).
   for (const id of [...(store.state.seats[me]?.main ?? [])]) {
-    if (tried.has(id)) continue;
-    tried.add(id);
     if (store.playFromHand(id)) return true;
   }
   // 3. Activer les pouvoirs à inclinaison (valeur gratuite).
