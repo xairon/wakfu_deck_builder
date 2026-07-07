@@ -57,6 +57,17 @@
               </dd>
             </div>
           </dl>
+          <!-- Glossaire : termes de mécanique cités dans l'effet (Métier, etc.) -->
+          <dl v-if="glossary.length" class="cardhov__kw mt-2 space-y-1">
+            <div
+              v-for="g in glossary"
+              :key="`gl-${g.term}`"
+              class="rounded bg-base-content/5 px-2 py-1 text-[11px] leading-snug"
+            >
+              <dt class="font-bold text-base-content/80">{{ g.term }}</dt>
+              <dd class="text-base-content/70">{{ g.definition }}</dd>
+            </div>
+          </dl>
         </div>
       </div>
     </Transition>
@@ -76,6 +87,7 @@ import { useCardPreview } from "@/composables/useCardPreview";
 import { isHeroCard } from "@/types/cards";
 import { elementColor } from "@/config/elementColors";
 import { highlightEffectHtml, isEffectAnnotation } from "@/utils/effectText";
+import { glossaryHints } from "@/utils/glossaryHints";
 
 const { card, mouseX, mouseY, hide } = useCardPreview();
 
@@ -172,6 +184,23 @@ const keywords = computed(() => {
     out.push({ label, description: numeric ? "" : raw });
   }
   return out;
+});
+
+/** Définitions de glossaire à surfacer : termes de mécanique non évidents
+ *  (Métier, Agilité, Tacle…) MENTIONNÉS dans le texte d'effet, hors mots-clefs
+ *  déjà structurés ci-dessus (évite les doublons). */
+const glossary = computed(() => {
+  const c = card.value;
+  if (!c) return [];
+  const kwNames = (
+    isHeroCard(c)
+      ? [...(c.recto?.keywords ?? []), ...(c.verso?.keywords ?? [])]
+      : (c.keywords ?? [])
+  )
+    .map((k) => k.name)
+    .filter((n): n is NonNullable<typeof n> => !!n);
+  const text = effects.value.map((e) => e.description).join("  ");
+  return glossaryHints(text, kwNames);
 });
 
 // La hauteur de la fenêtre varie selon le contenu : on la mesure après rendu

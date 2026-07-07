@@ -105,6 +105,21 @@
         </div>
       </div>
 
+      <!-- Glossaire : termes de mécanique cités dans l'effet (Métier, Agilité…) -->
+      <div v-if="glossary.length" class="mt-4" data-testid="card-glossary">
+        <p class="eyebrow mb-2">Glossaire</p>
+        <dl class="space-y-1.5">
+          <div
+            v-for="g in glossary"
+            :key="`gl-${g.term}`"
+            class="rounded bg-base-content/5 px-2.5 py-1.5 text-sm leading-snug"
+          >
+            <dt class="font-bold">{{ g.term }}</dt>
+            <dd class="text-base-content/70">{{ g.definition }}</dd>
+          </div>
+        </dl>
+      </div>
+
       <!-- Erratas -->
       <div v-if="errata.length" class="mt-4">
         <p class="eyebrow mb-2 text-primary">Errata</p>
@@ -163,6 +178,7 @@ import {
   splitEffectsAndNotes,
   type EffectAnnotationKind,
 } from "@/utils/effectText";
+import { glossaryHints } from "@/utils/glossaryHints";
 
 type DisplayEffect = { description: string; kind?: EffectAnnotationKind };
 
@@ -188,6 +204,16 @@ const realEffects = computed(
 );
 const noteEffects = computed(
   () => splitEffectsAndNotes(props.displayEffects).notes,
+);
+/** Termes de mécanique non évidents (Métier, Agilité, Tacle…) cités dans les
+ *  effets → leur définition de glossaire, hors mots-clefs déjà listés. */
+const glossary = computed(() =>
+  glossaryHints(
+    realEffects.value.map((e) => e.description).join("  "),
+    (props.card.keywords ?? [])
+      .map((k) => k.name)
+      .filter((n): n is NonNullable<typeof n> => !!n),
+  ),
 );
 
 const statRows = computed(() => {
