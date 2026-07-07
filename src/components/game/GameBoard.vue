@@ -60,6 +60,12 @@
                   @select="select(inst.instanceId)"
                   @zoom="zoomInst(inst.instanceId)"
                 />
+                <AttachedEquip
+                  :bearer="inst"
+                  :selected-id="selectedId"
+                  @select="select"
+                  @zoom="zoomInst"
+                />
               </div>
               <div
                 v-for="n in emptyInteriorSlots(opp)"
@@ -108,6 +114,12 @@
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
+            />
+            <AttachedEquip
+              :bearer="inst"
+              :selected-id="selectedId"
+              @select="select"
+              @zoom="zoomInst"
             />
           </div>
         </TransitionGroup>
@@ -172,6 +184,12 @@
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
+            />
+            <AttachedEquip
+              :bearer="inst"
+              :selected-id="selectedId"
+              @select="select"
+              @zoom="zoomInst"
             />
           </div>
         </TransitionGroup>
@@ -241,6 +259,12 @@
                   :selected="inst.instanceId === selectedId"
                   @select="select(inst.instanceId)"
                   @zoom="zoomInst(inst.instanceId)"
+                />
+                <AttachedEquip
+                  :bearer="inst"
+                  :selected-id="selectedId"
+                  @select="select"
+                  @zoom="zoomInst"
                 />
               </div>
               <div
@@ -844,6 +868,7 @@ import type {
   ZoneRef,
 } from "@/game";
 import GameCard from "./GameCard.vue";
+import AttachedEquip from "./AttachedEquip.vue";
 import HandFan from "./HandFan.vue";
 import type { HandItem } from "./HandFan.vue";
 import SeatHud from "./SeatHud.vue";
@@ -1508,6 +1533,7 @@ function manaBonus(seat: Seat): boolean {
 
 /* ── Slots ── */
 .gslot {
+  position: relative;
   width: var(--card-field);
 }
 .gslot--wide {
