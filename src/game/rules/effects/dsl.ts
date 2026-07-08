@@ -2857,14 +2857,17 @@ export function printedEffects(card: Card | null): CardEffect[] {
  * static/onSelfAttacks). Sert au rappel manuel non bloquant de la table.
  */
 export function manualEffects(card: Card | null): CardEffect[] {
-  // Un effet `coverage:"trait"` décrit une caractéristique DÉJÀ MODÉLISÉE, pas un
-  // effet de jeu à appliquer à la main : métier (Artisan → card.metier),
-  // restriction de classe (« Héros : X » → subTypes) ou trait de PRODUCTEUR
-  // coloré (« Produisez une Ressource [X] » → card.producesElement, lu par
-  // resourceElement). Aucun rappel manuel — sinon on signalerait à tort un effet
-  // « non couvert » alors qu'il est structurellement pris en charge.
+  // On EXCLUT les couvertures structurelles — l'effet n'est PAS « à jouer à la
+  // main », il est déjà pris en charge autrement :
+  //  - `coverage:"trait"` : caractéristique modélisée (Métier → card.metier,
+  //    restriction de classe → subTypes, producteur coloré → card.producesElement).
+  //  - `coverage:"keyword"` : mot-clef continu structuré (Géant, Agilité, Tacle…),
+  //    listé dans card.keywords[] (+ glossaire) et, pour les automatisés (Géant,
+  //    Résistance), géré par le moteur de combat. Ce n'est jamais une résolution
+  //    ponctuelle « à la main » → un rappel « Effet à résoudre » serait FAUX
+  //    (symptôme réel : Tofu Céleste « Géant » alertait à tort).
   return printedEffects(card).filter(
-    (e) => !e.compiled && e.coverage !== "trait",
+    (e) => !e.compiled && e.coverage !== "trait" && e.coverage !== "keyword",
   );
 }
 

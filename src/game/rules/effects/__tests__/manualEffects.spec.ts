@@ -39,4 +39,20 @@ describe("manualEffects", () => {
       "Effet vraiment manuel",
     ]);
   });
+
+  it('exclut les effets coverage:"keyword" (mot-clef continu — pas un rappel)', () => {
+    // Régression : « Tofu Céleste : Géant » (coverage:"keyword") alertait à tort
+    // en « Effet à résoudre à la main ». Un mot-clef est une capacité continue
+    // (listée dans keywords[] + glossaire, automatisée pour Géant/Résistance),
+    // jamais une résolution ponctuelle.
+    const card = createMockAllyCard({
+      effects: [
+        { description: "Géant", coverage: "keyword" },
+        { description: "Effet vraiment manuel" },
+      ],
+    });
+    expect(manualEffects(card).map((e) => e.description)).toEqual([
+      "Effet vraiment manuel",
+    ]);
+  });
 });
