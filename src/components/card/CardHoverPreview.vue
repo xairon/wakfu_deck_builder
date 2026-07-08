@@ -187,20 +187,24 @@ const keywords = computed(() => {
 });
 
 /** Définitions de glossaire à surfacer : termes de mécanique non évidents
- *  (Métier, Agilité, Tacle…) MENTIONNÉS dans le texte d'effet, hors mots-clefs
- *  déjà structurés ci-dessus (évite les doublons). */
+ *  (Métier, Recette, Agilité…) portés par la carte — texte d'effet, mots-clefs
+ *  (Recette « : Bijoutier 3 »), ou Métier — hors mots-clefs déjà expliqués. */
 const glossary = computed(() => {
   const c = card.value;
   if (!c) return [];
-  const kwNames = (
-    isHeroCard(c)
-      ? [...(c.recto?.keywords ?? []), ...(c.verso?.keywords ?? [])]
-      : (c.keywords ?? [])
-  )
-    .map((k) => k.name)
-    .filter((n): n is NonNullable<typeof n> => !!n);
-  const text = effects.value.map((e) => e.description).join("  ");
-  return glossaryHints(text, kwNames);
+  const kws = isHeroCard(c)
+    ? [...(c.recto?.keywords ?? []), ...(c.verso?.keywords ?? [])]
+    : (c.keywords ?? []);
+  return glossaryHints({
+    effectsText: effects.value.map((e) => e.description).join("  "),
+    keywordNames: kws
+      .map((k) => k.name)
+      .filter((n): n is NonNullable<typeof n> => !!n),
+    keywordDescriptions: kws
+      .map((k) => k.description)
+      .filter((d): d is string => !!d),
+    metier: c.metier ?? [],
+  });
 });
 
 // La hauteur de la fenêtre varie selon le contenu : on la mesure après rendu

@@ -91,6 +91,20 @@
         </ul>
       </div>
 
+      <!-- Métier (Artisan) : trait porté par certains Alliés — jusqu'ici invisible
+           dans la fiche. La définition « Métier » apparaît dans le Glossaire. -->
+      <div v-if="card.metier?.length" class="mt-4" data-testid="card-metier">
+        <p class="eyebrow mb-2">Métier</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span
+            v-for="m in card.metier"
+            :key="m"
+            class="border border-base-content/30 px-2 py-0.5 font-mono text-[11px] uppercase"
+            >{{ m }}</span
+          >
+        </div>
+      </div>
+
       <!-- Mots-clés -->
       <div v-if="card.keywords?.length" class="mt-4">
         <p class="eyebrow mb-2">Mots-clés</p>
@@ -205,15 +219,19 @@ const realEffects = computed(
 const noteEffects = computed(
   () => splitEffectsAndNotes(props.displayEffects).notes,
 );
-/** Termes de mécanique non évidents (Métier, Agilité, Tacle…) cités dans les
- *  effets → leur définition de glossaire, hors mots-clefs déjà listés. */
+/** Termes de mécanique non évidents (Métier, Recette, Agilité…) portés par la
+ *  carte — effets, mots-clefs (Recette « : Bijoutier 3 »), ou Métier. */
 const glossary = computed(() =>
-  glossaryHints(
-    realEffects.value.map((e) => e.description).join("  "),
-    (props.card.keywords ?? [])
+  glossaryHints({
+    effectsText: realEffects.value.map((e) => e.description).join("  "),
+    keywordNames: (props.card.keywords ?? [])
       .map((k) => k.name)
       .filter((n): n is NonNullable<typeof n> => !!n),
-  ),
+    keywordDescriptions: (props.card.keywords ?? [])
+      .map((k) => k.description)
+      .filter((d): d is string => !!d),
+    metier: props.card.metier ?? [],
+  }),
 );
 
 const statRows = computed(() => {
