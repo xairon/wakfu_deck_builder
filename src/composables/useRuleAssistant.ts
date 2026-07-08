@@ -81,6 +81,16 @@ function ruleForRejection(msg: string): AssistantRule | undefined {
       detail:
         "Seul le joueur actif agit pendant son tour (excepté bloquer en réaction).",
     };
+  if (
+    m.includes("déplace le héros") ||
+    m.includes("déjà dans le monde") ||
+    m.includes("déjà dans son havre-sac")
+  )
+    return {
+      ref: "414.1",
+      detail:
+        "À ton tour, en Phase Principale, ton Héros passe librement (sans coût) entre son Havre-Sac et le Monde. Exposé, il peut attaquer mais devient ciblable ; à l'abri, il est hors de portée (508.1).",
+    };
   return undefined;
 }
 
@@ -197,6 +207,18 @@ export function useRuleAssistant() {
 
     // 3) Hors combat, en jeu : selon à qui c'est de jouer.
     if (store.matchPhase === "playing") {
+      // Héros exposé dans le Monde : rappel du risque (508.x) — persistant tant
+      // qu'il n'est pas rentré, mais discret (ton info, sans ✕).
+      if (store.heroMoveOption?.to === "havreSac")
+        return {
+          tone: "info",
+          text: "Ton Héros est exposé dans le Monde : il peut être ciblé et attaqué. Sélectionne-le pour le « Rentrer au Havre-Sac ».",
+          rule: {
+            ref: "508.1",
+            detail:
+              "Dans son Havre-Sac, ton Héros est hors de portée de l'adversaire ; il ne devient ciblable qu'exposé dans le Monde (où il peut, lui, attaquer).",
+          },
+        };
       if (store.online && store.turn.active !== store.mySeat)
         return {
           tone: "info",
@@ -204,7 +226,7 @@ export function useRuleAssistant() {
         };
       return {
         tone: "action",
-        text: "À toi de jouer : pose une carte, déclare une attaque (⚔), ou finis ton tour.",
+        text: "À toi de jouer : pose une carte, sors/rentre ton Héros (⚔/🛡), déclare une attaque (⚔), ou finis ton tour.",
       };
     }
     return null;

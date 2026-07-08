@@ -64,6 +64,53 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
   });
 });
 
+describe("GameBoard — mouvement du Héros (414.1 / 508.x)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("propose de sortir puis de rentrer le Héros quand il est sélectionné", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck(), "B"); // B commence
+    store.endTurn(); // → tour 2, actif/perspective A (sortie autorisée)
+    const me = store.perspective;
+    const heroId = store.state.seats[me].heroInstanceId!;
+    expect(store.state.instances[heroId].location.zone).toBe("havreSac");
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+    // Sélectionner le Héros (intérieur du Havre-Sac) → bouton « Sortir ».
+    await wrapper.get(`[data-testid="card-${heroId}"]`).trigger("click");
+    const moveBtn = wrapper.find('[data-testid="action-move-hero"]');
+    expect(moveBtn.exists()).toBe(true);
+    expect(moveBtn.text()).toContain("Sortir dans le Monde");
+
+    await moveBtn.trigger("click");
+    expect(store.state.instances[heroId].location.zone).toBe("monde");
+
+    // Le Héros exposé (dans le Monde) : re-sélection → bouton « Rentrer ».
+    await wrapper.get(`[data-testid="card-${heroId}"]`).trigger("click");
+    expect(wrapper.find('[data-testid="action-move-hero"]').text()).toContain(
+      "Rentrer au Havre-Sac",
+    );
+  });
+
+  it("désactive le bouton (motif) quand la sortie est illégale (1er tour)", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck(), "A"); // A commence → tour 1
+    const me = store.perspective;
+    const heroId = store.state.seats[me].heroInstanceId!;
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+    await wrapper.get(`[data-testid="card-${heroId}"]`).trigger("click");
+    const moveBtn = wrapper.find('[data-testid="action-move-hero"]');
+    expect(moveBtn.exists()).toBe(true);
+    expect((moveBtn.element as HTMLButtonElement).disabled).toBe(true);
+    expect(moveBtn.attributes("title")).toContain("premier tour");
+  });
+});
+
 describe("GameBoard — a11y clavier (barre d'action)", () => {
   beforeEach(() => setActivePinia(createPinia()));
 

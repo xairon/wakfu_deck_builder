@@ -67,4 +67,33 @@ describe("gameStore — moveHero (mouvement du Héros, 414.1)", () => {
     expect(store.state.instances[heroId].location.zone).toBe("havreSac");
     expect(store.ruleError).toContain("premier tour");
   });
+
+  it("heroMoveOption (source du bouton) suit la zone du Héros et sa légalité", () => {
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "B"); // B commence → tour 1 = B
+    store.endTurn(); // → tour 2, actif/perspective A
+
+    // Héros embagué → propose de SORTIR dans le Monde, autorisé (tour 2).
+    expect(store.heroMoveOption?.to).toBe("monde");
+    expect(store.heroMoveOption?.reason).toBeNull();
+
+    store.moveHero("A", "monde");
+    // Héros exposé → propose de RENTRER au Havre-Sac.
+    expect(store.heroMoveOption?.to).toBe("havreSac");
+    expect(store.heroMoveOption?.reason).toBeNull();
+  });
+
+  it("heroMoveOption : motif non nul quand le déplacement est illégal (tour 1)", () => {
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "A"); // A commence → tour 1 = A
+    // Sortie interdite au 1er tour (506.3) → le bouton serait désactivé avec le motif.
+    expect(store.heroMoveOption?.to).toBe("monde");
+    expect(store.heroMoveOption?.reason).toContain("premier tour");
+  });
 });

@@ -799,6 +799,25 @@
           >
             ⚡ Activer
           </button>
+          <button
+            v-if="selectedIsMyHero && heroMove"
+            class="gbtn gbtn--accent"
+            data-testid="action-move-hero"
+            :disabled="!!heroMove.reason"
+            :title="
+              heroMove.reason ??
+              (heroMove.to === 'monde'
+                ? 'Ton Héros s’expose (ciblable) pour attaquer.'
+                : 'Ton Héros se met à l’abri dans son Havre-Sac.')
+            "
+            @click="moveHeroSelected"
+          >
+            {{
+              heroMove.to === "monde"
+                ? "⚔ Sortir dans le Monde"
+                : "🛡 Rentrer au Havre-Sac"
+            }}
+          </button>
           <button class="gbtn gbtn--accent" @click="tapSelected">
             {{
               selectedInst.orientation === "tapped"
@@ -1052,6 +1071,22 @@ const selectedName = computed(() => {
   if (!inst) return "";
   return resolveCard(inst.cardId)?.name ?? "Carte face cachée";
 });
+// Mouvement du Héros (414.1 / 508.x) : le bouton n'apparaît que si la carte
+// sélectionnée EST le Héros du joueur affiché. `heroMove.reason` (null = OK)
+// désactive le bouton hors Phase Principale / au 1er tour, avec l'explication.
+const heroMove = computed(() => store.heroMoveOption);
+const selectedIsMyHero = computed(
+  () =>
+    !!selectedInst.value &&
+    !!heroMove.value &&
+    selectedInst.value.instanceId === heroMove.value.heroInstanceId,
+);
+function moveHeroSelected(): void {
+  const opt = heroMove.value;
+  if (!opt) return;
+  store.moveHero(me.value, opt.to); // rejette avec le motif si illégal
+  selectedId.value = null; // la zone du Héros a changé → referme la barre
+}
 function select(instanceId: string): void {
   // ciblage de Porteur en cours (305.x) : le clic désigne la créature qui
   // portera l'équipement / la Monture en attente de jeu.

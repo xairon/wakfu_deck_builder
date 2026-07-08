@@ -1244,6 +1244,28 @@ export const useGameStore = defineStore("game", () => {
     );
   }
 
+  /**
+   * Option de mouvement du Héros pour le joueur AFFICHÉ (perspective), ou `null`
+   * si le Héros n'est ni au Monde ni au Havre-Sac. `to` = zone OPPOSÉE à sa
+   * position actuelle ; `reason` = pourquoi le déplacement est interdit MAINTENANT
+   * (null = autorisé, 414.1). Alimente le bouton « Sortir dans le Monde » /
+   * « Rentrer au Havre-Sac » de la barre d'action (réactif : suit tour/phase).
+   */
+  const heroMoveOption = computed(() => {
+    const seat = perspective.value;
+    const heroId = state.value.seats[seat]?.heroInstanceId;
+    const cur = heroId
+      ? state.value.instances[heroId]?.location.zone
+      : undefined;
+    if (cur !== "monde" && cur !== "havreSac") return null;
+    const to: "monde" | "havreSac" = cur === "monde" ? "havreSac" : "monde";
+    return {
+      to,
+      reason: whyCannotMoveHero(rulesCtx(), seat, to),
+      heroInstanceId: heroId!,
+    };
+  });
+
   function moveTo(
     instanceId: string,
     to: ZoneRef,
@@ -3185,6 +3207,7 @@ export const useGameStore = defineStore("game", () => {
     combatBlockerIds,
     eligibleAttackerIds,
     canDeclareAttack,
+    heroMoveOption,
     combatCanResolve,
     combatCanConfirmBlocks,
     combatWaitingForBlocks,
