@@ -156,13 +156,22 @@ function driveCombat(store: Store): void {
       else store.combatCancel(); // aucune cible → abandonner
       return;
     }
-    if (!c.attackers.length) {
-      const a = store.combatAttackerIds;
-      if (a.length) store.combatToggleAttacker(a[0]);
-      else store.combatCancel();
-      return;
+    // GREEDY = attaque avec TOUT ce qui est disponible. N'envoyer qu'UN attaquant
+    // laissait le défenseur le bloquer → le Havre-Sac adverse ne tombait jamais
+    // (parties sans fin depuis que le Héros est protégé au Havre-Sac). On déclare
+    // les attaquants un par un (éligibles NON encore déclarés) jusqu'à épuisement
+    // OU refus (plafond de PM 307.3c/703), puis on confirme.
+    const undeclared = store.combatAttackerIds.filter(
+      (id) => !c.attackers.includes(id),
+    );
+    if (undeclared.length) {
+      const before = c.attackers.length;
+      store.combatToggleAttacker(undeclared[0]);
+      // le toggle a bien ajouté → continuer ; sinon (plafond) → confirmer.
+      if ((store.combat?.attackers.length ?? 0) > before) return;
     }
-    store.combatConfirmAttackers();
+    if (store.combat?.attackers.length) store.combatConfirmAttackers();
+    else store.combatCancel();
     return;
   }
   if (c.step === "blockers") {
@@ -171,9 +180,20 @@ function driveCombat(store: Store): void {
     const b = store.combatBlockerIds;
     if (b.length && !Object.keys(c.blocks).length) {
       store.combatToggleBlock(b[0]);
-      if (store.combat?.pendingBlocker && store.combat.attackers.length)
-        store.combatChooseBlockTarget(store.combat.attackers[0]);
-      return;
+      // Assigne le bloqueur au PREMIER attaquant qu'il peut légalement bloquer
+      // (un attaquant Agilité 704 est inblocable par un bloqueur sans Agilité :
+      // insister sur `attackers[0]` bouclait à l'infini). Si aucun attaquant n'est
+      // blocable, on DÉSÉLECTIONNE et on résout (l'attaque passe) — jamais de
+      // livelock.
+      if (store.combat?.pendingBlocker) {
+        for (const atkId of store.combat.attackers) {
+          store.combatChooseBlockTarget(atkId);
+          if (!store.combat?.pendingBlocker) break; // blocage committé
+        }
+        if (store.combat?.pendingBlocker) store.combatToggleBlock(b[0]);
+      }
+      // blocage committé → laisser la résolution au prochain appel ; sinon résoudre.
+      if (store.combat && Object.keys(store.combat.blocks).length) return;
     }
     store.combatResolve();
     return;
