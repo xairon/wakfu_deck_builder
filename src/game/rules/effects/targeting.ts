@@ -17,7 +17,7 @@ import {
   tap,
   untap,
 } from "../../engine/verbs";
-import { normElement, normWord, xpValue } from "../cardAttrs";
+import { heroStats, normElement, normWord, xpValue } from "../cardAttrs";
 import { resourceProducers } from "../resources";
 import { effectiveForce } from "../stats";
 import { allyPowerDamageBonus, reduceDamage } from "./damageMods";
@@ -442,7 +442,33 @@ export function effectTargetIds(
   return out;
 }
 
-/** « regagne N PV » : soin du Héros ciblé (pas de plafond suivi en V1). */
+/** PV MAXIMUM d'un Héros (face courante) — le plafond de soin. `undefined` si la
+ *  cible n'est pas un Héros ou n'a pas de PV imprimé (mocks de test → pas de plafond). */
+function heroMaxPv(ctx: RulesCtx, instanceId: InstanceId): number | undefined {
+  const inst = ctx.state.instances[instanceId];
+  const card = inst ? ctx.getCard(inst.cardId) : null;
+  if (!card) return undefined;
+  return heroStats(card, inst!.face === "verso" ? "verso" : "recto")?.pv;
+}
+
+/**
+ * Soin RÉEL après PLAFONNEMENT au PV maximum du Héros. « Regagner des PV » =
+ * récupérer les PV perdus, jamais dépasser le maximum imprimé (un Héros au max ne
+ * gagne rien). PV max inconnu (pas un Héros / mock) → aucun plafond (fidèle).
+ */
+export function cappedHeal(
+  ctx: RulesCtx,
+  instanceId: InstanceId,
+  amount: number,
+): number {
+  if (amount <= 0) return 0;
+  const max = heroMaxPv(ctx, instanceId);
+  if (max === undefined) return amount;
+  const current = ctx.state.instances[instanceId]?.counters.hp ?? 0;
+  return Math.max(0, Math.min(amount, max - current));
+}
+
+/** « regagne N PV » : soin du Héros ciblé, plafonné au PV MAX (cf. cappedHeal). */
 export function resolveHealHeroTarget(
   ctx: RulesCtx,
   actor: Seat,
@@ -451,9 +477,15 @@ export function resolveHealHeroTarget(
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   if (!inst) return { events: [], log: [] };
+  const heal = cappedHeal(ctx, targetId, n);
+  if (heal <= 0)
+    return {
+      events: [],
+      log: [`${nameOf(ctx, targetId)} est déjà au PV max.`],
+    };
   return {
-    events: [incCounter(actor, targetId, "hp", n)],
-    log: [`${nameOf(ctx, targetId)} regagne ${n} PV.`],
+    events: [incCounter(actor, targetId, "hp", heal)],
+    log: [`${nameOf(ctx, targetId)} regagne ${heal} PV.`],
   };
 }
 

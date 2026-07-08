@@ -52,6 +52,7 @@ import {
   normElement,
   producedElement,
   reduceDamage,
+  cappedHeal,
   resolveBanishTarget,
   resolveBuffForceTarget,
   resolveDamageTarget,
@@ -1582,9 +1583,13 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       } else if (op.op === "heroGainPv") {
         // « Votre Héros regagne X PV » (X = nombre recyclé, costRecycle{max}) →
         // magnitude dynamique via opMagnitude (recyclé 0 → +0 PV, no-op fidèle).
+        // PLAFONNÉ au PV max (regagner = récupérer les PV perdus, pas dépasser).
         const heroId = deps.getState().seats[seat].heroInstanceId;
         const amount = opMagnitude(op, frame);
-        if (heroId && amount) deps.adjustCounter(heroId, "hp", amount);
+        if (heroId && amount) {
+          const heal = cappedHeal(deps.rulesCtx(), heroId, amount);
+          if (heal) deps.adjustCounter(heroId, "hp", heal);
+        }
       } else if (op.op === "heroLosePv") {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         if (heroId) deps.adjustCounter(heroId, "hp", -op.n);

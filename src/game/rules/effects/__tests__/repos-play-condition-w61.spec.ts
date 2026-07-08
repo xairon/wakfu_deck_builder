@@ -73,6 +73,13 @@ describe("costPayX + heroGainPv{fromCount} — Repos soigne X PV", () => {
     const p2 = placeInZone(store, "A", { zone: "monde" });
     const src = placeInZone(store, "A", { zone: "monde" });
     const heroId = store.state.seats.A.heroInstanceId!;
+    // Le soin est PLAFONNÉ au PV max : on blesse d'abord le Héros, sinon (au max)
+    // il ne regagne rien et le gain de X PV ne serait pas observable.
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "blessure",
+      ops: [{ op: "heroLosePv", n: 6 }],
+    });
     const hp0 = store.state.instances[heroId].counters.hp ?? 0;
     store.enqueueEffect({
       seat: "A",

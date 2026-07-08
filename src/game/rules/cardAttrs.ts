@@ -93,9 +93,11 @@ export function heroStats(
   side: "recto" | "verso",
 ): BaseStats | undefined {
   if (!isHeroCard(card)) return undefined;
+  // Lecture DÉFENSIVE (recto peut manquer sur des données/mocks malformés) :
+  // renvoie `undefined` plutôt que de planter.
   return side === "verso"
-    ? (card.verso?.stats ?? card.recto.stats)
-    : card.recto.stats;
+    ? (card.verso?.stats ?? card.recto?.stats)
+    : card.recto?.stats;
 }
 
 /** Toute carte en jeu produit une Ressource en s'inclinant, sauf Protecteur (4261). */

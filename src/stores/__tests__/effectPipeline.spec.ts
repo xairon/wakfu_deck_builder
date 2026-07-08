@@ -18,22 +18,31 @@ describe("pipeline d'effets — ops self / non-interactives", () => {
     expect(store.state.seats.A.main.length).toBe(2);
   });
 
-  it("heroGainPv / heroLosePv : ajuste les PV du Héros actif", () => {
+  it("heroGainPv / heroLosePv : ajuste les PV du Héros actif (soin plafonné au max)", () => {
     const { store } = makeEffectSandbox({ first: "A" });
     const heroId = store.state.seats.A.heroInstanceId!;
-    const base = store.state.instances[heroId].counters.hp ?? 0;
+    const base = store.state.instances[heroId].counters.hp ?? 0; // = PV max au départ
+    // heroLosePv : perte directe.
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "T",
+      ops: [{ op: "heroLosePv", n: 5 }],
+    });
+    expect(store.state.instances[heroId].counters.hp).toBe(base - 5);
+    // heroGainPv : soin — de la place existe (base-5), donc +3 s'applique.
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
       ops: [{ op: "heroGainPv", n: 3 }],
     });
-    expect(store.state.instances[heroId].counters.hp).toBe(base + 3);
+    expect(store.state.instances[heroId].counters.hp).toBe(base - 2);
+    // au PV MAX, « regagner » ne dépasse jamais : +99 est plafonné au max.
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
-      ops: [{ op: "heroLosePv", n: 1 }],
+      ops: [{ op: "heroGainPv", n: 99 }],
     });
-    expect(store.state.instances[heroId].counters.hp).toBe(base + 2);
+    expect(store.state.instances[heroId].counters.hp).toBe(base);
   });
 
   it("damageOppHero : retire des PV au Héros adverse", () => {
@@ -483,10 +492,16 @@ describe("pipeline d'effets — ciblage (effectTargeting)", () => {
     expect(store.state.seats[otherSeat("A")].defausse).toContain(target);
   });
 
-  it("healHeroTarget : le clic soigne le Héros ciblé", () => {
+  it("healHeroTarget : le clic soigne le Héros ciblé (plafonné au max)", () => {
     const { store } = makeEffectSandbox({ first: "A" });
     const heroId = store.state.seats.A.heroInstanceId!;
     const base = store.state.instances[heroId].counters.hp ?? 0;
+    // Blesser d'abord : au PV max, le soin (plafonné) ne serait pas observable.
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "dmg",
+      ops: [{ op: "heroLosePv", n: 5 }],
+    });
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
@@ -496,7 +511,7 @@ describe("pipeline d'effets — ciblage (effectTargeting)", () => {
     expect(store.effectTargetIdsList).toContain(heroId);
     store.effectTargetChoose(heroId);
     expect(store.effectTargeting).toBeNull();
-    expect(store.state.instances[heroId].counters.hp).toBe(base + 3);
+    expect(store.state.instances[heroId].counters.hp).toBe(base - 2);
   });
 
   it("buffForceTarget : le clic pose un +Force temporaire sur l'Allié ciblé", () => {
