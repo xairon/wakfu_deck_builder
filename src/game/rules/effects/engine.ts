@@ -343,6 +343,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
    * d'Attente du jeu (503).
    */
   const effectQueue = ref<EffectFrame[]>([]);
+  // Sentinelle de ré-entrance de `pumpEffects` : `true` tant qu'une pompe est en
+  // cours. Empêche un `enqueueEffect` déclenché EN COURS de résolution de relancer
+  // une pompe imbriquée qui ré-exécuterait la frame en tête (boucle infinie, 804.7).
+  let pumping = false;
 
   /**
    * Rappels d'effets NON automatisés (assistEffects ON) : la file ne les résout
@@ -398,7 +402,17 @@ export function createEffectEngine(deps: EffectEngineDeps) {
 
   function enqueueEffect(frame: EffectFrame): void {
     effectQueue.value = [...effectQueue.value, frame];
-    pumpEffects();
+    // 804.7 — un effet DÉCLENCHÉ enfilé PENDANT la résolution d'une frame (une
+    // riposte de Porteur, un déclenché de mort…) ne doit PAS relancer une pompe
+    // ré-entrante : la pompe en cours ré-exécuterait `effectQueue[0]` (la frame
+    // encore en tête, pas encore consommée) DEPUIS son 1er op, ré-infligerait ses
+    // Dommages et re-déclencherait à l'infini (boucle Cape du Prespic → dépassement
+    // de pile). On se contente d'ENFILER ; la boucle `pumpEffects` en cours draine
+    // la frame ajoutée APRÈS avoir consommé la frame courante (déclenché résolu
+    // APRÈS l'événement déclencheur, fidèle à 804.7). La pompe ne démarre ici que
+    // si aucune n'est active (enfilage « à froid » : effet initial, résolution de
+    // choix/ciblage, combat au niveau du store).
+    if (!pumping) pumpEffects();
   }
 
   /**
@@ -442,24 +456,32 @@ export function createEffectEngine(deps: EffectEngineDeps) {
 
   /** Avance la file tant qu'aucune interaction n'est en attente. */
   function pumpEffects(): void {
-    while (
-      effectQueue.value.length &&
-      !effectTargeting.value &&
-      !effectPicking.value
-    ) {
-      const frame = effectQueue.value[0];
-      if (runFrame(frame)) return; // en pause — la frame reste en tête
-      effectQueue.value = effectQueue.value.slice(1);
-    }
-    // file vidée : destructions d'état (1414/3019) puis limite de main
-    // (« à n'importe quel instant »)
-    if (
-      !effectQueue.value.length &&
-      !effectTargeting.value &&
-      !effectPicking.value
-    ) {
-      deps.checkVictory();
-      enforceHandLimit(deps.getState().turn.active);
+    // Garde de ré-entrance : une pompe déjà active draine elle-même les frames
+    // ajoutées par les déclenchés. Un appel imbriqué est un no-op (cf. `pumping`).
+    if (pumping) return;
+    pumping = true;
+    try {
+      while (
+        effectQueue.value.length &&
+        !effectTargeting.value &&
+        !effectPicking.value
+      ) {
+        const frame = effectQueue.value[0];
+        if (runFrame(frame)) return; // en pause — la frame reste en tête
+        effectQueue.value = effectQueue.value.slice(1);
+      }
+      // file vidée : destructions d'état (1414/3019) puis limite de main
+      // (« à n'importe quel instant »)
+      if (
+        !effectQueue.value.length &&
+        !effectTargeting.value &&
+        !effectPicking.value
+      ) {
+        deps.checkVictory();
+        enforceHandLimit(deps.getState().turn.active);
+      }
+    } finally {
+      pumping = false;
     }
   }
 
