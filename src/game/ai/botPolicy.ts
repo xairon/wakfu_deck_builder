@@ -274,10 +274,15 @@ function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
   for (const id of [...(store.state.seats[me]?.main ?? [])]) {
     if (store.playFromHand(id)) return true;
   }
-  // 3. Activer les pouvoirs à inclinaison (valeur gratuite).
+  // 3. Activer les pouvoirs à inclinaison (valeur gratuite). On NE SONDE QUE les
+  //    cartes qui portent un pouvoir COMPILÉ (hasTapPower). Sans ce garde,
+  //    activateTapPower sur une carte sans pouvoir rejette « Pas de pouvoir à
+  //    inclinaison automatisé » — un rejet qui pose un `ruleError` VISIBLE par
+  //    l'humain (l'assistant de règles), alors que le bot ne fait que sonder.
   for (const i of Object.values(store.state.instances)) {
     if (i.controller !== me) continue;
     if (i.location.zone !== "monde" && i.location.zone !== "havreSac") continue;
+    if (!store.hasTapPower(i.instanceId)) continue;
     if (tried.has("pw:" + i.instanceId)) continue;
     tried.add("pw:" + i.instanceId);
     if (store.activateTapPower(i.instanceId)) return true;
