@@ -8,6 +8,7 @@ import {
   instId,
   HERO_B,
   makeAlly,
+  moveHeroTo,
   type Fixture,
 } from "@/game/rules/__tests__/harness";
 import { resolveIntent } from "@/game/actions/resolveIntent";
@@ -25,6 +26,7 @@ function combatReady(): { f: Fixture; A0: string; B0: string } {
   const B0 = instId("B", 0);
   bringToMonde(f, "A", A0, { arrivedTurn: 0 });
   bringToMonde(f, "B", B0, { arrivedTurn: 0 });
+  moveHeroTo(f, "B", "monde"); // Héros B exposé → cible d'attaque légale (508.x)
   return { f, A0, B0 };
 }
 

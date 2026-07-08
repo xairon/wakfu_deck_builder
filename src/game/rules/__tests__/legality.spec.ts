@@ -50,6 +50,25 @@ describe("rules/legality — mouvement du Héros (414.1)", () => {
   });
 });
 
+describe("rules/legality — Héros ciblable/attaquant seulement exposé dans le Monde", () => {
+  it("protégé au Havre-Sac : ni attaquant ni cible ; exposé au Monde : les deux", () => {
+    const f = fixture([]);
+    setTurn(f, "A", 3);
+    // Héros au Havre-Sac : A ne peut pas l'envoyer attaquer, B n'est pas ciblable.
+    expect(eligibleAttackers(ctxOf(f), "A")).not.toContain(HERO_A);
+    expect(
+      eligibleTargets(ctxOf(f), "A").map((t) => t.instanceId),
+    ).not.toContain(HERO_B);
+    // Héros sortis dans le Monde : exposés (attaquant + cible).
+    moveHeroTo(f, "A", "monde");
+    moveHeroTo(f, "B", "monde");
+    expect(eligibleAttackers(ctxOf(f), "A")).toContain(HERO_A);
+    expect(eligibleTargets(ctxOf(f), "A").map((t) => t.instanceId)).toContain(
+      HERO_B,
+    );
+  });
+});
+
 describe("rules/legality — jouer une carte", () => {
   function handFixture(card = makeAlly("c0", { niveau: 1, element: "Feu" })) {
     const f = fixture([card]);
@@ -196,10 +215,11 @@ describe("rules/legality — attaquants, cibles, bloqueurs", () => {
     setTurn(f, "A", 3);
     bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 2 });
     bringToMonde(f, "A", instId("A", 1), { arrivedTurn: 3 });
+    moveHeroTo(f, "A", "monde"); // exposé, le Héros peut être envoyé au combat
     const attackers = eligibleAttackers(ctxOf(f), "A");
     expect(attackers).toContain(instId("A", 0));
     expect(attackers).not.toContain(instId("A", 1));
-    expect(attackers).toContain(HERO_A); // le Héros n'a pas le mal d'invocation
+    expect(attackers).toContain(HERO_A); // sorti au Monde : pas de mal d'invocation
   });
 
   it("exclut les cartes inclinées et les Alliés Élémentaires", () => {
@@ -219,6 +239,7 @@ describe("rules/legality — attaquants, cibles, bloqueurs", () => {
   it("cibles : Héros, Havre-Sac et Alliés adverses du Monde (702.2)", () => {
     const f = fixture([], [makeAlly("bd")]);
     bringToMonde(f, "B", instId("B", 0));
+    moveHeroTo(f, "B", "monde"); // le Héros adverse n'est ciblable qu'exposé (508.x)
     const targets = eligibleTargets(ctxOf(f), "A");
     const ids = targets.map((t) => t.instanceId);
     expect(ids).toContain(HERO_B);

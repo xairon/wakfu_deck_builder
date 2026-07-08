@@ -238,6 +238,10 @@ export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
     if (inst.orientation !== "upright") continue;
     const card = ctx.getCard(inst.cardId);
     if (!card || !canAttackCard(card)) continue;
+    // Le Héros ne peut être ENVOYÉ au combat qu'exposé dans le Monde (protégé au
+    // Havre-Sac, 508.x/414.1) ; il s'y expose en sortant (moveHero). Les Alliés
+    // y sont déjà joués — leur zone n'est pas restreinte ici.
+    if (card.mainType === "Héros" && zone !== "monde") continue;
     // « ne peut ni attaquer, ni bloquer » (pouvoir continu) — exclu des
     // attaquants éligibles (volet blocage géré par eligibleBlockers/cannotBlock).
     if (cannotAttackOrBlock(ctx, inst.instanceId)) continue;
@@ -263,8 +267,13 @@ export function eligibleTargets(ctx: RulesCtx, seat: Seat): CombatTarget[] {
   const def = otherSeat(seat);
   const board = ctx.state.seats[def];
   const out: CombatTarget[] = [];
-  if (board.heroInstanceId)
-    out.push({ kind: "hero", instanceId: board.heroInstanceId });
+  // Le Héros adverse n'est CIBLABLE qu'exposé dans le Monde (protégé au Havre-Sac,
+  // 508.x) ; il s'y expose en sortant attaquer ou à l'expulsion (410.7).
+  const heroInst = board.heroInstanceId
+    ? ctx.state.instances[board.heroInstanceId]
+    : null;
+  if (heroInst && heroInst.location.zone === "monde")
+    out.push({ kind: "hero", instanceId: board.heroInstanceId! });
   if (board.havreSacInstanceId)
     out.push({ kind: "havreSac", instanceId: board.havreSacInstanceId });
   for (const id of ctx.state.monde) {

@@ -268,6 +268,7 @@ describe("gameStore — pouvoirs continus & destructions d'état (lot B)", () =>
     store.nextTurn(); // tour 3 (A) — l'attaque devient légale
     expect(store.beginCombat()).toBe(true);
     store.combatToggleAttacker(atkId);
+    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
     store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true);
     // clic sur Jicé : refus EXPLIQUÉ, pas silencieux
@@ -325,6 +326,7 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.nextTurn(); // tour 3 (A) — l'attaque devient légale
     expect(store.beginCombat()).toBe(true);
     store.combatToggleAttacker(id);
+    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
     store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true);
     // A6 : incliné dès la déclaration
@@ -382,6 +384,7 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     );
     // après avoir attaqué : plus déclarable ce tour (1/tour)
     store.beginCombat(ready);
+    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
     store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
     store.combatConfirmAttackers();
     store.combatResolve();
@@ -453,6 +456,7 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.nextTurn(); // tour 3 (A)
     store.beginCombat(a1);
     store.combatToggleAttacker(a2);
+    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
     store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
     store.combatConfirmAttackers();
     // 2 attaquants → cliquer le bloqueur l'arme sans l'assigner
@@ -508,6 +512,7 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.nextTurn();
     store.nextTurn(); // tour 3 (A)
     store.beginCombat(a);
+    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
     store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
     store.combatConfirmAttackers(); // étape blockers
     // l'attaquant cède la main au défenseur
