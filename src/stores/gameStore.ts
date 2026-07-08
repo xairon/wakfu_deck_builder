@@ -74,6 +74,7 @@ import {
   turnStartEffects,
   victoryFromState,
   whyCannotDeclareAttack,
+  whyCannotMoveHero,
   blockerBlockedByAgilite,
   powerConditionReason,
   whyCannotPlay,
@@ -1210,6 +1211,37 @@ export const useGameStore = defineStore("game", () => {
       dispatch(drawTop(state.value, seat));
     }
     engine.enforceHandLimit(seat);
+  }
+
+  /**
+   * Mouvement du Héros entre son Havre-Sac et le Monde (414.1). Légalité via
+   * `whyCannotMoveHero` (à son tour, Phase Principale, pas de sortie dans le Monde
+   * au tout premier tour) ; on déplace l'instance en conservant son orientation.
+   * Sortir = s'exposer (ciblable) ; Rentrer = se protéger.
+   */
+  function moveHero(seat: Seat, to: "monde" | "havreSac"): void {
+    const reason = whyCannotMoveHero(rulesCtx(), seat, to);
+    if (reason) {
+      rejectMove(reason);
+      return;
+    }
+    const heroId = state.value.seats[seat].heroInstanceId;
+    const inst = heroId ? state.value.instances[heroId] : null;
+    if (!heroId || !inst) return;
+    dispatch(
+      move(seat, {
+        instanceId: heroId,
+        from: inst.location,
+        to:
+          to === "monde"
+            ? { zone: "monde" }
+            : { zone: "havreSac", owner: seat },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true,
+        orientationOnArrival: inst.orientation,
+      }),
+    );
   }
 
   function moveTo(
@@ -3101,6 +3133,7 @@ export const useGameStore = defineStore("game", () => {
     // verbes
     draw,
     moveTo,
+    moveHero,
     toggleTap,
     adjustCounter,
     shufflePioche,

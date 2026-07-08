@@ -188,6 +188,29 @@ export function bringToMonde(
   if (opts.tapped) dispatch(f, tap(seat, instanceId));
 }
 
+/** Déplace le Héros d'un siège entre son Havre-Sac et le Monde (état de test). */
+export function moveHeroTo(
+  f: Fixture,
+  seat: Seat,
+  to: "monde" | "havreSac",
+): void {
+  const heroId = seat === "A" ? HERO_A : HERO_B;
+  const from = deriveState(f.events).instances[heroId].location;
+  dispatch(
+    f,
+    move(seat, {
+      instanceId: heroId,
+      from,
+      to:
+        to === "monde" ? { zone: "monde" } : { zone: "havreSac", owner: seat },
+      position: { at: "any" },
+      visibility: { faceDown: false, visibleTo: "all" },
+      preservesIdentity: true,
+      orientationOnArrival: "upright",
+    }),
+  );
+}
+
 /**
  * Pose un combat EN COURS (state.combat) dans l'état de test : `attacker` déclare
  * `attackers` (par défaut son Héros) contre `target` (par défaut le Héros adverse).

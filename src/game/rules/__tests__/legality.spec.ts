@@ -7,6 +7,7 @@ import {
   havreSacHasRoom,
   havreSacOccupancy,
   whyCannotDeclareAttack,
+  whyCannotMoveHero,
   whyCannotPlay,
 } from "../legality";
 import {
@@ -20,10 +21,34 @@ import {
   fixture,
   instId,
   makeAlly,
+  moveHeroTo,
   setTurn,
 } from "./harness";
 import { move } from "@/game";
 import { createMockHavreSacCard } from "tests/factories/card";
+
+describe("rules/legality — mouvement du Héros (414.1)", () => {
+  it("refuse la sortie dans le Monde au tour 1 (506.3), l'autorise ensuite", () => {
+    const f = fixture([]);
+    setTurn(f, "A", 1);
+    expect(whyCannotMoveHero(ctxOf(f), "A", "monde")).toContain("premier tour");
+    setTurn(f, "A", 3);
+    expect(whyCannotMoveHero(ctxOf(f), "A", "monde")).toBeNull();
+  });
+
+  it("refuse hors de son tour, et si le Héros est déjà dans la zone visée", () => {
+    const f = fixture([]);
+    setTurn(f, "B", 3);
+    expect(whyCannotMoveHero(ctxOf(f), "A", "monde")).toBe(
+      "Ce n'est pas votre tour.",
+    );
+    setTurn(f, "A", 3);
+    expect(whyCannotMoveHero(ctxOf(f), "A", "havreSac")).toContain("déjà");
+    moveHeroTo(f, "A", "monde");
+    expect(whyCannotMoveHero(ctxOf(f), "A", "monde")).toContain("déjà");
+    expect(whyCannotMoveHero(ctxOf(f), "A", "havreSac")).toBeNull();
+  });
+});
 
 describe("rules/legality — jouer une carte", () => {
   function handFixture(card = makeAlly("c0", { niveau: 1, element: "Feu" })) {

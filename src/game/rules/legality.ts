@@ -203,6 +203,31 @@ export function whyCannotDeclareAttack(
   return null;
 }
 
+/**
+ * Mouvement du Héros entre son Havre-Sac et le Monde (414.1) : à son tour, en
+ * Phase Principale, aucune SORTIE dans le Monde au tout premier tour de la partie
+ * (506.3), et la zone visée doit différer de la zone courante. Sans coût (414.1).
+ */
+export function whyCannotMoveHero(
+  ctx: RulesCtx,
+  seat: Seat,
+  to: "monde" | "havreSac",
+): string | null {
+  const { turn } = ctx.state;
+  if (turn.active !== seat) return "Ce n'est pas votre tour.";
+  if (turn.phase !== "principale")
+    return "On déplace le Héros en Phase Principale.";
+  const heroId = ctx.state.seats[seat].heroInstanceId;
+  const cur = heroId ? ctx.state.instances[heroId]?.location.zone : undefined;
+  if (cur === to)
+    return to === "monde"
+      ? "Ton Héros est déjà dans le Monde."
+      : "Ton Héros est déjà dans son Havre-Sac.";
+  if (to === "monde" && turn.number === 1)
+    return "Aucune sortie dans le Monde au premier tour de la partie.";
+  return null;
+}
+
 /** Attaquants légaux : Alliés/Héros redressés, sans mal d'invocation (1821). */
 export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
   const out: InstanceId[] = [];
