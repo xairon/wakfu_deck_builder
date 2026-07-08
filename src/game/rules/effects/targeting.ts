@@ -267,6 +267,17 @@ export function effectTargetIds(
   const out: InstanceId[] = [];
   for (const inst of Object.values(ctx.state.instances)) {
     if (!zones.includes(inst.location.zone as "monde" | "havreSac")) continue;
+    // PORTÉE 508.1b/c : l'adversaire ne peut atteindre un objet (Héros compris)
+    // dans VOTRE Havre-Sac ; seul VOTRE propre Havre-Sac est joignable. (La source
+    // d'un effet est au Monde ou dans un Havre-Sac ; dans les deux cas, le
+    // Havre-Sac ADVERSE est hors de portée.) Le Havre-Sac protège donc son Héros
+    // tant qu'il n'est pas exposé dans le Monde (sortie 414.1 ou expulsion 410.7).
+    if (
+      inst.location.zone === "havreSac" &&
+      actor !== undefined &&
+      inst.controller !== actor
+    )
+      continue;
     const card = ctx.getCard(inst.cardId);
     if (!card) continue;
     let ok =

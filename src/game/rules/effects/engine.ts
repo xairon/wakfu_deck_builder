@@ -1617,7 +1617,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         if (heroId) deps.adjustCounter(heroId, "hp", -op.n);
       } else if (op.op === "damageOppHero") {
         const oppHeroId = deps.getState().seats[otherSeat(seat)].heroInstanceId;
-        if (oppHeroId) {
+        // PORTÉE 508.x : le Héros adverse protégé dans son Havre-Sac est
+        // INJOIGNABLE (no-op fidèle) ; il ne prend des Dommages qu'EXPOSÉ dans le
+        // Monde (sorti attaquer, ou expulsé à la destruction du Havre-Sac 410.7).
+        const oppHeroZone = oppHeroId
+          ? deps.getState().instances[oppHeroId]?.location.zone
+          : undefined;
+        // Bloqué UNIQUEMENT quand le Héros est effectivement dans son Havre-Sac ;
+        // « monde » (exposé) et zone indéterminée (état minimal) restent joignables.
+        if (oppHeroId && oppHeroZone !== "havreSac") {
           if (op.isDamage && op.n > 0) {
             // VRAIS Dommages (« inflige N Dommages au Héros adverse ») : d'abord
             // l'augmentation de pouvoir d'Allié (W54), PUIS la passe unique de

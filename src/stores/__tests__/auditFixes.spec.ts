@@ -52,6 +52,8 @@ describe("audit — damageOppHero{isDamage} passe par la prévention (Trêve)", 
   it("de vrais Dommages au Héros adverse sont absorbés par une Trêve active ; une perte de PV directe non", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     const heroB = store.state.seats.B.heroInstanceId!;
+    // Le Héros adverse doit être EXPOSÉ dans le Monde (protégé au Havre-Sac, 508.x).
+    store.moveTo(heroB, { zone: "monde" });
     const hp0 = store.state.instances[heroB].counters.hp ?? 0;
     // Trêve active (jeton treveUntilTurn > tour courant) → activeGlobalMods renvoie treve.
     store.state.instances[heroB].counters.tokens = {

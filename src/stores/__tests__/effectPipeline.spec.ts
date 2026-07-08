@@ -48,6 +48,8 @@ describe("pipeline d'effets — ops self / non-interactives", () => {
   it("damageOppHero : retire des PV au Héros adverse", () => {
     const { store } = makeEffectSandbox({ first: "A" });
     const oppHero = store.state.seats[otherSeat("A")].heroInstanceId!;
+    // Le Héros adverse doit être EXPOSÉ dans le Monde (protégé au Havre-Sac, 508.x).
+    store.moveTo(oppHero, { zone: "monde" });
     const base = store.state.instances[oppHero].counters.hp ?? 0;
     store.enqueueEffect({
       seat: "A",
