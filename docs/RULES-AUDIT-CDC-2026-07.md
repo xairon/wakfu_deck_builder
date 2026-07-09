@@ -27,11 +27,11 @@ sont partiellement périmés — cette page fait foi pour l'état 2026-07-09.
 
 ### P2 — Sous-systèmes de combat (moyen, risque modéré)
 
-| #   | Règle                                              | Manque                                                                                                                                                                        |
-| --- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A5  | **Choix du joueur en combat (6105/6135/707.1)**    | Répartition de Force du Géant, bloqueur frappé, riposte : **heuristiques auto** au lieu de choix joueur (`plan.strikes/ripostes` par défaut au premier). `combat.ts:168-225`. |
-| A6  | **Fenêtre d'actions de combat / DamageMods lot E** | `protectCombatants` (Glyphe Revigorant), `tapTrap` (Glyphe Incandescent) déclarés mais jamais produits (`types.ts:62-66`, `damageMods.ts:184`). Seule `treve` existe.         |
-| A7  | **Inclinaison mid-combat (bus)**                   | Glyphe Incandescent ne se déclenche qu'à `attackerDeclared`, pas aux inclinaisons de bloqueur en cours de combat (`triggers.ts:227`). Le RuleEvent `tapped` est déféré.       |
+| #   | Règle                                                                | Manque                                                                                                                                                                                                                                                                                      |
+| --- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A5  | ✅ **FAIT 2026-07-09** — Choix du joueur en combat (6105/6135/707.1) | Géant : étape « geant » (plan.geantAssign validé `whyBadGeantAssign`, préremplie `autoGeantAssign`, UI ±/clic, online + bot ; commit caae5210). Frappe 6105 et riposte 707.1 : étapes « strikes »/« riposte » préexistantes. Les défauts auto restent en FALLBACK moteur (jamais bloquant). |
+| A6  | **Fenêtre d'actions de combat / DamageMods lot E**                   | `protectCombatants` (Glyphe Revigorant), `tapTrap` (Glyphe Incandescent) déclarés mais jamais produits (`types.ts:62-66`, `damageMods.ts:184`). Seule `treve` existe.                                                                                                                       |
+| A7  | **Inclinaison mid-combat (bus)**                                     | Glyphe Incandescent ne se déclenche qu'à `attackerDeclared`, pas aux inclinaisons de bloqueur en cours de combat (`triggers.ts:227`). Le RuleEvent `tapped` est déféré.                                                                                                                     |
 
 ### P3 — Timing / triggers (gros, structurel)
 
