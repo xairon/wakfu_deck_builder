@@ -1,6 +1,10 @@
 ﻿import { describe, expect, it } from "vitest";
 import type { Card } from "@/types/cards";
-import { planCost, resourceProducers } from "../resources";
+import {
+  havreSacBonusAvailable,
+  planCost,
+  resourceProducers,
+} from "../resources";
 import {
   HERO_A,
   SAC_A,
@@ -12,7 +16,7 @@ import {
   makeAlly,
   setTurn,
 } from "./harness";
-import { tap } from "@/game";
+import { setCounter, tap } from "@/game";
 
 describe("rules/resources — producteurs et coûts", () => {
   it("compte les cartes en jeu redressées comme producteurs (héros Feu + sac Neutre)", () => {
@@ -45,6 +49,36 @@ describe("rules/resources — producteurs et coûts", () => {
     const sacA = ctxOf(f).state.seats.A.havreSacInstanceId!;
     const aIds = resourceProducers(ctxOf(f), "A").map((p) => p.instanceId);
     expect(aIds.filter((id) => id === sacA)).toHaveLength(1);
+  });
+
+  it("havreSacBonusAvailable — actif au 1er tour du 2ᵉ joueur (badge +1)", () => {
+    const f = fixture([]); // firstPlayer = A
+    setTurn(f, "B", 2);
+    expect(havreSacBonusAvailable(ctxOf(f), "B")).toBe(true);
+    // jamais pour le 1er joueur
+    expect(havreSacBonusAvailable(ctxOf(f), "A")).toBe(false);
+  });
+
+  it("havreSacBonusAvailable — inactif hors du 1er tour du 2ᵉ joueur", () => {
+    const f = fixture([]);
+    setTurn(f, "B", 4); // tour ultérieur de B
+    expect(havreSacBonusAvailable(ctxOf(f), "B")).toBe(false);
+  });
+
+  it("havreSacBonusAvailable — CONSOMMÉ quand le Havre-Sac est incliné (le +1 « part »)", () => {
+    const f = fixture([]);
+    setTurn(f, "B", 2);
+    const sacB = ctxOf(f).state.seats.B.havreSacInstanceId!;
+    dispatch(f, tap("B", sacB));
+    expect(havreSacBonusAvailable(ctxOf(f), "B")).toBe(false);
+  });
+
+  it("havreSacBonusAvailable — CONSOMMÉ quand le jeton sacBonusUsed est posé", () => {
+    const f = fixture([]);
+    setTurn(f, "B", 2);
+    const sacB = ctxOf(f).state.seats.B.havreSacInstanceId!;
+    dispatch(f, setCounter("B", sacB, "sacBonusUsed", 1, true));
+    expect(havreSacBonusAvailable(ctxOf(f), "B")).toBe(false);
   });
 
   it("exclut les Protecteurs (4261)", () => {

@@ -58,6 +58,7 @@ import {
   requiresBearer,
   forceValue,
   havreSacHasRoom,
+  havreSacBonusAvailable,
   normElement,
   normWord,
   planCost,
@@ -1785,10 +1786,22 @@ export const useGameStore = defineStore("game", () => {
     // Action dont TOUS les effets sont compilés : elle se résout puis va en
     // défausse (302.1). Un seul effet incompris (ex. restriction de jeu
     // « Ne jouez cette carte que… ») → la carte reste jouée manuellement.
+    // On accepte deux formes d'atome jouable :
+    //  - `playEffects` : effets `onPlay` (résolution immédiate d'Action) ;
+    //  - un pouvoir à COÛT PAYÉ « Inclinez un de vos X : … » compilé `onTap`
+    //    (paidOps — Agression). Le « Inclinez … : » est le COÛT de mise en jeu
+    //    de l'Action (pas le pouvoir d'une permanente) : on le fait passer par
+    //    le flux paidOps (donc AVEC la protection de ciblage 508.x), puis la
+    //    carte part en Défausse. On EXCLUT les autres coûts onTap
+    //    (`sacrificeSelf` — Cawotte « Mettez en jeu … » + « Détruisez ceci : … »
+    //    a d'autres effets et reste, à raison, une permanente).
     const effectsCount = printedEffects(card).length;
     const playAtoms =
       assistEffects.value && card.mainType === "Action"
-        ? playEffects(card)
+        ? [
+            ...playEffects(card),
+            ...tapPowers(card).filter((a) => a.cost === "paidOps"),
+          ]
         : [];
     const actionAtoms = playAtoms.length === effectsCount ? playAtoms : [];
     const dest: ZoneRef = actionAtoms.length
@@ -1880,9 +1893,15 @@ export const useGameStore = defineStore("game", () => {
         seat,
         cardName: card.name,
         ops: atom.ops,
-        // ACTOR-BINDING « … de votre choix. Il/Elle … » : le moteur réécrira
-        // sourceId vers la créature choisie par l'op de ciblage (sujet du corps lié).
-        ...(atom.actor === "target" ? { actorBind: "target" as const } : {}),
+        // ACTOR-BINDING : le moteur réécrit sourceId vers la créature choisie…
+        //  - "target"     : par un op de ciblage régulier (« … de votre choix. Il … ») ;
+        //  - "costTarget" : au paiement du coût « Inclinez un de vos X : il … »
+        //    (Agression — le sujet du corps est la créature inclinée).
+        ...(atom.actor === "target"
+          ? { actorBind: "target" as const }
+          : atom.actor === "costTarget"
+            ? { actorBind: "costTarget" as const }
+            : {}),
       }));
       // Log « Action résolue » seulement si elle se résout vraiment maintenant (pas
       // mise en attente pour une fenêtre d'annulation Échec Critique).
@@ -3120,6 +3139,13 @@ export const useGameStore = defineStore("game", () => {
 
   const started = computed(() => matchPhase.value !== "lobby");
 
+  /** 2342 — le bonus « Havre-Sac ×2 » du 2ᵉ joueur (badge « +1 ») est-il encore
+   *  disponible pour `seat` ? Faux dès qu'il est consommé (Havre-Sac incliné ou
+   *  jeton `sacBonusUsed` posé) — pour que le badge disparaisse à l'usage. */
+  function sacBonusAvailable(seat: Seat): boolean {
+    return havreSacBonusAvailable(rulesCtx(), seat);
+  }
+
   return {
     // état
     events,
@@ -3239,6 +3265,7 @@ export const useGameStore = defineStore("game", () => {
     effectTargetSkip: engine.effectTargetSkip,
     activateTapPower,
     hasTapPower,
+    sacBonusAvailable,
     hasHandPower,
     tapPowerNeedsCombat,
     effectPicking: engine.effectPicking,

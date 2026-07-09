@@ -19,6 +19,27 @@ import {
 import { staticAbilitiesOf } from "./modifiers.ts";
 import { isUniqueCard } from "@/utils/cardRules";
 
+/**
+ * 2342 — le bonus « Havre-Sac ×2 Ressources » du 2ᵉ joueur à son 1er tour est-il
+ * ENCORE disponible ? Vrai SSI : c'est le 1er tour du joueur qui n'a pas commencé
+ * (tour 2), son Havre-Sac est en jeu, DRESSÉ, et le jeton d'usage unique
+ * `sacBonusUsed` n'a pas été posé (il l'est dès que le Havre-Sac sert à payer —
+ * playFromHand / resolveIntent). Sert au comptage des producteurs ET à
+ * l'affichage du badge « +1 » (qui doit disparaître une fois le bonus consommé).
+ */
+export function havreSacBonusAvailable(ctx: RulesCtx, seat: Seat): boolean {
+  if (seat === ctx.state.turn.firstPlayer || ctx.state.turn.number !== 2)
+    return false;
+  const sacId = ctx.state.seats[seat].havreSacInstanceId;
+  const sac = sacId ? ctx.state.instances[sacId] : null;
+  return (
+    !!sac &&
+    (sac.location.zone === "monde" || sac.location.zone === "havreSac") &&
+    sac.orientation === "upright" &&
+    !sac.counters.tokens?.sacBonusUsed
+  );
+}
+
 /** Cartes inclinables pour produire une Ressource (contrôlées, redressées). */
 export function resourceProducers(
   ctx: RulesCtx,
@@ -27,9 +48,8 @@ export function resourceProducers(
   const out: ResourceProducer[] = [];
   // 2342 : au premier tour du joueur qui n'a PAS commencé, son Havre-Sac se
   // redresse après sa première inclinaison → il vaut DEUX Ressources pour le
-  // même coût (une seule inclinaison réelle au paiement).
-  const freeUntap =
-    seat !== ctx.state.turn.firstPlayer && ctx.state.turn.number === 2;
+  // même coût (une seule inclinaison réelle au paiement). Dispo centralisée.
+  const sacBonus = havreSacBonusAvailable(ctx, seat);
   const sacId = ctx.state.seats[seat].havreSacInstanceId;
   for (const inst of Object.values(ctx.state.instances)) {
     if (inst.controller !== seat) continue;
@@ -45,14 +65,9 @@ export function resourceProducers(
       element: resourceElement(card),
     };
     out.push(producer);
-    // Bonus à USAGE UNIQUE : une fois le Havre-Sac incliné ce tour (token posé
-    // par playFromHand), il ne se redouble plus, même redressé manuellement.
-    if (
-      freeUntap &&
-      inst.instanceId === sacId &&
-      !inst.counters.tokens?.sacBonusUsed
-    )
-      out.push({ ...producer });
+    // Bonus à USAGE UNIQUE : le doublon n'est émis que tant que le bonus est
+    // disponible (havreSacBonusAvailable garde déjà « dressé » + jeton d'usage).
+    if (sacBonus && inst.instanceId === sacId) out.push({ ...producer });
   }
   return out;
 }

@@ -1327,9 +1327,11 @@ function bumpHero(seat: Seat, counter: string, delta: number): void {
   const id = view.value.seats[seat].heroInstanceId;
   if (id) store.adjustCounter(id, counter, delta);
 }
-/** Bonus du 2e joueur à son 1er tour : Havre-Sac ×2 Ressources (règle 2342). */
+/** Bonus du 2e joueur à son 1er tour : Havre-Sac ×2 Ressources (règle 2342).
+ *  Disparaît dès que le bonus est CONSOMMÉ (Havre-Sac incliné / jeton d'usage),
+ *  pour que le badge « +1 » « parte » quand on l'utilise. */
 function manaBonus(seat: Seat): boolean {
-  return seat !== store.firstPlayer && store.turn.number === 2;
+  return store.sacBonusAvailable(seat);
 }
 </script>
 
