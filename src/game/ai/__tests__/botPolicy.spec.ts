@@ -34,6 +34,57 @@ function makeDeck(tag: string): { deck: Deck; cards: Card[] } {
   return { deck, cards: [hero, sac, ally] };
 }
 
+/** Deck dont le HÉROS porte un pouvoir onTap offensif « inflige 2 Dommages à
+ *  l'Allié ou Héros de votre choix » (façon Tirlangue Portey). */
+function makeDeckPoweredHero(tag: string): { deck: Deck; cards: Card[] } {
+  const powerFace = {
+    stats: { pv: 16, pa: 6, pm: 3 },
+    effects: [
+      {
+        description: "inflige 2 Dommages à l'Allié ou Héros de votre choix.",
+        compiled: {
+          trigger: "onTap" as const,
+          ops: [
+            {
+              op: "damageTarget" as const,
+              n: 2,
+              element: "Air",
+              heroes: true,
+              zones: ["monde", "havreSac"] as ("monde" | "havreSac")[],
+            },
+          ],
+        },
+      },
+    ] as unknown as Card["effects"],
+    keywords: [],
+  };
+  const hero = createMockHeroCard({
+    id: tag + "-hero",
+    name: tag + " Tirlangue",
+    recto: powerFace as never,
+    verso: powerFace as never,
+  });
+  const sac = createMockHavreSacCard({ id: tag + "-sac", name: tag + " Sac" });
+  const ally = createMockAllyCard({
+    id: tag + "-ally",
+    name: tag + " Allié",
+    stats: {
+      niveau: { value: 1, element: "Feu" },
+      force: { value: 1, element: "Feu" },
+    },
+  });
+  const deck: Deck = {
+    id: tag,
+    name: tag,
+    hero,
+    havreSac: sac,
+    cards: [{ card: ally, quantity: 48 }],
+    createdAt: "2026-07-09T00:00:00.000Z",
+    updatedAt: "2026-07-09T00:00:00.000Z",
+  };
+  return { deck, cards: [hero, sac, ally] };
+}
+
 describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
@@ -107,5 +158,52 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     expect(store.state.instances[bAllyId].location.zone).toBe("monde");
     expect(store.state.instances[heroB].counters.hp).toBe(hpBefore);
     expect(store.effectTargeting).toBeNull();
+  });
+
+  it("n'INCLINE PAS un pouvoir offensif sans cible adverse (Tirlangue vs Héros embagé)", () => {
+    // Le Héros du bot porte « inflige 2 Dommages à l'Allié ou Héros » ; l'adversaire
+    // n'a que son Héros EMBAGÉ (hors de portée, 508.1b) et aucun Allié → le pouvoir
+    // ne peut frapper personne. Le bot ne doit PAS gaspiller l'inclinaison.
+    const a = makeDeck("A");
+    const b = makeDeckPoweredHero("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "B"); // tour du bot (B)
+    store.assistEffects = true;
+    store.botAggressive = false; // pas d'attaque → on atteint l'étape des pouvoirs
+    store.perspective = "B";
+
+    const heroB = store.state.seats.B.heroInstanceId!;
+    // Plusieurs battements : le bot ne doit jamais incliner son Héros pour rien.
+    const tried = new Set<string>();
+    for (let i = 0; i < 5; i++) botStep(store, tried);
+
+    expect(store.state.instances[heroB].orientation).toBe("upright");
+    expect(store.effectTargeting).toBeNull();
+  });
+
+  it("INCLINE bien le pouvoir offensif quand une cible adverse existe", () => {
+    // Même Héros, mais l'adversaire a un Allié dans le Monde → cible légale : le bot
+    // active le pouvoir (incline le Héros) au lieu de passer.
+    const a = makeDeck("A");
+    const b = makeDeckPoweredHero("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "B");
+    store.assistEffects = true;
+    store.botAggressive = false;
+    store.perspective = "B";
+
+    // Un Allié adverse (A) exposé dans le Monde → cible légale du pouvoir.
+    const aAllyId = store.state.seats.A.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "A-ally",
+    )!;
+    store.moveTo(aAllyId, { zone: "monde" });
+
+    const heroB = store.state.seats.B.heroInstanceId!;
+    const tried = new Set<string>();
+    for (let i = 0; i < 5; i++) botStep(store, tried);
+
+    expect(store.state.instances[heroB].orientation).toBe("tapped");
   });
 });

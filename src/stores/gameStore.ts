@@ -59,6 +59,7 @@ import {
   forceValue,
   havreSacHasRoom,
   havreSacBonusAvailable,
+  effectTargetIds,
   normElement,
   normWord,
   planCost,
@@ -2316,6 +2317,63 @@ export const useGameStore = defineStore("game", () => {
     );
   }
 
+  // Ops de ciblage NUISIBLES / de COÛT (pour juger si un pouvoir « purement
+  // offensif » pourrait frapper quelqu'un). Sert au BOT (voir ci-dessous).
+  const OFFENSIVE_TARGET_OPS = new Set([
+    "damageTarget",
+    "damageTargetByForce",
+    "destroyTarget",
+    "tapTarget",
+    "banishTarget",
+    "damageMultiTarget",
+    "distributeDamage",
+    "removeFromCombatTarget",
+  ]);
+  const POWER_COST_OPS = new Set([
+    "costTapControlled",
+    "costTapResource",
+    "costPayX",
+    "costDiscard",
+    "costMillTop",
+    "costDestroyControlled",
+  ]);
+
+  /**
+   * POUR LE BOT — le pouvoir à inclinaison de `instanceId` est-il PUREMENT
+   * OFFENSIF (coûts + ciblage nuisible, aucun rider bénéfique) et SANS aucune
+   * cible ADVERSE légale ? Alors l'activer gaspillerait l'inclinaison (Tirlangue
+   * « inflige 2 Dommages à l'Allié ou Héros » face à un Héros adverse embagé et
+   * sans Allié exposé — hors de portée, 508.1b). Sonde les candidats via
+   * `effectTargetIds` SANS rien incliner. `false` (le bot tente) pour tout
+   * pouvoir non offensif ou portant un effet bénéfique.
+   */
+  function tapPowerLacksAdverseTarget(instanceId: string): boolean {
+    const inst = state.value.instances[instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    if (!inst || !card) return false;
+    const atom = tapPowers(card, inst.face === "verso" ? "verso" : "recto")[0];
+    if (!atom) return false;
+    const offensive = atom.ops.filter((o) => OFFENSIVE_TARGET_OPS.has(o.op));
+    if (!offensive.length) return false; // pas offensif → le bot tente
+    // Purement offensif : chaque op est un coût ou un ciblage nuisible (pas de
+    // pioche/soin/buff en rider qui vaudrait quand même l'inclinaison).
+    const pureOffense = atom.ops.every(
+      (o) => OFFENSIVE_TARGET_OPS.has(o.op) || POWER_COST_OPS.has(o.op),
+    );
+    if (!pureOffense) return false;
+    const ctx = rulesCtx();
+    const seat = inst.controller;
+    // Fizzle si AUCUN op nuisible n'a de cible ADVERSE légale.
+    return offensive.every((op) => {
+      const ids = effectTargetIds(
+        ctx,
+        op as Parameters<typeof effectTargetIds>[1],
+        seat,
+      );
+      return !ids.some((id) => state.value.instances[id]?.controller !== seat);
+    });
+  }
+
   /** Cette carte porte-t-elle un pouvoir ACTIVABLE DEPUIS LA MAIN (Polter Tofu) ?
    * Sert à l'UI : proposer le bouton « activer » sur une carte en main. */
   function hasHandPower(instanceId: string): boolean {
@@ -3265,6 +3323,7 @@ export const useGameStore = defineStore("game", () => {
     effectTargetSkip: engine.effectTargetSkip,
     activateTapPower,
     hasTapPower,
+    tapPowerLacksAdverseTarget,
     sacBonusAvailable,
     hasHandPower,
     tapPowerNeedsCombat,

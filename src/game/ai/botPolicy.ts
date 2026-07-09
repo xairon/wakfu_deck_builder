@@ -290,6 +290,10 @@ function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
     if (i.controller !== me) continue;
     if (i.location.zone !== "monde" && i.location.zone !== "havreSac") continue;
     if (!store.hasTapPower(i.instanceId)) continue;
+    // Ne pas incliner pour rien un pouvoir PUREMENT offensif sans cible adverse
+    // légale (Tirlangue « inflige 2 Dommages » vs Héros embagé hors de portée) —
+    // ré-évalué à chaque battement (le plateau adverse peut changer dans le tour).
+    if (store.tapPowerLacksAdverseTarget(i.instanceId)) continue;
     if (tried.has("pw:" + i.instanceId)) continue;
     tried.add("pw:" + i.instanceId);
     if (store.activateTapPower(i.instanceId)) return true;
