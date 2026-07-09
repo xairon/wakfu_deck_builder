@@ -1716,6 +1716,23 @@ export const useGameStore = defineStore("game", () => {
   }
 
   /**
+   * 706.5 — ce siège peut-il RÉAGIR (jouer une Action / activer un pouvoir hors
+   * de son tour) dans le combat EN COURS ? En LOCAL, le DÉFENSEUR d'un combat
+   * DÉCLARÉ (attaquants confirmés, step ≠ "attackers") réagit AUTOMATIQUEMENT
+   * tout au long de la fenêtre — plus besoin d'ouvrir la réaction à la main
+   * (ergonomie « priorité » façon MTGA ; règle « lorsqu'il attaque »). La fenêtre
+   * explicite `reactingSeat` (passation hot-seat) reste honorée. En ligne, la
+   * réaction passe par le protocole serveur : jamais ce raccourci local.
+   */
+  function canReactInCombat(seat: Seat): boolean {
+    const c = combat.value;
+    if (!c) return false;
+    if (c.reactingSeat === seat) return true;
+    if (online.value) return false;
+    return c.step !== "attackers" && seat === otherSeat(turn.value.active);
+  }
+
+  /**
    * Jouer une carte de sa main (mode assisté) : légalité, inclinaison
    * automatique des producteurs de Ressources, arrivée dans la bonne zone.
    * Un Équipement / une Monture à bonus de Porteur (305.x) ouvre un ciblage de
@@ -1749,8 +1766,8 @@ export const useGameStore = defineStore("game", () => {
         );
       }
     }
-    // 706.5 — en fenêtre de réaction, ce siège joue hors de son tour.
-    const reaction = combat.value?.reactingSeat === seat;
+    // 706.5 — le défenseur d'un combat déclaré joue hors de son tour (réaction).
+    const reaction = canReactInCombat(seat);
     const reason = whyCannotPlay(ctx, seat, instanceId, reaction);
     if (reason) return rejectMove(reason);
     const inst = state.value.instances[instanceId];
@@ -2015,7 +2032,7 @@ export const useGameStore = defineStore("game", () => {
       const hand = handPowers(card);
       if (!hand.length)
         return rejectMove("Pas de pouvoir activable depuis la main.");
-      const reaction = combat.value?.reactingSeat === seat;
+      const reaction = canReactInCombat(seat);
       if (!reaction && state.value.turn.active !== perspective.value)
         return rejectMove("Ce n'est pas votre tour.");
       // Cohérence avec whyCannotPlay : hors fenêtre de réaction, on ne joue
@@ -2142,11 +2159,10 @@ export const useGameStore = defineStore("game", () => {
     // est la première op (ciblage), qui met l'effet en pause pour le choix du
     // joueur. On enfile directement les ops (cost + corps).
     if (atom.cost === "paidOps") {
-      // 706.5 — FENÊTRE DE RÉACTION : le siège réagissant (défenseur du combat)
-      // peut activer un pouvoir HORS de son tour (même idiome que playFromHand).
-      // Nécessaire pour Dora côté bloqueur.
+      // 706.5 — RÉACTION : le défenseur d'un combat déclaré peut activer un
+      // pouvoir HORS de son tour (même idiome que playFromHand). Dora côté bloqueur.
       if (
-        combat.value?.reactingSeat !== seat &&
+        !canReactInCombat(seat) &&
         state.value.turn.active !== perspective.value
       )
         return rejectMove("Ce n'est pas votre tour.");
@@ -2251,9 +2267,9 @@ export const useGameStore = defineStore("game", () => {
     }
     if (inst.orientation !== "upright")
       return rejectMove("La carte est déjà inclinée.");
-    // 706.5 — FENÊTRE DE RÉACTION : idem chemin paidOps (Dora côté bloqueur).
+    // 706.5 — RÉACTION : idem chemin paidOps (Dora côté bloqueur).
     if (
-      combat.value?.reactingSeat !== seat &&
+      !canReactInCombat(seat) &&
       state.value.turn.active !== perspective.value
     )
       return rejectMove("Ce n'est pas votre tour.");
@@ -2488,6 +2504,34 @@ export const useGameStore = defineStore("game", () => {
   const combatRiposteIds = computed(() =>
     combat.value?.step === "riposte" ? combat.value.riposteCandidates : [],
   );
+
+  /**
+   * ERGONOMIE DE RÉACTION (façon MTGA) : le siège REGARDÉ (perspective) est-il un
+   * défenseur qui a AU MOINS une réaction légale MAINTENANT (une Action jouable en
+   * réaction OU un pouvoir activable avec une cible utile) ? Pilote la bannière
+   * « tu peux réagir » — qui NE s'affiche PAS s'il n'y a rien à faire (auto-skip).
+   */
+  const defenderCanReact = computed(() => {
+    const seat = perspective.value;
+    if (!canReactInCombat(seat)) return false;
+    const ctx = rulesCtx();
+    // une Action de la main jouable en réaction (légalité de tour relâchée) ?
+    for (const id of state.value.seats[seat].main)
+      if (whyCannotPlay(ctx, seat, id, true) === null) return true;
+    // …ou un pouvoir à inclinaison activable et NON gaspillé (cible utile) ?
+    for (const inst of Object.values(state.value.instances)) {
+      if (inst.controller !== seat) continue;
+      const zone = inst.location.zone;
+      if (zone !== "monde" && zone !== "havreSac") continue;
+      if (inst.orientation !== "upright") continue;
+      if (
+        hasTapPower(inst.instanceId) &&
+        !tapPowerLacksAdverseTarget(inst.instanceId)
+      )
+        return true;
+    }
+    return false;
+  });
 
   /** Choisit le bloqueur frappé par l'attaquant courant (6105). */
   function combatChooseStrike(blockerId: string): void {
@@ -3142,8 +3186,8 @@ export const useGameStore = defineStore("game", () => {
     const inst = state.value.instances[instanceId];
     if (!inst || inst.location.zone !== "main" || inst.controller !== seat)
       return "Pas dans ta main.";
-    // En fenêtre de réaction locale (706.5), le réacteur joue hors de son tour.
-    const reaction = combat.value?.reactingSeat === seat;
+    // En réaction (défenseur d'un combat déclaré, 706.5), on joue hors de son tour.
+    const reaction = canReactInCombat(seat);
     return whyCannotPlay(rulesCtx(), seat, instanceId, reaction);
   }
 
@@ -3324,6 +3368,7 @@ export const useGameStore = defineStore("game", () => {
     activateTapPower,
     hasTapPower,
     tapPowerLacksAdverseTarget,
+    defenderCanReact,
     sacBonusAvailable,
     hasHandPower,
     tapPowerNeedsCombat,

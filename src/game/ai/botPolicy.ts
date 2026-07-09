@@ -323,6 +323,38 @@ export function botStep(
 }
 
 /**
+ * RÉACTION du bot DÉFENSEUR à l'attaque adverse (706.5 — « lorsqu'il attaque »).
+ * Active UN pouvoir à inclinaison UTILE (cible adverse légale, non gaspillé) hors
+ * de son tour, puis rend la main (l'appelant résout la fenêtre éventuelle et
+ * rappelle). Ne bloque PAS et ne résout PAS le combat. Suppose la vue déjà côté
+ * bot (l'appelant `useBotOpponent` bascule `perspective`). `true` si un pouvoir a
+ * été activé (rappeler), `false` s'il n'y a rien d'utile à jouer en réaction.
+ */
+export function botReactInCombat(
+  store: Store,
+  botSeat: Seat,
+  tried: Set<string>,
+): boolean {
+  const c = store.combat;
+  if (!c || c.step === "attackers") return false;
+  // Le bot n'est défenseur que si l'attaquant (turn.active) est l'adversaire.
+  if ((store.state.turn.active as Seat) === botSeat) return false;
+  for (const inst of Object.values(store.state.instances)) {
+    if (inst.controller !== botSeat) continue;
+    const zone = inst.location.zone;
+    if (zone !== "monde" && zone !== "havreSac") continue;
+    if (inst.orientation !== "upright") continue;
+    if (!store.hasTapPower(inst.instanceId)) continue;
+    // seulement un pouvoir qui peut RÉELLEMENT frapper (cf. Tirlangue vs embagé).
+    if (store.tapPowerLacksAdverseTarget(inst.instanceId)) continue;
+    if (tried.has("rpw:" + inst.instanceId)) continue;
+    tried.add("rpw:" + inst.instanceId);
+    if (store.activateTapPower(inst.instanceId)) return true;
+  }
+  return false;
+}
+
+/**
  * Décision de l'IA en LIVE (mode « jouer contre l'ordinateur »), pour le siège
  * `botSeat` — RÔLE-CONSCIENT et NON RÉSOLVANT : le bot déclare ses attaques (en
  * tant qu'attaquant) et ses blocages (en tant que défenseur), mais ne RÉSOUT

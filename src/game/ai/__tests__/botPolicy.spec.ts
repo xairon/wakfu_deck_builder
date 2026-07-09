@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useGameStore } from "@/stores/gameStore";
 import { useCardStore } from "@/stores/cardStore";
-import { botStep } from "@/game/ai/botPolicy";
+import { botStep, botReactInCombat } from "@/game/ai/botPolicy";
 import type { Card, Deck } from "@/types/cards";
 import {
   createMockHeroCard,
@@ -180,6 +180,55 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
 
     expect(store.state.instances[heroB].orientation).toBe("upright");
     expect(store.effectTargeting).toBeNull();
+  });
+
+  it("botReactInCombat : le bot DÉFENSEUR réagit à l'attaque en activant un pouvoir utile", () => {
+    const a = makeDeck("A"); // A a un attaquant (A-ally, Force 1)
+    const b = makeDeckPoweredHero("B"); // B a un Héros « inflige 2 Dommages »
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "A");
+    store.assistEffects = true;
+
+    // A place un attaquant et déclare une attaque à son tour (tour 3).
+    const aAtkId = store.state.seats.A.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "A-ally",
+    )!;
+    store.moveTo(aAtkId, { zone: "monde" });
+    store.nextTurn(); // 2 (B)
+    store.nextTurn(); // 3 (A)
+    store.perspective = "A";
+    expect(store.beginCombat(aAtkId)).toBe(true);
+    store.combatChooseTarget(store.state.seats.B.havreSacInstanceId!);
+    expect(store.combatConfirmAttackers()).toBe(true); // step blockers, B défenseur
+
+    // Vue côté bot le temps d'agir (comme le driver useBotOpponent).
+    store.perspective = "B";
+    const heroB = store.state.seats.B.heroInstanceId!;
+    // L'attaquant de A (Monde) est une cible adverse légale → le bot réagit.
+    expect(botReactInCombat(store, "B", new Set())).toBe(true);
+    expect(store.state.instances[heroB].orientation).toBe("tapped");
+  });
+
+  it("botReactInCombat : ne réagit pas s'il n'a aucun pouvoir utile", () => {
+    const a = makeDeck("A"); // attaquant
+    const b = makeDeck("B"); // Héros SANS pouvoir
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "A");
+    store.assistEffects = true;
+    const aAtkId = store.state.seats.A.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "A-ally",
+    )!;
+    store.moveTo(aAtkId, { zone: "monde" });
+    store.nextTurn();
+    store.nextTurn();
+    store.perspective = "A";
+    store.beginCombat(aAtkId);
+    store.combatChooseTarget(store.state.seats.B.havreSacInstanceId!);
+    store.combatConfirmAttackers();
+    store.perspective = "B";
+    expect(botReactInCombat(store, "B", new Set())).toBe(false);
   });
 
   it("INCLINE bien le pouvoir offensif quand une cible adverse existe", () => {

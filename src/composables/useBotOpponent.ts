@@ -18,7 +18,7 @@
  *  - tour de l'humain : le bot ne fait que DÉFENDRE (déclare ses blocages).
  * On ne pose donc JAMAIS `passPending` pour le bot en jeu (plus de rideau).
  */
-import { botLiveStep } from "@/game/ai/botPolicy";
+import { botLiveStep, botReactInCombat } from "@/game/ai/botPolicy";
 import type { useGameStore } from "@/stores/gameStore";
 
 type Store = ReturnType<typeof useGameStore>;
@@ -137,15 +137,36 @@ export function useBotOpponent(
       return;
     }
 
-    // ── TOUR DE L'HUMAIN : le bot DÉFEND (déclare ses blocages, UNE fois) ──────────
+    // ── TOUR DE L'HUMAIN : le bot DÉFEND (réagit puis déclare ses blocages) ───────
     if (c && c.step === "blockers" && active === human) {
       const def = other(active); // = bot
-      // jeton par ensemble d'attaquants : si le bot décide de ne PAS bloquer, on ne
-      // re-tente pas chaque battement (anti-spin).
-      const tok = "__blk__" + c.attackers.join(",");
-      if (def === bot && !Object.keys(c.blocks).length && !tried.has(tok)) {
-        tried.add(tok);
-        botLiveStep(store, bot, tried);
+      if (def === bot) {
+        // 1) RÉACTION du bot (706.5) : activer un pouvoir UTILE avant de bloquer. On
+        //    bascule la vue sur le bot le temps d'agir (comme sa phase principale),
+        //    on résout la fenêtre ouverte, puis on rend la vue à l'humain. Un pouvoir
+        //    activé par battement (chacun marqué `rpw:` → borné) ; `__react__` clôt
+        //    quand il ne reste rien d'utile.
+        const reactTok = "__react__" + c.attackers.join(",");
+        if (!tried.has(reactTok)) {
+          store.perspective = bot;
+          const reacted = botReactInCombat(store, bot, tried);
+          let guard = 0;
+          while (botHasPending() && guard++ < 40) {
+            if (!botLiveStep(store, bot, tried)) break;
+          }
+          if (store.perspective === bot && !botHasPending()) {
+            store.perspective = human;
+            store.passPending = false;
+          }
+          if (reacted) return; // rappeler (réagir encore / bloquer au prochain battement)
+          tried.add(reactTok); // plus rien d'utile en réaction
+        }
+        // 2) Blocages (une fois). Jeton par ensemble d'attaquants (anti-spin).
+        const tok = "__blk__" + c.attackers.join(",");
+        if (!Object.keys(c.blocks).length && !tried.has(tok)) {
+          tried.add(tok);
+          botLiveStep(store, bot, tried);
+        }
       }
       return;
     }

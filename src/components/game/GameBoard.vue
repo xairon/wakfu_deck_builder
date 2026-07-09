@@ -604,7 +604,9 @@
                     ? "↩ La Cible riposte : choisis l'attaquant qu'elle frappe"
                     : store.combat.pendingBlocker
                       ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
-                      : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
+                      : store.defenderCanReact
+                        ? "⚡ Tu peux RÉAGIR : joue une Action ou un pouvoir, puis bloque et « Résoudre le combat »"
+                        : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
           }}
         </span>
         <span class="gcombat__info">
@@ -752,7 +754,10 @@
                 >
                   Résoudre le combat
                 </button>
+                <!-- Passation de réaction explicite : hot-seat uniquement (en solo,
+                     le défenseur réagit AUTO pendant l'attaque — cf. defenderCanReact). -->
                 <button
+                  v-if="!store.botSeat"
                   class="gbtn gbtn--ghost"
                   @click="store.combatOfferReaction()"
                 >
