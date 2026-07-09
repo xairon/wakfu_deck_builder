@@ -47,7 +47,9 @@ import {
   cannotBlock,
   collectTriggeredEffects,
   resolveDestroyTarget,
-  combatKeywords,
+  autoGeantAssign,
+  effectiveKeywords,
+  whyBadGeantAssign,
   effectiveForce,
   eligibleAttackers,
   eligibleBearers,
@@ -691,6 +693,9 @@ export const useGameStore = defineStore("game", () => {
         blocks: { ...sc.blocks },
         strikes: { ...(sc.strikes ?? {}) },
         strikeFor: null,
+        geantAssign: {},
+        geantFor: null,
+        geantConfirmed: [],
         ripostes: { ...(sc.ripostes ?? {}) },
         riposteFrom: null,
         riposteCandidates: [],
@@ -1637,6 +1642,7 @@ export const useGameStore = defineStore("game", () => {
           blocks: c.blocks,
           strikes: c.strikes,
           ripostes: c.ripostes,
+          geantAssign: c.geantAssign,
         },
         activeGlobalMods(rulesCtx()),
       );
@@ -2067,6 +2073,22 @@ export const useGameStore = defineStore("game", () => {
     if (c.riposteFrom === instanceId) c.riposteFrom = null;
     c.riposteCandidates = c.riposteCandidates.filter((id) => id !== instanceId);
     if (c.pendingBlocker === instanceId) c.pendingBlocker = null;
+    // 6135 — répartitions Géant : purge de l'attaquant retiré ET des parts qui
+    // le visaient (une répartition amputée redevient à confirmer).
+    if (c.geantAssign[instanceId] || c.geantFor === instanceId) {
+      const rest = { ...c.geantAssign };
+      delete rest[instanceId];
+      c.geantAssign = rest;
+      if (c.geantFor === instanceId) c.geantFor = null;
+    }
+    for (const [atk, assign] of Object.entries(c.geantAssign)) {
+      if (!(instanceId in assign)) continue;
+      const rest = { ...assign };
+      delete rest[instanceId];
+      c.geantAssign = { ...c.geantAssign, [atk]: rest };
+      c.geantConfirmed = c.geantConfirmed.filter((id) => id !== atk);
+    }
+    c.geantConfirmed = c.geantConfirmed.filter((id) => id !== instanceId);
   }
 
   /**
@@ -2514,7 +2536,7 @@ export const useGameStore = defineStore("game", () => {
 
   // ── Combat assisté (702–708) ─────────────────────────────────────────────
   const combat = ref<{
-    step: "attackers" | "blockers" | "strikes" | "riposte";
+    step: "attackers" | "blockers" | "strikes" | "geant" | "riposte";
     target: CombatTarget | null;
     attackers: string[];
     blocks: Record<string, string>;
@@ -2522,6 +2544,12 @@ export const useGameStore = defineStore("game", () => {
     strikes: Record<string, string>;
     /** Attaquant dont on choisit actuellement le bloqueur frappé. */
     strikeFor: string | null;
+    /** 6135 : attackerId Géant → répartition { bloqueur|cible → n } (préremplie auto). */
+    geantAssign: Record<string, Record<string, number>>;
+    /** Géant dont on répartit actuellement la Force (étape « geant »). */
+    geantFor: string | null;
+    /** Géants dont la répartition a été CONFIRMÉE (ne repassent pas en étape). */
+    geantConfirmed: string[];
     /** 707.1 : targetId → attaquant frappé par la riposte de la Cible. */
     ripostes: Record<string, string>;
     /** Cible en train de choisir sa riposte (étape riposte). */
@@ -2546,11 +2574,13 @@ export const useGameStore = defineStore("game", () => {
     const byAttacker = new Map<string, number>();
     for (const atk of Object.values(c.blocks))
       byAttacker.set(atk, (byAttacker.get(atk) ?? 0) + 1);
+    const ctx = rulesCtx();
     return c.attackers.filter((a) => {
       if ((byAttacker.get(a) ?? 0) < 2) return false;
       if (c.strikes[a]) return false;
-      const card = getCard(state.value.instances[a]?.cardId ?? null);
-      return !(card && combatKeywords(card).geant); // Géant répartit déjà
+      // Géant EFFECTIF (imprimé OU conféré par jeton/Porteur) : il répartit sa
+      // Force (étape « geant », 6135) — pas de choix de frappe 6105 en plus.
+      return !effectiveKeywords(ctx, a).geant;
     });
   }
 
@@ -2562,6 +2592,163 @@ export const useGameStore = defineStore("game", () => {
       .filter(([, atk]) => atk === c.strikeFor)
       .map(([blocker]) => blocker);
   });
+
+  /** Bloqueurs assignés à un attaquant donné (ordre stable des blocks). */
+  function blockersOfAttacker(
+    c: NonNullable<typeof combat.value>,
+    attackerId: string,
+  ): string[] {
+    return Object.entries(c.blocks)
+      .filter(([, atk]) => atk === attackerId)
+      .map(([blocker]) => blocker);
+  }
+
+  /** Posture du combat en cours (rôles/Force pour les helpers 6135). */
+  function stanceOfLocal(c: NonNullable<typeof combat.value>) {
+    return {
+      attackers: c.attackers,
+      blocks: c.blocks,
+      targetId:
+        c.target && c.target.kind !== "havreSac" ? c.target.instanceId : null,
+    };
+  }
+
+  /**
+   * 6135 — Géants BLOQUÉS dont la répartition de Force reste à confirmer.
+   * Un Géant à bloqueur unique SANS débordement possible (la politique auto ne
+   * sert rien à la Cible) n'a qu'une seule répartition légale → pas d'étape.
+   * Mot-clé lu via effectiveKeywords (Géant conféré par jeton/Porteur compris).
+   */
+  function pendingGeants(c: NonNullable<typeof combat.value>): string[] {
+    if (!c.target) return [];
+    const ctx = rulesCtx();
+    return c.attackers.filter((a) => {
+      const blockers = blockersOfAttacker(c, a);
+      if (!blockers.length) return false;
+      if (c.geantConfirmed.includes(a)) return false;
+      if (!effectiveKeywords(ctx, a).geant) return false;
+      if (blockers.length === 1) {
+        const auto = autoGeantAssign(
+          ctx,
+          stanceOfLocal(c),
+          a,
+          blockers,
+          c.target!.instanceId,
+        );
+        // Tout part sur l'unique bloqueur → aucune alternative légale.
+        if ((auto[c.target!.instanceId] ?? 0) === 0) return false;
+      }
+      return true;
+    });
+  }
+
+  /**
+   * Enchaîne les CHOIX d'attaquant restants (frappe 6105 → répartition Géant
+   * 6135), puis la riposte (707.1, local) et la résolution — chemin commun aux
+   * confirmations d'étape (combatResolve / combatChooseStrike / combatGeantConfirm).
+   */
+  function combatContinue(): void {
+    const c = combat.value;
+    if (!c || !c.target) return;
+    const strikes = pendingStrikes(c);
+    if (strikes.length) {
+      c.step = "strikes";
+      c.strikeFor = strikes[0];
+      return;
+    }
+    const geants = pendingGeants(c);
+    if (geants.length) {
+      const a = geants[0];
+      c.step = "geant";
+      c.geantFor = a;
+      // Préremplissage : politique automatique (létal le moins cher d'abord),
+      // que le joueur ajuste ensuite (façon MTGA).
+      if (!c.geantAssign[a])
+        c.geantAssign = {
+          ...c.geantAssign,
+          [a]: autoGeantAssign(
+            rulesCtx(),
+            stanceOfLocal(c),
+            a,
+            blockersOfAttacker(c, a),
+            c.target.instanceId,
+          ),
+        };
+      return;
+    }
+    // EN LIGNE : tous les choix d'attaquant faits → soumettre la résolution
+    // (la riposte est portée par le blocage du défenseur, DECLARE_BLOCK).
+    if (online.value) {
+      c.step = "blockers";
+      pushIntent({
+        kind: "RESOLVE_COMBAT",
+        strikes: c.strikes,
+        geantAssign: c.geantAssign,
+      });
+      return;
+    }
+    // 707.1 — riposte : si ≥2 attaquants libres et pas encore choisi, demander.
+    const cands = riposteCandidatesOf(c);
+    if (cands.length >= 2 && !c.ripostes[c.target.instanceId]) {
+      c.step = "riposte";
+      c.riposteFrom = c.target.instanceId;
+      c.riposteCandidates = cands;
+      return;
+    }
+    doResolveCombat();
+  }
+
+  /** Candidats de répartition du Géant courant : ses bloqueurs + la Cible. */
+  const combatGeantIds = computed(() => {
+    const c = combat.value;
+    if (!c || c.step !== "geant" || !c.geantFor || !c.target) return [];
+    return [...blockersOfAttacker(c, c.geantFor), c.target.instanceId];
+  });
+
+  /** Motif d'invalidité de la répartition courante (null = confirmable). */
+  const combatGeantReason = computed(() => {
+    const c = combat.value;
+    if (!c || c.step !== "geant" || !c.geantFor || !c.target) return null;
+    return whyBadGeantAssign(
+      rulesCtx(),
+      stanceOfLocal(c),
+      c.geantFor,
+      blockersOfAttacker(c, c.geantFor),
+      c.target.instanceId,
+      c.geantAssign[c.geantFor] ?? {},
+    );
+  });
+
+  /** Ajuste la part de Dommages du Géant courant vers `id` (bloqueur ou Cible). */
+  function combatGeantAdjust(id: string, delta: number): void {
+    const c = combat.value;
+    if (!c || c.step !== "geant" || !c.geantFor) return;
+    if (!combatGeantIds.value.includes(id)) return;
+    const entry = { ...(c.geantAssign[c.geantFor] ?? {}) };
+    const next = Math.max(0, (entry[id] ?? 0) + delta);
+    // Plafond : la somme ne dépasse jamais la Force du Géant (le bouton + de
+    // l'UI est désactivé à 0 restant ; garde symétrique ici).
+    const sum =
+      Object.entries(entry).reduce((s, [k, n]) => s + (k === id ? 0 : n), 0) +
+      next;
+    const force = effectiveForce(rulesCtx(), c.geantFor, stanceOfLocal(c));
+    if (sum > force) return;
+    if (next === 0) delete entry[id];
+    else entry[id] = next;
+    c.geantAssign = { ...c.geantAssign, [c.geantFor]: entry };
+  }
+
+  /** Confirme la répartition du Géant courant (6135) ; refus expliqué sinon. */
+  function combatGeantConfirm(): boolean {
+    const c = combat.value;
+    if (!c || c.step !== "geant" || !c.geantFor) return false;
+    const reason = combatGeantReason.value;
+    if (reason) return rejectMove(reason);
+    c.geantConfirmed = [...c.geantConfirmed, c.geantFor];
+    c.geantFor = null;
+    combatContinue();
+    return true;
+  }
 
   /** 707.1 — attaquants libres l'ayant frappée si la Cible est Allié/Héros. */
   function riposteCandidatesOf(c: NonNullable<typeof combat.value>): string[] {
@@ -2614,14 +2801,10 @@ export const useGameStore = defineStore("game", () => {
       c.strikeFor = next[0];
       return;
     }
-    // EN LIGNE : toutes les frappes choisies → on quitte le sous-état local et on
-    // soumet la résolution avec les frappes. En local, on résout directement.
-    if (online.value) {
-      c.step = "blockers";
-      pushIntent({ kind: "RESOLVE_COMBAT", strikes: c.strikes });
-      return;
-    }
-    doResolveCombat();
+    // Toutes les frappes choisies → chaîne commune (Géant 6135, riposte,
+    // résolution locale ou soumission en ligne).
+    c.strikeFor = null;
+    combatContinue();
   }
 
   const combatAttackerIds = computed(() =>
@@ -2708,6 +2891,7 @@ export const useGameStore = defineStore("game", () => {
           blocks: c.blocks,
           strikes: c.strikes,
           ripostes: c.ripostes,
+          geantAssign: c.geantAssign,
         },
         activeGlobalMods(rulesCtx()),
       );
@@ -2772,6 +2956,9 @@ export const useGameStore = defineStore("game", () => {
       blocks: {},
       strikes: {},
       strikeFor: null,
+      geantAssign: {},
+      geantFor: null,
+      geantConfirmed: [],
       ripostes: {},
       riposteFrom: null,
       riposteCandidates: [],
@@ -2982,39 +3169,15 @@ export const useGameStore = defineStore("game", () => {
     // déclaré ses blocages → state.combat.step === "resolve"). Le serveur
     // applique resolveCombat et clôt le combat (echo). La riposte (707.1) est
     // portée par le blocage du défenseur (DECLARE_BLOCK).
-    if (online.value) {
-      // 6105 : duels multi-bloqueurs sans Géant → l'attaquant choisit LOCALEMENT
-      // quel bloqueur encaisse la Force, puis on soumet (sinon défaut serveur).
-      const pending = pendingStrikes(c);
-      if (pending.length) {
-        c.step = "strikes";
-        c.strikeFor = pending[0];
-        return;
-      }
-      pushIntent({ kind: "RESOLVE_COMBAT", strikes: c.strikes });
-      return;
-    }
-    // Sécurité : si une réaction traînait, on la clôt et on rend la main à
-    // l'attaquant avant de résoudre.
-    if (c.reactingSeat) {
+    // Sécurité (local) : si une réaction traînait, on la clôt et on rend la
+    // main à l'attaquant avant de résoudre.
+    if (!online.value && c.reactingSeat) {
       c.reactingSeat = null;
       perspective.value = turn.value.active;
     }
-    const pending = pendingStrikes(c);
-    if (pending.length) {
-      c.step = "strikes";
-      c.strikeFor = pending[0];
-      return;
-    }
-    // 707.1 — riposte : si ≥2 attaquants libres et pas encore choisi, demander.
-    const cands = riposteCandidatesOf(c);
-    if (cands.length >= 2 && !c.ripostes[c.target.instanceId]) {
-      c.step = "riposte";
-      c.riposteFrom = c.target.instanceId;
-      c.riposteCandidates = cands;
-      return;
-    }
-    doResolveCombat();
+    // Chaîne commune des choix d'attaquant (frappes 6105 → Géant 6135) puis
+    // riposte (707.1, local) / soumission RESOLVE_COMBAT (en ligne).
+    combatContinue();
   }
 
   /**
@@ -3111,6 +3274,7 @@ export const useGameStore = defineStore("game", () => {
         blocks: c.blocks,
         strikes: c.strikes,
         ripostes: c.ripostes,
+        geantAssign: c.geantAssign,
       },
       activeGlobalMods(rulesCtx()),
     );
@@ -3425,6 +3589,10 @@ export const useGameStore = defineStore("game", () => {
     combatEndReaction,
     combatStrikeIds,
     combatChooseStrike,
+    combatGeantIds,
+    combatGeantReason,
+    combatGeantAdjust,
+    combatGeantConfirm,
     combatRiposteIds,
     combatChooseRiposte,
     combatCancel,

@@ -67,6 +67,103 @@ export function stanceOfPlan(plan: CombatPlan): CombatStance {
   };
 }
 
+/**
+ * 6135 — Dommages nécessaires pour rendre LÉTAL un bloqueur du point de vue
+ * d'un Géant : Force restante (Force effective − Dommages déjà marqués) +
+ * Résistance du bloqueur dans l'élément des Dommages de l'attaquant.
+ */
+function geantNeed(
+  ctx: RulesCtx,
+  blockerId: InstanceId,
+  stance: CombatStance,
+  element: string,
+): number {
+  const remaining = Math.max(
+    0,
+    forceOf(ctx, blockerId, stance) -
+      (ctx.state.instances[blockerId]?.counters.damage ?? 0),
+  );
+  return (
+    remaining + (effectiveKeywords(ctx, blockerId).resistances[element] ?? 0)
+  );
+}
+
+/**
+ * 6135 — la répartition de Force d'un Géant proposée par le joueur est-elle
+ * légale ? `null` si oui, sinon une raison en français (affichable). Légal :
+ * chaque part vise un de SES bloqueurs (ou la Cible de l'attaque), les parts
+ * sont des entiers ≥ 0, leur somme vaut la Force du Géant, et la Cible ne
+ * reçoit des Dommages QUE si tous les bloqueurs reçoivent des Dommages létaux
+ * (glossaire Géant : « Si tous les Alliés ou Héros qui bloquent … se voient
+ * infliger des Dommages létaux, les Dommages restants peuvent être infligés
+ * à la Cible de l'attaque »).
+ */
+export function whyBadGeantAssign(
+  ctx: RulesCtx,
+  stance: CombatStance,
+  attackerId: InstanceId,
+  blockers: InstanceId[],
+  targetId: InstanceId,
+  assign: Record<InstanceId, number>,
+): string | null {
+  const force = forceOf(ctx, attackerId, stance);
+  const el = damageElementOf(ctx, attackerId);
+  let sum = 0;
+  for (const [id, n] of Object.entries(assign)) {
+    if (!Number.isInteger(n) || n < 0)
+      return "Chaque part de Dommages doit être un entier positif.";
+    if (id !== targetId && !blockers.includes(id))
+      return "Un Géant ne répartit sa Force qu'entre SES bloqueurs (et la Cible).";
+    sum += n;
+  }
+  if (sum !== force)
+    return `La répartition doit totaliser la Force du Géant (${force}).`;
+  if ((assign[targetId] ?? 0) > 0 && !blockers.includes(targetId)) {
+    for (const b of blockers) {
+      if ((assign[b] ?? 0) < geantNeed(ctx, b, stance, el))
+        return "La Cible ne peut recevoir le reliquat que si tous les bloqueurs reçoivent des Dommages létaux.";
+    }
+  }
+  return null;
+}
+
+/**
+ * 6135 — politique AUTOMATIQUE de répartition d'un Géant (fallback moteur +
+ * préremplissage de l'UI) : assigner d'abord les parts létales les moins
+ * chères ; le reliquat va sur la Cible si tous les bloqueurs sont létaux,
+ * sinon sur le premier bloqueur non tué.
+ */
+export function autoGeantAssign(
+  ctx: RulesCtx,
+  stance: CombatStance,
+  attackerId: InstanceId,
+  blockers: InstanceId[],
+  targetId: InstanceId,
+): Record<InstanceId, number> {
+  const el = damageElementOf(ctx, attackerId);
+  const assign: Record<InstanceId, number> = {};
+  let pool = forceOf(ctx, attackerId, stance);
+  const sorted = [...blockers].sort(
+    (x, y) => geantNeed(ctx, x, stance, el) - geantNeed(ctx, y, stance, el),
+  );
+  const unkilled: InstanceId[] = [];
+  for (const b of sorted) {
+    const need = geantNeed(ctx, b, stance, el);
+    if (need > 0 && need <= pool) {
+      assign[b] = need;
+      pool -= need;
+    } else {
+      unkilled.push(b);
+    }
+  }
+  if (pool > 0) {
+    if (unkilled.length)
+      assign[unkilled[0]] = (assign[unkilled[0]] ?? 0) + pool;
+    else assign[targetId] = (assign[targetId] ?? 0) + pool; // 6135 : débordement
+  }
+  return assign;
+}
+
 export function resolveCombat(
   ctx: RulesCtx,
   plan: CombatPlan,
@@ -166,30 +263,33 @@ export function resolveCombat(
     const aForce = forceOf(ctx, attacker, stance);
     const el = damageElementOf(ctx, attacker);
     if (effectiveKeywords(ctx, attacker).geant) {
-      // politique auto : assigner d'abord les parts létales les moins chères
-      const needRaw = (b: InstanceId) => {
-        const remaining = Math.max(
-          0,
-          forceOf(ctx, b, stance) -
-            (ctx.state.instances[b]?.counters.damage ?? 0),
-        );
-        return remaining + (effectiveKeywords(ctx, b).resistances[el] ?? 0);
-      };
-      let pool = aForce;
-      const sorted = [...blockers].sort((x, y) => needRaw(x) - needRaw(y));
-      const unkilled: InstanceId[] = [];
-      for (const b of sorted) {
-        const need = needRaw(b);
-        if (need > 0 && need <= pool) {
-          inflict(attacker, b, need);
-          pool -= need;
-        } else {
-          unkilled.push(b);
-        }
-      }
-      if (pool > 0) {
-        if (unkilled.length) inflict(attacker, unkilled[0], pool);
-        else hitTarget(attacker, pool); // 6135 : débordement sur la Cible
+      // 6135 — répartition CHOISIE par l'attaquant (plan.geantAssign) si elle
+      // est légale (whyBadGeantAssign) ; sinon politique automatique (fallback
+      // moteur : bot, plan absent, ou proposition invalide — jamais bloquant).
+      const proposed = plan.geantAssign?.[attacker];
+      const assign =
+        proposed &&
+        whyBadGeantAssign(
+          ctx,
+          stance,
+          attacker,
+          blockers,
+          plan.target.instanceId,
+          proposed,
+        ) === null
+          ? proposed
+          : autoGeantAssign(
+              ctx,
+              stance,
+              attacker,
+              blockers,
+              plan.target.instanceId,
+            );
+      for (const [id, n] of Object.entries(assign)) {
+        if (n <= 0) continue;
+        if (id === plan.target.instanceId && !blockers.includes(id))
+          hitTarget(attacker, n); // débordement sur la Cible (tous létaux)
+        else inflict(attacker, id, n);
       }
       log.push(`Duel (Géant) : ${nameOf(ctx, attacker)} répartit sa Force.`);
     } else {

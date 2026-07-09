@@ -577,19 +577,21 @@
           {{
             store.combat.step === "strikes"
               ? "🎯 Clique le bloqueur qui encaisse la Force de l'attaquant surligné (6105)"
-              : store.combat.step === "riposte"
-                ? "↩ Clique l'attaquant que la Cible riposte (707.1)"
-                : store.combat.step === "attackers"
-                  ? "⚔ Choisis tes attaquants puis une cible adverse"
-                  : store.combatCanConfirmBlocks
-                    ? store.combat.pendingBlocker
-                      ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
-                      : "🛡 Déclare tes bloqueurs puis « Confirmer les blocages » (ou confirme à vide pour laisser passer)"
-                    : store.combatWaitingForBlocks
-                      ? "⏳ En attente des blocages adverses…"
-                      : store.combatCanResolve
-                        ? "⚔ Blocages déclarés — « Résoudre le combat »"
-                        : "⏳ En attente de l'adversaire…"
+              : store.combat.step === "geant"
+                ? "🗿 Répartis la Force du Géant entre ses bloqueurs (6135), puis confirme"
+                : store.combat.step === "riposte"
+                  ? "↩ Clique l'attaquant que la Cible riposte (707.1)"
+                  : store.combat.step === "attackers"
+                    ? "⚔ Choisis tes attaquants puis une cible adverse"
+                    : store.combatCanConfirmBlocks
+                      ? store.combat.pendingBlocker
+                        ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
+                        : "🛡 Déclare tes bloqueurs puis « Confirmer les blocages » (ou confirme à vide pour laisser passer)"
+                      : store.combatWaitingForBlocks
+                        ? "⏳ En attente des blocages adverses…"
+                        : store.combatCanResolve
+                          ? "⚔ Blocages déclarés — « Résoudre le combat »"
+                          : "⏳ En attente de l'adversaire…"
           }}
         </span>
         <span v-else class="gcombat__step" role="status" aria-live="polite">
@@ -600,13 +602,15 @@
                 ? "⚔ Choisis tes attaquants puis une cible adverse"
                 : store.combat.step === "strikes"
                   ? "🎯 Choisis le bloqueur qui encaisse la Force de l'attaquant en vert"
-                  : store.combat.step === "riposte"
-                    ? "↩ La Cible riposte : choisis l'attaquant qu'elle frappe"
-                    : store.combat.pendingBlocker
-                      ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
-                      : store.defenderCanReact
-                        ? "⚡ Tu peux RÉAGIR : joue une Action ou un pouvoir, puis bloque et « Résoudre le combat »"
-                        : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
+                  : store.combat.step === "geant"
+                    ? "🗿 Répartis la Force du Géant entre ses bloqueurs (clic ou +/−), puis confirme"
+                    : store.combat.step === "riposte"
+                      ? "↩ La Cible riposte : choisis l'attaquant qu'elle frappe"
+                      : store.combat.pendingBlocker
+                        ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
+                        : store.defenderCanReact
+                          ? "⚡ Tu peux RÉAGIR : joue une Action ou un pouvoir, puis bloque et « Résoudre le combat »"
+                          : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
           }}
         </span>
         <span class="gcombat__info">
@@ -660,6 +664,65 @@
           {{ lethalCardNames().length }} carte(s) seront détruite(s) :
           {{ lethalCardNames().join(", ") }}.
         </p>
+        <!-- 6135 — répartition de la Force du GÉANT : préremplie avec la
+             politique auto, ajustable par +/− (ou clic sur une carte surlignée),
+             la Cible n'acceptant le reliquat que si tous les bloqueurs sont
+             létaux (validation whyBadGeantAssign, motif affiché). -->
+        <div
+          v-if="store.combat.step === 'geant' && store.combat.geantFor"
+          class="gcombat__geant"
+          role="group"
+          aria-label="Répartition de la Force du Géant"
+        >
+          <span class="gcombat__info">
+            🗿 {{ cardNameOf(store.combat.geantFor) }} — reste
+            <strong>{{ geantRemaining }}</strong>
+          </span>
+          <span
+            v-for="id in store.combatGeantIds"
+            :key="id"
+            class="gcombat__geantrow"
+          >
+            <span class="gcombat__geantname">
+              {{ cardNameOf(id)
+              }}<template v-if="id === store.combat.target?.instanceId">
+                (Cible)</template
+              >
+            </span>
+            <button
+              class="gbtn gbtn--ghost gbtn--tiny"
+              :aria-label="`Retirer 1 Dommage à ${cardNameOf(id)}`"
+              @click="store.combatGeantAdjust(id, -1)"
+            >
+              −
+            </button>
+            <span class="gcombat__geantn">{{ geantShare(id) }}</span>
+            <button
+              class="gbtn gbtn--ghost gbtn--tiny"
+              :disabled="geantRemaining <= 0"
+              :aria-label="`Ajouter 1 Dommage à ${cardNameOf(id)}`"
+              @click="store.combatGeantAdjust(id, +1)"
+            >
+              +
+            </button>
+          </span>
+          <button
+            class="gbtn gbtn--accent"
+            data-testid="geant-confirm"
+            :disabled="!!store.combatGeantReason"
+            :title="store.combatGeantReason ?? undefined"
+            @click="store.combatGeantConfirm()"
+          >
+            Confirmer la répartition
+          </button>
+          <span
+            v-if="store.combatGeantReason"
+            class="gcombat__info"
+            role="status"
+          >
+            {{ store.combatGeantReason }}
+          </span>
+        </div>
         <div class="gcombat__btns">
           <!-- EN LIGNE (P3) : combat au journal, contrôles selon le rôle -->
           <template v-if="store.online">
@@ -1156,6 +1219,10 @@ function select(instanceId: string): void {
       else store.combatToggleAttacker(instanceId);
     } else if (store.combat.step === "strikes") {
       store.combatChooseStrike(instanceId);
+    } else if (store.combat.step === "geant") {
+      // 6135 — clic sur un bloqueur (ou la Cible) = +1 Dommage (façon MTGA) ;
+      // le réglage fin (−) se fait dans le bandeau de répartition.
+      store.combatGeantAdjust(instanceId, +1);
     } else if (store.combat.step === "riposte") {
       store.combatChooseRiposte(instanceId);
     } else {
@@ -1233,6 +1300,7 @@ function slotCls(instanceId: string): Record<string, boolean> {
     "gslot--target-can":
       (c.step === "attackers" && store.combatTargetIds.includes(instanceId)) ||
       (c.step === "strikes" && store.combatStrikeIds.includes(instanceId)) ||
+      (c.step === "geant" && store.combatGeantIds.includes(instanceId)) ||
       (c.step === "riposte" && store.combatRiposteIds.includes(instanceId)) ||
       (c.step === "blockers" &&
         !!c.pendingBlocker &&
@@ -1256,6 +1324,27 @@ function previewHpAfter(instanceId: string): number | null {
 function targetVitalLabel(): string {
   return store.combat?.target?.kind === "havreSac" ? "Rés." : "PV";
 }
+/** Nom lisible d'une instance du plateau (bandeau Géant, a11y). */
+function cardNameOf(instanceId: string): string {
+  const inst = store.state.instances[instanceId];
+  return resolveCard(inst?.cardId ?? null)?.name ?? "Carte";
+}
+/** 6135 — part de Dommages actuellement assignée à `id` par le Géant courant. */
+function geantShare(id: string): number {
+  const c = store.combat;
+  if (!c?.geantFor) return 0;
+  return c.geantAssign[c.geantFor]?.[id] ?? 0;
+}
+/** 6135 — Dommages du Géant courant restant à répartir. */
+const geantRemaining = computed(() => {
+  const c = store.combat;
+  if (!c?.geantFor) return 0;
+  const sum = Object.values(c.geantAssign[c.geantFor] ?? {}).reduce(
+    (s, n) => s + n,
+    0,
+  );
+  return (store.effectiveForceOf(c.geantFor)?.value ?? 0) - sum;
+});
 /** Noms des cartes qui seront détruites si le combat est résolu (pour l'a11y). */
 function lethalCardNames(): string[] {
   const ids = store.combatPreview?.lethal ?? [];
@@ -1792,6 +1881,35 @@ function manaBonus(seat: Seat): boolean {
 .gcombat__btns {
   display: flex;
   gap: 6px;
+}
+/* 6135 — panneau de répartition de la Force du Géant */
+.gcombat__geant {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.gcombat__geantrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.gcombat__geantname {
+  font-size: 0.78rem;
+  opacity: 0.9;
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gcombat__geantn {
+  min-width: 1.6ch;
+  text-align: center;
+  font-weight: 700;
+}
+.gbtn--tiny {
+  padding: 0 8px;
+  min-width: 26px;
 }
 .slidedown-enter-active,
 .slidedown-leave-active {

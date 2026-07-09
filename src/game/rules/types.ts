@@ -47,6 +47,13 @@ export interface CombatPlan {
    * de la Cible. Absent → premier attaquant l'ayant frappée.
    */
   ripostes?: Record<InstanceId, InstanceId>;
+  /**
+   * 6135 : attackerId Géant → répartition de sa Force { bloqueur|cible → n }.
+   * Validée par `whyBadGeantAssign` ; absente ou invalide → politique auto
+   * (`autoGeantAssign`). La Cible n'est servie que si tous les bloqueurs
+   * reçoivent des Dommages létaux (glossaire Géant).
+   */
+  geantAssign?: Record<InstanceId, Record<InstanceId, number>>;
 }
 
 export interface CombatResult {

@@ -60,5 +60,8 @@ export type GameIntent =
       kind: "RESOLVE_COMBAT";
       /** 6105 : attackerId → bloqueur frappé (choix de l'attaquant). */
       strikes?: Record<InstanceId, InstanceId>;
+      /** 6135 : attackerId Géant → répartition { bloqueur|cible → n } (choix
+       *  de l'attaquant ; invalide → politique auto côté moteur). */
+      geantAssign?: Record<InstanceId, Record<InstanceId, number>>;
     }
   | { kind: "CANCEL_COMBAT" };

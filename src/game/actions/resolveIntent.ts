@@ -535,7 +535,8 @@ export function resolveIntent(
           };
       }
       // resolveCombat applique les défauts (premier bloqueur frappé, première
-      // riposte) si strikes/ripostes manquent → robuste même sans choix fins.
+      // riposte, répartition Géant automatique) si strikes/ripostes/geantAssign
+      // manquent OU sont invalides (whyBadGeantAssign) → robuste sans choix fins.
       const result = resolveCombat(
         ctx,
         {
@@ -545,6 +546,7 @@ export function resolveIntent(
           blocks: c.blocks,
           strikes: intent.strikes ?? c.strikes,
           ripostes: c.ripostes,
+          geantAssign: intent.geantAssign,
         },
         activeGlobalMods(ctx),
       );

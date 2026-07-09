@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveCombat } from "../combat";
+import { autoGeantAssign, resolveCombat, whyBadGeantAssign } from "../combat";
 import {
   HERO_A,
   HERO_B,
@@ -298,6 +298,172 @@ describe("rules/combat — Géant (6135)", () => {
     // bloqueur (F1) tué par 1, reliquat 3 déborde sur le Héros : 16 − 3 = 13
     expect(result.destroyed).toContain(instId("B", 0));
     expect(state.instances[HERO_B].counters.hp).toBe(13);
+  });
+
+  /** Géant F4 de A bloqué par deux Alliés de B ; cible = Héros B. */
+  function geantDuo(blockerForces: [number, number] = [3, 3]) {
+    const f = fixture(
+      [makeAlly("colosse", { force: 4, geant: true })],
+      [
+        makeAlly("b1", { force: blockerForces[0] }),
+        makeAlly("b2", { force: blockerForces[1] }),
+      ],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    bringToMonde(f, "B", instId("B", 1));
+    const base = {
+      attackerSeat: "A" as const,
+      target: { kind: "hero" as const, instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: {
+        [instId("B", 0)]: instId("A", 0),
+        [instId("B", 1)]: instId("A", 0),
+      },
+    };
+    return {
+      f,
+      base,
+      atk: instId("A", 0),
+      b1: instId("B", 0),
+      b2: instId("B", 1),
+    };
+  }
+
+  it("6135 — plan.geantAssign : la répartition CHOISIE est honorée (2/2, personne ne meurt)", () => {
+    const { f, base, atk, b1, b2 } = geantDuo([3, 3]);
+    const { result, state } = applyCombat(f, {
+      ...base,
+      geantAssign: { [atk]: { [b1]: 2, [b2]: 2 } },
+    });
+    expect(result.destroyed).not.toContain(b1);
+    expect(result.destroyed).not.toContain(b2);
+    expect(state.instances[b1].counters.damage).toBe(2);
+    expect(state.instances[b2].counters.damage).toBe(2);
+    expect(state.instances[HERO_B].counters.hp).toBe(16); // aucun débordement
+  });
+
+  it("6135 — débordement sur la Cible accepté SEULEMENT si tous les bloqueurs sont létaux", () => {
+    // Bloqueur unique F2 (létal = 2), Géant F4 : {b1:2, héros:2} est valide.
+    const f = fixture(
+      [makeAlly("colosse", { force: 4, geant: true })],
+      [makeAlly("b1", { force: 2 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+      geantAssign: {
+        [instId("A", 0)]: { [instId("B", 0)]: 2, [HERO_B]: 2 },
+      },
+    });
+    expect(result.destroyed).toContain(instId("B", 0));
+    expect(state.instances[HERO_B].counters.hp).toBe(14); // 16 − 2 (et pas −3)
+  });
+
+  it("6135 — tout mettre sur le bloqueur est un choix légal (aucun débordement)", () => {
+    const f = fixture(
+      [makeAlly("colosse", { force: 4, geant: true })],
+      [makeAlly("b1", { force: 1 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+      geantAssign: { [instId("A", 0)]: { [instId("B", 0)]: 4 } },
+    });
+    expect(result.destroyed).toContain(instId("B", 0));
+    expect(state.instances[HERO_B].counters.hp).toBe(16); // le joueur a renoncé au débordement
+  });
+
+  it("6135 — répartition INVALIDE (cible visée sans létalité / somme ≠ Force) → politique auto", () => {
+    // Bloqueur F2, assign {b1:1, héros:3} : b1 non létal + cible visée → invalide.
+    // La politique auto s'applique : létal (2) sur b1, débordement 2 sur le Héros.
+    const f = fixture(
+      [makeAlly("colosse", { force: 4, geant: true })],
+      [makeAlly("b1", { force: 2 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+      geantAssign: {
+        [instId("A", 0)]: { [instId("B", 0)]: 1, [HERO_B]: 3 },
+      },
+    });
+    expect(result.destroyed).toContain(instId("B", 0));
+    expect(state.instances[HERO_B].counters.hp).toBe(14);
+
+    // Somme ≠ Force → invalide → auto (mêmes attentes sur un duo 3/3).
+    const duo = geantDuo([3, 3]);
+    const r2 = applyCombat(duo.f, {
+      ...duo.base,
+      geantAssign: { [duo.atk]: { [duo.b1]: 1 } },
+    });
+    // auto : létal (3) sur le moins cher, reliquat 1 sur l'autre (non létal)
+    expect(
+      r2.result.destroyed.filter((d) => [duo.b1, duo.b2].includes(d)).length,
+    ).toBe(1);
+  });
+
+  it("6135 — whyBadGeantAssign : raisons de refus en français (UI)", () => {
+    const { f, base, atk, b1, b2 } = geantDuo([3, 3]);
+    const ctx = ctxOf(f);
+    const stance = {
+      attackers: base.attackers,
+      blocks: base.blocks,
+      targetId: HERO_B,
+    };
+    // Valide : somme 4, pas de cible.
+    expect(
+      whyBadGeantAssign(ctx, stance, atk, [b1, b2], HERO_B, {
+        [b1]: 2,
+        [b2]: 2,
+      }),
+    ).toBeNull();
+    // Somme ≠ Force.
+    expect(
+      whyBadGeantAssign(ctx, stance, atk, [b1, b2], HERO_B, {
+        [b1]: 1,
+        [b2]: 1,
+      }),
+    ).toContain("Force");
+    // Cible visée sans létalité sur tous les bloqueurs.
+    expect(
+      whyBadGeantAssign(ctx, stance, atk, [b1, b2], HERO_B, {
+        [b1]: 3,
+        [b2]: 0,
+        [HERO_B]: 1,
+      }),
+    ).toContain("létaux");
+  });
+
+  it("6135 — autoGeantAssign reproduit la politique auto (préremplissage UI)", () => {
+    const { f, base, atk, b1, b2 } = geantDuo([1, 3]);
+    const ctx = ctxOf(f);
+    const stance = {
+      attackers: base.attackers,
+      blocks: base.blocks,
+      targetId: HERO_B,
+    };
+    // F4 : létal 1 sur b1, létal 3 sur b2 → tout létal, débordement 0.
+    expect(autoGeantAssign(ctx, stance, atk, [b1, b2], HERO_B)).toEqual({
+      [b1]: 1,
+      [b2]: 3,
+    });
   });
 });
 

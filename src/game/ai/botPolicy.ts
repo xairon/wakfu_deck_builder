@@ -200,6 +200,9 @@ function driveCombat(store: Store): void {
     return void store.combatResolve();
   }
   if (c.step === "strikes") return chooseStrike(store);
+  // 6135 — répartition Géant : le préremplissage est déjà la politique auto
+  // (létal le moins cher d'abord) → le bot confirme tel quel.
+  if (c.step === "geant") return void store.combatGeantConfirm();
   if (c.step === "riposte") return chooseRiposte(store);
   store.combatCancel();
 }
@@ -395,6 +398,12 @@ export function botLiveStep(
     }
     if (c.step === "strikes" && atk === botSeat) {
       chooseStrike(store);
+      return true;
+    }
+    // 6135 — le Géant du bot répartit sa Force : confirmer le préremplissage
+    // (= politique auto, identique au comportement historique).
+    if (c.step === "geant" && atk === botSeat) {
+      store.combatGeantConfirm();
       return true;
     }
     if (c.step === "riposte" && atk === botSeat) {
