@@ -6,6 +6,7 @@ import {
   eligibleTargets,
   havreSacHasRoom,
   havreSacOccupancy,
+  playDestination,
   whyCannotDeclareAttack,
   whyCannotMoveHero,
   whyCannotPlay,
@@ -106,6 +107,28 @@ describe("rules/legality — jouer une carte", () => {
     const f = fixture([salle]);
     bringToHand(f, "A", instId("A", 0));
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toBeNull();
+  });
+
+  it("place une Salle dans le Havre-Sac et une Zone dans le Monde (309.1)", () => {
+    const salle = {
+      ...makeAlly("s", {}),
+      mainType: "Salle",
+    } as unknown as Card;
+    const zone = { ...makeAlly("z", {}), mainType: "Zone" } as unknown as Card;
+    expect(playDestination(salle, "A")).toEqual({
+      zone: "havreSac",
+      owner: "A",
+    });
+    expect(playDestination(zone, "A")).toEqual({ zone: "monde" });
+  });
+
+  it("interdit une Zone au premier tour (destination Monde) mais pas une Salle", () => {
+    const zone = { ...makeAlly("z", {}), mainType: "Zone" } as unknown as Card;
+    const f = fixture([zone]);
+    bringToHand(f, "A", instId("A", 0)); // turn 1 (A) par défaut
+    expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toContain(
+      "premier tour",
+    );
   });
 
   it("refuse hors de son tour et hors phase principale", () => {

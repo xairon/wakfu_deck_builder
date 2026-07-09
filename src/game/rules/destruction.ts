@@ -106,12 +106,17 @@ export function havreSacBanishEvents(ctx: RulesCtx): StateBasedDestruction {
     if (!sac || sac.location.zone === "exil") continue;
     const res = sac.counters.resistance;
     if (res === undefined || res > 0) continue;
-    // Intérieur du Havre-Sac (zone havreSac) : Héros expulsé, Salles détruites.
+    // Intérieur du Havre-Sac (zone havreSac), 410.7 : « les cartes Salle sont
+    // détruites, les cartes Allié ou Héros sont EXPULSÉES dans le Monde ».
     for (const inst of Object.values(ctx.state.instances)) {
       if (inst.controller !== seat || inst.location.zone !== "havreSac")
         continue;
       const card = ctx.getCard(inst.cardId);
-      if (card?.mainType === "Héros") {
+      const expelledToMonde =
+        card?.mainType === "Héros" ||
+        card?.mainType === "Allié" ||
+        card?.mainType === "Allié Élémentaire";
+      if (expelledToMonde) {
         events.push(
           move(seat, {
             instanceId: inst.instanceId,
@@ -119,12 +124,15 @@ export function havreSacBanishEvents(ctx: RulesCtx): StateBasedDestruction {
             to: { zone: "monde" },
             position: { at: "any" },
             visibility: { faceDown: false, visibleTo: "all" },
-            preservesIdentity: true, // 501.5 : conserve PV/XP/Niveau
+            preservesIdentity: true, // 501.5 : conserve PV/XP/Niveau (Héros/Allié)
             orientationOnArrival: inst.orientation ?? "upright",
           }),
         );
-        log.push(`${card.name} est expulsé au Monde (Havre-Sac banni, 410.7).`);
+        log.push(
+          `${card?.name ?? "Une créature"} est expulsé(e) au Monde (Havre-Sac banni, 410.7).`,
+        );
       } else {
+        // Salles (et autres cartes de l'intérieur) : détruites.
         events.push(discard(inst.owner, inst.instanceId, inst.location));
         destroyed.push(inst.instanceId);
         log.push(

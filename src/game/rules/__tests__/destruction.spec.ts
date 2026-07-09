@@ -161,4 +161,30 @@ describe("rules/destruction — Havre-Sac banni à 0 Résistance (410.7)", () =>
     dispatch(f, setCounter("A", SAC_A, "resistance", 4));
     expect(havreSacBanishEvents(ctxOf(f)).events).toEqual([]);
   });
+
+  it("expulse aussi les ALLIÉS de l'intérieur au Monde (pas de destruction, 410.7)", () => {
+    const ally = makeAlly("interior", { niveau: 1, element: "Feu", force: 2 });
+    const f = fixture([ally]);
+    const allyId = instId("A", 0);
+    // Placer l'Allié dans l'INTÉRIEUR du Havre-Sac de A.
+    dispatch(
+      f,
+      move("A", {
+        instanceId: allyId,
+        from: ctxOf(f).state.instances[allyId].location,
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true,
+        orientationOnArrival: "upright",
+      }),
+    );
+    dispatch(f, setCounter("A", SAC_A, "resistance", 0));
+    const hsb = havreSacBanishEvents(ctxOf(f));
+    dispatch(f, ...hsb.events);
+    const st = ctxOf(f).state;
+    // 410.7 : « les cartes Allié ou Héros … sont expulsées dans le Monde » (≠ Salle détruite).
+    expect(st.instances[allyId].location.zone).toBe("monde");
+    expect(hsb.destroyed).not.toContain(allyId);
+  });
 });
