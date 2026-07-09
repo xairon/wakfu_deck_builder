@@ -153,8 +153,9 @@ export function resolveIntent(
       if (!inst || !card) return { error: "Carte inconnue." };
       const plan = planCost(ctx, seat, card);
       if (!plan.ok) return { error: plan.reason };
-      // 309.1 — la zone d'arrivée dépend du type (Salle → Havre-Sac, sinon Monde).
-      const dest = playDestination(card, seat);
+      // 309.1/303.1 — zone d'arrivée selon le type (Salle → Havre-Sac ; Allié →
+      // Monde, ou Havre-Sac au 1er tour de la partie, 506.3).
+      const dest = playDestination(card, seat, state.turn.number);
       const events: DraftEvent[] = plan.producers.map((id) => tap(seat, id));
       events.push(
         move(seat, {

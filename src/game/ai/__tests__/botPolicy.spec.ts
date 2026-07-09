@@ -38,7 +38,9 @@ function makeDeck(tag: string): { deck: Deck; cards: Card[] } {
  *  l'Allié ou Héros de votre choix » (façon Tirlangue Portey). */
 function makeDeckPoweredHero(tag: string): { deck: Deck; cards: Card[] } {
   const powerFace = {
-    stats: { pv: 16, pa: 6, pm: 3 },
+    // Élément Air (comme Tirlangue) : le Héros produit de l'Air, donc il ne paie
+    // pas un Allié Neutre (payé par le Havre-Sac) → reste dressé dans les tests.
+    stats: { pv: 16, pa: 6, pm: 3, niveau: { value: 1, element: "Air" } },
     effects: [
       {
         description: "inflige 2 Dommages à l'Allié ou Héros de votre choix.",
@@ -182,7 +184,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     expect(store.effectTargeting).toBeNull();
   });
 
-  it("1er tour (bot = 1er joueur) : pose une Salle au Havre-Sac, ne gaspille PAS Tirlangue, garde les cartes du Monde en main", () => {
+  it("1er tour (bot = 1er joueur) : pose Salle ET Allié dans son Havre-Sac (303.1), ne gaspille PAS Tirlangue", () => {
     const b = makeDeckPoweredHero("B"); // Héros type Tirlangue (pouvoir offensif)
     const salle = {
       ...createMockAllyCard({
@@ -195,9 +197,10 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     const mondeAlly = createMockAllyCard({
       id: "b-monde",
       name: "Allié Monde",
+      // Élément Neutre → payable par le Havre-Sac (producteur Neutre) au 1er tour.
       stats: {
-        niveau: { value: 1, element: "Feu" },
-        force: { value: 1, element: "Feu" },
+        niveau: { value: 1, element: "Neutre" },
+        force: { value: 1, element: "Neutre" },
       },
     });
     b.deck.cards.push({ card: salle, quantity: 1 });
@@ -224,11 +227,11 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     const tried = new Set<string>();
     for (let i = 0; i < 10; i++) botStep(store, tried);
 
-    // Salle POSÉE dans le Havre-Sac ; Tirlangue NON gaspillé ; Allié-Monde reste
-    // en main (le Monde est interdit au 1er tour de la partie, 4943).
+    // Au 1er tour (Monde interdit, 506.3) : la Salle ET l'Allié arrivent dans le
+    // Havre-Sac (303.1 — développement de Ressources) ; Tirlangue non gaspillé.
     expect(store.state.instances[salleId].location.zone).toBe("havreSac");
+    expect(store.state.instances[mondeId].location.zone).toBe("havreSac");
     expect(store.state.instances[heroB].orientation).toBe("upright");
-    expect(store.state.seats.B.main).toContain(mondeId);
   });
 
   it("botReactInCombat : le bot DÉFENSEUR réagit à l'attaque en activant un pouvoir utile", () => {

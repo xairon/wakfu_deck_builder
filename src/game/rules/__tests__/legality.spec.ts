@@ -91,8 +91,12 @@ describe("rules/legality — jouer une carte", () => {
     expect(whyCannotPlay(ctxOf(f), "A", id, true)).toBeNull();
   });
 
-  it("interdit le Monde au premier tour de la partie (4943)", () => {
-    const f = handFixture();
+  it("interdit le Monde au premier tour de la partie (4943, carte Monde)", () => {
+    // Une Zone va OBLIGATOIREMENT dans le Monde → refusée au 1er tour (506.3).
+    // (Un Allié, lui, est routé au Havre-Sac : cf. test dédié 303.1.)
+    const zone = { ...makeAlly("z0", {}), mainType: "Zone" } as unknown as Card;
+    const f = fixture([zone]);
+    bringToHand(f, "A", instId("A", 0));
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toContain(
       "premier tour",
     );
@@ -129,6 +133,22 @@ describe("rules/legality — jouer une carte", () => {
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toContain(
       "premier tour",
     );
+  });
+
+  it("autorise un Allié au premier tour, routé vers le Havre-Sac (303.1/506.3)", () => {
+    // Au 1er tour, le Monde est interdit (506.3) MAIS un Allié peut arriver dans
+    // le Havre-Sac (303.1) → jouable (pas de refus « premier tour »).
+    const ally = makeAlly("a1", { niveau: 0 });
+    const f = fixture([ally]);
+    bringToHand(f, "A", instId("A", 0)); // turn 1 (A)
+    expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toBeNull();
+    // Sa destination au 1er tour est le Havre-Sac (pas le Monde).
+    expect(playDestination(ally, "A", 1)).toEqual({
+      zone: "havreSac",
+      owner: "A",
+    });
+    // Hors 1er tour, il arrive dans le Monde (défaut).
+    expect(playDestination(ally, "A", 3)).toEqual({ zone: "monde" });
   });
 
   it("refuse hors de son tour et hors phase principale", () => {

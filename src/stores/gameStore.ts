@@ -1824,7 +1824,8 @@ export const useGameStore = defineStore("game", () => {
     const actionAtoms = playAtoms.length === effectsCount ? playAtoms : [];
     const dest: ZoneRef = actionAtoms.length
       ? { zone: "defausse", owner: seat }
-      : playDestination(card, seat);
+      : // 303.1/506.3 : un Allié joué au 1er tour arrive dans le Havre-Sac.
+        playDestination(card, seat, state.value.turn.number);
     drafts.push(
       move(seat, {
         instanceId,

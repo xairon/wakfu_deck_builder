@@ -15,9 +15,23 @@ import { combatKeywords, effectiveKeywords } from "./effects/keywords.ts";
 import { planCost } from "./resources.ts";
 import { eligibleBearers, requiresBearer } from "./bearer.ts";
 
-/** Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac). */
-export function playDestination(card: Card, seat: Seat): ZoneRef {
+/**
+ * Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac).
+ * 303.1 — un ALLIÉ « apparaît dans le Monde OU dans le Havre-Sac de son
+ * propriétaire ». Défaut : le Monde. MAIS au 1er tour de la partie (506.3, aucune
+ * entrée dans le Monde), sa seule destination légale est le Havre-Sac → on l'y
+ * route (développement de Ressources dès le 1er tour). `turnNumber` omis = défaut
+ * (compat). NB : la MONTURE se joue attachée ; ici on ne route que les créatures.
+ */
+export function playDestination(
+  card: Card,
+  seat: Seat,
+  turnNumber?: number,
+): ZoneRef {
   if (card.mainType === "Salle") return { zone: "havreSac", owner: seat };
+  const isAlly =
+    card.mainType === "Allié" || card.mainType === "Allié Élémentaire";
+  if (isAlly && turnNumber === 1) return { zone: "havreSac", owner: seat };
   return { zone: "monde" };
 }
 
@@ -163,10 +177,11 @@ export function whyCannotPlay(
     return "Ce n'est pas votre tour.";
   if (!bypassTurnPhase && state.turn.phase !== "principale")
     return "On ne joue des cartes qu'en Phase Principale.";
-  const dest = playDestination(card, seat);
+  const dest = playDestination(card, seat, state.turn.number);
   if (dest.zone === "monde" && state.turn.number === 1)
     return "Aucune carte ne peut entrer dans le Monde au premier tour de la partie.";
-  // 2626 : pas de Salle si le Havre-Sac est plein (Taille atteinte)
+  // 2626 / 4806 : pas de carte dans le Havre-Sac s'il est plein (Taille atteinte).
+  // Couvre les Salles ET les Alliés routés au Havre-Sac au 1er tour (303.1).
   if (dest.zone === "havreSac" && !havreSacHasRoom(ctx, seat))
     return "Le Havre-Sac est plein (Taille atteinte).";
   const plan = planCost(ctx, seat, card);
