@@ -69,8 +69,6 @@ export interface CombatResult {
 // ── Bus d'événements de règles (804.7) ──────────────────────────────────────
 // Émis par les résolutions PURES à côté de leurs DraftEvent, consommés par
 // `collectTriggeredEffects` → `store.processRuleEvents`. Jamais persistés.
-// (La variante `tapped` du Glyphe Incandescent arrive avec la fenêtre
-// d'actions de combat, lot E.)
 export type RuleEvent =
   | {
       kind: "damageDealt";
@@ -99,7 +97,14 @@ export type RuleEvent =
   // son déclenché « Quand [self] est détruit » (onSelfDestroyed, 804.7 : après
   // la résolution de la destruction). JAMAIS émis pour un BANNISSEMENT (→ Exil)
   // ni un RECYCLAGE (→ Pioche) : ce ne sont pas des destructions.
-  | { kind: "destroyed"; instanceId: InstanceId; controller: Seat };
+  | { kind: "destroyed"; instanceId: InstanceId; controller: Seat }
+  // INCLINAISON RÉELLE par un EFFET (dressé → incliné) — lot E / A7. Émis par
+  // les résolutions d'ops qui inclinent (resolveTapTarget…), JAMAIS par
+  // resolveCombat (les inclinaisons de FIN de combat 708.3 sont exclues par le
+  // ruling du Glyphe Incandescent — exclusion par construction). Les
+  // consommateurs (tappedFrames) filtrent : combat en cours + rôle
+  // attaquant/bloqueur (« s'incline DANS ce combat »).
+  | { kind: "tapped"; instanceId: InstanceId; controller: Seat };
 
 /**
  * Posture COMPLÈTE d'un combat (702–706) : qui attaque, qui bloque qui, et
@@ -116,17 +121,9 @@ export interface CombatStance {
 
 /**
  * Modificateurs GLOBAUX de Dommages consommés par `reduceDamage`.
- * Seul `treve` est implémenté au lot C ; `protectCombatants` (Glyphe
- * Revigorant) et `tapTrap` (Glyphe Incandescent) vivent dans `combat.mods`
- * et arrivent avec la fenêtre d'actions (lot E).
+ * `treve` est le seul mod : les deux autres candidats du lot E ont finalement
+ * été réalisés SANS mod global — Glyphe Revigorant via le jeton d'équipe
+ * `teamDmgRedCombatMod` (reduceDamage), Glyphe Incandescent via le marqueur
+ * `glypheDamage` + le bus d'inclinaison (`attackerDeclared`/`tapped`, A7).
  */
-export type DamageMod =
-  | { kind: "treve" } // token treveUntilTurn du Héros
-  | { kind: "protectCombatants"; seat: Seat; n: number } // [E] combat.mods
-  | {
-      kind: "tapTrap"; // [E] combat.mods
-      seat: Seat;
-      n: number;
-      element: string;
-      sourceName: string;
-    };
+export type DamageMod = { kind: "treve" }; // token treveUntilTurn du Héros

@@ -2481,6 +2481,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ? resolveTapTarget(deps.rulesCtx(), t.seat, instanceId)
           : resolveUntapTarget(deps.rulesCtx(), t.seat, instanceId);
       deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+      // 804.7 / A7 — bus « s'incline » (Glyphe Incandescent en combat).
+      if (deps.isAssistEffects() && res.ruleEvents?.length)
+        enqueueTriggered(
+          collectTriggeredEffects(deps.rulesCtx(), res.ruleEvents),
+        );
       const chosen = [...t.multi.chosen, instanceId];
       const remaining = t.multi.remaining - 1;
       // Cibles TOUJOURS distinctes (une créature déjà inclinée/redressée ne se

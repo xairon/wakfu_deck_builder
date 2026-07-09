@@ -223,9 +223,9 @@ function handWatcherFrames(
  * (incHeroTurnToken), purgé en début de tour. On somme les Glyphes des DEUX
  * joueurs (« chaque fois qu'un attaquant s'incline » vise tout attaquant, y
  * compris les vôtres). Chaque Glyphe = un PAQUET de 2 Feu (Résistance par paquet)
- * infligé à l'attaquant (riposteTargetId, aucun picker). OMISSION CONSERVATRICE
- * (jamais d'approximation qui agit à tort) : une inclinaison de BLOQUEUR en cours
- * de combat via un pouvoir (rare, aucune carte du périmètre) n'est pas couverte.
+ * infligé à l'attaquant (riposteTargetId, aucun picker). L'inclinaison MID-COMBAT
+ * (bloqueur/attaquant incliné par un EFFET pendant la fenêtre du combat) est
+ * couverte par le bus `tapped` → `tappedFrames` (A7).
  */
 function glypheFrames(
   ctx: RulesCtx,
@@ -236,6 +236,19 @@ function glypheFrames(
   // « attaque » mais ne « s'incline » pas → Glyphe ne le touche pas. `inclined`
   // absent = comportement historique (traité comme incliné).
   if (evt.inclined === false) return [];
+  return glyphePackets(ctx, evt.instanceId, evt.seat);
+}
+
+/** Paquets du Glyphe Incandescent (2 Feu × nombre de Glyphes actifs, sommés
+ *  sur les DEUX joueurs — « chaque fois qu'un … s'incline » vise tout le
+ *  monde) infligés à `victimId`. Partagé entre l'inclinaison d'ATTAQUANT à la
+ *  déclaration (glypheFrames) et l'inclinaison MID-COMBAT (tappedFrames, A7).
+ *  Chaque Glyphe = un PAQUET séparé (Résistance appliquée par paquet). */
+function glyphePackets(
+  ctx: RulesCtx,
+  victimId: InstanceId,
+  seat: Seat,
+): TriggeredFrame[] {
   let count = 0;
   for (const s of Object.values(ctx.state.seats ?? {})) {
     const hero = s?.heroInstanceId
@@ -244,20 +257,40 @@ function glypheFrames(
     count += hero?.counters.tokens?.glypheDamage ?? 0;
   }
   if (count <= 0) return [];
-  const attacker = ctx.state.instances[evt.instanceId];
-  if (!attacker) return [];
+  if (!ctx.state.instances[victimId]) return [];
   const frames: TriggeredFrame[] = [];
   for (let i = 0; i < count; i++) {
     frames.push({
-      seat: evt.seat,
-      sourceId: evt.instanceId,
+      seat,
+      sourceId: victimId,
       cardName: "Glyphe Incandescent",
-      text: "Glyphe Incandescent inflige 2 Dommages Feu à l'attaquant qui s'incline.",
+      text: "Glyphe Incandescent inflige 2 Dommages Feu à l'attaquant ou au bloqueur qui s'incline.",
       ops: [{ op: "damageRiposteSource", n: 2, element: "Feu" }],
-      riposteTargetId: evt.instanceId,
+      riposteTargetId: victimId,
     });
   }
   return frames;
+}
+
+/**
+ * tapped → GLYPHE INCANDESCENT (A7) : une créature inclinée PAR UN EFFET
+ * pendant qu'un combat est déclaré « s'incline dans ce combat » si elle en est
+ * un ATTAQUANT ou un BLOQUEUR — le Glyphe lui inflige ses paquets. Les
+ * inclinaisons de FIN de combat (708.3, bloqueurs à la résolution) ne passent
+ * JAMAIS par ce bus (resolveCombat n'émet pas `tapped`) : le ruling est
+ * respecté par construction. Une créature hors du combat n'est pas visée.
+ */
+function tappedFrames(
+  ctx: RulesCtx,
+  evt: Extract<RuleEvent, { kind: "tapped" }>,
+): TriggeredFrame[] {
+  const combat = ctx.state.combat;
+  if (!combat) return [];
+  const inCombat =
+    combat.attackers.includes(evt.instanceId) ||
+    evt.instanceId in (combat.blocks ?? {});
+  if (!inCombat) return [];
+  return glyphePackets(ctx, evt.instanceId, evt.controller);
 }
 
 /**
@@ -279,6 +312,8 @@ export function collectTriggeredEffects(
     } else if (evt.kind === "destroyed") {
       frames.push(...destroyedFrames(ctx, evt));
       frames.push(...handWatcherFrames(ctx, evt));
+    } else if (evt.kind === "tapped") {
+      frames.push(...tappedFrames(ctx, evt));
     }
   }
   const active = ctx.state.turn.active;

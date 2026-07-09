@@ -741,9 +741,18 @@ export function resolveTapTarget(
   if (!inst) return { events: [], log: [] };
   const events: DraftEvent[] = [];
   const log: string[] = [];
+  const ruleEvents: RuleEvent[] = [];
   if (inst.orientation === "upright") {
     events.push(tap(actor, targetId));
     log.push(`${nameOf(ctx, targetId)} est incliné.`);
+    // 804.7 / A7 — bus « s'incline » : VRAIE inclinaison par effet (dressé →
+    // incliné). Consommé par tappedFrames (Glyphe Incandescent : le combat en
+    // cours et le rôle attaquant/bloqueur sont filtrés côté consommateur).
+    ruleEvents.push({
+      kind: "tapped",
+      instanceId: targetId,
+      controller: inst.controller,
+    });
   } else {
     log.push(`${nameOf(ctx, targetId)} est déjà incliné.`);
   }
@@ -755,7 +764,7 @@ export function resolveTapTarget(
       `${nameOf(ctx, targetId)} ne peut pas se redresser jusqu'au début de votre prochain tour.`,
     );
   }
-  return { events, log };
+  return { events, log, ruleEvents };
 }
 
 /**
