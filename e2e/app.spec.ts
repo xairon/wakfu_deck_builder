@@ -197,7 +197,11 @@ test.describe("Decks", () => {
     page,
   }) => {
     await gotoAuthed(page, "/decks");
-    const officialLink = page.getByRole("link", { name: /Decks officiels/i });
+    // Scopé au contenu principal : le pied de page porte AUSSI un lien
+    // « Decks officiels » (strict mode Playwright refuserait le doublon).
+    const officialLink = page
+      .locator("main")
+      .getByRole("link", { name: /Decks officiels/i });
     await expect(officialLink).toBeVisible();
     await officialLink.click();
     await expect(page).toHaveURL(/\/decks\/official/);
@@ -449,8 +453,10 @@ test.describe("Table de jeu (/play/table)", () => {
     // Combat résolu : la barre disparaît.
     await expect(page.locator(".gcombat")).toBeHidden();
 
-    // 4) Le combat a eu lieu : l'attaquant est incliné (déclaration) et la cible
-    //    a pris des dégâts (ou a été détruite, donc retirée du Monde).
+    // 4) Le combat a eu lieu : la cible a pris des dégâts (ou a été détruite),
+    //    et l'attaquant est incliné (déclaration 703/A6) — OU détruit par la
+    //    riposte de la Cible (707.1 : à Forces égales, l'échange est mortel des
+    //    deux côtés — les deux decks jouent le même Allié).
     const result = await page.evaluate(
       (arg) => {
         const { atkId, tid } = arg as { atkId: string; tid: string };
@@ -462,13 +468,14 @@ test.describe("Table de jeu (/play/table)", () => {
         const inMonde = (game?.state?.seats?.B?.monde ?? []).includes(tid);
         return {
           tapped: atk?.orientation === "tapped",
+          atkZone: atk?.location?.zone ?? null,
           dmg: tgt?.counters?.damage ?? 0,
           inMonde,
         };
       },
       { atkId: setup.atkId, tid: target.id },
     );
-    expect(result.tapped).toBe(true);
+    expect(result.tapped || result.atkZone === "defausse").toBe(true);
     expect(result.dmg > target.dmgBefore || !result.inMonde).toBe(true);
   });
 });
