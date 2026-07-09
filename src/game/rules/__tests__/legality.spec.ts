@@ -9,6 +9,7 @@ import {
   playDestination,
   whyCannotDeclareAttack,
   whyCannotMoveHero,
+  whyCannotMoveCreature,
   whyCannotPlay,
 } from "../legality";
 import {
@@ -111,6 +112,78 @@ describe("rules/legality — jouer une carte", () => {
     const f = fixture([salle]);
     bringToHand(f, "A", instId("A", 0));
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toBeNull();
+  });
+
+  it("un Allié dans le Havre-Sac n'est PAS un attaquant légal (503.1/508.1b)", () => {
+    const ally = makeAlly("aatk", { niveau: 1, element: "Feu", force: 2 });
+    const f = fixture([ally]);
+    const allyId = instId("A", 0);
+    setTurn(f, "A", 3); // hors 1er tour + hors mal d'invocation
+    // Allié dans l'INTÉRIEUR du Havre-Sac, dressé.
+    dispatch(
+      f,
+      move("A", {
+        instanceId: allyId,
+        from: ctxOf(f).state.instances[allyId].location,
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true,
+        orientationOnArrival: "upright",
+      }),
+    );
+    expect(eligibleAttackers(ctxOf(f), "A")).not.toContain(allyId);
+    // Une fois SORTI dans le Monde, il devient attaquant légal.
+    dispatch(
+      f,
+      move("A", {
+        instanceId: allyId,
+        from: { zone: "havreSac", owner: "A" },
+        to: { zone: "monde" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true,
+        orientationOnArrival: "upright",
+      }),
+    );
+    expect(eligibleAttackers(ctxOf(f), "A")).toContain(allyId);
+  });
+
+  it("mouvement d'Allié 414.1/414.2 : sort du Havre-Sac dressé, bloqué si incliné ou au 1er tour", () => {
+    const mk = (orient: "upright" | "tapped") => {
+      const ally = makeAlly("mv", { niveau: 1, element: "Feu" });
+      const f = fixture([ally]);
+      const id = instId("A", 0);
+      dispatch(
+        f,
+        move("A", {
+          instanceId: id,
+          from: ctxOf(f).state.instances[id].location,
+          to: { zone: "havreSac", owner: "A" },
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: true,
+          orientationOnArrival: orient,
+        }),
+      );
+      return { f, id };
+    };
+    // Dressé, tour ≥ 2 → peut sortir dans le Monde.
+    const a = mk("upright");
+    setTurn(a.f, "A", 3);
+    expect(whyCannotMoveCreature(ctxOf(a.f), "A", a.id, "monde")).toBeNull();
+    // Incliné → 414.2 refuse le déplacement.
+    const b = mk("tapped");
+    setTurn(b.f, "A", 3);
+    expect(whyCannotMoveCreature(ctxOf(b.f), "A", b.id, "monde")).toContain(
+      "inclinée",
+    );
+    // 1er tour → pas de sortie au Monde (506.3).
+    const c = mk("upright");
+    setTurn(c.f, "A", 1);
+    expect(whyCannotMoveCreature(ctxOf(c.f), "A", c.id, "monde")).toContain(
+      "premier tour",
+    );
   });
 
   it("place une Salle dans le Havre-Sac et une Zone dans le Monde (309.1)", () => {

@@ -243,20 +243,62 @@ export function whyCannotMoveHero(
   return null;
 }
 
+/**
+ * Mouvement d'une CRÉATURE (Héros ou Allié) entre son Havre-Sac et le Monde
+ * (414.1) — GÉNÉRALISE le déplacement du Héros aux Alliés. À son tour, en Phase
+ * Principale ; la créature doit être DRESSÉE (414.2 : une carte inclinée ne se
+ * déplace pas) ; la zone visée diffère ; aucune SORTIE au Monde au 1er tour de la
+ * partie (506.3) ; l'entrée au Havre-Sac respecte la Taille (414.3). Gratuit.
+ */
+export function whyCannotMoveCreature(
+  ctx: RulesCtx,
+  seat: Seat,
+  instanceId: InstanceId,
+  to: "monde" | "havreSac",
+): string | null {
+  const { turn } = ctx.state;
+  if (turn.active !== seat) return "Ce n'est pas votre tour.";
+  if (turn.phase !== "principale")
+    return "On déplace une créature en Phase Principale.";
+  const inst = ctx.state.instances[instanceId];
+  if (!inst || inst.controller !== seat)
+    return "Cette créature n'est pas sous ton contrôle.";
+  const card = ctx.getCard(inst.cardId);
+  if (
+    !card ||
+    (card.mainType !== "Héros" &&
+      card.mainType !== "Allié" &&
+      card.mainType !== "Allié Élémentaire")
+  )
+    return "Seul un Héros ou un Allié peut se déplacer (414.1).";
+  const cur = inst.location.zone;
+  if (cur !== "monde" && cur !== "havreSac")
+    return "Cette créature n'est pas en jeu.";
+  if (cur === to)
+    return to === "monde"
+      ? "Cette créature est déjà dans le Monde."
+      : "Cette créature est déjà dans son Havre-Sac.";
+  if (inst.orientation !== "upright")
+    return "Une créature inclinée ne peut pas se déplacer (414.2).";
+  if (to === "monde" && turn.number === 1)
+    return "Aucune sortie dans le Monde au premier tour de la partie.";
+  if (to === "havreSac" && !havreSacHasRoom(ctx, seat))
+    return "Le Havre-Sac est plein (Taille atteinte).";
+  return null;
+}
+
 /** Attaquants légaux : Alliés/Héros redressés, sans mal d'invocation (1821). */
 export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
   const out: InstanceId[] = [];
   for (const inst of Object.values(ctx.state.instances)) {
     if (inst.controller !== seat) continue;
-    const zone = inst.location.zone;
-    if (zone !== "monde" && zone !== "havreSac") continue;
+    // 503.1/508.1b — on n'attaque QUE depuis le Monde : une créature (Héros comme
+    // Allié) dans l'intérieur du Havre-Sac est à l'abri mais ne peut pas être
+    // déclarée attaquante ; elle doit d'abord sortir (mouvement 414.1).
+    if (inst.location.zone !== "monde") continue;
     if (inst.orientation !== "upright") continue;
     const card = ctx.getCard(inst.cardId);
     if (!card || !canAttackCard(card)) continue;
-    // Le Héros ne peut être ENVOYÉ au combat qu'exposé dans le Monde (protégé au
-    // Havre-Sac, 508.x/414.1) ; il s'y expose en sortant (moveHero). Les Alliés
-    // y sont déjà joués — leur zone n'est pas restreinte ici.
-    if (card.mainType === "Héros" && zone !== "monde") continue;
     // « ne peut ni attaquer, ni bloquer » (pouvoir continu) — exclu des
     // attaquants éligibles (volet blocage géré par eligibleBlockers/cannotBlock).
     if (cannotAttackOrBlock(ctx, inst.instanceId)) continue;

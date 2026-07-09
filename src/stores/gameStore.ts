@@ -77,6 +77,7 @@ import {
   victoryFromState,
   whyCannotDeclareAttack,
   whyCannotMoveHero,
+  whyCannotMoveCreature,
   blockerBlockedByAgilite,
   powerConditionReason,
   whyCannotPlay,
@@ -1267,6 +1268,67 @@ export const useGameStore = defineStore("game", () => {
       heroInstanceId: heroId!,
     };
   });
+
+  /**
+   * Mouvement d'une CRÉATURE (Héros ou Allié) entre le Havre-Sac et le Monde
+   * (414.1) — généralise `moveHero` aux Alliés. Légalité via `whyCannotMoveCreature`
+   * (à son tour, Phase Principale, DRESSÉE 414.2, Taille 414.3, pas de sortie au
+   * 1er tour). On déplace l'instance en conservant ses compteurs (échange 501.5).
+   */
+  function moveCreature(instanceId: string, to: "monde" | "havreSac"): void {
+    const seat = perspective.value;
+    const reason = whyCannotMoveCreature(rulesCtx(), seat, instanceId, to);
+    if (reason) {
+      rejectMove(reason);
+      return;
+    }
+    const inst = state.value.instances[instanceId];
+    if (!inst) return;
+    dispatch(
+      move(seat, {
+        instanceId,
+        from: inst.location,
+        to:
+          to === "monde"
+            ? { zone: "monde" }
+            : { zone: "havreSac", owner: seat },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true, // 501.5 : conserve orientation/compteurs
+        orientationOnArrival: inst.orientation,
+      }),
+    );
+  }
+
+  /**
+   * Option de déplacement (Sortir/Rentrer, 414.1) pour la CRÉATURE `instanceId`
+   * du joueur affiché, ou `null` si ce n'est pas une créature en jeu qu'il
+   * contrôle. `to` = zone opposée à la position actuelle ; `reason` = motif de
+   * refus MAINTENANT (null = permis). Alimente un bouton par créature sélectionnée.
+   */
+  function creatureMoveOption(instanceId: string): {
+    to: "monde" | "havreSac";
+    reason: string | null;
+  } | null {
+    const seat = perspective.value;
+    const inst = state.value.instances[instanceId];
+    if (!inst || inst.controller !== seat) return null;
+    const cur = inst.location.zone;
+    if (cur !== "monde" && cur !== "havreSac") return null;
+    const card = getCard(inst.cardId);
+    if (
+      !card ||
+      (card.mainType !== "Héros" &&
+        card.mainType !== "Allié" &&
+        card.mainType !== "Allié Élémentaire")
+    )
+      return null;
+    const to: "monde" | "havreSac" = cur === "monde" ? "havreSac" : "monde";
+    return {
+      to,
+      reason: whyCannotMoveCreature(rulesCtx(), seat, instanceId, to),
+    };
+  }
 
   function moveTo(
     instanceId: string,
@@ -3285,6 +3347,8 @@ export const useGameStore = defineStore("game", () => {
     draw,
     moveTo,
     moveHero,
+    moveCreature,
+    creatureMoveOption,
     toggleTap,
     adjustCounter,
     shufflePioche,

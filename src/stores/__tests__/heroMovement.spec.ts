@@ -68,6 +68,47 @@ describe("gameStore — moveHero (mouvement du Héros, 414.1)", () => {
     expect(store.ruleError).toContain("premier tour");
   });
 
+  it("moveCreature : un ALLIÉ dressé sort du Havre-Sac vers le Monde et rentre (414.1)", () => {
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "B"); // B commence
+    store.endTurn(); // → tour 2, actif A
+    store.perspective = "A";
+    // Allié de A dans son Havre-Sac (dressé).
+    const allyId = store.state.seats.A.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "A-ally",
+    )!;
+    store.moveTo(allyId, { zone: "havreSac", owner: "A" });
+    expect(store.state.instances[allyId].location.zone).toBe("havreSac");
+
+    store.moveCreature(allyId, "monde"); // Sortir
+    expect(store.state.instances[allyId].location.zone).toBe("monde");
+
+    store.moveCreature(allyId, "havreSac"); // Rentrer
+    expect(store.state.instances[allyId].location.zone).toBe("havreSac");
+  });
+
+  it("moveCreature : refuse de déplacer un Allié INCLINÉ (414.2)", () => {
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "B");
+    store.endTurn(); // tour 2, actif A
+    store.perspective = "A";
+    const allyId = store.state.seats.A.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "A-ally",
+    )!;
+    store.moveTo(allyId, { zone: "monde" });
+    store.toggleTap(allyId); // incliné
+    store.ruleError = null;
+    store.moveCreature(allyId, "havreSac");
+    expect(store.state.instances[allyId].location.zone).toBe("monde"); // pas bougé
+    expect(store.ruleError).toContain("inclinée");
+  });
+
   it("heroMoveOption (source du bouton) suit la zone du Héros et sa légalité", () => {
     const a = makeDeck("A");
     const b = makeDeck("B");

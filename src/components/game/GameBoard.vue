@@ -823,6 +823,27 @@
                 : "🛡 Rentrer au Havre-Sac"
             }}
           </button>
+          <!-- Allié : Sortir/Rentrer (414.1) — même geste que le Héros, appliqué à
+               une créature sélectionnée qui n'est pas le Héros. -->
+          <button
+            v-else-if="allyMove"
+            class="gbtn gbtn--accent"
+            data-testid="action-move-ally"
+            :disabled="!!allyMove.reason"
+            :title="
+              allyMove.reason ??
+              (allyMove.to === 'monde'
+                ? 'Cet Allié sort dans le Monde (exposé, il peut attaquer).'
+                : 'Cet Allié rentre à l’abri dans ton Havre-Sac.')
+            "
+            @click="moveCreatureSelected"
+          >
+            {{
+              allyMove.to === "monde"
+                ? "⚔ Sortir dans le Monde"
+                : "🛡 Rentrer au Havre-Sac"
+            }}
+          </button>
           <button class="gbtn gbtn--accent" @click="tapSelected">
             {{
               selectedInst.orientation === "tapped"
@@ -1091,6 +1112,23 @@ function moveHeroSelected(): void {
   if (!opt) return;
   store.moveHero(me.value, opt.to); // rejette avec le motif si illégal
   selectedId.value = null; // la zone du Héros a changé → referme la barre
+}
+// Mouvement d'un ALLIÉ sélectionné (414.1) — exclut le Héros (qui a son propre
+// bouton ci-dessus). `creatureMoveOption` renvoie null si ce n'est pas une
+// créature contrôlée en jeu ; `reason` (null = OK) désactive avec l'explication.
+const allyMove = computed(() => {
+  const inst = selectedInst.value;
+  if (!inst) return null;
+  if (heroMove.value && inst.instanceId === heroMove.value.heroInstanceId)
+    return null;
+  return store.creatureMoveOption(inst.instanceId);
+});
+function moveCreatureSelected(): void {
+  const inst = selectedInst.value;
+  const opt = inst ? store.creatureMoveOption(inst.instanceId) : null;
+  if (!inst || !opt) return;
+  store.moveCreature(inst.instanceId, opt.to); // rejette avec le motif si illégal
+  selectedId.value = null; // la zone a changé → referme la barre
 }
 function select(instanceId: string): void {
   // ciblage de Porteur en cours (305.x) : le clic désigne la créature qui
