@@ -40,11 +40,13 @@ export const useTutorialStore = defineStore("tutorial", () => {
     game.assist = true;
     game.assistEffects = true;
     game.botAggressive = false; // doux le temps que le joueur développe
+    // Premier joueur TIRÉ AU SORT (comme en ligne) : on n'impose plus
+    // l'ordinateur. `first` omis → startMatch fait le pile/face ; le tirage animé
+    // (PlayTableView) le révèle. NB : si le joueur est désigné, son 1er tour est
+    // le tour 1 → il ne peut poser aucune carte ce tour-là (règle 4943).
     game.startMatch(deckA, deckB, {
       nameA: "Toi",
       nameB: "L'ordinateur",
-      first: "B", // l'ordinateur commence → le 1er tour du joueur (tour 2) autorise
-      // de poser une carte (règle 4943 : rien au tout premier tour de la partie).
     });
     game.botSeat = "B"; // l'IA pilote le siège B (useBotOpponent, monté par la vue)
     // La vue reste TOUJOURS côté humain (siège A) : on regarde le bot jouer, sans

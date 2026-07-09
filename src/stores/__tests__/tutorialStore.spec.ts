@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { nextTick } from "vue";
 import { setActivePinia, createPinia } from "pinia";
 import { useTutorialStore } from "../tutorialStore";
@@ -61,6 +61,36 @@ describe("tutorialStore — « Apprendre en jouant » (guide passif)", () => {
     // la vue reste côté humain (siège A), sans rideau de passation.
     expect(game.perspective).toBe("A");
     expect(game.passPending).toBe(false);
+  });
+
+  it("tire le premier joueur au SORT (n'impose plus l'ordinateur)", () => {
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const game = useGameStore();
+    const t = useTutorialStore();
+
+    // Math.random < 0.5 → le JOUEUR (siège A) commence : impossible avant
+    // (first était figé sur "B" = l'ordinateur).
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.1);
+    t.startGuidedGame(a.deck, b.deck);
+    expect(game.firstPlayer).toBe("A");
+    // La vue reste côté joueur et le bot garde le siège B quel que soit le tirage.
+    expect(game.perspective).toBe("A");
+    expect(game.botSeat).toBe("B");
+    rnd.mockRestore();
+  });
+
+  it("le tirage peut aussi désigner l'ordinateur (siège B)", () => {
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const game = useGameStore();
+    const t = useTutorialStore();
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.9); // ≥ 0.5 → B commence
+    t.startGuidedGame(a.deck, b.deck);
+    expect(game.firstPlayer).toBe("B");
+    rnd.mockRestore();
   });
 
   it("dismissWelcome() ferme l'écran d'accueil sans toucher à la partie", () => {

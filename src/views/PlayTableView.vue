@@ -1163,10 +1163,10 @@ watch(
       diceShownFor !== store.gameId()
     ) {
       diceShownFor = store.gameId();
-      // En mode « Apprendre en jouant », le 1er joueur est IMPOSÉ (l'ordinateur
-      // commence, pour la cohérence des étapes) : le tirage au sort animé serait
-      // trompeur (« L'adversaire commence » à chaque fois) et retarderait le début.
-      if (!tutorial.active) rollFirstPlayerDie();
+      // Tirage au sort ANIMÉ dans tous les modes (solo vs IA comme en ligne) : le
+      // 1er joueur est désormais tiré au sort (tutorialStore n'impose plus
+      // l'ordinateur), donc le dé est honnête et non plus trompeur.
+      rollFirstPlayerDie();
     }
   },
 );
