@@ -182,6 +182,55 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     expect(store.effectTargeting).toBeNull();
   });
 
+  it("1er tour (bot = 1er joueur) : pose une Salle au Havre-Sac, ne gaspille PAS Tirlangue, garde les cartes du Monde en main", () => {
+    const b = makeDeckPoweredHero("B"); // Héros type Tirlangue (pouvoir offensif)
+    const salle = {
+      ...createMockAllyCard({
+        id: "b-salle",
+        name: "Temple Test",
+        stats: { niveau: { value: 0, element: "Neutre" } },
+      }),
+      mainType: "Salle",
+    } as unknown as Card;
+    const mondeAlly = createMockAllyCard({
+      id: "b-monde",
+      name: "Allié Monde",
+      stats: {
+        niveau: { value: 1, element: "Feu" },
+        force: { value: 1, element: "Feu" },
+      },
+    });
+    b.deck.cards.push({ card: salle, quantity: 1 });
+    b.deck.cards.push({ card: mondeAlly, quantity: 1 });
+    const a = makeDeck("A");
+    useCardStore().cards = [...a.cards, ...b.cards, salle, mondeAlly];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "B"); // B commence → tour 1 = B
+    store.assistEffects = true;
+    store.botAggressive = false;
+
+    // Salle + Allié-Monde en main de B.
+    const salleId = store.state.seats.B.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "b-salle",
+    )!;
+    const mondeId = store.state.seats.B.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "b-monde",
+    )!;
+    store.moveTo(salleId, { zone: "main", owner: "B" });
+    store.moveTo(mondeId, { zone: "main", owner: "B" });
+    store.perspective = "B";
+    const heroB = store.state.seats.B.heroInstanceId!;
+
+    const tried = new Set<string>();
+    for (let i = 0; i < 10; i++) botStep(store, tried);
+
+    // Salle POSÉE dans le Havre-Sac ; Tirlangue NON gaspillé ; Allié-Monde reste
+    // en main (le Monde est interdit au 1er tour de la partie, 4943).
+    expect(store.state.instances[salleId].location.zone).toBe("havreSac");
+    expect(store.state.instances[heroB].orientation).toBe("upright");
+    expect(store.state.seats.B.main).toContain(mondeId);
+  });
+
   it("botReactInCombat : le bot DÉFENSEUR réagit à l'attaque en activant un pouvoir utile", () => {
     const a = makeDeck("A"); // A a un attaquant (A-ally, Force 1)
     const b = makeDeckPoweredHero("B"); // B a un Héros « inflige 2 Dommages »
