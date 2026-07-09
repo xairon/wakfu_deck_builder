@@ -1054,7 +1054,13 @@ onMounted(() => {
       inst?.location.zone === "main" &&
       inst.owner === me.value
     ) {
-      store.playFromHand(instanceId);
+      // 303.1 — la zone de drop porte le choix de destination du contrôleur :
+      // déposer un Allié sur SON Havre-Sac l'y fait apparaître (façon MTGA).
+      const dest: "monde" | "havreSac" =
+        spec.zone.zone === "havreSac" && spec.zone.owner === me.value
+          ? "havreSac"
+          : "monde";
+      store.playFromHand(instanceId, undefined, dest);
       return;
     }
     store.moveTo(instanceId, spec.zone, spec.position ?? { at: "any" });
@@ -1317,7 +1323,9 @@ function moveSelected(
     inst.location.zone === "main" &&
     inst.owner === me.value
   ) {
-    store.playFromHand(inst.instanceId);
+    // 303.1 — le bouton visé (« → Monde » / « → Socle ») porte le choix de
+    // zone d'arrivée du contrôleur (un Allié peut apparaître dans les deux).
+    store.playFromHand(inst.instanceId, undefined, zone);
     selectedId.value = null;
     return;
   }

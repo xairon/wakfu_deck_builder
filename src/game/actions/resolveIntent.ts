@@ -38,7 +38,7 @@ import {
 import { nextTurnEvents, turnEndDestroyEvents } from "../engine/turn.ts";
 import {
   whyCannotPlay,
-  playDestination,
+  resolvedPlayDestination,
   whyCannotDeclareAttack,
   eligibleAttackers,
   eligibleTargets,
@@ -146,7 +146,13 @@ export function resolveIntent(
 
   switch (intent.kind) {
     case "PLAY_CARD": {
-      const reason = whyCannotPlay(ctx, seat, intent.instanceId, false);
+      const reason = whyCannotPlay(
+        ctx,
+        seat,
+        intent.instanceId,
+        false,
+        intent.destination,
+      );
       if (reason) return { error: reason };
       const inst = state.instances[intent.instanceId];
       const card = getCard(inst?.cardId ?? null);
@@ -154,8 +160,10 @@ export function resolveIntent(
       const plan = planCost(ctx, seat, card);
       if (!plan.ok) return { error: plan.reason };
       // 309.1/303.1 — zone d'arrivée selon le type (Salle → Havre-Sac ; Allié →
-      // Monde, ou Havre-Sac au 1er tour de la partie, 506.3).
-      const dest = playDestination(card, seat, state.turn.number);
+      // Monde OU Havre-Sac au choix du contrôleur, forcé Havre-Sac au 1er tour
+      // de la partie, 506.3). La destination demandée ne peut viser que la
+      // zone du joueur lui-même (playDestination renvoie owner: seat).
+      const dest = resolvedPlayDestination(ctx, seat, card, intent.destination);
       const events: DraftEvent[] = plan.producers.map((id) => tap(seat, id));
       events.push(
         move(seat, {

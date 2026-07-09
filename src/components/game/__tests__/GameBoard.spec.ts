@@ -59,8 +59,36 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
 
     await mondeBtn!.trigger("click");
 
-    // Le chemin clavier/clic passe par playFromHand (coût + légalité), comme le DnD.
-    expect(playSpy).toHaveBeenCalledWith(handId);
+    // Le chemin clavier/clic passe par playFromHand (coût + légalité), comme le
+    // DnD — la destination visée (Monde) est transmise (choix de zone 303.1).
+    expect(playSpy).toHaveBeenCalledWith(handId, undefined, "monde");
+  });
+
+  it("« → Socle » joue la carte de la main vers le Havre-Sac (choix 303.1)", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    store.assist = true;
+    const me = store.perspective;
+    if (store.state.seats[me].main.length === 0) store.draw(me);
+    const handId = store.state.seats[me].main[0];
+    expect(handId).toBeTruthy();
+
+    const playSpy = vi.spyOn(store, "playFromHand");
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    await wrapper.get(`[data-testid="card-${handId}"]`).trigger("click");
+    const socleBtn = wrapper
+      .findAll("button")
+      .find((b) => b.text().includes("→ Socle"));
+    expect(socleBtn).toBeTruthy();
+
+    await socleBtn!.trigger("click");
+
+    // Le bouton « → Socle » porte le choix de zone du contrôleur (Havre-Sac).
+    expect(playSpy).toHaveBeenCalledWith(handId, undefined, "havreSac");
   });
 });
 

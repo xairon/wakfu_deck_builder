@@ -187,6 +187,32 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
     expect((arrived!.payload as { value: number }).value).toBe(2);
   });
 
+  it("PLAY_CARD destination Havre-Sac (tour 2) → MOVE vers le Havre-Sac (303.1)", () => {
+    const { events, getCard } = playingState();
+    const toT2 = sequence(
+      [setPhase("B", { active: "B", number: 2, phase: "principale" })],
+      "g",
+      events.length + 1,
+    );
+    const state = deriveState([...events, ...toT2]);
+    const bCard = state.seats.B.main[0];
+    expect(bCard).toBeDefined();
+
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "PLAY_CARD", instanceId: bCard, destination: "havreSac" },
+      "B",
+    );
+    if (!("events" in r))
+      throw new Error("error" in r ? r.error : "attendu events");
+    const moveEv = r.events.find((e) => e.type === "MOVE");
+    expect(moveEv).toBeDefined();
+    const to = (moveEv!.payload as { to: { zone: string; owner?: Seat } }).to;
+    expect(to.zone).toBe("havreSac");
+    expect(to.owner).toBe("B");
+  });
+
   it("END_TURN avec une main pleine (> PA) est rejeté (4873)", () => {
     const { events, getCard } = playingState(); // A a 3 cartes, PA 6
     // Pioche 4 cartes de plus pour A → 7 cartes en main (> PA 6).

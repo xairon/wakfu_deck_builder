@@ -18,21 +18,42 @@ import { eligibleBearers, requiresBearer } from "./bearer.ts";
 /**
  * Zone d'arrivée d'une carte jouée, selon son type (309.1 : Salle → Havre-Sac).
  * 303.1 — un ALLIÉ « apparaît dans le Monde OU dans le Havre-Sac de son
- * propriétaire ». Défaut : le Monde. MAIS au 1er tour de la partie (506.3, aucune
- * entrée dans le Monde), sa seule destination légale est le Havre-Sac → on l'y
- * route (développement de Ressources dès le 1er tour). `turnNumber` omis = défaut
- * (compat). NB : la MONTURE se joue attachée ; ici on ne route que les créatures.
+ * propriétaire » : aux tours ≥ 2, `preferred` porte le choix du contrôleur
+ * (défaut : le Monde). Au 1er tour de la partie (506.3, aucune entrée dans le
+ * Monde), sa seule destination légale est le Havre-Sac → on l'y route quel que
+ * soit le choix (développement de Ressources dès le 1er tour). `turnNumber`
+ * omis = défaut (compat). La préférence n'a de sens QUE pour un Allié — les
+ * autres types gardent leur zone imposée (Salle → Havre-Sac, reste → Monde).
+ * NB : la MONTURE se joue attachée ; ici on ne route que les créatures.
  */
 export function playDestination(
   card: Card,
   seat: Seat,
   turnNumber?: number,
+  preferred?: "monde" | "havreSac",
 ): ZoneRef {
   if (card.mainType === "Salle") return { zone: "havreSac", owner: seat };
   const isAlly =
     card.mainType === "Allié" || card.mainType === "Allié Élémentaire";
-  if (isAlly && turnNumber === 1) return { zone: "havreSac", owner: seat };
+  if (isAlly && (turnNumber === 1 || preferred === "havreSac"))
+    return { zone: "havreSac", owner: seat };
   return { zone: "monde" };
+}
+
+/**
+ * Destination EFFECTIVE d'une carte jouée, préférence du contrôleur comprise.
+ * La préférence est IGNORÉE pendant un combat : un Allié joué en fenêtre de
+ * combat (Défense / Renfort, 706.5) l'est pour bloquer ou renforcer l'attaque
+ * → il arrive TOUJOURS dans le Monde, jamais à l'abri du Havre-Sac.
+ */
+export function resolvedPlayDestination(
+  ctx: RulesCtx,
+  seat: Seat,
+  card: Card,
+  preferred?: "monde" | "havreSac",
+): ZoneRef {
+  const pref = ctx.state.combat ? undefined : preferred;
+  return playDestination(card, seat, ctx.state.turn.number, pref);
 }
 
 /** Tour d'entrée en jeu (token `arrivedTurn`, 0 = mise en place). */
@@ -151,6 +172,7 @@ export function whyCannotPlay(
   seat: Seat,
   instanceId: InstanceId,
   reaction = false,
+  preferred?: "monde" | "havreSac",
 ): string | null {
   const { state } = ctx;
   const inst = state.instances[instanceId];
@@ -177,7 +199,7 @@ export function whyCannotPlay(
     return "Ce n'est pas votre tour.";
   if (!bypassTurnPhase && state.turn.phase !== "principale")
     return "On ne joue des cartes qu'en Phase Principale.";
-  const dest = playDestination(card, seat, state.turn.number);
+  const dest = resolvedPlayDestination(ctx, seat, card, preferred);
   if (dest.zone === "monde" && state.turn.number === 1)
     return "Aucune carte ne peut entrer dans le Monde au premier tour de la partie.";
   // 2626 / 4806 : pas de carte dans le Havre-Sac s'il est plein (Taille atteinte).
@@ -219,9 +241,43 @@ export function whyCannotDeclareAttack(
 }
 
 /**
+ * Contrôles COMMUNS du mouvement 414.x, partagés Héros/Allié : zone visée ≠
+ * zone courante, carte DRESSÉE (414.2), aucune sortie au Monde au 1er tour de
+ * la partie (506.3), entrée au Havre-Sac dans la Taille (414.3). Le drapeau
+ * `hero` ne change QUE la formulation des messages — jamais la règle : toute
+ * évolution du mouvement se fait ICI, une seule fois.
+ */
+function whyCannotMoveCommon(
+  ctx: RulesCtx,
+  seat: Seat,
+  inst: CardInstance | undefined,
+  to: "monde" | "havreSac",
+  hero: boolean,
+): string | null {
+  if (inst?.location.zone === to) {
+    if (to === "monde")
+      return hero
+        ? "Ton Héros est déjà dans le Monde."
+        : "Cette créature est déjà dans le Monde.";
+    return hero
+      ? "Ton Héros est déjà dans son Havre-Sac."
+      : "Cette créature est déjà dans son Havre-Sac.";
+  }
+  if (inst && inst.orientation !== "upright")
+    return hero
+      ? "Un Héros incliné ne peut pas se déplacer (414.2)."
+      : "Une créature inclinée ne peut pas se déplacer (414.2).";
+  if (to === "monde" && ctx.state.turn.number === 1)
+    return "Aucune sortie dans le Monde au premier tour de la partie.";
+  if (to === "havreSac" && !havreSacHasRoom(ctx, seat))
+    return "Le Havre-Sac est plein (Taille atteinte).";
+  return null;
+}
+
+/**
  * Mouvement du Héros entre son Havre-Sac et le Monde (414.1) : à son tour, en
- * Phase Principale, aucune SORTIE dans le Monde au tout premier tour de la partie
- * (506.3), et la zone visée doit différer de la zone courante. Sans coût (414.1).
+ * Phase Principale, puis contrôles communs 414.x (dressé, 1er tour, Taille) —
+ * cf. `whyCannotMoveCommon` (messages « Héros »). Sans coût (414.1).
  */
 export function whyCannotMoveHero(
   ctx: RulesCtx,
@@ -233,22 +289,15 @@ export function whyCannotMoveHero(
   if (turn.phase !== "principale")
     return "On déplace le Héros en Phase Principale.";
   const heroId = ctx.state.seats[seat].heroInstanceId;
-  const cur = heroId ? ctx.state.instances[heroId]?.location.zone : undefined;
-  if (cur === to)
-    return to === "monde"
-      ? "Ton Héros est déjà dans le Monde."
-      : "Ton Héros est déjà dans son Havre-Sac.";
-  if (to === "monde" && turn.number === 1)
-    return "Aucune sortie dans le Monde au premier tour de la partie.";
-  return null;
+  const hero = heroId ? ctx.state.instances[heroId] : undefined;
+  return whyCannotMoveCommon(ctx, seat, hero, to, true);
 }
 
 /**
  * Mouvement d'une CRÉATURE (Héros ou Allié) entre son Havre-Sac et le Monde
  * (414.1) — GÉNÉRALISE le déplacement du Héros aux Alliés. À son tour, en Phase
- * Principale ; la créature doit être DRESSÉE (414.2 : une carte inclinée ne se
- * déplace pas) ; la zone visée diffère ; aucune SORTIE au Monde au 1er tour de la
- * partie (506.3) ; l'entrée au Havre-Sac respecte la Taille (414.3). Gratuit.
+ * Principale, sous son contrôle, en jeu, puis contrôles communs 414.x
+ * (dressé, 1er tour, Taille) — cf. `whyCannotMoveCommon`. Gratuit.
  */
 export function whyCannotMoveCreature(
   ctx: RulesCtx,
@@ -274,17 +323,7 @@ export function whyCannotMoveCreature(
   const cur = inst.location.zone;
   if (cur !== "monde" && cur !== "havreSac")
     return "Cette créature n'est pas en jeu.";
-  if (cur === to)
-    return to === "monde"
-      ? "Cette créature est déjà dans le Monde."
-      : "Cette créature est déjà dans son Havre-Sac.";
-  if (inst.orientation !== "upright")
-    return "Une créature inclinée ne peut pas se déplacer (414.2).";
-  if (to === "monde" && turn.number === 1)
-    return "Aucune sortie dans le Monde au premier tour de la partie.";
-  if (to === "havreSac" && !havreSacHasRoom(ctx, seat))
-    return "Le Havre-Sac est plein (Taille atteinte).";
-  return null;
+  return whyCannotMoveCommon(ctx, seat, inst, to, false);
 }
 
 /** Attaquants légaux : Alliés/Héros redressés, sans mal d'invocation (1821). */

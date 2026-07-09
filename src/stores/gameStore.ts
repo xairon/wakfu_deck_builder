@@ -63,7 +63,7 @@ import {
   normElement,
   normWord,
   planCost,
-  playDestination,
+  resolvedPlayDestination,
   playEffects,
   pmOf,
   printedEffects,
@@ -1801,14 +1801,19 @@ export const useGameStore = defineStore("game", () => {
    * Porteur (cf. pendingBearer / attachToBearer) plutôt que d'arriver standalone.
    * Retourne `false` (avec `ruleError`) si le coup est refusé.
    */
-  function playFromHand(instanceId: string, bearerId?: string): boolean {
+  function playFromHand(
+    instanceId: string,
+    bearerId?: string,
+    destination?: "monde" | "havreSac",
+  ): boolean {
     const seat = perspective.value;
     // EN LIGNE (P2) : intention PLAY_CARD — le serveur valide tour/zone/coût et
-    // choisit la destination (Salle → Havre-Sac), incline les producteurs, pose
-    // le jeton d'arrivée. Un refus revient en français via ruleError.
+    // résout la destination (Salle → Havre-Sac ; Allié → Monde ou Havre-Sac au
+    // choix, 303.1), incline les producteurs, pose le jeton d'arrivée. Un refus
+    // revient en français via ruleError.
     // L'attachement de Porteur (lot F) n'est PAS encore autoritaire côté serveur
     // → en ligne, l'équipement est joué en standalone (comportement actuel).
-    if (tryIntent({ kind: "PLAY_CARD", instanceId })) return true;
+    if (tryIntent({ kind: "PLAY_CARD", instanceId, destination })) return true;
     if (!assist.value) {
       moveTo(instanceId, { zone: "monde" });
       return true;
@@ -1830,7 +1835,7 @@ export const useGameStore = defineStore("game", () => {
     }
     // 706.5 — le défenseur d'un combat déclaré joue hors de son tour (réaction).
     const reaction = canReactInCombat(seat);
-    const reason = whyCannotPlay(ctx, seat, instanceId, reaction);
+    const reason = whyCannotPlay(ctx, seat, instanceId, reaction, destination);
     if (reason) return rejectMove(reason);
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
@@ -1886,8 +1891,10 @@ export const useGameStore = defineStore("game", () => {
     const actionAtoms = playAtoms.length === effectsCount ? playAtoms : [];
     const dest: ZoneRef = actionAtoms.length
       ? { zone: "defausse", owner: seat }
-      : // 303.1/506.3 : un Allié joué au 1er tour arrive dans le Havre-Sac.
-        playDestination(card, seat, state.value.turn.number);
+      : // 303.1 : un Allié arrive dans le Monde OU le Havre-Sac au choix du
+        // contrôleur (forcé Havre-Sac au 1er tour, 506.3 ; préférence ignorée
+        // en combat — Défense/Renfort arrivent dans le Monde).
+        resolvedPlayDestination(ctx, seat, card, destination);
     drafts.push(
       move(seat, {
         instanceId,

@@ -5,7 +5,14 @@ import type { CombatTargetRef } from "./state";
 /** Intentions de jeu de HAUT NIVEAU (le serveur les valide + les résout en
  *  events autoritatifs). L'acteur est imposé serveur, jamais dans le payload. */
 export type GameIntent =
-  | { kind: "PLAY_CARD"; instanceId: InstanceId; position?: Position }
+  | {
+      kind: "PLAY_CARD";
+      instanceId: InstanceId;
+      position?: Position;
+      /** 303.1 — choix du contrôleur pour un ALLIÉ aux tours ≥ 2 (défaut :
+       *  Monde). Ignoré pour les autres types (zone imposée par la règle). */
+      destination?: "monde" | "havreSac";
+    }
   | {
       kind: "MOVE_CARD";
       instanceId: InstanceId;

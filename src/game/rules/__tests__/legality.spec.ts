@@ -7,6 +7,7 @@ import {
   havreSacHasRoom,
   havreSacOccupancy,
   playDestination,
+  resolvedPlayDestination,
   whyCannotDeclareAttack,
   whyCannotMoveHero,
   whyCannotMoveCreature,
@@ -26,7 +27,7 @@ import {
   moveHeroTo,
   setTurn,
 } from "./harness";
-import { move } from "@/game";
+import { move, setCounter, tap, worldHavenSwap } from "@/game";
 import { createMockHavreSacCard } from "tests/factories/card";
 
 describe("rules/legality — mouvement du Héros (414.1)", () => {
@@ -49,6 +50,72 @@ describe("rules/legality — mouvement du Héros (414.1)", () => {
     moveHeroTo(f, "A", "monde");
     expect(whyCannotMoveHero(ctxOf(f), "A", "monde")).toContain("déjà");
     expect(whyCannotMoveHero(ctxOf(f), "A", "havreSac")).toBeNull();
+  });
+});
+
+describe("rules/legality — mouvement et mal d'invocation (303.3/414)", () => {
+  it("414.2 — un Héros incliné ne peut pas se déplacer", () => {
+    const f = fixture([]);
+    setTurn(f, "A", 3);
+    dispatch(f, tap("A", HERO_A));
+    expect(whyCannotMoveHero(ctxOf(f), "A", "monde")).toContain("incliné");
+  });
+
+  it("414.3 — le Héros ne peut pas rentrer dans un Havre-Sac plein", () => {
+    const f = fixture([makeAlly("occ1"), makeAlly("occ2")], [], {
+      sacA: createMockHavreSacCard({
+        id: "sacT2h",
+        stats: { taille: 2, resistance: 15 },
+      }),
+    });
+    setTurn(f, "A", 3);
+    moveHeroTo(f, "A", "monde");
+    // Deux Alliés occupent le Havre-Sac (Taille 2) pendant que le Héros est sorti.
+    for (const i of [0, 1]) {
+      dispatch(
+        f,
+        move("A", {
+          instanceId: instId("A", i),
+          from: { zone: "pioche", owner: "A" },
+          to: { zone: "havreSac", owner: "A" },
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+          orientationOnArrival: "upright",
+        }),
+      );
+    }
+    expect(whyCannotMoveHero(ctxOf(f), "A", "havreSac")).toContain("plein");
+  });
+
+  it("303.3 — la sortie du Havre-Sac ne repose PAS le mal d'invocation (l'arrivée seule compte)", () => {
+    const ally = makeAlly("fraich", { niveau: 1, element: "Feu", force: 2 });
+    const f = fixture([ally]);
+    const id = instId("A", 0);
+    setTurn(f, "A", 3);
+    // Apparu CE tour dans le Havre-Sac (303.1)…
+    dispatch(
+      f,
+      move("A", {
+        instanceId: id,
+        from: { zone: "pioche", owner: "A" },
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: false,
+        orientationOnArrival: "upright",
+      }),
+    );
+    dispatch(f, setCounter("A", id, "arrivedTurn", 3, true));
+    // … puis SORT dans le Monde le même tour (414.1, identité conservée).
+    expect(whyCannotMoveCreature(ctxOf(f), "A", id, "monde")).toBeNull();
+    dispatch(f, worldHavenSwap("A", id, "havreSac"));
+    expect(ctxOf(f).state.instances[id].location.zone).toBe("monde");
+    // Mal d'invocation de l'ARRIVÉE (303.3) : pas attaquant le tour d'apparition.
+    expect(eligibleAttackers(ctxOf(f), "A")).not.toContain(id);
+    // Au tour suivant de A, il attaque — le mouvement seul ne repose RIEN.
+    setTurn(f, "A", 5);
+    expect(eligibleAttackers(ctxOf(f), "A")).toContain(id);
   });
 });
 
@@ -206,6 +273,84 @@ describe("rules/legality — jouer une carte", () => {
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toContain(
       "premier tour",
     );
+  });
+
+  it("303.1 — la préférence Havre-Sac d'un Allié est honorée aux tours ≥ 2", () => {
+    const ally = makeAlly("pref", { niveau: 0 });
+    // Tours ≥ 2 : le contrôleur choisit le Monde (défaut) OU son Havre-Sac.
+    expect(playDestination(ally, "A", 3, "havreSac")).toEqual({
+      zone: "havreSac",
+      owner: "A",
+    });
+    expect(playDestination(ally, "A", 3, "monde")).toEqual({ zone: "monde" });
+    // 1er tour : Havre-Sac forcé (506.3), quelle que soit la préférence.
+    expect(playDestination(ally, "A", 1, "monde")).toEqual({
+      zone: "havreSac",
+      owner: "A",
+    });
+    // Non-Allié : la préférence est ignorée (une Zone va toujours au Monde).
+    const zone = { ...makeAlly("z", {}), mainType: "Zone" } as unknown as Card;
+    expect(playDestination(zone, "A", 3, "havreSac")).toEqual({
+      zone: "monde",
+    });
+  });
+
+  it("refuse un Allié visant un Havre-Sac plein (préférence + 2626), Monde OK", () => {
+    const f = fixture(
+      [makeAlly("occupant"), makeAlly("joue", { niveau: 0 })],
+      [],
+      {
+        sacA: createMockHavreSacCard({
+          id: "sacT2b",
+          stats: { taille: 2, resistance: 15 },
+        }),
+      },
+    );
+    // Héros (1) + un Allié (2) dans le Havre-Sac → plein (Taille 2).
+    dispatch(
+      f,
+      move("A", {
+        instanceId: instId("A", 0),
+        from: ctxOf(f).state.instances[instId("A", 0)].location,
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: false,
+        orientationOnArrival: "upright",
+      }),
+    );
+    bringToHand(f, "A", instId("A", 1));
+    setTurn(f, "A", 3);
+    expect(
+      whyCannotPlay(ctxOf(f), "A", instId("A", 1), false, "havreSac"),
+    ).toContain("plein");
+    // Sans préférence (défaut Monde), le coup reste légal.
+    expect(whyCannotPlay(ctxOf(f), "A", instId("A", 1))).toBeNull();
+  });
+
+  it("la préférence Havre-Sac est ignorée pendant un combat (Défense → Monde)", () => {
+    const ally = makeAlly("def", { niveau: 0 });
+    const f = fixture([ally]);
+    setTurn(f, "A", 3);
+    const ctx = ctxOf(f);
+    const inCombat = {
+      ...ctx,
+      state: {
+        ...ctx.state,
+        combat: { attackerSeat: "B" } as unknown as NonNullable<
+          typeof ctx.state.combat
+        >,
+      },
+    };
+    // En combat, un Allié joué (Défense/Renfort) arrive TOUJOURS dans le Monde.
+    expect(resolvedPlayDestination(inCombat, "A", ally, "havreSac")).toEqual({
+      zone: "monde",
+    });
+    // Hors combat, la préférence est honorée.
+    expect(resolvedPlayDestination(ctx, "A", ally, "havreSac")).toEqual({
+      zone: "havreSac",
+      owner: "A",
+    });
   });
 
   it("autorise un Allié au premier tour, routé vers le Havre-Sac (303.1/506.3)", () => {
