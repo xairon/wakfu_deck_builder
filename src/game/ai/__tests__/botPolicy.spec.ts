@@ -63,4 +63,49 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
       "Pas de pouvoir à inclinaison automatisé.",
     );
   });
+
+  it("n'inflige PAS ses Dommages ciblés à ses PROPRES créatures faute de cible adverse (passe)", () => {
+    // Régression (Tirlangue vs Héros adverse embagé) : un op nuisible « … de
+    // votre choix » sans cible ADVERSE légale ne doit PAS retomber sur les
+    // créatures du bot (auto-mutilation invisible) — le bot PASSE.
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "A");
+    store.assistEffects = true;
+
+    // Un Allié du bot dans le Monde ; le Héros A reste embagé, aucun Allié A au
+    // Monde → aucune cible adverse légale (508.x).
+    const bAllyId = store.state.seats.B.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "B-ally",
+    )!;
+    store.moveTo(bAllyId, { zone: "monde" });
+
+    store.perspective = "B";
+    store.enqueueEffect({
+      seat: "B",
+      cardName: "Tirlangue (test)",
+      ops: [
+        {
+          op: "damageTarget",
+          n: 2,
+          element: "Air",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+    expect(store.effectTargeting?.op.op).toBe("damageTarget");
+    const heroB = store.state.seats.B.heroInstanceId!;
+    const hpBefore = store.state.instances[heroB].counters.hp;
+
+    botStep(store, new Set());
+
+    // Le bot a PASSÉ : aucune de ses créatures n'a encaissé les 2 Dommages.
+    expect(store.state.instances[bAllyId].counters.damage ?? 0).toBe(0);
+    expect(store.state.instances[bAllyId].location.zone).toBe("monde");
+    expect(store.state.instances[heroB].counters.hp).toBe(hpBefore);
+    expect(store.effectTargeting).toBeNull();
+  });
 });

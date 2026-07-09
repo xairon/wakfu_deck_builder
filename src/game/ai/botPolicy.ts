@@ -88,7 +88,14 @@ function pickTarget(store: Store, me: Seat): void {
   const pool = harmful
     ? scored.filter((s) => !s.mine)
     : scored.filter((s) => s.mine);
-  const chosen = (pool.length ? pool : scored).sort((a, b) => b.f - a.f)[0];
+  // Aucune cible du bon camp : on PASSE au lieu de retomber sur le mauvais camp
+  // (un op nuisible sans cible adverse — Tirlangue vs Héros embagé — ne doit
+  // jamais s'auto-infliger à ses propres créatures ; symétrie pour les bénéfiques).
+  if (!pool.length) {
+    store.effectTargetSkip();
+    return;
+  }
+  const chosen = pool.sort((a, b) => b.f - a.f)[0];
   store.effectTargetChoose(chosen.id);
 }
 
