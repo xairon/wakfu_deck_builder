@@ -20,29 +20,39 @@ import type { DraftEvent } from "../types/events";
 import { otherSeat } from "../types/zones.ts";
 import { setPhase, untap, setCounter } from "./verbs.ts";
 import { isTurnToken } from "../rules/effects/limits.ts";
-import type { RulesCtx } from "../rules/types";
+import type { RuleEvent, RulesCtx } from "../rules/types";
 import { resolveDestroyTarget } from "../rules/effects/targeting.ts";
 
 /**
  * DESTRUCTIONS DE FIN DE TOUR (« détruisez … à la fin du tour » — Katsou Mee) :
  * détruit FIDÈLEMENT (resolveDestroyTarget → Défausse + XP 415.1) les créatures
- * du joueur SORTANT portant le flag `destroyAtTurnEnd`, AVANT la transition (donc
- * avant la purge des jetons). Partagé jeu local (`nextTurn`) + autorité serveur
- * (`resolveIntent` END_TURN). NB : ne fait pas tourner les déclenchés de mort
- * (onSelfDestroyed / hand-watchers) — fidèle pour Katsou (aucun), à étendre si un
- * futur flag-porteur en a.
+ * du joueur SORTANT portant le flag `destroyAtTurnEnd`, AVANT la transition
+ * (donc avant la purge des jetons). Partagé jeu local (`nextTurn`) + autorité
+ * serveur (`resolveIntent` END_TURN). Émet aussi les événements de règles
+ * `destroyed` (A10) : le jeu LOCAL les collecte (déclenchés « Quand détruit » /
+ * hand-watchers, à collecter AVANT le dispatch — l'instance doit rester
+ * lisible) ; le serveur les ignore (pas de moteur d'effets côté Edge).
  */
-export function turnEndDestroyEvents(ctx: RulesCtx): DraftEvent[] {
+export function turnEndDestroyEvents(ctx: RulesCtx): {
+  events: DraftEvent[];
+  ruleEvents: RuleEvent[];
+} {
   const ending = ctx.state.turn.active;
   const events: DraftEvent[] = [];
+  const ruleEvents: RuleEvent[] = [];
   for (const inst of Object.values(ctx.state.instances)) {
     if (inst.controller !== ending) continue;
     const zone = inst.location.zone;
     if (zone !== "monde" && zone !== "havreSac") continue;
     if (!inst.counters.tokens?.destroyAtTurnEnd) continue;
     events.push(...resolveDestroyTarget(ctx, ending, inst.instanceId).events);
+    ruleEvents.push({
+      kind: "destroyed",
+      instanceId: inst.instanceId,
+      controller: inst.controller,
+    });
   }
-  return events;
+  return { events, ruleEvents };
 }
 
 export function nextTurnEvents(state: GameState): DraftEvent[] {

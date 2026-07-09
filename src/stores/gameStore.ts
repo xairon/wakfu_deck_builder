@@ -3438,8 +3438,16 @@ export const useGameStore = defineStore("game", () => {
     // DESTRUCTIONS DE FIN DE TOUR (Katsou : « détruisez … à la fin du tour ») :
     // AVANT la transition (donc avant la purge des jetons), on détruit fidèlement
     // (Défausse + XP) les créatures flaggées `destroyAtTurnEnd`. Miroir online :
-    // resolveIntent END_TURN.
-    dispatch(...turnEndDestroyEvents(rulesCtx()));
+    // resolveIntent END_TURN. Leurs déclenchés de mort (A10 : « Quand détruit »,
+    // hand-watchers) sont collectés sur le contexte AVANT dispatch (l'instance
+    // détruite doit rester lisible) puis résolus immédiatement.
+    const sweepCtx = rulesCtx();
+    const sweep = turnEndDestroyEvents(sweepCtx);
+    dispatch(...sweep.events);
+    if (assistEffects.value && sweep.ruleEvents.length)
+      engine.enqueueTriggered(
+        collectTriggeredEffects(sweepCtx, sweep.ruleEvents),
+      );
     // Transition de tour PURE et partagée (cf. `nextTurnEvents`) : SET_PHASE +
     // purge des jetons de tour + redressement/effacement des dégâts du joueur
     // entrant. Même chemin que l'autorité serveur (`resolveIntent` END_TURN).

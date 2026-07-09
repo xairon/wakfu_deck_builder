@@ -117,3 +117,39 @@ describe("Katsou Mee — dépense cumulée + auto-destruction", () => {
     );
   });
 });
+
+describe("Fin de tour — déclenchés de mort du balayage (A10)", () => {
+  it("une créature détruite à la fin du tour déclenche son « Quand détruit »", () => {
+    const MARTYR: Card = createMockAllyCard({
+      id: "martyr-test",
+      name: "Martyr",
+      effects: [
+        {
+          description: "Quand Martyr est détruit, votre Héros regagne 2 PV.",
+          compiled: {
+            trigger: "onSelfDestroyed",
+            ops: [{ op: "heroGainPv", n: 2 }],
+          },
+        },
+      ],
+    });
+    const { store } = makeEffectSandbox({
+      first: "A",
+      allAllies: true,
+      extraCards: [MARTYR],
+    });
+    store.state.turn.number = 3;
+    const id = placeInZone(store, "A", { zone: "monde" });
+    store.state.instances[id].cardId = "martyr-test";
+    const heroA = store.state.seats.A.heroInstanceId!;
+    // Héros amputé pour rendre le regain observable.
+    store.adjustCounter(heroA, "hp", -3);
+    const hpBefore = store.state.instances[heroA].counters.hp!;
+    // Flag « détruire à la fin du tour » (posé normalement par un effet Katsou-like).
+    store.state.instances[id].counters.tokens = { destroyAtTurnEnd: 1 };
+    store.nextTurn();
+    // Détruit par le balayage ET son déclenché de mort a tourné (+2 PV).
+    expect(store.state.instances[id].location.zone).toBe("defausse");
+    expect(store.state.instances[heroA].counters.hp).toBe(hpBefore + 2);
+  });
+});

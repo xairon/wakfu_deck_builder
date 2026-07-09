@@ -397,8 +397,13 @@ export function resolveIntent(
       // entrant. Les `need` pioches du joueur SORTANT sont appliquées par
       // `submit_event` après ces events (l'acteur des pioches reste le siège).
       // DESTRUCTIONS DE FIN DE TOUR (Katsou : « détruisez … à la fin du tour ») :
-      // AVANT la transition (avant la purge des jetons) — miroir de gameStore.nextTurn.
-      const events = [...turnEndDestroyEvents(ctx), ...nextTurnEvents(state)];
+      // AVANT la transition (avant la purge des jetons) — miroir de
+      // gameStore.nextTurn. Les ruleEvents `destroyed` sont ignorés ici : le
+      // serveur n'a pas de moteur d'effets (les déclenchés tournent côté client).
+      const events = [
+        ...turnEndDestroyEvents(ctx).events,
+        ...nextTurnEvents(state),
+      ];
       return { events, draws: need };
     }
 
