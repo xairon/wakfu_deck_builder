@@ -1349,6 +1349,30 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         );
         continue;
       }
+      if (op.op === "costDiscardSelf") {
+        // COÛT « [Élément], Défaussez le <Nom> de votre main : CORPS » (Champas)
+        // — la SOURCE, en MAIN, se défausse ELLE-MÊME. Impayable si la source
+        // n'est plus en main → frame abandonnée (corps non exécuté), comme les
+        // autres coûts payés.
+        const selfInst = sourceId
+          ? deps.getState().instances[sourceId]
+          : undefined;
+        if (!selfInst || selfInst.location.zone !== "main") {
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} : la carte n'est plus en main, pouvoir annulé.`,
+            ),
+          );
+          return false; // coût impayable → corps non exécuté
+        }
+        deps.moveTo(selfInst.instanceId, {
+          zone: "defausse",
+          owner: selfInst.owner,
+        });
+        deps.dispatch(say(seat, `${cardName} défaussé (coût du pouvoir).`));
+        continue;
+      }
       if (op.op === "costRecycle") {
         // COÛT « Recyclez … : CORPS » — première op d'une séquence cost:"paidOps".
         // Recycler = remettre une carte SOUS la Pioche de son propriétaire. Le

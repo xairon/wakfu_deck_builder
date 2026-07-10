@@ -1080,6 +1080,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     op: z.literal("costMillTop"),
     n: z.number(),
   }),
+  // COÛT D'AUTO-DÉFAUSSE « [Élément], Défaussez le <Nom> de votre main : CORPS »
+  // (Champas ×4) : la SOURCE, dans la MAIN de son contrôleur, se défausse
+  // ELLE-MÊME (pouvoir-main onHandActivate, chemin paidOps). Impayable si la
+  // source n'est plus en main → frame abandonnée. AUCUN choix ni paramètre.
+  z.object({
+    op: z.literal("costDiscardSelf"),
+  }),
   // COÛT VARIABLE « X : CORPS » (X-cost, 4262) — le joueur paie X Ressources, X
   // étant CHOISI (0..producteurs disponibles). Modèle SANS POOL : payer X =
   // INCLINER X de ses cartes productrices dressées (au choix, comme

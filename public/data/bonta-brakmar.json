@@ -3565,7 +3565,28 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onHandActivate",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Eau"
+            },
+            {
+              "op": "costDiscardSelf"
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 1,
+              "heroes": true,
+              "alsoKeyword": "Tacle",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "cost": "paidOps"
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "cost-discard", "buff-force-target"]
       }
     ],
     "keywords": [],
@@ -3604,7 +3625,28 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onHandActivate",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Air"
+            },
+            {
+              "op": "costDiscardSelf"
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 1,
+              "heroes": true,
+              "alsoKeyword": "Agilité",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "cost": "paidOps"
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "cost-discard", "buff-force-target"]
       }
     ],
     "keywords": [],
@@ -3643,7 +3685,28 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onHandActivate",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Feu"
+            },
+            {
+              "op": "costDiscardSelf"
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 1,
+              "heroes": true,
+              "alsoKeyword": "Agressivité",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "cost": "paidOps"
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "cost-discard", "buff-force-target"]
       }
     ],
     "keywords": [],
@@ -3683,7 +3746,28 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onHandActivate",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Terre"
+            },
+            {
+              "op": "costDiscardSelf"
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 1,
+              "heroes": true,
+              "alsoKeyword": "Géant",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "cost": "paidOps"
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "cost-discard", "buff-force-target"]
       }
     ],
     "keywords": [],

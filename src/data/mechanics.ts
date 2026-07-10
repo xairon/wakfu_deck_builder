@@ -608,6 +608,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   costTapControlled: "cost-tap-controlled",
   costDestroyControlled: "cost-destroy-controlled",
   costDiscard: "cost-discard",
+  costDiscardSelf: "cost-discard",
   costMillTop: "cost-mill-top",
   costPayX: "cost-pay-x",
   costRecycle: "cost-recycle",

@@ -2373,6 +2373,11 @@ export function compileTapEffectText(
   //    script Yomtella (W54/W64), même machinerie moteur.
   let iconResources: string[] | null = null;
   let iconOncePerTurn = false;
+  // POUVOIR-MAIN À AUTO-DÉFAUSSE (Champas) : « [Élément]+, Défaussez le <Nom>
+  // de votre main : CORPS » → activable depuis la MAIN (onHandActivate, W66),
+  // coût payé = Ressource(s) PUIS auto-défausse (costDiscardSelf). STRICT : le
+  // nom défaussé doit être LA CARTE ELLE-MÊME (jamais une autre carte → manuel).
+  let handDiscardSelf = false;
   if (requiresIncline) {
     const mIcon = normalized.match(
       /^\[incliner\](?:\s*,\s*((?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+))?\s*:\s*(.+)$/,
@@ -2390,9 +2395,24 @@ export function compileTapEffectText(
     // source ne s'incline pas). La clause once-per-turn N'EST PAS redondante
     // ici (aucun verrou d'inclinaison) → strippée ET traduite en flag
     // oncePerTurn (jeton powerUses0, gate d'activation).
-    const mBare = normalized.match(
-      /^((?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+):\s*(.+)$/,
+    const mHand = normalized.match(
+      /^((?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+),?\s*defaussez (?:le |la |l['’])?(.{1,40}?) de votre main\s*:\s*(.+)$/,
     );
+    if (mHand && mHand[2].trim() === norm(cardName)) {
+      handDiscardSelf = true;
+      normalized = mHand[3].trim();
+      iconResources = [
+        ...mHand[1].matchAll(/\[(feu|eau|terre|air|neutre)\]/g),
+      ].map((g) => g[1].charAt(0).toUpperCase() + g[1].slice(1));
+    } else if (mHand) {
+      // Auto-défausse d'une AUTRE carte que soi : hors modèle → manuel.
+      return null;
+    }
+    const mBare = handDiscardSelf
+      ? null
+      : normalized.match(
+          /^((?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+):\s*(.+)$/,
+        );
     if (mBare) {
       let rest = mBare[2].trim();
       if (TAP_ONCE_PER_TURN.test(rest)) {
@@ -2419,6 +2439,8 @@ export function compileTapEffectText(
   const withIconCost = iconResources
     ? {
         ...compiled,
+        // Auto-défausse (Champas) : le pouvoir s'active depuis la MAIN.
+        ...(handDiscardSelf ? { trigger: "onHandActivate" as const } : {}),
         cost: "paidOps" as const,
         // tapsSource UNIQUEMENT avec [Incliner] explicite (requiresIncline) —
         // un coût-icônes nu (Léopardo) n'incline pas la source.
@@ -2432,6 +2454,9 @@ export function compileTapEffectText(
               ? { op: "costTapResource" as const }
               : { op: "costTapResource" as const, element: el },
           ),
+          // La Ressource se paie AVANT l'auto-défausse (impayable → la carte
+          // reste en main, rien n'est consommé).
+          ...(handDiscardSelf ? [{ op: "costDiscardSelf" as const }] : []),
           ...compiled.ops,
         ],
       }
@@ -3103,6 +3128,18 @@ function compileRecycleCountCost(
 /** « Défaussez [jusqu'à] N carte(s) : … » = coût de défausse (avec « : »). */
 export function isDiscardCostText(text: string): boolean {
   return /^defaussez [^:]{1,60}:/.test(norm(text));
+}
+
+/**
+ * « [Élément]+, Défaussez <Nom> de votre main : … » = pouvoir-main à
+ * AUTO-DÉFAUSSE (Champas). Prédicat de ROUTAGE (compileEffects) : ces textes
+ * passent par compileTapEffectText même sans `requiresIncline` (la validation
+ * <Nom> = la carte elle-même est faite par la grammaire, pas ici).
+ */
+export function isHandDiscardCostText(text: string): boolean {
+  return /^(?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+,?\s*defaussez [^:]{1,60}de votre main\s*:/.test(
+    norm(text),
+  );
 }
 
 /** « Défaussez la première carte de votre Pioche : … » = coût de mill. */
