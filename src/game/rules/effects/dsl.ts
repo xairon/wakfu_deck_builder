@@ -3588,10 +3588,69 @@ export function compileAppearanceTriggerText(
   cardName: string,
   sourceElement = "Neutre",
 ): CompiledEffect | null {
-  const n = norm(text);
+  let n = norm(text);
   // « Jusqu'à la fin du tour, chaque fois qu'un … » : déclencheur flottant —
   // HORS champ de cette tranche (rejet explicite avant tout le reste).
   if (/^jusqu['’]a la fin du tour\s*,/.test(n)) return null;
+  // (0) Préfixe « Tant que <self> est dans le Monde, » (A8.2) : verrou de zone
+  // du VEILLEUR — la veille ne joue que depuis le Monde (watcherInMonde, lu par
+  // queueAppearanceWatchers). Le sujet DOIT être la carte elle-même ; un
+  // « Tant que » visant une autre carte / une autre condition reste manuel.
+  let watcherInMonde = false;
+  const pre = n.match(/^tant que (.{1,60}?) est dans le monde\s*,\s*(.+)$/);
+  if (pre) {
+    if (!subjectIsSelf(pre[1], cardName)) return null;
+    watcherInMonde = true;
+    n = pre[2];
+  }
+  // (0bis) SUJET POSSESSIF « un(e) [autre]? de vos <Famille>s apparaît » (A8.2)
+  // → veille des Alliés de CE contrôleur (controller self). « autre » n'ajoute
+  // rien à modéliser : la veille exclut déjà sa propre apparition (instanceId).
+  // La Famille est un mot unique (« Gelées », « Pirates ») ou « Alliés <Famille> »
+  // (« Alliés Uniques » — Unique est un subType) ; « Alliés » nu = sans filtre.
+  const mp = n.match(
+    new RegExp(
+      "^(?:quand |chaque fois qu['’]\\s?)une? (?:autre )?de vos ([a-z -]+?)s? apparait" +
+        "(?:" +
+        APPEAR_LOC +
+        ")?\\s*,\\s*(.+)$",
+    ),
+  );
+  if (mp) {
+    const subject = mp[1].trim();
+    let sub: string | undefined;
+    if (subject === "allie") sub = undefined;
+    else if (subject.startsWith("allies "))
+      sub = subject.slice("allies ".length).replace(/s$/, "");
+    else sub = subject.replace(/s$/, "");
+    // Famille multi-mots ou mot réservé (autre type de carte) → hors champ.
+    if (
+      sub &&
+      (/ /.test(sub) ||
+        [
+          "equipement",
+          "carte",
+          "heros",
+          "zone",
+          "salle",
+          "action",
+          "sort",
+          "havre",
+        ].includes(sub))
+    )
+      return null;
+    return finishAppearanceBody(
+      {
+        mainType: "Allié",
+        ...(sub ? { sub } : {}),
+        controller: "self",
+      },
+      mp[2],
+      cardName,
+      sourceElement,
+      watcherInMonde,
+    );
+  }
   // (1) Quand/Chaque fois qu'un Allié [Famille]? [adverse]? apparaît [dans le
   //     Monde], CORPS.  La Famille et « adverse » sont mutuellement exclusifs
   //     ici (un Allié adverse n'a pas de Famille capturée). « sous votre
@@ -3636,7 +3695,30 @@ export function compileAppearanceTriggerText(
     ...(sub ? { sub: sub.replace(/s$/, "") } : {}),
     ...(m[2] ? { controller: "opponent" as const } : {}),
   };
-  let body = m[4].replace(/\.$/, "").trim();
+  return finishAppearanceBody(
+    watch,
+    m[4],
+    cardName,
+    sourceElement,
+    watcherInMonde,
+  );
+}
+
+/**
+ * Queue COMMUNE des déclencheurs d'apparition non-soi : compile le CORPS
+ * (actor-binding « il/elle … » → acteur = l'apparu ; « vous pouvez … » →
+ * optionnel ; sinon corps générique du contrôleur du veilleur) et assemble le
+ * CompiledEffect, avec l'éventuel verrou de zone du veilleur (watcherInMonde).
+ */
+function finishAppearanceBody(
+  watch: NonNullable<CompiledEffect["watch"]>,
+  bodyRaw: string,
+  cardName: string,
+  sourceElement: string,
+  watcherInMonde: boolean,
+): CompiledEffect | null {
+  let body = bodyRaw.replace(/\.$/, "").trim();
+  const inMonde = watcherInMonde ? { watcherInMonde: true as const } : {};
   // ACTOR-BINDING : CORPS « il/elle … » — l'Allié APPARU est l'acteur (sujet du
   // corps). STRICT : seules les formes de compileActorBoundBody sont admises
   // (« inflige sa Force… », « inflige N Dommages… », « gagne +N en Force… ») ;
@@ -3647,7 +3729,13 @@ export function compileAppearanceTriggerText(
   if (actorBound) {
     const ops = compileActorBoundBody(actorBound[1], sourceElement);
     if (!ops) return null;
-    return { trigger: "onOtherAppears", watch, actor: "appeared", ops };
+    return {
+      trigger: "onOtherAppears",
+      watch,
+      actor: "appeared",
+      ...inMonde,
+      ops,
+    };
   }
   // CORPS générique (sujet = contrôleur du veilleur). « vous pouvez … » →
   // optionnel (une seule phrase, sinon ambigu).
@@ -3663,6 +3751,7 @@ export function compileAppearanceTriggerText(
   return {
     trigger: "onOtherAppears",
     watch,
+    ...inMonde,
     ...(optional ? { optional } : {}),
     ops,
   };

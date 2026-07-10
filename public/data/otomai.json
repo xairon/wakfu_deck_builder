@@ -4533,7 +4533,24 @@
         "description": "Tant que la Gelée Royale Bleue est dans le Monde, chaque fois qu'une de vos Gelées apparaît, vous pouvez piocher une carte.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onOtherAppears",
+          "watch": {
+            "mainType": "Allié",
+            "sub": "gelee",
+            "controller": "self"
+          },
+          "watcherInMonde": true,
+          "optional": true,
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       },
       {
         "description": "Vous pouvez piocher une carte si la Gelée Royale Bleue apparaît dans le Monde.",

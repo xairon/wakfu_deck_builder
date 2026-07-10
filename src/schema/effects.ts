@@ -1260,6 +1260,11 @@ export const compiledEffectSchema = z.object({
   static: staticAbilitySchema.optional(),
   // Présent uniquement pour trigger:"onOtherAppears".
   watch: appearanceWatchSchema.optional(),
+  // Verrou de zone du VEILLEUR (« Tant que <self> est dans le Monde, chaque
+  // fois que … apparaît, … ») : la veille onOtherAppears ne joue que si la
+  // carte qui veille est DANS LE MONDE (l'intérieur du Havre-Sac la rend
+  // muette). Présent uniquement pour trigger:"onOtherAppears".
+  watcherInMonde: z.boolean().optional(),
   // ACTOR-BINDING : le CORPS a pour sujet (source) une créature désignée par le
   // contexte, pas la carte qui porte l'effet (« …, il/elle inflige sa Force … »).
   //  - "appeared"   : la créature qui vient d'APPARAÎTRE (onOtherAppears) ; le

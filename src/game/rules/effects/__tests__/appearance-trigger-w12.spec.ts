@@ -67,6 +67,55 @@ describe("compileAppearanceTriggerText — formes sûres", () => {
   });
 });
 
+describe("compileAppearanceTriggerText — « Tant que … dans le Monde » + possessif (A8.2)", () => {
+  it("Gelée Royale Bleue : veille self/Famille, verrou Monde du veilleur, pioche optionnelle", () => {
+    const c = compileAppearanceTriggerText(
+      "Tant que la Gelée Royale Bleue est dans le Monde, chaque fois qu'une de vos Gelées apparaît, vous pouvez piocher une carte.",
+      "Gelée Royale Bleue",
+    );
+    expect(c).toEqual({
+      trigger: "onOtherAppears",
+      watch: { mainType: "Allié", sub: "gelee", controller: "self" },
+      watcherInMonde: true,
+      optional: true,
+      ops: [{ op: "draw", n: 1 }],
+    });
+  });
+
+  it("le préfixe « Tant que » visant une AUTRE carte ne compile pas", () => {
+    expect(
+      compileAppearanceTriggerText(
+        "Tant que le Château est dans le Monde, chaque fois qu'une de vos Gelées apparaît, piochez une carte.",
+        "Gelée Royale Bleue",
+      ),
+    ).toBeNull();
+  });
+
+  it("« un autre de vos Alliés Uniques » → sub unique, controller self", () => {
+    const c = compileAppearanceTriggerText(
+      "Tant que Grasmera est dans le Monde, chaque fois qu'un autre de vos Alliés Uniques apparaît, piochez une carte.",
+      "Grasmera",
+    );
+    expect(c).toMatchObject({
+      trigger: "onOtherAppears",
+      watch: { mainType: "Allié", sub: "unique", controller: "self" },
+      watcherInMonde: true,
+    });
+  });
+
+  it("« un de vos Pirates apparaît » sans préfixe → veille self, sans verrou Monde", () => {
+    const c = compileAppearanceTriggerText(
+      "Chaque fois qu'un de vos Pirates apparaît, piochez une carte.",
+      "Ben le Ripate",
+    );
+    expect(c).toEqual({
+      trigger: "onOtherAppears",
+      watch: { mainType: "Allié", sub: "pirate", controller: "self" },
+      ops: [{ op: "draw", n: 1 }],
+    });
+  });
+});
+
 describe("compileAppearanceTriggerText — frontière (NE compile PAS)", () => {
   it("CORPS « il … » (actor-binding) → null", () => {
     expect(
@@ -280,6 +329,67 @@ describe("queueArrivalEffects — veille non-soi (onOtherAppears)", () => {
     );
     engine.queueArrivalEffects("A", selfWatchWabbit, "w1");
     expect(draw).not.toHaveBeenCalled();
+  });
+
+  it("verrou « Tant que … dans le Monde » : veilleur au Havre-Sac muet, au Monde actif", () => {
+    const GELEE_WATCHER: Card = {
+      id: "geleewatch",
+      name: "Gelée Royale Bleue",
+      mainType: "Allié",
+      subTypes: ["Gelée"],
+      effects: [
+        {
+          description:
+            "Tant que la Gelée Royale Bleue est dans le Monde, chaque fois qu'une de vos Gelées apparaît, piochez une carte.",
+          compiled: {
+            trigger: "onOtherAppears",
+            watch: { mainType: "Allié", sub: "gelee", controller: "self" },
+            watcherInMonde: true,
+            ops: [{ op: "draw", n: 1 }],
+          },
+        },
+      ],
+    } as unknown as Card;
+    const GELEE: Card = {
+      id: "gelee",
+      name: "Gelée Fraise",
+      mainType: "Allié",
+      subTypes: ["Gelée"],
+    } as unknown as Card;
+    const getCard = (id: string | null) =>
+      id === "geleewatch" ? GELEE_WATCHER : id === "gelee" ? GELEE : null;
+    const mk = (zone: "monde" | "havreSac") => {
+      const state = makeState();
+      (state.instances as Record<string, unknown>).w1 = {
+        instanceId: "w1",
+        cardId: "geleewatch",
+        owner: "A",
+        controller: "A",
+        location:
+          zone === "monde"
+            ? { zone: "monde" }
+            : { zone: "havreSac", owner: "A" },
+      };
+      if (zone === "havreSac") {
+        (state as unknown as { monde: string[] }).monde = [];
+        (
+          state.seats as unknown as Record<string, { havreSac: string[] }>
+        ).A.havreSac = ["w1"];
+      }
+      return state;
+    };
+    // Veilleuse dans l'INTÉRIEUR du Havre-Sac → le verrou la rend muette.
+    const drawBag = vi.fn();
+    createEffectEngine(
+      mockDeps({ draw: drawBag, getState: () => mk("havreSac"), getCard }),
+    ).queueArrivalEffects("A", GELEE, "g1");
+    expect(drawBag).not.toHaveBeenCalled();
+    // Veilleuse dans le MONDE → la veille joue.
+    const drawMonde = vi.fn();
+    createEffectEngine(
+      mockDeps({ draw: drawMonde, getState: () => mk("monde"), getCard }),
+    ).queueArrivalEffects("A", GELEE, "g1");
+    expect(drawMonde).toHaveBeenCalledWith("A", 1);
   });
 
   it("filtre contrôleur « adverse » : Allié adverse déclenche, Allié allié non", () => {

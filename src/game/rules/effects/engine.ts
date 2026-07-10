@@ -2283,6 +2283,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           )
         )
           continue;
+        // « Tant que <self> est dans le Monde, … » (A8.2) : le verrou de zone
+        // rend la veille muette depuis l'intérieur du Havre-Sac.
+        if (atom.watcherInMonde && watcher.location.zone !== "monde") continue;
         // ACTOR-BINDING « il/elle … » : l'instance APPARUE est le sujet du corps
         // (sourceId = appearedId) ; le « de votre choix » reste au contrôleur du
         // veilleur (seat). Sinon, le veilleur lui-même est la source.
