@@ -125,6 +125,16 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
   // l'acteur portant justAppeared ET justAppearedFromDefausse (provenance) ?
   // Restriction de JEU (play-time, whyCannotPlay).
   z.object({ cond: z.literal("allyJustAppearedFromDiscard") }),
+  // « … un [autre] Allié <Famille> vient d'apparaître » (Assassin Grouilleux,
+  // W79) : existe-t-il une instance Allié (TOUT contrôleur) portant
+  // justAppeared et matchant la Famille `sub` ? `other` exclut la SOURCE du
+  // pouvoir (« un AUTRE ») — gate d'activation (powerConditionReason reçoit
+  // l'instanceId de la source).
+  z.object({
+    cond: z.literal("allyJustAppeared"),
+    sub: z.string().optional(),
+    other: z.boolean().optional(),
+  }),
 ]);
 
 // ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────
@@ -381,6 +391,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // les inclinaisons de DÉCLARATION d'attaque sont marquées (pas les tap-powers
     // ni les bloqueurs de fin de combat). Jouée en fenêtre de réaction locale.
     recentlyInclined: z.boolean().optional(),
+    // MAGNITUDE = NIVEAU DU GROUILLEUX APPARU (Assassin Grouilleux, W79) :
+    // les Dommages = Niveau de l'instance Allié portant justAppeared, matchant
+    // la Famille `sub`, DISTINCTE de la source (« un AUTRE Allié <Famille> qui
+    // vient d'apparaître »). Évalué à la RÉSOLUTION (flag dédié, précédent
+    // doubleForce W62) ; référent absent → 0 (le gate d'activation
+    // allyJustAppeared empêche normalement ce cas).
+    appearedLevel: z.object({ sub: z.string().optional() }).optional(),
     // « … à l'Allié ou Héros ADVERSE de votre choix » : restreint la cible aux
     // créatures du contrôleur adverse (opponent) ; absent = n'importe quel
     // contrôleur (cible libre). Lu par effectTargetIds comme pour destroy/tap.

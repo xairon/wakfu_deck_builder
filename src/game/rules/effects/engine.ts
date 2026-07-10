@@ -849,6 +849,20 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             deps.getCard(inst.cardId)?.mainType === "Allié",
         );
       }
+      case "allyJustAppeared": {
+        // « un [autre] Allié <Famille> vient d'apparaître » (Assassin
+        // Grouilleux, W79) — miroir du gate de legality ; `other` exclut la
+        // SOURCE (frame.sourceId).
+        const sub = cond.sub ? normWord(cond.sub) : undefined;
+        return Object.values(deps.getState().instances).some((inst) => {
+          if (cond.other && sourceId && inst.instanceId === sourceId)
+            return false;
+          if ((inst.counters.tokens?.justAppeared ?? 0) <= 0) return false;
+          const card = deps.getCard(inst.cardId);
+          if (card?.mainType !== "Allié") return false;
+          return !sub || (card.subTypes ?? []).some((s) => normWord(s) === sub);
+        });
+      }
     }
   }
 
@@ -2476,6 +2490,29 @@ export function createEffectEngine(deps: EffectEngineDeps) {
    * pas la carte qui porte l'effet. Retourne undefined si la source est absente
    * (repli sur l'Élément figé à la compilation).
    */
+  /**
+   * MAGNITUDE « Niveau du <Famille> apparu » (Assassin Grouilleux, W79) :
+   * Niveau de l'instance Allié portant justAppeared, matchant `sub`, DISTINCTE
+   * de la source (« un AUTRE … »). Référent absent (parti / marqueur déplacé
+   * depuis l'activation) → 0 (aucun Dommage, fidèle).
+   */
+  function appearedLevelMagnitude(
+    spec: { sub?: string },
+    sourceId?: string,
+  ): number {
+    const sub = spec.sub ? normWord(spec.sub) : undefined;
+    for (const inst of Object.values(deps.getState().instances)) {
+      if (sourceId && inst.instanceId === sourceId) continue;
+      if ((inst.counters.tokens?.justAppeared ?? 0) <= 0) continue;
+      const card = deps.getCard(inst.cardId);
+      if (card?.mainType !== "Allié") continue;
+      if (sub && !(card.subTypes ?? []).some((s) => normWord(s) === sub))
+        continue;
+      return card.stats?.niveau?.value ?? 0;
+    }
+    return 0;
+  }
+
   function liveSourceElement(sourceId?: string): string | undefined {
     if (!sourceId) return undefined;
     const inst = deps.getState().instances[sourceId];
@@ -2956,7 +2993,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                                     deps.rulesCtx(),
                                     t.seat,
                                     instanceId,
-                                    t.op.n,
+                                    // MAGNITUDE = Niveau du Grouilleux marqué
+                                    // justAppeared (Assassin, W79) — évaluée à
+                                    // la résolution ; sinon `n` figé.
+                                    t.op.appearedLevel
+                                      ? appearedLevelMagnitude(
+                                          t.op.appearedLevel,
+                                          t.sourceId,
+                                        )
+                                      : t.op.n,
                                     // Élément EXPLICITE (choix d'Élément W56 /
                                     // mot d'Élément) : jamais remplacé par la
                                     // source vivante ; sinon 410.1 (source liée).

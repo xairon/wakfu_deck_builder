@@ -2313,6 +2313,9 @@ export const useGameStore = defineStore("game", () => {
         rulesCtx(),
         seat,
         atom.playCondition,
+        // Source du pouvoir : exclue du référent des conds « un AUTRE … »
+        // (allyJustAppeared{other}, W79).
+        instanceId,
       );
       if (pcReason) return rejectMove(pcReason);
     }

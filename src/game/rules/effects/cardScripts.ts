@@ -882,6 +882,35 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
     },
   },
 
+  // « L'Assassin Grouilleux inflige un nombre de Dommages égal au Niveau d'un
+  //   autre Allié Grouilleux qui vient d'apparaître à l'Allié ou Héros de votre
+  //   choix. » — pouvoir à inclinaison (W79). DOUBLE RÉFÉRENT : magnitude =
+  //   Niveau du Grouilleux marqué justAppeared (≠ la source, « un AUTRE » —
+  //   appearedLevelMagnitude, évaluée à la résolution), cible = choix du
+  //   joueur. GATE d'activation playCondition allyJustAppeared{sub, other}
+  //   (l'inclinaison n'est pas brûlée sans référent). Élément Air (liveSource
+  //   le recalcule sur la source vivante, fidèle 410.1).
+  "assassin-grouilleux-bonta-brakmar": {
+    0: {
+      trigger: "onTap",
+      playCondition: {
+        cond: "allyJustAppeared",
+        sub: "grouilleux",
+        other: true,
+      },
+      ops: [
+        {
+          op: "damageTarget",
+          n: 0,
+          appearedLevel: { sub: "grouilleux" },
+          element: "Air",
+          heroes: true,
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    },
+  },
+
   // « Gagnez un nombre d'XP égal à la valeur d'XP de l'Allié qui vient
   //   d'apparaître depuis votre Défausse. » + « Ne jouez Échappé des Glaces que
   //   lorsqu'un de vos Alliés vient d'apparaître depuis votre Défausse. » —

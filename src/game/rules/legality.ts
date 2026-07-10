@@ -121,6 +121,10 @@ function playConditionOk(
   pc: NonNullable<
     NonNullable<Card["effects"]>[number]["compiled"]
   >["playCondition"],
+  // SOURCE du pouvoir (activation) : sert aux conds « un AUTRE … » qui
+  // excluent la source du référent (allyJustAppeared{other} — W79). Absent
+  // pour une carte JOUÉE de la main (aucune exclusion pertinente).
+  sourceId?: string,
 ): boolean {
   const heroId = ctx.state.seats[seat].heroInstanceId;
   const hero = heroId ? ctx.state.instances[heroId] : null;
@@ -153,6 +157,19 @@ function playConditionOk(
         ctx.getCard(inst.cardId)?.mainType === "Allié",
     );
   }
+  // « … un [autre] Allié <Famille> vient d'apparaître » (Assassin Grouilleux,
+  // W79) : un Allié (TOUT contrôleur) marqué justAppeared matche la Famille ;
+  // `other` exclut la SOURCE du pouvoir (« un AUTRE »).
+  if (pc?.cond === "allyJustAppeared") {
+    const sub = pc.sub ? normWord(pc.sub) : undefined;
+    return Object.values(ctx.state.instances).some((inst) => {
+      if (pc.other && sourceId && inst.instanceId === sourceId) return false;
+      if ((inst.counters.tokens?.justAppeared ?? 0) <= 0) return false;
+      const card = ctx.getCard(inst.cardId);
+      if (card?.mainType !== "Allié") return false;
+      return !sub || (card.subTypes ?? []).some((s) => normWord(s) === sub);
+    });
+  }
   return true; // condSpec sans sémantique de restriction → aucune contrainte
 }
 
@@ -181,9 +198,12 @@ export function powerConditionReason(
   pc: NonNullable<
     NonNullable<Card["effects"]>[number]["compiled"]
   >["playCondition"],
+  // Instance SOURCE du pouvoir — exclue du référent par les conds « un
+  // AUTRE … » (allyJustAppeared{other}, W79).
+  sourceId?: string,
 ): string | null {
   if (!pc) return null;
-  return playConditionOk(ctx, seat, pc) ? null : reasonFor(pc);
+  return playConditionOk(ctx, seat, pc, sourceId) ? null : reasonFor(pc);
 }
 
 function reasonFor(
@@ -215,6 +235,12 @@ function reasonFor(
   }
   if (pc?.cond === "allyJustAppearedFromDiscard")
     return "Un de vos Alliés doit venir d'apparaître depuis votre Défausse.";
+  if (pc?.cond === "allyJustAppeared") {
+    const what = pc.sub
+      ? `Allié ${pc.sub.charAt(0).toUpperCase()}${pc.sub.slice(1)}`
+      : "Allié";
+    return `Un ${pc.other ? "autre " : ""}${what} doit venir d'apparaître.`;
+  }
   return "Condition de jeu non remplie.";
 }
 
