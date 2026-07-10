@@ -186,6 +186,7 @@ function reasonFor(
       parchemin: "un Parchemin",
       equipement: "un Équipement",
       allie: "un Allié",
+      unique: "une carte Unique",
     };
     const what = pc.kinds.map((k) => labels[k] ?? k).join(" ou ");
     return pc.who === "other"

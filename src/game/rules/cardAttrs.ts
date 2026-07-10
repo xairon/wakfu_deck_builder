@@ -39,6 +39,7 @@ export const RECENT_PLAY_TOKENS = {
   parchemin: "recentPlayParchemin",
   equipement: "recentPlayEquipement",
   allie: "recentPlayAllie",
+  unique: "recentPlayUnique",
 } as const;
 export type RecentPlayKind = keyof typeof RECENT_PLAY_TOKENS;
 
@@ -53,6 +54,7 @@ export function recentPlayKindsOf(card: Card): RecentPlayKind[] {
   const subs = (card.subTypes ?? []).map(normWord);
   if (subs.includes("sort")) kinds.push("sort");
   if (subs.includes("parchemin")) kinds.push("parchemin");
+  if (subs.includes("unique")) kinds.push("unique");
   return kinds;
 }
 

@@ -101,7 +101,7 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
   z.object({
     cond: z.literal("recentlyPlayedKind"),
     kinds: z.array(
-      z.enum(["action", "sort", "parchemin", "equipement", "allie"]),
+      z.enum(["action", "sort", "parchemin", "equipement", "allie", "unique"]),
     ),
     who: z.enum(["self", "other"]),
   }),

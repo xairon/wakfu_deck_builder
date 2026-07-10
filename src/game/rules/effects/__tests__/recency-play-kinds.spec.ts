@@ -98,6 +98,44 @@ describe("récence par catégorie — DSL (clause « que lorsque … vient de jo
     });
   });
 
+  it("Sagesse de Silouate (texte réel) : tuteur Unique + récence adverse « carte Unique »", () => {
+    const c = compileActionEffectText(
+      "Cherchez une carte Unique dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche. Ne jouez ce pouvoir que lorsqu'un autre joueur vient de jouer une carte Unique.",
+      "Sagesse de Silouate",
+    );
+    expect(c).toEqual({
+      trigger: "onPlay",
+      playCondition: {
+        cond: "recentlyPlayedKind",
+        kinds: ["unique"],
+        who: "other",
+      },
+      ops: [
+        { op: "searchDeck", sub: "unique", dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    });
+  });
+
+  it("Démons et Merveilles : effet RESTRICTION SEULE → compiled {playCondition, ops: []}", () => {
+    // La restriction est un EFFET SÉPARÉ sur la carte (le corps vit dans un
+    // autre effet, encore manuel) : la compiler gate RÉELLEMENT le jeu de la
+    // carte (playConditionReason scanne tous les effets), sans rien résoudre.
+    const c = compileActionEffectText(
+      "Ne jouez Démons et Merveilles que lorsque vous venez de jouer un Allié .",
+      "Démons et Merveilles",
+    );
+    expect(c).toEqual({
+      trigger: "onPlay",
+      playCondition: {
+        cond: "recentlyPlayedKind",
+        kinds: ["allie"],
+        who: "self",
+      },
+      ops: [],
+    });
+  });
+
   it("récences NON « jouer » (détruire / fabriquer / gagner XP) → manuel", () => {
     expect(
       compileActionEffectText(

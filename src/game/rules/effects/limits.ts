@@ -30,6 +30,7 @@ const TURN_TOKENS = new Set([
   "recentPlayParchemin",
   "recentPlayEquipement",
   "recentPlayAllie",
+  "recentPlayUnique",
   // KATSOU MEE : compteur de dépense cumulée + flag d'auto-destruction de fin de
   // tour — purgés en début de tour (le seuil et la destruction sont turn-scoped).
   "katsouSpend",

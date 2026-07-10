@@ -2247,13 +2247,15 @@ export function compileTapEffectText(
  */
 const PLAY_KIND_WORDS: Record<
   string,
-  "action" | "sort" | "parchemin" | "equipement" | "allie"
+  "action" | "sort" | "parchemin" | "equipement" | "allie" | "unique"
 > = {
   action: "action",
   sort: "sort",
   parchemin: "parchemin",
   equipement: "equipement",
   allie: "allie",
+  // « une carte Unique » (Sagesse de Silouate) : subType Unique.
+  unique: "unique",
 };
 function stripRecentlyPlayedClause(
   body: string,
@@ -2281,8 +2283,11 @@ function stripRecentlyPlayedClause(
   const k1 = PLAY_KIND_WORDS[m[4]];
   const k2 = m[5] ? PLAY_KIND_WORDS[m[5]] : undefined;
   if (!k1 || (m[5] && !k2)) return [body, null];
+  // Clause SEULE (restriction en effet séparé — Démons et Merveilles) : rest
+  // vide, l'appelant Action compile un effet RESTRICTION-ONLY {playCondition,
+  // ops: []} — le gate de jeu est réel (playConditionReason scanne tous les
+  // effets de la carte), rien ne se résout.
   const rest = m[1].trim();
-  if (!rest) return [body, null]; // clause seule, aucun corps → manuel
   return [
     rest,
     {
@@ -3983,6 +3988,9 @@ export function compileActionEffectText(
   const [normStripped, recency] = stripRecentlyPlayedClause(normed, cardName);
   normed = normStripped;
   const pc = recency ? { playCondition: recency } : {};
+  // RESTRICTION SEULE (l'effet ne contient QUE la clause — Démons et
+  // Merveilles) : effet compilé sans op, le gate de jeu seul.
+  if (recency && !normed) return { trigger: "onPlay", ...pc, ops: [] };
   // ACTOR-BINDING « <op de ciblage de créature>. Il/Elle <corps lié> » : la
   // créature choisie par l'op de ciblage devient le sujet du corps « Il/Elle … »
   // (actor:"target", le moteur réécrit sourceId à la résolution du ciblage). Ex.

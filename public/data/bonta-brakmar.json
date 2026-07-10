@@ -5544,7 +5544,16 @@
         "description": "Ne jouez Démons et Merveilles que lorsque vous venez de jouer un Allié .",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "playCondition": {
+            "cond": "recentlyPlayedKind",
+            "kinds": ["allie"],
+            "who": "self"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],
@@ -13608,7 +13617,26 @@
         "description": "Cherchez une carte Unique dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche. Ne jouez ce pouvoir que lorsqu'un autre joueur vient de jouer une carte Unique.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "playCondition": {
+            "cond": "recentlyPlayedKind",
+            "kinds": ["unique"],
+            "who": "other"
+          },
+          "ops": [
+            {
+              "op": "searchDeck",
+              "sub": "unique",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       }
     ],
     "keywords": [],
