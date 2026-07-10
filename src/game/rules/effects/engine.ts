@@ -134,6 +134,10 @@ export interface PickFilter {
   /** NOM exact de carte, normalisé (« une Gelée Menthe » — Menthe n'est pas un
    *  subType : seul le nom distingue les Gelées entre elles). */
   name?: string;
+  /** UNION de types racines (« une carte Équipement ou Zone ») : l'UN d'eux. */
+  whatIn?: string[];
+  /** UNION de subTypes normalisés (« une carte Potion ou Parchemin »). */
+  subIn?: string[];
 }
 
 /** minuscules + accents retirés (la casse/les accents varient dans les données). */
@@ -149,6 +153,12 @@ export function matchesPickFilter(card: Card | null, f?: PickFilter): boolean {
   if (f.sub && !(card.subTypes ?? []).some((s) => normWord(s) === f.sub))
     return false;
   if (f.name && normWord(card.name) !== f.name) return false;
+  if (f.whatIn && !f.whatIn.includes(card.mainType)) return false;
+  if (
+    f.subIn &&
+    !(card.subTypes ?? []).some((s) => f.subIn!.includes(normWord(s)))
+  )
+    return false;
   if (f.element && producedElement(card) !== normElement(f.element))
     return false;
   if (
@@ -1095,6 +1105,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ...(op.what ? { mainType: op.what } : {}),
           ...(op.sub ? { sub: op.sub } : {}),
           ...(op.name ? { name: op.name } : {}),
+          ...(op.whatIn ? { whatIn: op.whatIn } : {}),
+          ...(op.subIn ? { subIn: op.subIn } : {}),
           ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
           ...(op.exactLevel !== undefined ? { exactLevel: op.exactLevel } : {}),
           ...(op.levelIn ? { levelIn: op.levelIn } : {}),

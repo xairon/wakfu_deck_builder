@@ -2104,7 +2104,22 @@
         "description": "Bannissez la Bibliothèque de Barbok depuis votre Défausse : Cherchez une carte Équipement ou Zone dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "banishSelfFromDiscard",
+          "ops": [
+            {
+              "op": "searchDeck",
+              "whatIn": ["Équipement", "Zone"],
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       }
     ],
     "keywords": [],

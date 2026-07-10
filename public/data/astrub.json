@@ -1384,7 +1384,26 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onOtherAppears",
+          "watch": {
+            "mainType": "Allié",
+            "sub": "marchand",
+            "controller": "self"
+          },
+          "ops": [
+            {
+              "op": "searchDeck",
+              "subIn": ["potion", "parchemin"],
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       }
     ],
     "keywords": [],

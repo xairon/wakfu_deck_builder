@@ -114,14 +114,18 @@ describe("compileAppearanceTriggerText — clause de lieu intégrée (onOtherApp
     });
   });
 
-  it("« sous votre contrôle » reste admis (régression)", () => {
+  it("« sous votre contrôle » → veille controller SELF (vague tuteurs 2)", () => {
+    // Avant la vague, la clause était acceptée mais NON modélisée (aucun corps
+    // compilable ne l'atteignait). Dès qu'un corps compile (Caravane
+    // Marchande), l'ignorer serait SUR-LARGE (déclenchement aussi sur les
+    // Alliés adverses) → elle filtre désormais le contrôleur.
     const c = compileAppearanceTriggerText(
       "Quand un Allié apparaît sous votre contrôle, piochez une carte.",
       "Veilleur",
     );
     expect(c).toEqual({
       trigger: "onOtherAppears",
-      watch: { mainType: "Allié" },
+      watch: { mainType: "Allié", controller: "self" },
       ops: [{ op: "draw", n: 1 }],
     });
   });

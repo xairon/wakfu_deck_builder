@@ -15,7 +15,11 @@
  *    recherche — PAS une levée du garde multi-phrases W47).
  */
 import { describe, it, expect } from "vitest";
-import { compileEffectText } from "../dsl";
+import {
+  compileAppearanceTriggerText,
+  compileEffectText,
+  compileTurnStartEffectText,
+} from "../dsl";
 import { matchesPickFilter } from "../engine";
 import type { Card } from "@/types/cards";
 
@@ -122,6 +126,99 @@ describe("tuteur — corps infinitif + catégories subType (DSL)", () => {
         "Veilleur",
       ),
     ).toBeNull();
+  });
+});
+
+describe("tuteur vague 2 — début-de-tour conditionnel + multi-types OU (DSL)", () => {
+  it("Uk'Not'Allag : « Au début de votre tour, si … dans le Monde, vous pouvez chercher … »", () => {
+    const c = compileTurnStartEffectText(
+      "Au début de votre tour, si Uk'Not'Allag est dans le Monde, vous pouvez chercher un Allié Démon dans votre Pioche et le prendre en main. Si vous le faites, mélangez votre Pioche.",
+      "Uk'Not'Allag",
+    );
+    expect(c).toEqual({
+      trigger: "onTurnStart",
+      ops: [
+        {
+          op: "conditional",
+          cond: { cond: "selfInZone", zone: "monde" },
+          optional: true,
+          ops: [
+            { op: "searchDeck", what: "Allié", sub: "demon", dest: "main" },
+            { op: "shuffleDeck" },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("« une carte Équipement ou Zone » → whatIn (union de types racines)", () => {
+    const c = compileEffectText(
+      "Quand le Veilleur apparaît, cherchez une carte Équipement ou Zone dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
+      "Veilleur",
+    );
+    expect(c).toEqual({
+      trigger: "onArrive",
+      ops: [
+        { op: "searchDeck", whatIn: ["Équipement", "Zone"], dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    });
+  });
+
+  it("Caravane Marchande : « sous votre contrôle » → watch controller self + subIn", () => {
+    const c = compileAppearanceTriggerText(
+      "Quand un Allié Marchand apparaît sous votre contrôle, cherchez une carte Potion ou Parchemin dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
+      "Caravane Marchande",
+    );
+    expect(c).toEqual({
+      trigger: "onOtherAppears",
+      watch: { mainType: "Allié", sub: "marchand", controller: "self" },
+      ops: [
+        { op: "searchDeck", subIn: ["potion", "parchemin"], dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    });
+  });
+
+  it("OU mixte (racine + catégorie) → manuel (pas de devinette)", () => {
+    expect(
+      compileEffectText(
+        "Quand le Veilleur apparaît, cherchez une carte Allié ou Potion dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
+        "Veilleur",
+      ),
+    ).toBeNull();
+  });
+});
+
+describe("tuteur vague 2 — matchesPickFilter whatIn/subIn (moteur)", () => {
+  const mk = (mainType: string, subs: string[]): Card =>
+    ({ id: "x", name: "X", mainType, subTypes: subs }) as unknown as Card;
+
+  it("whatIn : matche l'UN des types racines", () => {
+    expect(
+      matchesPickFilter(mk("Zone", []), { whatIn: ["Équipement", "Zone"] }),
+    ).toBe(true);
+    expect(
+      matchesPickFilter(mk("Action", []), { whatIn: ["Équipement", "Zone"] }),
+    ).toBe(false);
+  });
+
+  it("subIn : matche l'UN des subTypes", () => {
+    expect(
+      matchesPickFilter(mk("Action", ["Potion"]), {
+        subIn: ["potion", "parchemin"],
+      }),
+    ).toBe(true);
+    expect(
+      matchesPickFilter(mk("Équipement", ["Parchemin"]), {
+        subIn: ["potion", "parchemin"],
+      }),
+    ).toBe(true);
+    expect(
+      matchesPickFilter(mk("Action", ["Quête"]), {
+        subIn: ["potion", "parchemin"],
+      }),
+    ).toBe(false);
   });
 });
 

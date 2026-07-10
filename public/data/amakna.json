@@ -7206,7 +7206,32 @@
         "description": "Au début de votre tour, si Uk'Not'Allag est dans le Monde, vous pouvez chercher un Allié Démon dans votre Pioche et le prendre en main. Si vous le faites, mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTurnStart",
+          "ops": [
+            {
+              "op": "conditional",
+              "cond": {
+                "cond": "selfInZone",
+                "zone": "monde"
+              },
+              "optional": true,
+              "ops": [
+                {
+                  "op": "searchDeck",
+                  "what": "Allié",
+                  "sub": "demon",
+                  "dest": "main"
+                },
+                {
+                  "op": "shuffleDeck"
+                }
+              ]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["conditional"]
       },
       {
         "description": "Vous pouvez utiliser ce pouvoir même si vous n'avez plus d'Allié Démon dans votre Pioche. Si c'est le cas, vous devez mélanger votre Pioche après voir cherché.",

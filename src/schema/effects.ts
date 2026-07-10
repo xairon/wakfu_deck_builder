@@ -533,6 +533,10 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // NOM exact de carte, normalisé minuscules sans accents (« une Gelée
     // Menthe » : Menthe n'est PAS un subType — seul le nom distingue la carte).
     name: z.string().optional(),
+    // UNION de types racines (« une carte Équipement ou Zone ») — l'un d'eux.
+    whatIn: z.array(z.string()).optional(),
+    // UNION de subTypes normalisés (« une carte Potion ou Parchemin »).
+    subIn: z.array(z.string()).optional(),
     maxLevel: z.number().optional(),
     // Niveau EXACT (« … de Niveau N ») — distinct de maxLevel (≤). Cible sans
     // Niveau = inéligible.

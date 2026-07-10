@@ -227,10 +227,19 @@ describe("banish — DSL (négatifs : skip fidèle, jamais d'approximation)", ()
     expect(compileTapEffectText(text, "L'Arbre de Vie")).toBeNull(); // …mais corps non mappé
   });
 
-  it("Bibliothèque de Barbok : recherche multi-type « Équipement ou Zone » → manuel (null)", () => {
+  it("Bibliothèque de Barbok : recherche multi-type « Équipement ou Zone » → whatIn (frontière levée, vague tuteurs 2)", () => {
+    // L'union HOMOGÈNE de types racines compile désormais (searchDeck.whatIn) ;
+    // le coût banishSelfFromDiscard était déjà en place (W29).
     const text =
       "Bannissez la Bibliothèque de Barbok depuis votre Défausse : Cherchez une carte Équipement ou Zone dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.";
-    expect(compileTapEffectText(text, "La Bibliothèque de Barbok")).toBeNull();
+    expect(compileTapEffectText(text, "La Bibliothèque de Barbok")).toEqual({
+      trigger: "onTap",
+      cost: "banishSelfFromDiscard",
+      ops: [
+        { op: "searchDeck", whatIn: ["Équipement", "Zone"], dest: "main" },
+        { op: "shuffleDeck" },
+      ],
+    });
   });
 
   it("bannissement depuis la Défausse ADVERSE → banishFromZone (pas banishTarget)", () => {

@@ -539,6 +539,23 @@ function parseSentence(
   //     « carte Bouftou ») → Allié + sub (cf. pickType / ALLIED_FAMILIES).
   //   - « inclinée » en ligne après « en jeu » → tapped (jumeau de la phrase
   //     de liaison « Il apparaît incliné. »), uniquement quand dest = monde.
+  // OU MULTI-TYPES (« une carte Équipement ou Zone », « une carte Potion ou
+  // Parchemin ») : union HOMOGÈNE — deux types racines → whatIn, deux
+  // catégories subType → subIn. Mixte (racine + catégorie / famille) → manuel
+  // (pas de devinette). AVANT la règle mono-mot (qui rejette « ou »).
+  m = sentence.match(
+    /^cherche[zr] (?:un|une) (?:carte )?([a-z]+) ou (?:une? )?(?:carte )?([a-z]+) dans votre pioche,? (?:(?:revelez-l[ea]|l[ea] reveler) et (?:prenez-l[ea] en main|l[ea] prendre en main)|et (?:prenez-l[ea] en main|l[ea] prendre en main))$/,
+  );
+  if (m) {
+    const a = pickType(m[1]);
+    const b = pickType(m[2]);
+    if (!a || !b) return null;
+    if (a.what && !a.sub && b.what && !b.sub)
+      return { op: "searchDeck", whatIn: [a.what, b.what], dest: "main" };
+    if (!a.what && a.sub && !b.what && b.sub)
+      return { op: "searchDeck", subIn: [a.sub, b.sub], dest: "main" };
+    return null;
+  }
   m = sentence.match(
     /^cherche[zr] (?:un|une) (?:carte )?([a-z]+)( [a-z]+)?(?: de niveau (?:inferieur ou egal a (\d+)|(\d+) ou (\d+)))? dans votre pioche,? (?:(?:revelez-l[ea]|l[ea] reveler) et (?:prenez-l[ea] en main|l[ea] prendre en main)|et (?:prenez-l[ea] en main|l[ea] prendre en main)|et mettez-l[ea] en jeu( inclinee?)?)$/,
   );
@@ -2081,21 +2098,8 @@ export function compileEffectText(
     optional = true;
     rest = opt[1];
   }
-  // Queue de TUTEUR « . Si vous le faites, mélangez [ensuite] vot(t)re
-  // Pioche » : absorbée UNIQUEMENT quand le corps est une recherche
-  // (« cherch… ») — le mélange est intrinsèque à la fouille de la Pioche (il
-  // s'applique même si la recherche échoue) et devient une op suivante
-  // (shuffleDeck). Ce n'est PAS une levée du garde multi-phrases ci-dessous
-  // (W47) : toute autre conséquence « Si vous le faites, … » reste manuelle.
-  // « vottre » : typo de scrape (Gelée Royale Citron).
-  let shuffleTail = false;
-  const tail = rest.match(
-    /^(.*)\.\s*si vous le faites, melangez(?: ensuite)? vot?t?re pioche$/,
-  );
-  if (tail && /cherch/.test(tail[1])) {
-    shuffleTail = true;
-    rest = tail[1].trim();
-  }
+  const [restStripped, shuffleTail] = stripTutorShuffleTail(rest);
+  rest = restStripped;
   // « vous pouvez » ne porte que sur sa phrase : un optionnel multi-phrases
   // est ambigu (le reste serait-il obligatoire ?) → on ne compile pas.
   if (optional && /\.\s+\S/.test(rest)) return null;
@@ -2105,6 +2109,23 @@ export function compileEffectText(
   return optional
     ? { trigger: "onArrive", optional, ops: allOps }
     : { trigger: "onArrive", ops: allOps };
+}
+
+/**
+ * Queue de TUTEUR « . Si vous le faites, mélangez [ensuite] vot(t)re Pioche » :
+ * absorbée UNIQUEMENT quand le corps restant est une recherche (« cherch… ») —
+ * le mélange est intrinsèque à la fouille de la Pioche (il s'applique même si
+ * la recherche échoue) et devient l'op suivante (shuffleDeck, ajoutée par
+ * l'appelant quand le booléen renvoyé est vrai). Ce n'est PAS une levée du
+ * garde multi-phrases W47 : toute autre conséquence « Si vous le faites, … »
+ * reste manuelle. « vottre » : typo de scrape (Gelée Royale Citron).
+ */
+function stripTutorShuffleTail(body: string): [string, boolean] {
+  const tail = body.match(
+    /^(.*)\.\s*si vous le faites, melangez(?: ensuite)? vot?t?re pioche$/,
+  );
+  if (tail && /cherch/.test(tail[1])) return [tail[1].trim(), true];
+  return [body, false];
 }
 
 /**
@@ -3747,6 +3768,12 @@ export function compileAppearanceTriggerText(
     mainType: "Allié",
     ...(sub ? { sub: sub.replace(/s$/, "") } : {}),
     ...(m[2] ? { controller: "opponent" as const } : {}),
+    // « apparaît sous votre contrôle » = veille des SEULS Alliés du contrôleur
+    // du veilleur (sans quoi un corps désormais compilable se déclencherait
+    // aussi sur les Alliés adverses — sur-large).
+    ...(!m[2] && / apparait sous votre controle\s*,/.test(n)
+      ? { controller: "self" as const }
+      : {}),
   };
   return finishAppearanceBody(
     watch,
@@ -3974,8 +4001,12 @@ export function compileTurnStartEffectText(
     if (opt) {
       optional = true;
       inner = opt[1];
-      if (/\.\s+\S/.test(inner)) return null;
     }
+    // Queue de TUTEUR (même absorption que compileEffectText) : le mélange
+    // suit la recherche, dans le MÊME conditionnel/optionnel (Uk'Not'Allag).
+    const [innerStripped, shuffleTail] = stripTutorShuffleTail(inner);
+    inner = innerStripped;
+    if (optional && /\.\s+\S/.test(inner)) return null;
     const innerOps = compileBody(inner, cardName, sourceElement);
     if (!innerOps) return null;
     return {
@@ -3985,7 +4016,9 @@ export function compileTurnStartEffectText(
           op: "conditional",
           cond,
           ...(optional ? { optional: true } : {}),
-          ops: innerOps,
+          ops: shuffleTail
+            ? [...innerOps, { op: "shuffleDeck" as const }]
+            : innerOps,
         },
       ],
     };
