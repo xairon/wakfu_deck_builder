@@ -452,6 +452,10 @@ export function effectTargetIds(
     if (ok && "recentlyAppeared" in op && op.recentlyAppeared) {
       ok = (inst.counters.tokens?.justAppeared ?? 0) > 0;
     }
+    // « … non Unique » (W76 — Fouet) : cible SANS le subType Unique.
+    if (ok && "nonUnique" in op && op.nonUnique) {
+      ok = !(card.subTypes ?? []).some((s) => normWord(s) === "unique");
+    }
     // filtre de contrôleur (« un de vos … » / « … adverse »)
     if (ok && controller && actor !== undefined) {
       const want = controller === "self" ? actor : otherSeat(actor);

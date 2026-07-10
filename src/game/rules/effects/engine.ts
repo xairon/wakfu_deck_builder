@@ -2814,7 +2814,14 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         : t.op.op === "destroyTarget" || t.op.op === "costDestroyControlled"
           ? // COÛT « Détruisez un de vos X » : même résolution que destroyTarget
             // (un Allié détruit rapporte son XP à l'adversaire, 415.1).
-            resolveDestroyTarget(deps.rulesCtx(), t.seat, instanceId)
+            // « Vous ne gagnez pas d'XP » (Fouet, W76) : l'XP est supprimé
+            // UNIQUEMENT si son bénéficiaire serait l'acteur (noXpFor).
+            resolveDestroyTarget(
+              deps.rulesCtx(),
+              t.seat,
+              instanceId,
+              "noXp" in t.op && t.op.noXp ? t.seat : undefined,
+            )
           : t.op.op === "costRecycleControlled"
             ? // COÛT « Recyclez un <X> de votre choix » (Vampyro) : recycle la
               // créature choisie sous la Pioche de son propriétaire.

@@ -3340,7 +3340,22 @@
         "description": "Détruisez le Monstre non Unique de votre choix qui vient d'apparaître dans le Monde ou dans un Havre Sac. Vous ne gagnez pas d'XP.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "destroyTarget",
+              "what": "Allié",
+              "sub": "monstre",
+              "nonUnique": true,
+              "recentlyAppeared": true,
+              "zones": ["monde", "havreSac"],
+              "noXp": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["destroy-target"]
       }
     ],
     "keywords": [],

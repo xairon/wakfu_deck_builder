@@ -1223,6 +1223,24 @@ function parseSentence(
       zones,
     };
   }
+  // « Détruisez le <Famille> non Unique de votre choix qui vient d'apparaître
+  //   [dans le Monde][ ou dans un Havre Sac] » (W76 — Fouet) → destroyTarget +
+  //   nonUnique (exclut le subType Unique) + recentlyAppeared (jeton
+  //   justAppeared, W74). Placé AVANT la forme Famille-nue (son `$` rejette
+  //   les deux clauses). La clause « Vous ne gagnez pas d'XP » est une phrase
+  //   SUIVANTE (liée par le gestionnaire de clause résiduelle → noXp).
+  m = sentence.match(
+    /^detrui(?:sez|re) (?:le |la |l['’ ]?\s?)([a-z]+) non unique de votre choix qui vient d['’]apparaitre( dans le monde)?( ou dans un havre ?-?sac)?$/,
+  );
+  if (m && ALLIED_FAMILIES.has(m[1]))
+    return {
+      op: "destroyTarget",
+      what: "Allié",
+      sub: m[1],
+      nonUnique: true,
+      recentlyAppeared: true,
+      zones: m[2] || m[3] ? ["monde", "havreSac"] : ["monde"],
+    };
   // « Détruisez le/la/l' <Famille> de votre choix [de Niveau …] » → destroyTarget
   //   Allié + `sub`. La Famille nue (« le Démon », « la Gelée ») désigne un Allié
   //   de cette Famille (cf. ALLIED_FAMILIES — UNIQUEMENT des Familles de créature
@@ -2012,17 +2030,22 @@ function compileBody(
       }
       return null;
     }
-    // CLAUSE RÉSIDUELLE « Vous ne gagnez pas d'XP » (Flèche Blizzard) : se
-    // rapporte aux Dommages de MASSE de la phrase précédente — les destructions
-    // en cascade ne rapportent pas d'XP au LANCEUR (celles au profit de
-    // l'adversaire restent accordées, la clause ne parle que de « vous »).
-    // STRICT : sans damageAll précédent, le référent est ambigu → manuel.
+    // CLAUSE RÉSIDUELLE « Vous ne gagnez pas d'XP » (Flèche Blizzard, Fouet) :
+    // se rapporte à la destruction / aux Dommages de MASSE de la phrase
+    // précédente — le LANCEUR ne gagne pas l'XP (celui au profit de
+    // l'adversaire reste accordé, la clause ne parle que de « vous »).
+    // STRICT : sans damageAll / destroyTarget précédent, le référent est
+    // ambigu → manuel.
     if (/^vous ne gagnez pas d['’ ]?\s?xp$/.test(s)) {
       const dmgOp = [...ops]
         .reverse()
         .find(
-          (o): o is Extract<EffectOp, { op: "damageAll" }> =>
-            o.op === "damageAll",
+          (
+            o,
+          ): o is Extract<
+            EffectOp,
+            { op: "damageAll" } | { op: "destroyTarget" }
+          > => o.op === "damageAll" || o.op === "destroyTarget",
         );
       if (dmgOp) {
         dmgOp.noXp = true;

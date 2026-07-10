@@ -273,6 +273,14 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     // « … qui ne porte aucun Équipement » : cible sans attachement Équipement.
     noEquipment: z.boolean().optional(),
+    // « … non Unique » (Fouet, W76) : cible SANS le subType Unique.
+    nonUnique: z.boolean().optional(),
+    // « … qui vient d'apparaître » (W74) : cible restreinte au permanent
+    // portant le jeton `justAppeared` (dernière apparition).
+    recentlyAppeared: z.boolean().optional(),
+    // « Vous ne gagnez pas d'XP » (Fouet, W76) : supprime l'XP de 415.1 pour
+    // le LANCEUR seul (l'XP au profit de l'adversaire resterait accordé).
+    noXp: z.boolean().optional(),
     zones: zonesSchema,
   }),
   // « Bannissez l'Allié [Famille] [de Niveau ≤ N] de votre choix [dans le Monde] »
