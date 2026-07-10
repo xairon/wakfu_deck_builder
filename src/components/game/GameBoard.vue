@@ -1936,6 +1936,19 @@ function manaBonus(seat: Seat): boolean {
 .gcombat--effect.slidedown-leave-to {
   transform: translate(-50%, calc(-50% - 14px));
 }
+/* MOBILE (plateau empilé, la page scrolle) : un bandeau ancré au plateau part
+   SOUS la ligne de flottaison (audit UX : bandeau effet mesuré à y=928 pour
+   844px d'écran → invisible). On l'épingle au VIEWPORT : les invites de
+   ciblage/combat restent toujours à l'écran, comme sur MTGA mobile. */
+@media (max-width: 767px) {
+  .gcombat {
+    position: fixed;
+    top: 8px;
+  }
+  .gcombat--effect {
+    top: 50vh;
+  }
+}
 .gslot--atk-can :deep(.game-card),
 .gslot--target-can :deep(.game-card),
 .gslot--blk-can :deep(.game-card) {

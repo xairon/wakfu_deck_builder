@@ -218,6 +218,15 @@ const resourceTotal = computed(() =>
   gap: 11px;
   align-items: flex-end;
 }
+/* MOBILE : la rangée de stats (PV/PA/PM/XP/NIV + boutons ±) est plus large
+   que l'écran (~456px pour 390) — sans repli elle créait un scroll HORIZONTAL
+   de page (audit UX mobile 2026-07). Les stats se replient sur 2 lignes. */
+@media (max-width: 767px) {
+  .ghud__row {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+  }
+}
 /* ── Compteur de mana (Ressources) typé par Élément ── */
 .ghud__mana {
   display: flex;

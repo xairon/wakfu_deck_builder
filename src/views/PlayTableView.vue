@@ -1698,6 +1698,10 @@ onUnmounted(() => {
 @media (max-width: 1024px) {
   .gfull {
     overflow-y: auto;
+    /* `overflow-y: auto` seul rend l'axe X défilable (visible → auto) : le
+       surplomb de l'éventail (~8px hors cadre, voulu sur desktop) créait un
+       scroll HORIZONTAL de page en mobile (audit UX 2026-07) → clippé. */
+    overflow-x: hidden;
   }
   .glayout {
     flex-direction: column;

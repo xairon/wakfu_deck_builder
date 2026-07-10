@@ -89,8 +89,14 @@
           >
         </router-link>
 
-        <!-- Navigation : liens texte, soulignement cinabre actif -->
-        <nav class="flex items-center gap-6" aria-label="Navigation principale">
+        <!-- Navigation : liens texte, soulignement cinabre actif. flex-wrap :
+             sur mobile (~390px), les 5 liens ne tiennent pas sur une ligne —
+             sans repli, la nav débordait et créait un scroll HORIZONTAL de
+             page (audit UX mobile 2026-07). -->
+        <nav
+          class="flex flex-wrap items-center gap-x-6 gap-y-1"
+          aria-label="Navigation principale"
+        >
           <router-link
             v-for="item in navItems"
             :key="item.to"
