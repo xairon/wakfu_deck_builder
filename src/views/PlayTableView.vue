@@ -269,6 +269,15 @@
         </span>
       </div>
       <div class="gtopbar__group">
+        <button
+          class="gtop-btn"
+          :aria-label="sounds.muted.value ? 'Activer le son' : 'Couper le son'"
+          :aria-pressed="!sounds.muted.value"
+          data-testid="topbar-sound-toggle"
+          @click="sounds.toggleMute()"
+        >
+          {{ sounds.muted.value ? "🔇 Son" : "🔊 Son" }}
+        </button>
         <button class="gtop-btn" @click="showJournal = !showJournal">
           {{ showJournal ? "Masquer le journal" : "Journal" }}
         </button>
@@ -290,6 +299,10 @@
          Visible PARTOUT, y compris en « Apprendre en jouant » : c'est LE guide du
          mode d'apprentissage (plus de coach à étapes forcées). -->
     <RuleAssistant />
+
+    <!-- Sons de table (repères discrets — pioche, pose, combat, fin de partie).
+         Sans rendu ; coupable via le bouton « Son » du bandeau. -->
+    <GameSoundLayer />
 
     <!-- Adversaire déconnecté : bandeau de grâce + réclamation de victoire -->
     <div
@@ -669,6 +682,8 @@ import DragLayer from "@/components/game/DragLayer.vue";
 import EffectSpotlight from "@/components/game/EffectSpotlight.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
 import RuleAssistant from "@/components/game/RuleAssistant.vue";
+import GameSoundLayer from "@/components/game/GameSoundLayer.vue";
+import { useGameSounds } from "@/composables/useGameSounds";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { OFFICIAL_DECKS } from "@/data/officialDecks";
@@ -695,6 +710,9 @@ const deckStore = useDeckStore();
 const cardStore = useCardStore();
 const store = useGameStore();
 const tutorial = useTutorialStore();
+// Sons de table : état muet (bouton du bandeau) — le calque GameSoundLayer
+// joue les repères, ici on n'expose que la bascule.
+const sounds = useGameSounds();
 const route = useRoute();
 
 const toast = useToast();
