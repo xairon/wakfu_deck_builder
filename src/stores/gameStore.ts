@@ -506,6 +506,7 @@ export const useGameStore = defineStore("game", () => {
     return (
       counter === "arrivedTurn" ||
       counter === "justAppeared" ||
+      counter === "justAppearedFromDefausse" ||
       counter === "justInclined"
     );
   }
@@ -1355,7 +1356,13 @@ export const useGameStore = defineStore("game", () => {
    * Jeton turn-scoped (purgé en fin de tour, cf. limits.ts). Lu par le filtre
    * de ciblage `recentlyAppeared` (Homar Chérif, Potion d'Agression).
    */
-  function justAppearedDrafts(actor: Seat, instanceId: string): DraftEvent[] {
+  function justAppearedDrafts(
+    actor: Seat,
+    instanceId: string,
+    // PROVENANCE (W78 — Échappé des Glaces) : l'entrée en jeu vient-elle de la
+    // DÉFAUSSE ? Second jeton `justAppearedFromDefausse` à côté du marqueur.
+    fromDefausse = false,
+  ): DraftEvent[] {
     const card = getCard(state.value.instances[instanceId]?.cardId ?? null);
     if (!card || card.mainType === "Action") return [];
     const drafts: DraftEvent[] = [];
@@ -1365,8 +1372,22 @@ export const useGameStore = defineStore("game", () => {
         drafts.push(
           setCounterVerb(actor, inst.instanceId, "justAppeared", 0, true),
         );
+      if (inst.counters.tokens?.justAppearedFromDefausse)
+        drafts.push(
+          setCounterVerb(
+            actor,
+            inst.instanceId,
+            "justAppearedFromDefausse",
+            0,
+            true,
+          ),
+        );
     }
     drafts.push(setCounterVerb(actor, instanceId, "justAppeared", 1, true));
+    if (fromDefausse)
+      drafts.push(
+        setCounterVerb(actor, instanceId, "justAppearedFromDefausse", 1, true),
+      );
     return drafts;
   }
 
@@ -1454,7 +1475,14 @@ export const useGameStore = defineStore("game", () => {
       // elle se résout, elle n'« apparaît » pas), RÉINITIALISÉ sur les autres
       // instances (seule la PLUS RÉCENTE apparition le porte — miroir du
       // patron `justInclined` W71). Jeton turn-scoped (purgé en fin de tour).
-      drafts.push(...justAppearedDrafts(inst.controller, instanceId));
+      // PROVENANCE (W78) : `inst.location` est encore la zone de DÉPART ici.
+      drafts.push(
+        ...justAppearedDrafts(
+          inst.controller,
+          instanceId,
+          inst.location.zone === "defausse",
+        ),
+      );
     }
     dispatch(...drafts);
     // un déplacement peut casser une aura / vider une main (Vrombyx) :

@@ -197,14 +197,24 @@ export function resolveIntent(
       // (gameStore.justAppearedDrafts). Sans ça, Homar Chérif / Potion
       // d'Agression seraient inertes en ligne (le filtre lit ce jeton).
       if (card.mainType !== "Action") {
-        for (const other of Object.values(state.instances))
-          if (
-            other.instanceId !== intent.instanceId &&
-            other.counters.tokens?.justAppeared
-          )
+        for (const other of Object.values(state.instances)) {
+          if (other.instanceId === intent.instanceId) continue;
+          if (other.counters.tokens?.justAppeared)
             events.push(
               setCounter(seat, other.instanceId, "justAppeared", 0, true),
             );
+          // Provenance (W78) : nettoyée avec le marqueur.
+          if (other.counters.tokens?.justAppearedFromDefausse)
+            events.push(
+              setCounter(
+                seat,
+                other.instanceId,
+                "justAppearedFromDefausse",
+                0,
+                true,
+              ),
+            );
+        }
         events.push(
           setCounter(seat, intent.instanceId, "justAppeared", 1, true),
         );
@@ -320,17 +330,38 @@ export function resolveIntent(
         // Récence d'apparition (W74) — miroir du site PLAY_CARD ci-dessus.
         const movedCard = getCard(inst.cardId);
         if (movedCard && movedCard.mainType !== "Action") {
-          for (const other of Object.values(state.instances))
-            if (
-              other.instanceId !== intent.instanceId &&
-              other.counters.tokens?.justAppeared
-            )
+          for (const other of Object.values(state.instances)) {
+            if (other.instanceId === intent.instanceId) continue;
+            if (other.counters.tokens?.justAppeared)
               events.push(
                 setCounter(seat, other.instanceId, "justAppeared", 0, true),
               );
+            if (other.counters.tokens?.justAppearedFromDefausse)
+              events.push(
+                setCounter(
+                  seat,
+                  other.instanceId,
+                  "justAppearedFromDefausse",
+                  0,
+                  true,
+                ),
+              );
+          }
           events.push(
             setCounter(seat, intent.instanceId, "justAppeared", 1, true),
           );
+          // PROVENANCE (W78 — Échappé des Glaces) : apparition DEPUIS LA
+          // DÉFAUSSE (fromZone lue AVANT le move).
+          if (fromZone === "defausse")
+            events.push(
+              setCounter(
+                seat,
+                intent.instanceId,
+                "justAppearedFromDefausse",
+                1,
+                true,
+              ),
+            );
         }
       }
       return { events };

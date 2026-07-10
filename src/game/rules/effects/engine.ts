@@ -837,6 +837,18 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const src = sourceId ? deps.getState().instances[sourceId] : null;
         return metierOf(src, deps.getCard(src?.cardId ?? null)).length > 0;
       }
+      case "allyJustAppearedFromDiscard": {
+        // « un de VOS Alliés vient d'apparaître depuis votre Défausse »
+        // (Échappé des Glaces, W78) — miroir du gate de legality : un Allié de
+        // l'acteur porte les DEUX jetons de récence d'apparition.
+        return Object.values(deps.getState().instances).some(
+          (inst) =>
+            inst.controller === seat &&
+            (inst.counters.tokens?.justAppeared ?? 0) > 0 &&
+            (inst.counters.tokens?.justAppearedFromDefausse ?? 0) > 0 &&
+            deps.getCard(inst.cardId)?.mainType === "Allié",
+        );
+      }
     }
   }
 
@@ -1680,6 +1692,34 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         );
         if (grant.won) {
           deps.onMatchWon(seat);
+        }
+      } else if (op.op === "gainXpOfAppeared") {
+        // « Gagnez un nombre d'XP égal à la valeur d'XP de l'Allié qui vient
+        // d'apparaître [depuis votre Défausse] » (Échappé des Glaces, W78) :
+        // référent = l'Allié de l'acteur portant justAppeared (+ provenance
+        // Défausse si fromDiscard). NON-interactif ; absent → no-op fidèle
+        // (la restriction de jeu garantit normalement sa présence).
+        // Instantané du discriminant AVANT la closure (narrowing TS perdu sur
+        // un binding mutable capturé — gotcha récurrent).
+        const needDiscard = !!op.fromDiscard;
+        const referent = Object.values(deps.getState().instances).find(
+          (inst) =>
+            inst.controller === seat &&
+            (inst.counters.tokens?.justAppeared ?? 0) > 0 &&
+            (!needDiscard ||
+              (inst.counters.tokens?.justAppearedFromDefausse ?? 0) > 0) &&
+            deps.getCard(inst.cardId)?.mainType === "Allié",
+        );
+        const refCard = referent ? deps.getCard(referent.cardId) : null;
+        if (refCard) {
+          const grant = grantXpEvents(deps.rulesCtx(), seat, xpValue(refCard));
+          deps.dispatch(
+            ...grant.events,
+            ...grant.log.map((l) =>
+              say(seat, `Le Héros de ${deps.playerName(seat)} ${l}`),
+            ),
+          );
+          if (grant.won) deps.onMatchWon(seat);
         }
       } else if (op.op === "heroGainPv") {
         // « Votre Héros regagne X PV » (X = nombre recyclé, costRecycle{max}) →

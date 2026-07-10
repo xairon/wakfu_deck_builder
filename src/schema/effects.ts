@@ -120,6 +120,11 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
   // « … un personnage possédant un Métier (Artisan) » : la SOURCE (frame.sourceId)
   // possède-t-elle un Métier ? Lu par `metierOf` (jeton metier_* ou subType Métier).
   z.object({ cond: z.literal("selfIsArtisan") }),
+  // « … que lorsqu'un de VOS Alliés vient d'apparaître depuis votre Défausse »
+  // (Échappé des Glaces, W78) : existe-t-il une instance Allié contrôlée par
+  // l'acteur portant justAppeared ET justAppearedFromDefausse (provenance) ?
+  // Restriction de JEU (play-time, whyCannotPlay).
+  z.object({ cond: z.literal("allyJustAppearedFromDiscard") }),
 ]);
 
 // ── VALEUR DYNAMIQUE — représentation CANONIQUE d'une magnitude (ValueExpr) ────
@@ -212,6 +217,14 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     ops: conditionalBodySchema,
   }),
   z.object({ op: z.literal("gainXp"), n: z.number() }),
+  // « Gagnez un nombre d'XP égal à la valeur d'XP de l'Allié qui vient
+  // d'apparaître [depuis votre Défausse] » (Échappé des Glaces, W78) :
+  // NON-interactif — le référent est l'instance Allié de l'acteur portant
+  // justAppeared (+ justAppearedFromDefausse si fromDiscard). Absente → no-op.
+  z.object({
+    op: z.literal("gainXpOfAppeared"),
+    fromDiscard: z.boolean().optional(),
+  }),
   z.object({
     op: z.literal("draw"),
     n: z.number(),

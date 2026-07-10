@@ -46,6 +46,10 @@ const TURN_TOKENS = new Set([
   // le permanent qui entre en jeu, réinitialisé à chaque nouvelle apparition
   // (seule la plus récente le porte), purgé en fin de tour.
   "justAppeared",
+  // PROVENANCE (W78 — Échappé des Glaces) : « … depuis votre Défausse » —
+  // second jeton posé à côté du marqueur quand l'entrée en jeu vient de la
+  // Défausse. Même cycle de vie (réinitialisé/purgé avec justAppeared).
+  "justAppearedFromDefausse",
   // « gagne <Mot-clé> jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) —
   // jetons TURN-scoped purgés en fin de tour, comme forceMod (geantCombatMod, lui,
   // est couvert par le suffixe *CombatMod ⇒ portée combat). Un jeton par mot-clé

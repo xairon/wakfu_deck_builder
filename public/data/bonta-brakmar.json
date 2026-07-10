@@ -6630,13 +6630,30 @@
         "description": "Gagnez un nombre d'XP égal à la valeur d'XP de l'Allié qui vient d'apparaître depuis votre Défausse.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "gainXpOfAppeared",
+              "fromDiscard": true
+            }
+          ]
+        },
+        "coverage": "manual",
+        "mechanics": ["gain-xp"]
       },
       {
         "description": "Ne jouez Échappé des Glaces que lorsqu'un de vos Alliés vient d'apparaître depuis votre Défausse.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "playCondition": {
+            "cond": "allyJustAppearedFromDiscard"
+          },
+          "ops": []
+        },
+        "coverage": "manual"
       }
     ],
     "keywords": [],

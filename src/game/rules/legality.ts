@@ -141,6 +141,18 @@ function playConditionOk(
       (k) => (h?.counters.tokens?.[RECENT_PLAY_TOKENS[k]] ?? 0) > 0,
     );
   }
+  // « … que lorsqu'un de VOS Alliés vient d'apparaître depuis votre Défausse »
+  // (Échappé des Glaces, W78) : un Allié contrôlé par l'acteur porte les DEUX
+  // jetons de récence d'apparition (marqueur justAppeared + provenance).
+  if (pc?.cond === "allyJustAppearedFromDiscard") {
+    return Object.values(ctx.state.instances).some(
+      (inst) =>
+        inst.controller === seat &&
+        (inst.counters.tokens?.justAppeared ?? 0) > 0 &&
+        (inst.counters.tokens?.justAppearedFromDefausse ?? 0) > 0 &&
+        ctx.getCard(inst.cardId)?.mainType === "Allié",
+    );
+  }
   return true; // condSpec sans sémantique de restriction → aucune contrainte
 }
 
@@ -201,6 +213,8 @@ function reasonFor(
       ? `Un adversaire doit venir de jouer ${what}.`
       : `Vous devez venir de jouer ${what}.`;
   }
+  if (pc?.cond === "allyJustAppearedFromDiscard")
+    return "Un de vos Alliés doit venir d'apparaître depuis votre Défausse.";
   return "Condition de jeu non remplie.";
 }
 

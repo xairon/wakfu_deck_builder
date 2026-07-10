@@ -882,6 +882,28 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
     },
   },
 
+  // « Gagnez un nombre d'XP égal à la valeur d'XP de l'Allié qui vient
+  //   d'apparaître depuis votre Défausse. » + « Ne jouez Échappé des Glaces que
+  //   lorsqu'un de vos Alliés vient d'apparaître depuis votre Défausse. » —
+  //   Action (W78). PROVENANCE d'apparition : le marqueur justAppeared (W74)
+  //   est doublé de justAppearedFromDefausse quand l'entrée en jeu vient de la
+  //   Défausse. Effet [0] = gainXpOfAppeared{fromDiscard} (non-interactif : XP
+  //   = valeur d'XP du référent) ; effet [1] = la RESTRICTION seule
+  //   (playCondition allyJustAppearedFromDiscard, gate whyCannotPlay, ops
+  //   vides). Scripté : le DSL ne modélise ni la provenance ni la restriction
+  //   à double jeton.
+  "echappe-des-glaces-bonta-brakmar": {
+    0: {
+      trigger: "onPlay",
+      ops: [{ op: "gainXpOfAppeared", fromDiscard: true }],
+    },
+    1: {
+      trigger: "onPlay",
+      playCondition: { cond: "allyJustAppearedFromDiscard" },
+      ops: [],
+    },
+  },
+
   // « Votre Héros regagne X PV. Ne jouez cette carte que si votre Héros se
   //   trouve dans son Havre-Sac. » — Action à COÛT VARIABLE X (« Niveau : X »
   //   au raw). Le X payé (costPayX — incliner X producteurs) est soigné en PV au
