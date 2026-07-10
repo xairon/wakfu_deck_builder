@@ -795,7 +795,13 @@ function startVsBot(): void {
   tutorial.startGuidedGame(mine, opp);
 }
 // Driver IA : actif dès que store.botSeat est renseigné (gate interne).
-const botDriver = useBotOpponent(store);
+// `hold` : le bot NE JOUE PAS pendant le jet de dé d'entame (l'overlay est
+// cosmétique par-dessus un état déjà « playing » — sans la garde, un bot
+// premier joueur jouait son tour EN FOND pendant l'animation). Le getter est
+// évalué à chaque battement du driver, après l'init du script (pas de TDZ).
+const botDriver = useBotOpponent(store, 550, {
+  hold: () => diceVisible.value,
+});
 // Masqué par défaut : le plateau occupe toute la largeur (cartes plus grandes).
 // Le joueur ouvre le journal à la demande via le bouton « Journal ».
 const showJournal = ref(false);

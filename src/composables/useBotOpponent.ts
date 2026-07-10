@@ -28,6 +28,17 @@ const other = (s: Seat): Seat => (s === "A" ? "B" : "A");
 export function useBotOpponent(
   store: Store,
   delayMs = 550,
+  opts?: {
+    /**
+     * PAUSE CINÉMATIQUE : tant que ce prédicat est vrai, le bot NE JOUE PAS.
+     * Sert au jet de dé d'entame (l'overlay est purement visuel par-dessus un
+     * état déjà « playing » — sans cette garde, un bot premier joueur jouait
+     * son tour EN FOND pendant l'animation, avant que le joueur désigné soit
+     * révélé). L'humain est de toute façon bloqué par l'overlay : la garde
+     * rend les deux camps symétriques.
+     */
+    hold?: () => boolean;
+  },
 ): { stop: () => void } {
   let timer: ReturnType<typeof setTimeout> | null = null;
   let tried = new Set<string>();
@@ -48,6 +59,9 @@ export function useBotOpponent(
 
   function step(): void {
     const bot = store.botSeat as Seat | null;
+    // Pause cinématique (jet de dé d'entame…) : personne ne joue tant que
+    // l'overlay est à l'écran — le joueur désigné n'est pas encore révélé.
+    if (opts?.hold?.()) return;
     // Actif en mulligan (le bot garde sa main) ET en jeu.
     if (
       !bot ||
