@@ -407,6 +407,26 @@ function parseSentence(
     /^pioche[zr] un nombre de cartes egal a la valeur d['’ ]?\s?xp de l['’ ]?\s?allie( dans le monde)? de votre choix$/,
   );
   if (m) return { op: "drawTargetXp", zones: ["monde"] };
+  // Variante RÉCENCE (W75 — Anneau Cérémonial) : « Piochez un nombre de cartes
+  //   égal à la valeur d'XP de l'Allié [<Famille>] qui vient d'apparaître » →
+  //   drawTargetXp + sub (subTypes libre : « Unique » est un subType) +
+  //   recentlyAppeared (jeton justAppeared, W74). Pas de « de votre choix » :
+  //   le référent est l'unique apparu récent — les filtres le désignent, le
+  //   clic ne fait que confirmer. Garde anti-mot-de-liaison sur la Famille.
+  m = sentence.match(
+    /^pioche[zr] un nombre de cartes egal a la valeur d['’ ]?\s?xp de l['’ ]?\s?allie(?: ([a-z-]+))? qui vient d['’]apparaitre$/,
+  );
+  if (m) {
+    const sub = m[1];
+    if (sub && ["de", "du", "des", "ou", "et", "la", "le", "les"].includes(sub))
+      return null;
+    return {
+      op: "drawTargetXp",
+      ...(sub ? { sub } : {}),
+      recentlyAppeared: true,
+      zones: ["monde"],
+    };
+  }
   // « Chaque joueur pioche N carte(s). » / « Tous les joueurs piochent N carte(s). »
   // — pioche symétrique (joueur actif d'abord).
   m = sentence.match(/^chaque joueur pioche (une|deux|trois|\d+) cartes?$/);

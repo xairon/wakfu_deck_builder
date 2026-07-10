@@ -317,6 +317,7 @@ export function effectTargetIds(
         op.op === "destroyTarget" ||
         op.op === "banishTarget" ||
         op.op === "damageTarget" ||
+        op.op === "drawTargetXp" ||
         op.op === "grantKeywordTarget" ||
         op.op === "grantResistanceTarget") &&
       op.sub

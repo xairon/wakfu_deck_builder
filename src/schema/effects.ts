@@ -919,6 +919,11 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // (heroes:false) dans `zones`.
   z.object({
     op: z.literal("drawTargetXp"),
+    // « … de l'Allié <Famille> … » (Anneau Cérémonial : Unique) — filtre subTypes.
+    sub: z.string().optional(),
+    // « … qui vient d'apparaître » (W74) : cible restreinte au permanent
+    // portant le jeton `justAppeared` (dernière apparition).
+    recentlyAppeared: z.boolean().optional(),
     zones: zonesSchema,
   }),
   z.object({

@@ -316,7 +316,19 @@
         "description": "Piochez un nombre de cartes égal à la valeur d'XP de l'Allié Unique qui vient d'apparaître.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "drawTargetXp",
+              "sub": "unique",
+              "recentlyAppeared": true,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       }
     ],
     "keywords": [
