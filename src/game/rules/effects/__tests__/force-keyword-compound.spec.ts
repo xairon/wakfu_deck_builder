@@ -79,6 +79,31 @@ describe("composé Force+Mot-clé — DSL", () => {
     });
   });
 
+  it("Léopardo : « [Neutre][Neutre] : … +3 en Force et Géant … une seule fois par tour » (sans inclinaison)", () => {
+    // requiresIncline ABSENT : les [Neutre] sont des coûts de Ressource
+    // GÉNÉRIQUES (l'icône neutre du site est le symbole de Ressource
+    // générique) → costTapResource sans élément ; la clause once-per-turn
+    // n'est PAS redondante (aucun verrou d'inclinaison) → flag oncePerTurn
+    // (jeton powerUses0, gate d'activation).
+    const c = compileTapEffectText(
+      "[Neutre][Neutre] : Le Léopardo gagne +3 en Force et Géant jusqu'à la fin du tour. N'utilisez ce pouvoir qu'une seule fois par tour.",
+      "Léopardo",
+      undefined,
+      false,
+      false,
+    );
+    expect(c).toEqual({
+      trigger: "onTap",
+      cost: "paidOps",
+      oncePerTurn: true,
+      ops: [
+        { op: "costTapResource" },
+        { op: "costTapResource" },
+        { op: "buffForceSelf", n: 3, alsoKeyword: "Géant" },
+      ],
+    });
+  });
+
   it("mot-clé NON câblé (« et Fantôme ») → manuel", () => {
     expect(
       compileEffectText(

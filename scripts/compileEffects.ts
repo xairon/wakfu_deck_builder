@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Migration / compilation des données de cartes — `npm run compile-effects`.
  *
  * Réécrit les fichiers d'extensions de public/data/*.json :
@@ -29,6 +29,7 @@ import {
   compileTurnStartEffectText,
   isBanishCostText,
   isDiscardCostText,
+  isIconCostText,
   isInclineCostText,
   isPaidCostText,
   isRecycleCostText,
@@ -230,6 +231,7 @@ function compileEffects(
       isBanishCostText(text) ||
       isRecycleCostText(text) ||
       isDiscardCostText(text) ||
+      isIconCostText(text) ||
       isTokenTapPowerText(text)
         ? // Un coût de RECYCLAGE sur une Action (Parchemins) compile en "onPlay"
           // (résolution au jeu) plutôt qu'en "onTap" — cf. compileTapEffectText.

@@ -141,12 +141,12 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
       ],
     },
   },
-  // « Le Léopardo gagne +3 en Force [.] jusqu'à la fin du tour.
-  //   N'utilisez ce pouvoir qu'une seule fois par tour. »
-  // → pouvoir activé : l'inclinaison garantit l'unique utilisation par tour.
-  "leopardo-incarnam": {
-    0: { trigger: "onTap", ops: [{ op: "buffForceSelf", n: 3 }] },
-  },
+  // Léopardo : script SUPPRIMÉ (2026-07-10) — écrit sur un texte au <strong>
+  // perdu, devenu INFIDÈLE après récupération (« [Neutre][Neutre] : Le
+  // Léopardo gagne +3 en Force et Géant … une seule fois par tour ») : coût de
+  // 2 Ressources non facturé, Géant absent, inclinaison supposée à tort. La
+  // grammaire DSL (coûts-icônes nus + alsoKeyword + oncePerTurn) compile
+  // désormais le texte réparé fidèlement.
   // « Les Mines d'Astrub apparaissent inclinées. »
   "mines-d-astrub-incarnam": {
     1: { trigger: "onArrive", ops: [{ op: "tapSelf" }] },

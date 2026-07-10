@@ -2193,6 +2193,17 @@ export function compileEffectText(
 }
 
 /**
+ * Le texte commence-t-il par un COÛT-ICÔNES de pouvoir (« [Incliner] … : » /
+ * « [Neutre][Neutre] : » — Léopardo) ? Prédicat de ROUTAGE (compileEffects) :
+ * ces textes passent par compileTapEffectText même sans `requiresIncline`.
+ */
+export function isIconCostText(text: string): boolean {
+  return /^\s*(?:\[incliner\]|\[(?:feu|eau|terre|air|neutre)\])[^:]{0,40}:/.test(
+    norm(text),
+  );
+}
+
+/**
  * Queue de TUTEUR « . Si vous le faites, mélangez [ensuite] vot(t)re Pioche » :
  * absorbée UNIQUEMENT quand le corps restant est une recherche (« cherch… ») —
  * le mélange est intrinsèque à la fouille de la Pioche (il s'applique même si
@@ -2308,6 +2319,7 @@ export function compileTapEffectText(
   //    tapsSource (l'activation incline AUSSI la source) — généralisation du
   //    script Yomtella (W54/W64), même machinerie moteur.
   let iconResources: string[] | null = null;
+  let iconOncePerTurn = false;
   if (requiresIncline) {
     const mIcon = normalized.match(
       /^\[incliner\](?:\s*,\s*((?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+))?\s*:\s*(.+)$/,
@@ -2318,6 +2330,26 @@ export function compileTapEffectText(
         iconResources = [
           ...mIcon[1].matchAll(/\[(feu|eau|terre|air|neutre)\]/g),
         ].map((g) => g[1].charAt(0).toUpperCase() + g[1].slice(1));
+    }
+  } else {
+    // COÛT-ICÔNES SANS INCLINAISON (« [Neutre][Neutre] : CORPS » — Léopardo) :
+    // chaque [Élément] est un coût de Ressource payé ; PAS de tapsSource (la
+    // source ne s'incline pas). La clause once-per-turn N'EST PAS redondante
+    // ici (aucun verrou d'inclinaison) → strippée ET traduite en flag
+    // oncePerTurn (jeton powerUses0, gate d'activation).
+    const mBare = normalized.match(
+      /^((?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+):\s*(.+)$/,
+    );
+    if (mBare) {
+      let rest = mBare[2].trim();
+      if (TAP_ONCE_PER_TURN.test(rest)) {
+        iconOncePerTurn = true;
+        rest = stripTapOncePerTurn(rest);
+      }
+      normalized = rest;
+      iconResources = [
+        ...mBare[1].matchAll(/\[(feu|eau|terre|air|neutre)\]/g),
+      ].map((g) => g[1].charAt(0).toUpperCase() + g[1].slice(1));
     }
   }
   const compiled = compileTapNormalized(
@@ -2335,12 +2367,18 @@ export function compileTapEffectText(
     ? {
         ...compiled,
         cost: "paidOps" as const,
-        tapsSource: true,
+        // tapsSource UNIQUEMENT avec [Incliner] explicite (requiresIncline) —
+        // un coût-icônes nu (Léopardo) n'incline pas la source.
+        ...(requiresIncline ? { tapsSource: true } : {}),
+        ...(iconOncePerTurn ? { oncePerTurn: true } : {}),
         ops: [
-          ...iconResources.map((el) => ({
-            op: "costTapResource" as const,
-            element: el,
-          })),
+          ...iconResources.map((el) =>
+            // [Neutre] = Ressource GÉNÉRIQUE (symbole du site) → costTapResource
+            // SANS élément (tout producteur) ; un élément réel filtre.
+            el === "Neutre"
+              ? { op: "costTapResource" as const }
+              : { op: "costTapResource" as const, element: el },
+          ),
           ...compiled.ops,
         ],
       }

@@ -10094,13 +10094,22 @@
           "trigger": "onTap",
           "ops": [
             {
+              "op": "costTapResource"
+            },
+            {
+              "op": "costTapResource"
+            },
+            {
               "op": "buffForceSelf",
-              "n": 3
+              "n": 3,
+              "alsoKeyword": "Géant"
             }
-          ]
+          ],
+          "cost": "paidOps",
+          "oncePerTurn": true
         },
-        "coverage": "manual",
-        "mechanics": ["buff-force-self"]
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "buff-force-self"]
       }
     ],
     "keywords": [],
