@@ -1860,6 +1860,13 @@ function manaBonus(seat: Seat): boolean {
   box-shadow:
     0 10px 34px rgba(0, 0, 0, 0.6),
     0 0 24px rgba(240, 166, 43, 0.2);
+  /* Ancré sur la ligne « LE MONDE » (bande VIDE par construction) plutôt qu'en
+     haut : en haut, le bandeau recouvrait la rangée ADVERSE — précisément là
+     où vivent les cibles d'un ciblage d'effet (audit UX 2026-07). Le bandeau
+     de COMBAT, lui, reste en haut (établi, et ses étapes ne masquent pas de
+     cibles : la sélection se fait sur tout le plateau). */
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 .gcombat__step {
   font-family: Fraunces, Georgia, serif;
@@ -1922,6 +1929,12 @@ function manaBonus(seat: Seat): boolean {
 .slidedown-leave-to {
   transform: translate(-50%, -14px);
   opacity: 0;
+}
+/* Variante effet (ancrée à -50% vertical) : même glissé de 14px, depuis SA
+   position — sans quoi l'animation partirait du haut du plateau. */
+.gcombat--effect.slidedown-enter-from,
+.gcombat--effect.slidedown-leave-to {
+  transform: translate(-50%, calc(-50% - 14px));
 }
 .gslot--atk-can :deep(.game-card),
 .gslot--target-can :deep(.game-card),
