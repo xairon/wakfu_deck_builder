@@ -445,6 +445,12 @@ export function effectTargetIds(
     ) {
       ok = (inst.counters.tokens?.justInclined ?? 0) > 0;
     }
+    // « … qui vient d'apparaître » (W74 — Homar Chérif, Potion d'Agression) :
+    // la cible doit porter le jeton `justAppeared` (posé sur le permanent qui
+    // vient d'entrer en jeu, seule la DERNIÈRE apparition le porte).
+    if (ok && "recentlyAppeared" in op && op.recentlyAppeared) {
+      ok = (inst.counters.tokens?.justAppeared ?? 0) > 0;
+    }
     // filtre de contrôleur (« un de vos … » / « … adverse »)
     if (ok && controller && actor !== undefined) {
       const want = controller === "self" ? actor : otherSeat(actor);

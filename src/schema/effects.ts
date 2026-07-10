@@ -374,6 +374,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     element: z.string(),
     heroes: z.boolean().optional(),
     controller: controllerSchema.optional(),
+    // « … qui vient d'apparaître » (Potion d'Agression, W74) : cible restreinte
+    // au permanent portant le jeton `justAppeared` (dernière apparition).
+    recentlyAppeared: z.boolean().optional(),
     zones: zonesSchema,
   }),
   // « Choisissez jusqu'à N Alliés ou Héros [attaquants ou bloqueurs]?
@@ -857,6 +860,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // « … qui ne porte aucun Équipement » : la cible ne doit avoir AUCUN
     // attachement de mainType Équipement (les Dofus attachés ne comptent pas).
     noEquipment: z.boolean().optional(),
+    // « … qui vient d'apparaître » (Homar Chérif, W74) : cible restreinte au
+    // permanent portant le jeton `justAppeared` (dernière apparition).
+    recentlyAppeared: z.boolean().optional(),
     zones: zonesSchema,
   }),
   z.object({

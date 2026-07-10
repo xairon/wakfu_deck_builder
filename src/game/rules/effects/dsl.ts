@@ -1404,23 +1404,30 @@ function parseSentence(
       zones: m[1] || m[3] ? ["monde", "havreSac"] : ["monde"],
     };
   // « Inclinez / Redressez l'Allié (ou Héros) [adverse] de votre choix
-  //   [dans le Monde][ ou dans un Havre-Sac] » → tapTarget / untapTarget.
+  //   [qui vient d'apparaître] [dans le Monde][ ou dans un Havre-Sac] »
+  //   → tapTarget / untapTarget.
   // « adverse » → contrôleur opponent ; sinon n'importe quel contrôleur. La
   // TOTALITÉ de la phrase doit correspondre (le `$` rejette toute condition
-  // résiduelle : « de Force ≤ 3 », « qui vient d'apparaître », « attaquant »…).
+  // résiduelle : « de Force ≤ 3 », « attaquant »…). « qui vient d'apparaître »
+  // (W74 — Homar Chérif) → flag recentlyAppeared (jeton justAppeared) — admis
+  // sur l'INCLINAISON seule (aucune carte « Redressez … vient d'apparaître » ;
+  // une provenance résiduelle « depuis … » reste manuelle, rejetée par le `$`).
   m = sentence.match(
-    /^(incline|redresse)[zr] l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+    /^(incline|redresse)[zr] l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix( qui vient d['’]apparaitre)?( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
   );
-  if (m)
+  if (m) {
+    if (m[4] && m[1] !== "incline") return null;
     return {
       op: m[1] === "incline" ? "tapTarget" : "untapTarget",
       ...(m[2] ? { heroes: true } : {}),
       ...(m[3] ? { controller: "opponent" } : {}),
+      ...(m[4] ? { recentlyAppeared: true } : {}),
       // sans clause Havre-Sac, la cible inclinable est dans le Monde (comme
       // destroyTarget). MAIS `heroes` ⇒ inclure le Havre-Sac : le Héros y réside
       // (setup.ts), sinon « ou Héros de votre choix » serait inciblable.
-      zones: m[2] || m[5] ? ["monde", "havreSac"] : ["monde"],
+      zones: m[2] || m[6] ? ["monde", "havreSac"] : ["monde"],
     };
+  }
   // « Inclinez / Redressez un de vos Alliés (ou Héros) [dans le Monde] … »
   // → tapTarget / untapTarget contrôleur self. Pas de famille ni de condition
   // (« un de vos Alliés Sram », « : effet » sont hors champ — rejetés par `$`
@@ -2052,9 +2059,11 @@ function compileActorBoundBody(
 ): EffectOp[] | null {
   const body = rawBody.replace(/\.$/, "").trim();
   // « inflige sa Force en Dommages à l'Allié (ou Héros) de votre choix [adverse]
-  //   [dans le Monde][ ou dans un Havre-Sac] » → damageTargetByForce.
+  //   [qui vient d'apparaître] [dans le Monde][ ou dans un Havre-Sac] »
+  //   → damageTargetByForce. « qui vient d'apparaître » (W74 — Potion
+  //   d'Agression) → flag recentlyAppeared (jeton justAppeared).
   let m = body.match(
-    /^inflige sa force en dommages? a l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
+    /^inflige sa force en dommages? a l['’ ]?\s?allie( ou heros)?( adverse)? de votre choix( qui vient d['’]apparaitre)?( dans le monde)?( ou dans (?:un|son) havre ?-?sac)?$/,
   );
   if (m)
     return [
@@ -2063,7 +2072,8 @@ function compileActorBoundBody(
         element: sourceElement,
         ...(m[1] ? { heroes: true } : {}),
         ...(m[2] ? { controller: "opponent" as const } : {}),
-        zones: targetZones(m[3], m[4]),
+        ...(m[3] ? { recentlyAppeared: true } : {}),
+        zones: targetZones(m[4], m[5]),
       },
     ];
   // « inflige N Dommages à l'Allié (ou Héros) de votre choix [dans le Monde]

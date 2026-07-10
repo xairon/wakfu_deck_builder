@@ -42,6 +42,10 @@ const TURN_TOKENS = new Set([
   // attaquants s'inclinant à la déclaration, purgé en début de tour (sécurité ;
   // réinitialisé aussi à chaque déclaration).
   "justInclined",
+  // RÉCENCE D'APPARITION (W74) : « … qui vient d'apparaître » — jeton posé sur
+  // le permanent qui entre en jeu, réinitialisé à chaque nouvelle apparition
+  // (seule la plus récente le porte), purgé en fin de tour.
+  "justAppeared",
   // « gagne <Mot-clé> jusqu'à la fin du TOUR » (grantKeywordSelf/grantKeywordTarget) —
   // jetons TURN-scoped purgés en fin de tour, comme forceMod (geantCombatMod, lui,
   // est couvert par le suffixe *CombatMod ⇒ portée combat). Un jeton par mot-clé

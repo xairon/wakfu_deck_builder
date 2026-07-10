@@ -8838,7 +8838,18 @@
         "description": "Inclinez l'Allié de votre choix qui vient d'apparaître.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "tapTarget",
+              "recentlyAppeared": true,
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["tap-target"]
       }
     ],
     "keywords": [],
@@ -12689,7 +12700,26 @@
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "cost": "paidOps",
+          "actor": "costTarget",
+          "ops": [
+            {
+              "op": "costTapControlled",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            },
+            {
+              "op": "damageTargetByForce",
+              "element": "Neutre",
+              "recentlyAppeared": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-controlled", "damage-target-by-force"]
       }
     ],
     "keywords": [],

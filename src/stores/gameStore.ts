@@ -500,7 +500,14 @@ export const useGameStore = defineStore("game", () => {
   /** Événements techniques invisibles dans le journal. */
   function isInternalEvent(e: PersistedEvent): boolean {
     if (e.type !== "SET_COUNTER" && e.type !== "INC_COUNTER") return false;
-    return (e.payload as { counter?: string }).counter === "arrivedTurn";
+    const counter = (e.payload as { counter?: string }).counter;
+    // Marqueurs de récence (apparition W74 / inclinaison W71) : posés à chaque
+    // entrée en jeu / déclaration — du bruit pur dans le journal.
+    return (
+      counter === "arrivedTurn" ||
+      counter === "justAppeared" ||
+      counter === "justInclined"
+    );
   }
   const log = computed<LogLine[]>(() =>
     events.value
@@ -1339,6 +1346,30 @@ export const useGameStore = defineStore("game", () => {
     };
   }
 
+  /**
+   * RÉCENCE D'APPARITION (W74) — drafts du marqueur `justAppeared` : posé sur
+   * le PERMANENT `instanceId` qui entre en jeu (une Action ne fait jamais
+   * qu'ÊTRE RÉSOLUE — elle n'« apparaît » pas → aucun draft), et RÉINITIALISÉ
+   * sur toutes les autres instances (seule la PLUS RÉCENTE apparition le
+   * porte, comme `justInclined` W71 ne marque que la dernière déclaration).
+   * Jeton turn-scoped (purgé en fin de tour, cf. limits.ts). Lu par le filtre
+   * de ciblage `recentlyAppeared` (Homar Chérif, Potion d'Agression).
+   */
+  function justAppearedDrafts(actor: Seat, instanceId: string): DraftEvent[] {
+    const card = getCard(state.value.instances[instanceId]?.cardId ?? null);
+    if (!card || card.mainType === "Action") return [];
+    const drafts: DraftEvent[] = [];
+    for (const inst of Object.values(state.value.instances)) {
+      if (inst.instanceId === instanceId) continue;
+      if (inst.counters.tokens?.justAppeared)
+        drafts.push(
+          setCounterVerb(actor, inst.instanceId, "justAppeared", 0, true),
+        );
+    }
+    drafts.push(setCounterVerb(actor, instanceId, "justAppeared", 1, true));
+    return drafts;
+  }
+
   function moveTo(
     instanceId: string,
     to: ZoneRef,
@@ -1418,6 +1449,12 @@ export const useGameStore = defineStore("game", () => {
           true,
         ),
       );
+      // RÉCENCE D'APPARITION (W74, « … qui vient d'apparaître ») : marqueur
+      // `justAppeared` sur le PERMANENT qui entre en jeu (jamais une Action —
+      // elle se résout, elle n'« apparaît » pas), RÉINITIALISÉ sur les autres
+      // instances (seule la PLUS RÉCENTE apparition le porte — miroir du
+      // patron `justInclined` W71). Jeton turn-scoped (purgé en fin de tour).
+      drafts.push(...justAppearedDrafts(inst.controller, instanceId));
     }
     dispatch(...drafts);
     // un déplacement peut casser une aura / vider une main (Vrombyx) :
@@ -1926,6 +1963,8 @@ export const useGameStore = defineStore("game", () => {
           true,
         ),
       );
+      // Récence d'apparition (W74) — miroir du site moveTo.
+      drafts.push(...justAppearedDrafts(seat, instanceId));
     }
     if (plan.producers.length) {
       // 2342 : le Havre-Sac doublé apparaît deux fois dans plan.producers (même

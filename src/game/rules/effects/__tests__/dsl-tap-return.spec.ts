@@ -113,10 +113,14 @@ describe("DSL — tapTarget / untapTarget / returnToHand", () => {
     ).toBeNull();
   });
 
-  it("NE compile PAS « Inclinez l'Allié de votre choix qui vient d'apparaître » (condition)", () => {
+  // W74 : la récence d'apparition est désormais FIDÈLEMENT compilable — le
+  //   jeton `justAppeared` (posé à chaque entrée en jeu, seule la dernière
+  //   apparition le porte) rend « qui vient d'apparaître » un simple filtre
+  //   d'éligibilité (recentlyAppeared). L'ancien verrou « → manuel » est levé.
+  it("compile « Inclinez l'Allié de votre choix qui vient d'apparaître » → tapTarget recentlyAppeared (W74)", () => {
     expect(
       ops("Inclinez l'Allié de votre choix qui vient d'apparaître."),
-    ).toBeNull();
+    ).toEqual([{ op: "tapTarget", recentlyAppeared: true, zones: ["monde"] }]);
   });
 
   // W11 : le filtre combatRole rend cette formulation FIDÈLEMENT compilable

@@ -191,6 +191,24 @@ export function resolveIntent(
           true,
         ),
       );
+      // RÉCENCE D'APPARITION (W74, « … qui vient d'apparaître ») : marqueur
+      // `justAppeared` sur le permanent qui entre en jeu (jamais une Action),
+      // réinitialisé sur les autres instances — MIROIR du chemin local
+      // (gameStore.justAppearedDrafts). Sans ça, Homar Chérif / Potion
+      // d'Agression seraient inertes en ligne (le filtre lit ce jeton).
+      if (card.mainType !== "Action") {
+        for (const other of Object.values(state.instances))
+          if (
+            other.instanceId !== intent.instanceId &&
+            other.counters.tokens?.justAppeared
+          )
+            events.push(
+              setCounter(seat, other.instanceId, "justAppeared", 0, true),
+            );
+        events.push(
+          setCounter(seat, intent.instanceId, "justAppeared", 1, true),
+        );
+      }
       // 2342 — bonus de doublement du Havre-Sac à USAGE UNIQUE : si le Havre-Sac
       // doublé du 2e joueur sert à payer au tour 2, on pose le jeton anti-redouble.
       const sacId = state.seats[seat].havreSacInstanceId;
@@ -299,6 +317,21 @@ export function resolveIntent(
             true,
           ),
         );
+        // Récence d'apparition (W74) — miroir du site PLAY_CARD ci-dessus.
+        const movedCard = getCard(inst.cardId);
+        if (movedCard && movedCard.mainType !== "Action") {
+          for (const other of Object.values(state.instances))
+            if (
+              other.instanceId !== intent.instanceId &&
+              other.counters.tokens?.justAppeared
+            )
+              events.push(
+                setCounter(seat, other.instanceId, "justAppeared", 0, true),
+              );
+          events.push(
+            setCounter(seat, intent.instanceId, "justAppeared", 1, true),
+          );
+        }
       }
       return { events };
     }
