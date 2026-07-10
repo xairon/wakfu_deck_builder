@@ -883,6 +883,23 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     fromCount: z.boolean().optional(),
     zones: zonesSchema,
   }),
+  // BUFF MULTI-CIBLES BORNÉ « Choisissez jusqu'à N de vos Alliés ou Héros
+  // [<Sub>] : Ils gagnent +N en Force [et <Mot-clé>] jusqu'à la fin du tour »
+  // (Attaques Bontarienne/Brâkmarienne) : ciblage RÉPÉTÉ (« jusqu'à » — le
+  // joueur peut s'arrêter), chaque cible choisie reçoit forceMod (+ <kw>TurnMod
+  // via alsoKeyword) à la résolution du clic.
+  z.object({
+    op: z.literal("buffForceMultiTarget"),
+    n: z.number(),
+    alsoKeyword: z
+      .enum(["Géant", "Agilité", "Agressivité", "Tacle"])
+      .optional(),
+    count: z.number(),
+    heroes: z.boolean(),
+    sub: z.string().optional(),
+    controller: z.enum(["self", "opponent"]).optional(),
+    zones: zonesSchema,
+  }),
   z.object({
     op: z.literal("untapMultiTarget"),
     heroes: z.boolean(),

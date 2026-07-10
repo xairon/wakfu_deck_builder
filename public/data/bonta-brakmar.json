@@ -1103,7 +1103,23 @@
         "description": "Choisissez jusqu'à trois de vos Alliés ou Héros Bonta : Ils gagnent +1 en Force et Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "buffForceMultiTarget",
+              "n": 1,
+              "alsoKeyword": "Agilité",
+              "count": 3,
+              "heroes": true,
+              "sub": "bonta",
+              "controller": "self",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],
@@ -1135,7 +1151,23 @@
         "description": "Choisissez jusqu'à trois de vos Allié ou Héros Brâkmar : Ils gagnent +1 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "buffForceMultiTarget",
+              "n": 1,
+              "alsoKeyword": "Géant",
+              "count": 3,
+              "heroes": true,
+              "sub": "brakmar",
+              "controller": "self",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],

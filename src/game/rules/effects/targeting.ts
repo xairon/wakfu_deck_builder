@@ -57,6 +57,7 @@ export type TargetingOp = Extract<
   | { op: "playerDraw" }
   | { op: "playerLoseStatTurn" }
   | { op: "playerGainStat" }
+  | { op: "buffForceMultiTarget" }
 >;
 
 export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
@@ -87,7 +88,8 @@ export function isTargetingOp(op: CompiledEffectOp): op is TargetingOp {
     op.op === "duelChooseChallenged" ||
     op.op === "playerDraw" ||
     op.op === "playerLoseStatTurn" ||
-    op.op === "playerGainStat"
+    op.op === "playerGainStat" ||
+    op.op === "buffForceMultiTarget"
   );
 }
 
@@ -254,7 +256,8 @@ export function effectTargetIds(
     op.op === "damageTargetByForce" ||
     op.op === "grantKeywordTarget" ||
     op.op === "grantResistanceTarget" ||
-    op.op === "banishTarget"
+    op.op === "banishTarget" ||
+    op.op === "buffForceMultiTarget"
       ? op.controller
       : undefined;
   // Rôles du combat EN COURS (state.combat) : un instance est « attaquant »
@@ -310,6 +313,7 @@ export function effectTargetIds(
     if (
       ok &&
       (op.op === "buffForceTarget" ||
+        op.op === "buffForceMultiTarget" ||
         op.op === "destroyTarget" ||
         op.op === "banishTarget" ||
         op.op === "damageTarget" ||

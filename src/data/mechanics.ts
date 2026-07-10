@@ -556,6 +556,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   eachPlayerDraws: "each-player-draws",
   healHeroTarget: "heal-hero-target",
   buffForceTarget: "buff-force-target",
+  buffForceMultiTarget: "buff-force-target",
   buffForceSelf: "buff-force-self",
   incTurnCounterSelf: "inc-turn-counter-self",
   incHeroTurnToken: "inc-hero-turn-token",

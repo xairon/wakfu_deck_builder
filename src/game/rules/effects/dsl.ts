@@ -871,6 +871,46 @@ function parseSentence(
       zones: ["monde", "havreSac"],
     };
   }
+  // BUFF MULTI-CIBLES BORNÉ « Choisissez jusqu'à N de vos Alliés ou Héros
+  //   [<Sub>] : Ils gagnent +N en Force [et <Mot-clé>] jusqu'à la fin du tour »
+  //   (Attaques Bontarienne/Brâkmarienne) → buffForceMultiTarget : ciblage
+  //   RÉPÉTÉ distinct (« jusqu'à » = le joueur peut s'arrêter, effectTargetSkip).
+  //   « de vos » ⇒ controller self. <Sub> = filtre subTypes LIBRE (factions
+  //   Bonta/Brâkmar hors ALLIED_FAMILIES) — garde anti-mot-de-liaison ; la
+  //   coquille « Allié » singulier (Brâkmarienne) est tolérée (allies?).
+  m = sentence.match(
+    /^choisissez jusqu['’]a (une|deux|trois|\d+) de vos allies?( ou heros)?(?: ([a-z-]+))? : ils gagnent \+(\d+) en force(?: et ([a-z]+))? jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m) {
+    const sub = m[3];
+    const LIAISON = new Set([
+      "de",
+      "du",
+      "des",
+      "en",
+      "et",
+      "ou",
+      "la",
+      "le",
+      "les",
+      "un",
+      "une",
+      "vos",
+      "votre",
+    ]);
+    if (sub && LIAISON.has(sub)) return null;
+    if (m[5] && !GRANTABLE_KEYWORDS[m[5]]) return null;
+    return {
+      op: "buffForceMultiTarget",
+      n: toNumber(m[4]),
+      ...(m[5] ? { alsoKeyword: GRANTABLE_KEYWORDS[m[5]] } : {}),
+      count: toNumber(m[1]),
+      heroes: !!m[2],
+      ...(sub ? { sub } : {}),
+      controller: "self",
+      zones: ["monde", "havreSac"],
+    };
+  }
   // « L'Allié (ou Héros) de votre choix gagne +N en Force [et <Mot-clé>]
   //   jusqu'à la fin du tour » — le COMPOSÉ (Blops Royaux) octroie le mot-clé
   //   câblé à la MÊME cible (alsoKeyword) ; un mot-clé non câblé → manuel.

@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
+import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
 import {
   loadAllCards,
   loadCardById,
@@ -11,7 +11,7 @@ import {
 
 // Doit suivre le CACHE_KEY de src/services/cardLoader.ts (bumpé à chaque
 // changement de forme/normalisation des données compilées).
-const CACHE_KEY = "wakfu-cards-cache-v98";
+const CACHE_KEY = "wakfu-cards-cache-v99";
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 24h - mirrors the source constant
 
 /**

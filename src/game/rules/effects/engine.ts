@@ -1058,11 +1058,14 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           // DOMMAGES MULTI-CIBLES BORNÉS : ouvre un ciblage RÉPÉTÉ (jusqu'à
           // op.count cibles). effectTargetChoose ré-ouvre tant que `remaining > 0`
           // et qu'il reste des cibles ; effectTargetSkip clôt (« jusqu'à »).
-          ...(op.op === "damageMultiTarget"
+          ...(op.op === "damageMultiTarget" || op.op === "buffForceMultiTarget"
             ? {
                 multi: {
                   remaining: op.count,
-                  distinct: !!op.distinct,
+                  // Buff multi (Attaques B.) : cibles DISTINCTES (un même Allié
+                  // ne cumule pas deux parts) ; « jusqu'à » via effectTargetSkip.
+                  distinct:
+                    op.op === "buffForceMultiTarget" ? true : !!op.distinct,
                   chosen: [],
                 },
               }
@@ -2571,6 +2574,45 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       const remaining = t.multi.remaining - 1;
       // Cibles TOUJOURS distinctes (une créature déjà inclinée/redressée ne se
       // repropose pas) — on exclut `chosen` de l'éligibilité recalculée.
+      const stillEligible =
+        remaining > 0
+          ? effectTargetIds(
+              deps.rulesCtx(),
+              op,
+              t.seat,
+              t.sourceId,
+              new Set(chosen),
+            )
+          : [];
+      if (remaining > 0 && stillEligible.length) {
+        effectTargeting.value = {
+          ...t,
+          multi: { remaining, distinct: true, chosen },
+        };
+        return;
+      }
+      effectTargeting.value = null;
+      pumpEffects();
+      return;
+    }
+    // BUFF MULTI-CIBLES BORNÉ (« Choisissez jusqu'à N de vos Alliés ou Héros
+    // <Sub> : Ils gagnent +N en Force [et <Kw>] » — Attaques Bontarienne/
+    // Brâkmarienne) : chaque cible choisie est buffée immédiatement, puis on
+    // RÉ-OUVRE le ciblage tant qu'il reste des choix ET des cibles distinctes.
+    // « Jusqu'à » : effectTargetSkip clôt la boucle à tout moment.
+    if (t.op.op === "buffForceMultiTarget" && t.multi) {
+      const op = t.op;
+      const res = resolveBuffForceTarget(
+        deps.rulesCtx(),
+        t.seat,
+        instanceId,
+        op.n,
+        undefined,
+        op.alsoKeyword,
+      );
+      deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+      const chosen = [...t.multi.chosen, instanceId];
+      const remaining = t.multi.remaining - 1;
       const stillEligible =
         remaining > 0
           ? effectTargetIds(
