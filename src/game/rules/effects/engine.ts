@@ -601,26 +601,37 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       return;
     }
     effectPicking.value = null;
-    // LOOK-N (lookTopPick) : le RESTE des candidats — encore dans la zone (le
-    // pris vient d'en sortir) — est recyclé SOUS la Pioche (« … puis recyclez
-    // l'autre »), dans l'ordre des candidats.
-    if (p.restAction === "recycle" && p.candidates) {
-      const zoneIds = new Set(deps.getState().seats[p.owner ?? p.seat][p.zone]);
-      const rest = p.candidates.filter((id) => zoneIds.has(id));
-      for (const id of rest)
-        deps.moveTo(id, { zone: "pioche", owner: p.seat }, { at: "bottom" });
-      if (rest.length)
-        deps.dispatch(
-          say(
-            p.seat,
-            `${p.cardName} : ${rest.length} carte(s) recyclée(s) sous la Pioche.`,
-          ),
-        );
-    }
+    // LOOK-N (lookTopPick / revealTopPutInPlay) : le RESTE des candidats —
+    // encore dans la zone (le pris vient d'en sortir) — est recyclé SOUS la
+    // Pioche (« … puis recyclez l'autre / les autres »), dans l'ordre.
+    recycleRestCandidates(p);
     // COÛT « Recyclez jusqu'à N … » (upTo) terminé (max atteint / pile épuisée) :
     // lie le nombre RÉELLEMENT recyclé à la frame retenue avant de reprendre le corps.
     if (p.upTo) bindCountToHeldFrame(picked);
     pumpEffects();
+  }
+
+  /**
+   * Recycle SOUS la Pioche le RESTE des candidats d'un pick LOOK-N
+   * (lookTopPick / revealTopPutInPlay) — ceux encore dans la zone. Appelé à
+   * la CLÔTURE du pick ET au PASSER (revealTopPutInPlay : les cartes sont
+   * révélées, le recyclage du reste est dû même sans mise en jeu).
+   */
+  function recycleRestCandidates(
+    p: NonNullable<typeof effectPicking.value>,
+  ): void {
+    if (p.restAction !== "recycle" || !p.candidates) return;
+    const zoneIds = new Set(deps.getState().seats[p.owner ?? p.seat][p.zone]);
+    const rest = p.candidates.filter((id) => zoneIds.has(id));
+    for (const id of rest)
+      deps.moveTo(id, { zone: "pioche", owner: p.seat }, { at: "bottom" });
+    if (rest.length)
+      deps.dispatch(
+        say(
+          p.seat,
+          `${p.cardName} : ${rest.length} carte(s) recyclée(s) sous la Pioche.`,
+        ),
+      );
   }
 
   /**
@@ -665,6 +676,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       pumpEffects();
       return;
     }
+    // LOOK-N révélé (revealTopPutInPlay) : passer N'ANNULE PAS le recyclage du
+    // reste — les cartes révélées retournent SOUS la Pioche.
+    recycleRestCandidates(p);
     deps.dispatch(say(p.seat, `${p.cardName} : choix passé.`));
     pumpEffects();
   }
@@ -2009,6 +2023,41 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "revealTopPutInPlay") {
+        // « Révéler les N premières cartes de votre Pioche. Si un <What> de
+        // Niveau L est révélé, vous pouvez le mettre en jeu gratuitement[,
+        // incliné]. Recyclez les autres cartes. » (les 4 Blops, W80) :
+        // révélation PUBLIQUE (les noms au journal), pick OPTIONNEL filtré
+        // (mainType + Niveau exact) → toMonde ; le reste recyclé SOUS la
+        // Pioche à la clôture — y compris si le joueur passe (effectPickSkip
+        // recycle aussi le reste des candidats).
+        const pioche = deps.getState().seats[seat].pioche;
+        if (!pioche.length) {
+          deps.dispatch(say(seat, `${cardName} : Pioche vide, effet passé.`));
+          continue;
+        }
+        const candidates = pioche.slice(0, op.n);
+        const names = candidates
+          .map(
+            (id) =>
+              deps.getCard(deps.getState().instances[id]?.cardId ?? null)
+                ?.name ?? "?",
+          )
+          .join(", ");
+        deps.dispatch(say(seat, `${cardName} : révèle ${names}.`));
+        effectPicking.value = {
+          seat,
+          cardName,
+          zone: "pioche",
+          action: "toMonde",
+          candidates,
+          restAction: "recycle",
+          filter: { mainType: op.what, exactLevel: op.exactLevel },
+          ...(op.tapped ? { enterTapped: true } : {}),
+          remaining: 1,
+        };
+        holdRest(frame, ops.slice(i + 1));
+        return true;
       } else if (op.op === "lookTopPick") {
         // LOOK-N (« Regardez les N premières cartes de votre Pioche. Prenez
         // l'une de ces cartes en main, puis recyclez l'autre. » — Bonne

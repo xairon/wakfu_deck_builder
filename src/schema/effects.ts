@@ -524,6 +524,19 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     dest: z.enum(["main"]),
     rest: z.enum(["recycle"]),
   }),
+  // « Révéler les N premières cartes de votre Pioche. Si un <What> de Niveau L
+  // est révélé de cette manière, vous pouvez le mettre en jeu gratuitement[,
+  // incliné]. Recyclez les autres cartes. » (les 4 Blops, W80) : révélation
+  // PUBLIQUE du top N, pick OPTIONNEL parmi les révélées (filtre mainType +
+  // Niveau exact) → entre en jeu (gratuitement, incliné si `tapped`), le
+  // RESTE recyclé SOUS la Pioche — y compris quand le joueur PASSE.
+  z.object({
+    op: z.literal("revealTopPutInPlay"),
+    n: z.number(),
+    what: z.enum(["Allié"]),
+    exactLevel: z.number(),
+    tapped: z.boolean().optional(),
+  }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({
     op: z.literal("healHeroTarget"),

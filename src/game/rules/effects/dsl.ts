@@ -1953,11 +1953,43 @@ function matchLeurInflige(sentence: string, cardName: string): number | null {
  * Gère la clause de liaison « Il apparaît incliné. » : elle marque la
  * recherche-mise-en-jeu précédente (`tapped`), sinon rejet.
  */
+/**
+ * CORPS MULTI-PHRASES apparié EN BLOC (une seule opération malgré plusieurs
+ * phrases) : « Révéler les trois premières cartes de votre Pioche. Si un Allié
+ * de Niveau N est révélé de cette manière, vous pouvez le mettre en jeu
+ * gratuitement, incliné. Recyclez les autres cartes. » (les 4 Blops, W80) →
+ * UN op revealTopPutInPlay (révélation + pick optionnel filtré + recyclage du
+ * reste). STRICT : toute variante (« remettez les autres dans l'ordre… »)
+ * reste manuelle. `body` déjà normalisé.
+ */
+function compileWholeBodyBlock(body: string): EffectOp[] | null {
+  const blop = body
+    .replace(/\.$/, "")
+    .match(
+      /^revele[rz] les trois premieres cartes de votre pioche\. si un allie de niveau (\d+) est revele de cette maniere, vous pouvez le mettre en jeu gratuitement, incline\. recyclez les autres cartes$/,
+    );
+  if (blop)
+    return [
+      {
+        op: "revealTopPutInPlay",
+        n: 3,
+        what: "Allié",
+        exactLevel: toNumber(blop[1]),
+        tapped: true,
+      },
+    ];
+  return null;
+}
+
 function compileBody(
   body: string,
   cardName: string,
   sourceElement: string,
 ): EffectOp[] | null {
+  // Corps multi-phrases à opération UNIQUE (les 4 Blops, W80) — apparié en
+  // bloc AVANT le découpage par phrase.
+  const block = compileWholeBodyBlock(body);
+  if (block) return block;
   const sentences = body
     .replace(/\.$/, "")
     .split(/\.\s*/)
@@ -2298,7 +2330,14 @@ export function compileEffectText(
   rest = restStripped;
   // « vous pouvez » ne porte que sur sa phrase : un optionnel multi-phrases
   // est ambigu (le reste serait-il obligatoire ?) → on ne compile pas.
-  if (optional && /\.\s+\S/.test(rest)) return null;
+  // EXCEPTION (W80) : un corps multi-phrases qui s'apparie EN BLOC (UNE seule
+  // opération — les 4 Blops) n'est pas ambigu : le « vous pouvez » porte sur
+  // l'opération entière (révéler+choisir+recycler = indivisible).
+  if (optional && /\.\s+\S/.test(rest)) {
+    const block = compileWholeBodyBlock(rest);
+    if (!block) return null;
+    return { trigger: "onArrive", optional, ops: block };
+  }
   const ops = compileBody(rest, cardName, sourceElement);
   if (!ops) return null;
   const allOps = shuffleTail ? [...ops, { op: "shuffleDeck" as const }] : ops;

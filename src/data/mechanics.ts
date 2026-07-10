@@ -598,6 +598,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   grantBonusBlock: "grant-bonus-block",
   buffTeamPowerDamageTurn: "team-power-damage-boost",
   lookTopPick: "look-top",
+  revealTopPutInPlay: "look-top",
   tapMultiTarget: "tap-target",
   untapMultiTarget: "untap-target",
   returnToHand: "return-to-hand",

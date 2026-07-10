@@ -2285,7 +2285,21 @@
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopPutInPlay",
+              "n": 3,
+              "what": "Allié",
+              "exactLevel": 1,
+              "tapped": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       },
       {
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Coco ne vous permet pas de mettre tous les Alliés en jeu.",
@@ -2341,7 +2355,21 @@
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopPutInPlay",
+              "n": 3,
+              "what": "Allié",
+              "exactLevel": 1,
+              "tapped": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       },
       {
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Griotte ne vous permet pas de mettre tous les Alliés en jeu.",
@@ -2398,7 +2426,21 @@
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopPutInPlay",
+              "n": 3,
+              "what": "Allié",
+              "exactLevel": 1,
+              "tapped": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       },
       {
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Indigo ne vous permet pas de mettre tous les Alliés en jeu.",
@@ -2454,7 +2496,21 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopPutInPlay",
+              "n": 3,
+              "what": "Allié",
+              "exactLevel": 1,
+              "tapped": true
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       },
       {
         "description": "Si plusieurs Alliés de Niveau 1 sont révélés ainsi, vous choisissez celui que vous mettez en jeu gratuitement. Le Blop Reinette ne vous permet pas de mettre tous les Alliés en jeu.",
