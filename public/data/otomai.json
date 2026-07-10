@@ -576,7 +576,24 @@
         "description": "Iop. [Incliner] : L'Allié ou Héros de votre choix gagne +1 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 1,
+              "heroes": true,
+              "alsoKeyword": "Géant",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "playCondition": {
+            "cond": "heroClass",
+            "class": "Iop"
+          }
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-target"]
       },
       {
         "description": "Cet Allié possède un pouvoir activé ou déclenché lié à la Classe du Héros de son contrôleur. Ce pouvoir se sera jouable ou ne se déclenchera que si le Héros est de la bonne Classe. Dans le cas contraire, le pouvoir ne fera rien.",

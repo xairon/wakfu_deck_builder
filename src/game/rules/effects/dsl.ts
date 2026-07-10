@@ -2310,6 +2310,19 @@ export function compileTapEffectText(
     cardName,
   );
   normalized = normStripped;
+  // GATE DE CLASSE « <Classe>. <coût> : CORPS » (Gzenah — « Iop. [Incliner] :
+  // … ») : le pouvoir n'est activable que si le Héros du contrôleur est de la
+  // Classe (ruling in-data des pouvoirs liés à la Classe). Préfixe strippé →
+  // playCondition heroClass, jugée à l'activation (powerConditionReason).
+  // ALLOWLIST stricte des Classes — tout autre mot-préfixe reste manuel.
+  let heroClassGate: string | null = null;
+  const mClass = normalized.match(
+    /^(iop|feca|osamodas|sram|xelor|cra|sadida|ecaflip|eniripsa|enutrof|sacrieur|pandawa)\.\s+(.+)$/,
+  );
+  if (mClass) {
+    heroClassGate = mClass[1].charAt(0).toUpperCase() + mClass[1].slice(1);
+    normalized = mClass[2].trim();
+  }
   // COÛT-ICÔNES en tête (textes récupérés du scrape), UNIQUEMENT sur un
   // pouvoir à inclinaison (requiresIncline) :
   //  - « [Incliner] : CORPS » — l'inclinaison textuelle EST l'inclinaison par
@@ -2386,6 +2399,14 @@ export function compileTapEffectText(
   const withBearer = bearerInCombat
     ? { ...withIconCost, requiresBearerInCombat: true }
     : withIconCost;
+  // Un seul playCondition par effet : récence ET gate de Classe simultanés
+  // seraient ambigus → manuel (aucune carte connue ne combine les deux).
+  if (recency && heroClassGate) return null;
+  if (heroClassGate)
+    return {
+      ...withBearer,
+      playCondition: { cond: "heroClass", class: heroClassGate },
+    };
   return recency ? { ...withBearer, playCondition: recency } : withBearer;
 }
 

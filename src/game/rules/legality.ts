@@ -13,9 +13,11 @@ import {
   canAttackCard,
   canBlockCard,
   heroStats,
+  normWord,
   onceNameToken,
   RECENT_PLAY_TOKENS,
 } from "./cardAttrs.ts";
+import { heroClassOf } from "./resources.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
 import { combatKeywords, effectiveKeywords } from "./effects/keywords.ts";
 import { planCost } from "./resources.ts";
@@ -124,6 +126,9 @@ function playConditionOk(
   const hero = heroId ? ctx.state.instances[heroId] : null;
   if (pc?.cond === "heroInZone")
     return !!hero && hero.location.zone === pc.zone;
+  // GATE DE CLASSE (Gzenah) : le Héros du contrôleur doit être de la Classe.
+  if (pc?.cond === "heroClass")
+    return heroClassOf(ctx, seat) === normWord(pc.class);
   if (pc?.cond === "recentlyPlayedQuestParch")
     return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
   // RÉCENCE PAR CATÉGORIE : `who:"self"` lit VOTRE Héros, `who:"other"` le
@@ -178,6 +183,8 @@ function reasonFor(
     return pc.zone === "havreSac"
       ? "Votre Héros doit être dans son Havre-Sac pour jouer cette carte."
       : "Votre Héros doit être dans le Monde pour jouer cette carte.";
+  if (pc?.cond === "heroClass")
+    return `Votre Héros doit être ${pc.class} pour utiliser ce pouvoir.`;
   if (pc?.cond === "recentlyPlayedQuestParch")
     return "Vous devez venir de jouer une carte Quête ou Parchemin.";
   if (pc?.cond === "recentlyPlayedKind") {

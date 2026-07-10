@@ -36,6 +36,7 @@ import {
   allyPowerDamageBonus,
   appearanceTriggerEffects,
   arrivalEffects,
+  heroClassOf,
   RECENT_PLAY_TOKENS,
   collectTriggeredEffects,
   effectiveForce,
@@ -809,6 +810,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         const hero = heroId ? deps.getState().instances[heroId] : null;
         return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
+      }
+      case "heroClass": {
+        // GATE DE CLASSE (Gzenah) — miroir du gate de legality.
+        return heroClassOf(deps.rulesCtx(), seat) === normWord(cond.class);
       }
       case "recentlyPlayedKind": {
         // RÉCENCE PAR CATÉGORIE — miroir du gate de legality (playConditionOk) :

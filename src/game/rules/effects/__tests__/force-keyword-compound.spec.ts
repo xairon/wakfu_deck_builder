@@ -104,6 +104,41 @@ describe("composé Force+Mot-clé — DSL", () => {
     });
   });
 
+  it("Gzenah : gate de CLASSE « Iop. [Incliner] : … » → playCondition heroClass", () => {
+    const c = compileTapEffectText(
+      "Iop. [Incliner] : L'Allié ou Héros de votre choix gagne +1 en Force et Géant jusqu'à la fin du tour.",
+      "Gzenah la Guerrière",
+      undefined,
+      false,
+      true,
+    );
+    expect(c).toEqual({
+      trigger: "onTap",
+      playCondition: { cond: "heroClass", class: "Iop" },
+      ops: [
+        {
+          op: "buffForceTarget",
+          n: 1,
+          heroes: true,
+          alsoKeyword: "Géant",
+          zones: ["monde", "havreSac"],
+        },
+      ],
+    });
+  });
+
+  it("préfixe-mot NON classe (« Bonjour. ») → pas de gate, sujet refusé (manuel)", () => {
+    expect(
+      compileTapEffectText(
+        "Bonjour. [Incliner] : L'Allié de votre choix gagne +1 en Force et Géant jusqu'à la fin du tour.",
+        "X",
+        undefined,
+        false,
+        true,
+      ),
+    ).toBeNull();
+  });
+
   it("mot-clé NON câblé (« et Fantôme ») → manuel", () => {
     expect(
       compileEffectText(

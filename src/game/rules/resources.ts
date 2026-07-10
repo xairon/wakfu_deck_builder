@@ -72,8 +72,9 @@ export function resourceProducers(
   return out;
 }
 
-/** Classe du Héros de `seat` (heroCard.class), normalisée, ou null. */
-function heroClassOf(ctx: RulesCtx, seat: Seat): string | null {
+/** Classe du Héros de `seat` (heroCard.class), normalisée, ou null. Exporté :
+ *  lu aussi par le gate d'activation heroClass (legality/engine — Gzenah). */
+export function heroClassOf(ctx: RulesCtx, seat: Seat): string | null {
   const id = ctx.state.seats[seat].heroInstanceId;
   const inst = id ? ctx.state.instances[id] : null;
   const card = inst ? ctx.getCard(inst.cardId) : null;

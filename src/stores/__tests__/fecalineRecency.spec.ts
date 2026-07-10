@@ -88,6 +88,58 @@ describe("Fécaline — récence Quête/Parchemin", () => {
   });
 });
 
+describe("gate de CLASSE du Héros (heroClass — Gzenah)", () => {
+  it("pouvoir refusé si le Héros n'est pas de la Classe ; autorisé sinon", () => {
+    const { store } = setup();
+    const GZENAH: Card = {
+      id: "gzenah-test",
+      name: "Gzenah la Guerrière",
+      mainType: "Allié",
+      subTypes: [],
+      effects: [
+        {
+          description:
+            "Iop. [Incliner] : L'Allié ou Héros de votre choix gagne +1 en Force et Géant jusqu'à la fin du tour.",
+          requiresIncline: true,
+          compiled: {
+            trigger: "onTap",
+            playCondition: { cond: "heroClass", class: "Iop" },
+            ops: [
+              {
+                op: "buffForceTarget",
+                n: 1,
+                heroes: true,
+                alsoKeyword: "Géant",
+                zones: ["monde", "havreSac"],
+              },
+            ],
+          },
+        },
+      ],
+    } as unknown as Card;
+    const cardStore = useCardStore();
+    cardStore.cards = [...cardStore.cards, GZENAH];
+    const gz = placeInZone(store, "A", { zone: "monde" });
+    store.state.instances[gz].cardId = "gzenah-test";
+    // Le Héros factice est IOP (factory) : un gate SRAM refuse, expliqué.
+    GZENAH.effects![0].compiled!.playCondition = {
+      cond: "heroClass",
+      class: "Sram",
+    };
+    expect(store.activateTapPower(gz)).toBe(false);
+    expect(store.ruleError).toContain("Sram");
+    store.clearRuleError();
+    expect(store.state.instances[gz].orientation).toBe("upright"); // rien consommé
+    // Gate IOP (la Classe du Héros) → pouvoir activable, ciblage ouvert.
+    GZENAH.effects![0].compiled!.playCondition = {
+      cond: "heroClass",
+      class: "Iop",
+    };
+    expect(store.activateTapPower(gz)).toBe(true);
+    expect(store.effectTargeting).not.toBeNull();
+  });
+});
+
 describe("récence PAR CATÉGORIE (recentPlay<Kind>) — écrivain + gate", () => {
   it("jouer une Action pose recentPlayAction=1 (et parchemin selon le subType), écrasés au jeu suivant", () => {
     const { store, parchId, autreId } = setup();

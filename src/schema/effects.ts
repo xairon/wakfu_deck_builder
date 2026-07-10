@@ -98,6 +98,10 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
   // jeu (écrasés — stricte récence, comme recentQuestParch), purgés au
   // changement de tour. `who: "self"` lit VOTRE Héros ; `who: "other"` lit le
   // Héros ADVERSE (en 1v1, « un adversaire / un autre joueur » = l'adversaire).
+  // GATE DE CLASSE DU HÉROS (« Iop. [Incliner] : … » — Gzenah) : le pouvoir
+  // n'est activable que si le Héros du CONTRÔLEUR est de la Classe nommée
+  // (heroCard.class, comparaison normalisée — même lecture que selfCostMod).
+  z.object({ cond: z.literal("heroClass"), class: z.string() }),
   z.object({
     cond: z.literal("recentlyPlayedKind"),
     kinds: z.array(
