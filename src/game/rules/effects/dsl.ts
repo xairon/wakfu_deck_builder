@@ -931,6 +931,28 @@ function parseSentence(
       zones: ["monde", "havreSac"],
     };
   }
+  // « L'Allié <Famille> qui vient d'apparaître [dans le Monde] gagne +N en
+  //   Force [et <Mot-clé>] jusqu'à la fin du tour » (W77 — Tainéla) →
+  //   buffForceTarget + sub + recentlyAppeared (jeton justAppeared, W74).
+  //   Pas de « de votre choix » : le référent est l'unique apparu récent —
+  //   les filtres d'éligibilité le désignent, le clic ne fait que confirmer.
+  m = sentence.match(
+    /^l['’ ]?\s?allie(?: ([a-z-]+))? qui vient d['’]apparaitre( dans le monde)? gagne \+(\d+) en force(?: et ([a-z]+))? jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m) {
+    const fam = m[1];
+    if (fam && !ALLIED_FAMILIES.has(fam)) return null;
+    if (m[4] && !GRANTABLE_KEYWORDS[m[4]]) return null;
+    return {
+      op: "buffForceTarget",
+      n: toNumber(m[3]),
+      heroes: false,
+      ...(fam ? { sub: fam } : {}),
+      recentlyAppeared: true,
+      ...(m[4] ? { alsoKeyword: GRANTABLE_KEYWORDS[m[4]] } : {}),
+      zones: ["monde"],
+    };
+  }
   // « L'Allié (ou Héros) de votre choix gagne +N en Force [et <Mot-clé>]
   //   jusqu'à la fin du tour » — le COMPOSÉ (Blops Royaux) octroie le mot-clé
   //   câblé à la MÊME cible (alsoKeyword) ; un mot-clé non câblé → manuel.
@@ -2383,6 +2405,13 @@ export function compileTapEffectText(
     requiresIncline || isTokenTapPowerText(text)
       ? stripTapOncePerTurn(norm(text))
       : norm(text);
+  // PRÉFIXE « Réaction. » (W77 — Tainéla) sur un POUVOIR à inclinaison : la
+  // permission « utilisable en réaction » est DÉJÀ accordée par le moteur
+  // (fenêtre 706.5 dans activateTapPower, chemins paidOps et défaut) →
+  // préfixe strippé, AUCUN flag. STRICT : réservé aux pouvoirs à inclinaison
+  // (sur une Action, « Réaction » = restriction de JEU, reactionOnly — gérée
+  // au cas par cas, jamais strippée ici).
+  if (requiresIncline) normalized = normalized.replace(/^reaction\.\s+/, "");
   // CONDITION D'ACTIVATION « … que si le Porteur de <self> est attaquant ou
   // bloqueur » (Dora) : strippée UNIQUEMENT sur un pouvoir à inclinaison
   // (requiresIncline) et si le sujet est la carte elle-même → flag

@@ -532,6 +532,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     orientation: orientationFilterSchema.optional(),
     // Rôle de combat (« l'Allié ou Héros attaquant / bloqueur de votre choix »).
     combatRole: combatRoleSchema.optional(),
+    // « … qui vient d'apparaître » (Tainéla, W77) : cible restreinte au
+    // permanent portant le jeton `justAppeared` (dernière apparition).
+    recentlyAppeared: z.boolean().optional(),
     zones: zonesSchema,
   }),
   // BUFF DE MASSE « Tous vos/les [autres] <X> gagnent +N en Force et <Mot-clé>

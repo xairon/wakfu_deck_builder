@@ -7155,7 +7155,22 @@
         "description": "Réaction. [Incliner] : L'Allié Bouftou qui vient d'apparaître dans le Monde gagne +1 en Force et Agressivité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 1,
+              "heroes": false,
+              "sub": "bouftou",
+              "recentlyAppeared": true,
+              "alsoKeyword": "Agressivité",
+              "zones": ["monde"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],
