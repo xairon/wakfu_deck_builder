@@ -54,6 +54,35 @@ describe("useRuleAssistant", () => {
     expect(h?.rule?.ref).toBe("Tour");
   });
 
+  it("étape GÉANT du combat → indice de répartition (6135), pas l'indice générique", async () => {
+    // Audit UX 2026-07 : à l'étape « geant », le coach affichait « Déclare les
+    // blocages, puis résous le combat » (périmé — les blocages sont déjà
+    // déclarés, on répartit la Force du Géant).
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, deck, "A");
+    (store as unknown as { combat: Record<string, unknown> | null }).combat = {
+      step: "geant",
+      target: null,
+      attackers: [],
+      blocks: {},
+      strikes: {},
+      geantAssign: {},
+      geantFor: null,
+      geantConfirmed: [],
+      ripostes: {},
+      riposteFrom: null,
+      riposteCandidates: [],
+      pendingBlocker: null,
+      reactingSeat: null,
+    };
+    await nextTick();
+    const h = hintOf(mount(Harness));
+    expect(h?.tone).toBe("action");
+    expect(h?.text).toContain("Répartis");
+    expect(h?.rule?.ref).toBe("6135");
+  });
+
   it("dismiss efface le refus affiché", async () => {
     const store = useGameStore();
     const deck = createMockDeck();

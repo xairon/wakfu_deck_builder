@@ -195,6 +195,16 @@ export function useRuleAssistant() {
               "Une Cible (Allié/Héros) non engagée en duel riposte sa Force à un attaquant qui l'a frappée.",
           },
         };
+      if (step === "geant")
+        return {
+          tone: "action",
+          text: "Répartis la Force de ton Géant entre ses bloqueurs et la Cible (clic sur une carte ou +/−), puis « Confirmer la répartition ».",
+          rule: {
+            ref: "6135",
+            detail:
+              "Un Géant répartit sa Force comme son contrôleur le souhaite entre ses bloqueurs et, s'il en reste, la Cible du combat.",
+          },
+        };
       return {
         tone: "action",
         text: "Déclare les blocages, puis résous le combat.",
