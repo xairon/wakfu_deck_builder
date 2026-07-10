@@ -108,6 +108,27 @@ describe("rules/bearer — DSL compileBearerBonusText", () => {
     ).toEqual({ kind: "bearerBonus", keyword: "Agilité" });
   });
 
+  it("compile le COMPOSÉ « gagne +N en Force et <Mot-clé> » (Dragodindes récupérées)", () => {
+    expect(
+      compileBearerBonusText(
+        "Le Porteur de la Dragodinde Ébène gagne +1 en Force et Agilité.",
+        "Dragodinde Ébène",
+      )?.static,
+    ).toEqual({ kind: "bearerBonus", force: 1, keyword: "Agilité" });
+    expect(
+      compileBearerBonusText(
+        "Le Porteur de la Dragodinde ébène et Orchidée gagne +1 en Force et Agressivité.",
+        "Dragodinde Ébène et Orchidée",
+      )?.static,
+    ).toEqual({ kind: "bearerBonus", force: 1, keyword: "Agressivité" });
+    expect(
+      compileBearerBonusText(
+        "Le Porteur de la Dragodinde Indigo et Pourpre gagne +1 en Force et Géant.",
+        "Dragodinde Indigo et Pourpre",
+      )?.static,
+    ).toEqual({ kind: "bearerBonus", force: 1, keyword: "Géant" });
+  });
+
   it("REJETTE le préfixe conditionnel « Tant qu'il est attaquant, … » (≠ continu)", () => {
     expect(
       compileBearerBonusText(
@@ -126,14 +147,13 @@ describe("rules/bearer — DSL compileBearerBonusText", () => {
     ).toBeNull();
   });
 
-  it("REJETTE l'icône perdue au scrape (« gagne . ») et les bonus composés", () => {
+  it("REJETTE l'icône perdue au scrape (« gagne . ») — le composé Force+Mot-clé, lui, compile désormais", () => {
     expect(compileBearerBonusText("Le Porteur du X gagne .", "X")).toBeNull();
+    // Frontière LEVÉE (textes récupérés du scrape) : cf. le test du composé.
     expect(
-      compileBearerBonusText(
-        "Le Porteur du X gagne +1 en Force et Tacle.",
-        "X",
-      ),
-    ).toBeNull();
+      compileBearerBonusText("Le Porteur du X gagne +1 en Force et Tacle.", "X")
+        ?.static,
+    ).toEqual({ kind: "bearerBonus", force: 1, keyword: "Tacle" });
   });
 
   it("REJETTE un sujet qui n'est pas la carte elle-même", () => {
@@ -237,6 +257,35 @@ describe("rules/bearer — application des bonus portés", () => {
     // Le mot-clé disparaît si l'équipement est détaché.
     dispatch(f, detach("A", bootsId, { zone: "main", owner: "A" }));
     expect(effectiveKeywords(ctxOf(f), bearerId).geant).toBe(false);
+  });
+
+  it("effectiveKeywords confère AUSSI Agilité / Agressivité / Tacle au Porteur (Dragodindes)", () => {
+    for (const [kw, flag] of [
+      ["Agilité", "agilite"],
+      ["Agressivité", "agressivite"],
+      ["Tacle", "tacle"],
+    ] as const) {
+      const bearer = makeAlly("bearer", { force: 3 });
+      const mount = createMockAllyCard({
+        id: "mount",
+        name: "Dragodinde Test",
+        subTypes: ["Monstre", "Monture"],
+        stats: { niveau: { value: 1, element: "Feu" } },
+        effects: [
+          {
+            description: `Le Porteur de la Dragodinde Test gagne +1 en Force et ${kw}.`,
+          },
+        ],
+      });
+      const f = fixture([bearer, mount]);
+      const bearerId = instId("A", 0);
+      const mountId = instId("A", 1);
+      bringToMonde(f, "A", bearerId);
+      bringToMonde(f, "A", mountId);
+      expect(effectiveKeywords(ctxOf(f), bearerId)[flag], kw).toBe(false);
+      dispatch(f, attach("A", mountId, bearerId));
+      expect(effectiveKeywords(ctxOf(f), bearerId)[flag], kw).toBe(true);
+    }
   });
 
   it("effectiveKeywords cumule une Résistance MULTI-ÉLÉMENTS portée (Croum)", () => {

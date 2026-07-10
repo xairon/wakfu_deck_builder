@@ -5553,7 +5553,7 @@
         "mechanics": ["hero-lose-pv"]
       },
       {
-        "description": "Vos Alliés Bouftous gagnent +1 en Force et .",
+        "description": "Vos Alliés Bouftous gagnent +1 en Force et Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -5658,7 +5658,7 @@
         "mechanics": ["hero-lose-pv"]
       },
       {
-        "description": "Tous vos Alliés Tofus gagnent +1 en Force et .",
+        "description": "Tous vos Alliés Tofus gagnent +1 en Force et Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -10086,7 +10086,7 @@
     },
     "effects": [
       {
-        "description": "Le Léopardo gagne +3 en Force et jusqu'à la fin du tour. N'utilisez ce pouvoir qu'une seule fois par tour.",
+        "description": "[Neutre][Neutre] : Le Léopardo gagne +3 en Force et Géant jusqu'à la fin du tour. N'utilisez ce pouvoir qu'une seule fois par tour.",
         "elements": ["Neutre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -13306,7 +13306,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié ou Héros de votre choix gagne +4 en Force et jusqu'à la fin du tour. Vous ne pouvez jouer qu'une seule Puissance d'Ogrest par tour.",
+        "description": "L'Allié ou Héros de votre choix gagne +4 en Force et Géant jusqu'à la fin du tour. Vous ne pouvez jouer qu'une seule Puissance d'Ogrest par tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"

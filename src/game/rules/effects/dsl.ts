@@ -3358,8 +3358,24 @@ export function compileBearerBonusText(
   cardName: string,
 ): CompiledEffect | null {
   const body = norm(text).replace(/\.$/, "").trim();
-  // « Le Porteur de/du/des/d' <self> gagne +N / -N en Force »
+  // COMPOSÉ « Le Porteur de <self> gagne +N en Force et <Mot-clé>. »
+  // (Dragodindes — textes récupérés du scrape, le <strong> du mot-clé était
+  // perdu). bearerBonus porte force ET keyword ensemble (schéma). AVANT la
+  // forme simple (dont le `$` rejette le composé).
   let m = body.match(
+    /^le porteur (?:de |du |des |de la |de l['’]\s?|d['’]\s?)?(.{1,60}?) gagne ([+-]?\d+) en force et (geant|tacle|agilite|agressivite|portee|critique|parade)$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName)) {
+    const keyword = BEARER_KEYWORDS[m[3]];
+    if (keyword)
+      return {
+        trigger: "static",
+        static: { kind: "bearerBonus", force: toNumber(m[2]), keyword },
+        ops: [],
+      };
+  }
+  // « Le Porteur de/du/des/d' <self> gagne +N / -N en Force »
+  m = body.match(
     /^le porteur (?:de |du |des |de la |de l['’]\s?|d['’]\s?)?(.{1,60}?) gagne ([+-]?\d+) en force$/,
   );
   if (m && subjectIsSelf(m[1], cardName))
@@ -3417,6 +3433,7 @@ const BEARER_KEYWORDS: Record<string, CardKeyword> = {
   geant: "Géant",
   tacle: "Tacle",
   agilite: "Agilité",
+  agressivite: "Agressivité",
   portee: "Portée",
   critique: "Critique",
   parade: "Parade",

@@ -4525,7 +4525,7 @@
     },
     "effects": [
       {
-        "description": "Jusqu'à la fin du tour, tous les Alliés ou Héros attaquants gagnent +1 en Force et .",
+        "description": "Jusqu'à la fin du tour, tous les Alliés ou Héros attaquants gagnent +1 en Force et Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -7137,7 +7137,7 @@
         "mechanics": ["recycle-from-discard"]
       },
       {
-        "description": "L'Allié Bouftou qui vient d'apparaître dans le Monde gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "Réaction. [Incliner] : L'Allié Bouftou qui vient d'apparaître dans le Monde gagne +1 en Force et Agressivité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"

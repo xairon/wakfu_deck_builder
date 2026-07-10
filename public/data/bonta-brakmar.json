@@ -1100,7 +1100,7 @@
     },
     "effects": [
       {
-        "description": "Choisissez jusqu'à trois de vos Alliés ou Héros : Ils gagnent +1 en Force et jusqu'à la fin du tour.",
+        "description": "Choisissez jusqu'à trois de vos Alliés ou Héros Bonta : Ils gagnent +1 en Force et Agilité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -1132,7 +1132,7 @@
     },
     "effects": [
       {
-        "description": "Choisissez jusqu'à trois de vos Allié ou Héros : Ils gagnent +1 en Force et jusqu'à la fin du tour.",
+        "description": "Choisissez jusqu'à trois de vos Allié ou Héros Brâkmar : Ils gagnent +1 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -3529,7 +3529,7 @@
     },
     "effects": [
       {
-        "description": "Défaussez le Champa Bleu de votre main : l'Allié ou Héros de votre choix gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "[Eau], Défaussez le Champa Bleu de votre main : l'Allié ou Héros de votre choix gagne +1 en Force et Tacle jusqu'à la fin du tour.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3568,7 +3568,7 @@
     },
     "effects": [
       {
-        "description": "Défaussez le Champa Marron de votre main : L'Allié ou Héros de votre choix gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "[Air], Défaussez le Champa Marron de votre main : L'Allié ou Héros de votre choix gagne +1 en Force et Agilité jusqu'à la fin du tour.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3607,7 +3607,7 @@
     },
     "effects": [
       {
-        "description": "Défaussez le Champa Rouge de votre main : L'Allié ou Héros de votre choix gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "[Feu], Défaussez le Champa Rouge de votre main : L'Allié ou Héros de votre choix gagne +1 en Force et Agressivité jusqu'à la fin du tour.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -3647,7 +3647,7 @@
     },
     "effects": [
       {
-        "description": "Défaussez le Champa Vert de votre main : L'Allié ou Héros de votre choix gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "[Terre], Défaussez le Champa Vert de votre main : L'Allié ou Héros de votre choix gagne +1 en Force et Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
@@ -6152,10 +6152,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde Ébène gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde Ébène gagne +1 en Force et Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -6203,10 +6212,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde Indigo gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde Indigo gagne +1 en Force et Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Tacle"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -6255,10 +6273,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde Orchidée gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde Orchidée gagne +1 en Force et Agressivité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Agressivité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -6307,10 +6334,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde Pourpre gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde Pourpre gagne +1 en Force et Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [
@@ -8788,7 +8824,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Tant que Hyrkul le Tendancieux est dans le Monde, tous vos autres Alliés ou Héros ont +1 en Force et .",
+        "description": "Tant que Hyrkul le Tendancieux est dans le Monde, tous vos autres Alliés ou Héros Brâkmar ont +1 en Force et Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -12845,7 +12881,7 @@
         "coverage": "keyword"
       },
       {
-        "description": "Tous vos autres Rats gagnent +1 en Force et jusqu'à la fin du tour.",
+        "description": "[Incliner] : Tous vos autres Rats gagnent +1 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"

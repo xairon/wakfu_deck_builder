@@ -573,7 +573,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié ou Héros de votre choix gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "Iop. [Incliner] : L'Allié ou Héros de votre choix gagne +1 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"

@@ -434,7 +434,7 @@
     },
     "effects": [
       {
-        "description": "Détruisez un de vos Monstres : Le Porteur de l'Arc de Chasse gagne un bonus de Force égal à la Force de ce Monstre et jusqu'à la fin du tour.",
+        "description": "[Incliner], [Terre], Détruisez un de vos Monstres : Le Porteur de l'Arc de Chasse gagne un bonus de Force égal à la Force de ce Monstre et Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -690,7 +690,7 @@
         "mechanics": ["return-to-hand"]
       },
       {
-        "description": "L'Allié ou Héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
+        "description": "[Incliner], [Terre] : L'Allié ou Héros de votre choix gagne +2 en Force et Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -748,7 +748,7 @@
         "mechanics": ["return-to-hand"]
       },
       {
-        "description": "L'Allié ou héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
+        "description": "[Incliner], [Terre] : L'Allié ou héros de votre choix gagne +2 en Force et Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -806,7 +806,7 @@
     },
     "effects": [
       {
-        "description": "L'Allié ou héros de votre choix gagne +2 en Force et jusqu'à la fin du tour.",
+        "description": "[Incliner], [Terre] : L'Allié ou héros de votre choix gagne +2 en Force et Géant jusqu'à la fin du tour.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
@@ -1198,7 +1198,7 @@
     },
     "effects": [
       {
-        "description": "Tant que vous avez au moins un Allié, un Équipement et une Action dans votre Défausse, le Bulbig gagne +3 en Force et .",
+        "description": "Tant que vous avez au moins un Allié, un Équipement et une Action dans votre Défausse, le Bulbig gagne +3 en Force et Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -6621,7 +6621,7 @@
     },
     "effects": [
       {
-        "description": "Défaussez un Monstre de votre main : Le Rib gagne un bonus de Force égal à la Force du Monstre défaussé de cette façon et jusqu'à la fin du tour.",
+        "description": "[Incliner], Défaussez un Monstre de votre main : Le Rib gagne un bonus de Force égal à la Force du Monstre défaussé de cette façon et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"

@@ -206,8 +206,17 @@ export function effectiveKeywords(
   // Force au combat (les autres mots-clés conférés n'ont pas encore de
   // sémantique de combat, exactement comme s'ils étaient imprimés).
   let bearerGeant = false;
+  let bearerAgilite = false;
+  let bearerAgressivite = false;
+  let bearerTacle = false;
   for (const b of bearerBonuses(ctx, id)) {
     if (b.keyword === "Géant") bearerGeant = true;
+    // Agilité / Agressivité / Tacle conférés par l'équipement porté (« gagne
+    // +1 en Force et Agilité » — Dragodindes) ont EXACTEMENT la sémantique des
+    // mots-clés imprimés (blocage 704 / mal d'invocation / verrou Tacle).
+    if (b.keyword === "Agilité") bearerAgilite = true;
+    if (b.keyword === "Agressivité") bearerAgressivite = true;
+    if (b.keyword === "Tacle") bearerTacle = true;
     if (!b.resistance) continue;
     const els = Array.isArray(b.resistance.element)
       ? b.resistance.element
@@ -234,16 +243,24 @@ export function effectiveKeywords(
   // imprimés (Agilité → blocage 704 ; Agressivité → mal d'invocation à l'attaque),
   // lus par eligibleBlockers/eligibleAttackers via effectiveKeywords.
   const agilite =
-    base.agilite || !!tokens.agiliteTurnMod || auraGranted.has("Agilité");
+    base.agilite ||
+    bearerAgilite ||
+    !!tokens.agiliteTurnMod ||
+    auraGranted.has("Agilité");
   const agressivite =
     base.agressivite ||
+    bearerAgressivite ||
     !!tokens.agressiviteTurnMod ||
     auraGranted.has("Agressivité");
   // Tacle : imprimé (`base`) OU conféré « jusqu'à la fin du tour » par un jeton
   // TURN-scoped `tacleTurnMod` (grantKeywordSelf/grantKeywordTarget) OU par une
   // aura de mot-clé du Monde (keywordAura). Le verrou d'inclinaison reste appliqué
   // par resolveCombat (relation de blocage).
-  const tacle = base.tacle || !!tokens.tacleTurnMod || auraGranted.has("Tacle");
+  const tacle =
+    base.tacle ||
+    bearerTacle ||
+    !!tokens.tacleTurnMod ||
+    auraGranted.has("Tacle");
   // Défense / Renfort : mots-clés de TIMING de jeu attachés à la carte imprimée
   // (face courante). Ils ne sont ni octroyés par jeton ni conférés par aura dans
   // les données (aucune carte « accorde Défense/Renfort ») — donc passés tels

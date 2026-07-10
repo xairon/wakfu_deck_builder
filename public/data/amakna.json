@@ -480,7 +480,7 @@
     },
     "effects": [
       {
-        "description": "Tous les Alliés Piou gagnent +2 en Force et jusqu'à la fin du tour.",
+        "description": "Tous les Alliés Piou gagnent +2 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -3787,7 +3787,7 @@
     },
     "effects": [
       {
-        "description": "Quand Kabrok apparaît, le Monstre de votre choix gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "Quand Kabrok apparaît, le Monstre de votre choix gagne +1 en Force et Agressivité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -5166,7 +5166,7 @@
     },
     "effects": [
       {
-        "description": "Chaque fois qu'un Allié apparaît dans le Monde depuis votre Défausse, Nosférathon gagne +1 en Force et jusqu'à la fin du tour.",
+        "description": "Chaque fois qu'un Allié apparaît dans le Monde depuis votre Défausse, Nosférathon gagne +1 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"

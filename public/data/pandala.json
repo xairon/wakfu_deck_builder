@@ -2661,10 +2661,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde ébène et Orchidée gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde ébène et Orchidée gagne +1 en Force et Agressivité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Agressivité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Tant que la Dragodinde ébène et Orchidée est , chaque fois que vous jouez une Action, vous pouvez regarder la main du joueur de votre choix.",
@@ -2726,10 +2735,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde ébène et Pourpre gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde ébène et Pourpre gagne +1 en Force et Agilité.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Agilité"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Tant que la Dragodinde ébène et Pourpre est , chaque fois que vous jouez une Action, vous pouvez incliner l'Allié ou Héros de votre choix.",
@@ -2791,10 +2809,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde Indigo et Orchidée gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde Indigo et Orchidée gagne +1 en Force et Tacle.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Tacle"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Tant que la Dragodinde Indigo et Orchidée est Capturée, chaque fois que vous jouez une Action, son Porteur gagne dans l'élément de votre choix jusqu'à la fin du tour.",
@@ -2858,10 +2885,19 @@
         "coverage": "keyword"
       },
       {
-        "description": "Le Porteur de la Dragodinde Indigo et Pourpre gagne +1 en Force et .",
+        "description": "Le Porteur de la Dragodinde Indigo et Pourpre gagne +1 en Force et Géant.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "bearerBonus",
+            "force": 1,
+            "keyword": "Géant"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Tant que la Dragodinde Indigo et Pourpre est Capturée, chaque fois que vous jouez une Action, vous pouvez recycler une carte de votre main. Si vous le faites, piochez une carte.",
@@ -5256,7 +5292,7 @@
     },
     "effects": [
       {
-        "description": "Tous vos Alliés et Héros gagnent +3 en Force et jusqu'à la fin du tour.",
+        "description": "Tous vos Alliés et Héros gagnent +3 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
         "coverage": "uncovered"
@@ -7733,7 +7769,7 @@
     },
     "effects": [
       {
-        "description": "Le Yokaï Firefoux gagne +2 en Force et jusqu'à la fin du tour.",
+        "description": "[Incliner] : Le Yokaï Firefoux gagne +2 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
         "coverage": "uncovered"
