@@ -5295,7 +5295,21 @@
         "description": "Tous vos Alliés et Héros gagnent +3 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "buffAllTurn",
+              "n": 3,
+              "alsoKeyword": "Géant",
+              "controller": "self",
+              "heroes": true,
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-all-turn"]
       },
       {
         "description": "Cette carte est bannie en tournoi officiel au format Bloc depuis le 15 Août 2011.",

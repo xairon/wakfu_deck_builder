@@ -2007,12 +2007,38 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       } else if (
         op.op === "tapAll" ||
         op.op === "untapAll" ||
-        op.op === "damageAll"
+        op.op === "damageAll" ||
+        op.op === "buffAllTurn"
       ) {
         // OPS DE MASSE (non interactives) : appliquent l'effet à TOUTES les
         // créatures en jeu correspondant aux filtres, sans choix du joueur. Ordre
         // STABLE (tri des instanceId) pour un déroulé déterministe côté joueur actif.
         const ids = massEligibleIds(op, seat).sort();
+        if (op.op === "buffAllTurn") {
+          // BUFF DE MASSE Force + Mot-clé (Rat Batteur, La Dernière Rasade,
+          // Apioucalypse) : jetons TURN-scoped PAR INSTANCE de l'instantané
+          // éligible ; `others` exclut la SOURCE. Aucune interaction.
+          // Snapshot en consts : `op` est un binding mutable, le narrowing ne
+          // survit pas aux closures (flatMap/filter).
+          const buffN = op.n;
+          const buffKw = op.alsoKeyword;
+          const kwToken = GRANT_KEYWORD_TOKEN[buffKw];
+          const excludeSelf = op.others === true;
+          const buffed = ids.filter((id) => !(excludeSelf && id === sourceId));
+          if (buffed.length) {
+            deps.dispatch(
+              ...buffed.flatMap((id) => [
+                incCounterVerb(seat, id, "forceMod", buffN, true),
+                incCounterVerb(seat, id, kwToken, 1, true),
+              ]),
+              say(
+                seat,
+                `${cardName} : ${buffed.length} créature(s) gagnent +${buffN} en Force et ${buffKw} jusqu'à la fin du tour.`,
+              ),
+            );
+          }
+          continue;
+        }
         if (op.op === "tapAll") {
           for (const id of ids) {
             const inst = deps.getState().instances[id];

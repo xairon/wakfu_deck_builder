@@ -827,6 +827,50 @@ function parseSentence(
         ],
       };
   }
+  // BUFF DE MASSE « Tous vos/les [autres] Alliés [Famille] [et/ou Héros]
+  //   gagnent +N en Force et <Mot-clé> jusqu'à la fin du tour » (La Dernière
+  //   Rasade, Apioucalypse) → buffAllTurn (jetons PAR INSTANCE à la
+  //   résolution, sans choix). « vos » = self ; « les » = les DEUX camps.
+  //   STRICT : le mot-clé doit être câblé, la Famille connue — sinon manuel.
+  m = sentence.match(
+    /^tous (vos|les) (autres )?allies( [a-z-]+)?( (?:et|ou) heros)? gagnent \+(\d+) en force et ([a-z]+) jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m) {
+    const kw = GRANTABLE_KEYWORDS[m[6]];
+    const fam = m[3]?.trim();
+    if (!kw) return null;
+    if (fam && !ALLIED_FAMILIES.has(fam)) return null;
+    return {
+      op: "buffAllTurn",
+      n: toNumber(m[5]),
+      alsoKeyword: kw,
+      controller: m[1] === "vos" ? "self" : "any",
+      ...(m[2] ? { others: true } : {}),
+      ...(m[4] ? { heroes: true } : {}),
+      ...(fam ? { sub: fam } : {}),
+      zones: ["monde", "havreSac"],
+    };
+  }
+  // Variante FAMILLE NUE « Tous vos autres Rats gagnent +N en Force et
+  //   <Mot-clé> jusqu'à la fin du tour » (Rat Batteur) — la Famille remplace
+  //   « Alliés » (ALLIED_FAMILIES, pluriel toléré).
+  m = sentence.match(
+    /^tous (vos|les) (autres )?([a-z-]+?)s? gagnent \+(\d+) en force et ([a-z]+) jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m) {
+    const kw = GRANTABLE_KEYWORDS[m[5]];
+    const fam = m[3];
+    if (!kw || !ALLIED_FAMILIES.has(fam)) return null;
+    return {
+      op: "buffAllTurn",
+      n: toNumber(m[4]),
+      alsoKeyword: kw,
+      controller: m[1] === "vos" ? "self" : "any",
+      ...(m[2] ? { others: true } : {}),
+      sub: fam,
+      zones: ["monde", "havreSac"],
+    };
+  }
   // « L'Allié (ou Héros) de votre choix gagne +N en Force [et <Mot-clé>]
   //   jusqu'à la fin du tour » — le COMPOSÉ (Blops Royaux) octroie le mot-clé
   //   câblé à la MÊME cible (alsoKeyword) ; un mot-clé non câblé → manuel.

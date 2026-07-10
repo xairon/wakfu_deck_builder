@@ -368,6 +368,13 @@ export const MECHANICS: Mechanic[] = [
       "Incline tous les Alliés (et Héros) correspondant aux filtres, sans choix du joueur.",
   },
   {
+    id: "buff-all-turn",
+    label: "Buff de masse (Force + mot-clé, tour)",
+    category: "tempo",
+    glossary:
+      "Toutes les créatures correspondant aux filtres gagnent +N en Force et un mot-clé de combat jusqu'à la fin du tour, sans choix du joueur.",
+  },
+  {
     id: "untap-all",
     label: "Redressement de masse",
     category: "tempo",
@@ -593,6 +600,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   untapMultiTarget: "untap-target",
   returnToHand: "return-to-hand",
   tapAll: "tap-all",
+  buffAllTurn: "buff-all-turn",
   untapAll: "untap-all",
   damageAll: "damage-all",
   destroyAll: "destroy-all",

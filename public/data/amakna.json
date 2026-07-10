@@ -483,7 +483,21 @@
         "description": "Tous les Alliés Piou gagnent +2 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "ops": [
+            {
+              "op": "buffAllTurn",
+              "n": 2,
+              "alsoKeyword": "Géant",
+              "controller": "any",
+              "sub": "piou",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-all-turn"]
       },
       {
         "description": "À la fin du tour, détruisez tous les Alliés Piou dans le Monde et dans les Havres Sacs.",

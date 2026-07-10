@@ -519,6 +519,21 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
+  // BUFF DE MASSE « Tous vos/les [autres] <X> gagnent +N en Force et <Mot-clé>
+  // jusqu'à la fin du tour » (Rat Batteur, La Dernière Rasade, Apioucalypse) :
+  // pose forceMod + <kw>TurnMod PAR INSTANCE éligible à la résolution
+  // (instantané fidèle), sans choix du joueur. `others` exclut la SOURCE ;
+  // `controller:"any"` = les deux camps (« Tous LES Alliés Piou »).
+  z.object({
+    op: z.literal("buffAllTurn"),
+    n: z.number(),
+    alsoKeyword: z.enum(["Géant", "Agilité", "Agressivité", "Tacle"]),
+    controller: z.enum(["self", "any"]),
+    others: z.boolean().optional(),
+    heroes: z.boolean().optional(),
+    sub: z.string().optional(),
+    zones: zonesSchema,
+  }),
   z.object({
     op: z.literal("buffForceSelf"),
     n: z.number(),

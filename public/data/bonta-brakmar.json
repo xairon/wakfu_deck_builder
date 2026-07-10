@@ -12884,7 +12884,22 @@
         "description": "[Incliner] : Tous vos autres Rats gagnent +1 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffAllTurn",
+              "n": 1,
+              "alsoKeyword": "Géant",
+              "controller": "self",
+              "others": true,
+              "sub": "rat",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-all-turn"]
       }
     ],
     "keywords": [

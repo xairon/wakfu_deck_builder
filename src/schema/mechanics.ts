@@ -52,6 +52,7 @@ export const mechanicTagSchema = z.enum([
   "untap-target",
   "return-to-hand",
   "tap-all",
+  "buff-all-turn",
   "untap-all",
   "damage-all",
   "destroy-all",
