@@ -5976,7 +5976,14 @@
         "description": "La Salle du Trône d'Allister ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Bannissez un de vos Alliés non Monstre dans le Monde : Gagnez un nombre d'XP égal à la valeur d'XP de cet Allié.",
@@ -6828,7 +6835,14 @@
         "description": "Les Têtes à Clic et à Clac ne peuvent pas être fabriquées.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Bannissez les Têtes à Clic et à Clac : Bannissez le Démon de votre choix.",
@@ -6983,7 +6997,14 @@
         "description": "Le Tourmenteur ne peut être fabriqué.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Porteur du Tourmenteur perd sa Classe et sa Famille et devient un Chevalier.",

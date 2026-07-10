@@ -3050,8 +3050,21 @@ export function compileStaticEffectText(
   cardName: string,
 ): CompiledEffect | null {
   const body = norm(text).replace(/\.$/, "").trim();
-  // « La force du Vrombyx est toujours égale au nombre de vos cartes en main. »
+  // FABRICATION (A19, hors moteur de table) : « <self> ne peut (pas) être
+  // fabriqué(e/s). » — propriété du système de Fabrication, AUCUNE incidence
+  // en partie (le moteur ne fabrique pas : la contrainte est structurellement
+  // garantie). Compilée en static déclaratif → plus de rappel manuel inutile.
   let m = body.match(
+    /^(?:le |la |les |l['’]\s?)?(.{1,60}?) ne peu(?:t|vent) (?:pas )?etre fabriquee?s?$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName))
+    return {
+      trigger: "static",
+      static: { kind: "craftingRule" },
+      ops: [],
+    };
+  // « La force du Vrombyx est toujours égale au nombre de vos cartes en main. »
+  m = body.match(
     /^la force (?:du |de la |de l['’]\s?|des |de )?(.{1,60}?) est toujours egale au nombre de vos cartes en main$/,
   );
   if (m && subjectIsSelf(m[1], cardName))

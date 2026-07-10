@@ -1469,7 +1469,14 @@
         "description": "La Bague d'Ombrage ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Chaque fois qu'un Héros adverse perd un ou plusieurs PV, le Porteur de la Bague d'Ombrage regagne le même nombre de PV.",
@@ -2107,7 +2114,14 @@
         "description": "La Bibliothèque de Barbok ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Cherchez une carte Équipement ou Zone dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche. N'utilisez ce pouvoir qu'au début de votre tour.",
@@ -6734,7 +6748,14 @@
         "description": "L'Épée de Rubilax ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "A la fin de votre tour, si le Porteur de l'Épée de Rubilax n'a pas attaqué, votre Héros perd 5 PV.",

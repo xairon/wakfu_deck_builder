@@ -1096,6 +1096,12 @@ export const staticAbilitySchema = z.discriminatedUnion("kind", [
   // d'autorité que `cannotBlock`). Plus fort que `cannotBlock` (couvre aussi
   // l'attaque), modélisé comme un kind distinct pour rester littéral.
   z.object({ kind: z.literal("cannotAttackOrBlock") }),
+  // « <self> ne peut (pas) être fabriqué(e/s). » — propriété du système de
+  // FABRICATION (A19, hors moteur de table) : AUCUNE incidence en partie (le
+  // moteur ne fabrique pas — la contrainte est structurellement garantie).
+  // Compilée en static déclaratif pour supprimer un rappel manuel inutile ;
+  // consommée le jour où la Fabrication arrive.
+  z.object({ kind: z.literal("craftingRule") }),
   // « [self] ne peut pas porter d'Équipement. » (Allies Élémentaires) —
   // restriction CONTINUE : cette créature ne peut jamais être Porteur ; l'op
   // ATTACH la refuse comme bearer (lu par `cannotCarryEquipment`).

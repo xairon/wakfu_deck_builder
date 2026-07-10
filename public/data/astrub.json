@@ -306,7 +306,14 @@
         "description": "L'Arc du Bandit Archer ne peut pas être fabriqué.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Porteur de l'Arc du Bandit Archer perd sa Classe et sa Famille et devient un Bandit.",
@@ -685,7 +692,14 @@
         "description": "La Baguette du Bandit Ensorceleur ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Porteur de la Baguette du Bandit Ensorceleur perd sa Classe et sa Famille et devient un Bandit.",
@@ -820,7 +834,14 @@
         "description": "Le Bâton du Bandit Baroudeur ne peut pas être fabriqué.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Porteur du Bâton du Bandit Baroudeur perd sa Classe et sa Famille et devient un Bandit.",
@@ -1435,7 +1456,14 @@
         "description": "La Carte du Grav'Mar'Av' ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Bannissez la Carte du Grav'Mar'Av' : Cherchez une carte Zone dans votre Pioche, révélez-la et prenez-la en main, puis mélangez votre Pioche.",
@@ -3012,7 +3040,14 @@
         "description": "L'Épée du Bandit Fine-Lame ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Le Porteur de l'Épée du Bandit Fine-Lame perd sa Classe et sa Famille et devient un Bandit.",
@@ -3408,7 +3443,14 @@
         "description": "Les Geôles d'Astrub ne peuvent pas être fabriquées.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Bannissez les Geôles d'Astrub : Bannissez l'Allié de votre choix dans le Monde.",
@@ -5870,7 +5912,14 @@
         "description": "La Peluche de Pleur Nicheuz ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       },
       {
         "description": "Au début de votre tour, si le Porteur de la Peluche de Pleur Nicheuz est dans le Monde, gagnez 1 XP.",

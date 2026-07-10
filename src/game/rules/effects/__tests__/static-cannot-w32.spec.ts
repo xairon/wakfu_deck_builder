@@ -8,6 +8,35 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { CardEffect } from "@/types/cards";
+import { compileStaticEffectText } from "../dsl";
+
+describe("static craftingRule — « ne peut (pas) être fabriqué(e/s) » (DSL)", () => {
+  it("compile la propriété de Fabrication (A19, hors moteur de table) en static déclaratif", () => {
+    for (const [text, name] of [
+      ["La Cape du Wa Wabbit ne peut pas être fabriquée.", "Cape du Wa Wabbit"],
+      ["Le Tourmenteur ne peut être fabriqué.", "Tourmenteur"],
+      [
+        "Les Têtes à Clic et à Clac ne peuvent pas être fabriquées.",
+        "Têtes à Clic et à Clac",
+      ],
+    ] as const) {
+      expect(compileStaticEffectText(text, name), text).toEqual({
+        trigger: "static",
+        static: { kind: "craftingRule" },
+        ops: [],
+      });
+    }
+  });
+
+  it("le sujet doit être la carte ELLE-MÊME (pas une autre)", () => {
+    expect(
+      compileStaticEffectText(
+        "La Cape du Wa Wabbit ne peut pas être fabriquée.",
+        "Une Toute Autre Carte",
+      ),
+    ).toBeNull();
+  });
+});
 
 const DATA_DIR = join(process.cwd(), "public", "data");
 

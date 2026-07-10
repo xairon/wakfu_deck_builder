@@ -1785,7 +1785,14 @@
         "description": "Le Bâton du Wa Wabbit ne peut pas être fabriqué.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],
@@ -3139,7 +3146,14 @@
         "description": "La Cape du Wa Wabbit ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],
@@ -4432,7 +4446,14 @@
         "description": "La Couronne du Wa Wabbit ne peut pas être fabriquée.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "craftingRule"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
       }
     ],
     "keywords": [],
