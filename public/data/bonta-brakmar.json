@@ -7617,7 +7617,22 @@
         "description": "Quand Ganymède apparaît, vous pouvez chercher une Quête dans votre Pioche, la révéler et la prendre en main, puis mélanger votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "sub": "quete",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       }
     ],
     "keywords": [],

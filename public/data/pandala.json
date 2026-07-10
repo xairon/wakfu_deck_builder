@@ -3723,7 +3723,22 @@
         "description": "Quand Festino apparaît, vous pouvez chercher une Arme dans votre pioche, la révéler et la prendre en main. Si vous le faites, mélangez ensuite votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "sub": "arme",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       }
     ],
     "keywords": [],

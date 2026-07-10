@@ -3140,7 +3140,23 @@
         "description": "Quand Jékïde apparaît, vous pouvez chercher un Équipement de Niveau 1 ou 2 dans votre Pioche, le révéler et le prendre en main. Si vous le faites, mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Équipement",
+              "levelIn": [1, 2],
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Mettez en jeu gratuitement de votre main un Équipement de Niveau 1 ou 2 sur un de vos Alliés ou Héros attaquants.",

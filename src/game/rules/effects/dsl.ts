@@ -248,7 +248,7 @@ function parseCreateToken(sentence: string): EffectOp | null {
  * une Famille de créature non ambiguë (→ Allié + sub). `mot` est déjà normalisé.
  */
 function pickType(word: string): {
-  what: "Allié" | "Zone" | "Salle" | "Équipement" | "Dofus" | "Action";
+  what?: "Allié" | "Zone" | "Salle" | "Équipement" | "Dofus" | "Action";
   sub?: string;
 } | null {
   const ROOT: Record<
@@ -264,8 +264,28 @@ function pickType(word: string): {
   };
   if (ROOT[word]) return { what: ROOT[word] };
   if (ALLIED_FAMILIES.has(word)) return { what: "Allié", sub: word };
+  // CATÉGORIES par subType SEUL (« un Parchemin », « une Arme ») : ces mots
+  // sont des subTypes portés par PLUSIEURS mainTypes dans les données (ex.
+  // Parchemin = 14 Actions + 1 Équipement) → aucun `what` imposé, le filtre
+  // ne retient que le subType. Les appelants dont le schéma EXIGE un mainType
+  // (putInPlay) doivent rejeter un pickType sans `what`.
+  if (PICK_SUBTYPES.has(word)) return { sub: word };
   return null;
 }
+
+/** Catégories de carte NON-créature cherchables par subType seul (vérité des
+ *  données 2026-07 : quete=18 Actions ; parchemin=14 Actions+1 Équipement ;
+ *  potion=17 Actions+1 Équipement ; arme=85 Équipements ; monture=16 Alliés ;
+ *  donjon=9 Zones ; sort=168 Actions). */
+const PICK_SUBTYPES = new Set([
+  "quete",
+  "parchemin",
+  "potion",
+  "arme",
+  "monture",
+  "donjon",
+  "sort",
+]);
 
 /**
  * Mot-type PLURIEL d'un compte « … que vous contrôlez » (« Équipements », «
@@ -520,21 +540,29 @@ function parseSentence(
   //   - « inclinée » en ligne après « en jeu » → tapped (jumeau de la phrase
   //     de liaison « Il apparaît incliné. »), uniquement quand dest = monde.
   m = sentence.match(
-    /^cherchez (?:un|une) (?:carte )?([a-z]+)( [a-z]+)?( de niveau inferieur ou egal a (\d+))? dans votre pioche,? (?:revelez-l[ea] et prenez-l[ea] en main|et mettez-l[ea] en jeu( inclinee?)?)$/,
+    /^cherche[zr] (?:un|une) (?:carte )?([a-z]+)( [a-z]+)?(?: de niveau (?:inferieur ou egal a (\d+)|(\d+) ou (\d+)))? dans votre pioche,? (?:(?:revelez-l[ea]|l[ea] reveler) et (?:prenez-l[ea] en main|l[ea] prendre en main)|et (?:prenez-l[ea] en main|l[ea] prendre en main)|et mettez-l[ea] en jeu( inclinee?)?)$/,
   );
   if (m) {
     const pt = pickType(m[1]);
     if (!pt) return null;
-    const sub = pt.sub ?? m[2]?.trim();
+    const extra = m[2]?.trim();
     // mots de liaison = pas une famille (« ou non Unique », « portant… »)
-    if (sub && ["ou", "non", "portant", "de", "et"].includes(sub)) return null;
+    if (extra && ["ou", "non", "portant", "de", "et"].includes(extra))
+      return null;
+    // FAMILLE + 2e mot (« une Gelée Menthe ») : le 2e mot n'est PAS un subType
+    // — c'est le NOM de la carte ; l'ignorer chercherait TOUTE la famille
+    // (sur-large). Filtre par nom exact normalisé.
+    const name = pt.sub && extra ? `${m[1]} ${extra}` : undefined;
+    const sub = name ? undefined : (pt.sub ?? extra);
     const dest = sentence.includes("en jeu") ? "monde" : "main";
     return {
       op: "searchDeck",
-      what: pt.what,
+      ...(pt.what ? { what: pt.what } : {}),
       ...(sub ? { sub } : {}),
-      ...(m[4] ? { maxLevel: toNumber(m[4]) } : {}),
-      ...(m[5] && dest === "monde" ? { tapped: true } : {}),
+      ...(name ? { name } : {}),
+      ...(m[3] ? { maxLevel: toNumber(m[3]) } : {}),
+      ...(m[4] && m[5] ? { levelIn: [toNumber(m[4]), toNumber(m[5])] } : {}),
+      ...(m[6] && dest === "monde" ? { tapped: true } : {}),
       dest,
     };
   }
@@ -550,8 +578,10 @@ function parseSentence(
   );
   if (m) {
     const pt = pickType(m[1]);
-    // putInPlay n'accepte pas Action/Dofus (schéma) ; on reste strict.
-    if (!pt || pt.what === "Action" || pt.what === "Dofus") return null;
+    // putInPlay n'accepte pas Action/Dofus ni les catégories sans mainType
+    // (schéma : `what` requis) ; on reste strict.
+    if (!pt || !pt.what || pt.what === "Action" || pt.what === "Dofus")
+      return null;
     const sub = pt.sub ?? m[2]?.trim();
     if (sub && ["ou", "non", "portant", "de", "et"].includes(sub)) return null;
     return {
@@ -577,14 +607,19 @@ function parseSentence(
   if (m) {
     const pt = pickType(m[1]);
     if (!pt) return null;
-    const sub = pt.sub ?? m[2]?.trim();
+    const extra = m[2]?.trim();
     // mots de liaison = pas une famille (« ou non Unique », « portant… »)
-    if (sub && ["ou", "non", "portant", "de", "et"].includes(sub)) return null;
+    if (extra && ["ou", "non", "portant", "de", "et"].includes(extra))
+      return null;
+    // Famille + 2e mot = NOM de carte (même correction que la recherche-Pioche).
+    const name = pt.sub && extra ? `${m[1]} ${extra}` : undefined;
+    const sub = name ? undefined : (pt.sub ?? extra);
     return {
       op: "searchDeck",
-      what: pt.what,
+      ...(pt.what ? { what: pt.what } : {}),
       from: "defausse",
       ...(sub ? { sub } : {}),
+      ...(name ? { name } : {}),
       ...(m[3] ? { maxLevel: toNumber(m[3]) } : {}),
       ...(m[4] ? { exactLevel: toNumber(m[4]) } : {}),
       dest: "main",
@@ -620,7 +655,8 @@ function parseSentence(
   );
   if (m) {
     const pt = pickType(m[1]);
-    if (!pt || pt.what === "Action" || pt.what === "Dofus") return null;
+    if (!pt || !pt.what || pt.what === "Action" || pt.what === "Dofus")
+      return null;
     const sub = pt.sub ?? m[2]?.trim();
     if (sub && ["ou", "non", "de", "et", "gratuitement"].includes(sub))
       return null;
@@ -645,7 +681,8 @@ function parseSentence(
   );
   if (m) {
     const pt = pickType(m[1]);
-    if (!pt || pt.what === "Action" || pt.what === "Dofus") return null;
+    if (!pt || !pt.what || pt.what === "Action" || pt.what === "Dofus")
+      return null;
     const sub = pt.sub ?? m[2]?.trim();
     // mots de liaison captés par la classe famille → pas une vraie Famille
     if (sub && ["ou", "non", "de", "et", "gratuitement"].includes(sub))
@@ -674,7 +711,7 @@ function parseSentence(
   //   Classe de Vampyro) ne correspondent pas → manuel (SKIP fidèle).
   const tok = parseCreateToken(sentence);
   if (tok) return tok;
-  m = sentence.match(/^melangez(?:[- ]la)? votre pioche$/);
+  m = sentence.match(/^melange[zr](?:[- ]la)?(?: ensuite)? votre pioche$/);
   if (m) return { op: "shuffleDeck" };
   m = sentence.match(/^votre heros regagne (\d+) (?:pv|points? de vie)$/);
   if (m) return { op: "heroGainPv", n: toNumber(m[1]) };
@@ -2044,14 +2081,30 @@ export function compileEffectText(
     optional = true;
     rest = opt[1];
   }
+  // Queue de TUTEUR « . Si vous le faites, mélangez [ensuite] vot(t)re
+  // Pioche » : absorbée UNIQUEMENT quand le corps est une recherche
+  // (« cherch… ») — le mélange est intrinsèque à la fouille de la Pioche (il
+  // s'applique même si la recherche échoue) et devient une op suivante
+  // (shuffleDeck). Ce n'est PAS une levée du garde multi-phrases ci-dessous
+  // (W47) : toute autre conséquence « Si vous le faites, … » reste manuelle.
+  // « vottre » : typo de scrape (Gelée Royale Citron).
+  let shuffleTail = false;
+  const tail = rest.match(
+    /^(.*)\.\s*si vous le faites, melangez(?: ensuite)? vot?t?re pioche$/,
+  );
+  if (tail && /cherch/.test(tail[1])) {
+    shuffleTail = true;
+    rest = tail[1].trim();
+  }
   // « vous pouvez » ne porte que sur sa phrase : un optionnel multi-phrases
   // est ambigu (le reste serait-il obligatoire ?) → on ne compile pas.
   if (optional && /\.\s+\S/.test(rest)) return null;
   const ops = compileBody(rest, cardName, sourceElement);
   if (!ops) return null;
+  const allOps = shuffleTail ? [...ops, { op: "shuffleDeck" as const }] : ops;
   return optional
-    ? { trigger: "onArrive", optional, ops }
-    : { trigger: "onArrive", ops };
+    ? { trigger: "onArrive", optional, ops: allOps }
+    : { trigger: "onArrive", ops: allOps };
 }
 
 /**

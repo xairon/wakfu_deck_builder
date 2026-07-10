@@ -1232,7 +1232,23 @@
         "description": "Quand la Gelée Royale Menthe apparaît, vous pouvez chercher une Gelée Menthe dans votre Pioche, la révéler et la prendre en main. Si vous le faites, mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "name": "gelee menthe",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Toutes vos Gelées gagnent +2 en Force jusqu'à la fin du tour. N'utilisez ce pouvoir que si la Gelée Royale Menthe est dans le Monde.",
@@ -2326,7 +2342,23 @@
         "description": "Quand la Gelée Royale Citron apparaît, vous pouvez chercher une Gelée Citron dans votre Pioche, la révéler et la prendre en main. Si vous le faites, mélangez vottre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "name": "gelee citron",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Tant que la Gelée Royale Citron est dans le Monde, toutes vos Gelées gagnent Agilité.",
@@ -3480,7 +3512,23 @@
         "description": "Quand la Gelée Royale Fraise apparaît, vous pouvez chercher une Gelée Fraise dans votre Pioche, la révéler et la prendre en main. Si vous le faites, mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "name": "gelee fraise",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Jusqu'à la fin du tour tous les Dommages sur le point d'être infligés à vos Gelées sont réduits de 1. N'utilisez ce pouvoir que si la Gelée Royale Fraise est dans le Monde.",
@@ -4527,7 +4575,23 @@
         "description": "Quand la Gelée Royale Bleue apparaît, vous pouvez chercher une Gelée Bleue dans votre Pioche, la révéler et la prendre en main. Si vous le faites, mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Allié",
+              "name": "gelee bleue",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Tant que la Gelée Royale Bleue est dans le Monde, chaque fois qu'une de vos Gelées apparaît, vous pouvez piocher une carte.",

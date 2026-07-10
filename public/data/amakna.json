@@ -1987,7 +1987,22 @@
         "description": "Quand Crail apparaît, vous pouvez chercher un Dofus dans votre Pioche, le révéler et le prendre en main. Si vous le faites, mélangez votre Pioche.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "searchDeck",
+              "what": "Dofus",
+              "dest": "main"
+            },
+            {
+              "op": "shuffleDeck"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["search-deck", "shuffle-deck"]
       },
       {
         "description": "Quand Crail est détruit, vous pouvez le bannir à la place. Si vous le faites, mettez en jeu gratuitement un Dofus de votre main sans déclencher son effet d'apparition.",

@@ -131,6 +131,9 @@ export interface PickFilter {
   levelIn?: number[];
   /** « une carte [Feu] » : seules les cartes de cet Élément. */
   element?: string;
+  /** NOM exact de carte, normalisé (« une Gelée Menthe » — Menthe n'est pas un
+   *  subType : seul le nom distingue les Gelées entre elles). */
+  name?: string;
 }
 
 /** minuscules + accents retirés (la casse/les accents varient dans les données). */
@@ -145,6 +148,7 @@ export function matchesPickFilter(card: Card | null, f?: PickFilter): boolean {
   if (f.mainType && card.mainType !== f.mainType) return false;
   if (f.sub && !(card.subTypes ?? []).some((s) => normWord(s) === f.sub))
     return false;
+  if (f.name && normWord(card.name) !== f.name) return false;
   if (f.element && producedElement(card) !== normElement(f.element))
     return false;
   if (
@@ -1084,11 +1088,16 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // « Cherchez … dans votre Pioche / Défausse … » : même machinerie de
         // pick, la pile source dépend de `from` (défaut "pioche").
         const fromZone = op.from === "defausse" ? "defausse" : "pioche";
+        // `what` peut être ABSENT (recherche par subType seul : « un Parchemin »
+        // matche toute carte au subType Parchemin, Action comme Équipement) ou
+        // complété d'un NOM exact (« une Gelée Menthe » — filtre name).
         const filter: PickFilter = {
-          mainType: op.what,
+          ...(op.what ? { mainType: op.what } : {}),
           ...(op.sub ? { sub: op.sub } : {}),
+          ...(op.name ? { name: op.name } : {}),
           ...(op.maxLevel !== undefined ? { maxLevel: op.maxLevel } : {}),
           ...(op.exactLevel !== undefined ? { exactLevel: op.exactLevel } : {}),
+          ...(op.levelIn ? { levelIn: op.levelIn } : {}),
         };
         const hasMatch = deps
           .getState()

@@ -522,12 +522,24 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("discardFromHand"), n: z.number() }),
   z.object({
     op: z.literal("searchDeck"),
-    what: z.enum(["Dofus", "Action", "Équipement", "Zone", "Salle", "Allié"]),
+    // `what` OPTIONNEL : « un Parchemin / une Potion » = recherche par subType
+    // SEUL (les données portent ces catégories sur PLUSIEURS mainTypes — 14
+    // Actions + 1 Équipement pour Parchemin ; imposer un mainType serait une
+    // approximation). Au moins un critère (what/sub/name) est posé par le DSL.
+    what: z
+      .enum(["Dofus", "Action", "Équipement", "Zone", "Salle", "Allié"])
+      .optional(),
     sub: z.string().optional(),
+    // NOM exact de carte, normalisé minuscules sans accents (« une Gelée
+    // Menthe » : Menthe n'est PAS un subType — seul le nom distingue la carte).
+    name: z.string().optional(),
     maxLevel: z.number().optional(),
     // Niveau EXACT (« … de Niveau N ») — distinct de maxLevel (≤). Cible sans
     // Niveau = inéligible.
     exactLevel: z.number().optional(),
+    // Niveau dans un ENSEMBLE (« … de Niveau 1 ou 2 ») — carte sans Niveau
+    // inéligible (même sémantique que putInPlay.levelIn).
+    levelIn: z.array(z.number()).optional(),
     tapped: z.boolean().optional(),
     // Pile de recherche : « dans votre Pioche » (défaut, mélange possible) ou
     // « dans votre Défausse » (« Cherchez … dans votre Défausse et prenez-la en
