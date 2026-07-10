@@ -500,14 +500,23 @@ export const useGameStore = defineStore("game", () => {
   /** Événements techniques invisibles dans le journal. */
   function isInternalEvent(e: PersistedEvent): boolean {
     if (e.type !== "SET_COUNTER" && e.type !== "INC_COUNTER") return false;
-    const counter = (e.payload as { counter?: string }).counter;
-    // Marqueurs de récence (apparition W74 / inclinaison W71) : posés à chaque
-    // entrée en jeu / déclaration — du bruit pur dans le journal.
+    const counter = (e.payload as { counter?: string }).counter ?? "";
+    // Comptabilité INTERNE du moteur (marqueurs de récence, verrous par tour,
+    // jetons de bonus consommé) : posée à CHAQUE jeu/entrée/déclaration — du
+    // bruit pur pour le joueur (« ajuste « recentPlayAllie » » ×5 par carte).
+    // Les événements PARLANTS (buffs, Dommages, XP…) ont leurs propres lignes
+    // say() ; les ajustements MANUELS des joueurs (PV/compteurs via +/-)
+    // portent d'autres noms et restent visibles.
     return (
       counter === "arrivedTurn" ||
       counter === "justAppeared" ||
       counter === "justAppearedFromDefausse" ||
-      counter === "justInclined"
+      counter === "justInclined" ||
+      counter === "recentQuestParch" ||
+      counter === "sacBonusUsed" ||
+      counter.startsWith("recentPlay") ||
+      counter.startsWith("oncePlayed_") ||
+      counter.startsWith("powerUses")
     );
   }
   const log = computed<LogLine[]>(() =>

@@ -80,6 +80,38 @@ describe("useToast", () => {
 
       expect(toasts.value[0].show).toBe(true);
     });
+
+    it("DÉDOUBLONNE : un même message+type répété ne s'empile pas (rafraîchi)", () => {
+      // Spam de refus identiques (« Pas assez de Ressources » ×N sur le
+      // plateau) : un seul toast visible, sa durée repart — jamais une pile
+      // orange qui recouvre la main.
+      const { addToast, toasts } = useToast();
+
+      const id1 = addToast("Pas assez de Ressources.", { type: "warning" });
+      const id2 = addToast("Pas assez de Ressources.", { type: "warning" });
+      const id3 = addToast("Pas assez de Ressources.", { type: "warning" });
+
+      expect(toasts.value).toHaveLength(1);
+      expect(id2).toBe(id1);
+      expect(id3).toBe(id1);
+      // Le rafraîchissement repousse l'expiration : après la durée initiale
+      // écoulée depuis le PREMIER add, le toast (rafraîchi) est encore là.
+      vi.advanceTimersByTime(2000);
+      addToast("Pas assez de Ressources.", { type: "warning" });
+      vi.advanceTimersByTime(2000);
+      expect(toasts.value).toHaveLength(1);
+      // Et il expire bien après la durée pleine du dernier rafraîchissement.
+      vi.advanceTimersByTime(1300 + 300);
+      expect(toasts.value).toHaveLength(0);
+    });
+
+    it("ne dédoublonne PAS deux messages différents ou deux types différents", () => {
+      const { addToast, toasts } = useToast();
+      addToast("Message A", { type: "warning" });
+      addToast("Message B", { type: "warning" });
+      addToast("Message A", { type: "error" });
+      expect(toasts.value).toHaveLength(3);
+    });
   });
 
   describe("Auto-suppression", () => {

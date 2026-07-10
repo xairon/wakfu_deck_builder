@@ -986,7 +986,6 @@ import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
-import { useToast } from "@/composables/useToast";
 import { useAccessibility } from "@/composables/useAccessibility";
 
 const store = useGameStore();
@@ -1134,14 +1133,16 @@ onUnmounted(() => {
   dnd.resetZones();
 });
 
-// ── Refus de coup → toast ────────────────────────────────────────────────────
-const toast = useToast();
+// ── Refus de coup ────────────────────────────────────────────────────────────
+// L'affichage VISUEL du refus appartient au coach (RuleAssistant — bandeau
+// haut avec la règle dépliable ; il capture store.ruleError AVANT le clear,
+// via son propre watch) : plus de toast générique en bas-droite, qui faisait
+// DOUBLON et recouvrait la main (pile orange sur refus répétés). On garde
+// l'annonce assertive pour les lecteurs d'écran, puis on consomme l'erreur.
 watch(
   () => store.ruleError,
   (msg) => {
     if (msg) {
-      toast.addToast(msg, { type: "warning" });
-      // Coup refusé : annonce assertive pour les lecteurs d'écran (en plus du toast visuel).
       announce(msg, { politeness: "assertive" });
       store.clearRuleError();
     }

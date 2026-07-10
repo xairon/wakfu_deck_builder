@@ -14,6 +14,9 @@ export interface Toast {
 // Singleton pour gérer les toasts à travers toute l'application
 const toasts = ref<Toast[]>([]);
 let nextId = 1;
+// Minuteur d'expiration PAR toast : nécessaire au DÉDOUBLONNAGE (rafraîchir un
+// toast = repousser son expiration, donc annuler l'ancien minuteur).
+const expiryTimers = new Map<number, ReturnType<typeof setTimeout>>();
 
 export function useToast() {
   // Ajouter un nouveau toast
@@ -29,13 +32,33 @@ export function useToast() {
       type: "info" as ToastType,
       duration: 3000, // 3 secondes par défaut
     };
+    const type = options?.type || defaults.type;
+    const duration = options?.duration || defaults.duration;
+
+    // DÉDOUBLONNAGE : un toast IDENTIQUE (message + type) encore visible n'est
+    // pas ré-empilé — son expiration repart de zéro. Sans ça, un refus répété
+    // (« Pas assez de Ressources » ×N) forme une pile qui recouvre l'interface.
+    const dup = toasts.value.find(
+      (t) => t.show && t.message === message && t.type === type,
+    );
+    if (dup) {
+      const prev = expiryTimers.get(dup.id);
+      if (prev) clearTimeout(prev);
+      if (duration > 0) {
+        expiryTimers.set(
+          dup.id,
+          setTimeout(() => removeToast(dup.id), duration),
+        );
+      }
+      return dup.id;
+    }
 
     const toast: Toast = {
       id: nextId++,
       message,
       title: options?.title,
-      type: options?.type || defaults.type,
-      duration: options?.duration || defaults.duration,
+      type,
+      duration,
       show: true,
     };
 
@@ -43,9 +66,12 @@ export function useToast() {
 
     // Auto-supprimer après la durée spécifiée
     if (toast.duration > 0) {
-      setTimeout(() => {
-        removeToast(toast.id);
-      }, toast.duration);
+      expiryTimers.set(
+        toast.id,
+        setTimeout(() => {
+          removeToast(toast.id);
+        }, toast.duration),
+      );
     }
 
     return toast.id;
@@ -89,6 +115,9 @@ export function useToast() {
     if (index !== -1) {
       // Marquer comme non-affiché pour l'animation de sortie
       toasts.value[index].show = false;
+      const timer = expiryTimers.get(id);
+      if (timer) clearTimeout(timer);
+      expiryTimers.delete(id);
 
       // Supprimer après un court délai pour permettre l'animation
       setTimeout(() => {
@@ -99,6 +128,8 @@ export function useToast() {
 
   // Supprimer tous les toasts
   function clearToasts(): void {
+    for (const timer of expiryTimers.values()) clearTimeout(timer);
+    expiryTimers.clear();
     toasts.value = [];
   }
 
