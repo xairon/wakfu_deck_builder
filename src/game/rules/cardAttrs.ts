@@ -58,6 +58,12 @@ export function recentPlayKindsOf(card: Card): RecentPlayKind[] {
   return kinds;
 }
 
+/** Jeton « une seule <Nom> par tour » (onceNamePerTurn) : clé par NOM
+ *  normalisé — les rééditions du même nom partagent la limite. */
+export function onceNameToken(cardName: string): string {
+  return `oncePlayed_${normWord(cardName).replace(/\W+/g, "-")}`;
+}
+
 /** Coût de lancement = Niveau de la carte (4316). */
 export function levelCost(card: Card): number {
   return card.stats?.niveau?.value ?? 0;

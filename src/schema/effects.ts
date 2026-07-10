@@ -1311,6 +1311,11 @@ export const compiledEffectSchema = z.object({
   // jeton `powerUses0` sur la source (purgé en fin de tour, cf. isTurnToken) ;
   // un jeton > 0 rend le pouvoir inactivable ce tour.
   oncePerTurn: z.boolean().optional(),
+  // « Vous ne pouvez jouer qu'une seule <Nom> par tour. » (Puissance
+  // d'Ogrest) : restriction de JEU par NOM — jeton `oncePlayed_<slug>` posé
+  // sur VOTRE Héros au jeu (purgé au tour, préfixe TURN_TOKEN), refus par
+  // whyCannotPlay d'une 2e copie du même nom (rééditions comprises).
+  onceNamePerTurn: z.boolean().optional(),
   // CONDITION D'ACTIVATION « N'utilisez ce pouvoir que si le Porteur de <self>
   // est attaquant ou bloqueur » (Dora) : vérifiée par activateTapPower AVANT de
   // consommer l'inclinaison — Porteur = instance dont `attachments` contient la

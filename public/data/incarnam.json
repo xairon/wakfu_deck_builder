@@ -13318,7 +13318,21 @@
         "description": "L'Allié ou Héros de votre choix gagne +4 en Force et Géant jusqu'à la fin du tour. Vous ne pouvez jouer qu'une seule Puissance d'Ogrest par tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onPlay",
+          "onceNamePerTurn": true,
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 4,
+              "heroes": true,
+              "alsoKeyword": "Géant",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],

@@ -4171,10 +4171,25 @@ export function compileActionEffectText(
   // corps compilé sans elle. Toute autre récence reste manuelle.
   const [normStripped, recency] = stripRecentlyPlayedClause(normed, cardName);
   normed = normStripped;
-  const pc = recency ? { playCondition: recency } : {};
+  // « Vous ne pouvez jouer qu'une seule <self> par tour. » (Puissance
+  // d'Ogrest) : clause résiduelle → flag onceNamePerTurn (jeton par NOM sur le
+  // Héros, gate whyCannotPlay). Le sujet doit être la carte elle-même.
+  let onceName = false;
+  const onceM = normed.match(
+    /^(?:(.*)\.)?\s*vous ne pouvez jouer qu['’]une seule (.{1,60}?) par tour\s*\.?\s*$/,
+  );
+  if (onceM && subjectIsSelf(onceM[2].trim(), cardName)) {
+    onceName = true;
+    normed = (onceM[1] ?? "").trim();
+  }
+  const pc = {
+    ...(recency ? { playCondition: recency } : {}),
+    ...(onceName ? { onceNamePerTurn: true } : {}),
+  };
   // RESTRICTION SEULE (l'effet ne contient QUE la clause — Démons et
   // Merveilles) : effet compilé sans op, le gate de jeu seul.
-  if (recency && !normed) return { trigger: "onPlay", ...pc, ops: [] };
+  if ((recency || onceName) && !normed)
+    return { trigger: "onPlay", ...pc, ops: [] };
   // ACTOR-BINDING « <op de ciblage de créature>. Il/Elle <corps lié> » : la
   // créature choisie par l'op de ciblage devient le sujet du corps « Il/Elle … »
   // (actor:"target", le moteur réécrit sourceId à la résolution du ciblage). Ex.

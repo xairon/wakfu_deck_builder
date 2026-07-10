@@ -13,6 +13,7 @@ import {
   canAttackCard,
   canBlockCard,
   heroStats,
+  onceNameToken,
   RECENT_PLAY_TOKENS,
 } from "./cardAttrs.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
@@ -248,6 +249,15 @@ export function whyCannotPlay(
   // RESTRICTION DE JEU « Ne jouez cette carte que si <cond> » (Repos, heroInZone).
   const pcReason = playConditionReason(ctx, seat, card);
   if (pcReason) return pcReason;
+  // « Vous ne pouvez jouer qu'une seule <Nom> par tour » (onceNamePerTurn —
+  // Puissance d'Ogrest) : jeton par NOM sur VOTRE Héros, posé au jeu, purgé au
+  // tour. Les rééditions du même nom partagent la limite.
+  if ((card.effects ?? []).some((e) => e.compiled?.onceNamePerTurn)) {
+    const hid = state.seats[seat].heroInstanceId;
+    const h = hid ? state.instances[hid] : null;
+    if ((h?.counters.tokens?.[onceNameToken(card.name)] ?? 0) > 0)
+      return `Vous ne pouvez jouer qu'une seule ${card.name} par tour.`;
+  }
   return null;
 }
 

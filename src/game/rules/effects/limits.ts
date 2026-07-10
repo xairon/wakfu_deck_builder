@@ -59,7 +59,14 @@ const TURN_TOKENS = new Set([
   "teamPowerDmgMod",
 ]);
 
-const TURN_TOKEN_PREFIXES = ["resMod_", "powerUses", "metier_"];
+const TURN_TOKEN_PREFIXES = [
+  "resMod_",
+  "powerUses",
+  "metier_",
+  // « une seule <Nom> par tour » (onceNamePerTurn — Puissance d'Ogrest) :
+  // jeton par NOM de carte jouée, purgé au changement de tour.
+  "oncePlayed_",
+];
 
 /**
  * Le jeton `name` doit-il être purgé au passage au tour `nextTurnNumber` ?

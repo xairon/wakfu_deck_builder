@@ -49,6 +49,7 @@ import {
 import { planCost } from "../rules/resources.ts";
 import {
   normWord,
+  onceNameToken,
   recentPlayKindsOf,
   RECENT_PLAY_TOKENS,
 } from "../rules/cardAttrs.ts";
@@ -226,6 +227,12 @@ export function resolveIntent(
         for (const [kind, token] of Object.entries(RECENT_PLAY_TOKENS)) {
           events.push(
             setCounter(seat, heroId, token, kinds.has(kind) ? 1 : 0, true),
+          );
+        }
+        // « Une seule <Nom> par tour » (onceNamePerTurn) — miroir local.
+        if ((card.effects ?? []).some((e) => e.compiled?.onceNamePerTurn)) {
+          events.push(
+            setCounter(seat, heroId, onceNameToken(card.name), 1, true),
           );
         }
       }

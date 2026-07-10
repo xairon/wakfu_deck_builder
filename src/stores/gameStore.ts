@@ -64,6 +64,7 @@ import {
   effectTargetIds,
   normElement,
   normWord,
+  onceNameToken,
   planCost,
   recentPlayKindsOf,
   RECENT_PLAY_TOKENS,
@@ -1992,6 +1993,14 @@ export const useGameStore = defineStore("game", () => {
             kinds.has(kind as RecentPlayKind) ? 1 : 0,
             true,
           ),
+        );
+      }
+      // « Une seule <Nom> par tour » (onceNamePerTurn — Puissance d'Ogrest) :
+      // marque le NOM joué sur le Héros (jeton purgé au tour), lu par
+      // whyCannotPlay pour refuser une 2e copie du même nom.
+      if ((card.effects ?? []).some((e) => e.compiled?.onceNamePerTurn)) {
+        drafts.push(
+          setCounterVerb(seat, recentHeroId, onceNameToken(card.name), 1, true),
         );
       }
     }
