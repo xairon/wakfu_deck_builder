@@ -504,6 +504,13 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     // jeton TURN-scoped posé sur la cible à la résolution ; l'éligibilité exclut
     // les cibles déjà marquées ce tour (limite par-cible-par-tour, Coup Critique).
     markTurnToken: z.string().optional(),
+    // COMPOSÉ « gagne +N en Force ET <Mot-clé> jusqu'à la fin du tour »
+    // (Blops Royaux, Kabrok — textes récupérés du scrape) : le mot-clé de
+    // combat câblé est octroyé à la MÊME cible (jeton <kw>TurnMod posé à la
+    // résolution, à côté de forceMod). Un seul op, une seule cible.
+    alsoKeyword: z
+      .enum(["Géant", "Agilité", "Agressivité", "Tacle"])
+      .optional(),
     heroes: z.boolean(),
     sub: z.string().optional(),
     // Orientation imprimée (« l'Allié incliné / dressé de votre choix »).
@@ -512,7 +519,15 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     combatRole: combatRoleSchema.optional(),
     zones: zonesSchema,
   }),
-  z.object({ op: z.literal("buffForceSelf"), n: z.number() }),
+  z.object({
+    op: z.literal("buffForceSelf"),
+    n: z.number(),
+    // COMPOSÉ self « gagne +N en Force et <Mot-clé> jusqu'à la fin du tour »
+    // (Yokaï Firefoux) — miroir de buffForceTarget.alsoKeyword sur la SOURCE.
+    alsoKeyword: z
+      .enum(["Géant", "Agilité", "Agressivité", "Tacle"])
+      .optional(),
+  }),
   // Incrémente un jeton TURN-scoped sur la SOURCE (Katsou Mee : compteur de
   // dépense `katsouSpend`, et flag `destroyAtTurnEnd` posé quand le seuil est
   // franchi). Le jeton doit être reconnu par isTurnToken (purge en début de tour).

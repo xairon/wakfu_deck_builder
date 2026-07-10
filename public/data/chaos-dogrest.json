@@ -694,7 +694,26 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Terre"
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": true,
+              "alsoKeyword": "Géant",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "cost": "paidOps",
+          "tapsSource": true
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "buff-force-target"]
       }
     ],
     "keywords": [],
@@ -752,7 +771,26 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Terre"
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": true,
+              "alsoKeyword": "Géant",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "cost": "paidOps",
+          "tapsSource": true
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "buff-force-target"]
       },
       {
         "description": "Détruisez l'Équipement ou la Zone de votre choix.",
@@ -810,7 +848,26 @@
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "costTapResource",
+              "element": "Terre"
+            },
+            {
+              "op": "buffForceTarget",
+              "n": 2,
+              "heroes": true,
+              "alsoKeyword": "Géant",
+              "zones": ["monde", "havreSac"]
+            }
+          ],
+          "cost": "paidOps",
+          "tapsSource": true
+        },
+        "coverage": "auto",
+        "mechanics": ["cost-tap-resource", "buff-force-target"]
       },
       {
         "description": "Détruisez l'Équipement ou la Zone de votre choix.",

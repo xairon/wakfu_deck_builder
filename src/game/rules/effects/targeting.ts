@@ -881,6 +881,10 @@ export function resolveBuffForceTarget(
   // « … qu'un seul <X> sur le même … par tour » : jeton TURN-scoped posé sur la
   // cible (l'éligibilité l'exclut ensuite ce tour).
   markTurnToken?: string,
+  // COMPOSÉ « … et <Mot-clé> jusqu'à la fin du tour » (Blops Royaux, Kabrok) :
+  // le mot-clé câblé est octroyé à la MÊME cible (jeton <kw>TurnMod, purgé en
+  // fin de tour — lu par effectiveKeywords comme un octroi grantKeyword*).
+  alsoKeyword?: keyof typeof GRANT_KEYWORD_TOKEN,
 ): EffectResolution {
   const inst = ctx.state.instances[targetId];
   if (!inst) return { events: [], log: [] };
@@ -890,9 +894,22 @@ export function resolveBuffForceTarget(
       ...(markTurnToken
         ? [incCounter(actor, targetId, markTurnToken, 1, true)]
         : []),
+      ...(alsoKeyword
+        ? [
+            incCounter(
+              actor,
+              targetId,
+              GRANT_KEYWORD_TOKEN[alsoKeyword],
+              1,
+              true,
+            ),
+          ]
+        : []),
     ],
     log: [
-      `${nameOf(ctx, targetId)} gagne +${n} en Force jusqu'à la fin du tour.`,
+      alsoKeyword
+        ? `${nameOf(ctx, targetId)} gagne +${n} en Force et ${alsoKeyword} jusqu'à la fin du tour.`
+        : `${nameOf(ctx, targetId)} gagne +${n} en Force jusqu'à la fin du tour.`,
     ],
   };
 }

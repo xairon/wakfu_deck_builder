@@ -7772,7 +7772,18 @@
         "description": "[Incliner] : Le Yokaï Firefoux gagne +2 en Force et Géant jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "buffForceSelf",
+              "n": 2,
+              "alsoKeyword": "Géant"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-self"]
       }
     ],
     "keywords": [],

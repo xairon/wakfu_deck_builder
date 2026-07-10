@@ -3790,7 +3790,21 @@
         "description": "Quand Kabrok apparaît, le Monstre de votre choix gagne +1 en Force et Agressivité jusqu'à la fin du tour.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "ops": [
+            {
+              "op": "buffForceTarget",
+              "n": 1,
+              "heroes": false,
+              "sub": "monstre",
+              "alsoKeyword": "Agressivité",
+              "zones": ["monde", "havreSac"]
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["buff-force-target"]
       }
     ],
     "keywords": [],

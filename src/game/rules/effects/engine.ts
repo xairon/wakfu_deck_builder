@@ -1454,9 +1454,24 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         if (inPlay) {
           deps.dispatch(
             incCounterVerb(seat, sourceId!, "forceMod", op.n, true),
+            // COMPOSÉ « … et <Mot-clé> jusqu'à la fin du tour » (Yokaï
+            // Firefoux) : jeton <kw>TurnMod sur la SOURCE, purgé en fin de tour.
+            ...(op.alsoKeyword
+              ? [
+                  incCounterVerb(
+                    seat,
+                    sourceId!,
+                    GRANT_KEYWORD_TOKEN[op.alsoKeyword],
+                    1,
+                    true,
+                  ),
+                ]
+              : []),
             say(
               seat,
-              `${cardName} gagne +${op.n} en Force jusqu'à la fin du tour.`,
+              op.alsoKeyword
+                ? `${cardName} gagne +${op.n} en Force et ${op.alsoKeyword} jusqu'à la fin du tour.`
+                : `${cardName} gagne +${op.n} en Force jusqu'à la fin du tour.`,
             ),
           );
         }
@@ -2730,6 +2745,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
                         ? effectiveForce(deps.rulesCtx(), instanceId)
                         : t.op.n,
                       t.op.markTurnToken,
+                      // Composé « … et <Mot-clé> » : octroyé à la même cible.
+                      t.op.alsoKeyword,
                     )
                   : t.op.op === "grantKeywordTarget"
                     ? resolveGrantKeywordTarget(

@@ -827,23 +827,52 @@ function parseSentence(
         ],
       };
   }
-  // « L'Allié (ou Héros) de votre choix gagne +N en Force jusqu'à la fin du tour »
+  // « L'Allié (ou Héros) de votre choix gagne +N en Force [et <Mot-clé>]
+  //   jusqu'à la fin du tour » — le COMPOSÉ (Blops Royaux) octroie le mot-clé
+  //   câblé à la MÊME cible (alsoKeyword) ; un mot-clé non câblé → manuel.
   m = sentence.match(
-    /^l['’ ]?\s?allie( ou heros)? de votre choix gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/,
+    /^l['’ ]?\s?allie( ou heros)? de votre choix gagne \+(\d+) en force(?: et ([a-z]+))? jusqu['’]a la fin d[ue] tour$/,
   );
-  if (m)
+  if (m) {
+    if (m[3] && !GRANTABLE_KEYWORDS[m[3]]) return null;
     return {
       op: "buffForceTarget",
       n: toNumber(m[2]),
       heroes: !!m[1],
+      ...(m[3] ? { alsoKeyword: GRANTABLE_KEYWORDS[m[3]] } : {}),
       zones: ["monde", "havreSac"],
     };
-  // « [Cette carte] gagne +N en Force jusqu'à la fin du tour »
+  }
+  // « Le <Famille> de votre choix gagne +N en Force [et <Mot-clé>] jusqu'à la
+  //   fin du tour » (Kabrok : « le Monstre … et Agressivité ») — pendant Force
+  //   de la forme mot-clé-par-Famille ci-dessous (ALLIED_FAMILIES).
   m = sentence.match(
-    /^(.{1,50}?) gagne \+(\d+) en force jusqu['’]a la fin d[ue] tour$/,
+    /^le ([a-z-]+?) de votre choix gagne \+(\d+) en force(?: et ([a-z]+))? jusqu['’]a la fin d[ue] tour$/,
   );
-  if (m && subjectIsSelf(m[1], cardName))
-    return { op: "buffForceSelf", n: toNumber(m[2]) };
+  if (m && ALLIED_FAMILIES.has(m[1])) {
+    if (m[3] && !GRANTABLE_KEYWORDS[m[3]]) return null;
+    return {
+      op: "buffForceTarget",
+      n: toNumber(m[2]),
+      heroes: false,
+      sub: m[1],
+      ...(m[3] ? { alsoKeyword: GRANTABLE_KEYWORDS[m[3]] } : {}),
+      zones: ["monde", "havreSac"],
+    };
+  }
+  // « [Cette carte] gagne +N en Force [et <Mot-clé>] jusqu'à la fin du tour »
+  //   (Yokaï Firefoux : composé self — mêmes jetons, sur la SOURCE).
+  m = sentence.match(
+    /^(.{1,50}?) gagne \+(\d+) en force(?: et ([a-z]+))? jusqu['’]a la fin d[ue] tour$/,
+  );
+  if (m && subjectIsSelf(m[1], cardName)) {
+    if (m[3] && !GRANTABLE_KEYWORDS[m[3]]) return null;
+    return {
+      op: "buffForceSelf",
+      n: toNumber(m[2]),
+      ...(m[3] ? { alsoKeyword: GRANTABLE_KEYWORDS[m[3]] } : {}),
+    };
+  }
   // « L'Allié (ou Héros) [<Famille>] [bloqué] de votre choix gagne <Mot-clé>
   //   jusqu'à la fin du tour » (Pandaluk : Géant tout Allié ; Petit Anneau de
   //   Force : Géant Allié ou Héros en sacrifice ; chaos-dogrest : Agilité /
@@ -2057,6 +2086,11 @@ function parseCond(raw: string, cardName: string): CondSpec | null {
 
 /** Le sujet du déclencheur désigne-t-il la carte elle-même ? */
 function subjectIsSelf(subject: string, cardName: string): boolean {
+  // GARDE : un sujet contenant des tokens de COÛT non parsés (« [Incliner] :
+  // Le X … », « [Terre][Terre] : … ») n'est PAS un simple auto-référent — le
+  // laisser passer avalerait le coût (approximation). Les coûts-icônes sont
+  // traités en amont (compileTapEffectText) ; ici on refuse.
+  if (/[[\]:]/.test(subject)) return false;
   const s = subject.replace(/^(le |la |les |l['’]\s?|un |une )/, "").trim();
   const n = norm(cardName);
   return n.includes(s) || s.includes(n);
@@ -2221,6 +2255,27 @@ export function compileTapEffectText(
     cardName,
   );
   normalized = normStripped;
+  // COÛT-ICÔNES en tête (textes récupérés du scrape), UNIQUEMENT sur un
+  // pouvoir à inclinaison (requiresIncline) :
+  //  - « [Incliner] : CORPS » — l'inclinaison textuelle EST l'inclinaison par
+  //    défaut de l'activation (flag) → préfixe redondant, strippé (fidèle) ;
+  //  - « [Incliner], [Élément]+ : CORPS » — idem, PLUS chaque [Élément] devient
+  //    un coût de Ressource payé (costTapResource en tête, chemin paidOps) avec
+  //    tapsSource (l'activation incline AUSSI la source) — généralisation du
+  //    script Yomtella (W54/W64), même machinerie moteur.
+  let iconResources: string[] | null = null;
+  if (requiresIncline) {
+    const mIcon = normalized.match(
+      /^\[incliner\](?:\s*,\s*((?:\[(?:feu|eau|terre|air|neutre)\]\s*,?\s*)+))?\s*:\s*(.+)$/,
+    );
+    if (mIcon) {
+      normalized = mIcon[2].trim();
+      if (mIcon[1])
+        iconResources = [
+          ...mIcon[1].matchAll(/\[(feu|eau|terre|air|neutre)\]/g),
+        ].map((g) => g[1].charAt(0).toUpperCase() + g[1].slice(1));
+    }
+  }
   const compiled = compileTapNormalized(
     normalized,
     cardName,
@@ -2229,9 +2284,26 @@ export function compileTapEffectText(
     requiresIncline,
   );
   if (!compiled) return null;
-  const withBearer = bearerInCombat
-    ? { ...compiled, requiresBearerInCombat: true }
+  // Coûts-icônes : jamais superposés à un coût déjà compilé (double-coût
+  // ambigu → manuel).
+  if (iconResources && compiled.cost) return null;
+  const withIconCost = iconResources
+    ? {
+        ...compiled,
+        cost: "paidOps" as const,
+        tapsSource: true,
+        ops: [
+          ...iconResources.map((el) => ({
+            op: "costTapResource" as const,
+            element: el,
+          })),
+          ...compiled.ops,
+        ],
+      }
     : compiled;
+  const withBearer = bearerInCombat
+    ? { ...withIconCost, requiresBearerInCombat: true }
+    : withIconCost;
   return recency ? { ...withBearer, playCondition: recency } : withBearer;
 }
 
