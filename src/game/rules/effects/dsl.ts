@@ -357,11 +357,15 @@ function parseSentence(
   m = sentence.match(
     /^chaque joueur peut piocher (une|deux|trois|\d+) cartes?$/,
   );
-  if (m)
+  if (m) {
+    const n = toNumber(m[1]);
     return {
       op: "eachPlayerOptional",
-      ops: [{ op: "draw", n: toNumber(m[1]) }],
+      // Libellé de la confirmation — fidèle au texte imprimé (audit UX).
+      prompt: n === 1 ? "peut piocher une carte" : `peut piocher ${n} cartes`,
+      ops: [{ op: "draw", n }],
     };
+  }
   // « Chaque joueur peut redresser un Allié [ou Héros] de son choix. » (Djakky
   //   Chwan) → eachPlayerOptional{ untapTarget controller:self } : chaque joueur
   //   redresse une de SES créatures (Monde ou Havre-Sac, cf. ruling).
@@ -371,6 +375,7 @@ function parseSentence(
   if (m)
     return {
       op: "eachPlayerOptional",
+      prompt: `peut redresser un Allié${m[1] ? " ou Héros" : ""} de son choix`,
       ops: [
         {
           op: "untapTarget",

@@ -991,7 +991,9 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             {
               seat: s,
               cardName,
-              text: `${cardName} — ${deps.playerName(s)} : peut agir`,
+              // Libellé LISIBLE posé par le DSL (« peut piocher une carte ») ;
+              // « peut agir » = repli des données non recompilées (audit UX).
+              text: `${cardName} — ${deps.playerName(s)} : ${op.prompt ?? "peut agir"}`,
               ops: body,
               ...(frame.powerSourceId
                 ? { powerSourceId: frame.powerSourceId }

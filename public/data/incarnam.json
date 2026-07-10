@@ -3918,6 +3918,7 @@
           "ops": [
             {
               "op": "eachPlayerOptional",
+              "prompt": "peut piocher une carte",
               "ops": [
                 {
                   "op": "draw",
@@ -5177,6 +5178,7 @@
           "ops": [
             {
               "op": "eachPlayerOptional",
+              "prompt": "peut redresser un Allié de son choix",
               "ops": [
                 {
                   "op": "untapTarget",

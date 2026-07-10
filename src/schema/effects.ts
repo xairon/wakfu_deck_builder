@@ -224,6 +224,11 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // pas une exécution d'office (≠ eachPlayerDraws mandatory). Ops récursives.
   z.object({
     op: z.literal("eachPlayerOptional"),
+    // Libellé LISIBLE de la confirmation (« peut piocher une carte ») — posé
+    // par le DSL depuis le texte imprimé. Sans lui, la fenêtre disait
+    // « <Carte> — <Joueur> : peut agir » sans dire CE QUE fait l'effet
+    // (audit UX 2026-07).
+    prompt: z.string().optional(),
     ops: conditionalBodySchema,
   }),
   z.object({ op: z.literal("gainXp"), n: z.number() }),

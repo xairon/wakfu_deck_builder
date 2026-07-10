@@ -462,6 +462,7 @@
           "ops": [
             {
               "op": "eachPlayerOptional",
+              "prompt": "peut piocher une carte",
               "ops": [
                 {
                   "op": "draw",

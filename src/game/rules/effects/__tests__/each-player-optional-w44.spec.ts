@@ -13,11 +13,17 @@ import {
 } from "@/game/rules";
 
 describe("DSL — eachPlayerOptional", () => {
-  it("« Chaque joueur peut piocher une carte » → eachPlayerOptional{draw}", () => {
+  it("« Chaque joueur peut piocher une carte » → eachPlayerOptional{draw} + prompt lisible", () => {
     expect(
       compileActionEffectText("Chaque joueur peut piocher une carte.", "T")
         ?.ops,
-    ).toEqual([{ op: "eachPlayerOptional", ops: [{ op: "draw", n: 1 }] }]);
+    ).toEqual([
+      {
+        op: "eachPlayerOptional",
+        prompt: "peut piocher une carte",
+        ops: [{ op: "draw", n: 1 }],
+      },
+    ]);
   });
 
   it("Coffre Malveillant (onSelfDestroyed) → trigger + eachPlayerOptional{draw}", () => {
@@ -28,7 +34,11 @@ describe("DSL — eachPlayerOptional", () => {
     );
     expect(c?.trigger).toBe("onSelfDestroyed");
     expect(c?.ops).toEqual([
-      { op: "eachPlayerOptional", ops: [{ op: "draw", n: 1 }] },
+      {
+        op: "eachPlayerOptional",
+        prompt: "peut piocher une carte",
+        ops: [{ op: "draw", n: 1 }],
+      },
     ]);
   });
 
@@ -44,6 +54,7 @@ describe("DSL — eachPlayerOptional", () => {
     expect(c?.ops).toEqual([
       {
         op: "eachPlayerOptional",
+        prompt: "peut redresser un Allié de son choix",
         ops: [
           {
             op: "untapTarget",
@@ -53,5 +64,16 @@ describe("DSL — eachPlayerOptional", () => {
         ],
       },
     ]);
+  });
+
+  it("le prompt est utilisé par la confirmation (plus de « peut agir » générique quand il existe)", () => {
+    // UX audit 2026-07 : la fenêtre disait « <Carte> — <Joueur> : peut agir »
+    // sans dire CE QUE fait l'effet. Le DSL embarque désormais le libellé.
+    const c = compileActionEffectText(
+      "Chaque joueur peut piocher deux cartes.",
+      "T",
+    );
+    const op = c?.ops[0] as { prompt?: string };
+    expect(op.prompt).toBe("peut piocher 2 cartes");
   });
 });
