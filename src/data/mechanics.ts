@@ -599,6 +599,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   buffTeamPowerDamageTurn: "team-power-damage-boost",
   lookTopPick: "look-top",
   revealTopPutInPlay: "look-top",
+  revealTopConditional: "look-top",
   tapMultiTarget: "tap-target",
   untapMultiTarget: "untap-target",
   returnToHand: "return-to-hand",

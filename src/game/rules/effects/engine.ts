@@ -2023,6 +2023,60 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             ),
           );
         }
+      } else if (op.op === "revealTopConditional") {
+        // RÉVÈLE/DÉFAUSSE LE DESSUS (ou DESSOUS) + CONDITIONNEL (W81) —
+        // entièrement DÉTERMINISTE (aucune interaction) :
+        //  - discardDraw : la carte part en Défausse ; Élément matche → +1 pioche.
+        //  - takeElse : type matche → en main ; sinon recycle / Défausse.
+        const pioche = deps.getState().seats[seat].pioche;
+        if (!pioche.length) {
+          deps.dispatch(say(seat, `${cardName} : Pioche vide, effet passé.`));
+          continue;
+        }
+        const revId =
+          op.from === "bottom" ? pioche[pioche.length - 1] : pioche[0];
+        const revCard = deps.getCard(
+          deps.getState().instances[revId]?.cardId ?? null,
+        );
+        const revName = revCard?.name ?? "une carte";
+        const matches = revCard
+          ? op.element
+            ? producedElement(revCard) === normElement(op.element)
+            : (op.whatIn ?? []).includes(
+                revCard.mainType as "Allié" | "Équipement",
+              )
+          : false;
+        if (op.mode === "discardDraw") {
+          deps.moveTo(revId, { zone: "defausse", owner: seat });
+          deps.dispatch(
+            say(seat, `${cardName} : révèle et défausse ${revName}.`),
+          );
+          if (matches) {
+            deps.draw(seat, 1);
+            deps.dispatch(
+              say(seat, `${cardName} : l'Élément correspond — pioche 1 carte.`),
+            );
+          }
+        } else if (matches) {
+          deps.moveTo(revId, { zone: "main", owner: seat });
+          deps.dispatch(
+            say(seat, `${cardName} : révèle ${revName} — prise en main.`),
+          );
+        } else if (op.otherwise === "discard") {
+          deps.moveTo(revId, { zone: "defausse", owner: seat });
+          deps.dispatch(
+            say(seat, `${cardName} : révèle ${revName} — mise en Défausse.`),
+          );
+        } else {
+          deps.moveTo(revId, { zone: "pioche", owner: seat }, { at: "bottom" });
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} : révèle ${revName} — recyclée sous la Pioche.`,
+            ),
+          );
+        }
+        continue;
       } else if (op.op === "revealTopPutInPlay") {
         // « Révéler les N premières cartes de votre Pioche. Si un <What> de
         // Niveau L est révélé, vous pouvez le mettre en jeu gratuitement[,

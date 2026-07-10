@@ -1963,11 +1963,10 @@ function matchLeurInflige(sentence: string, cardName: string): number | null {
  * reste manuelle. `body` déjà normalisé.
  */
 function compileWholeBodyBlock(body: string): EffectOp[] | null {
-  const blop = body
-    .replace(/\.$/, "")
-    .match(
-      /^revele[rz] les trois premieres cartes de votre pioche\. si un allie de niveau (\d+) est revele de cette maniere, vous pouvez le mettre en jeu gratuitement, incline\. recyclez les autres cartes$/,
-    );
+  const b = body.replace(/\.$/, "");
+  const blop = b.match(
+    /^revele[rz] les trois premieres cartes de votre pioche\. si un allie de niveau (\d+) est revele de cette maniere, vous pouvez le mettre en jeu gratuitement, incline\. recyclez les autres cartes$/,
+  );
   if (blop)
     return [
       {
@@ -1976,6 +1975,55 @@ function compileWholeBodyBlock(body: string): EffectOp[] | null {
         what: "Allié",
         exactLevel: toNumber(blop[1]),
         tapped: true,
+      },
+    ];
+  // « Défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte
+  //   [Élém] / Si la carte défaussé(e) est une carte [Élém], piochez une
+  //   carte. » (W81 — Alysse/Chauchane/Grine Piz [+ variante Alplaïa], Éléments
+  //   RÉCUPÉRÉS des pages brutes) → revealTopConditional discardDraw. La typo
+  //   de scrape « défaussez » (infinitif fautif) est tolérée (defausse[rz]).
+  const mDraw = b.match(
+    /^defausse[rz] la carte du dessus de votre pioche\. (?:s['’]il s['’]agit d['’]une carte|si la carte defaussee? est une carte) \[(air|eau|feu|terre|neutre)\], piochez une carte$/,
+  );
+  if (mDraw)
+    return [
+      {
+        op: "revealTopConditional",
+        mode: "discardDraw",
+        element: mDraw[1].charAt(0).toUpperCase() + mDraw[1].slice(1),
+      },
+    ];
+  // « Révéler la carte du dessus de votre Pioche. S'il s'agit d'un Équipement,
+  //   prenez cette carte en main. Sinon, recyclez-la. » (Hilary Goll) →
+  //   revealTopConditional takeElse/recycle.
+  if (
+    /^revele[rz] la carte du dessus de votre pioche\. s['’]il s['’]agit d['’]un equipement, prenez cette carte en main\. sinon, recyclez-la$/.test(
+      b,
+    )
+  )
+    return [
+      {
+        op: "revealTopConditional",
+        mode: "takeElse",
+        whatIn: ["Équipement"],
+        otherwise: "recycle",
+      },
+    ];
+  // « Révéler la carte du DESSOUS de votre Pioche. S'il s'agit d'un Allié ou
+  //   d'un Équipement, prenez-la en main. Sinon, mettez-la dans votre
+  //   Défausse. » (Berlanette Chichi ×2) → takeElse/discard depuis le dessous.
+  if (
+    /^revele[rz] la carte du dessous de votre pioche\. s['’]il s['’]agit d['’]un allie ou d['’]un equipement, prenez-la en main\. sinon, mettez-la dans votre defausse$/.test(
+      b,
+    )
+  )
+    return [
+      {
+        op: "revealTopConditional",
+        from: "bottom",
+        mode: "takeElse",
+        whatIn: ["Allié", "Équipement"],
+        otherwise: "discard",
       },
     ];
   return null;

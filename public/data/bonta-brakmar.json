@@ -98,11 +98,23 @@
         "coverage": "trait"
       },
       {
-        "description": "Quand Alplaïa Vamos apparaît, vous pouvez défaussez la carte du dessus de votre Pioche. Si la carte défaussé est une carte , piochez une carte.",
+        "description": "Quand Alplaïa Vamos apparaît, vous pouvez défaussez la carte du dessus de votre Pioche. Si la carte défaussé est une carte [Terre], piochez une carte.",
         "elements": ["Terre"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopConditional",
+              "mode": "discardDraw",
+              "element": "Terre"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       }
     ],
     "keywords": [],
@@ -143,11 +155,23 @@
         "coverage": "trait"
       },
       {
-        "description": "Quand Alysse apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte , piochez une carte.",
+        "description": "Quand Alysse apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte [Air], piochez une carte.",
         "elements": ["Air"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopConditional",
+              "mode": "discardDraw",
+              "element": "Air"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       }
     ],
     "keywords": [],
@@ -4088,11 +4112,23 @@
         "coverage": "trait"
       },
       {
-        "description": "Quand Chauchane apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte , piochez une carte.",
+        "description": "Quand Chauchane apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte [Eau], piochez une carte.",
         "elements": ["Eau"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopConditional",
+              "mode": "discardDraw",
+              "element": "Eau"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       }
     ],
     "keywords": [],
@@ -8329,11 +8365,23 @@
         "coverage": "trait"
       },
       {
-        "description": "Quand Grine Piz apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte , piochez une carte.",
+        "description": "Quand Grine Piz apparaît, vous pouvez défausser la carte du dessus de votre Pioche. S'il s'agit d'une carte [Feu], piochez une carte.",
         "elements": ["Feu"],
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopConditional",
+              "mode": "discardDraw",
+              "element": "Feu"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       }
     ],
     "keywords": [],
@@ -8808,7 +8856,20 @@
         "description": "Quand Hilary Goll apparaît, vous pouvez révéler la carte du dessus de votre Pioche. S'il s'agit d'un Équipement, prenez cette carte en main. Sinon, recyclez-la.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopConditional",
+              "mode": "takeElse",
+              "whatIn": ["Équipement"],
+              "otherwise": "recycle"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       },
       {
         "description": "Tant qu'elle porte au moins un Équipement, Hilary Goll gagne Géant.",

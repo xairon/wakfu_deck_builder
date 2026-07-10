@@ -775,7 +775,21 @@
         "description": "Quand Berlanette Chichi apparaît, vous pouvez révéler la carte du dessous de votre Pioche. S'il s'agit d'un Allié ou d'un Équipement, prenez-la en main. Sinon, mettez-la dans votre Défausse.",
         "isOncePerTurn": false,
         "requiresIncline": false,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onArrive",
+          "optional": true,
+          "ops": [
+            {
+              "op": "revealTopConditional",
+              "from": "bottom",
+              "mode": "takeElse",
+              "whatIn": ["Allié", "Équipement"],
+              "otherwise": "discard"
+            }
+          ]
+        },
+        "coverage": "auto",
+        "mechanics": ["look-top"]
       }
     ],
     "keywords": [],

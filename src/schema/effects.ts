@@ -537,6 +537,24 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     exactLevel: z.number(),
     tapped: z.boolean().optional(),
   }),
+  // RÉVÈLE/DÉFAUSSE LE DESSUS (ou le DESSOUS) + CONDITIONNEL (W81) —
+  // NON-interactif :
+  //  - mode "discardDraw" (Alysse/Chauchane/Grine Piz/Alplaïa) : « Défausser
+  //    la carte du dessus de votre Pioche. S'il s'agit d'une carte [Élém],
+  //    piochez une carte. » — la carte part en Défausse quoi qu'il arrive ;
+  //    si son Élément matche, +1 pioche.
+  //  - mode "takeElse" (Hilary Goll ; Berlanette ×2 depuis le dessous) :
+  //    « Révéler la carte du dessus/dessous. S'il s'agit d'un <Types>,
+  //    prenez-la en main. Sinon, recyclez-la / mettez-la dans votre
+  //    Défausse. » (`otherwise`).
+  z.object({
+    op: z.literal("revealTopConditional"),
+    from: z.enum(["bottom"]).optional(),
+    mode: z.enum(["discardDraw", "takeElse"]),
+    element: z.string().optional(),
+    whatIn: z.array(z.enum(["Allié", "Équipement"])).optional(),
+    otherwise: z.enum(["recycle", "discard"]).optional(),
+  }),
   z.object({ op: z.literal("eachPlayerDraws"), n: z.number() }),
   z.object({
     op: z.literal("healHeroTarget"),
