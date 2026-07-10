@@ -92,6 +92,19 @@ export const condSpecSchema = z.discriminatedUnion("cond", [
   // récence : rejouer autre chose annule), purgé en début de tour. Restriction de
   // POUVOIR (gate d'activation dans activateTapPower), pas de résolution.
   z.object({ cond: z.literal("recentlyPlayedQuestParch") }),
+  // GÉNÉRALISATION par CATÉGORIE (« … que lorsqu'un adversaire vient de jouer
+  // une Action », « … que lorsque vous venez de jouer une carte Équipement ») :
+  // jetons TURN-scoped `recentPlay<Kind>` posés sur le Héros du JOUEUR à chaque
+  // jeu (écrasés — stricte récence, comme recentQuestParch), purgés au
+  // changement de tour. `who: "self"` lit VOTRE Héros ; `who: "other"` lit le
+  // Héros ADVERSE (en 1v1, « un adversaire / un autre joueur » = l'adversaire).
+  z.object({
+    cond: z.literal("recentlyPlayedKind"),
+    kinds: z.array(
+      z.enum(["action", "sort", "parchemin", "equipement", "allie"]),
+    ),
+    who: z.enum(["self", "other"]),
+  }),
   // « Si vous dépensez PLUS DE N … » (Katsou Mee) : le jeton `counter` de la
   // SOURCE (frame.sourceId) est-il ≥ `n` ? Lu sur les compteurs de l'instance
   // source. Sert au flag d'auto-destruction (seuil de dépense franchi).

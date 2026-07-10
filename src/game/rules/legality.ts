@@ -9,7 +9,12 @@ import type { CardInstance } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
 import { otherSeat } from "../types/zones.ts";
 import type { CombatTarget, RulesCtx } from "./types";
-import { canAttackCard, canBlockCard, heroStats } from "./cardAttrs.ts";
+import {
+  canAttackCard,
+  canBlockCard,
+  heroStats,
+  RECENT_PLAY_TOKENS,
+} from "./cardAttrs.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
 import { combatKeywords, effectiveKeywords } from "./effects/keywords.ts";
 import { planCost } from "./resources.ts";
@@ -120,6 +125,16 @@ function playConditionOk(
     return !!hero && hero.location.zone === pc.zone;
   if (pc?.cond === "recentlyPlayedQuestParch")
     return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
+  // RÉCENCE PAR CATÉGORIE : `who:"self"` lit VOTRE Héros, `who:"other"` le
+  // Héros ADVERSE (en 1v1, « un adversaire / un autre joueur » = l'adversaire).
+  if (pc?.cond === "recentlyPlayedKind") {
+    const whoSeat = pc.who === "other" ? otherSeat(seat) : seat;
+    const hid = ctx.state.seats[whoSeat].heroInstanceId;
+    const h = hid ? ctx.state.instances[hid] : null;
+    return pc.kinds.some(
+      (k) => (h?.counters.tokens?.[RECENT_PLAY_TOKENS[k]] ?? 0) > 0,
+    );
+  }
   return true; // condSpec sans sémantique de restriction → aucune contrainte
 }
 
@@ -164,6 +179,19 @@ function reasonFor(
       : "Votre Héros doit être dans le Monde pour jouer cette carte.";
   if (pc?.cond === "recentlyPlayedQuestParch")
     return "Vous devez venir de jouer une carte Quête ou Parchemin.";
+  if (pc?.cond === "recentlyPlayedKind") {
+    const labels: Record<string, string> = {
+      action: "une Action",
+      sort: "un Sort",
+      parchemin: "un Parchemin",
+      equipement: "un Équipement",
+      allie: "un Allié",
+    };
+    const what = pc.kinds.map((k) => labels[k] ?? k).join(" ou ");
+    return pc.who === "other"
+      ? `Un adversaire doit venir de jouer ${what}.`
+      : `Vous devez venir de jouer ${what}.`;
+  }
   return "Condition de jeu non remplie.";
 }
 

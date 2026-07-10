@@ -65,6 +65,9 @@ import {
   normElement,
   normWord,
   planCost,
+  recentPlayKindsOf,
+  RECENT_PLAY_TOKENS,
+  type RecentPlayKind,
   resolvedPlayDestination,
   playEffects,
   pmOf,
@@ -1976,6 +1979,21 @@ export const useGameStore = defineStore("game", () => {
           true,
         ),
       );
+      // GÉNÉRALISATION PAR CATÉGORIE (recentPlay<Kind>) : un jeton par
+      // catégorie, TOUS écrasés à chaque jeu (stricte récence) — lus par la
+      // restriction recentlyPlayedKind (Bébé Crocodaille, Buveur, Tolot…).
+      const kinds = new Set(recentPlayKindsOf(card));
+      for (const [kind, token] of Object.entries(RECENT_PLAY_TOKENS)) {
+        drafts.push(
+          setCounterVerb(
+            seat,
+            recentHeroId,
+            token,
+            kinds.has(kind as RecentPlayKind) ? 1 : 0,
+            true,
+          ),
+        );
+      }
     }
     dispatch(...drafts);
     if (actionAtoms.length) {

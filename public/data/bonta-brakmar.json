@@ -1985,7 +1985,22 @@
         "description": "Piochez une carte. N'utilisez ce pouvoir que lorsqu'un adversaire vient de jouer une Action.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ],
+          "playCondition": {
+            "cond": "recentlyPlayedKind",
+            "kinds": ["action"],
+            "who": "other"
+          }
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       },
       {
         "description": "Agilité",
@@ -3067,7 +3082,22 @@
         "description": "Piochez une carte. Ne jouez ce pouvoir que lorsqu'un autre joueur vient de jouer un Sort ou un Parchemin.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ],
+          "playCondition": {
+            "cond": "recentlyPlayedKind",
+            "kinds": ["sort", "parchemin"],
+            "who": "other"
+          }
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       }
     ],
     "keywords": [],

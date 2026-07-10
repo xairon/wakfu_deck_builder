@@ -10,6 +10,7 @@
 import { describe, it, expect } from "vitest";
 import type { Card } from "@/types/cards";
 import { createMockActionCard, createMockAllyCard } from "tests/factories/card";
+import { useCardStore } from "../cardStore";
 import { makeEffectSandbox, placeInZone } from "./effectPipeline.harness";
 
 const FECALINE: Card = createMockAllyCard({
@@ -84,5 +85,63 @@ describe("Fécaline — récence Quête/Parchemin", () => {
     store.playFromHand(autreId); // écrase → récence = autre (0)
     expect(store.activateTapPower(fecalineId)).toBe(false);
     expect(xp()).toBe(0);
+  });
+});
+
+describe("récence PAR CATÉGORIE (recentPlay<Kind>) — écrivain + gate", () => {
+  it("jouer une Action pose recentPlayAction=1 (et parchemin selon le subType), écrasés au jeu suivant", () => {
+    const { store, parchId, autreId } = setup();
+    const heroA = store.state.seats.A.heroInstanceId!;
+    const tok = (name: string) =>
+      store.state.instances[heroA].counters.tokens?.[name] ?? 0;
+    store.playFromHand(parchId); // Action au subType Parchemin
+    expect(tok("recentPlayAction")).toBe(1);
+    expect(tok("recentPlayParchemin")).toBe(1);
+    expect(tok("recentPlayEquipement")).toBe(0);
+    store.playFromHand(autreId); // Action sans subType → parchemin écrasé
+    expect(tok("recentPlayAction")).toBe(1);
+    expect(tok("recentPlayParchemin")).toBe(0);
+  });
+
+  it("gate who:'other' : le pouvoir lit le Héros ADVERSE (refus si lui n'a rien joué)", () => {
+    const { store } = setup();
+    const BEBE: Card = {
+      id: "bebe-test",
+      name: "Bébé Crocodaille",
+      mainType: "Allié",
+      subTypes: [],
+      effects: [
+        {
+          description:
+            "Piochez une carte. N'utilisez ce pouvoir que lorsqu'un adversaire vient de jouer une Action.",
+          compiled: {
+            trigger: "onTap",
+            playCondition: {
+              cond: "recentlyPlayedKind",
+              kinds: ["action"],
+              who: "other",
+            },
+            ops: [{ op: "draw", n: 1 }],
+          },
+        },
+      ],
+    } as unknown as Card;
+    const cardStore = useCardStore();
+    cardStore.cards = [...cardStore.cards, BEBE];
+    const bebeId = placeInZone(store, "A", { zone: "monde" });
+    store.state.instances[bebeId].cardId = "bebe-test";
+    // L'adversaire (B) n'a rien joué → refus avec motif.
+    expect(store.activateTapPower(bebeId)).toBe(false);
+    expect(store.ruleError).toContain("adversaire");
+    store.clearRuleError();
+    // On simule « B vient de jouer une Action » (jeton sur SON Héros).
+    const heroB = store.state.seats.B.heroInstanceId!;
+    store.state.instances[heroB].counters.tokens = {
+      ...(store.state.instances[heroB].counters.tokens ?? {}),
+      recentPlayAction: 1,
+    };
+    const handBefore = store.state.seats.A.main.length;
+    expect(store.activateTapPower(bebeId)).toBe(true);
+    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
   });
 });

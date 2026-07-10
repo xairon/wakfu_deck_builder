@@ -47,7 +47,11 @@ import {
   pmOf,
 } from "../rules/legality.ts";
 import { planCost } from "../rules/resources.ts";
-import { normWord } from "../rules/cardAttrs.ts";
+import {
+  normWord,
+  recentPlayKindsOf,
+  RECENT_PLAY_TOKENS,
+} from "../rules/cardAttrs.ts";
 import { attackPmBonus, cannotCarryEquipment } from "../rules/modifiers.ts";
 import { resolveCombat } from "../rules/combat.ts";
 import { activeGlobalMods } from "../rules/effects/damageMods.ts";
@@ -216,6 +220,14 @@ export function resolveIntent(
             true,
           ),
         );
+        // GÉNÉRALISATION PAR CATÉGORIE (recentPlay<Kind>) — miroir du chemin
+        // local (gameStore.playFromHand) : tous écrasés à chaque jeu.
+        const kinds = new Set<string>(recentPlayKindsOf(card));
+        for (const [kind, token] of Object.entries(RECENT_PLAY_TOKENS)) {
+          events.push(
+            setCounter(seat, heroId, token, kinds.has(kind) ? 1 : 0, true),
+          );
+        }
       }
       return { events };
     }

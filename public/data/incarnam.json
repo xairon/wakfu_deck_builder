@@ -15454,7 +15454,22 @@
         "description": "Piochez une carte. N'utilisez ce pouvoir que lorsque vous venez de jouer une carte Équipement.",
         "isOncePerTurn": false,
         "requiresIncline": true,
-        "coverage": "uncovered"
+        "compiled": {
+          "trigger": "onTap",
+          "ops": [
+            {
+              "op": "draw",
+              "n": 1
+            }
+          ],
+          "playCondition": {
+            "cond": "recentlyPlayedKind",
+            "kinds": ["equipement"],
+            "who": "self"
+          }
+        },
+        "coverage": "auto",
+        "mechanics": ["draw"]
       }
     ],
     "keywords": [],

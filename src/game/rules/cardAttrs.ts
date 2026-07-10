@@ -26,6 +26,36 @@ export function normWord(s: string): string {
   return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 }
 
+/**
+ * RÉCENCE DE JEU PAR CATÉGORIE : jetons TURN-scoped posés sur le Héros du
+ * JOUEUR à CHAQUE carte jouée (tous écrasés — stricte récence, comme
+ * `recentQuestParch`), purgés au changement de tour. Lus par la restriction
+ * `playCondition { cond: "recentlyPlayedKind", kinds, who }` (Bébé
+ * Crocodaille, Buveur, Tolot, Sagesse de Silouate, Démons et Merveilles).
+ */
+export const RECENT_PLAY_TOKENS = {
+  action: "recentPlayAction",
+  sort: "recentPlaySort",
+  parchemin: "recentPlayParchemin",
+  equipement: "recentPlayEquipement",
+  allie: "recentPlayAllie",
+} as const;
+export type RecentPlayKind = keyof typeof RECENT_PLAY_TOKENS;
+
+/** Catégories de récence portées par une carte jouée (cumulables : une Action
+ *  au subType Parchemin pose `action` ET `parchemin`). */
+export function recentPlayKindsOf(card: Card): RecentPlayKind[] {
+  const kinds: RecentPlayKind[] = [];
+  if (card.mainType === "Action") kinds.push("action");
+  if (card.mainType === "Équipement") kinds.push("equipement");
+  if (card.mainType === "Allié" || card.mainType === "Allié Élémentaire")
+    kinds.push("allie");
+  const subs = (card.subTypes ?? []).map(normWord);
+  if (subs.includes("sort")) kinds.push("sort");
+  if (subs.includes("parchemin")) kinds.push("parchemin");
+  return kinds;
+}
+
 /** Coût de lancement = Niveau de la carte (4316). */
 export function levelCost(card: Card): number {
   return card.stats?.niveau?.value ?? 0;

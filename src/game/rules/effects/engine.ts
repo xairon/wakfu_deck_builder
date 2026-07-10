@@ -36,6 +36,7 @@ import {
   allyPowerDamageBonus,
   appearanceTriggerEffects,
   arrivalEffects,
+  RECENT_PLAY_TOKENS,
   collectTriggeredEffects,
   effectiveForce,
   effectSourceElement,
@@ -808,6 +809,16 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         const heroId = deps.getState().seats[seat].heroInstanceId;
         const hero = heroId ? deps.getState().instances[heroId] : null;
         return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
+      }
+      case "recentlyPlayedKind": {
+        // RÉCENCE PAR CATÉGORIE — miroir du gate de legality (playConditionOk) :
+        // who:"self" lit le Héros de l'acteur, who:"other" le Héros adverse.
+        const whoSeat = cond.who === "other" ? otherSeat(seat) : seat;
+        const heroId = deps.getState().seats[whoSeat].heroInstanceId;
+        const hero = heroId ? deps.getState().instances[heroId] : null;
+        return cond.kinds.some(
+          (k) => (hero?.counters.tokens?.[RECENT_PLAY_TOKENS[k]] ?? 0) > 0,
+        );
       }
       case "selfCounterAtLeast": {
         // « Si vous dépensez plus de N … » (Katsou) : jeton `counter` de la SOURCE

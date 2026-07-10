@@ -22,6 +22,14 @@ const TURN_TOKENS = new Set([
   // RÉCENCE DE JEU (Fécaline) : « venez de jouer une Quête/Parchemin » — jeton
   // posé sur le Héros à chaque playFromHand, purgé en début de tour.
   "recentQuestParch",
+  // RÉCENCE PAR CATÉGORIE (recentlyPlayedKind — Bébé Crocodaille, Buveur,
+  // Tolot…) : un jeton par catégorie de carte jouée, tous écrasés à chaque jeu,
+  // purgés au changement de tour comme recentQuestParch.
+  "recentPlayAction",
+  "recentPlaySort",
+  "recentPlayParchemin",
+  "recentPlayEquipement",
+  "recentPlayAllie",
   // KATSOU MEE : compteur de dépense cumulée + flag d'auto-destruction de fin de
   // tour — purgés en début de tour (le seuil et la destruction sont turn-scoped).
   "katsouSpend",

@@ -285,6 +285,9 @@ const PICK_SUBTYPES = new Set([
   "monture",
   "donjon",
   "sort",
+  // « une carte Unique » : Unique est un subType porté par les cartes uniques
+  // (tous types confondus) → recherche par subType seul, comme les autres.
+  "unique",
 ]);
 
 /**
@@ -2210,6 +2213,14 @@ export function compileTapEffectText(
       normalized = normalized.replace(TAP_BEARER_IN_COMBAT, "").trim();
     }
   }
+  // RÉCENCE PAR CATÉGORIE (Bébé Crocodaille / Buveur / Tolot) : clause
+  // « … que lorsque … vient de jouer <catégorie(s)> » → playCondition
+  // recentlyPlayedKind, jugée à l'activation (powerConditionReason).
+  const [normStripped, recency] = stripRecentlyPlayedClause(
+    normalized,
+    cardName,
+  );
+  normalized = normStripped;
   const compiled = compileTapNormalized(
     normalized,
     cardName,
@@ -2217,9 +2228,69 @@ export function compileTapEffectText(
     asAction,
     requiresIncline,
   );
-  return compiled && bearerInCombat
+  if (!compiled) return null;
+  const withBearer = bearerInCombat
     ? { ...compiled, requiresBearerInCombat: true }
     : compiled;
+  return recency ? { ...withBearer, playCondition: recency } : withBearer;
+}
+
+/**
+ * Clause résiduelle de RÉCENCE DE JEU PAR CATÉGORIE : « Ne jouez (cette carte
+ * | ce pouvoir | <self>) / N'utilisez ce pouvoir que lorsqu(e) (vous venez |
+ * un adversaire vient | un autre joueur vient) de jouer <catégorie> [ou
+ * <catégorie>] » → playCondition { cond: "recentlyPlayedKind", kinds, who }.
+ * STRICT : seules les catégories connues (Action / Sort / Parchemin /
+ * Équipement / Allié — jetons recentPlay<Kind> posés à chaque jeu) ; toute
+ * autre récence (« vient de détruire », « de fabriquer », « de gagner des
+ * XP »…) n'est PAS captée → manuelle. Renvoie [corps sans la clause, cond?].
+ */
+const PLAY_KIND_WORDS: Record<
+  string,
+  "action" | "sort" | "parchemin" | "equipement" | "allie"
+> = {
+  action: "action",
+  sort: "sort",
+  parchemin: "parchemin",
+  equipement: "equipement",
+  allie: "allie",
+};
+function stripRecentlyPlayedClause(
+  body: string,
+  cardName: string,
+): [
+  string,
+  Extract<
+    NonNullable<CompiledEffect["playCondition"]>,
+    { cond: "recentlyPlayedKind" }
+  > | null,
+] {
+  const m = body.match(
+    /^(.*?)\.?\s*n[e'’ ]?\s?(?:utilisez ce pouvoir|joue[z] (ce pouvoir|cette carte|[^.]{1,50}?)) que lorsqu(?:e|['’])\s?(vous venez|un adversaire vient|un autre joueur vient) de jouer (?:un |une |la |le )?(?:carte )?([a-z]+)(?: ou (?:un |une )?(?:carte )?([a-z]+))?\s*\.?\s*$/,
+  );
+  if (!m) return [body, null];
+  // « Ne jouez <X> que … » : X = « cette carte », « ce pouvoir » ou le nom de
+  // la carte elle-même — tout autre sujet n'est pas une clause de soi.
+  if (
+    m[2] &&
+    m[2] !== "ce pouvoir" &&
+    m[2] !== "cette carte" &&
+    !subjectIsSelf(m[2].trim(), cardName)
+  )
+    return [body, null];
+  const k1 = PLAY_KIND_WORDS[m[4]];
+  const k2 = m[5] ? PLAY_KIND_WORDS[m[5]] : undefined;
+  if (!k1 || (m[5] && !k2)) return [body, null];
+  const rest = m[1].trim();
+  if (!rest) return [body, null]; // clause seule, aucun corps → manuel
+  return [
+    rest,
+    {
+      cond: "recentlyPlayedKind",
+      kinds: k2 ? [k1, k2] : [k1],
+      who: m[3] === "vous venez" ? "self" : "other",
+    },
+  ];
 }
 
 /** Corps de compileTapEffectText, sur texte DÉJÀ normalisé et dénudé des
@@ -3904,7 +3975,14 @@ export function compileActionEffectText(
   cardName: string,
   sourceElement = "Neutre",
 ): CompiledEffect | null {
-  const normed = norm(text);
+  let normed = norm(text);
+  // RÉCENCE PAR CATÉGORIE : clause résiduelle « Ne jouez (cette carte | ce
+  // pouvoir | <self>) que lorsque … vient de jouer <catégorie(s)> » →
+  // playCondition recentlyPlayedKind (jugée au PLAY-TIME par whyCannotPlay),
+  // corps compilé sans elle. Toute autre récence reste manuelle.
+  const [normStripped, recency] = stripRecentlyPlayedClause(normed, cardName);
+  normed = normStripped;
+  const pc = recency ? { playCondition: recency } : {};
   // ACTOR-BINDING « <op de ciblage de créature>. Il/Elle <corps lié> » : la
   // créature choisie par l'op de ciblage devient le sujet du corps « Il/Elle … »
   // (actor:"target", le moteur réécrit sourceId à la résolution du ciblage). Ex.
@@ -3935,6 +4013,7 @@ export function compileActionEffectText(
       return {
         trigger: "onPlay",
         actor: "target",
+        ...pc,
         ops: [
           ...head,
           {
@@ -3959,13 +4038,14 @@ export function compileActionEffectText(
       return {
         trigger: "onPlay",
         actor: "target",
+        ...pc,
         ops: [...head, ...boundOps],
       };
     }
   }
   const ops = compileBody(normed, cardName, sourceElement);
   if (!ops) return null;
-  return { trigger: "onPlay", ops };
+  return { trigger: "onPlay", ...pc, ops };
 }
 
 /**
