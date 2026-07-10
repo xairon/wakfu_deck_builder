@@ -466,6 +466,24 @@ export const useGameStore = defineStore("game", () => {
   }
 
   // ── Journal lisible ──────────────────────────────────────────────────────
+  /** Noms français des zones (journal). */
+  const ZONE_FR: Record<string, string> = {
+    main: "Main",
+    monde: "Monde",
+    havreSac: "Havre-Sac",
+    defausse: "Défausse",
+    pioche: "Pioche",
+    exil: "Exil",
+    fileAttente: "File d'Attente",
+    reserve: "Réserve",
+  };
+  /** Nom de la carte d'une instance — pour les événements PUBLICS uniquement
+   * (jamais sur une carte cachée : pioche, main). Null si inconnue (jeton
+   * disparu, données absentes) → l'appelant retombe sur « une carte ». */
+  function publicCardName(instanceId: unknown): string | null {
+    const inst = state.value.instances[String(instanceId)];
+    return getCard(inst?.cardId ?? null)?.name ?? null;
+  }
   function describe(ev: PersistedEvent): string {
     const p = ev.payload as Record<string, unknown>;
     switch (ev.type) {
@@ -476,16 +494,38 @@ export const useGameStore = defineStore("game", () => {
       case "MOVE": {
         const from = (p.from as ZoneRef)?.zone;
         const to = (p.to as ZoneRef)?.zone;
+        // Nommer la carte UNIQUEMENT quand l'événement la rend PUBLIQUE
+        // (visibleTo:"all", face visible) — jamais une pioche ni un retour
+        // face cachée : le journal est partagé (hot-seat / en ligne).
+        const vis = p.visibility as
+          | { faceDown?: boolean; visibleTo?: unknown }
+          | undefined;
+        const isPublic = !!vis && !vis.faceDown && vis.visibleTo === "all";
+        const nm = (isPublic ? publicCardName(p.instanceId) : null) ?? null;
+        const le = nm ?? "une carte";
         if (from === "pioche" && to === "main") return "pioche une carte.";
-        if (from === "main" && to === "monde") return "joue une carte.";
-        if (to === "defausse") return "défausse une carte.";
+        if (from === "main" && to === "monde") return `joue ${le}.`;
+        if (from === "main" && to === "havreSac")
+          return `joue ${le} dans son Havre-Sac.`;
+        // Monde ↔ Havre-Sac : les verbes de l'UI (« Sortir » / « Rentrer »).
+        if (from === "monde" && to === "havreSac")
+          return `rentre ${le} dans son Havre-Sac.`;
+        if (from === "havreSac" && to === "monde")
+          return `sort ${le} dans le Monde.`;
+        if (to === "monde" || to === "havreSac") return `met ${le} en jeu.`;
+        if (to === "defausse") return `défausse ${le}.`;
         if (to === "pioche") return "renvoie une carte dans la Pioche.";
-        return `déplace une carte (${from} → ${to}).`;
+        if (to === "exil") return `bannit ${le}.`;
+        return `déplace une carte (${ZONE_FR[from] ?? from} → ${ZONE_FR[to] ?? to}).`;
       }
-      case "SET_ORIENTATION":
+      case "SET_ORIENTATION": {
+        // La carte est EN JEU (publique) : la nommer rend le journal lisible
+        // (« incline Piou Rouge » plutôt que « incline une carte »).
+        const nm = publicCardName(p.instanceId) ?? "une carte";
         return (p.orientation as string) === "tapped"
-          ? "incline une carte."
-          : "redresse une carte.";
+          ? `incline ${nm}.`
+          : `redresse ${nm}.`;
+      }
       case "SET_COUNTER":
       case "INC_COUNTER":
         return `ajuste « ${String(p.counter)} ».`;

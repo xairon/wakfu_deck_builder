@@ -35,4 +35,27 @@ describe("journal — pas de comptabilité interne", () => {
     const lines = store.log.map((l) => l.text);
     expect(lines.some((t) => /pv|compteur|ajuste/i.test(t))).toBe(true);
   });
+
+  it("les événements PUBLICS nomment la carte (joue/incline <Nom>), jamais la pioche", () => {
+    const { store } = makeEffectSandbox({ allAllies: true, first: "A" });
+    store.endTurn();
+    store.endTurn();
+    const id = placeInZone(store, "A", { zone: "main", owner: "A" });
+    expect(store.playFromHand(id)).toBe(true);
+    const lines = store.log.map((l) => l.text);
+    // La ligne de jeu NOMME la carte (« <Joueur> joue <Nom> … ») — plus de
+    // « déplace une carte (main → havreSac) » anonyme.
+    expect(lines.some((t) => /\bjoue (?!une carte)/.test(t))).toBe(true);
+    expect(lines.some((t) => /déplace une carte \(main/.test(t))).toBe(false);
+    // Les pioches restent ANONYMES (information cachée, journal partagé).
+    expect(lines.some((t) => /\bpioche une carte\.$/.test(t))).toBe(true);
+  });
+
+  it("incliner une carte en jeu la NOMME dans le journal", () => {
+    const { store } = makeEffectSandbox({ allAllies: true, first: "A" });
+    const id = placeInZone(store, "A", { zone: "monde" });
+    store.toggleTap(id);
+    const lines = store.log.map((l) => l.text);
+    expect(lines.some((t) => /\bincline (?!une carte\.).+/.test(t))).toBe(true);
+  });
 });
