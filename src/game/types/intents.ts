@@ -12,6 +12,10 @@ export type GameIntent =
       /** 303.1 — choix du contrôleur pour un ALLIÉ aux tours ≥ 2 (défaut :
        *  Monde). Ignoré pour les autres types (zone imposée par la règle). */
       destination?: "monde" | "havreSac";
+      /** 305.x (lot F) — PORTEUR choisi pour un ÉQUIPEMENT / une Monture :
+       *  OBLIGATOIRE quand la carte se joue attachée (requiresBearer), validé
+       *  serveur (eligibleBearers) puis événement ATTACH autoritatif. */
+      bearerId?: InstanceId;
     }
   | {
       kind: "MOVE_CARD";

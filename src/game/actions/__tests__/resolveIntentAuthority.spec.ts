@@ -274,3 +274,80 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
     expect("events" in r).toBe(true);
   });
 });
+
+// ── 305.x (lot F) — PORTEUR autoritatif au jeu d'un Équipement ────────────────
+import { createMockEquipmentCard } from "tests/factories/card";
+
+describe("resolveIntent — PLAY_CARD d'un Équipement : Porteur validé serveur", () => {
+  const EQUIP = createMockEquipmentCard({
+    id: "equip-authority-test",
+    name: "Anneau d'Autorité",
+  });
+
+  /** État en cours : tour 2, un Allié de A et un de B dans le Monde, l'Équipement en main de A. */
+  function bearerState() {
+    const { state, getCard } = playingState();
+    state.turn.number = 2;
+    const put = (seat: Seat) => {
+      const id = state.seats[seat].main[0];
+      state.seats[seat].main.splice(0, 1);
+      state.monde.push(id);
+      const inst = state.instances[id];
+      inst.location = { zone: "monde" };
+      inst.orientation = "upright";
+      return id;
+    };
+    const myAlly = put("A");
+    const oppAlly = put("B");
+    const equipId = state.seats.A.main[0];
+    state.instances[equipId].cardId = "equip-authority-test";
+    const getCard2 = (id: string | null) =>
+      id === "equip-authority-test" ? EQUIP : getCard(id);
+    return { state, getCard: getCard2, equipId, myAlly, oppAlly };
+  }
+
+  it("SANS bearerId → refusé (plus jamais d'Équipement standalone en ligne)", () => {
+    const { state, getCard, equipId } = bearerState();
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "PLAY_CARD", instanceId: equipId },
+      "A",
+    );
+    expect(isErr(r)).toBe(true);
+    expect(isErr(r) && r.error).toMatch(/porteur/i);
+  });
+
+  it("bearerId FORGÉ (créature adverse) → refusé", () => {
+    const { state, getCard, equipId, oppAlly } = bearerState();
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "PLAY_CARD", instanceId: equipId, bearerId: oppAlly },
+      "A",
+    );
+    expect(isErr(r)).toBe(true);
+    expect(isErr(r) && r.error).toMatch(/porteur/i);
+  });
+
+  it("bearerId VALIDE (mon Allié) → événement ATTACH autoritatif émis", () => {
+    const { state, getCard, equipId, myAlly } = bearerState();
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "PLAY_CARD", instanceId: equipId, bearerId: myAlly },
+      "A",
+    );
+    expect(isErr(r)).toBe(false);
+    const events = !isErr(r) ? r.events : [];
+    const att = events.find((e) => e.type === "ATTACH");
+    expect(att).toBeTruthy();
+    expect(
+      (att?.payload as { equipmentId?: string; bearerId?: string })
+        ?.equipmentId,
+    ).toBe(equipId);
+    expect(
+      (att?.payload as { equipmentId?: string; bearerId?: string })?.bearerId,
+    ).toBe(myAlly);
+  });
+});

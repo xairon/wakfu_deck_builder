@@ -1946,9 +1946,24 @@ export const useGameStore = defineStore("game", () => {
     // résout la destination (Salle → Havre-Sac ; Allié → Monde ou Havre-Sac au
     // choix, 303.1), incline les producteurs, pose le jeton d'arrivée. Un refus
     // revient en français via ruleError.
-    // L'attachement de Porteur (lot F) n'est PAS encore autoritaire côté serveur
-    // → en ligne, l'équipement est joué en standalone (comportement actuel).
-    if (tryIntent({ kind: "PLAY_CARD", instanceId, destination })) return true;
+    // 305.x (lot F) — EN LIGNE, un Équipement se joue ATTACHÉ comme en local :
+    // le prompt de Porteur s'ouvre AVANT l'envoi de l'intention ; le choix
+    // (attachToBearer) renvoie ici avec bearerId, transmis au serveur qui le
+    // REVALIDE (eligibleBearers) et émet l'ATTACH autoritatif.
+    if (online.value && assist.value && bearerId === undefined) {
+      const c0 = getCard(state.value.instances[instanceId]?.cardId ?? null);
+      if (c0 && requiresBearer(c0)) {
+        const eligible = eligibleBearers(rulesCtx(), seat, instanceId);
+        if (!eligible.length)
+          return rejectMove(
+            `Aucune créature en jeu ne peut porter ${c0.name}.`,
+          );
+        pendingBearer.value = { equipmentId: instanceId, eligible };
+        return true; // en attente du clic sur le Porteur (attachToBearer)
+      }
+    }
+    if (tryIntent({ kind: "PLAY_CARD", instanceId, destination, bearerId }))
+      return true;
     if (!assist.value) {
       moveTo(instanceId, { zone: "monde" });
       return true;

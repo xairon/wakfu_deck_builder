@@ -26,6 +26,7 @@ import type {
 import type { Seat, ZoneRef } from "../types/zones";
 import { otherSeat, ZONE_SPECS, zoneOwner } from "../types/zones.ts";
 import {
+  attach,
   move,
   worldHavenSwap,
   tap,
@@ -35,6 +36,7 @@ import {
   setCombat,
   say,
 } from "../engine/verbs.ts";
+import { eligibleBearers, requiresBearer } from "../rules/bearer.ts";
 import { nextTurnEvents, turnEndDestroyEvents } from "../engine/turn.ts";
 import {
   whyCannotPlay,
@@ -164,6 +166,20 @@ export function resolveIntent(
       if (!inst || !card) return { error: "Carte inconnue." };
       const plan = planCost(ctx, seat, card);
       if (!plan.ok) return { error: plan.reason };
+      // 305.x (lot F) — un ÉQUIPEMENT / une Monture se joue ATTACHÉ : le
+      // Porteur est OBLIGATOIRE et validé SERVEUR (anti-triche : un bearerId
+      // forgé — créature adverse, Monstre, hors jeu — est refusé net ; jouer
+      // sans Porteur ne pose plus l'Équipement standalone).
+      if (requiresBearer(card)) {
+        if (!intent.bearerId)
+          return { error: "Choisis le Porteur de cet Équipement (305.x)." };
+        if (
+          !eligibleBearers(ctx, seat, intent.instanceId).includes(
+            intent.bearerId,
+          )
+        )
+          return { error: "Cible de Porteur invalide (305.x)." };
+      }
       // 309.1/303.1 — zone d'arrivée selon le type (Salle → Havre-Sac ; Allié →
       // Monde OU Havre-Sac au choix du contrôleur, forcé Havre-Sac au 1er tour
       // de la partie, 506.3). La destination demandée ne peut viser que la
@@ -181,6 +197,9 @@ export function resolveIntent(
           orientationOnArrival: "upright",
         }),
       );
+      // 305.x (lot F) — ATTACH autoritatif au Porteur validé ci-dessus.
+      if (requiresBearer(card) && intent.bearerId)
+        events.push(attach(seat, intent.instanceId, intent.bearerId));
       // Mal d'invocation (1821) : jeton du tour d'arrivée.
       events.push(
         setCounter(
