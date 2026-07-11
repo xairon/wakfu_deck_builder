@@ -102,6 +102,49 @@ function getInstance(s: GameState, id: InstanceId): CardInstance {
 
 // ── Application des events ───────────────────────────────────────────────────
 
+/**
+ * 305.x — les cartes PORTÉES suivent leur Porteur. Un porté n'est dans AUCUNE
+ * pile (retiré à l'ATTACH) : sans ce suivi, un Porteur tué au combat ou par
+ * un effet laissait ses Équipements ORPHELINS invisibles (bug 2026-07-10).
+ * Appliqué AU REDUCER (règle déterministe du flux d'événements, comme la
+ * disparition des jetons) pour couvrir TOUS les chemins d'un coup : combat,
+ * destruction ciblée, bannissement, retour en main, recyclage, online.
+ *  - le Porteur RESTE en jeu (échange Monde↔Havre-Sac…) → co-localisation ;
+ *  - le Porteur QUITTE le jeu → chaque porté est détaché puis DÉFAUSSÉ chez
+ *    son propriétaire (un jeton porté cesse d'exister, 502.x).
+ */
+function settleAttachments(
+  s: GameState,
+  bearer: CardInstance,
+  bearerStaysInPlay: boolean,
+): void {
+  // `?.` : des états de test hand-craftés peuvent omettre le champ.
+  if (!bearer.attachments?.length) return;
+  if (bearerStaysInPlay) {
+    for (const eid of bearer.attachments) {
+      const eq = s.instances[eid];
+      if (eq) eq.location = bearer.location;
+    }
+    return;
+  }
+  const worn = [...bearer.attachments];
+  bearer.attachments = [];
+  for (const eid of worn) {
+    const eq = s.instances[eid];
+    if (!eq) continue;
+    if (isTokenCardId(eq.cardId)) {
+      delete s.instances[eid];
+      continue;
+    }
+    eq.counters = {};
+    eq.orientation = null; // 106.3 : hors jeu, pas d'orientation
+    eq.face = eq.face === "hidden" ? "recto" : eq.face;
+    eq.revealedTo = ["A", "B"];
+    eq.location = { zone: "defausse", owner: eq.owner };
+    insertIntoZone(s, eq, eq.location, { at: "top" });
+  }
+}
+
 function applyMove(s: GameState, p: MovePayload): void {
   const inst = getInstance(s, p.instanceId);
   removeFromZone(s, inst);
@@ -113,6 +156,8 @@ function applyMove(s: GameState, p: MovePayload): void {
   // Monde↔Havre-Sac — restent normaux, gérés par la branche standard ci-dessous.)
   const arrivesInPlayZone = p.to.zone === "monde" || p.to.zone === "havreSac";
   if (isTokenCardId(inst.cardId) && !arrivesInPlayZone) {
+    // Ses portés éventuels sont défaussés AVANT que le jeton-Porteur disparaisse.
+    settleAttachments(s, inst, false);
     delete s.instances[p.instanceId];
     return;
   }
@@ -146,6 +191,8 @@ function applyMove(s: GameState, p: MovePayload): void {
 
   inst.location = p.to;
   insertIntoZone(s, inst, p.to, p.position);
+  // 305.x : les portés suivent (co-localisés en jeu, défaussés à la sortie).
+  settleAttachments(s, inst, arrivesInPlay);
 }
 
 /**
@@ -289,6 +336,10 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
         const i = inst.attachments.indexOf(p.equipmentId);
         if (i >= 0) inst.attachments.splice(i, 1);
       }
+      // Idempotence : si le reducer a DÉJÀ défaussé ce porté au départ de son
+      // Porteur (settleAttachments), un DETACH explicite qui suit (passe
+      // d'état 1414/3019) ne doit pas dupliquer l'entrée de pile.
+      removeFromZone(next, equip);
       equip.counters = {};
       equip.location = p.to;
       insertIntoZone(next, equip, p.to, p.position);

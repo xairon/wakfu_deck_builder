@@ -36,10 +36,14 @@ const props = defineProps<{
   reserve?: boolean;
   top?: RedactedInstance | null;
   topCard?: Card | null;
+  /** Pile PUBLIQUE consultable (Défausse) : le clic OUVRE le contenu complet
+   * (façon cimetière MTGA) au lieu de zoomer la seule carte du dessus. */
+  browse?: boolean;
 }>();
 const emit = defineEmits<{
   (e: "act"): void;
   (e: "zoom", instanceId: string): void;
+  (e: "browse"): void;
 }>();
 
 const depth = computed(() => Math.min(props.count, 6));
@@ -55,6 +59,7 @@ const topImg = computed(() => {
 
 function onClick(): void {
   if (props.deck) emit("act");
+  else if (props.browse && props.count > 0) emit("browse");
   else if (props.top) emit("zoom", props.top.instanceId);
   else emit("act");
 }

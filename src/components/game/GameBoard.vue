@@ -91,6 +91,8 @@
             :count="discardCount(opp)"
             :top="topDiscard(opp)"
             :top-card="resolveCard(topDiscard(opp)?.cardId ?? null)"
+            browse
+            @browse="openPileBrowser(opp)"
             @zoom="zoomInst"
           />
           <PileStack label="Réserve" :count="reserveCount(opp)" deck reserve />
@@ -335,6 +337,8 @@
               :count="discardCount(me)"
               :top="topDiscard(me)"
               :top-card="resolveCard(topDiscard(me)?.cardId ?? null)"
+              browse
+              @browse="openPileBrowser(me)"
               @zoom="zoomInst"
             />
           </span>
@@ -953,6 +957,58 @@
       </div>
     </Transition>
 
+    <!-- ════ Consultation d'une pile publique (Défausse, façon cimetière MTGA) :
+         la pile n'affiche que la carte du dessus — ce panneau liste TOUT son
+         contenu, du dessus au dessous ; clic sur une carte = agrandir. ════ -->
+    <div
+      v-if="pileBrowse"
+      class="gpilebrowser"
+      data-testid="pile-browser"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="`Défausse de ${store.players[pileBrowse.seat].name}`"
+      tabindex="-1"
+      @click.self="pileBrowse = null"
+      @keydown.esc.prevent="pileBrowse = null"
+    >
+      <div class="gpilebrowser__panel">
+        <header class="gpilebrowser__head">
+          <h2 class="gpilebrowser__title">
+            Défausse — {{ store.players[pileBrowse.seat].name }}
+            <span class="gpilebrowser__count"
+              >{{ browsedPile.length }} carte(s)</span
+            >
+          </h2>
+          <button
+            class="gbtn gbtn--ghost"
+            aria-label="Fermer"
+            data-testid="pile-browser-close"
+            @click="pileBrowse = null"
+          >
+            ✕
+          </button>
+        </header>
+        <p class="gpilebrowser__hint">
+          Du dessus (la plus récente) au dessous — clique une carte pour
+          l'agrandir.
+        </p>
+        <div class="gpilebrowser__grid">
+          <div
+            v-for="inst in browsedPile"
+            :key="inst.instanceId"
+            class="gpilebrowser__slot"
+          >
+            <GameCard
+              :instance="inst"
+              :card="resolveCard(inst.cardId)"
+              @select="zoomInst(inst.instanceId)"
+              @zoom="zoomInst(inst.instanceId)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
     <CardZoomModal
       :card="zoomCard"
       :open="zoomOpen"
@@ -1074,6 +1130,25 @@ function discardCount(seat: Seat): number {
 }
 function topDiscard(seat: Seat): RedactedInstance | null {
   return instancesOf(view.value.seats[seat].defausse)[0] ?? null;
+}
+// ── Consultation d'une pile publique (Défausse — cimetière MTGA) ─────────────
+// La Défausse est PUBLIQUE (les deux joueurs peuvent la consulter, la sienne
+// comme l'adverse). `browsedPile` liste le contenu du dessus au dessous
+// (l'ordre du tableau de zone : index 0 = dessus).
+const pileBrowse = ref<{ seat: Seat } | null>(null);
+const browsedPile = computed<RedactedInstance[]>(() =>
+  pileBrowse.value
+    ? instancesOf(view.value.seats[pileBrowse.value.seat].defausse)
+    : [],
+);
+function openPileBrowser(seat: Seat): void {
+  pileBrowse.value = { seat };
+  // Focus sur le dialogue → Échap fonctionne immédiatement.
+  nextTick(() => {
+    (
+      document.querySelector("[data-testid=pile-browser]") as HTMLElement | null
+    )?.focus?.();
+  });
 }
 function reserveCount(seat: Seat): number {
   const z = view.value.seats[seat].reserve;
@@ -2169,6 +2244,68 @@ function manaBonus(seat: Seat): boolean {
   .zone-enter-active,
   .zone-leave-active {
     transition: none;
+  }
+}
+
+/* ── Consultation d'une pile publique (Défausse) ─────────────────────────── */
+.gpilebrowser {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(10, 8, 6, 0.78);
+  backdrop-filter: blur(3px);
+}
+.gpilebrowser__panel {
+  width: min(920px, 96vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  border: 1px solid rgba(246, 245, 241, 0.16);
+  background: linear-gradient(180deg, #241d16, #1a1510);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.65);
+  padding: 16px 18px 18px;
+}
+.gpilebrowser__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gpilebrowser__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f6f5f1;
+}
+.gpilebrowser__count {
+  margin-left: 10px;
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(246, 245, 241, 0.7);
+}
+.gpilebrowser__hint {
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(246, 245, 241, 0.6);
+}
+.gpilebrowser__grid {
+  margin-top: 12px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 10px;
+  padding: 2px;
+}
+@media (max-width: 640px) {
+  .gpilebrowser {
+    padding: 10px;
+  }
+  .gpilebrowser__grid {
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
   }
 }
 </style>
