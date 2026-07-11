@@ -734,6 +734,17 @@ const tutorial = useTutorialStore();
 const sounds = useGameSounds();
 // Musique de fond (pistes locales de l'exploitant, cf. useGameMusic).
 const music = useGameMusic();
+// Reprise AUTO au premier geste (politique d'autoplay : impossible avant une
+// interaction) si la préférence « Musique ON » était mémorisée — sans ce
+// câblage, la musique ne reprenait JAMAIS après un rechargement (bug
+// utilisateur : « j'ai pas de musique quand je joue »).
+onMounted(() => {
+  const once = () => {
+    music.resumeIfWanted();
+    window.removeEventListener("pointerdown", once);
+  };
+  window.addEventListener("pointerdown", once);
+});
 const route = useRoute();
 
 const toast = useToast();

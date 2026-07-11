@@ -2915,7 +2915,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       deps.dispatch(
         say(
           t.seat,
-          `${t.cardName} : pioche ${xp} carte(s) (valeur d'XP de la cible).`,
+          // Lisibilité (retour utilisateur : « Prospection ne marche pas ») —
+          // nommer la CIBLE et sa valeur d'XP rend l'effet auto-explicatif
+          // (« pioche 1 carte — valeur d'XP de Dragodinde Rousse Sauvage »).
+          `${t.cardName} : pioche ${xp} carte(s) — valeur d'XP de ${card?.name ?? "la cible"} (${xp}).`,
         ),
       );
       pumpEffects();
