@@ -1012,13 +1012,16 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   },
 
   // ── Amar Casto (W72) — « gagne le Métier de votre choix jusqu'à la fin du tour »
-  // À l'apparition (onPlay), le joueur choisit l'un des 4 Métiers (chooseOne à 4
-  // branches, W56) ; la branche pose setMetierSelf → jeton metier_<métier> sur Amar
-  // Casto, qui devient Artisan pour le tour (metierOf / selfIsArtisan). Deux éditions
+  // À l'APPARITION (trigger onArrive — Amar Casto est un ALLIÉ : le chemin de
+  // jeu consomme arrivalEffects/onArrive ; « onPlay » n'est lu que pour les
+  // ACTIONS → bug utilisateur 2026-07-10 « pas de choix de Métier proposé »),
+  // le joueur choisit l'un des 4 Métiers (chooseOne à 4 branches, W56) ; la
+  // branche pose setMetierSelf → jeton metier_<métier> sur Amar Casto, qui
+  // devient Artisan pour le tour (metierOf / selfIsArtisan). Deux éditions
   // (le texte dofus-collection a perdu le mot « Métier » au scrape — même intention).
   "amar-casto-incarnam": {
     0: {
-      trigger: "onPlay",
+      trigger: "onArrive",
       ops: [
         {
           op: "chooseOne",
@@ -1047,7 +1050,7 @@ export const CARD_SCRIPTS: Record<string, Record<number, CardScriptEntry>> = {
   },
   "amar-casto-dofus-collection": {
     0: {
-      trigger: "onPlay",
+      trigger: "onArrive",
       ops: [
         {
           op: "chooseOne",

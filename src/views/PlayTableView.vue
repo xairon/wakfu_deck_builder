@@ -244,7 +244,12 @@
           Mélanger
         </button>
         <button class="gtop-btn" @click="store.undoLast()">Annuler</button>
+        <!-- Module SOLO starter (vs bot) : TOUJOURS full-assisté — la bascule
+             n'a pas de sens là (le bot et les effets exigent les règles) et
+             son seul usage serait de se mettre dans un état cassé. Elle reste
+             disponible en table libre / hot-seat (sans botSeat). -->
         <label
+          v-if="!store.botSeat"
           class="gtop-toggle"
           title="Coûts en Ressources, légalité des coups, combat et victoire automatiques"
         >
@@ -793,6 +798,10 @@ function startVsBot(): void {
   // « Apprendre en jouant » : partie complète guidée-puis-libre vs l'IA (mulligan,
   // règles assistées, bot doux pendant l'intro). startGuidedGame pose botSeat.
   tutorial.startGuidedGame(mine, opp);
+  // Module SOLO starter : TOUJOURS full-assisté (la bascule est masquée là —
+  // on force les deux drapeaux au cas où une table libre les aurait éteints).
+  store.assist = true;
+  store.assistEffects = true;
 }
 // Driver IA : actif dès que store.botSeat est renseigné (gate interne).
 // `hold` : le bot NE JOUE PAS pendant le jet de dé d'entame (l'overlay est

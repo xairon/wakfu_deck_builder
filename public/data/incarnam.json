@@ -619,7 +619,7 @@
         "isOncePerTurn": false,
         "requiresIncline": false,
         "compiled": {
-          "trigger": "onPlay",
+          "trigger": "onArrive",
           "ops": [
             {
               "op": "chooseOne",
