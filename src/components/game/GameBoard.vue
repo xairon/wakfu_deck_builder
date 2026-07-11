@@ -918,6 +918,23 @@
                 : "↻ Incliner"
             }}
           </button>
+          <!-- A19 — FABRICATION (305.4/418.6) : carte de MA main portant une
+               Recette. Actif quand la fabrication est légale ; sinon désactivé
+               avec la raison lisible (affordance MTGA : l'option existe, la
+               contrainte est expliquée). -->
+          <button
+            v-if="selectedCraft"
+            class="gbtn gbtn--accent"
+            data-testid="action-craft"
+            :disabled="!!selectedCraft.reason"
+            :title="
+              selectedCraft.reason ??
+              `Recette : ${selectedCraft.recette.metier} — incliner un Artisan et recycler ${selectedCraft.recette.n} carte(s) ${selectedCraft.recette.element} de ta Défausse.`
+            "
+            @click="craftSelected"
+          >
+            🔨 Fabriquer
+          </button>
           <span class="gactionbar__sep"></span>
           <button class="gbtn" @click="moveSelected('monde')">→ Monde</button>
           <button class="gbtn" @click="moveSelected('havreSac')">
@@ -1039,6 +1056,7 @@ import SeatHud from "./SeatHud.vue";
 import PileStack from "./PileStack.vue";
 import CombatLinks from "./CombatLinks.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
+import { recetteOf } from "@/game/rules";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
@@ -1517,6 +1535,23 @@ function moveSelected(
 }
 function tapSelected(): void {
   if (selectedInst.value) store.toggleTap(selectedInst.value.instanceId);
+}
+// A19 — FABRICATION : Recette de la carte de MA main sélectionnée (null si la
+// carte n'en porte pas ou n'est pas dans ma main) + raison d'illégalité
+// éventuelle (whyCannotCraft — Artisan du Métier dressé, Défausse typée…).
+const selectedCraft = computed(() => {
+  const inst = selectedInst.value;
+  if (!inst || inst.location.zone !== "main" || inst.controller !== me.value)
+    return null;
+  const recette = recetteOf(resolveCard(inst.cardId));
+  if (!recette) return null;
+  return { recette, reason: store.whyCannotCraft(inst.instanceId) };
+});
+function craftSelected(): void {
+  const inst = selectedInst.value;
+  if (!inst) return;
+  // La séquence (Artisan → recyclage → Porteur) prend le relais en overlay.
+  if (store.craftFromHand(inst.instanceId)) selectedId.value = null;
 }
 function bumpDamage(delta: number): void {
   if (selectedInst.value)
