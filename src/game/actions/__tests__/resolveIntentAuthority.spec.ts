@@ -351,3 +351,116 @@ describe("resolveIntent — PLAY_CARD d'un Équipement : Porteur validé serveur
     ).toBe(myAlly);
   });
 });
+
+// ── A19 / lot F — FABRICATION autoritative (intent CRAFT, 418.6) ─────────────
+describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", () => {
+  const EQUIP_R = createMockEquipmentCard({
+    id: "equip-recette-authority",
+    name: "Anneau à Recette",
+    keywords: [
+      { name: "Recette", description: ": Bijoutier 2", elements: ["Feu"] },
+    ],
+  });
+  const ARTISAN_C = createMockAllyCard({
+    id: "artisan-authority",
+    name: "Bijoutier",
+    metier: ["Bijoutier"],
+  });
+  const FEU_C = createMockAllyCard({
+    id: "feu-authority",
+    name: "Carte Feu",
+    stats: { niveau: { value: 1, element: "Feu" } },
+  });
+
+  function craftState() {
+    const { state, getCard } = playingState();
+    state.turn.number = 2;
+    const custom = new Map<string, Card>([
+      ["equip-recette-authority", EQUIP_R],
+      ["artisan-authority", ARTISAN_C],
+      ["feu-authority", FEU_C],
+    ]);
+    const getCard2 = (id: string | null) =>
+      (id && custom.get(id)) || getCard(id);
+    const toMonde = (seat: Seat, cardId?: string) => {
+      const id = state.seats[seat].main.shift()!;
+      state.monde.push(id);
+      const inst = state.instances[id];
+      inst.location = { zone: "monde" };
+      inst.orientation = "upright";
+      if (cardId) inst.cardId = cardId;
+      return id;
+    };
+    const toDefausse = (seat: Seat, cardId: string) => {
+      const id = state.seats[seat].main.shift()!;
+      state.seats[seat].defausse.push(id);
+      const inst = state.instances[id];
+      inst.location = { zone: "defausse", owner: seat };
+      inst.cardId = cardId;
+      return id;
+    };
+    // Main de A regarnie (playingState n'en met que 3) : piocher 3 de plus.
+    for (let i = 0; i < 3; i++) {
+      const top = state.seats.A.pioche.shift()!;
+      state.seats.A.main.push(top);
+      state.instances[top].location = { zone: "main", owner: "A" };
+    }
+    const artisanId = toMonde("A", "artisan-authority");
+    const bearerId = toMonde("A");
+    const oppAlly = toMonde("B");
+    const feu1 = toDefausse("A", "feu-authority");
+    const feu2 = toDefausse("A", "feu-authority");
+    const equipId = state.seats.A.main[0];
+    state.instances[equipId].cardId = "equip-recette-authority";
+    return { state, getCard: getCard2, equipId, artisanId, bearerId, oppAlly, feu1, feu2 };
+  }
+
+  it("soumission VALIDE → tap Artisan + 2 recyclages sous la Pioche + ATTACH", () => {
+    const s = craftState();
+    const r = resolveIntent(
+      s.state,
+      s.getCard,
+      { kind: "CRAFT", equipmentId: s.equipId, artisanId: s.artisanId, recycledIds: [s.feu1, s.feu2], bearerId: s.bearerId },
+      "A",
+    );
+    expect(isErr(r) && r.error).toBeFalsy();
+    const events = !isErr(r) ? r.events : [];
+    expect(events.some((e) => e.type === "SET_ORIENTATION")).toBe(true);
+    const moves = events.filter((e) => e.type === "MOVE");
+    expect(moves.length).toBe(3); // 2 recyclages + la mise en jeu
+    expect(events.some((e) => e.type === "ATTACH")).toBe(true);
+  });
+
+  it("Artisan FORGÉ (mauvais Métier / adverse / incliné) → refusé", () => {
+    const s1 = craftState();
+    const r1 = resolveIntent(s1.state, s1.getCard, { kind: "CRAFT", equipmentId: s1.equipId, artisanId: s1.bearerId, recycledIds: [s1.feu1, s1.feu2], bearerId: s1.bearerId }, "A");
+    expect(isErr(r1) && r1.error).toMatch(/artisan/i);
+    const s2 = craftState();
+    const r2 = resolveIntent(s2.state, s2.getCard, { kind: "CRAFT", equipmentId: s2.equipId, artisanId: s2.oppAlly, recycledIds: [s2.feu1, s2.feu2], bearerId: s2.bearerId }, "A");
+    expect(isErr(r2) && r2.error).toMatch(/artisan/i);
+    const s3 = craftState();
+    s3.state.instances[s3.artisanId].orientation = "tapped";
+    const r3 = resolveIntent(s3.state, s3.getCard, { kind: "CRAFT", equipmentId: s3.equipId, artisanId: s3.artisanId, recycledIds: [s3.feu1, s3.feu2], bearerId: s3.bearerId }, "A");
+    expect(isErr(r3)).toBe(true);
+  });
+
+  it("recyclage FORGÉ (mauvais Élément / hors Défausse / compte faux) → refusé", () => {
+    const s1 = craftState();
+    // une carte de la MAIN au lieu de la Défausse
+    const handCard = s1.state.seats.A.main[1];
+    const r1 = resolveIntent(s1.state, s1.getCard, { kind: "CRAFT", equipmentId: s1.equipId, artisanId: s1.artisanId, recycledIds: [s1.feu1, handCard], bearerId: s1.bearerId }, "A");
+    expect(isErr(r1) && r1.error).toMatch(/recycl|418/i);
+    const s2 = craftState();
+    const r2 = resolveIntent(s2.state, s2.getCard, { kind: "CRAFT", equipmentId: s2.equipId, artisanId: s2.artisanId, recycledIds: [s2.feu1], bearerId: s2.bearerId }, "A");
+    expect(isErr(r2) && r2.error).toMatch(/exactement 2/i);
+    const s3 = craftState();
+    const r3 = resolveIntent(s3.state, s3.getCard, { kind: "CRAFT", equipmentId: s3.equipId, artisanId: s3.artisanId, recycledIds: [s3.feu1, s3.feu1], bearerId: s3.bearerId }, "A");
+    expect(isErr(r3)).toBe(true); // doublon = compte forgé
+  });
+
+  it("hors de son tour → refusé (TURN_BOUND)", () => {
+    const s = craftState();
+    const r = resolveIntent(s.state, s.getCard, { kind: "CRAFT", equipmentId: s.equipId, artisanId: s.artisanId, recycledIds: [s.feu1, s.feu2], bearerId: s.bearerId }, "B");
+    expect(isErr(r)).toBe(true);
+  });
+});

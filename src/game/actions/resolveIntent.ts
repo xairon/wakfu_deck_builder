@@ -53,8 +53,11 @@ import {
   normWord,
   onceNameToken,
   recentPlayKindsOf,
+  recetteOf,
   RECENT_PLAY_TOKENS,
 } from "../rules/cardAttrs.ts";
+import { whyCannotCraft } from "../rules/legality.ts";
+import { metierOf } from "../rules/effects/keywords.ts";
 import { attackPmBonus, cannotCarryEquipment } from "../rules/modifiers.ts";
 import { resolveCombat } from "../rules/combat.ts";
 import { activeGlobalMods } from "../rules/effects/damageMods.ts";
@@ -69,6 +72,7 @@ export type IntentResult =
 /** Toutes les intentions de P1 sont liées au tour (le combat hors-tour viendra en P3). */
 const TURN_BOUND = new Set<GameIntent["kind"]>([
   "PLAY_CARD",
+  "CRAFT",
   "MOVE_CARD",
   "TAP",
   "UNTAP",
@@ -283,6 +287,148 @@ export function resolveIntent(
           );
         }
       }
+      return { events };
+    }
+
+    case "CRAFT": {
+      // A19 / lot F — FABRICATION AUTORITATIVE (305.4 / 401.4a / 418.6) :
+      // TOUT est revalidé serveur sur la soumission atomique des choix — un
+      // client forgé ne peut ni fabriquer sans Artisan du Métier, ni recycler
+      // des cartes du mauvais Élément / d'une autre pile, ni équiper une
+      // créature adverse.
+      const reason = whyCannotCraft(ctx, seat, intent.equipmentId);
+      if (reason) return { error: reason };
+      // Portes d'arrivée hors coût (1er tour, Havre-Sac plein, Porteur
+      // éligible, restrictions de jeu) — coût de lancement REMPLACÉ (freeCost).
+      const playReason = whyCannotPlay(
+        ctx,
+        seat,
+        intent.equipmentId,
+        false,
+        intent.destination,
+        true,
+      );
+      if (playReason) return { error: playReason };
+      const inst = state.instances[intent.equipmentId];
+      const card = getCard(inst?.cardId ?? null);
+      const recette = card ? recetteOf(card) : null;
+      if (!inst || !card || !recette) return { error: "Carte inconnue." };
+      // 401.4a — l'ARTISAN : contrôlé, DRESSÉ, en jeu, du Métier de la Recette.
+      const artisan = state.instances[intent.artisanId];
+      const artisanCard = getCard(artisan?.cardId ?? null);
+      const az = artisan?.location.zone;
+      if (
+        !artisan ||
+        !artisanCard ||
+        artisan.controller !== seat ||
+        artisan.orientation !== "upright" ||
+        (az !== "monde" && az !== "havreSac") ||
+        artisanCard.mainType !== "Allié" ||
+        !metierOf(artisan, artisanCard).includes(recette.metier)
+      )
+        return { error: `Artisan ${recette.metier} invalide (401.4a).` };
+      // 418.6 — le RECYCLAGE : n cartes DISTINCTES de l'Élément, dans SA Défausse.
+      const ids = intent.recycledIds ?? [];
+      if (ids.length !== recette.n || new Set(ids).size !== ids.length)
+        return {
+          error: `Recette : recycler exactement ${recette.n} carte(s) ${recette.element} (418.6).`,
+        };
+      for (const rid of ids) {
+        const rc = getCard(state.instances[rid]?.cardId ?? null);
+        if (
+          !state.seats[seat].defausse.includes(rid) ||
+          rc?.stats?.niveau?.element !== recette.element
+        )
+          return {
+            error: `Recette : carte recyclée invalide (${recette.element} de ta Défausse requis, 418.6).`,
+          };
+      }
+      // 305.x — le PORTEUR (Équipement) : obligatoire et éligible.
+      if (requiresBearer(card)) {
+        if (!intent.bearerId)
+          return { error: "Choisis le Porteur de cet Équipement (305.x)." };
+        if (
+          !eligibleBearers(ctx, seat, intent.equipmentId).includes(
+            intent.bearerId,
+          )
+        )
+          return { error: "Cible de Porteur invalide (305.x)." };
+      }
+      // ── Événements autoritatifs : coût de Recette PUIS mise en jeu. ────────
+      const events: DraftEvent[] = [tap(seat, intent.artisanId)];
+      for (const rid of ids) {
+        const rInst = state.instances[rid];
+        events.push(
+          move(seat, {
+            instanceId: rid,
+            from: rInst.location,
+            to: { zone: "pioche", owner: rInst.owner },
+            position: { at: "bottom" },
+            visibility: { faceDown: true, visibleTo: "none" },
+            preservesIdentity: false,
+          }),
+        );
+      }
+      const dest = resolvedPlayDestination(ctx, seat, card, intent.destination);
+      events.push(
+        move(seat, {
+          instanceId: intent.equipmentId,
+          from: inst.location,
+          to: dest,
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+          orientationOnArrival: "upright",
+        }),
+      );
+      if (requiresBearer(card) && intent.bearerId)
+        events.push(attach(seat, intent.equipmentId, intent.bearerId));
+      // MIROIR du tail PLAY_CARD (mal d'invocation + récences) — toute
+      // évolution là-bas doit être répercutée ici.
+      events.push(
+        setCounter(
+          seat,
+          intent.equipmentId,
+          "arrivedTurn",
+          state.turn.number,
+          true,
+        ),
+      );
+      for (const other of Object.values(state.instances)) {
+        if (other.instanceId === intent.equipmentId) continue;
+        if (other.counters.tokens?.justAppeared)
+          events.push(
+            setCounter(seat, other.instanceId, "justAppeared", 0, true),
+          );
+        if (other.counters.tokens?.justAppearedFromDefausse)
+          events.push(
+            setCounter(
+              seat,
+              other.instanceId,
+              "justAppearedFromDefausse",
+              0,
+              true,
+            ),
+          );
+      }
+      events.push(
+        setCounter(seat, intent.equipmentId, "justAppeared", 1, true),
+      );
+      const craftHeroId = state.seats[seat].heroInstanceId;
+      if (craftHeroId) {
+        const kinds = new Set<string>(recentPlayKindsOf(card));
+        for (const [kind, token] of Object.entries(RECENT_PLAY_TOKENS)) {
+          events.push(
+            setCounter(seat, craftHeroId, token, kinds.has(kind) ? 1 : 0, true),
+          );
+        }
+      }
+      events.push(
+        say(
+          seat,
+          `${card.name} est fabriqué (Recette : ${recette.metier}, ${recette.n} carte(s) ${recette.element} recyclée(s), 418.6).`,
+        ),
+      );
       return { events };
     }
 

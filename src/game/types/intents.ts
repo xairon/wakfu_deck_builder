@@ -23,6 +23,17 @@ export type GameIntent =
       to: ZoneRef;
       position?: Position;
     }
+  | {
+      /** A19 / lot F — FABRICATION (305.4/418.6) : soumission ATOMIQUE des
+       *  choix, ENTIÈREMENT revalidée serveur (Artisan du Métier dressé,
+       *  cartes recyclées de l'Élément dans la Défausse, Porteur éligible). */
+      kind: "CRAFT";
+      equipmentId: InstanceId;
+      artisanId: InstanceId;
+      recycledIds: InstanceId[];
+      bearerId?: InstanceId;
+      destination?: "monde" | "havreSac";
+    }
   | { kind: "TAP"; instanceId: InstanceId }
   | { kind: "UNTAP"; instanceId: InstanceId }
   | {
