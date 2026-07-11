@@ -134,7 +134,13 @@ describe("bot — initie la fabrication quand elle est légale (W-craft-4)", () 
         tried.add("__no_attack__");
       }
       const acted = botLiveStep(store, "A", tried);
-      if (!acted && !store.effectTargeting && !store.effectPicking && !store.pendingBearer) break;
+      if (
+        !acted &&
+        !store.effectTargeting &&
+        !store.effectPicking &&
+        !store.pendingBearer
+      )
+        break;
     }
     // L'Anneau a fini ATTACHÉ (le bot a inité craftFromHand puis résolu
     // Artisan → recyclage → Porteur via ses handlers génériques).
