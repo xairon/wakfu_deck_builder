@@ -86,6 +86,7 @@ import {
   whyCannotMoveCreature,
   blockerBlockedByAgilite,
   powerConditionReason,
+  whyCannotCraft,
   whyCannotPlay,
 } from "@/game/rules";
 import { useCardStore } from "@/stores/cardStore";
@@ -3571,6 +3572,18 @@ export const useGameStore = defineStore("game", () => {
     return whyCannotPlay(rulesCtx(), seat, instanceId, reaction);
   }
 
+  /**
+   * A19 — FABRICATION (Recette, 418.6) : cette carte de MA main est-elle
+   * fabricable maintenant ? `null` = oui ; sinon la raison (pas de Recette /
+   * pas d'Artisan du Métier dressé / Défausse insuffisante / tour-phase).
+   * Miroir store de rules/legality.whyCannotCraft, du point de vue du siège
+   * affiché — sert l'UI (bouton « Fabriquer ») et la vague W-craft-2.
+   */
+  function whyCannotCraftFromHand(instanceId: string): string | null {
+    if (matchPhase.value !== "playing") return "Partie non en cours.";
+    return whyCannotCraft(rulesCtx(), perspective.value, instanceId);
+  }
+
   function shufflePioche(seat: Seat = perspective.value): void {
     const size = state.value.seats[seat].pioche.length;
     if (size < 2) return;
@@ -3752,6 +3765,8 @@ export const useGameStore = defineStore("game", () => {
     combatCancel,
     effectiveForceOf,
     cannotPlayReason,
+    // A19 — légalité de FABRICATION (Recette) du point de vue du siège affiché.
+    whyCannotCraft: whyCannotCraftFromHand,
     effectChoice: engine.effectChoice,
     effectChoiceResolve: engine.effectChoiceResolve,
     effectChoiceSelect: engine.effectChoiceSelect,

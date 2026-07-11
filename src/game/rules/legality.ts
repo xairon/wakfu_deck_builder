@@ -15,8 +15,10 @@ import {
   heroStats,
   normWord,
   onceNameToken,
+  recetteOf,
   RECENT_PLAY_TOKENS,
 } from "./cardAttrs.ts";
+import { metierOf } from "./effects/keywords.ts";
 import { heroClassOf } from "./resources.ts";
 import { cannotAttackOrBlock, cannotBlock } from "./modifiers.ts";
 import { combatKeywords, effectiveKeywords } from "./effects/keywords.ts";
@@ -242,6 +244,58 @@ function reasonFor(
     return `Un ${pc.other ? "autre " : ""}${what} doit venir d'apparaître.`;
   }
   return "Condition de jeu non remplie.";
+}
+
+/**
+ * A19 — FABRICATION (305.4 / 401.4a / 418.6) : la carte en main peut-elle être
+ * FABRIQUÉE (jouée pour son coût de Recette) ? Renvoie la raison du refus, ou
+ * null si légal. Exigences :
+ *  - carte en MAIN du joueur, porteuse d'une Recette parsable (recetteOf) ;
+ *  - type Équipement ou Salle (418.4c) ;
+ *  - son tour + Phase Principale (mêmes contrôles que jouer normalement) ;
+ *  - ≥1 Allié ARTISAN du Métier requis, contrôlé, DRESSÉ (401.4a : il faut
+ *    pouvoir l'incliner) et en jeu (Monde/Havre-Sac) ;
+ *  - la Défausse du joueur contient ≥ N cartes de l'Élément de la Recette
+ *    (418.6 — l'Élément d'une carte = son Élément de Niveau imprimé).
+ */
+export function whyCannotCraft(
+  ctx: RulesCtx,
+  seat: Seat,
+  instanceId: InstanceId,
+): string | null {
+  const { state } = ctx;
+  const inst = state.instances[instanceId];
+  if (!inst) return "Carte introuvable.";
+  if (inst.location.zone !== "main" || inst.owner !== seat)
+    return "Cette carte n'est pas dans votre main.";
+  const card = ctx.getCard(inst.cardId);
+  if (!card) return "Carte inconnue.";
+  const recette = recetteOf(card);
+  if (!recette) return "Cette carte n'a pas de Recette.";
+  if (card.mainType !== "Équipement" && card.mainType !== "Salle")
+    return "Seuls les Équipements et les Salles se fabriquent (418.4c).";
+  if (state.turn.active !== seat) return "Ce n'est pas votre tour.";
+  if (state.turn.phase !== "principale")
+    return "On ne fabrique qu'en Phase Principale.";
+  // 401.4a — un Artisan du Métier requis, contrôlé, DRESSÉ, en jeu.
+  const hasArtisan = Object.values(state.instances).some((i) => {
+    if (i.controller !== seat || i.orientation !== "upright") return false;
+    const z = i.location.zone;
+    if (z !== "monde" && z !== "havreSac") return false;
+    const c = ctx.getCard(i.cardId);
+    if (!c || c.mainType !== "Allié") return false;
+    return metierOf(i, c).includes(recette.metier);
+  });
+  if (!hasArtisan)
+    return `Il faut incliner un Artisan ${recette.metier} dressé (401.4a).`;
+  // 418.6 — N cartes de l'Élément requis dans SA Défausse.
+  const have = state.seats[seat].defausse.filter((id) => {
+    const c = ctx.getCard(state.instances[id]?.cardId ?? null);
+    return c?.stats?.niveau?.element === recette.element;
+  }).length;
+  if (have < recette.n)
+    return `Défausse insuffisante : il faut recycler ${recette.n} carte(s) ${recette.element} (${have} disponible(s), 418.6).`;
+  return null;
 }
 
 export function whyCannotPlay(

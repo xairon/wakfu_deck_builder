@@ -325,11 +325,18 @@ export function metierOf(
     | {
         subTypes?: readonly string[];
         effects?: readonly { description?: string; coverage?: string }[];
+        metier?: readonly string[];
       }
     | null
     | undefined,
 ): string[] {
   const out = new Set<string>();
+  // Source CANONIQUE : le champ dérivé `metier` des données (24 cartes,
+  // peuplé au pipeline — Guerya Wood: ["Forgeron","Bricoleur"]).
+  for (const m of card?.metier ?? []) {
+    const hit = METIERS.find((x) => x === m);
+    if (hit) out.add(hit);
+  }
   // Comparaison NORMALISÉE (minuscules + accents retirés) : la casse des subTypes
   // varie dans les données scrapées (cf. normWord dans engine.ts). On normalise les
   // deux côtés par robustesse, puis on stocke la forme canonique (METIERS).

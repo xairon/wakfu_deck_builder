@@ -152,3 +152,25 @@ export function canAttackCard(card: Card): boolean {
 export function canBlockCard(card: Card): boolean {
   return card.mainType === "Allié";
 }
+
+/**
+ * A19 — RECETTE d'une carte (305.4 / 418.4c) : parse STRICT du keyword
+ * `{ name: "Recette", description: ": <Métier> <N>", elements: ["<Élément>"] }`
+ * (format uniforme des 232 cartes à Recette). Toute forme inattendue → null
+ * (la carte n'est simplement pas fabricable — jamais d'approximation).
+ * `metier` est canonisé (Forgeron / Armurier / Bijoutier / Bricoleur).
+ */
+export function recetteOf(
+  card: Card | null | undefined,
+): { metier: string; n: number; element: string } | null {
+  const kw = (card?.keywords ?? []).find((k) => k?.name === "Recette");
+  if (!kw) return null;
+  const m = (kw.description ?? "")
+    .trim()
+    .match(/^:?\s*(forgeron|armurier|bijoutier|bricoleur)\s+(\d+)$/i);
+  if (!m) return null;
+  const els = kw.elements ?? [];
+  if (els.length !== 1 || !els[0]) return null;
+  const metier = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+  return { metier, n: Number.parseInt(m[2], 10), element: els[0] };
+}
