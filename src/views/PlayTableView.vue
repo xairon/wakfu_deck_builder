@@ -283,6 +283,19 @@
         >
           {{ sounds.muted.value ? "🔇 Son" : "🔊 Son" }}
         </button>
+        <!-- Musique de fond : pistes LOCALES de l'exploitant (public/audio/
+             music + manifest.json — cf. README ; rien d'embarqué : les OST
+             commerciales ne se redistribuent pas). Bouton visible seulement
+             si une playlist est déclarée. -->
+        <button
+          v-if="music.available.value"
+          class="gtop-btn"
+          :aria-pressed="music.playing.value"
+          data-testid="topbar-music-toggle"
+          @click="music.toggle()"
+        >
+          {{ music.playing.value ? "♫ Musique" : "♪ Musique" }}
+        </button>
         <button class="gtop-btn" @click="showJournal = !showJournal">
           {{ showJournal ? "Masquer le journal" : "Journal" }}
         </button>
@@ -689,6 +702,7 @@ import TurnBanner from "@/components/game/TurnBanner.vue";
 import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import GameSoundLayer from "@/components/game/GameSoundLayer.vue";
 import { useGameSounds } from "@/composables/useGameSounds";
+import { useGameMusic } from "@/composables/useGameMusic";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { OFFICIAL_DECKS } from "@/data/officialDecks";
@@ -718,6 +732,8 @@ const tutorial = useTutorialStore();
 // Sons de table : état muet (bouton du bandeau) — le calque GameSoundLayer
 // joue les repères, ici on n'expose que la bascule.
 const sounds = useGameSounds();
+// Musique de fond (pistes locales de l'exploitant, cf. useGameMusic).
+const music = useGameMusic();
 const route = useRoute();
 
 const toast = useToast();

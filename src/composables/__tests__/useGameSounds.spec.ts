@@ -22,8 +22,25 @@ describe("sfxForLogLine — mapping journal → repère", () => {
     );
   });
 
-  it("ignore les lignes sans repère (mélange, tour, compteurs)", () => {
-    expect(sfxForLogLine("Table mélange sa Pioche.")).toBeNull();
+  it("classe les nouveaux repères (audit « bruitages pour la plupart des effets »)", () => {
+    // « détruit » PRIME sur « Dommages » (une résolution de combat détruit).
+    expect(sfxForLogLine("Kristie Endor est détruit.")).toBe("destroy");
+    expect(sfxForLogLine("Le Héros de A regagne 2 PV.")).toBe("heal");
+    expect(
+      sfxForLogLine("Alliance de Silimelle est équipé(e) sur Alibert."),
+    ).toBe("equip");
+    expect(
+      sfxForLogLine("Anneau : la carte est recyclée sous la Pioche."),
+    ).toBe("recycle");
+    expect(sfxForLogLine("Table mélange sa Pioche.")).toBe("shuffle");
+    expect(sfxForLogLine("Le Héros de A gagne 2 XP.")).toBe("xp");
+    expect(sfxForLogLine("Toi redresse Tofu.")).toBe("untap");
+    expect(sfxForLogLine("Toi fabrique Anneau Cérémonial — Recette…")).toBe(
+      "play",
+    );
+  });
+
+  it("ignore les lignes sans repère (tour, compteurs)", () => {
     expect(sfxForLogLine("Toi entame le tour 2.")).toBeNull();
     expect(sfxForLogLine("Toi ajuste « pv ».")).toBeNull();
   });

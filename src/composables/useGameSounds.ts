@@ -19,8 +19,15 @@ export type SfxKind =
   | "draw"
   | "play"
   | "tap"
+  | "untap"
   | "attack"
   | "damage"
+  | "destroy"
+  | "heal"
+  | "equip"
+  | "recycle"
+  | "shuffle"
+  | "xp"
   | "victory"
   | "defeat";
 
@@ -118,6 +125,35 @@ const RECIPES: Record<SfxKind, () => void> = {
     tone(95, 0.16, { gain: 0.55, sweepTo: 55 });
     whoosh(0.12, { freq: 350, gain: 0.2 });
   },
+  // Redressement : tic inversé (plus grave que tap, montée légère).
+  untap: () => tone(520, 0.06, { type: "triangle", gain: 0.16, sweepTo: 760 }),
+  // Destruction : craquement mat (thump grave + souffle rêche).
+  destroy: () => {
+    tone(70, 0.2, { gain: 0.6, sweepTo: 40 });
+    whoosh(0.16, { freq: 220, q: 0.8, gain: 0.26 });
+  },
+  // Soin : petit carillon doux ascendant.
+  heal: () => {
+    tone(660, 0.1, { type: "sine", gain: 0.22 });
+    tone(880, 0.16, { type: "sine", gain: 0.22, at: 0.08 });
+  },
+  // Équipement attaché : clink métallique bref.
+  equip: () => {
+    tone(1320, 0.06, { type: "square", gain: 0.1 });
+    tone(1760, 0.1, { type: "triangle", gain: 0.14, at: 0.04 });
+  },
+  // Recyclage : glissement descendant (la carte file sous la Pioche).
+  recycle: () => whoosh(0.14, { freq: 1400, sweepTo: 500, gain: 0.2 }),
+  // Mélange : bruissement bref en deux temps (riffle).
+  shuffle: () => {
+    whoosh(0.09, { freq: 1800, q: 0.7, gain: 0.16 });
+    setTimeout(() => whoosh(0.09, { freq: 1500, q: 0.7, gain: 0.16 }), 70);
+  },
+  // XP / montée de Niveau : étincelle (deux harmoniques rapides).
+  xp: () => {
+    tone(988, 0.08, { type: "triangle", gain: 0.2 });
+    tone(1319, 0.14, { type: "triangle", gain: 0.22, at: 0.06 });
+  },
   // Victoire : petit arpège majeur ascendant.
   victory: () => {
     tone(523, 0.16, { gain: 0.32 });
@@ -137,8 +173,19 @@ const RECIPES: Record<SfxKind, () => void> = {
  * du gameStore — verrouillés par les specs du journal.
  */
 export function sfxForLogLine(text: string): SfxKind | null {
+  // Ordre : les événements FORTS d'abord (une ligne « X est détruit » ne doit
+  // pas retomber sur « damage » ; « équipé(e) » avant « joue »).
+  if (/\best détruite?s?\b|\bsont détruite?s?\b/.test(text)) return "destroy";
+  if (/\bregagne .*PV\b|\bgagne \d+ PV\b/.test(text)) return "heal";
+  // « est équipé(e) sur … » — le « (e) » est LITTÉRAL dans le journal.
+  if (/équipé(?:\(e\)|e)? sur\b/.test(text)) return "equip";
+  if (/\brecycl(é|ée|és|ées|e)\b.*Pioche|\brecycle\b/i.test(text))
+    return "recycle";
+  if (/\bmélang(e|ée)\b/i.test(text)) return "shuffle";
+  if (/\bXP\b|\bpasse au Niveau\b/.test(text)) return "xp";
+  if (/\bredresse\b/.test(text)) return "untap";
   if (/\bpioche (une|\d+) cartes?\b/.test(text)) return "draw";
-  if (/\bjoue\b|\bmet .+ en jeu\b/.test(text)) return "play";
+  if (/\bjoue\b|\bmet .+ en jeu\b|\bfabriqu/i.test(text)) return "play";
   if (/\bincline\b/.test(text)) return "tap";
   if (/dommages?\b/i.test(text)) return "damage";
   return null;
