@@ -108,6 +108,11 @@ const isDragSource = computed(
 );
 
 function onEnter(): void {
+  // TACTILE (« hover: none ») : un tap émule mouseenter+click — la fenêtre de
+  // lecture au survol s'ouvrait par-dessus le contenu au premier contact
+  // (doublon avec le zoom/sélection du clic). Pas de vrai survol → pas de
+  // preview ; la lecture passe par le zoom explicite (sélection / Agrandir).
+  if (window.matchMedia?.("(hover: none)")?.matches) return;
   if (!hidden.value && !dnd.isDragging.value) preview.show(props.card);
 }
 function onLeave(): void {
