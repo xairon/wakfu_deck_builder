@@ -383,6 +383,40 @@
       <span class="gendturn__txt">Fin du<br />tour</span>
     </button>
 
+    <!-- ════════ Bandeau de PAIEMENT au choix (coût de lancement) ════════ -->
+    <Transition name="slidedown">
+      <div
+        v-if="store.pendingPayment"
+        class="gcombat gcombat--effect"
+        role="toolbar"
+        aria-label="Paiement du coût"
+        data-testid="payment-banner"
+      >
+        <span class="gcombat__step">
+          💠 Incline tes producteurs de Ressources —
+          {{ store.pendingPayment.chosen.length }}/{{
+            store.pendingPayment.cost
+          }}
+          (clique tes cartes, re-clic pour retirer)
+        </span>
+        <div class="gcombat__btns">
+          <button
+            class="gbtn gbtn--accent"
+            data-testid="payment-auto"
+            @click="store.payAuto()"
+          >
+            ⚡ Auto
+          </button>
+          <button
+            class="gbtn gbtn--ghost"
+            data-testid="payment-cancel"
+            @click="store.payCancel()"
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    </Transition>
     <!-- ════════ Bandeau de ciblage d'effet ════════ -->
     <Transition name="slidedown">
       <div
@@ -1313,6 +1347,12 @@ function moveCreatureSelected(): void {
   selectedId.value = null; // la zone a changé → referme la barre
 }
 function select(instanceId: string): void {
+  // PAIEMENT au choix (coût de lancement) : le clic désigne un producteur à
+  // incliner (re-clic = désélection) ; « Auto » / « Annuler » au bandeau.
+  if (store.pendingPayment) {
+    store.payPick(instanceId);
+    return;
+  }
   // ciblage de Porteur en cours (305.x) : le clic désigne la créature qui
   // portera l'équipement / la Monture en attente de jeu.
   if (store.pendingBearer) {

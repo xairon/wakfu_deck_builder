@@ -76,6 +76,7 @@ import {
   resolveCombat,
   havreSacBanishEvents,
   resourceProducers,
+  validatePayment,
   stateBasedDestroyEvents,
   handPowers,
   tapPowers,
@@ -1555,6 +1556,77 @@ export const useGameStore = defineStore("game", () => {
     free?: boolean;
   } | null>(null);
 
+  // ── PAIEMENT AU CHOIX DU JOUEUR (local assisté) ────────────────────────────
+  // Le joueur désigne LES cartes qui s'inclinent pour produire (clics sur le
+  // plateau), ou prend le plan automatique (« Auto »), ou annule (rien n'est
+  // consommé). Confirmé automatiquement quand le compte y est ; le paiement
+  // est REVALIDÉ (validatePayment) au jeu final — 418.5b compris.
+  const pendingPayment = ref<{
+    instanceId: string;
+    bearerId?: string;
+    destination?: "monde" | "havreSac";
+    cost: number;
+    eligible: string[];
+    /** 2342 — id → nombre de Ressources produites par UNE inclinaison (le
+     * Havre-Sac doublé du 2e joueur vaut 2 au tour 2). */
+    weights: Record<string, number>;
+    /** Liste EFFECTIVE (un id peut y figurer 2 fois — sac doublé). */
+    chosen: string[];
+  } | null>(null);
+  function payPick(producerId: string): boolean {
+    const p = pendingPayment.value;
+    if (!p) return false;
+    if (p.chosen.includes(producerId)) {
+      // re-clic = désélection (toutes les occurrences de la carte)
+      p.chosen = p.chosen.filter((x) => x !== producerId);
+      return true;
+    }
+    const weight = p.weights[producerId] ?? 0;
+    if (!weight)
+      return rejectMove("Cette carte ne peut pas produire de Ressource.");
+    if (p.chosen.length >= p.cost) return false;
+    // 2342 : une inclinaison du sac doublé compte pour 2 (plafonné au besoin).
+    const add = Math.min(weight, p.cost - p.chosen.length);
+    for (let k = 0; k < add; k++) p.chosen.push(producerId);
+    if (p.chosen.length === p.cost) {
+      // Compte atteint → tentative de jeu (validatePayment revalide 418.5b ;
+      // un refus GARDE l'invite ouverte, le joueur ajuste sa sélection).
+      const snapshot = { ...p, chosen: [...p.chosen] };
+      pendingPayment.value = null;
+      const ok = playFromHand(
+        snapshot.instanceId,
+        snapshot.bearerId,
+        snapshot.destination,
+        false,
+        snapshot.chosen,
+      );
+      if (!ok) pendingPayment.value = snapshot;
+      return ok;
+    }
+    return true;
+  }
+  /** Paiement AUTOMATIQUE (plan planCost — l'ancien comportement, en un clic). */
+  function payAuto(): boolean {
+    const p = pendingPayment.value;
+    if (!p) return false;
+    const inst = state.value.instances[p.instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    if (!card) return false;
+    const auto = planCost(rulesCtx(), perspective.value, card);
+    if (!auto.ok) return rejectMove(auto.reason);
+    pendingPayment.value = null;
+    return playFromHand(
+      p.instanceId,
+      p.bearerId,
+      p.destination,
+      false,
+      auto.producers,
+    );
+  }
+  function payCancel(): void {
+    pendingPayment.value = null;
+  }
+
   // ── ÉCHEC CRITIQUE (W74) — FENÊTRE D'ANNULATION (pile de résolution profondeur 1).
   // Quand un joueur joue une Action/Sort/pouvoir À EFFETS et que l'adversaire tient
   // Échec Critique (LOCAL uniquement), les effets sont mis EN ATTENTE (frames) au lieu
@@ -1938,6 +2010,9 @@ export const useGameStore = defineStore("game", () => {
     // d'être payé par la frame de fabrication). Local uniquement (W-craft-4
     // apportera la parité online) ; propagé au prompt de Porteur.
     free = false,
+    // PAIEMENT MANUEL : producteurs CHOISIS par le joueur (pendingPayment) —
+    // validés par validatePayment (compte exact, dressés, 418.5b).
+    producersOverride?: string[],
   ): boolean {
     const seat = perspective.value;
     if (free && online.value)
@@ -1998,12 +2073,20 @@ export const useGameStore = defineStore("game", () => {
     const card = getCard(inst?.cardId ?? null);
     if (!inst || !card) return rejectMove("Carte inconnue.");
     // Fabrication : AUCUN producteur incliné (coût de Recette déjà payé).
-    const plan = free
-      ? ({ ok: true, producers: [] } as ReturnType<typeof planCost> & {
-          ok: true;
-        })
-      : planCost(ctx, seat, card);
-    if (!plan.ok) return rejectMove(plan.reason);
+    // Paiement MANUEL (producersOverride, choisi via pendingPayment) : validé
+    // à l'identique du plan auto (compte exact, dressés, 418.5b élémentaire).
+    let plan: { ok: true; producers: string[] };
+    if (free) {
+      plan = { ok: true, producers: [] };
+    } else if (producersOverride) {
+      const payErr = validatePayment(ctx, seat, card, producersOverride);
+      if (payErr) return rejectMove(payErr);
+      plan = { ok: true, producers: [...producersOverride] };
+    } else {
+      const auto = planCost(ctx, seat, card);
+      if (!auto.ok) return rejectMove(auto.reason);
+      plan = { ok: true, producers: auto.producers };
+    }
 
     // 305.x — TOUT ÉQUIPEMENT se joue ATTACHÉ à une créature contrôlée (Allié
     // non-Monstre / Héros en jeu), jamais « tout seul » sur le plateau. Si aucun
@@ -2025,6 +2108,34 @@ export const useGameStore = defineStore("game", () => {
       }
       if (!eligible.includes(bearerId))
         return rejectMove("Cible de Porteur invalide.");
+    }
+
+    // ── PAIEMENT AU CHOIX DU JOUEUR (retour utilisateur : « le mana est
+    // choisi automatiquement, on n'a pas le choix ») : en LOCAL assisté, un
+    // coût > 0 ouvre l'invite pendingPayment — le joueur clique SES
+    // producteurs (ou « Auto » = le plan automatique, ou annule). Le bot et
+    // le mode en ligne gardent le plan automatique (le serveur incline).
+    if (
+      !free &&
+      !producersOverride &&
+      !online.value &&
+      plan.producers.length > 0 &&
+      seat !== botSeat.value
+    ) {
+      const pool = resourceProducers(ctx, seat);
+      const weights: Record<string, number> = {};
+      for (const p of pool)
+        weights[p.instanceId] = (weights[p.instanceId] ?? 0) + 1;
+      pendingPayment.value = {
+        instanceId,
+        bearerId,
+        destination,
+        cost: plan.producers.length,
+        eligible: [...new Set(pool.map((p) => p.instanceId))],
+        weights,
+        chosen: [],
+      };
+      return true; // en attente des clics producteurs (payPick / payAuto)
     }
 
     const drafts: DraftEvent[] = plan.producers.map((id) => ({
@@ -3813,6 +3924,11 @@ export const useGameStore = defineStore("game", () => {
     pendingBearer,
     attachToBearer,
     cancelBearerTargeting,
+    // Paiement au choix du joueur (local assisté).
+    pendingPayment,
+    payPick,
+    payAuto,
+    payCancel,
     pendingResolution,
     effectSpotlight,
     passPendingResolution,

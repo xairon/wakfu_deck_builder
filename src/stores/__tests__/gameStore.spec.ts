@@ -525,6 +525,8 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     // B joue sa carte HORS de son tour → acceptée (légalité de tour relâchée)
     const ok = store.playFromHand(rc);
     expect([ok, store.ruleError]).toEqual([true, null]);
+    // Paiement au choix (nouveau flux) : prendre le plan AUTO.
+    if (store.pendingPayment) expect(store.payAuto()).toBe(true);
     expect(store.state.instances[rc].location.zone).not.toBe("main");
     // fin de réaction → retour à l'attaquant
     store.combatEndReaction();

@@ -17,6 +17,7 @@ describe("journal — pas de comptabilité interne", () => {
     store.endTurn();
     const id = placeInZone(store, "A", { zone: "main", owner: "A" });
     expect(store.playFromHand(id)).toBe(true);
+    if (store.pendingPayment) expect(store.payAuto()).toBe(true);
 
     const noise = store.log
       .map((l) => l.text)
@@ -42,6 +43,7 @@ describe("journal — pas de comptabilité interne", () => {
     store.endTurn();
     const id = placeInZone(store, "A", { zone: "main", owner: "A" });
     expect(store.playFromHand(id)).toBe(true);
+    if (store.pendingPayment) expect(store.payAuto()).toBe(true);
     const lines = store.log.map((l) => l.text);
     // La ligne de jeu NOMME la carte (« <Joueur> joue <Nom> … ») — plus de
     // « déplace une carte (main → havreSac) » anonyme.

@@ -237,6 +237,12 @@ function resolveInteraction(
     else store.cancelBearerTargeting();
     return true;
   }
+  // Paiement au choix du joueur : le bot prend toujours le plan AUTO (garde-
+  // fou — l'invite ne s'ouvre normalement pas pour le siège du bot).
+  if (store.pendingPayment) {
+    if (!store.payAuto()) store.payCancel();
+    return true;
+  }
   if (store.effectPicking) {
     const ids = store.effectPickIds;
     if (ids.length) store.effectPick(ids[0]);

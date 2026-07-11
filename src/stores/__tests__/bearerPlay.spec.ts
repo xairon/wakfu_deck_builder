@@ -106,6 +106,8 @@ describe("store — équiper un Porteur (305.x)", () => {
     store.playFromHand(equipId);
     const ok = store.attachToBearer(bearerId);
     expect(ok).toBe(true);
+    // Paiement au choix (nouveau flux) : le test prend le plan AUTO.
+    if (store.pendingPayment) expect(store.payAuto()).toBe(true);
     expect(store.pendingBearer).toBeNull();
     const inst = store.state.instances[equipId];
     // L'équipement est en jeu et listé dans les attachments du Porteur.

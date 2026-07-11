@@ -149,6 +149,47 @@ export function costModifier(ctx: RulesCtx, seat: Seat, card: Card): number {
  * sous 1, le coût reste planchéré à 1 (payé avec sa Ressource élémentaire). Les
  * autres types (coût Neutre) tombent bien à 0 (gratuits).
  */
+/**
+ * PAIEMENT MANUEL (choix du joueur, façon « incline tes producteurs ») :
+ * valide un ensemble de producteurs CHOISIS pour payer le coût de `card`.
+ * Renvoie la raison du refus, ou null si le paiement est exact et légal :
+ *  - autant de producteurs que le coût (réductions 805 appliquées) ;
+ *  - tous DISTINCTS, contrôlés, DRESSÉS et producteurs (resourceProducers) ;
+ *  - 418.5b : pour un Allié, AU MOINS UN producteur de son Élément.
+ */
+export function validatePayment(
+  ctx: RulesCtx,
+  seat: Seat,
+  card: Card,
+  producers: InstanceId[],
+): string | null {
+  const req = requiredElement(card);
+  const reduced = Math.max(0, levelCost(card) - costModifier(ctx, seat, card));
+  const cost = req ? Math.max(1, reduced) : reduced;
+  if (producers.length !== cost)
+    return `Il faut incliner exactement ${cost} producteur(s) (${producers.length} choisi(s)).`;
+  // MULTISET : le pool peut contenir un id DEUX fois (2342 — Havre-Sac doublé
+  // du 2e joueur : une inclinaison vaut deux Ressources). Chaque id ne peut
+  // être utilisé plus de fois qu'il n'apparaît dans le pool.
+  const pool = resourceProducers(ctx, seat);
+  const capacity = new Map<InstanceId, number>();
+  const elementOf = new Map<InstanceId, string>();
+  for (const p of pool) {
+    capacity.set(p.instanceId, (capacity.get(p.instanceId) ?? 0) + 1);
+    elementOf.set(p.instanceId, p.element);
+  }
+  const used = new Map<InstanceId, number>();
+  for (const id of producers) {
+    const u = (used.get(id) ?? 0) + 1;
+    used.set(id, u);
+    if (u > (capacity.get(id) ?? 0))
+      return "Une des cartes choisies ne peut pas produire (inclinée, adverse ou non productrice).";
+  }
+  if (req && !producers.some((id) => elementOf.get(id) === req))
+    return `Il faut au moins une Ressource ${elementLabel(req)} pour jouer cet Allié (418.5b).`;
+  return null;
+}
+
 export function planCost(ctx: RulesCtx, seat: Seat, card: Card): PlanCost {
   const req = requiredElement(card);
   const reduced = Math.max(0, levelCost(card) - costModifier(ctx, seat, card));

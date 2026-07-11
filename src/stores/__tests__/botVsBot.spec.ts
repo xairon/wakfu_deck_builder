@@ -86,6 +86,12 @@ function driveOnce(store: Store, triedThisTurn: Set<string>): boolean {
     store.cancelBearerTargeting(); // l'équipement reste en main (marqué tried)
     return true;
   }
+  if (store.pendingPayment) {
+    // Harnais glouton : paiement AUTO (le choix manuel est une affordance
+    // humaine ; ici on ne teste que la robustesse de bout en bout).
+    if (!store.payAuto()) store.payCancel();
+    return true;
+  }
   if (store.effectPicking) {
     const ids = store.effectPickIds;
     if (ids.length) store.effectPick(ids[0]);
