@@ -315,7 +315,7 @@
               label="Pioche"
               :count="piocheCount(me)"
               deck
-              @act="store.draw(me)"
+              @act="onPiocheClick"
             />
           </span>
           <span
@@ -1124,6 +1124,22 @@ function handList(seat: Seat): HandItem[] {
 function piocheCount(seat: Seat): number {
   const z = view.value.seats[seat].pioche;
   return z.kind === "count" ? z.count : z.instances.length;
+}
+/**
+ * Clic sur MA Pioche. En RÈGLES ASSISTÉES, la pioche est AUTOMATIQUE (fin de
+ * tour : la main est complétée jusqu'aux PA — cf. endTurn ; les effets
+ * « Piochez … » se résolvent seuls) — cliquer la pile ne doit PAS piocher en
+ * douce (façon MTGA : la bibliothèque n'est pas cliquable) ; on explique via
+ * l'assistant de règles. Le clic-pioche reste l'affordance du mode MANUEL
+ * (assist désactivé, table libre).
+ */
+function onPiocheClick(): void {
+  if (store.assistEffects) {
+    store.ruleError =
+      "La pioche est automatique : en finissant ton tour, ta main est complétée jusqu'à tes PA (et les effets « Piochez … » se résolvent seuls).";
+    return;
+  }
+  store.draw(me.value);
 }
 function discardCount(seat: Seat): number {
   return instancesOf(view.value.seats[seat].defausse).length;
