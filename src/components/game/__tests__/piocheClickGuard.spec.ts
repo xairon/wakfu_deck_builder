@@ -12,6 +12,10 @@ import { makeEffectSandbox } from "@/stores/__tests__/effectPipeline.harness";
 
 async function clickMyPioche(assist: boolean) {
   const { store } = makeEffectSandbox({ first: "A", allAllies: true });
+  // La garde suit `assist` — LA bascule « Règles assistées » visible dans
+  // l'en-tête (pas `assistEffects`, drapeau interne d'automatisation des
+  // effets, réglé de concert ici pour représenter les deux modes réels).
+  store.assist = assist;
   store.assistEffects = assist;
   const wrapper = mount(GameBoard, { attachTo: document.body });
   const handBefore = store.state.seats.A.main.length;

@@ -1152,7 +1152,10 @@ function piocheCount(seat: Seat): number {
  * (assist désactivé, table libre).
  */
 function onPiocheClick(): void {
-  if (store.assistEffects) {
+  // Clé = `assist` (LA bascule « Règles assistées » de l'en-tête), pas
+  // `assistEffects` (automatisation des effets, drapeau interne distinct) :
+  // la gouvernance de la pioche appartient aux règles assistées.
+  if (store.assist) {
     store.ruleError =
       "La pioche est automatique : en finissant ton tour, ta main est complétée jusqu'à tes PA (et les effets « Piochez … » se résolvent seuls).";
     return;
