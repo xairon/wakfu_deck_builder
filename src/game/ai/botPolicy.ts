@@ -284,6 +284,17 @@ function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
   for (const id of [...(store.state.seats[me]?.main ?? [])]) {
     if (store.playFromHand(id)) return true;
   }
+  // 2bis. FABRIQUER (A19, 418.6) : une carte à Recette injouable au coût
+  //    normal peut être fabriquée (Artisan du Métier dressé + Défausse typée).
+  //    Sondé via whyCannotCraft (silencieux) — jamais craftFromHand à
+  //    l'aveugle, dont le rejet poserait un ruleError visible par l'humain.
+  //    Les interactions ouvertes (Artisan → recyclage → Porteur) sont ensuite
+  //    résolues par les handlers génériques du bot (targeting / picking /
+  //    pendingBearer ci-dessus).
+  for (const id of [...(store.state.seats[me]?.main ?? [])]) {
+    if (store.whyCannotCraft(id) === null && store.craftFromHand(id))
+      return true;
+  }
   // 3. Activer les pouvoirs à inclinaison (valeur gratuite). On NE SONDE QUE les
   //    cartes qui portent un pouvoir COMPILÉ (hasTapPower). Sans ce garde,
   //    activateTapPower sur une carte sans pouvoir rejette « Pas de pouvoir à

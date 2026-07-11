@@ -27,6 +27,17 @@ const ARTISAN: Card = createMockAllyCard({
   metier: ["Bijoutier"],
 });
 
+const ANNEAU_CHER: Card = createMockEquipmentCard({
+  id: "anneau-cher-craft-test",
+  name: "Anneau Hors de Prix",
+  // Niveau 9 : INABORDABLE au coût normal dans le bac à sable (planCost
+  // échoue) → seule la FABRICATION permet de le jouer. Même Recette.
+  stats: { niveau: { value: 9, element: "Neutre" } },
+  keywords: [
+    { name: "Recette", description: ": Bijoutier 2", elements: ["Feu"] },
+  ],
+});
+
 const CARTE_FEU: Card = createMockAllyCard({
   id: "carte-feu-craft-test",
   name: "Carte Feu",
@@ -37,7 +48,7 @@ function setup() {
   const { store } = makeEffectSandbox({
     first: "A",
     allAllies: true,
-    extraCards: [ANNEAU, ARTISAN, CARTE_FEU],
+    extraCards: [ANNEAU, ANNEAU_CHER, ARTISAN, CARTE_FEU],
   });
   // Tour 2 (au tour 1, rien n'entre dans le Monde — 506.3).
   store.state.turn.number = 2;
@@ -102,5 +113,36 @@ describe("craftFromHand — fabrication complète (A19)", () => {
     store.state.instances[artisanId].orientation = "tapped";
     expect(store.craftFromHand(equipId)).toBe(false);
     expect(store.effectTargeting).toBeNull();
+  });
+});
+
+describe("bot — initie la fabrication quand elle est légale (W-craft-4)", () => {
+  it("botLiveStep fabrique l'Équipement inabordable et résout toute la séquence", async () => {
+    const { botLiveStep } = await import("@/game/ai/botPolicy");
+    const { store, equipId, artisanId, bearerId } = setup();
+    // Basculer l'Anneau vers la version INABORDABLE (Niveau 9) : playFromHand
+    // refuse (coût), la boucle 2bis du bot doit alors FABRIQUER.
+    store.state.instances[equipId].cardId = "anneau-cher-craft-test";
+    store.perspective = "A";
+    const tried = new Set<string>();
+    // Pomper le bot jusqu'à stabilisation (chaque appel = un geste).
+    for (let i = 0; i < 40; i++) {
+      // Le bot glouton ATTAQUE d'abord (tour 2) : hors sujet ici — on annule
+      // le combat pour le laisser passer aux étapes de développement (2/2bis).
+      if (store.combat) {
+        store.combatCancel();
+        tried.add("__no_attack__");
+      }
+      const acted = botLiveStep(store, "A", tried);
+      if (!acted && !store.effectTargeting && !store.effectPicking && !store.pendingBearer) break;
+    }
+    // L'Anneau a fini ATTACHÉ (le bot a inité craftFromHand puis résolu
+    // Artisan → recyclage → Porteur via ses handlers génériques).
+    const worn = Object.values(store.state.instances).some((i) =>
+      (i.attachments ?? []).includes(equipId),
+    );
+    expect(worn).toBe(true);
+    expect(store.state.instances[artisanId].orientation).toBe("tapped");
+    void bearerId;
   });
 });
