@@ -1825,6 +1825,13 @@ function manaBonus(seat: Seat): boolean {
   display: flex;
   gap: 10px;
   align-self: center;
+  /* Les piles restent CLIQUABLES sous l'éventail : au-dessus des cartes de
+     main AU REPOS (z-index 1..taille de main, cf. HandFan) mais SOUS la carte
+     survolée (z-index 40) — comportement MTGA : la main ne passe devant qu'au
+     survol. Sans ça, une main de 8+ cartes recouvrait entièrement Pioche/
+     Défausse/Réserve sur laptop (vérifié à 1280×720 : 0 point atteignable). */
+  position: relative;
+  z-index: 30;
 }
 .gpiles__slot {
   display: block;
