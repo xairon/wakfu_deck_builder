@@ -22,7 +22,7 @@ import { resourceProducers } from "../resources";
 import { effectiveForce } from "../stats";
 import { allyPowerDamageBonus, reduceDamage } from "./damageMods";
 import { grantXpEvents } from "../progress";
-import { GRANT_KEYWORD_TOKEN, resistanceLabel } from "./keywords";
+import { GRANT_KEYWORD_TOKEN, metierOf, resistanceLabel } from "./keywords";
 
 export type TargetingOp = Extract<
   CompiledEffectOp,
@@ -221,6 +221,15 @@ export function effectTargetIds(
       if (
         op.maxLevel !== undefined &&
         (card.stats?.niveau?.value ?? Number.POSITIVE_INFINITY) > op.maxLevel
+      )
+        continue;
+      // A19 (401.4a) — FABRICATION : seul un ARTISAN du Métier requis peut
+      // être incliné pour fabriquer (metierOf : champ metier ∪ subTypes ∪
+      // traits ∪ jetons metier_* du tour — Amar Casto compte).
+      if (
+        op.op === "costTapControlled" &&
+        op.metier &&
+        !metierOf(inst, card).includes(op.metier)
       )
         continue;
       out.push(inst.instanceId);

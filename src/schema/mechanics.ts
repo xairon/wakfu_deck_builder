@@ -65,6 +65,7 @@ export const mechanicTagSchema = z.enum([
   "cost-recycle",
   "cost-recycle-controlled",
   "cost-tap-resource",
+  "craft",
   "riposte-bearer",
   "remove-from-combat",
   "grant-bonus-block",

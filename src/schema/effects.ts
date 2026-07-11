@@ -1100,6 +1100,9 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
     sub: z.string().optional(),
     maxLevel: z.number().optional(),
     excludeSource: z.boolean().optional(),
+    // A19 (401.4a) — FABRICATION : la cible doit être un ARTISAN possédant ce
+    // Métier (metierOf : card.metier ∪ subTypes ∪ traits ∪ jetons metier_*).
+    metier: z.string().optional(),
     zones: zonesSchema,
   }),
   // COÛT de pouvoir payé « Détruisez un de vos X : … » : op de CIBLAGE. Le joueur
@@ -1174,6 +1177,16 @@ export const compiledEffectOpSchema = z.discriminatedUnion("op", [
   // source n'est plus en main → frame abandonnée. AUCUN choix ni paramètre.
   z.object({
     op: z.literal("costDiscardSelf"),
+  }),
+  // A19 — FABRICATION (305.4/418.6) : op FINAL de la séquence de fabrication
+  // [costTapControlled{metier}, costRecycle{defausse, element, n},
+  // craftPlaySelf]. La SOURCE (l'Équipement/la Salle, encore en MAIN) est
+  // JOUÉE SANS COÛT de lancement (le coût de Recette vient d'être payé) via le
+  // chemin de jeu normal (deps.playCostFree → playFromHand mode franc : choix
+  // du Porteur, zone d'arrivée, effets d'apparition). Source plus en main →
+  // no-op (frame déjà consommée).
+  z.object({
+    op: z.literal("craftPlaySelf"),
   }),
   // COÛT VARIABLE « X : CORPS » (X-cost, 4262) — le joueur paie X Ressources, X
   // étant CHOISI (0..producteurs disponibles). Modèle SANS POOL : payer X =

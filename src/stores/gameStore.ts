@@ -86,6 +86,7 @@ import {
   whyCannotMoveCreature,
   blockerBlockedByAgilite,
   powerConditionReason,
+  recetteOf,
   whyCannotCraft,
   whyCannotPlay,
 } from "@/game/rules";
@@ -1549,6 +1550,9 @@ export const useGameStore = defineStore("game", () => {
   const pendingBearer = ref<{
     equipmentId: string;
     eligible: string[];
+    /** A19 — l'Équipement est FABRIQUÉ (coût de Recette déjà payé) : le jeu
+     * final via attachToBearer→playFromHand ne refacture pas le lancement. */
+    free?: boolean;
   } | null>(null);
 
   // ── ÉCHEC CRITIQUE (W74) — FENÊTRE D'ANNULATION (pile de résolution profondeur 1).
@@ -1899,7 +1903,7 @@ export const useGameStore = defineStore("game", () => {
       return rejectMove("Cible de Porteur invalide.");
     const equipmentId = pend.equipmentId;
     pendingBearer.value = null;
-    return playFromHand(equipmentId, bearerId);
+    return playFromHand(equipmentId, bearerId, undefined, pend.free ?? false);
   }
 
   /**
@@ -1930,8 +1934,14 @@ export const useGameStore = defineStore("game", () => {
     instanceId: string,
     bearerId?: string,
     destination?: "monde" | "havreSac",
+    // A19 — FABRICATION : jeu SANS coût de lancement (le coût de Recette vient
+    // d'être payé par la frame de fabrication). Local uniquement (W-craft-4
+    // apportera la parité online) ; propagé au prompt de Porteur.
+    free = false,
   ): boolean {
     const seat = perspective.value;
+    if (free && online.value)
+      return rejectMove("La fabrication n'est pas encore disponible en ligne.");
     // EN LIGNE (P2) : intention PLAY_CARD — le serveur valide tour/zone/coût et
     // résout la destination (Salle → Havre-Sac ; Allié → Monde ou Havre-Sac au
     // choix, 303.1), incline les producteurs, pose le jeton d'arrivée. Un refus
@@ -1960,12 +1970,24 @@ export const useGameStore = defineStore("game", () => {
     }
     // 706.5 — le défenseur d'un combat déclaré joue hors de son tour (réaction).
     const reaction = canReactInCombat(seat);
-    const reason = whyCannotPlay(ctx, seat, instanceId, reaction, destination);
+    const reason = whyCannotPlay(
+      ctx,
+      seat,
+      instanceId,
+      reaction,
+      destination,
+      free,
+    );
     if (reason) return rejectMove(reason);
     const inst = state.value.instances[instanceId];
     const card = getCard(inst?.cardId ?? null);
     if (!inst || !card) return rejectMove("Carte inconnue.");
-    const plan = planCost(ctx, seat, card);
+    // Fabrication : AUCUN producteur incliné (coût de Recette déjà payé).
+    const plan = free
+      ? ({ ok: true, producers: [] } as ReturnType<typeof planCost> & {
+          ok: true;
+        })
+      : planCost(ctx, seat, card);
     if (!plan.ok) return rejectMove(plan.reason);
 
     // 305.x — TOUT ÉQUIPEMENT se joue ATTACHÉ à une créature contrôlée (Allié
@@ -1981,7 +2003,9 @@ export const useGameStore = defineStore("game", () => {
           return rejectMove(
             `Aucune créature en jeu ne peut porter ${card.name}.`,
           );
-        pendingBearer.value = { equipmentId: instanceId, eligible };
+        // `free` mémorisé : l'attachement (attachToBearer) rejoue par
+        // playFromHand et ne doit pas re-facturer un coût déjà payé (Recette).
+        pendingBearer.value = { equipmentId: instanceId, eligible, free };
         return true; // en attente du clic sur le Porteur (attachToBearer)
       }
       if (!eligible.includes(bearerId))
@@ -2184,6 +2208,9 @@ export const useGameStore = defineStore("game", () => {
     },
     removeFromCombat,
     grantBonusBlock,
+    // A19 — FABRICATION : jeu franc de la source (craftPlaySelf), coût de
+    // Recette déjà payé par les ops précédentes de la frame.
+    playCostFree: (id: string) => playFromHand(id, undefined, undefined, true),
   });
 
   /**
@@ -3581,7 +3608,54 @@ export const useGameStore = defineStore("game", () => {
    */
   function whyCannotCraftFromHand(instanceId: string): string | null {
     if (matchPhase.value !== "playing") return "Partie non en cours.";
+    if (online.value)
+      return "La fabrication n'est pas encore disponible en ligne.";
     return whyCannotCraft(rulesCtx(), perspective.value, instanceId);
+  }
+
+  /**
+   * A19 — FABRIQUER la carte (305.4/418.6) : enfile la séquence de coût de
+   * Recette [incliner l'Artisan du Métier (choix), recycler N cartes de
+   * l'Élément depuis la Défausse (choix), jouer la carte SANS coût]. Chaque
+   * étape est interactive et ANNULABLE tant que rien n'est consommé (les ops
+   * de coût abandonnent la frame sans exécuter la suite — l'Équipement reste
+   * en main). Le jeu final passe par playFromHand mode franc : choix du
+   * Porteur (Équipement), zone d'arrivée (Salle → Havre-Sac), effets
+   * d'apparition.
+   */
+  function craftFromHand(instanceId: string): boolean {
+    const reason = whyCannotCraftFromHand(instanceId);
+    if (reason) return rejectMove(reason);
+    const inst = state.value.instances[instanceId];
+    const card = getCard(inst?.cardId ?? null);
+    const recette = recetteOf(card);
+    if (!card || !recette) return rejectMove("Cette carte n'a pas de Recette.");
+    dispatch(
+      say(
+        perspective.value,
+        `${players.value[perspective.value].name} fabrique ${card.name} — Recette : ${recette.metier}, ${recette.n} carte(s) ${recette.element} (418.6).`,
+      ),
+    );
+    engine.enqueueEffect({
+      seat: perspective.value,
+      cardName: card.name,
+      sourceId: instanceId,
+      ops: [
+        {
+          op: "costTapControlled",
+          metier: recette.metier,
+          zones: ["monde", "havreSac"],
+        },
+        {
+          op: "costRecycle",
+          from: "defausse",
+          n: recette.n,
+          element: recette.element,
+        },
+        { op: "craftPlaySelf" },
+      ],
+    });
+    return true;
   }
 
   function shufflePioche(seat: Seat = perspective.value): void {
@@ -3767,6 +3841,7 @@ export const useGameStore = defineStore("game", () => {
     cannotPlayReason,
     // A19 — légalité de FABRICATION (Recette) du point de vue du siège affiché.
     whyCannotCraft: whyCannotCraftFromHand,
+    craftFromHand,
     effectChoice: engine.effectChoice,
     effectChoiceResolve: engine.effectChoiceResolve,
     effectChoiceSelect: engine.effectChoiceSelect,

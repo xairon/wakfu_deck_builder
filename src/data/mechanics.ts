@@ -494,6 +494,13 @@ export const MECHANICS: Mechanic[] = [
       "Coût d'un pouvoir (« payer pour … ») : inclinez une carte contrôlée dressée (Monde ou Havre-Sac, sauf Protecteur) pour produire et dépenser une Ressource (rulebook 4261). Aucune réserve stockée : la Ressource est produite et dépensée dans le même geste.",
   },
   {
+    id: "craft",
+    label: "Fabrication (Recette)",
+    category: "ressource",
+    glossary:
+      "Jouer un Équipement ou une Salle pour son coût de Recette (305.4/418.6) : incliner un Artisan possédant le Métier de la Recette, puis recycler depuis sa Défausse une carte de l'Élément donné par symbole de la Recette. La carte est alors jouée sans son coût de lancement.",
+  },
+  {
     id: "player-draw",
     label: "Pioche du joueur choisi",
     category: "ressource",
@@ -617,6 +624,7 @@ export const OP_TO_MECHANIC: Record<CompiledEffectOp["op"], MechanicTag> = {
   costRecycle: "cost-recycle",
   costRecycleControlled: "cost-recycle-controlled",
   costTapResource: "cost-tap-resource",
+  craftPlaySelf: "craft",
   playerDraw: "player-draw",
   playerLoseStatTurn: "player-lose-stat-turn",
   playerGainStat: "player-gain-stat",

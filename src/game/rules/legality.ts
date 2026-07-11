@@ -304,6 +304,10 @@ export function whyCannotPlay(
   instanceId: InstanceId,
   reaction = false,
   preferred?: "monde" | "havreSac",
+  // A19 — FABRICATION : le coût de lancement est REMPLACÉ par la Recette
+  // (305.4, déjà payée par la frame de fabrication) → l'affordabilité en
+  // Ressources n'est pas exigée. Toutes les autres contraintes tiennent.
+  freeCost = false,
 ): string | null {
   const { state } = ctx;
   const inst = state.instances[instanceId];
@@ -337,8 +341,10 @@ export function whyCannotPlay(
   // Couvre les Salles ET les Alliés routés au Havre-Sac au 1er tour (303.1).
   if (dest.zone === "havreSac" && !havreSacHasRoom(ctx, seat))
     return "Le Havre-Sac est plein (Taille atteinte).";
-  const plan = planCost(ctx, seat, card);
-  if (!plan.ok) return plan.reason;
+  if (!freeCost) {
+    const plan = planCost(ctx, seat, card);
+    if (!plan.ok) return plan.reason;
+  }
   // 305.x — un ÉQUIPEMENT se joue ATTACHÉ à une créature : sans Porteur éligible
   // en jeu (Allié non-Monstre / Héros contrôlé), il est injouable (jamais posé
   // « tout seul »). Grise la carte dans la main (affordance) plutôt qu'un refus au clic.

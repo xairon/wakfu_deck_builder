@@ -217,6 +217,14 @@ export interface EffectEngineDeps {
    * (tests isolés / sans combat) → no-op fidèle.
    */
   grantBonusBlock?: (n: number) => void;
+  /**
+   * A19 — FABRICATION (op craftPlaySelf) : joue la SOURCE (encore en main)
+   * SANS coût de lancement — le coût de Recette vient d'être payé par les ops
+   * précédentes de la frame. Fournie par le store (playFromHand mode franc :
+   * choix du Porteur, zone d'arrivée, effets d'apparition). Optionnelle :
+   * absente (tests isolés) → l'op est un no-op journalisé.
+   */
+  playCostFree?: (instanceId: string) => boolean;
 }
 
 /**
@@ -1389,6 +1397,30 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             `${cardName} : ${op.n === 1 ? "la première carte" : `les ${op.n} premières cartes`} de la Pioche défaussée${op.n === 1 ? "" : "s"}.`,
           ),
         );
+        continue;
+      }
+      if (op.op === "craftPlaySelf") {
+        // A19 — FABRICATION : le coût de Recette (Artisan incliné + recyclage
+        // typé) vient d'être payé par les ops précédentes → jouer la SOURCE
+        // depuis la main SANS coût de lancement (305.4). Source plus en main
+        // (état inattendu) → no-op journalisé, jamais de double-jeu.
+        const selfInst = sourceId
+          ? deps.getState().instances[sourceId]
+          : undefined;
+        if (!selfInst || selfInst.location.zone !== "main") {
+          deps.dispatch(
+            say(seat, `${cardName} : la carte n'est plus en main.`),
+          );
+          continue;
+        }
+        if (deps.playCostFree?.(selfInst.instanceId)) {
+          deps.dispatch(
+            say(
+              seat,
+              `${cardName} est fabriqué (coût de Recette payé, 418.6).`,
+            ),
+          );
+        }
         continue;
       }
       if (op.op === "costDiscardSelf") {
