@@ -313,13 +313,21 @@ export function metierToken(metier: string): string {
 }
 
 /**
- * Métiers possédés par une instance : innés (`subTypes`) ∪ octroyés (jetons
- * `metier_*` > 0). Source unique de vérité pour « possède un Métier » (Artisan) —
- * lu par condSpec `selfIsArtisan` et tout futur consommateur (aura Artisan).
+ * Métiers possédés par une instance : innés (`subTypes` OU ligne de TRAIT —
+ * les données scrapées encodent « Forgeron » de Guerya Wood/Merelyne Manro en
+ * effet-trait, jamais en subTypes) ∪ octroyés (jetons `metier_*` > 0). Source
+ * unique de vérité pour « possède un Métier » (Artisan) — lu par condSpec
+ * `selfIsArtisan` et tout futur consommateur (aura Artisan).
  */
 export function metierOf(
   inst: { counters?: { tokens?: Record<string, number> } } | null | undefined,
-  card: { subTypes?: readonly string[] } | null | undefined,
+  card:
+    | {
+        subTypes?: readonly string[];
+        effects?: readonly { description?: string; coverage?: string }[];
+      }
+    | null
+    | undefined,
 ): string[] {
   const out = new Set<string>();
   // Comparaison NORMALISÉE (minuscules + accents retirés) : la casse des subTypes
@@ -329,6 +337,14 @@ export function metierOf(
     s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   for (const st of card?.subTypes ?? []) {
     const hit = METIERS.find((m) => norm(m) === norm(st));
+    if (hit) out.add(hit);
+  }
+  // Métier inné en TRAIT : ligne de texte réduite au nom du Métier, cataloguée
+  // coverage "trait" (STRICT : une phrase citant un Métier ne compte pas).
+  for (const e of card?.effects ?? []) {
+    if (e?.coverage !== "trait" || !e.description) continue;
+    const desc = e.description.trim(); // snapshot : narrowing perdu en closure
+    const hit = METIERS.find((m) => norm(m) === norm(desc));
     if (hit) out.add(hit);
   }
   const tokens = inst?.counters?.tokens ?? {};

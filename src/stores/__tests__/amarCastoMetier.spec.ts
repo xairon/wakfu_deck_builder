@@ -74,4 +74,34 @@ describe("Amar Casto — octroi de Métier (Artisan)", () => {
     // « forgeron » minuscule (scrape) → détecté, stocké sous la forme canonique.
     expect(metierOf(inst, { subTypes: ["forgeron"] })).toEqual(["Forgeron"]);
   });
+
+  it("un Métier inné en TRAIT (Guerya Wood, Merelyne Manro) rend Artisan", () => {
+    // Les données encodent les Métiers innés comme effets-traits (coverage
+    // "trait"), PAS en subTypes (0 carte avec un Métier en subTypes, vérifié
+    // toutes extensions) — metierOf doit les lire aussi.
+    const { store } = makeEffectSandbox({ first: "A", allAllies: true });
+    const src = placeInZone(store, "A", { zone: "monde" });
+    const inst = store.state.instances[src];
+    expect(
+      metierOf(inst, {
+        subTypes: ["Eniripsa"],
+        effects: [
+          { description: "Forgeron", coverage: "trait" },
+          { description: "Bricoleur", coverage: "trait" },
+        ],
+      }),
+    ).toEqual(["Forgeron", "Bricoleur"]);
+    // Une PHRASE citant un Métier (non-trait) ne compte pas.
+    expect(
+      metierOf(inst, {
+        subTypes: [],
+        effects: [
+          {
+            description: "Détruisez le Forgeron de votre choix.",
+            coverage: "auto",
+          },
+        ],
+      }),
+    ).toEqual([]);
+  });
 });
