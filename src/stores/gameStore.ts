@@ -3276,11 +3276,14 @@ export const useGameStore = defineStore("game", () => {
       c.attackers = c.attackers.filter((a) => a !== instanceId);
       return;
     }
-    if (
-      !eligibleAttackers(rulesCtx(), perspective.value).includes(instanceId)
-    ) {
+    // Siège de la DÉCLARATION = le joueur ACTIF (703), PAS la perspective : en
+    // solo mono-écran, la vue reste côté humain pendant le combat du BOT —
+    // juger par `perspective` rendait le bot incapable d'ajouter un attaquant
+    // (retour silencieux) et figeait la partie (stall détecté au playtest).
+    const atkSeat = turn.value.active;
+    if (!eligibleAttackers(rulesCtx(), atkSeat).includes(instanceId)) {
       const inst = state.value.instances[instanceId];
-      if (inst && inst.controller === perspective.value) {
+      if (inst && inst.controller === atkSeat) {
         ruleError.value =
           "Cette carte ne peut pas attaquer (inclinée, arrivée ce tour, ou type non combattant).";
       }
@@ -3290,7 +3293,7 @@ export const useGameStore = defineStore("game", () => {
     // la vérification de légalité de la déclaration (jetons pas encore posés).
     const ctxNow = rulesCtx();
     const cap =
-      pmOf(ctxNow, perspective.value) +
+      pmOf(ctxNow, atkSeat) +
       attackPmBonus(ctxNow, [...c.attackers, instanceId]);
     if (c.attackers.length >= cap) {
       ruleError.value = `Maximum ${cap} attaquant(s) — limite de PM (703).`;
@@ -3308,7 +3311,10 @@ export const useGameStore = defineStore("game", () => {
       c.target = null;
       return;
     }
-    const t = eligibleTargets(rulesCtx(), perspective.value).find(
+    // Même règle que combatToggleAttacker : la cible est jugée pour le joueur
+    // ACTIF (l'attaquant, 702.2) — pas pour la perspective (vue humaine
+    // pendant le combat du bot → le bot ne pouvait JAMAIS viser : stall).
+    const t = eligibleTargets(rulesCtx(), turn.value.active).find(
       (x) => x.instanceId === instanceId,
     );
     // refus EXPLIQUÉ (jamais silencieux), comme l'attaque et le blocage (702.2).
