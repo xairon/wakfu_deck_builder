@@ -78,6 +78,17 @@ function stop(): void {
   audio?.pause();
 }
 
+/**
+ * Pause CONTEXTUELLE (quitter la partie, quitter la page) : coupe la lecture
+ * SANS toucher à la préférence persistée — au prochain match, la musique
+ * reprend selon le choix de l'utilisateur (bug rapporté : « quand on quitte
+ * la partie, la musique reste »).
+ */
+function pause(): void {
+  audio?.pause();
+  playing.value = false;
+}
+
 export function useGameMusic() {
   void loadManifest();
   function toggle(): void {
@@ -107,5 +118,5 @@ export function useGameMusic() {
     playing.value = true;
     playCurrent();
   }
-  return { available, playing, toggle, resumeIfWanted };
+  return { available, playing, toggle, resumeIfWanted, pause };
 }

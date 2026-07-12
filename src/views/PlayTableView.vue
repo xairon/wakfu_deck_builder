@@ -735,16 +735,29 @@ const sounds = useGameSounds();
 // Musique de fond (pistes locales de l'exploitant, cf. useGameMusic).
 const music = useGameMusic();
 // Démarrage AUTO au premier geste (politique d'autoplay : impossible avant
-// une interaction). ON PAR DÉFAUT dès qu'une playlist locale existe — seule
-// une coupure explicite au bouton (préférence « 0 ») la désactive.
-// resumeIfWanted ATTEND le manifeste (le premier clic peut précéder le fetch).
+// une interaction). ON PAR DÉFAUT dès qu'une playlist existe — seule une
+// coupure explicite au bouton la désactive. resumeIfWanted ATTEND le
+// manifeste (le premier clic peut précéder le fetch).
 onMounted(() => {
   const once = () => {
-    void music.resumeIfWanted();
+    // La musique n'accompagne QUE le match : au lobby, on n'arme rien.
+    if (store.matchPhase !== "lobby") void music.resumeIfWanted();
     window.removeEventListener("pointerdown", once);
   };
   window.addEventListener("pointerdown", once);
 });
+// La musique est BORNÉE À LA PARTIE (bug rapporté : « quand on quitte la
+// partie, la musique reste ») : retour au lobby → pause contextuelle (sans
+// toucher la préférence) ; entrée en match → reprise (l'événement vient d'un
+// clic → l'activation utilisateur couvre le play()).
+watch(
+  () => store.matchPhase,
+  (now, prev) => {
+    if (now === "lobby") music.pause();
+    else if (prev === "lobby") void music.resumeIfWanted();
+  },
+);
+onUnmounted(() => music.pause());
 const route = useRoute();
 
 const toast = useToast();
