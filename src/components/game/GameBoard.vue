@@ -1444,6 +1444,18 @@ watch(
 
 // ── Combat assisté : surbrillances + bouton Attaquer ────────────────────────
 function slotCls(instanceId: string): Record<string, boolean> {
+  // PAIEMENT au choix : producteurs éligibles surlignés (même affordance que
+  // le ciblage), producteurs déjà choisis marqués « engagés » (comme un
+  // attaquant déclaré). Sans ça, l'invite disait « clique tes cartes » sans
+  // montrer LESQUELLES — la seule surface sans feedback visuel de la table.
+  if (store.pendingPayment) {
+    return {
+      "gslot--target-can":
+        store.pendingPayment.eligible.includes(instanceId) &&
+        !store.pendingPayment.chosen.includes(instanceId),
+      "gslot--atk": store.pendingPayment.chosen.includes(instanceId),
+    };
+  }
   if (store.effectTargeting) {
     return {
       "gslot--target-can": store.effectTargetIdsList.includes(instanceId),
