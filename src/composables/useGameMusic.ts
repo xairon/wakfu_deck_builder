@@ -15,7 +15,12 @@
  */
 import { ref } from "vue";
 
-const STORAGE_KEY = "wakfu-table-music-on";
+// Clé V2 : l'ancienne (« wakfu-table-music-on ») pouvait contenir un « 0 »
+// écrit par un clic du temps où le bouton ne jouait rien (pas de playlist) —
+// ce vieux réglage coupait la musique malgré le ON par défaut (retour
+// utilisateur « toujours pas de musique »). On repart proprement : seul un
+// opt-out fait APRÈS cette version compte.
+const STORAGE_KEY = "wakfu-table-music-v2";
 
 const available = ref(false);
 const playing = ref(false);
