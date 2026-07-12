@@ -1,9 +1,9 @@
 /**
- * Musique de fond de la table — lecteur de PISTES LOCALES fournies par
- * l'exploitant de l'appli (AUCUNE piste embarquée : les musiques du MMO Wakfu
- * sont la propriété d'Ankama — on ne les redistribue pas ; l'utilisateur
- * dépose les fichiers qu'il possède dans `public/audio/music/` et les liste
- * dans `manifest.json`, cf. le README du dossier).
+ * Musique de fond de la table — lecteur des pistes de `public/audio/music/`
+ * listées dans `manifest.json`. N'y embarquer que des pistes aux droits
+ * réglés (les musiques du MMO Wakfu appartiennent à Ankama — jamais
+ * redistribuées) ; cf. le README du dossier pour la politique et la
+ * traçabilité des autorisations.
  *
  * - Lecture en BOUCLE de la playlist (ordre mélangé une fois au chargement),
  *   volume discret (0,25), enchaînement automatique des pistes.
