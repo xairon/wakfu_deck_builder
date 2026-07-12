@@ -93,5 +93,5 @@ dofus_mag_decks/
 dofus_mag_decks_rotated/
 
 # Pistes audio locales (droits Ankama/OST — jamais dans le depot ; README du dossier)
-public/audio/music/*.mp3
+# (pistes musicales : embarquées UNIQUEMENT si les droits sont réglés — décision explicite de l'exploitant)
 public/audio/music/*.ogg
