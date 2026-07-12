@@ -14,7 +14,7 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "baseUrl": ".",
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals", "vite-plugin-pwa/vue"],
     "paths": {
       "@/*": ["src/*"]
     }

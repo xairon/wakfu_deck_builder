@@ -33,7 +33,7 @@ export default defineConfig({
       },
     }),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt", // invite de mise a jour (PWAUpdatePrompt) — autoUpdate laissait les onglets/PWA sur l ancien bundle sans le dire
       includeAssets: ["images/pwa-192x192.png", "images/pwa-512x512.png"],
       manifest: {
         name: "Wakfu Deck Builder",

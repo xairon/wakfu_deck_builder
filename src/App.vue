@@ -146,6 +146,7 @@
 
     <ToastContainer />
     <PWAInstallPrompt />
+    <PWAUpdatePrompt />
   </div>
 </template>
 
@@ -154,6 +155,7 @@ import { onMounted, ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import ToastContainer from "./components/ui/ToastContainer.vue";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt.vue";
+import PWAUpdatePrompt from "./components/ui/PWAUpdatePrompt.vue";
 import ThemeToggle from "./components/common/ThemeToggle.vue";
 import UserMenu from "./components/auth/UserMenu.vue";
 import SiteFooter from "./components/layout/SiteFooter.vue";
