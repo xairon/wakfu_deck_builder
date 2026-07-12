@@ -734,13 +734,13 @@ const tutorial = useTutorialStore();
 const sounds = useGameSounds();
 // Musique de fond (pistes locales de l'exploitant, cf. useGameMusic).
 const music = useGameMusic();
-// Reprise AUTO au premier geste (politique d'autoplay : impossible avant une
-// interaction) si la préférence « Musique ON » était mémorisée — sans ce
-// câblage, la musique ne reprenait JAMAIS après un rechargement (bug
-// utilisateur : « j'ai pas de musique quand je joue »).
+// Démarrage AUTO au premier geste (politique d'autoplay : impossible avant
+// une interaction). ON PAR DÉFAUT dès qu'une playlist locale existe — seule
+// une coupure explicite au bouton (préférence « 0 ») la désactive.
+// resumeIfWanted ATTEND le manifeste (le premier clic peut précéder le fetch).
 onMounted(() => {
   const once = () => {
-    music.resumeIfWanted();
+    void music.resumeIfWanted();
     window.removeEventListener("pointerdown", once);
   };
   window.addEventListener("pointerdown", once);

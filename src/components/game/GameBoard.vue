@@ -448,80 +448,10 @@
         <span class="gcombat__step">
           ✨ {{ store.effectTargeting.cardName }} —
           {{
-            store.effectTargeting.op.op === "destroyTarget"
-              ? store.effectTargeting.op.whatAny
-                ? "choisis la cible à détruire"
-                : `choisis ${
-                    store.effectTargeting.op.what === "Allié"
-                      ? "l'Allié"
-                      : store.effectTargeting.op.what === "Zone"
-                        ? "la Zone"
-                        : "l'Équipement"
-                  } à détruire`
-              : store.effectTargeting.op.op === "banishTarget"
-                ? "choisis la cible à bannir (retirée de la partie)"
-                : store.effectTargeting.op.op === "tapTarget"
-                  ? "choisis la cible à incliner"
-                  : store.effectTargeting.op.op === "untapTarget"
-                    ? "choisis la cible à redresser"
-                    : store.effectTargeting.op.op === "returnToHand"
-                      ? "choisis la cible à renvoyer en main"
-                      : store.effectTargeting.op.op === "removeFromCombatTarget"
-                        ? "choisis l'attaquant ou bloqueur à retirer du combat"
-                        : store.effectTargeting.op.op === "costTapControlled"
-                          ? "coût : choisis une de tes créatures à incliner"
-                          : store.effectTargeting.op.op === "costTapResource"
-                            ? "coût : choisis une carte à incliner pour produire une Ressource"
-                            : store.effectTargeting.op.op ===
-                                "costDestroyControlled"
-                              ? "coût : choisis une de tes créatures à détruire"
-                              : store.effectTargeting.op.op ===
-                                  "costRecycleControlled"
-                                ? "coût : choisis une de tes créatures à recycler"
-                                : store.effectTargeting.op.op ===
-                                    "damageTargetByForce"
-                                  ? "choisis la cible qui subit la Force en Dommages"
-                                  : store.effectTargeting.op.op ===
-                                        "playerDraw" ||
-                                      store.effectTargeting.op.op ===
-                                        "playerLoseStatTurn" ||
-                                      store.effectTargeting.op.op ===
-                                        "playerGainStat"
-                                    ? "choisis le Héros du joueur concerné"
-                                    : store.effectTargeting.op.op ===
-                                        "grantKeywordTarget"
-                                      ? `choisis la cible qui gagne ${store.effectTargeting.op.keyword}`
-                                      : store.effectTargeting.op.op ===
-                                          "grantResistanceTarget"
-                                        ? "choisis la cible qui gagne de la Résistance"
-                                        : store.effectTargeting.op.op ===
-                                            "damageMultiTarget"
-                                          ? `choisis une cible qui subit ${store.effectTargeting.op.n} Dommage(s) (jusqu'à ${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                                          : store.effectTargeting.op.op ===
-                                              "tapMultiTarget"
-                                            ? `choisis une créature à incliner (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                                            : store.effectTargeting.op.op ===
-                                                "untapMultiTarget"
-                                              ? `choisis une créature à redresser (${store.effectTargeting.multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`
-                                              : store.effectTargeting.op.op ===
-                                                  "drawTargetXp"
-                                                ? "choisis l'Allié dont tu piocheras la valeur d'XP"
-                                                : store.effectTargeting.op
-                                                      .op === "costPayX"
-                                                  ? `incline une carte pour payer (${store.effectTargeting.multi?.chosen?.length ?? 0} Ressource(s) payée(s)) — « Passer » pour arrêter`
-                                                  : store.effectTargeting.op
-                                                        .op ===
-                                                      "distributeDamage"
-                                                    ? `répartis les Dommages (${store.effectTargeting.multi?.remaining ?? 0} point(s) restant(s)) — clique une cible par point`
-                                                    : store.effectTargeting.op
-                                                          .op ===
-                                                        "duelTapDuelist"
-                                                      ? "choisis l'un de tes Alliés ou Héros dressés à incliner (le duelliste)"
-                                                      : store.effectTargeting.op
-                                                            .op ===
-                                                          "duelChooseChallenged"
-                                                        ? "choisis l'Allié ou Héros adverse à défier en duel"
-                                                        : `choisis l'Allié qui subit ${"n" in store.effectTargeting.op ? store.effectTargeting.op.n : 0} Dommage(s)`
+            targetingLabel(
+              store.effectTargeting.op,
+              store.effectTargeting.multi,
+            )
           }}
         </span>
         <div class="gcombat__btns">
@@ -1345,6 +1275,84 @@ function moveCreatureSelected(): void {
   if (!inst || !opt) return;
   store.moveCreature(inst.instanceId, opt.to); // rejette avec le motif si illégal
   selectedId.value = null; // la zone a changé → referme la barre
+}
+/**
+ * Libellé du bandeau de CIBLAGE D'EFFET — un libellé DÉDIÉ par op (le vieux
+ * ternaire repliait tout op inconnu sur « subit N Dommages », affichant un
+ * effet FAUX : Amal Odoua « le Héros regagne 3 PV » annonçait des dégâts).
+ * Repli désormais NEUTRE : ne jamais mentir sur un effet.
+ */
+function targetingLabel(
+  op: NonNullable<(typeof store)["effectTargeting"]>["op"],
+  multi: NonNullable<(typeof store)["effectTargeting"]>["multi"],
+): string {
+  switch (op.op) {
+    case "destroyTarget":
+      return op.whatAny
+        ? "choisis la cible à détruire"
+        : `choisis ${
+            op.what === "Allié"
+              ? "l'Allié"
+              : op.what === "Zone"
+                ? "la Zone"
+                : "l'Équipement"
+          } à détruire`;
+    case "banishTarget":
+      return "choisis la cible à bannir (retirée de la partie)";
+    case "damageTarget":
+      return `choisis ${op.heroes ? "l'Allié ou Héros" : "l'Allié"} qui subit ${op.n} Dommage(s)`;
+    case "healHeroTarget":
+      return `choisis le Héros qui regagne ${op.n} PV`;
+    case "buffForceTarget":
+      return `choisis la cible qui gagne +${op.n} en Force${op.alsoKeyword ? ` et ${op.alsoKeyword}` : ""} jusqu'à la fin du tour`;
+    case "buffForceMultiTarget":
+      return `choisis une cible qui gagne +${op.n} en Force${op.alsoKeyword ? ` et ${op.alsoKeyword}` : ""} (jusqu'à ${multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`;
+    case "tapTarget":
+      return "choisis la cible à incliner";
+    case "untapTarget":
+      return "choisis la cible à redresser";
+    case "returnToHand":
+      return "choisis la cible à renvoyer en main";
+    case "removeFromCombatTarget":
+      return "choisis l'attaquant ou bloqueur à retirer du combat";
+    case "costTapControlled":
+      return "coût : choisis une de tes créatures à incliner";
+    case "costTapResource":
+      return "coût : choisis une carte à incliner pour produire une Ressource";
+    case "costDestroyControlled":
+      return "coût : choisis une de tes créatures à détruire";
+    case "costRecycleControlled":
+      return "coût : choisis une de tes créatures à recycler";
+    case "damageTargetByForce":
+      return "choisis la cible qui subit la Force en Dommages";
+    case "playerDraw":
+    case "playerLoseStatTurn":
+    case "playerGainStat":
+      return "choisis le Héros du joueur concerné";
+    case "grantKeywordTarget":
+      return `choisis la cible qui gagne ${op.keyword}`;
+    case "grantResistanceTarget":
+      return "choisis la cible qui gagne de la Résistance";
+    case "damageMultiTarget":
+      return `choisis une cible qui subit ${op.n} Dommage(s) (jusqu'à ${multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`;
+    case "tapMultiTarget":
+      return `choisis une créature à incliner (${multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`;
+    case "untapMultiTarget":
+      return `choisis une créature à redresser (${multi?.remaining ?? 0} restante(s)) — « Passer » pour arrêter`;
+    case "drawTargetXp":
+      return "choisis l'Allié dont tu piocheras la valeur d'XP";
+    case "costPayX":
+      return `incline une carte pour payer (${multi?.chosen?.length ?? 0} Ressource(s) payée(s)) — « Passer » pour arrêter`;
+    case "distributeDamage":
+      return `répartis les Dommages (${multi?.remaining ?? 0} point(s) restant(s)) — clique une cible par point`;
+    case "duelTapDuelist":
+      return "choisis l'un de tes Alliés ou Héros dressés à incliner (le duelliste)";
+    case "duelChooseChallenged":
+      return "choisis l'Allié ou Héros adverse à défier en duel";
+    default:
+      // Repli NEUTRE : jamais un effet inventé (cf. bug Amal Odoua).
+      return "choisis la cible de l'effet";
+  }
 }
 function select(instanceId: string): void {
   // PAIEMENT au choix (coût de lancement) : le clic désigne un producteur à

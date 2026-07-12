@@ -22,11 +22,15 @@ const playing = ref(false);
 const tracks = ref<string[]>([]);
 let audio: HTMLAudioElement | null = null;
 let index = 0;
-let loaded = false;
+let manifestPromise: Promise<void> | null = null;
 
-async function loadManifest(): Promise<void> {
-  if (loaded) return;
-  loaded = true;
+function loadManifest(): Promise<void> {
+  if (manifestPromise) return manifestPromise;
+  manifestPromise = doLoadManifest();
+  return manifestPromise;
+}
+
+async function doLoadManifest(): Promise<void> {
   try {
     const res = await fetch("/audio/music/manifest.json");
     if (!res.ok) return;
@@ -78,16 +82,25 @@ export function useGameMusic() {
     if (playing.value) playCurrent();
     else stop();
   }
-  /** Reprise auto au premier geste si la préférence était ON (autoplay). */
-  function resumeIfWanted(): void {
-    if (playing.value || available.value === false) return;
-    if (
-      typeof localStorage !== "undefined" &&
-      localStorage.getItem(STORAGE_KEY) === "1"
-    ) {
-      playing.value = true;
-      playCurrent();
-    }
+  /**
+   * Démarrage/reprise au premier GESTE utilisateur (politique d'autoplay).
+   * ON PAR DÉFAUT dès qu'une playlist existe (retour utilisateur : « y'a
+   * toujours pas de musique » — l'opt-in au bouton n'était pas découvert) ;
+   * seule une désactivation EXPLICITE (« 0 » persisté) la coupe. ATTEND le
+   * manifeste : au premier clic d'une partie, le fetch peut ne pas avoir
+   * abouti — sans l'attente, la reprise était silencieusement perdue.
+   */
+  async function resumeIfWanted(): Promise<void> {
+    if (playing.value) return;
+    await loadManifest();
+    if (!available.value) return;
+    const pref =
+      typeof localStorage !== "undefined"
+        ? localStorage.getItem(STORAGE_KEY)
+        : null;
+    if (pref === "0") return; // opt-out explicite
+    playing.value = true;
+    playCurrent();
   }
   return { available, playing, toggle, resumeIfWanted };
 }
