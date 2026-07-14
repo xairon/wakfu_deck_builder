@@ -160,6 +160,10 @@ function fixSpecialCharacters(str: string): string {
     .replace(/\?\?/g, "é"); // Dernier recours pour les 'é' non reconnus
 }
 
+// IMPORTANT : cette fonction PROPAGE ses erreurs (fetch, parsing, format).
+// Ne pas la « tolérer » en renvoyant [] : un catalogue partiel servi comme
+// complet fait jeter les cartes des extensions manquantes lors de la
+// reconstruction des decks cloud (perte de cartes constatée en prod).
 async function loadExtensionCards(extension: string): Promise<Card[]> {
   try {
     const response = await fetch(`/data/${extension}.json`);
@@ -191,7 +195,11 @@ async function loadExtensionCards(extension: string): Promise<Card[]> {
     }
 
     if (!Array.isArray(cards)) {
-      return [];
+      // Donnée corrompue ≠ extension vide : on échoue franchement plutôt que
+      // de servir un catalogue amputé.
+      throw new Error(
+        `Format inattendu pour l'extension ${extension}: tableau attendu`,
+      );
     }
 
     if (cards.length === 0) {
@@ -282,8 +290,44 @@ async function loadExtensionCards(extension: string): Promise<Card[]> {
       `Erreur lors du chargement des cartes pour l'extension ${extension}:`,
       error,
     );
-    return [];
+    throw error;
   }
+}
+
+/**
+ * Charge toutes les extensions en parallèle ; les échecs sont re-tentés une
+ * fois, et s'il en reste, on REJETTE : tout ou rien. Jamais de catalogue
+ * partiel (il tronquerait silencieusement les decks au pull cloud).
+ */
+async function loadExtensionsAllOrNothing(): Promise<Card[]> {
+  const results = await Promise.allSettled(
+    EXTENSION_FILES.map((extension) => loadExtensionCards(extension)),
+  );
+  const cardsByExtension: Card[][] = [];
+  const failed: number[] = [];
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled") cardsByExtension[i] = r.value;
+    else failed.push(i);
+  });
+
+  if (failed.length > 0) {
+    const retries = await Promise.allSettled(
+      failed.map((i) => loadExtensionCards(EXTENSION_FILES[i])),
+    );
+    const stillFailing: string[] = [];
+    retries.forEach((r, j) => {
+      const i = failed[j];
+      if (r.status === "fulfilled") cardsByExtension[i] = r.value;
+      else stillFailing.push(EXTENSION_FILES[i]);
+    });
+    if (stillFailing.length > 0) {
+      throw new Error(
+        `Catalogue incomplet, extension(s) en échec après retry: ${stillFailing.join(", ")}`,
+      );
+    }
+  }
+
+  return cardsByExtension.flat();
 }
 
 export async function loadAllCards(): Promise<Card[]> {
@@ -294,16 +338,10 @@ export async function loadAllCards(): Promise<Card[]> {
       return cachedCards;
     }
 
-    // Charger les cartes de chaque extension en parallèle
-    const results = await Promise.all(
-      EXTENSION_FILES.map((extension) => loadExtensionCards(extension)),
-    );
-    const allCards: Card[] = [];
-    for (const cards of results) {
-      allCards.push(...cards);
-    }
+    const allCards = await loadExtensionsAllOrNothing();
 
-    // Mettre en cache pour les prochains chargements
+    // Mettre en cache pour les prochains chargements (catalogue complet
+    // uniquement : on n'arrive ici que si toutes les extensions ont chargé)
     saveToCache(allCards);
 
     return allCards;

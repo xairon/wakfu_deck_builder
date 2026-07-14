@@ -111,6 +111,43 @@ describe("cloudSync — conversion Deck <-> CloudDeck", () => {
     expect(deck.cards[0].card.id).toBe("known");
   });
 
+  it("cloudToDeck collecte les ids introuvables (garde d'intégrité du pull)", () => {
+    const cloud = {
+      id: "d4",
+      user_id: "u",
+      name: "Deck",
+      hero_id: "unknown-hero",
+      havre_sac_id: "unknown-hs",
+      cards: [
+        { cardId: "known", quantity: 1 },
+        { cardId: "missing-1", quantity: 2 },
+        { cardId: "missing-2", quantity: 3, isReserve: true },
+      ],
+      created_at: "a",
+      updated_at: "b",
+    } as any;
+
+    const missing: string[] = [];
+    const deck = cloudToDeck(
+      cloud,
+      (id) => (id === "known" ? card("known") : undefined),
+      missing,
+    );
+
+    // Comportement inchangé côté deck reconstruit…
+    expect(deck.cards).toHaveLength(1);
+    // …mais l'appelant peut désormais savoir que la reconstruction est tronquée.
+    expect(missing).toEqual(
+      expect.arrayContaining([
+        "unknown-hero",
+        "unknown-hs",
+        "missing-1",
+        "missing-2",
+      ]),
+    );
+    expect(missing).toHaveLength(4);
+  });
+
   it("aller-retour deckToCloud -> cloudToDeck préserve la structure", () => {
     const catalog: Record<string, any> = {
       h: card("h"),

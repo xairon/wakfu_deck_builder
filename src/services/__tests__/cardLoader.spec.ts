@@ -541,7 +541,10 @@ describe("cardLoader", () => {
       expect(result).toHaveLength(2);
     });
 
-    it("should handle fetch failure for one extension gracefully", async () => {
+    it("should reject on persistent extension failure and never cache a partial catalogue", async () => {
+      // Un catalogue partiel servait des decks TRONQUÉS (cartes des extensions
+      // manquantes jetées au pull cloud) et restait en cache 24 h. Désormais :
+      // échec persistant d'une extension (après retry) → rejet, pas de cache.
       (localStorage.getItem as Mock).mockReturnValue(null);
       (global.fetch as Mock).mockImplementation(async (url: string) => {
         if (url.includes("amakna")) {
@@ -557,12 +560,38 @@ describe("cardLoader", () => {
         };
       });
 
+      await expect(loadAllCards()).rejects.toThrow(/amakna/);
+      expect(localStorage.setItem).not.toHaveBeenCalledWith(
+        CACHE_KEY,
+        expect.any(String),
+      );
+    });
+
+    it("should retry a transiently failing extension and return the full catalogue", async () => {
+      (localStorage.getItem as Mock).mockReturnValue(null);
+      let amaknaCalls = 0;
+      (global.fetch as Mock).mockImplementation(async (url: string) => {
+        if (url.includes("amakna")) {
+          amaknaCalls++;
+          if (amaknaCalls === 1) throw new Error("Network hiccup");
+          return {
+            ok: true,
+            status: 200,
+            text: async () => JSON.stringify([makeRawCard({ id: "amk-1" })]),
+          };
+        }
+        return { ok: true, status: 200, text: async () => "[]" };
+      });
+
       const result = await loadAllCards();
 
-      // Should still have cards from other extensions
-      expect(result.find((c) => c.id === "ast-1")).toBeDefined();
-      // amakna failure should not break the entire load
-      expect(result.length).toBeGreaterThanOrEqual(1);
+      expect(result.map((c) => c.id)).toContain("amk-1");
+      expect(amaknaCalls).toBe(2);
+      // Catalogue complet après retry → mis en cache normalement.
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        CACHE_KEY,
+        expect.any(String),
+      );
     });
 
     it("should handle empty JSON array for an extension", async () => {
@@ -595,7 +624,7 @@ describe("cardLoader", () => {
       expect(result).toEqual([]);
     });
 
-    it("should handle non-array JSON response gracefully", async () => {
+    it("should reject on non-array JSON response (corrupt data ≠ empty extension)", async () => {
       (localStorage.getItem as Mock).mockReturnValue(null);
       (global.fetch as Mock).mockImplementation(async () => ({
         ok: true,
@@ -603,8 +632,7 @@ describe("cardLoader", () => {
         text: async () => JSON.stringify({ not: "an array" }),
       }));
 
-      const result = await loadAllCards();
-      expect(result).toEqual([]);
+      await expect(loadAllCards()).rejects.toThrow();
     });
 
     it("should provide default extension info when card has none", async () => {
@@ -855,22 +883,22 @@ describe("cardLoader", () => {
   // =========================================================================
 
   describe("Error handling", () => {
-    it("should not throw when all extensions fail individually (returns empty)", async () => {
+    it("should reject when all extensions fail (no silent empty catalogue)", async () => {
       (localStorage.getItem as Mock).mockReturnValue(null);
-      // loadExtensionCards catches errors and returns [] for each extension
       (global.fetch as Mock).mockImplementation(async () => ({
         ok: false,
         status: 500,
         statusText: "Server Error",
       }));
 
-      const result = await loadAllCards();
-
-      // All extensions fail gracefully, returning empty arrays
-      expect(result).toEqual([]);
+      await expect(loadAllCards()).rejects.toThrow();
+      expect(localStorage.setItem).not.toHaveBeenCalledWith(
+        CACHE_KEY,
+        expect.any(String),
+      );
     });
 
-    it("should handle invalid JSON parse errors gracefully per extension", async () => {
+    it("should reject on persistent invalid JSON for one extension", async () => {
       (localStorage.getItem as Mock).mockReturnValue(null);
       (global.fetch as Mock).mockImplementation(async (url: string) => {
         if (url.includes("amakna")) {
@@ -887,13 +915,10 @@ describe("cardLoader", () => {
         };
       });
 
-      const result = await loadAllCards();
-
-      // amakna fails with parse error, other extensions succeed
-      expect(result.find((c) => c.id === "ok-card")).toBeDefined();
+      await expect(loadAllCards()).rejects.toThrow(/amakna/);
     });
 
-    it("should handle network errors per extension without breaking others", async () => {
+    it("should reject on persistent network error for one extension", async () => {
       (localStorage.getItem as Mock).mockReturnValue(null);
       (global.fetch as Mock).mockImplementation(async (url: string) => {
         if (url.includes("draft")) {
@@ -911,13 +936,10 @@ describe("cardLoader", () => {
         };
       });
 
-      const result = await loadAllCards();
-
-      // 10 extensions succeed, 1 fails - should have 10 cards
-      expect(result.length).toBe(10);
+      await expect(loadAllCards()).rejects.toThrow(/draft/);
     });
 
-    it("should log console.error when fetch fails for an extension", async () => {
+    it("should log console.error when the catalogue load fails", async () => {
       (localStorage.getItem as Mock).mockReturnValue(null);
       (global.fetch as Mock).mockImplementation(async () => ({
         ok: false,
@@ -925,7 +947,7 @@ describe("cardLoader", () => {
         statusText: "Server Error",
       }));
 
-      await loadAllCards();
+      await expect(loadAllCards()).rejects.toThrow();
 
       expect(console.error).toHaveBeenCalled();
     });

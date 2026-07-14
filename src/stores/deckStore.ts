@@ -7,6 +7,18 @@ import { sameCanonicalCard } from "@/utils/cardIdentity";
 import { validateDeck, getCardCopies } from "@/validators/deck";
 import { useCardStore } from "./cardStore";
 import { namespacedKey } from "@/services/storageNamespace";
+// Imports STATIQUES (pas de cycle : authStore n'importe deckStore que
+// dynamiquement) : le flush du push sur pagehide ne peut pas se permettre
+// d'attendre des imports dynamiques pendant le déchargement de la page.
+import { isSupabaseConfigured } from "@/services/supabase";
+import { useAuthStore } from "@/stores/authStore";
+import {
+  saveDecksToCloud,
+  loadDecksFromCloud,
+  deleteDeckFromCloud,
+  deckToCloud,
+  cloudToDeck,
+} from "@/services/cloudSync";
 
 // Configuration
 // Clé de stockage des decks, namespacée par compte actif (invité = clé de base).
@@ -217,10 +229,18 @@ export const useDeckStore = defineStore("deck", () => {
 
   // --- Synchronisation cloud des decks (best-effort, mode connecté) ---
   let cloudPushTimeout: ReturnType<typeof setTimeout> | null = null;
+  // Retries après un push en échec : sans eux, une modification dont le push
+  // échoue n'est JAMAIS re-poussée, le cloud reste périmé et le prochain pull
+  // écrase le travail local (perte de cartes constatée en prod).
+  let cloudPushRetries = 0;
+  const MAX_PUSH_RETRIES = 2;
+  const PUSH_RETRY_DELAY = 5000;
 
   function pushDecksToCloudDebounced() {
+    cloudPushRetries = 0;
     if (cloudPushTimeout) clearTimeout(cloudPushTimeout);
     cloudPushTimeout = setTimeout(() => {
+      cloudPushTimeout = null;
       void pushDecksToCloudNow();
     }, 1500);
   }
@@ -246,38 +266,85 @@ export const useDeckStore = defineStore("deck", () => {
     }
   }
 
+  /** Programme une nouvelle tentative après un push en échec (borné). */
+  function schedulePushRetry() {
+    if (cloudPushRetries < MAX_PUSH_RETRIES) {
+      cloudPushRetries++;
+      if (cloudPushTimeout) clearTimeout(cloudPushTimeout);
+      cloudPushTimeout = setTimeout(() => {
+        cloudPushTimeout = null;
+        void pushDecksToCloudNow();
+      }, PUSH_RETRY_DELAY);
+    } else {
+      syncState.value = "error";
+    }
+  }
+
   async function pushDecksToCloudNow() {
     try {
-      const { isSupabaseConfigured } = await import("@/services/supabase");
       if (!isSupabaseConfigured()) return;
-      const { useAuthStore } = await import("@/stores/authStore");
       const auth = useAuthStore();
-      if (!auth.isAuthenticated || !auth.userId) return;
+      if (!auth.isAuthenticated || !auth.userId) {
+        // Supabase configuré mais session absente/expirée : la modification
+        // n'est PAS persistée — l'UI doit le refléter, pas laisser « synced ».
+        syncState.value = "error";
+        return;
+      }
       syncState.value = "syncing";
-      const { saveDecksToCloud, deckToCloud } = await import(
-        "@/services/cloudSync"
-      );
       const userId = auth.userId;
       const ok = await saveDecksToCloud(
         decks.value.map((d) => deckToCloud(d, userId)),
       );
-      syncState.value = ok ? "synced" : "error";
+      if (ok) {
+        syncState.value = "synced";
+        cloudPushRetries = 0;
+      } else {
+        schedulePushRetry();
+      }
     } catch {
-      syncState.value = "error";
       // le cache local reste la source de secours
+      schedulePushRetry();
     }
   }
 
+  // Un rechargement/fermeture d'onglet pendant le debounce perdait le dernier
+  // push (puis le pull suivant écrasait le local avec le cloud périmé). On
+  // force donc le push en attente dès que la page se cache ou se décharge.
+  if (typeof window !== "undefined") {
+    window.addEventListener("pagehide", () => {
+      void flushCloudPush();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") void flushCloudPush();
+    });
+  }
+
+  /** Le deck local est-il plus récent que l'horodatage cloud ? */
+  function isLocalNewer(local: Deck, cloudUpdatedAt: string): boolean {
+    const l = Date.parse(local.updatedAt ?? "");
+    const c = Date.parse(cloudUpdatedAt ?? "");
+    if (Number.isNaN(l)) return false;
+    if (Number.isNaN(c)) return true;
+    return l > c;
+  }
+
   /**
-   * Récupère les decks depuis Supabase (autorité) et reconstruit les decks
-   * locaux. Nécessite que le catalogue de cartes soit chargé pour résoudre les
-   * cartes. Best-effort.
+   * Récupère les decks depuis Supabase et FUSIONNE avec l'état local, deck par
+   * deck. Le cloud ne fait autorité que s'il est plus récent ET entièrement
+   * résolu par le catalogue :
+   *  - cartes cloud non résolues (catalogue incomplet) → version locale
+   *    conservée (sinon on écraserait un deck complet par une version tronquée,
+   *    perte de cartes constatée en prod) ;
+   *  - version locale plus récente (push perdu / jamais parti) → conservée ;
+   *  - deck local absent du cloud → conservé (contrepartie assumée : un deck
+   *    supprimé depuis un autre appareil peut réapparaître si un cache local
+   *    périmé traîne — préférable à la perte silencieuse de travail).
+   * Si des versions locales ont prévalu, un push différé répare le cloud.
+   * Nécessite que le catalogue de cartes soit chargé. Best-effort.
    */
   async function pullCloudDecks() {
     try {
-      const { isSupabaseConfigured } = await import("@/services/supabase");
       if (!isSupabaseConfigured()) return;
-      const { useAuthStore } = await import("@/stores/authStore");
       const auth = useAuthStore();
       if (!auth.isAuthenticated || !auth.userId) return;
 
@@ -285,22 +352,51 @@ export const useDeckStore = defineStore("deck", () => {
       // et on écraserait les decks par des coquilles vides. On attend.
       if (cardStore.cards.length === 0) return;
 
-      const { loadDecksFromCloud, cloudToDeck, saveDecksToCloud, deckToCloud } =
-        await import("@/services/cloudSync");
       const cloud = await loadDecksFromCloud();
       // null = erreur réseau / indisponible : ne RIEN écraser.
       if (cloud === null) return;
       // Index O(1) au lieu d'un Array.find O(n) par carte de chaque deck.
       const resolve = (cardId: string) => cardStore.getCardByIdSync(cardId);
 
-      if (cloud.length > 0) {
-        decks.value = cloud.map((cd) => cloudToDeck(cd, resolve));
-        saveDecks({ skipCloud: true });
-      } else if (decks.value.length > 0) {
-        // Cloud confirmé vide : on l'initialise depuis le cache local.
-        const userId = auth.userId;
-        await saveDecksToCloud(decks.value.map((d) => deckToCloud(d, userId)));
+      if (cloud.length === 0) {
+        if (decks.value.length > 0) {
+          // Cloud confirmé vide : on l'initialise depuis le cache local.
+          const userId = auth.userId;
+          await saveDecksToCloud(
+            decks.value.map((d) => deckToCloud(d, userId)),
+          );
+        }
+        return;
       }
+
+      const localById = new Map(decks.value.map((d) => [d.id, d]));
+      const merged: Deck[] = [];
+      let keptLocal = false;
+      for (const cd of cloud) {
+        const local = localById.get(cd.id);
+        localById.delete(cd.id);
+        const missing: string[] = [];
+        const rebuilt = cloudToDeck(cd, resolve, missing);
+        if (
+          local &&
+          (missing.length > 0 || isLocalNewer(local, cd.updated_at))
+        ) {
+          merged.push(local);
+          keptLocal = true;
+        } else {
+          merged.push(rebuilt);
+        }
+      }
+      // Decks locaux inconnus du cloud (push jamais parti) : conservés.
+      for (const local of localById.values()) {
+        merged.push(local);
+        keptLocal = true;
+      }
+
+      decks.value = merged;
+      // Des versions locales ont prévalu → le cloud est périmé, on le répare
+      // (push différé). Sinon, pas de re-push juste après un pull.
+      saveDecks({ skipCloud: !keptLocal });
     } catch {
       // offline : on garde le cache local
     }
@@ -382,9 +478,7 @@ export const useDeckStore = defineStore("deck", () => {
       // Suppression côté cloud (best-effort, mode connecté)
       void (async () => {
         try {
-          const { isSupabaseConfigured } = await import("@/services/supabase");
           if (!isSupabaseConfigured()) return;
-          const { deleteDeckFromCloud } = await import("@/services/cloudSync");
           await deleteDeckFromCloud(id);
         } catch {
           /* best-effort */

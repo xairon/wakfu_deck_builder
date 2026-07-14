@@ -200,11 +200,14 @@ export function deckToCloud(deck: Deck, userId: string): CloudDeck {
 /**
  * Reconstruit un deck local depuis le format base, en résolvant chaque id de
  * carte via `resolveCard` (catalogue chargé). Les cartes introuvables sont
- * ignorées.
+ * ignorées ; si `missingIds` est fourni, leurs ids y sont collectés pour que
+ * l'appelant sache que la reconstruction est TRONQUÉE (catalogue incomplet) et
+ * s'abstienne d'écraser une version locale complète avec.
  */
 export function cloudToDeck(
   cloud: CloudDeck,
   resolveCard: (id: string) => Card | undefined,
+  missingIds?: string[],
 ): Deck {
   // Le store/UI lisent TOUT depuis deck.cards (réserve filtrée par isReserve).
   // On reconstruit donc un unique tableau `cards` en conservant le drapeau,
@@ -212,18 +215,25 @@ export function cloudToDeck(
   const cards: DeckCard[] = [];
   for (const c of cloud.cards ?? []) {
     const card = resolveCard(c.cardId);
-    if (!card) continue;
+    if (!card) {
+      missingIds?.push(c.cardId);
+      continue;
+    }
     const entry: DeckCard = { card, quantity: c.quantity };
     if (c.isReserve) entry.isReserve = true;
     cards.push(entry);
   }
+  const hero = cloud.hero_id ? (resolveCard(cloud.hero_id) ?? null) : null;
+  if (cloud.hero_id && !hero) missingIds?.push(cloud.hero_id);
+  const havreSac = cloud.havre_sac_id
+    ? (resolveCard(cloud.havre_sac_id) ?? null)
+    : null;
+  if (cloud.havre_sac_id && !havreSac) missingIds?.push(cloud.havre_sac_id);
   return {
     id: cloud.id,
     name: cloud.name,
-    hero: cloud.hero_id ? (resolveCard(cloud.hero_id) ?? null) : null,
-    havreSac: cloud.havre_sac_id
-      ? (resolveCard(cloud.havre_sac_id) ?? null)
-      : null,
+    hero,
+    havreSac,
     cards,
     reserve: [],
     createdAt: cloud.created_at,
