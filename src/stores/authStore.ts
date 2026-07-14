@@ -153,6 +153,12 @@ export const useAuthStore = defineStore("auth", () => {
       /* best-effort */
     }
     try {
+      const { useCardStore } = await import("@/stores/cardStore");
+      await useCardStore().flushCollectionPush();
+    } catch {
+      /* best-effort */
+    }
+    try {
       await getAuthProvider().signOut();
     } catch (err) {
       // Même si l'appel réseau échoue, on purge TOUJOURS l'état local : sinon

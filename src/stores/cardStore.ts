@@ -6,6 +6,17 @@ import { loadAllCards } from "@/services/cardLoader";
 import { useLocalStorage } from "@vueuse/core";
 import { localStorageService } from "@/services/localStorage";
 import { canonicalKey } from "@/utils/cardIdentity";
+import { namespacedKey } from "@/services/storageNamespace";
+// Imports STATIQUES (pas de cycle : authStore n'importe cardStore que
+// dynamiquement) : le flush du push sur pagehide ne peut pas se permettre
+// d'attendre des imports dynamiques pendant le déchargement de la page.
+import { isSupabaseConfigured } from "@/services/supabase";
+import { useAuthStore } from "@/stores/authStore";
+import {
+  loadCollectionFromCloud,
+  saveCollectionToCloud,
+  deleteCollectionEntryFromCloud,
+} from "@/services/cloudSync";
 
 function isValidCollection(
   payload: unknown,
@@ -246,15 +257,52 @@ export const useCardStore = defineStore("cards", () => {
     }
   }
 
+  // --- Suivi des modifications locales non poussées (anti-perte) ------------
+  // Ids de cartes modifiés localement depuis le dernier push réussi. PERSISTÉ
+  // (par compte) : la perte se joue précisément au rechargement de page, quand
+  // un pull écraserait des modifications dont le push n'est jamais parti.
+  function dirtyStorageKey(): string {
+    return namespacedKey("wakfu-collection-dirty");
+  }
+
+  function loadDirtyIds(): Set<string> {
+    try {
+      const raw = localStorage.getItem(dirtyStorageKey());
+      const parsed = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(parsed) ? parsed : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  let dirtyIds = loadDirtyIds();
+
+  function saveDirtyIds() {
+    try {
+      localStorage.setItem(dirtyStorageKey(), JSON.stringify([...dirtyIds]));
+    } catch {
+      /* quota : le suivi reste en mémoire */
+    }
+  }
+
+  function markDirty(cardId: string) {
+    dirtyIds.add(cardId);
+    saveDirtyIds();
+  }
+
   // Recharge la collection depuis le stockage du compte actif.
   // Appelé après connexion/déconnexion (changement d'espace de stockage).
   function reloadCollection() {
     collection.value = localStorageService.loadCollection();
+    dirtyIds = loadDirtyIds();
   }
 
   // Vide la collection en mémoire (à la déconnexion).
   function clearCollection() {
     collection.value = {};
+    // Le suivi « non poussé » du compte reste persisté (repris à la prochaine
+    // connexion) ; on vide seulement l'état en mémoire.
+    dirtyIds = new Set();
     // Horodatage de synchro propre au compte : on le réinitialise au logout
     // pour ne pas afficher le « dernier sync » d'un autre utilisateur.
     lastSync.value = null;
@@ -262,31 +310,44 @@ export const useCardStore = defineStore("cards", () => {
   }
 
   /**
-   * En mode cloud connecté, synchronise la collection avec Supabase :
-   *  - si le cloud contient des données, elles font autorité (multi-appareils) ;
-   *  - sinon, on initialise le cloud à partir de la collection locale.
+   * En mode cloud connecté, synchronise la collection avec Supabase en
+   * FUSIONNANT : le cloud fait autorité (multi-appareils) SAUF pour les cartes
+   * modifiées localement et pas encore poussées (suivi `dirtyIds`, persisté) —
+   * sinon un push perdu suivi d'un refresh écraserait le travail local.
+   * Cloud vide : on l'initialise depuis le local.
    * Best-effort : toute erreur (hors-ligne, etc.) est ignorée silencieusement.
    */
   async function pullCloudCollection() {
     try {
-      const { isSupabaseConfigured } = await import("@/services/supabase");
       if (!isSupabaseConfigured()) return;
-      const { useAuthStore } = await import("@/stores/authStore");
       if (!useAuthStore().isAuthenticated) return;
 
-      const { loadCollectionFromCloud, saveCollectionToCloud } = await import(
-        "@/services/cloudSync"
-      );
       const cloud = await loadCollectionFromCloud();
       // null = erreur réseau / indisponible : ne RIEN écraser côté cloud.
       if (cloud === null) return;
-      if (Object.keys(cloud).length > 0) {
-        collection.value = cloud;
-        localStorageService.saveCollection(cloud);
-      } else {
+      if (Object.keys(cloud).length === 0) {
         // Cloud confirmé vide : on l'initialise depuis le local.
         await saveCollectionToCloud(collection.value);
+        return;
       }
+
+      const merged = { ...cloud };
+      let keptLocal = false;
+      for (const id of dirtyIds) {
+        const local = collection.value[id];
+        if (local) {
+          merged[id] = local;
+        } else {
+          // Suppression locale jamais poussée : ne pas ressusciter la carte.
+          delete merged[id];
+          deleteCollectionEntryFromCloudIfNeeded(id);
+        }
+        keptLocal = true;
+      }
+      collection.value = merged;
+      localStorageService.saveCollection(merged);
+      // Des valeurs locales ont prévalu → le cloud est périmé, on le répare.
+      if (keptLocal) pushCollectionToCloudDebounced();
     } catch {
       // best-effort : on reste sur les données locales
     }
@@ -296,13 +357,8 @@ export const useCardStore = defineStore("cards", () => {
   function deleteCollectionEntryFromCloudIfNeeded(cardId: string) {
     void (async () => {
       try {
-        const { isSupabaseConfigured } = await import("@/services/supabase");
         if (!isSupabaseConfigured()) return;
-        const { useAuthStore } = await import("@/stores/authStore");
         if (!useAuthStore().isAuthenticated) return;
-        const { deleteCollectionEntryFromCloud } = await import(
-          "@/services/cloudSync"
-        );
         await deleteCollectionEntryFromCloud(cardId);
       } catch {
         // silencieux : best-effort
@@ -310,27 +366,86 @@ export const useCardStore = defineStore("cards", () => {
     })();
   }
 
-  /** Pousse la collection vers le cloud (mode cloud connecté), sans bloquer. */
-  function pushCollectionToCloudIfNeeded(
-    data: Record<string, { normal: number; foil: number }>,
-  ) {
-    void (async () => {
-      try {
-        const { isSupabaseConfigured } = await import("@/services/supabase");
-        if (!isSupabaseConfigured()) return;
-        const { useAuthStore } = await import("@/stores/authStore");
-        if (!useAuthStore().isAuthenticated) return;
-        syncState.value = "syncing";
-        const { saveCollectionToCloud } = await import("@/services/cloudSync");
-        const ok = await saveCollectionToCloud(data);
-        // false = échec d'écriture (réseau/RLS) : on le signale au lieu de
-        // laisser croire que tout est sauvegardé.
-        syncState.value = ok ? "synced" : "error";
-      } catch {
+  // --- Push cloud de la collection : débouncé, avec retries (anti-perte) ----
+  let cloudPushTimeout: ReturnType<typeof setTimeout> | null = null;
+  let cloudPushRetries = 0;
+  const MAX_PUSH_RETRIES = 2;
+  const PUSH_RETRY_DELAY = 5000;
+
+  function pushCollectionToCloudDebounced() {
+    cloudPushRetries = 0;
+    if (cloudPushTimeout) clearTimeout(cloudPushTimeout);
+    cloudPushTimeout = setTimeout(() => {
+      cloudPushTimeout = null;
+      void pushCollectionToCloudNow();
+    }, 1500);
+  }
+
+  /**
+   * Force immédiatement un push en attente (pagehide, déconnexion) : sans lui,
+   * un rechargement pendant le debounce perd la dernière modification.
+   */
+  async function flushCollectionPush() {
+    if (cloudPushTimeout) {
+      clearTimeout(cloudPushTimeout);
+      cloudPushTimeout = null;
+      await pushCollectionToCloudNow();
+    }
+  }
+
+  /** Programme une nouvelle tentative après un push en échec (borné). */
+  function schedulePushRetry() {
+    if (cloudPushRetries < MAX_PUSH_RETRIES) {
+      cloudPushRetries++;
+      if (cloudPushTimeout) clearTimeout(cloudPushTimeout);
+      cloudPushTimeout = setTimeout(() => {
+        cloudPushTimeout = null;
+        void pushCollectionToCloudNow();
+      }, PUSH_RETRY_DELAY);
+    } else {
+      syncState.value = "error";
+    }
+  }
+
+  async function pushCollectionToCloudNow() {
+    try {
+      if (!isSupabaseConfigured()) return;
+      if (!useAuthStore().isAuthenticated) {
+        // Supabase configuré mais session absente/expirée : la modification
+        // n'est PAS persistée — l'UI doit le refléter, pas laisser « synced ».
         syncState.value = "error";
-        // la sauvegarde locale reste la source de secours
+        return;
       }
-    })();
+      syncState.value = "syncing";
+      // Instantané des ids couverts par CE push : les modifications arrivées
+      // pendant l'envoi restent marquées non poussées.
+      const pushedIds = [...dirtyIds];
+      const ok = await saveCollectionToCloud(collection.value);
+      if (ok) {
+        syncState.value = "synced";
+        cloudPushRetries = 0;
+        for (const id of pushedIds) dirtyIds.delete(id);
+        saveDirtyIds();
+      } else {
+        // false = échec d'écriture (réseau/RLS) : on re-tente puis on signale.
+        schedulePushRetry();
+      }
+    } catch {
+      // la sauvegarde locale reste la source de secours
+      schedulePushRetry();
+    }
+  }
+
+  // Un rechargement/fermeture d'onglet pendant le debounce perdait le dernier
+  // push (puis le pull suivant écrasait le local avec le cloud périmé). On
+  // force donc le push en attente dès que la page se cache ou se décharge.
+  if (typeof window !== "undefined") {
+    window.addEventListener("pagehide", () => {
+      void flushCollectionPush();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") void flushCollectionPush();
+    });
   }
 
   async function addToCollection(card: Card, quantity = 1, isFoil = false) {
@@ -349,6 +464,9 @@ export const useCardStore = defineStore("cards", () => {
     } else {
       collection.value[card.id].normal += quantity;
     }
+
+    // Marquée « non poussée » jusqu'au prochain push réussi (anti-perte).
+    markDirty(card.id);
 
     // saveToLocalStorage() écrit déjà le cache local puis pousse vers le cloud
     // (best-effort, non bloquant) — une seule écriture, pas de double write.
@@ -389,6 +507,9 @@ export const useCardStore = defineStore("cards", () => {
       // Propager la suppression au cloud (sinon la carte réapparaît au pull).
       deleteCollectionEntryFromCloudIfNeeded(card.id);
     }
+
+    // Marquée « non poussée » (le pull ne doit ni écraser ni ressusciter).
+    markDirty(card.id);
 
     // saveToLocalStorage() écrit déjà le cache local puis pousse vers le cloud
     // (best-effort, non bloquant) — une seule écriture, pas de double write.
@@ -506,8 +627,8 @@ export const useCardStore = defineStore("cards", () => {
       localStorageService.saveCollection(collection.value);
       lastSync.value = new Date().toISOString();
 
-      // Pousser vers le cloud si connecté (best-effort, non bloquant)
-      pushCollectionToCloudIfNeeded(collection.value);
+      // Pousser vers le cloud si connecté (différé + retries, non bloquant)
+      pushCollectionToCloudDebounced();
 
       return { success: true, timestamp: lastSync.value };
     } catch (error) {
@@ -551,6 +672,7 @@ export const useCardStore = defineStore("cards", () => {
     reloadCollection,
     clearCollection,
     pullCloudCollection,
+    flushCollectionPush,
     addToCollection,
     removeFromCollection,
     getCardById,
