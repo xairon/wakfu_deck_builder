@@ -308,6 +308,10 @@ export function whyCannotPlay(
   // (305.4, déjà payée par la frame de fabrication) → l'affordabilité en
   // Ressources n'est pas exigée. Toutes les autres contraintes tiennent.
   freeCost = false,
+  // TABLE LIBRE (partie NON assistée) : jeu HORS de son tour autorisé, SANS la
+  // restriction « Actions seules » de la fenêtre de réaction — le joueur gère sa
+  // table à la main. Coût/main/zone restent vérifiés.
+  manual = false,
 ): string | null {
   const { state } = ctx;
   const inst = state.instances[instanceId];
@@ -322,7 +326,7 @@ export function whyCannotPlay(
   // exactement les deux mêmes contrôles que la fenêtre de réaction (tour/phase) —
   // toutes les autres contraintes (main, coût, zone, 4943) restent vérifiées.
   const combatWindow = combatPlayWindow(ctx, seat, card);
-  const bypassTurnPhase = reaction || combatWindow;
+  const bypassTurnPhase = reaction || combatWindow || manual;
   // « Réaction. … » (Flèche d'Immolation) : jouable UNIQUEMENT en fenêtre de
   // réaction (706.5). Hors réaction (à son propre tour), refusée — sinon un
   // marqueur périmé « qui vient de s'incliner » serait ciblable (approximation).
@@ -332,7 +336,7 @@ export function whyCannotPlay(
   // tour), seule une ACTION est jouable — un Allié/Équipement/Salle/Zone (vitesse
   // « sorcier ») ne se pose qu'à son propre tour. Les Alliés Défense/Renfort ont
   // leur propre autorisation (combatWindow) et ne passent pas par ce garde.
-  if (reaction && !combatWindow && card.mainType !== "Action")
+  if (reaction && !combatWindow && !manual && card.mainType !== "Action")
     return "Seule une Action peut être jouée en réaction (706.5).";
   // 706 — en fenêtre de réaction on joue HORS de son tour : ces deux contrôles
   // sont relâchés (les autres — main, coût, zone, 4943 — restent actifs).

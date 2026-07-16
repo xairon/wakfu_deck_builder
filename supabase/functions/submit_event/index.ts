@@ -67,11 +67,15 @@ Deno.serve(async (req) => {
 
     const { data: game } = await db
       .from("games")
-      .select("last_seq, status, updated_at")
+      .select("last_seq, status, updated_at, assisted")
       .eq("id", gameId)
       .single();
     if (!game || game.status !== "active")
       return json({ error: "PARTIE_INACTIVE" }, 409);
+    // TABLE LIBRE : une partie NON assistée est une table manuelle « de confiance »
+    // — resolveIntent y relâche les gardes de tour/compteurs (gestes sur SES
+    // cartes, journalisés + visibles). Une partie assistée reste stricte.
+    const manual = !game.assisted;
 
     const { data: secret } = await db
       .from("game_secrets")
@@ -225,7 +229,9 @@ Deno.serve(async (req) => {
       const getCard = (id: string | null): Card | null =>
         id ? (cardMap.get(id) ?? null) : null;
 
-      const res = resolveIntent(state, getCard, intent, me.seat as "A" | "B");
+      const res = resolveIntent(state, getCard, intent, me.seat as "A" | "B", {
+        manual,
+      });
       if ("error" in res) return json({ error: res.error }, 403);
 
       // Lot ATOMIQUE (M3) : events de l'intention + pioches (avec recyclage 507.5)

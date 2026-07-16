@@ -118,6 +118,67 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
     expect(isErr(r) && r.error).toContain("protégé");
   });
 
+  // ── TABLE LIBRE (partie NON assistée, `manual:true`) : les compteurs NOMMÉS de
+  // table sont ajustables sur SES PROPRES cartes (journalisé + visible, comme au
+  // physique) ; les JETONS moteur et les cartes ADVERSES restent bloqués. ───────
+  it("manuel : SET_COUNTER resistance sur SON Havre-Sac → autorisé (table libre)", () => {
+    const { state, getCard } = playingState();
+    const sac = state.seats.A.havreSacInstanceId!;
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "SET_COUNTER", instanceId: sac, counter: "resistance", value: 5 },
+      "A",
+      { manual: true },
+    );
+    expect("events" in r).toBe(true);
+  });
+
+  it("manuel : INC_COUNTER damage/hp sur SA créature → autorisé", () => {
+    const { state, getCard } = playingState();
+    const aHero = state.seats.A.heroInstanceId!;
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "INC_COUNTER", instanceId: aHero, counter: "hp", delta: -3 },
+      "A",
+      { manual: true },
+    );
+    expect("events" in r).toBe(true);
+  });
+
+  it("manuel : un JETON reste refusé (forceMod) même en table libre", () => {
+    const { state, getCard } = playingState();
+    const aHero = state.seats.A.heroInstanceId!;
+    const r = resolveIntent(
+      state,
+      getCard,
+      {
+        kind: "INC_COUNTER",
+        instanceId: aHero,
+        counter: "forceMod",
+        delta: 99,
+        token: true,
+      },
+      "A",
+      { manual: true },
+    );
+    expect(isErr(r)).toBe(true);
+  });
+
+  it("manuel : compteur sur la carte ADVERSE reste refusé (ownership)", () => {
+    const { state, getCard } = playingState();
+    const bHero = state.seats.B.heroInstanceId!;
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "SET_COUNTER", instanceId: bHero, counter: "hp", value: 0 },
+      "A",
+      { manual: true },
+    );
+    expect(isErr(r)).toBe(true);
+  });
+
   it("INC_COUNTER xp +18 sur son Héros → refusé (compteur protégé)", () => {
     const { state, getCard } = playingState();
     const aHero = state.seats.A.heroInstanceId!;
@@ -246,6 +307,53 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
     );
     expect(isErr(r)).toBe(true);
     expect(isErr(r) && r.error).toContain("contrôles pas");
+  });
+
+  it("manuel : incliner SA carte / ajuster SON Havre-Sac HORS de son tour → autorisé (table libre, #10)", () => {
+    const { state, getCard } = playingState(); // A actif → B agit hors-tour
+    const bHero = state.seats.B.heroInstanceId!;
+    const bSac = state.seats.B.havreSacInstanceId!;
+    const tap = resolveIntent(
+      state,
+      getCard,
+      { kind: "TAP", instanceId: bHero },
+      "B",
+      { manual: true },
+    );
+    expect("events" in tap).toBe(true);
+    const res = resolveIntent(
+      state,
+      getCard,
+      {
+        kind: "SET_COUNTER",
+        instanceId: bSac,
+        counter: "resistance",
+        value: 8,
+      },
+      "B",
+      { manual: true },
+    );
+    expect("events" in res).toBe(true);
+  });
+
+  it("ASSISTÉ : incliner SA carte hors de son tour → refusé (garde de tour stricte)", () => {
+    const { state, getCard } = playingState();
+    const bHero = state.seats.B.heroInstanceId!;
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "TAP", instanceId: bHero },
+      "B",
+    ); // pas de manual → strict
+    expect(isErr(r) && r.error).toContain("tour");
+  });
+
+  it("manuel : END_TURN reste réservé au joueur ACTIF (pas de fin de tour hors-tour)", () => {
+    const { state, getCard } = playingState();
+    const r = resolveIntent(state, getCard, { kind: "END_TURN" }, "B", {
+      manual: true,
+    });
+    expect(isErr(r) && r.error).toContain("tour");
   });
 
   it("MOVE_CARD de SA carte vers la zone privée ADVERSE → refusé", () => {

@@ -312,6 +312,11 @@ export const useGameStore = defineStore("game", () => {
    * ON (compat tests + futur mode assisté).
    */
   const assistEffects = ref(true);
+  /** TABLE LIBRE : partie EN LIGNE NON assistée = table manuelle « de confiance »
+   *  (pool général, effets non couverts joués à la main). On y relâche les gardes
+   *  de tour/phase côté client (gestes hors-tour, réactions), en miroir du serveur
+   *  (resolveIntent `manual`). En local ou en ligne assisté, les gardes tiennent. */
+  const manualTable = computed(() => online.value && !assist.value);
   /** Dernier refus de coup, à afficher en toast. */
   const ruleError = ref<string | null>(null);
   /** Tour où l'attaque du joueur actif a été déclarée (1 attaque/tour, jeu LOCAL). */
@@ -2074,6 +2079,8 @@ export const useGameStore = defineStore("game", () => {
       }
     }
     // 706.5 — le défenseur d'un combat déclaré joue hors de son tour (réaction).
+    // TABLE LIBRE : en ligne non assisté, on joue aussi HORS de son tour (à la
+    // main), sans la restriction « Actions seules » — cf. whyCannotPlay(manual).
     const reaction = canReactInCombat(seat);
     const reason = whyCannotPlay(
       ctx,
@@ -2082,6 +2089,7 @@ export const useGameStore = defineStore("game", () => {
       reaction,
       destination,
       free,
+      manualTable.value,
     );
     if (reason) return rejectMove(reason);
     const inst = state.value.instances[instanceId];
@@ -2436,7 +2444,7 @@ export const useGameStore = defineStore("game", () => {
       const hand = handPowers(card);
       if (!hand.length)
         return rejectMove("Pas de pouvoir activable depuis la main.");
-      const reaction = canReactInCombat(seat);
+      const reaction = canReactInCombat(seat) || manualTable.value;
       if (!reaction && state.value.turn.active !== perspective.value)
         return rejectMove("Ce n'est pas votre tour.");
       // Cohérence avec whyCannotPlay : hors fenêtre de réaction, on ne joue
@@ -2492,7 +2500,7 @@ export const useGameStore = defineStore("game", () => {
     if (atom.cost === "banishSelfFromDiscard") {
       if (inst.location.zone !== "defausse")
         return rejectMove("La carte doit être dans votre Défausse.");
-      if (state.value.turn.active !== perspective.value)
+      if (!manualTable.value && state.value.turn.active !== perspective.value)
         return rejectMove("Ce n'est pas votre tour.");
       dispatch(
         move(seat, {
@@ -2570,6 +2578,7 @@ export const useGameStore = defineStore("game", () => {
       // pouvoir HORS de son tour (même idiome que playFromHand). Dora côté bloqueur.
       if (
         !canReactInCombat(seat) &&
+        !manualTable.value &&
         state.value.turn.active !== perspective.value
       )
         return rejectMove("Ce n'est pas votre tour.");
@@ -2679,9 +2688,11 @@ export const useGameStore = defineStore("game", () => {
       atom.cost === "sacrificeSelf" || atom.cost === "banishSelf";
     if (!sacrifices && inst.orientation !== "upright")
       return rejectMove("La carte est déjà inclinée.");
-    // 706.5 — RÉACTION : idem chemin paidOps (Dora côté bloqueur).
+    // 706.5 — RÉACTION : idem chemin paidOps (Dora côté bloqueur). TABLE LIBRE :
+    // pouvoir activable hors-tour en ligne non assisté.
     if (
       !canReactInCombat(seat) &&
+      !manualTable.value &&
       state.value.turn.active !== perspective.value
     )
       return rejectMove("Ce n'est pas votre tour.");

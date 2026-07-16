@@ -85,6 +85,21 @@ const TURN_BOUND = new Set<GameIntent["kind"]>([
   "END_TURN",
 ]);
 
+/** TABLE LIBRE : gestes MANUELS autorisés HORS de son tour (réactions, actions
+ *  de combat, ajustements). END_TURN (finir le tour) et DECLARE_ATTACK (attaquer)
+ *  restent réservés au joueur actif ; SET_LEVEL est refusé partout en ligne. */
+const MANUAL_OUT_OF_TURN = new Set<GameIntent["kind"]>([
+  "PLAY_CARD",
+  "CRAFT",
+  "MOVE_CARD",
+  "TAP",
+  "UNTAP",
+  "SET_COUNTER",
+  "INC_COUNTER",
+  "ATTACH",
+  "DETACH",
+]);
+
 /**
  * PA du Héros du siège = compteur de table + modificateur temporaire `paMod`
  * (miroir du `paOf` client + du `pmOf` de legality) ; repli 6 si absent.
@@ -120,8 +135,22 @@ const PROTECTED_COUNTERS = new Set([
  *  la pose) : un `adjustCounter` du client n'envoie jamais `token`. On refuse
  *  donc TOUT jeton via intent (allowlist vide) — sinon un client trafiqué se
  *  forgeait Force/Géant/Agilité/boucliers et un combat gagnant côté serveur. */
-function counterIsProtected(counter: string, token?: boolean): boolean {
-  return token ? true : PROTECTED_COUNTERS.has(counter);
+function counterIsProtected(
+  counter: string,
+  token?: boolean,
+  manual?: boolean,
+): boolean {
+  // Les JETONS moteur (forceMod/geantMod/paMod…) sont TOUJOURS bloqués : un
+  // joueur ne les écrit jamais à la main et les ouvrir rouvrirait la forge
+  // SILENCIEUSE de combat.
+  if (token) return true;
+  // TABLE LIBRE (partie NON assistée, `manual`) : les compteurs NOMMÉS de table
+  // (PV/Résistance/dégâts/PA/PM/XP/Niveau) sont ajustables sur SES PROPRES cartes
+  // — journalisés et VISIBLES par l'adversaire, comme au physique (l'ownership
+  // reste vérifié par controlError). En partie ASSISTÉE (automatisée), ils
+  // restent protégés (dérivés du moteur) pour l'anti-triche.
+  if (manual) return false;
+  return PROTECTED_COUNTERS.has(counter);
 }
 
 /** L'instance existe ET est contrôlée par le siège ? (raison FR sinon). Empêche
@@ -150,11 +179,24 @@ export function resolveIntent(
   getCard: (id: string | null) => Card | null,
   intent: GameIntent,
   seat: Seat,
+  opts: { manual?: boolean } = {},
 ): IntentResult {
   const ctx: RulesCtx = { state, getCard };
+  // TABLE LIBRE : une partie NON assistée est une table manuelle « de confiance »
+  // (pool général, effets non couverts joués à la main). On y relâche les gardes
+  // de tour et de compteurs — chaque geste reste sur SES cartes, journalisé et
+  // VISIBLE (comme au physique). En partie ASSISTÉE, les gardes restent stricts.
+  const manual = opts.manual ?? false;
 
   // Garde de tour : une intention liée au tour ne peut venir que du joueur actif.
-  if (TURN_BOUND.has(intent.kind) && state.turn.active !== seat) {
+  // En TABLE LIBRE, on autorise les gestes MANUELS hors-tour (réactions, actions
+  // de combat) — mais JAMAIS finir le tour ou déclarer une attaque hors de son
+  // tour (END_TURN/DECLARE_ATTACK gardent leur propre contrôle plus bas).
+  if (
+    TURN_BOUND.has(intent.kind) &&
+    state.turn.active !== seat &&
+    !(manual && MANUAL_OUT_OF_TURN.has(intent.kind))
+  ) {
     return { error: "Ce n'est pas votre tour." };
   }
 
@@ -166,6 +208,8 @@ export function resolveIntent(
         intent.instanceId,
         false,
         intent.destination,
+        false,
+        manual,
       );
       if (reason) return { error: reason };
       const inst = state.instances[intent.instanceId];
@@ -560,7 +604,7 @@ export function resolveIntent(
     case "SET_COUNTER": {
       const err = controlError(state, seat, intent.instanceId);
       if (err) return { error: err };
-      if (counterIsProtected(intent.counter, intent.token))
+      if (counterIsProtected(intent.counter, intent.token, manual))
         return {
           error:
             "Compteur protégé : il dérive du jeu (combat/progression), non modifiable manuellement en ligne.",
@@ -581,7 +625,7 @@ export function resolveIntent(
     case "INC_COUNTER": {
       const err = controlError(state, seat, intent.instanceId);
       if (err) return { error: err };
-      if (counterIsProtected(intent.counter, intent.token))
+      if (counterIsProtected(intent.counter, intent.token, manual))
         return {
           error:
             "Compteur protégé : il dérive du jeu (combat/progression), non modifiable manuellement en ligne.",
