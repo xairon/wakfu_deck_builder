@@ -3,13 +3,10 @@
 import { adminClient, getUserId } from "../_shared/auth.ts";
 import { json, preflight } from "../_shared/cors.ts";
 import { setupEvents } from "../../../src/game/engine/setup.ts";
-import { sequence, drawTop } from "../../../src/game/engine/verbs.ts";
-import {
-  resolveDraft,
-  redactEventForSeat,
-} from "../../../src/game/engine/authority.ts";
-import { deriveState } from "../../../src/game/engine/reducer.ts";
+import { drawTop } from "../../../src/game/engine/verbs.ts";
+import { resolveDraft } from "../../../src/game/engine/authority.ts";
 import { reconcileAndValidateDeck } from "../_shared/deck.ts";
+import { makeBatch, commitBatch } from "../_shared/journal.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return preflight();
@@ -76,90 +73,36 @@ Deno.serve(async (req) => {
       .eq("game_id", game.id)
       .single();
 
-    const drafts = setupEvents(game.id, decks, { firstPlayer: first });
-    let parent = 0;
-    let stateEvents: ReturnType<typeof sequence> = [];
-    for (const draft of drafts) {
-      const state = deriveState(stateEvents);
-      const ev = resolveDraft(state, draft, {
+    // Mise en place ATOMIQUE (M3) : setup + mains de départ résolus en mémoire,
+    // appendés en UNE transaction (parent_seq 0 → OUT_OF_ORDER si un setup
+    // concurrent a déjà écrit). Fini le journal à moitié posé / status incohérent.
+    const batch = makeBatch([], (pre, d, seq) =>
+      resolveDraft(pre, d, {
         gameId: game.id,
-        seq: parent + 1,
+        seq,
         ts: Date.now(),
         masterSeed: secret!.master_seed,
-      });
-      const { error: appendErr } = await db.rpc("append_event", {
-        p_game_id: game.id,
-        p_parent_seq: parent,
-        p_actor: ev.actor,
-        p_type: ev.type,
-        p_payload: ev.payload,
-        p_payload_private: ev.payloadPrivate ?? null,
-      });
-      // Échec d'append (ex. double-join concurrent → OUT_OF_ORDER) : on AVORTE
-      // au lieu de continuer sur un état corrompu (sinon broadcasts + status
-      // 'active' incohérents). L'atomicité fine du join reste un lot P1.
-      if (appendErr) return json({ error: appendErr.message }, 409);
-      stateEvents = [...stateEvents, ev];
-      parent = ev.seq;
-      // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
-      const post = deriveState(stateEvents);
+      }),
+    );
+    try {
+      for (const draft of setupEvents(game.id, decks, { firstPlayer: first }))
+        batch.add(draft);
+      // Main de départ : PA initiale du Héros par siège (4873 ; PA dérivée du
+      // compteur réel, non figée). Chaque tirage = MOVE Pioche→Main révélé au seul
+      // propriétaire (redaction par siège).
       for (const seat of ["A", "B"] as const) {
-        // Canal PRIVÉ (cf. submit_event) : l'émetteur doit aussi être privé.
-        await db
-          .channel(`game:${game.id}:${seat}`, {
-            config: { private: true },
-          })
-          .send({
-            type: "broadcast",
-            event: "game_event",
-            payload: redactEventForSeat(ev, seat, state, post),
-          });
+        const st = batch.state();
+        const heroId = st.seats[seat].heroInstanceId;
+        const hero = heroId ? st.instances[heroId] : null;
+        const openingHand = Math.max(0, hero?.counters.pa ?? 6);
+        for (let i = 0; i < openingHand; i++)
+          batch.add({ ...drawTop(batch.state(), seat), actor: "system" });
       }
-    }
-    // ── Main de départ : PA initiale du Héros par siège (4873 ; = paOf côté
-    // client). On la DÉRIVE du compteur pa réel (setup lit la PA imprimée du
-    // Héros) plutôt qu'une constante 6, pour rester en parité avec le jeu local
-    // et tout Héros non standard. Chaque tirage est un MOVE Pioche→Main révélé au
-    // SEUL propriétaire (la redaction par siège masque le cardId à l'autre).
-    for (const seat of ["A", "B"] as const) {
-      const setupState = deriveState(stateEvents);
-      const heroId = setupState.seats[seat].heroInstanceId;
-      const hero = heroId ? setupState.instances[heroId] : null;
-      const openingHand = Math.max(0, hero?.counters.pa ?? 6);
-      for (let i = 0; i < openingHand; i++) {
-        const state = deriveState(stateEvents);
-        const ev = resolveDraft(
-          state,
-          { ...drawTop(state, seat), actor: "system" },
-          {
-            gameId: game.id,
-            seq: parent + 1,
-            ts: Date.now(),
-            masterSeed: secret!.master_seed,
-          },
-        );
-        const { error: appendErr } = await db.rpc("append_event", {
-          p_game_id: game.id,
-          p_parent_seq: parent,
-          p_actor: ev.actor,
-          p_type: ev.type,
-          p_payload: ev.payload,
-          p_payload_private: ev.payloadPrivate ?? null,
-        });
-        if (appendErr) return json({ error: appendErr.message }, 409);
-        stateEvents = [...stateEvents, ev];
-        parent = ev.seq;
-        const post = deriveState(stateEvents);
-        for (const s of ["A", "B"] as const) {
-          await db
-            .channel(`game:${game.id}:${s}`, { config: { private: true } })
-            .send({
-              type: "broadcast",
-              event: "game_event",
-              payload: redactEventForSeat(ev, s, state, post),
-            });
-        }
-      }
+      await commitBatch(db, game.id, 0, batch.resolved);
+    } catch (e) {
+      // Échec (double-join concurrent → OUT_OF_ORDER, ou erreur) : rollback total,
+      // aucun event partiel, status reste 'lobby'. Le client retentera / resync.
+      return json({ error: String(e) }, 409);
     }
 
     await db

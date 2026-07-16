@@ -15,6 +15,7 @@ import { victoryFromState } from "../../../src/game/rules/victory.ts";
 import { equalityRescueEvents } from "../../../src/game/rules/progress.ts";
 import { resolveIntent } from "../../../src/game/actions/resolveIntent.ts";
 import { loadCards } from "../_shared/cards.ts";
+import { makeBatch, commitBatch } from "../_shared/journal.ts";
 import { otherSeat } from "../../../src/game/types/zones.ts";
 import type { Card, Deck } from "../../../src/types/cards.ts";
 import type {
@@ -178,52 +179,31 @@ Deno.serve(async (req) => {
       );
       if (already) return json({ error: "MULLIGAN_DEJA_FAIT" }, 409);
 
-      let working = rowEvents.slice();
-      const hand = [...deriveState(working).seats[seat].main];
-
-      const appendOne = async (d: DraftEvent): Promise<void> => {
-        const pre = deriveState(working);
-        const ev = resolveDraft(pre, d, {
+      const startSeq = deriveState(rowEvents).seq;
+      const hand = [...deriveState(rowEvents).seats[seat].main];
+      // Lot ATOMIQUE (M3) : recycle main → mélange → repioche. Résolu en mémoire
+      // puis appendé en UNE transaction (aucun journal partiel possible).
+      const batch = makeBatch(rowEvents, (pre, d, seq) =>
+        resolveDraft(pre, d, {
           gameId,
-          seq: pre.seq + 1,
+          seq,
           ts: Date.now(),
           masterSeed: secret!.master_seed,
-        });
-        const { error } = await db.rpc("append_event", {
-          p_game_id: gameId,
-          p_parent_seq: pre.seq,
-          p_actor: ev.actor,
-          p_type: ev.type,
-          p_payload: ev.payload,
-          p_payload_private: ev.payloadPrivate ?? null,
-        });
-        if (error) throw new Error(error.message);
-        working = [...working, ev];
-        const post = deriveState(working);
-        for (const s of ["A", "B"] as const) {
-          await db
-            .channel(`game:${gameId}:${s}`, { config: { private: true } })
-            .send({
-              type: "broadcast",
-              event: "game_event",
-              payload: redactEventForSeat(ev, s, pre, post),
-            });
-        }
-      };
-
+        }),
+      );
       try {
-        for (const id of hand) await appendOne(recycleToPiocheTop(seat, id));
-        await appendOne({
+        for (const id of hand) batch.add(recycleToPiocheTop(seat, id));
+        batch.add({
           actor: seat,
           type: "SHUFFLE",
           payload: { zone: { zone: "pioche", owner: seat }, permutation: [] },
         });
         const redraw = Math.max(0, hand.length - 1);
-        for (let i = 0; i < redraw; i++) {
-          await appendOne(drawTop(deriveState(working), seat));
-        }
+        for (let i = 0; i < redraw; i++)
+          batch.add(drawTop(batch.state(), seat));
+        await commitBatch(db, gameId, startSeq, batch.resolved);
       } catch (e) {
-        return json({ error: String(e) }, 409); // partiel → le client resync
+        return json({ error: String(e) }, 409); // rollback → journal cohérent
       }
       return json({ ok: true });
     }
@@ -248,53 +228,32 @@ Deno.serve(async (req) => {
       const res = resolveIntent(state, getCard, intent, me.seat as "A" | "B");
       if ("error" in res) return json({ error: res.error }, 403);
 
-      let working = rowEvents.slice();
-      const appendOne = async (d: DraftEvent): Promise<void> => {
-        const pre = deriveState(working);
-        const ev = resolveDraft(pre, d, {
+      // Lot ATOMIQUE (M3) : events de l'intention + pioches (avec recyclage 507.5)
+      // + sauvetage d'égalité. Résolu en mémoire, appendé en UNE transaction.
+      const startSeq = deriveState(rowEvents).seq;
+      const batch = makeBatch(rowEvents, (pre, d, seq) =>
+        resolveDraft(pre, d, {
           gameId,
-          seq: pre.seq + 1,
+          seq,
           ts: Date.now(),
           masterSeed: secret!.master_seed,
-        });
-        const { error } = await db.rpc("append_event", {
-          p_game_id: gameId,
-          p_parent_seq: pre.seq,
-          p_actor: ev.actor,
-          p_type: ev.type,
-          p_payload: ev.payload,
-          p_payload_private: ev.payloadPrivate ?? null,
-        });
-        if (error) throw new Error(error.message);
-        working = [...working, ev];
-        const post = deriveState(working);
-        for (const s of ["A", "B"] as const) {
-          await db
-            .channel(`game:${gameId}:${s}`, { config: { private: true } })
-            .send({
-              type: "broadcast",
-              event: "game_event",
-              payload: redactEventForSeat(ev, s, pre, post),
-            });
-        }
-      };
-
+        }),
+      );
       try {
-        for (const d of res.events) await appendOne(d);
+        for (const d of res.events) batch.add(d);
         if ("draws" in res && res.draws) {
           const seat = me.seat as "A" | "B";
           for (let i = 0; i < res.draws; i++) {
-            let st = deriveState(working);
+            let st = batch.state();
             // 507.5 — Pioche vide : on RECYCLE la Défausse (move → Pioche + SHUFFLE
-            // serveur) avant de piocher, comme le chemin local. Si la Défausse est
-            // AUSSI vide, on s'arrête (pas de défaite par deck-out dans Wakfu) —
-            // sinon drawTop levait PIOCHE_VIDE → 409 + main jamais rechargée.
+            // serveur) avant de piocher. Si la Défausse est AUSSI vide, on s'arrête
+            // (pas de défaite par deck-out) — sinon drawTop levait PIOCHE_VIDE.
             if (!st.seats[seat].pioche.length) {
               const discard = [...st.seats[seat].defausse];
               if (!discard.length) break;
               for (const id of discard) {
                 const inst = st.instances[id];
-                await appendOne({
+                st = batch.add({
                   actor: seat,
                   type: "MOVE",
                   payload: {
@@ -306,11 +265,10 @@ Deno.serve(async (req) => {
                     preservesIdentity: false,
                   },
                 });
-                st = deriveState(working);
               }
               // SHUFFLE nu : resolveDraft recalcule la permutation depuis la
               // masterSeed (ordre secret), comme le mélange du MULLIGAN.
-              await appendOne({
+              batch.add({
                 actor: seat,
                 type: "SHUFFLE",
                 payload: {
@@ -318,31 +276,27 @@ Deno.serve(async (req) => {
                   permutation: [],
                 },
               });
-              st = deriveState(working);
+              st = batch.state();
             }
             if (!st.seats[seat].pioche.length) break;
-            await appendOne(drawTop(st, seat));
+            batch.add(drawTop(st, seat));
           }
         }
-        // 103.3 — sauvetage d'égalité : si l'état résultant (typiquement après un
-        // RESOLVE_COMBAT) a les DEUX Héros à ≤ 0 PV (K.O. simultané), on les
-        // ramène à 1 PV via des events JOURNALISÉS, AVANT de tester la victoire.
-        // Le serveur fait autorité (le client ne dispatch plus rien en ligne).
-        const rescue = equalityRescueEvents({
-          state: deriveState(working),
-          getCard,
-        });
-        for (const d of rescue) await appendOne(d);
+        // 103.3 — sauvetage d'égalité : si les DEUX Héros sont à ≤ 0 PV (K.O.
+        // simultané), on les ramène à 1 PV via des events JOURNALISÉS AVANT de
+        // tester la victoire (le serveur fait autorité).
+        const rescue = equalityRescueEvents({ state: batch.state(), getCard });
+        for (const d of rescue) batch.add(d);
+        await commitBatch(db, gameId, startSeq, batch.resolved);
       } catch (e) {
-        return json({ error: String(e) }, 409); // partiel → le client resync
+        return json({ error: String(e) }, 409); // rollback → journal cohérent
       }
-      // Auto-victoire : l'état résultant de l'intention peut satisfaire une
-      // condition de victoire (PV adverses ≤ 0 ou Niveau 3). Comme le chemin
-      // legacy, on clôt alors la partie (GAME_OVER terminal + write 'finished').
-      const postIntent = deriveState(working);
+      // Auto-victoire : l'état résultant peut satisfaire une condition de victoire
+      // (PV adverses ≤ 0 ou Niveau 3) → GAME_OVER terminal + write 'finished'.
+      const postIntent = batch.state();
       const wIntent = victoryFromState({ state: postIntent } as never);
-      if (wIntent && !working.some((e) => e.type === "GAME_OVER"))
-        await finishGame(wIntent, "defeat", working);
+      if (wIntent && !batch.events().some((e) => e.type === "GAME_OVER"))
+        await finishGame(wIntent, "defeat", batch.events());
       return json({ ok: true });
     }
 
