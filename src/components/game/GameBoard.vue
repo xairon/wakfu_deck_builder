@@ -1,7 +1,9 @@
 <template>
   <div class="gtable" :class="{ 'gtable--dragging': dnd.isDragging.value }">
-    <!-- Liaisons de combat (attaquant→cible, bloqueur→attaquant) par-dessus tout. -->
-    <CombatLinks />
+    <!-- Panneau de combat : liste les affrontements + aperçu de dégâts (remplace
+         les anciennes flèches CombatLinks — les contours gslot--* suffisent au
+         « qui frappe qui », le tray donne le détail lisible). -->
+    <CombatTray />
 
     <!-- ════════ ADVERSAIRE : bande (HUD · socle · main · piles) puis champ ════════ -->
     <section class="gseat gseat--opp">
@@ -1019,7 +1021,7 @@ import HandFan from "./HandFan.vue";
 import type { HandItem } from "./HandFan.vue";
 import SeatHud from "./SeatHud.vue";
 import PileStack from "./PileStack.vue";
-import CombatLinks from "./CombatLinks.vue";
+import CombatTray from "./CombatTray.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import { recetteOf } from "@/game/rules";
 import { getThumbPath } from "@/utils/imagePaths";

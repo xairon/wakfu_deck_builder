@@ -183,6 +183,9 @@ const ariaLabel = computed(() => {
 
 <style scoped>
 .game-card {
+  /* Angle d'inclinaison (« semi-tap » façon MTGA) : une carte engagée bascule
+     de cet angle plutôt que le 90° brutal — l'art reste lisible. Ajustable ici. */
+  --tap-angle: 25deg;
   position: relative;
   display: block;
   width: 100%;
@@ -238,8 +241,8 @@ const ariaLabel = computed(() => {
   z-index: 2;
 }
 .game-card--tapped {
-  transform: rotate(90deg) scale(0.84);
-  filter: saturate(0.75) brightness(0.88);
+  transform: rotate(var(--tap-angle)) scale(0.92);
+  filter: saturate(0.7) brightness(0.82);
 }
 .game-card--selected {
   outline: 2px solid #f0a62b;
@@ -259,7 +262,7 @@ const ariaLabel = computed(() => {
     0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 .game-card--tapped:hover {
-  transform: rotate(90deg) scale(0.86);
+  transform: rotate(var(--tap-angle)) scale(0.94);
 }
 .game-card:focus-visible {
   outline: 2px solid #f04e22;
@@ -334,7 +337,7 @@ const ariaLabel = computed(() => {
   }
   .game-card--tapped,
   .game-card--tapped:hover {
-    transform: rotate(90deg) scale(0.84);
+    transform: rotate(var(--tap-angle)) scale(0.92);
   }
   .game-card__badge {
     animation: none;
