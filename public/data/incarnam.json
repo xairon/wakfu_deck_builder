@@ -12802,7 +12802,7 @@
     "id": "potion-d-oubli-de-sort-incarnam",
     "name": "Potion d'Oubli de Sort",
     "mainType": "Action",
-    "subTypes": [],
+    "subTypes": ["Potion"],
     "extension": {
       "name": "Incarnam",
       "number": "162/320",
@@ -12834,7 +12834,7 @@
     "id": "potion-de-rappel-incarnam",
     "name": "Potion de Rappel",
     "mainType": "Action",
-    "subTypes": [],
+    "subTypes": ["Potion"],
     "extension": {
       "name": "Incarnam",
       "number": "161/320",
