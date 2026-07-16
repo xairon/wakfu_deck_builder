@@ -346,7 +346,10 @@ export function whyCannotPlay(
     return "On ne joue des cartes qu'en Phase Principale.";
   const dest = resolvedPlayDestination(ctx, seat, card, preferred);
   if (dest.zone === "monde" && state.turn.number === 1)
-    return "Aucune carte ne peut entrer dans le Monde au premier tour de la partie.";
+    // Les Alliés du 1er tour sont routés au Havre-Sac (303.1) — ce refus ne vise
+    // donc QUE les cartes qui entrent dans le Monde (Zone/Salle/Protecteur/Dofus).
+    // Message explicite pour lever la confusion (« pourquoi mon Allié est refusé »).
+    return `${card.mainType} : cette carte entre dans le Monde, interdit au premier tour (506.3). Un Allié, lui, irait dans ton Havre-Sac.`;
   // 2626 / 4806 : pas de carte dans le Havre-Sac s'il est plein (Taille atteinte).
   // Couvre les Salles ET les Alliés routés au Havre-Sac au 1er tour (303.1).
   if (dest.zone === "havreSac" && !havreSacHasRoom(ctx, seat))
