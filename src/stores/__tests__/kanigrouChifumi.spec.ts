@@ -184,4 +184,20 @@ describe("Kanigrou — Chi-Fu-Mi (prévention pré-dégâts en combat)", () => {
     expect(store.combat).toBeNull(); // résolu directement
     expect(store.state.instances[kani].counters.damage).toBe(3);
   });
+
+  // #6 — EN LIGNE, le mini-jeu ne doit JAMAIS s'ouvrir : la résolution est
+  // autoritative (RESOLVE_COMBAT côté serveur) et le Chi-Fu-Mi hot-seat n'a pas
+  // d'intent cross-client → s'il s'ouvrait, `pendingChifumi` bloquerait `endTurn`
+  // à vie. On vérifie qu'aucun mini-jeu n'apparaît en ligne, même Kanigrou visé.
+  it("#6 — en ligne : la résolution N'OUVRE PAS le Chi-Fu-Mi (pas de blocage)", () => {
+    const { store } = setupCombat();
+    store.online = true; // partie en ligne (pas de transport → pushIntent no-op)
+    store.combatResolve();
+    expect(store.pendingChifumi).toBeNull();
+    // endTurn n'est donc pas bloqué par un Chi-Fu-Mi orphelin.
+    store.combat = null;
+    store.ruleError = null;
+    store.endTurn();
+    expect(store.ruleError ?? "").not.toContain("Chi-Fu-Mi");
+  });
 });

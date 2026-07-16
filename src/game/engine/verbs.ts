@@ -10,6 +10,7 @@ import type {
   InstanceId,
   ShufflePayload,
   CreateTokenPayload,
+  LookRevealPayload,
 } from "../types/events";
 import type { CombatState, GameState, TurnPhase } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
@@ -227,6 +228,20 @@ export function undo(actor: Seat, targetSeq: number): DraftEvent {
 
 export function say(actor: Seat | "system", text: string): DraftEvent {
   return { actor, type: "SAID", payload: { text } };
+}
+
+/**
+ * RÉVÉLATION de main (Filouterie / « montrer sa main ») : marque `instanceIds`
+ * comme révélés à `to`. Monotone (le reducer n'ajoute qu'au `revealedTo`) → geste
+ * one-shot : les cartes révélées le restent jusqu'au prochain mélange de la zone.
+ * Les cartes piochées APRÈS ne sont pas incluses (snapshot à l'émission).
+ */
+export function revealHand(
+  actor: Seat,
+  instanceIds: InstanceId[],
+  to: Seat[],
+): DraftEvent<LookRevealPayload> {
+  return { actor, type: "REVEAL", payload: { instanceIds, to } };
 }
 
 /** Met à jour le tour (joueur actif, numéro, phase) — assistance non bloquante. */

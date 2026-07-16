@@ -33,6 +33,7 @@ import {
   otherSeat,
   redactStateFor,
   say,
+  revealHand,
   sequence,
   setCounter as setCounterVerb,
   incCounter as incCounterVerb,
@@ -1568,6 +1569,11 @@ export const useGameStore = defineStore("game", () => {
     /** A19 — l'Équipement est FABRIQUÉ (coût de Recette déjà payé) : le jeu
      * final via attachToBearer→playFromHand ne refacture pas le lancement. */
     free?: boolean;
+    /** TL3 — GESTE MANUEL d'équipement (table libre) : la résolution émet
+     * l'intent autoritatif `ATTACH` directement (l'équipement est déjà placé,
+     * ou attaché depuis la main sans re-jouer/refacturer), au lieu du chemin
+     * PLAY_CARD de `playFromHand`. */
+    manual?: boolean;
   } | null>(null);
 
   // ── PAIEMENT AU CHOIX DU JOUEUR (local assisté) ────────────────────────────
@@ -1988,8 +1994,47 @@ export const useGameStore = defineStore("game", () => {
     if (!pend.eligible.includes(bearerId))
       return rejectMove("Cible de Porteur invalide.");
     const equipmentId = pend.equipmentId;
+    const manual = pend.manual ?? false;
     pendingBearer.value = null;
+    // TL3 — geste manuel (table libre) : intent ATTACH autoritatif (le serveur
+    // revalide Équipement/Porteur/508.x) ; l'équipement peut venir du Monde
+    // (déjà posé) ou de la main. Pas de PLAY_CARD (ni coût ni destination).
+    if (manual) return tryIntent({ kind: "ATTACH", equipmentId, bearerId });
     return playFromHand(equipmentId, bearerId, undefined, pend.free ?? false);
+  }
+
+  /**
+   * TL3 — TABLE LIBRE : ouvre le ciblage de Porteur pour un Équipement (de MA
+   * main ou déjà posé) que je veux attacher À LA MAIN. La résolution
+   * (attachToBearer) émet l'intent `ATTACH`. Réservé au geste manuel (le jeu
+   * assisté attache déjà à la pose, via playFromHand → pendingBearer).
+   */
+  function attachSelected(equipmentId: string): boolean {
+    const seat = perspective.value;
+    const card = getCard(state.value.instances[equipmentId]?.cardId ?? null);
+    if (!card || !requiresBearer(card))
+      return rejectMove("Cette carte n'est pas un Équipement à porter.");
+    const eligible = eligibleBearers(rulesCtx(), seat, equipmentId);
+    if (!eligible.length)
+      return rejectMove(`Aucune créature en jeu ne peut porter ${card.name}.`);
+    pendingBearer.value = { equipmentId, eligible, manual: true };
+    return true; // en attente du clic sur le Porteur (attachToBearer)
+  }
+
+  /**
+   * TL5 — MONTRER SA MAIN à l'adversaire (Filouterie / geste manuel). Émet un
+   * `REVEAL` de toutes mes cartes en main vers l'autre siège : le serveur
+   * recalcule le delta `reveals` pour l'adversaire (redactEventForSeat) et son
+   * client affiche mes cartes. Monotone/one-shot (cf. verbe revealHand) : les
+   * cartes piochées ensuite ne sont pas révélées. Sans effet en local hot-seat
+   * (les deux mains sont déjà visibles), mais inoffensif.
+   */
+  function revealMyHand(): boolean {
+    const seat = perspective.value;
+    const ids = state.value.seats[seat]?.main ?? [];
+    if (!ids.length) return rejectMove("Ta main est vide.");
+    dispatch(revealHand(seat, [...ids], [otherSeat(seat)]));
+    return true;
   }
 
   /**
@@ -3595,7 +3640,12 @@ export const useGameStore = defineStore("game", () => {
     // Dommages (dry-run pur), on ouvre le mini-jeu Chi-Fu-Mi pour LE PREMIER — sa
     // résolution (bouclier / destruction / déclin) relance doResolveCombat, jusqu'à
     // ce qu'aucun ne soit plus « sur le point de recevoir des Dommages ».
-    if (assistEffects.value) {
+    // EN LIGNE, jamais le mini-jeu : le combat est résolu par le serveur
+    // (RESOLVE_COMBAT) et le Chi-Fu-Mi est un état LOCAL hot-seat sans intent
+    // cross-client — s'il s'ouvrait ici (chemin local résiduel en ligne),
+    // `pendingChifumi` ne pourrait jamais se résoudre et bloquerait `endTurn`
+    // à vie (#6). Le bouclier Kanigrou est alors un effet non couvert en ligne.
+    if (assistEffects.value && !online.value) {
       const under = kanigrouUnderFire(c);
       if (under.length) {
         openChifumi(under[0]);
@@ -3938,6 +3988,7 @@ export const useGameStore = defineStore("game", () => {
     assist,
     assistEffects,
     online,
+    manualTable,
     mySeat,
     botSeat,
     botAggressive,
@@ -3965,6 +4016,8 @@ export const useGameStore = defineStore("game", () => {
     rulesCtx,
     pendingBearer,
     attachToBearer,
+    attachSelected,
+    revealMyHand,
     cancelBearerTargeting,
     // Paiement au choix du joueur (local assisté).
     pendingPayment,

@@ -132,10 +132,14 @@ export function heroStats(
 ): BaseStats | undefined {
   if (!isHeroCard(card)) return undefined;
   // Lecture DÉFENSIVE (recto peut manquer sur des données/mocks malformés) :
-  // renvoie `undefined` plutôt que de planter.
+  // repli sur les stats top-level (`card.stats`) plutôt que `undefined` — sinon
+  // un Héros dont les stats vivent au top-level (et non sous `recto.stats`)
+  // rapportait Force 0 (attaque inoffensive) alors que getHeroPv, lui, avait déjà
+  // ce repli pour les PV : on aligne les deux lectures (#8).
+  const top = (card as { stats?: BaseStats }).stats;
   return side === "verso"
-    ? (card.verso?.stats ?? card.recto?.stats)
-    : card.recto?.stats;
+    ? (card.verso?.stats ?? card.recto?.stats ?? top)
+    : (card.recto?.stats ?? top);
 }
 
 /** Toute carte en jeu produit une Ressource en s'inclinant, sauf Protecteur (4261). */

@@ -43,6 +43,7 @@ export {
   shuffle,
   undo,
   say,
+  revealHand,
   setPhase,
   setCombat,
   sequence,

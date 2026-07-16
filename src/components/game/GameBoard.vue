@@ -361,6 +361,32 @@
                  pour info mais NON piochable en jeu. -->
             <PileStack label="Réserve" :count="reserveCount(me)" reserve />
           </span>
+          <!-- TL4 / TL5 — gestes manuels (table libre non assistée) : Piocher
+               (double le clic sur la pile) + Montrer sa main à l'adversaire
+               (Filouterie). Masqués en mode assisté / hors ligne. -->
+          <span
+            v-if="canManualDraw || canRevealHand"
+            class="gpiles__slot gpiles__manual"
+          >
+            <button
+              v-if="canManualDraw"
+              class="gbtn gbtn--sm"
+              data-testid="action-draw"
+              title="Piocher une carte de ta Pioche."
+              @click="drawOne"
+            >
+              🎴 Piocher
+            </button>
+            <button
+              v-if="canRevealHand"
+              class="gbtn gbtn--sm"
+              data-testid="action-reveal-hand"
+              title="Montrer ta main à l'adversaire (Filouterie)."
+              @click="revealHandToOpponent"
+            >
+              👁 Montrer ma main
+            </button>
+          </span>
         </div>
       </div>
     </section>
@@ -906,6 +932,17 @@
           >
             🔨 Fabriquer
           </button>
+          <!-- TL3 — ÉQUIPER (table libre) : attacher cet Équipement sur un
+               Porteur (clic ensuite sur la créature surlignée). -->
+          <button
+            v-if="canEquipSelected"
+            class="gbtn gbtn--accent"
+            data-testid="action-equip"
+            title="Attacher cet Équipement à un Porteur (clique ensuite la créature)."
+            @click="equipSelected"
+          >
+            🔗 Équiper
+          </button>
           <span class="gactionbar__sep"></span>
           <button class="gbtn" @click="moveSelected('monde')">→ Monde</button>
           <button class="gbtn" @click="moveSelected('havreSac')">
@@ -1027,7 +1064,7 @@ import SeatHud from "./SeatHud.vue";
 import PileStack from "./PileStack.vue";
 import CombatTray from "./CombatTray.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
-import { recetteOf } from "@/game/rules";
+import { recetteOf, requiresBearer } from "@/game/rules";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
@@ -1614,6 +1651,39 @@ function moveSelected(
 function tapSelected(): void {
   if (selectedInst.value) store.toggleTap(selectedInst.value.instanceId);
 }
+// TL3 — ÉQUIPER (table libre) : bouton pour attacher À LA MAIN un Équipement
+// sélectionné (de ma main ou déjà posé) sur un Porteur, via le ciblage
+// pendingBearer → intent ATTACH. Le jeu assisté attache déjà à la pose ; ce
+// geste comble le mode manuel (online non assisté), où jouer un Équipement le
+// laissait posé sans Porteur.
+const canEquipSelected = computed(() => {
+  const inst = selectedInst.value;
+  if (!store.manualTable || store.combat || !inst) return false;
+  if (inst.controller !== me.value) return false;
+  const card = resolveCard(inst.cardId);
+  return !!card && requiresBearer(card);
+});
+function equipSelected(): void {
+  const id = selectedInst.value?.instanceId;
+  if (!id) return;
+  if (store.attachSelected(id)) selectedId.value = null; // le plateau prend le relais (clic Porteur)
+}
+// TL5 — MONTRER SA MAIN (Filouterie / geste manuel) : révèle toute ma main à
+// l'adversaire. Réservé au jeu en ligne (en local hot-seat, tout est déjà
+// visible). Bouton global (indépendant de la carte sélectionnée).
+const canRevealHand = computed(
+  () => store.online && handList(me.value).length > 0,
+);
+function revealHandToOpponent(): void {
+  store.revealMyHand();
+}
+// TL4 — PIOCHER (table libre / non assisté) : bouton explicite doublant le clic
+// sur la pile Pioche (onPiocheClick), plus découvrable. Masqué en mode assisté
+// (pioche automatique). Piocher reste borné au tour côté serveur.
+const canManualDraw = computed(() => !store.assist);
+function drawOne(): void {
+  store.draw(me.value);
+}
 // A19 — FABRICATION : Recette de la carte de MA main sélectionnée (null si la
 // carte n'en porte pas ou n'est pas dans ma main) + raison d'illégalité
 // éventuelle (whyCannotCraft — Artisan du Métier dressé, Défausse typée…).
@@ -1965,6 +2035,18 @@ function manaBonus(seat: Seat): boolean {
 .gpiles__slot {
   display: block;
   border-radius: 8px;
+}
+/* TL4/TL5 — gestes manuels (table libre) : petite colonne de boutons à côté
+   des piles du joueur. */
+.gpiles__manual {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+.gbtn--sm {
+  padding: 3px 8px;
+  font-size: 0.72rem;
 }
 
 /* ── Bouton Fin du tour ── */

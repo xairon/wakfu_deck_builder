@@ -75,7 +75,16 @@ function redactBoard(
     seat,
     // L'ordre de la Pioche est secret pour TOUS → jamais de contenu.
     pioche: countZone(b.pioche),
-    main: isSelf ? fullZone(state, b.main, viewer) : countZone(b.main),
+    // Main : cachée à l'adversaire (compteur), SAUF si au moins une carte y a été
+    // RÉVÉLÉE à ce viewer (Filouterie, « montrer sa main ») → on passe en zone
+    // complète, où redactInstance/canSeeCardId ne dévoile QUE les cartes révélées
+    // (les autres gardent cardId null). Révélation partielle gérée correctement.
+    main:
+      isSelf ||
+      (viewer !== "spectator" &&
+        b.main.some((id) => state.instances[id]?.revealedTo.includes(viewer)))
+        ? fullZone(state, b.main, viewer)
+        : countZone(b.main),
     havreSac: fullZone(state, b.havreSac, viewer),
     defausse: fullZone(state, b.defausse, viewer),
     reserve: isSelf ? fullZone(state, b.reserve, viewer) : null,
