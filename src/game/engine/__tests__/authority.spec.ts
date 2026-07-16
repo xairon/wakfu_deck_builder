@@ -270,6 +270,21 @@ describe("authorizeDraft", () => {
     ).not.toThrow();
   });
 
+  it("UNDONE d'un joueur est REFUSÉ (annulation indisponible en ligne, anti-effacement)", () => {
+    // UNDONE ne portait aucune garde (ni propriété, ni tour, ni targetSeq) : un
+    // client pouvait annuler le seq de paiement d'un PLAY_CARD (rejouer gratis)
+    // ou effacer un event adverse / GAME_STARTED. L'undo est désactivé client-side
+    // en ligne → aucun chemin légitime ne l'émet.
+    const s = twoSeatState();
+    expect(() =>
+      authorizeDraft(s, {
+        actor: "A",
+        type: "UNDONE",
+        payload: { targetSeq: 1 },
+      }),
+    ).toThrow(EngineError);
+  });
+
   it("laisse passer les events système (setup)", () => {
     const s = twoSeatState();
     expect(() =>

@@ -212,7 +212,10 @@ function applyCreateToken(s: GameState, p: CreateTokenPayload): void {
     location: { zone: "monde" },
     face: "recto",
     orientation: p.orientation ?? "upright",
-    counters: {},
+    // 303.3 — mal d'invocation : un jeton (Allié) arrive CE tour, comme toute
+    // créature jouée ; sans ce marqueur (arrivedTurn = 0 par défaut) il pouvait
+    // attaquer le tour même de sa création. eligibleAttackers lit ce jeton.
+    counters: { tokens: { arrivedTurn: s.turn.number } },
     attachments: [],
     revealedTo: ["A", "B"],
   };

@@ -248,6 +248,42 @@ describe("bus — bearerFrames (riposte de Porteur)", () => {
   });
 });
 
+describe("moteur — Glyphe Incandescent n'auto-riposte pas (P2-12)", () => {
+  it("un paquet de Glyphe (source == cible) ne déclenche PAS la Cape du Porteur contre lui-même", () => {
+    // Le Glyphe (Zone) inflige ses Dommages au Porteur `bearer` : ce n'est pas
+    // « un Allié ou Héros » qui frappe → la Cape ne doit pas riposter. Régression :
+    // la frame Glyphe attribuait la source à la VICTIME (bearer), et bearerFrames
+    // voyait alors un Allié frappant son propre Porteur → riposte sur soi.
+    const state = makeState();
+    const dispatch = vi.fn();
+    const engine = createEffectEngine(mockDeps(state, { dispatch }));
+    // Frame Glyphe : sourceId == riposteTargetId == bearer (auto-attribution).
+    engine.enqueueTriggered([
+      {
+        seat: "A",
+        sourceId: "bearer",
+        cardName: "Glyphe Incandescent",
+        text: "Glyphe Incandescent inflige 2 Dommages Feu.",
+        ops: [{ op: "damageRiposteSource", n: 2, element: "Feu" }],
+        riposteTargetId: "bearer",
+      },
+    ]);
+    // Le Porteur encaisse les 2 du Glyphe UNE fois ; aucune riposte ne le refrappe.
+    const bearerHits = dispatch.mock.calls
+      .flat()
+      .filter(
+        (e) =>
+          e &&
+          typeof e === "object" &&
+          e.type === "INC_COUNTER" &&
+          e.payload?.instanceId === "bearer" &&
+          e.payload?.counter === "damage",
+      );
+    expect(bearerHits).toHaveLength(1);
+    expect(bearerHits[0].payload.delta).toBe(2);
+  });
+});
+
 describe("moteur — flux complet de riposte", () => {
   it("le frappeur (atk) subit 1 Dommage Feu de riposte", () => {
     const state = makeState();

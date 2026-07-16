@@ -154,7 +154,11 @@ const ALLOWED_TYPES = new Set<EventType>([
   "REVEAL",
   "SAID",
   "MULLIGAN_DONE",
-  "UNDONE",
+  // NB : "UNDONE" est VOLONTAIREMENT absent. L'annulation est une commodité
+  // LOCALE (désactivée en ligne, cf. gameStore.undoLast) ; l'accepter côté
+  // serveur laissait un client annuler N'IMPORTE QUEL seq (paiement d'un
+  // PLAY_CARD → rejeu gratuit, event adverse ou GAME_STARTED → plateau effacé),
+  // sans garde de propriété/tour/adjacence. Un joueur ne peut donc pas l'émettre.
 ]);
 
 // Types « liés au tour » restant sur le chemin draft : seul SHUFFLE (mélange de

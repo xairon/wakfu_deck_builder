@@ -183,6 +183,12 @@ export function effectTargetIds(
       if (inst.location.zone !== "monde" && inst.location.zone !== "havreSac")
         continue;
       if (inst.controller !== want) continue;
+      // PORTÉE 508.1b/c : le duelliste ADVERSE désigné (duelChooseChallenged) ne
+      // peut être un objet protégé dans SON Havre-Sac — même règle que le
+      // ciblage générique. (duelTapDuelist vise SES propres créatures : pas de
+      // restriction de portée sur son propre Havre-Sac.)
+      if (op.op === "duelChooseChallenged" && inst.location.zone === "havreSac")
+        continue;
       const card = ctx.getCard(inst.cardId);
       if (card?.mainType !== "Allié" && card?.mainType !== "Héros") continue;
       // le duelliste doit être DRESSÉ (on l'incline en coût).

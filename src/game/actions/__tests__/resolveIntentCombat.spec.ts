@@ -88,6 +88,20 @@ describe("resolveIntent — combat (autorité serveur, P3)", () => {
     expect((c.target as { instanceId: string }).instanceId).toBe(HERO_B);
   });
 
+  it("DECLARE_ATTACK avec un attaquant EN DOUBLE → refusé (dégâts multipliés)", () => {
+    const { f, A0 } = combatReady();
+    const r = run(
+      f,
+      {
+        kind: "DECLARE_ATTACK",
+        attackers: [A0, A0, A0],
+        target: { kind: "hero", instanceId: HERO_B },
+      },
+      "A",
+    );
+    expect("error" in r).toBe(true);
+  });
+
   it("DECLARE_BLOCK : refusée pour l'attaquant, acceptée pour le défenseur", () => {
     const { f, A0, B0 } = combatReady();
     apply(
@@ -112,6 +126,42 @@ describe("resolveIntent — combat (autorité serveur, P3)", () => {
       ok.events[0].payload as { combat: { blocks: Record<string, string> } }
     ).combat;
     expect(c.blocks[B0]).toBe(A0);
+  });
+
+  it("CANCEL_COMBAT après les blocages (step resolve) → refusé (anti-scouting)", () => {
+    const { f, A0, B0 } = combatReady();
+    apply(
+      f,
+      {
+        kind: "DECLARE_ATTACK",
+        attackers: [A0],
+        target: { kind: "hero", instanceId: HERO_B },
+      },
+      "A",
+    );
+    // Avant blocage (step "blockers") : l'annulation reste permise.
+    const early = run(f, { kind: "CANCEL_COMBAT" }, "A");
+    expect("events" in early).toBe(true);
+    // Le défenseur déclare son blocage → step "resolve" (plan révélé à l'attaquant).
+    apply(f, { kind: "DECLARE_BLOCK", blocks: { [B0]: A0 } }, "B");
+    const late = run(f, { kind: "CANCEL_COMBAT" }, "A");
+    expect("error" in late).toBe(true);
+  });
+
+  it("END_TURN avec un combat OUVERT → refusé (combat orphelin sinon)", () => {
+    const { f, A0 } = combatReady();
+    apply(
+      f,
+      {
+        kind: "DECLARE_ATTACK",
+        attackers: [A0],
+        target: { kind: "hero", instanceId: HERO_B },
+      },
+      "A",
+    );
+    const r = run(f, { kind: "END_TURN" }, "A");
+    expect("error" in r).toBe(true);
+    expect("error" in r && r.error).toContain("combat");
   });
 
   it("RESOLVE_COMBAT : refusée pour le défenseur ; l'attaquant résout → dégâts + clôture + attaque enregistrée", () => {

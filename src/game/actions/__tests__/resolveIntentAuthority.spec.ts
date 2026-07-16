@@ -18,6 +18,7 @@ import {
   createMockAllyCard,
 } from "tests/factories/card";
 import type { Card, Deck } from "@/types/cards";
+import type { GameState } from "@/game/types/state";
 import type { Seat } from "@/game";
 import { createGame } from "@/game";
 import { drawTop, sequence } from "@/game/engine/verbs";
@@ -65,6 +66,42 @@ function playingState() {
 
 const isErr = (r: ReturnType<typeof resolveIntent>): r is { error: string } =>
   "error" in r;
+
+/** État minimal : A contrôle au Monde un Équipement, un Allié NORMAL et un
+ *  Allié MONSTRE + un Allié non-Équipement (pour tester les forgeries d'ATTACH). */
+function attachState() {
+  const equip = createMockEquipmentCard({ id: "eq" });
+  const normal = createMockAllyCard({ id: "ally", name: "Allié" });
+  const monster = createMockAllyCard({
+    id: "mon",
+    name: "Bouftou Monstre",
+    subTypes: ["Monstre"],
+  });
+  const cards: Record<string, Card> = { eq: equip, ally: normal, mon: monster };
+  const inst = (id: string, cardId: string) => ({
+    instanceId: id,
+    cardId,
+    owner: "A" as Seat,
+    controller: "A" as Seat,
+    orientation: "upright" as const,
+    location: { zone: "monde" as const },
+    counters: {},
+  });
+  const state = {
+    turn: { active: "A", number: 3 },
+    seats: {
+      A: { main: [], pioche: [], defausse: [], heroInstanceId: "hA" },
+      B: { main: [], pioche: [], defausse: [], heroInstanceId: "hB" },
+    },
+    instances: {
+      eq: inst("eq", "eq"),
+      ally: inst("ally", "ally"),
+      mon: inst("mon", "mon"),
+    },
+  } as unknown as GameState;
+  const getCard = (id: string | null) => (id ? (cards[id] ?? null) : null);
+  return { state, getCard };
+}
 
 describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () => {
   // ── Victoire forgée / compteurs vitaux ─────────────────────────────────────
@@ -142,6 +179,42 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
       "A",
     );
     expect(isErr(r) && r.error).toContain("protégé");
+  });
+
+  it("TOUT jeton via intent → refusé (forceMod/geantMod/… alimentent le combat)", () => {
+    const { state, getCard } = playingState();
+    const aHero = state.seats.A.heroInstanceId!;
+    // La couche de jetons n'est écrite QUE par le moteur d'effets ; aucun jeu
+    // légitime ne l'écrit via une intention. Un client trafiqué s'octroierait
+    // sinon Force/Géant/Agilité/boucliers à volonté (combat forgé côté serveur).
+    for (const counter of ["forceMod", "forceCombatMod", "geantMod", "pmMod"]) {
+      const inc = resolveIntent(
+        state,
+        getCard,
+        {
+          kind: "INC_COUNTER",
+          instanceId: aHero,
+          counter,
+          delta: 999,
+          token: true,
+        },
+        "A",
+      );
+      expect(isErr(inc) && inc.error).toContain("protégé");
+      const set = resolveIntent(
+        state,
+        getCard,
+        {
+          kind: "SET_COUNTER",
+          instanceId: aHero,
+          counter,
+          value: 999,
+          token: true,
+        },
+        "A",
+      );
+      expect(isErr(set) && set.error).toContain("protégé");
+    }
   });
 
   // ── Manipulation des cartes adverses ───────────────────────────────────────
@@ -225,20 +298,51 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
     expect(isErr(r) && r.error).toContain("contrôles pas");
   });
 
-  // ── Les coups LÉGITIMES passent toujours ───────────────────────────────────
-  it("SET_COUNTER d'un compteur NON protégé sur SA carte → autorisé", () => {
-    const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+  // ── ATTACH : le Porteur ET l'objet attaché sont revalidés (305.x) ───────────
+  it("ATTACH d'un Équipement sur un MONSTRE → refusé (un Monstre ne porte pas)", () => {
+    const { state, getCard } = attachState();
     const r = resolveIntent(
       state,
       getCard,
-      {
-        kind: "SET_COUNTER",
-        instanceId: aHero,
-        counter: "marqueur",
-        value: 1,
-        token: true,
-      },
+      { kind: "ATTACH", equipmentId: "eq", bearerId: "mon" },
+      "A",
+    );
+    expect(isErr(r)).toBe(true);
+  });
+
+  it("ATTACH d'une carte NON-Équipement (un Allié) → refusé", () => {
+    const { state, getCard } = attachState();
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "ATTACH", equipmentId: "ally", bearerId: "mon" },
+      "A",
+    );
+    expect(isErr(r)).toBe(true);
+  });
+
+  it("ATTACH d'un Équipement sur un Allié normal → autorisé (ATTACH émis)", () => {
+    const { state, getCard } = attachState();
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "ATTACH", equipmentId: "eq", bearerId: "ally" },
+      "A",
+    );
+    expect("events" in r).toBe(true);
+    expect("events" in r && r.events[0].type).toBe("ATTACH");
+  });
+
+  // ── Les coups LÉGITIMES passent toujours ───────────────────────────────────
+  it("SET_COUNTER d'un compteur NON protégé, NON jeton, sur SA carte → autorisé", () => {
+    const { state, getCard } = playingState();
+    const aHero = state.seats.A.heroInstanceId!;
+    // Compteur manuel « normal » (ce que `adjustCounter` du client envoie : sans
+    // `token`). Reste autorisé — seuls les jetons du moteur sont bannis via intent.
+    const r = resolveIntent(
+      state,
+      getCard,
+      { kind: "SET_COUNTER", instanceId: aHero, counter: "marqueur", value: 1 },
       "A",
     );
     expect("events" in r).toBe(true);
@@ -412,7 +516,16 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
     const feu2 = toDefausse("A", "feu-authority");
     const equipId = state.seats.A.main[0];
     state.instances[equipId].cardId = "equip-recette-authority";
-    return { state, getCard: getCard2, equipId, artisanId, bearerId, oppAlly, feu1, feu2 };
+    return {
+      state,
+      getCard: getCard2,
+      equipId,
+      artisanId,
+      bearerId,
+      oppAlly,
+      feu1,
+      feu2,
+    };
   }
 
   it("soumission VALIDE → tap Artisan + 2 recyclages sous la Pioche + ATTACH", () => {
@@ -420,7 +533,13 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
     const r = resolveIntent(
       s.state,
       s.getCard,
-      { kind: "CRAFT", equipmentId: s.equipId, artisanId: s.artisanId, recycledIds: [s.feu1, s.feu2], bearerId: s.bearerId },
+      {
+        kind: "CRAFT",
+        equipmentId: s.equipId,
+        artisanId: s.artisanId,
+        recycledIds: [s.feu1, s.feu2],
+        bearerId: s.bearerId,
+      },
       "A",
     );
     expect(isErr(r) && r.error).toBeFalsy();
@@ -433,14 +552,47 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
 
   it("Artisan FORGÉ (mauvais Métier / adverse / incliné) → refusé", () => {
     const s1 = craftState();
-    const r1 = resolveIntent(s1.state, s1.getCard, { kind: "CRAFT", equipmentId: s1.equipId, artisanId: s1.bearerId, recycledIds: [s1.feu1, s1.feu2], bearerId: s1.bearerId }, "A");
+    const r1 = resolveIntent(
+      s1.state,
+      s1.getCard,
+      {
+        kind: "CRAFT",
+        equipmentId: s1.equipId,
+        artisanId: s1.bearerId,
+        recycledIds: [s1.feu1, s1.feu2],
+        bearerId: s1.bearerId,
+      },
+      "A",
+    );
     expect(isErr(r1) && r1.error).toMatch(/artisan/i);
     const s2 = craftState();
-    const r2 = resolveIntent(s2.state, s2.getCard, { kind: "CRAFT", equipmentId: s2.equipId, artisanId: s2.oppAlly, recycledIds: [s2.feu1, s2.feu2], bearerId: s2.bearerId }, "A");
+    const r2 = resolveIntent(
+      s2.state,
+      s2.getCard,
+      {
+        kind: "CRAFT",
+        equipmentId: s2.equipId,
+        artisanId: s2.oppAlly,
+        recycledIds: [s2.feu1, s2.feu2],
+        bearerId: s2.bearerId,
+      },
+      "A",
+    );
     expect(isErr(r2) && r2.error).toMatch(/artisan/i);
     const s3 = craftState();
     s3.state.instances[s3.artisanId].orientation = "tapped";
-    const r3 = resolveIntent(s3.state, s3.getCard, { kind: "CRAFT", equipmentId: s3.equipId, artisanId: s3.artisanId, recycledIds: [s3.feu1, s3.feu2], bearerId: s3.bearerId }, "A");
+    const r3 = resolveIntent(
+      s3.state,
+      s3.getCard,
+      {
+        kind: "CRAFT",
+        equipmentId: s3.equipId,
+        artisanId: s3.artisanId,
+        recycledIds: [s3.feu1, s3.feu2],
+        bearerId: s3.bearerId,
+      },
+      "A",
+    );
     expect(isErr(r3)).toBe(true);
   });
 
@@ -448,19 +600,63 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
     const s1 = craftState();
     // une carte de la MAIN au lieu de la Défausse
     const handCard = s1.state.seats.A.main[1];
-    const r1 = resolveIntent(s1.state, s1.getCard, { kind: "CRAFT", equipmentId: s1.equipId, artisanId: s1.artisanId, recycledIds: [s1.feu1, handCard], bearerId: s1.bearerId }, "A");
+    const r1 = resolveIntent(
+      s1.state,
+      s1.getCard,
+      {
+        kind: "CRAFT",
+        equipmentId: s1.equipId,
+        artisanId: s1.artisanId,
+        recycledIds: [s1.feu1, handCard],
+        bearerId: s1.bearerId,
+      },
+      "A",
+    );
     expect(isErr(r1) && r1.error).toMatch(/recycl|418/i);
     const s2 = craftState();
-    const r2 = resolveIntent(s2.state, s2.getCard, { kind: "CRAFT", equipmentId: s2.equipId, artisanId: s2.artisanId, recycledIds: [s2.feu1], bearerId: s2.bearerId }, "A");
+    const r2 = resolveIntent(
+      s2.state,
+      s2.getCard,
+      {
+        kind: "CRAFT",
+        equipmentId: s2.equipId,
+        artisanId: s2.artisanId,
+        recycledIds: [s2.feu1],
+        bearerId: s2.bearerId,
+      },
+      "A",
+    );
     expect(isErr(r2) && r2.error).toMatch(/exactement 2/i);
     const s3 = craftState();
-    const r3 = resolveIntent(s3.state, s3.getCard, { kind: "CRAFT", equipmentId: s3.equipId, artisanId: s3.artisanId, recycledIds: [s3.feu1, s3.feu1], bearerId: s3.bearerId }, "A");
+    const r3 = resolveIntent(
+      s3.state,
+      s3.getCard,
+      {
+        kind: "CRAFT",
+        equipmentId: s3.equipId,
+        artisanId: s3.artisanId,
+        recycledIds: [s3.feu1, s3.feu1],
+        bearerId: s3.bearerId,
+      },
+      "A",
+    );
     expect(isErr(r3)).toBe(true); // doublon = compte forgé
   });
 
   it("hors de son tour → refusé (TURN_BOUND)", () => {
     const s = craftState();
-    const r = resolveIntent(s.state, s.getCard, { kind: "CRAFT", equipmentId: s.equipId, artisanId: s.artisanId, recycledIds: [s.feu1, s.feu2], bearerId: s.bearerId }, "B");
+    const r = resolveIntent(
+      s.state,
+      s.getCard,
+      {
+        kind: "CRAFT",
+        equipmentId: s.equipId,
+        artisanId: s.artisanId,
+        recycledIds: [s.feu1, s.feu2],
+        bearerId: s.bearerId,
+      },
+      "B",
+    );
     expect(isErr(r)).toBe(true);
   });
 });

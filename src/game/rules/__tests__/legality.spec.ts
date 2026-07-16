@@ -151,12 +151,25 @@ describe("rules/legality — jouer une carte", () => {
     expect(whyCannotPlay(ctxOf(f), "A", instId("A", 0))).toBeNull();
   });
 
-  it("réaction : autorise à jouer hors de son tour quand reaction=true (706)", () => {
-    const f = handFixture();
+  it("réaction : autorise à jouer une ACTION hors de son tour quand reaction=true (706)", () => {
+    // 706.5 : la fenêtre de réaction ne relâche tour/phase que pour une ACTION.
+    const action = {
+      ...makeAlly("c0", { niveau: 0, element: "Feu" }),
+      mainType: "Action",
+    } as unknown as Card;
+    const f = fixture([action]);
+    bringToHand(f, "A", instId("A", 0));
     setTurn(f, "B", 3); // tour de B → A est hors-tour
     const id = instId("A", 0);
     expect(whyCannotPlay(ctxOf(f), "A", id)).toBe("Ce n'est pas votre tour.");
     expect(whyCannotPlay(ctxOf(f), "A", id, true)).toBeNull();
+  });
+
+  it("réaction : un Allié (vitesse sorcier) reste refusé hors-tour même reaction=true (706.5)", () => {
+    const f = handFixture(); // Allié par défaut
+    setTurn(f, "B", 3);
+    const id = instId("A", 0);
+    expect(whyCannotPlay(ctxOf(f), "A", id, true)).toContain("Action");
   });
 
   it("interdit le Monde au premier tour de la partie (4943, carte Monde)", () => {

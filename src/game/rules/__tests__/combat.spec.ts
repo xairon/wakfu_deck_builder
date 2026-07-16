@@ -12,7 +12,7 @@ import {
   makeAlly,
   setTurn,
 } from "./harness";
-import { setCounter } from "@/game";
+import { discard, setCounter } from "@/game";
 import { combatKeywords, effectiveKeywords } from "../effects/keywords";
 import type { Fixture } from "./harness";
 
@@ -46,6 +46,149 @@ describe("rules/combat — choix du bloqueur frappé (6105)", () => {
     expect(result.destroyed).toContain(instId("B", 1)); // le désigné
     expect(result.destroyed).not.toContain(instId("B", 0));
     expect(state.instances[instId("B", 0)].counters.damage ?? 0).toBe(0);
+  });
+});
+
+describe("rules/combat — événements `destroyed` pour les déclenchés de mort (P0-2)", () => {
+  it("un Allié détruit en duel émet un RuleEvent destroyed (804.7)", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 2 })],
+      [makeAlly("blk", { force: 3 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    const { result } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    // l'attaquant (force 2) prend 3 → détruit → doit émettre un destroyed
+    expect(result.destroyed).toContain(instId("A", 0));
+    expect(result.ruleEvents).toContainEqual({
+      kind: "destroyed",
+      instanceId: instId("A", 0),
+      controller: "A",
+    });
+  });
+
+  it("un attaquant libre tuant le Héros n'émet pas de destroyed pour le Héros (mort de Héros = victoire, pas déclenché d'Allié)", () => {
+    const f = fixture([makeAlly("atk", { force: 3 })]);
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    dispatch(f, setCounter("B", HERO_B, "hp", 2));
+    const { result } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: {},
+    });
+    expect(
+      result.ruleEvents.some(
+        (e) => e.kind === "destroyed" && e.instanceId === HERO_B,
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("rules/combat — riposte redirigée : feedback (707.1)", () => {
+  it("si l'attaquant choisi pour la riposte n'a pas frappé la cible (bloqué), la riposte est redirigée AVEC un message", () => {
+    // A attaque l'Allié B0 (cible) avec A0 (libre) et A1 (bloqué par B1).
+    // Seul A0 frappe la cible → seul A0 est ripostable. Le défenseur choisit A1
+    // (bloqué) : la riposte doit être redirigée vers A0, et le log l'expliquer.
+    const f = fixture(
+      [makeAlly("a0", { force: 2 }), makeAlly("a1", { force: 2 })],
+      [makeAlly("target", { force: 3 }), makeAlly("blk", { force: 1 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "A", instId("A", 1), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0)); // cible Allié
+    bringToMonde(f, "B", instId("B", 1)); // bloqueur
+    const { result } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "ally", instanceId: instId("B", 0) },
+      attackers: [instId("A", 0), instId("A", 1)],
+      blocks: { [instId("B", 1)]: instId("A", 1) }, // A1 bloqué
+      ripostes: { [instId("B", 0)]: instId("A", 1) }, // choix = A1 (n'a pas frappé)
+    });
+    expect(result.log.some((l) => /redirig|bloquée|absorbée/i.test(l))).toBe(
+      true,
+    );
+  });
+});
+
+describe("rules/combat — combattant hors-jeu à la résolution (P0-1)", () => {
+  it("un attaquant LIBRE détruit avant la résolution ne frappe plus la cible", () => {
+    const f = fixture([makeAlly("atk", { force: 3 })]);
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    // l'attaquant meurt (réaction/effet) → Défausse AVANT la résolution
+    dispatch(f, discard("A", instId("A", 0), { zone: "monde" }));
+    const { state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: {},
+    });
+    expect(state.instances[HERO_B].counters.hp).toBe(16); // aucun dégât
+  });
+
+  it("un attaquant détruit ne bannit pas non plus le Havre-Sac cible", () => {
+    const f = fixture([makeAlly("atk", { force: 3 })]);
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    dispatch(f, setCounter("B", SAC_B, "resistance", 2));
+    dispatch(f, discard("A", instId("A", 0), { zone: "monde" }));
+    const { state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "havreSac", instanceId: SAC_B },
+      attackers: [instId("A", 0)],
+      blocks: {},
+    });
+    expect(state.instances[SAC_B].counters.resistance).toBe(2); // intacte
+  });
+
+  it("bloqueur détruit avant résolution → l'attaquant redevient libre et frappe la cible", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 3 })],
+      [makeAlly("blk", { force: 3 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    // le bloqueur meurt avant la résolution → son blocage est levé
+    dispatch(f, discard("B", instId("B", 0), { zone: "monde" }));
+    const { state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    expect(state.instances[HERO_B].counters.hp).toBe(13); // 16 − 3, attaquant libre
+  });
+
+  it("attaquant détruit avec bloqueur : le bloqueur orphelin n'échange aucun coup et n'est pas incliné dans la Défausse", () => {
+    const f = fixture(
+      [makeAlly("atk", { force: 5 })],
+      [makeAlly("blk", { force: 1 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0));
+    dispatch(f, discard("A", instId("A", 0), { zone: "monde" }));
+    const { result, state } = applyCombat(f, {
+      attackerSeat: "A",
+      target: { kind: "hero", instanceId: HERO_B },
+      attackers: [instId("A", 0)],
+      blocks: { [instId("B", 0)]: instId("A", 0) },
+    });
+    // le bloqueur ne prend aucun dégât d'un attaquant mort
+    expect(result.destroyed).not.toContain(instId("B", 0));
+    expect(state.instances[instId("B", 0)].counters.damage ?? 0).toBe(0);
+    // le Héros cible n'est pas frappé (l'attaquant était bloqué, puis mort)
+    expect(state.instances[HERO_B].counters.hp).toBe(16);
   });
 });
 

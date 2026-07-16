@@ -207,10 +207,12 @@ describe("moteur — destroyAll (destruction de masse, non interactive)", () => 
     expect(wasDestroyed(dispatch, "mine")).toBe(false);
   });
 
-  it("heroes : « et Héros » détruit AUSSI le Héros adverse (board-wipe total)", () => {
+  it("heroes : « et Héros » détruit le Héros adverse EXPOSÉ au Monde, mais épargne celui embagué (508.x)", () => {
     const foe = ally("foe", "B");
-    const h = hero("h", "B");
-    const { engine, dispatch } = setup([foe, h]);
+    const hExposed = hero("hExpo", "B");
+    hExposed.inst.location = { zone: "monde" }; // Héros sorti du Havre-Sac
+    const hBagged = hero("hBag", "B"); // reste dans son Havre-Sac (protégé)
+    const { engine, dispatch } = setup([foe, hExposed, hBagged]);
     engine.enqueueEffect({
       seat: "A",
       cardName: "Wipe",
@@ -224,7 +226,10 @@ describe("moteur — destroyAll (destruction de masse, non interactive)", () => 
       ],
     });
     expect(wasDestroyed(dispatch, "foe")).toBe(true);
-    expect(wasDestroyed(dispatch, "h")).toBe(true);
+    // 508.1b/c : un board-wipe adverse ne perce pas le Havre-Sac ADVERSE — le
+    // Héros exposé tombe, l'embagué survit (cohérent avec le ciblage générique).
+    expect(wasDestroyed(dispatch, "hExpo")).toBe(true);
+    expect(wasDestroyed(dispatch, "hBag")).toBe(false);
   });
 
   it("sub : ne détruit que la Famille (« tous les Alliés Piou »)", () => {

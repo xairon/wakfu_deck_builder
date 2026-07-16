@@ -1136,13 +1136,22 @@ export const useGameStore = defineStore("game", () => {
       rejectMove("Ce n'est pas ton tour.");
       return;
     }
+    // Un COMBAT déclaré non résolu bloque la fin de tour : le supprimer en
+    // silence abandonnait l'attaque (attaquants laissés inclinés, aucune
+    // résolution) et, en ligne, laissait `state.combat` orphelin. Il faut
+    // résoudre ou annuler (combatCancel redresse les attaquants, A6).
+    if (combat.value) {
+      rejectMove(
+        "Termine le combat en cours (résous ou annule) avant de finir le tour.",
+      );
+      return;
+    }
     // 4873 : on ne passe pas la main avec un excédent — défausse d'abord
     if (assist.value && state.value.seats[active].main.length > paOf(active)) {
       engine.enforceHandLimit(active);
       rejectMove("Main pleine : défausse l'excédent avant de finir le tour.");
       return;
     }
-    combat.value = null;
     // EN LIGNE (P2) : une seule intention END_TURN — le serveur pioche jusqu'aux
     // PA, passe la main, redresse/efface les dégâts du joueur entrant et purge
     // les jetons de tour (resolveIntent → nextTurnEvents). On n'avance RIEN
@@ -1990,8 +1999,14 @@ export const useGameStore = defineStore("game", () => {
   function canReactInCombat(seat: Seat): boolean {
     const c = combat.value;
     if (!c) return false;
-    if (c.reactingSeat === seat) return true;
+    // EN LIGNE (P1-9) : la réaction en combat n'est pas encore supportée côté
+    // serveur (moteur d'effets OFF, PLAY_CARD/TAP restent TURN_BOUND). Le garde
+    // doit passer AVANT le raccourci `reactingSeat` : sinon la main du défenseur
+    // s'allumait comme jouable puis chaque coup était rejeté (« Réseau : … » +
+    // resync). On désactive donc proprement toute affordance de réaction en
+    // ligne — pas de faux positif. (Support online = feature différée.)
     if (online.value) return false;
+    if (c.reactingSeat === seat) return true;
     return c.step !== "attackers" && seat === otherSeat(turn.value.active);
   }
 
@@ -3667,6 +3682,11 @@ export const useGameStore = defineStore("game", () => {
       else combat.value = null;
       return;
     }
+    // NB : l'anti-scouting « pas d'annulation après les blocages » est appliqué
+    // par l'AUTORITÉ SERVEUR (resolveIntent CANCEL_COMBAT, step "resolve") — c'est
+    // là qu'un adversaire pourrait sonder puis annuler. En LOCAL (hot-seat / solo
+    // vs bot), le ref de combat suit un autre modèle d'étapes et l'annulation
+    // reste une commodité ; on n'y duplique pas la garde.
     // Annuler APRÈS la déclaration : les attaquants ont été inclinés à la
     // déclaration (A6). On les redresse pour ne pas laisser le joueur avec des
     // cartes tapées « pour rien » s'il renonce au combat.

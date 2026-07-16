@@ -246,10 +246,22 @@ export function resolveCombat(
     if (plan.target.kind === "ally") addDmg(plan.target.instanceId, eff);
   }
 
+  // Vivacité : un combattant DÉTRUIT / expulsé du Monde avant la résolution
+  // (réaction, effet, Exclusion) ne participe plus. Le journal est immuable
+  // (l'instance survit en Défausse) donc on FILTRE ici sur la zone, sinon un
+  // cadavre frapperait depuis la Défausse (dégâts + XP fantômes). Miroir de
+  // removeFromCombat (ruling W52) : attaquant mort → ses blocages restent
+  // orphelins (le bloqueur n'échange aucun coup mais s'incline en 708.3) ;
+  // bloqueur mort → son blocage est levé (l'attaquant redevient libre).
+  const inPlay = (id: InstanceId): boolean =>
+    ctx.state.instances[id]?.location.zone === "monde";
+  const liveAttackers = plan.attackers.filter(inPlay);
+
   // bloqueurs par attaquant
   const blockersOf = new Map<InstanceId, InstanceId[]>();
   for (const [blocker, attacker] of Object.entries(plan.blocks)) {
-    if (!plan.attackers.includes(attacker)) continue;
+    if (!liveAttackers.includes(attacker)) continue; // attaquant mort → blocage orphelin
+    if (!inPlay(blocker)) continue; // bloqueur mort → blocage levé
     const list = blockersOf.get(attacker) ?? [];
     list.push(blocker);
     blockersOf.set(attacker, list);
@@ -257,7 +269,7 @@ export function resolveCombat(
 
   // 706 — duels : l'attaquant frappe UN bloqueur (Géant : répartit sa Force
   // entre tous, 6135) ; tous les bloqueurs le frappent simultanément.
-  for (const attacker of plan.attackers) {
+  for (const attacker of liveAttackers) {
     const blockers = blockersOf.get(attacker);
     if (!blockers?.length) continue;
     const aForce = forceOf(ctx, attacker, stance);
@@ -307,7 +319,7 @@ export function resolveCombat(
   }
 
   // 707 — attaquants libres → Dommages sur la cible, individuellement (6179)
-  const freeAttackers = plan.attackers.filter(
+  const freeAttackers = liveAttackers.filter(
     (id) => !blockersOf.get(id)?.length,
   );
   for (const id of freeAttackers) hitTarget(id, forceOf(ctx, id, stance));
@@ -318,10 +330,19 @@ export function resolveCombat(
   if (plan.target.kind !== "havreSac" && targetStrikers.length) {
     const tId = plan.target.instanceId;
     const chosen = plan.ripostes?.[tId];
-    const struck =
-      chosen && targetStrikers.includes(chosen) ? chosen : targetStrikers[0];
+    const wasChosen = !!chosen && targetStrikers.includes(chosen);
+    const struck = wasChosen ? chosen! : targetStrikers[0];
     inflict(tId, struck, forceOf(ctx, tId, stance));
-    log.push(`Riposte : ${nameOf(ctx, tId)} frappe ${nameOf(ctx, struck)}.`);
+    // 707.1 : la riposte ne peut viser qu'un attaquant AYANT infligé des Dommages
+    // à la Cible. Si le choix pointait un attaquant bloqué / absorbé (aucun
+    // Dommage passé), on redirige vers un frappeur valide — AVEC un message
+    // (sinon la riposte frappait « ailleurs » sans explication).
+    if (chosen && !wasChosen)
+      log.push(
+        `Riposte redirigée : ${nameOf(ctx, chosen)} n'a pas infligé de Dommages (bloqué/absorbé) → ${nameOf(ctx, tId)} frappe ${nameOf(ctx, struck)}.`,
+      );
+    else
+      log.push(`Riposte : ${nameOf(ctx, tId)} frappe ${nameOf(ctx, struck)}.`);
   }
 
   // Application du total à la Cible Héros (PV) / Havre-Sac (Résistance) ;
@@ -373,6 +394,15 @@ export function resolveCombat(
     if (force > 0 && total >= force) {
       destroyed.push(id);
       events.push(discard(inst.owner, id, inst.location));
+      // 804.7 — déclenchés de mort (« Quand détruit », hand-watchers Tofu
+      // Céleste). Émis ici pour que la mort EN COMBAT les déclenche comme la
+      // destruction par effet/balayage ; collectés par doResolveCombat sur le
+      // contexte de destruction (l'instance reste lisible en Défausse).
+      ruleEvents.push({
+        kind: "destroyed",
+        instanceId: id,
+        controller: inst.controller,
+      });
       const card = ctx.getCard(inst.cardId);
       const xp = card ? xpValue(card) : 0;
       if (inst.controller === def) xpForAtk += xp;
@@ -432,7 +462,14 @@ export function resolveCombat(
   for (const blocker of Object.keys(plan.blocks)) {
     if (destroyed.includes(blocker)) continue;
     const inst = ctx.state.instances[blocker];
-    if (!inst || inst.orientation === "tapped") continue;
+    // Un bloqueur détruit AVANT la résolution (réaction) est déjà en Défausse :
+    // 708.3 ne l'incline pas (on n'émet pas de SET_ORIENTATION sur un mort).
+    if (
+      !inst ||
+      inst.location.zone !== "monde" ||
+      inst.orientation === "tapped"
+    )
+      continue;
     // Tacle : un bloqueur verrouillé « ne peut pas s'incliner » → on n'émet pas
     // son inclinaison de fin de combat (708.3 cédant au pouvoir continu Tacle).
     if (tacleLocked(blocker)) {

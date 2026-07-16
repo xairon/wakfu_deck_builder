@@ -88,11 +88,13 @@ function pickTarget(store: Store, me: Seat): void {
   const pool = harmful
     ? scored.filter((s) => !s.mine)
     : scored.filter((s) => s.mine);
-  // Aucune cible du bon camp : on PASSE au lieu de retomber sur le mauvais camp
-  // (un op nuisible sans cible adverse — Tirlangue vs Héros embagé — ne doit
-  // jamais s'auto-infliger à ses propres créatures ; symétrie pour les bénéfiques).
+  // Aucune cible du bon camp : l'effet est OBLIGATOIRE (une cible légale existe,
+  // « Passer » est désormais refusé — P2-10). On choisit la cible la MOINS
+  // pénalisante — Force la plus faible parmi toutes les éligibles (auto-dégât
+  // minimal pour un op nuisible, bonus minimal à l'adversaire pour un bénéfique).
   if (!pool.length) {
-    store.effectTargetSkip();
+    const forced = [...scored].sort((a, b) => a.f - b.f)[0];
+    store.effectTargetChoose(forced.id);
     return;
   }
   const chosen = pool.sort((a, b) => b.f - a.f)[0];

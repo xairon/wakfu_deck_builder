@@ -74,6 +74,16 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
       name: "Action A",
       stats: { niveau: { value: 0, element: "Neutre" } },
     });
+    // Allié VANILLE dans la main de A (sans mot-clé Défense/Renfort) : ne doit PAS
+    // être jouable en réaction (706.5 — vitesse sorcier, seulement à son tour).
+    const vanilla = createMockAllyCard({
+      id: "a-vanilla",
+      name: "Allié Vanille A",
+      stats: {
+        niveau: { value: 1, element: "Neutre" },
+        force: { value: 1, element: "Neutre" },
+      },
+    });
     const atk = createMockAllyCard({
       id: "b-atk",
       name: "Attaquant B",
@@ -86,11 +96,12 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
       heroWithPower("A"),
       heroWithPower("B"),
       action,
+      vanilla,
       atk,
     ];
     const store = useGameStore();
     store.startSandbox(
-      smallDeck(heroWithPower("A"), [action]),
+      smallDeck(heroWithPower("A"), [action, vanilla]),
       smallDeck(heroWithPower("B"), [atk]),
       "A",
     );
@@ -98,8 +109,10 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
 
     const atkId = instOf(store, "b-atk");
     const actionId = instOf(store, "a-action");
+    const vanillaId = instOf(store, "a-vanilla");
     store.moveTo(atkId, { zone: "monde" }); // attaquant B prêt
     store.moveTo(actionId, { zone: "main", owner: "A" }); // Action en main de A
+    store.moveTo(vanillaId, { zone: "main", owner: "A" }); // Allié en main de A
 
     // Amener le tour de B (turn 4 = 2e tour de B → attaque légale).
     store.nextTurn(); // 2 (B)
@@ -112,8 +125,15 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
     expect(store.combatConfirmAttackers()).toBe(true); // → step blockers
     // Vue rendue au défenseur (comme en solo pendant l'attaque du bot).
     store.perspective = "A";
-    return { store, actionId };
+    return { store, actionId, vanillaId };
   }
+
+  it("le défenseur NE PEUT PAS poser un Allié vanille en réaction (706.5 — Actions seules)", () => {
+    const { store, vanillaId } = setupBAttacksA();
+    expect(store.playFromHand(vanillaId)).toBe(false);
+    expect(store.ruleError).toContain("Action");
+    expect(store.state.instances[vanillaId].location.zone).toBe("main");
+  });
 
   it("le défenseur peut JOUER une Action pendant l'attaque adverse (sans ouvrir la réaction à la main)", () => {
     const { store, actionId } = setupBAttacksA();
@@ -163,7 +183,12 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
     store.nextTurn(); // 3 (A) — A attaque
     store.perspective = "A";
     const sacB = store.state.seats.B.havreSacInstanceId!;
+    // Résistance RÉELLE (5) : sans elle, un coup fantôme bannissait le Havre-Sac
+    // et le reset des compteurs masquait le bug (resBefore == 0 == 0 après). Avec
+    // 5, tout Dommage encaissé la ferait chuter → le test mord vraiment.
+    store.adjustCounter(sacB, "resistance", 5);
     const resBefore = store.state.instances[sacB].counters.resistance ?? 0;
+    expect(resBefore).toBe(5);
     expect(store.beginCombat(atkId)).toBe(true);
     store.combatChooseTarget(sacB);
     expect(store.combatConfirmAttackers()).toBe(true); // step blockers

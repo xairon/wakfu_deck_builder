@@ -547,7 +547,7 @@ describe("pipeline d'effets — ciblage (effectTargeting)", () => {
     expect(store.effectTargeting).toBeNull();
   });
 
-  it("effectTargetSkip : passe le ciblage en cours", () => {
+  it("effectTargetSkip : refuse de passer un ciblage OBLIGATOIRE tant qu'une cible existe (P2-10)", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     placeInZone(store, otherSeat("A"), { zone: "monde" });
     store.enqueueEffect({
@@ -556,8 +556,10 @@ describe("pipeline d'effets — ciblage (effectTargeting)", () => {
       ops: [{ op: "destroyTarget", what: "Allié", zones: ["monde"] }],
     });
     expect(store.effectTargeting).not.toBeNull();
+    // Une cible légale existe → « Passer » est illégal (effet obligatoire) :
+    // le picker RESTE ouvert (on ne peut pas esquiver l'effet).
     store.effectTargetSkip();
-    expect(store.effectTargeting).toBeNull();
+    expect(store.effectTargeting).not.toBeNull();
   });
 });
 

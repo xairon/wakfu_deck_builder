@@ -113,12 +113,14 @@ const PROTECTED_COUNTERS = new Set([
   "resistance",
   "damage",
 ]);
-/** Jetons protégés (dans `counters.tokens`) : paMod alimente paOf (PA effective). */
-const PROTECTED_TOKENS = new Set(["paMod"]);
+/** La couche de JETONS (`counters.tokens.*`) alimente le combat (forceMod,
+ *  geantMod, pmMod, chifumiShield…), les mots-clés et la PA (paMod). Elle n'est
+ *  JAMAIS écrite légitimement par une intention client (seul le moteur d'effets
+ *  la pose) : un `adjustCounter` du client n'envoie jamais `token`. On refuse
+ *  donc TOUT jeton via intent (allowlist vide) — sinon un client trafiqué se
+ *  forgeait Force/Géant/Agilité/boucliers et un combat gagnant côté serveur. */
 function counterIsProtected(counter: string, token?: boolean): boolean {
-  return token
-    ? PROTECTED_TOKENS.has(counter)
-    : PROTECTED_COUNTERS.has(counter);
+  return token ? true : PROTECTED_COUNTERS.has(counter);
 }
 
 /** L'instance existe ET est contrôlée par le siège ? (raison FR sinon). Empêche
@@ -600,6 +602,24 @@ export function resolveIntent(
       if (e1) return { error: e1 };
       const e2 = controlError(state, seat, intent.bearerId);
       if (e2) return { error: e2 };
+      // Anti-triche (305.x) : l'objet attaché DOIT être un Équipement (ou une
+      // carte à bonus de Porteur) — un client forgé ne peut pas attacher n'importe
+      // quelle carte pour lui conférer des bonus. Miroir de PLAY_CARD/CRAFT.
+      const eqCard = getCard(
+        state.instances[intent.equipmentId]?.cardId ?? null,
+      );
+      if (!requiresBearer(eqCard))
+        return { error: "Cette carte ne s'attache pas (pas un Équipement)." };
+      // Le Porteur DOIT pouvoir porter un Équipement (Allié non-Monstre / Héros
+      // contrôlé, en jeu) — sinon un Monstre s'octroierait des bonus de Porteur.
+      if (
+        !eligibleBearers(ctx, seat, intent.equipmentId).includes(
+          intent.bearerId,
+        )
+      )
+        return {
+          error: "Porteur invalide (Monstre, type non valide, ou hors jeu).",
+        };
       // « [bearer] ne peut pas porter d'Équipement. » (Allies Élémentaires) —
       // pouvoir continu refusant à cette créature le rôle de Porteur.
       if (cannotCarryEquipment(ctx, intent.bearerId))
@@ -625,6 +645,14 @@ export function resolveIntent(
     }
 
     case "END_TURN": {
+      // On ne finit pas le tour avec un COMBAT déclaré non résolu : sinon
+      // `state.combat` traverse la transition (nextTurnEvents ne le purge pas) →
+      // combat orphelin au journal (plus personne ne peut attaquer, l'ex-attaquant
+      // résout sur un plateau rembobiné). Il faut résoudre ou annuler d'abord.
+      if (state.combat)
+        return {
+          error: "Termine le combat en cours avant de finir le tour.",
+        };
       // 4873 — on ne passe pas la main avec un excédent : il faut défausser
       // l'excédent d'abord (le client gate déjà ; le serveur fait autorité).
       if (state.seats[seat].main.length > paOf(state, seat))
@@ -670,6 +698,10 @@ export function resolveIntent(
       if (reason) return { error: reason };
       if (!intent.attackers.length)
         return { error: "Déclare au moins un attaquant." };
+      // Anti-triche : un attaquant EN DOUBLE frapperait plusieurs fois (le cap PM
+      // compte la longueur, donc les doublons passeraient) → dégâts multipliés.
+      if (new Set(intent.attackers).size !== intent.attackers.length)
+        return { error: "Attaquant en double." };
       const eligibleA = new Set(eligibleAttackers(ctx, seat));
       for (const a of intent.attackers) {
         if (!eligibleA.has(a))
@@ -818,6 +850,15 @@ export function resolveIntent(
       if (!c) return { events: [] };
       if (seat !== c.attackerSeat)
         return { error: "Seul l'attaquant peut annuler le combat." };
+      // Anti-scouting : une fois les blocages/ripostes déclarés (step "resolve"),
+      // le plan de défense a été révélé à l'attaquant. Lui permettre d'annuler
+      // puis de redéclarer optimalement (attaque non consommée) est un abus
+      // d'information parfaite → on refuse l'annulation à partir de cette étape.
+      if (c.step === "resolve")
+        return {
+          error:
+            "Impossible d'annuler après les blocages : résous le combat (703/704).",
+        };
       // A6 : on redresse les attaquants inclinés à la déclaration (combat avorté).
       const untaps: DraftEvent[] = c.attackers
         .filter((id) => state.instances[id]?.orientation === "tapped")

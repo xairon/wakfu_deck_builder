@@ -12,6 +12,7 @@ import { createGame, setCounter } from "@/game";
 import { useGameStore, DISCONNECT_GRACE_MS } from "../gameStore";
 import { useCardStore } from "../cardStore";
 import {
+  createMockActionCard,
   createMockAllyCard,
   createMockDeck,
   createMockHavreSacCard,
@@ -478,14 +479,12 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
         force: { value: 2, element: "Feu" },
       },
     });
-    // carte de réaction NEUTRE niv 1 → payable par n'importe quelle Ressource (4398)
-    const react = createMockAllyCard({
+    // Carte de réaction = une ACTION NEUTRE niv 1 (706.5 : seule une Action se
+    // joue en réaction ; payable par n'importe quelle Ressource, 4398).
+    const react = createMockActionCard({
       id: "rcard",
       name: "RCard",
-      stats: {
-        niveau: { value: 1, element: "Neutre" },
-        force: { value: 1, element: "Neutre" },
-      },
+      stats: { niveau: { value: 1, element: "Neutre" } },
     });
     // Héros + Havre-Sac explicites dans le cardStore : sinon getCard renvoie
     // null pour les producteurs et B n'a aucune Ressource (artefact de test).

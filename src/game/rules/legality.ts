@@ -328,6 +328,12 @@ export function whyCannotPlay(
   // marqueur périmé « qui vient de s'incliner » serait ciblable (approximation).
   if (!reaction && (card.effects ?? []).some((e) => e.compiled?.reactionOnly))
     return "Cette carte ne peut être jouée qu'en réaction.";
+  // RESTRICTION DE TIMING (706.5) : dans la fenêtre de RÉACTION (jeu HORS de son
+  // tour), seule une ACTION est jouable — un Allié/Équipement/Salle/Zone (vitesse
+  // « sorcier ») ne se pose qu'à son propre tour. Les Alliés Défense/Renfort ont
+  // leur propre autorisation (combatWindow) et ne passent pas par ce garde.
+  if (reaction && !combatWindow && card.mainType !== "Action")
+    return "Seule une Action peut être jouée en réaction (706.5).";
   // 706 — en fenêtre de réaction on joue HORS de son tour : ces deux contrôles
   // sont relâchés (les autres — main, coût, zone, 4943 — restent actifs).
   if (!bypassTurnPhase && state.turn.active !== seat)

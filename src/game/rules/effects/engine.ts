@@ -2338,6 +2338,15 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // une mort) ; la garde anti-boucle est dans bearerFrames (damager Allié/Héros).
         const targetId = frame.riposteTargetId;
         if (targetId && deps.getState().instances[targetId]) {
+          // GLYPHE INCANDESCENT (P2-12) : la frame Glyphe pose sourceId == cible
+          // (auto-attribution, faute d'instanceId de Zone). Transmettre cette
+          // source ferait croire à bearerFrames qu'« un Allié/Héros » (la victime)
+          // frappe le Porteur → riposte de Cape du Prespic contre son PROPRE
+          // Porteur. Le Glyphe est une Zone : Dommages SANS source de créature.
+          // On n'attribue donc pas la source quand elle est la cible elle-même
+          // (la vraie riposte de Porteur a source = l'Équipement ≠ cible).
+          const attributedSource =
+            sourceId && sourceId !== targetId ? sourceId : undefined;
           const res = resolveDamageTarget(
             deps.rulesCtx(),
             seat,
@@ -2346,7 +2355,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             op.element,
             {
               mods: activeGlobalMods(deps.rulesCtx()),
-              ...(sourceId ? { sourceId } : {}),
+              ...(attributedSource ? { sourceId: attributedSource } : {}),
               // provenance = l'Équipement (riposte) → allyPowerDamageBonus rend 0
               // (le bonus ne vise que les POUVOIRS D'ALLIÉS) ; passé par uniformité.
               ...(frame.powerSourceId
@@ -2443,6 +2452,11 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         continue;
       if (op.controller === "self" && inst.controller !== actor) continue;
       if (op.controller === "opponent" && inst.controller !== otherSeat(actor))
+        continue;
+      // PORTÉE 508.1b/c : une op de masse ne perce pas le Havre-Sac ADVERSE.
+      // On ne peut atteindre l'intérieur du Havre-Sac que du sien (self) — la
+      // même protection que le ciblage générique (cf. effectTargetIds).
+      if (inst.location.zone === "havreSac" && inst.controller !== actor)
         continue;
       const card = deps.getCard(inst.cardId);
       if (!card) continue;
@@ -3186,27 +3200,29 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ...effectQueue.value.slice(1),
         ];
     }
-    // 804.7 — bus : « Quand [self] est détruit » de la cible DÉTRUITE (415.1).
-    // Collecté AVANT le dispatch (l'instance est encore lisible) ; n'émet que
-    // pour une vraie DESTRUCTION (destroyTarget / costDestroyControlled → Défausse),
-    // jamais pour un bannissement (banishTarget → Exil) ni un recyclage (→ Pioche).
-    const destroyedEvents: RuleEvent[] =
-      t.op.op === "destroyTarget" || t.op.op === "costDestroyControlled"
-        ? (() => {
-            const inst = deps.getState().instances[instanceId];
-            return inst
-              ? [
-                  {
-                    kind: "destroyed" as const,
-                    instanceId,
-                    controller: inst.controller,
-                  },
-                ]
-              : [];
-          })()
-        : [];
+    // 804.7 — bus « Quand [self] est détruit » de la cible DÉTRUITE (415.1).
+    // Deux signaux, réunis pour éviter tout doublon : le NOM de l'op (destruction
+    // directe : destroyTarget / costDestroyControlled) ET la TRANSITION D'ÉTAT
+    // réelle (la cible passe en Défausse du fait de cet op) — cette dernière
+    // couvre la mort par Dommages d'effet LÉTAUX (Tofu Mutant tué par
+    // Flétrissement), tout en excluant le bannissement (→ Exil) et le recyclage
+    // (→ Pioche). Collecté sur le contexte AVANT dispatch (l'instance y est
+    // encore lisible en jeu).
+    const destroyedByOpName =
+      t.op.op === "destroyTarget" || t.op.op === "costDestroyControlled";
+    const preInst = deps.getState().instances[instanceId];
+    const wasInPlay =
+      preInst?.location.zone === "monde" ||
+      preInst?.location.zone === "havreSac";
+    const preController = preInst?.controller;
     const destroyedCtx = deps.rulesCtx();
     deps.dispatch(...res.events, ...res.log.map((l) => say(t.seat, l)));
+    const nowDiscarded =
+      deps.getState().instances[instanceId]?.location.zone === "defausse";
+    const destroyedEvents: RuleEvent[] =
+      wasInPlay && preController && (destroyedByOpName || nowDiscarded)
+        ? [{ kind: "destroyed", instanceId, controller: preController }]
+        : [];
     // 804.7 — bus : déclenchés des Dommages ciblés (riposte… dormant lot F).
     if (deps.isAssistEffects() && res.ruleEvents?.length)
       enqueueTriggered(
@@ -3292,6 +3308,27 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       bindCountToHeldFrame(t.multi.chosen.length);
       pumpEffects();
       return;
+    }
+    // CIBLAGE OBLIGATOIRE (P2-10) : un op à cible UNIQUE (non `multi`) n'ouvre son
+    // picker QUE s'il existe au moins une cible légale (sinon il fizzle en amont)
+    // et l'optionalité « vous pouvez » est déjà tranchée par effectChoices → à ce
+    // stade l'effet est OBLIGATOIRE. Tant qu'une cible éligible demeure, « Passer »
+    // est illégal : on ROUVRE le picker (comme distributeDamage). Les multi bornés
+    // « jusqu'à N » (t.multi — buffForceMultiTarget…) gardent leur arrêt anticipé.
+    if (!t.multi) {
+      const stillTargetable = effectTargetIds(
+        deps.rulesCtx(),
+        t.op,
+        t.seat,
+        t.sourceId,
+      );
+      if (stillTargetable.length) {
+        effectTargeting.value = t;
+        deps.dispatch(
+          say(t.seat, `${t.cardName} : choisis une cible (effet obligatoire).`),
+        );
+        return;
+      }
     }
     deps.dispatch(say(t.seat, `${t.cardName} : ciblage passé.`));
     pumpEffects();

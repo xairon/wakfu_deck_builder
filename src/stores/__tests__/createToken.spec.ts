@@ -52,6 +52,29 @@ describe("jeton — création & combat (intégration)", () => {
     expect(store.effectiveForceOf(id!)?.value).toBe(1);
   });
 
+  it("un jeton créé porte le mal d'invocation (arrivedTurn = tour courant, 303.3)", () => {
+    const { store } = makeEffectSandbox({ first: "A" });
+    const turnNow = store.state.turn.number;
+    store.enqueueEffect({
+      seat: "A",
+      cardName: "Abraknyde",
+      ops: [
+        {
+          op: "createToken",
+          name: "Monstre - Arakne",
+          force: 1,
+          sub: "Arakne",
+          element: "Terre",
+        },
+      ],
+    });
+    const id = tokenInMonde(store)!;
+    // Sans arrivedTurn, le jeton (Allié) pouvait attaquer le tour de sa création.
+    expect(store.state.instances[id].counters.tokens?.arrivedTurn).toBe(
+      turnNow,
+    );
+  });
+
   it("le jeton est ciblable et meurt à Dommages ≥ Force, et est alors RETIRÉ du jeu", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     // Jeton contrôlé par B, ciblé par un effet de A.

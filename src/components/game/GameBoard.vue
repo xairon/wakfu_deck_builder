@@ -371,7 +371,8 @@
       v-show="
         store.turn.active === store.perspective &&
         !store.pendingChifumi &&
-        !store.pendingResolution
+        !store.pendingResolution &&
+        !store.combat
       "
       type="button"
       class="gendturn"
