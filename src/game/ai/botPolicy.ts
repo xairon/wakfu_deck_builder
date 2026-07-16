@@ -291,6 +291,10 @@ function mainPhase(store: Store, me: Seat, tried: Set<string>): boolean {
   //    de boucle infinie (une passe sans aucun succès renvoie `false` → fin de tour).
   for (const id of [...(store.state.seats[me]?.main ?? [])]) {
     if (store.playFromHand(id)) return true;
+    // SONDAGE MUET : un échec (carte impayable / mal timée) pose un ruleError que
+    // l'humain verrait (assistant + annonce lecteur d'écran). On l'efface — comme
+    // les sondages fabrication (whyCannotCraft) et pouvoir (hasTapPower).
+    store.clearRuleError();
   }
   // 2bis. FABRIQUER (A19, 418.6) : une carte à Recette injouable au coût
   //    normal peut être fabriquée (Artisan du Métier dressé + Défausse typée).

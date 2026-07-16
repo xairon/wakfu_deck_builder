@@ -22,14 +22,26 @@ function hintOf(w: ReturnType<typeof mount>): AssistantHint | null {
 describe("useRuleAssistant", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
-  it("en jeu, à ton tour → indice d'ACTION", () => {
+  it("en jeu, à ton tour (hors 1er tour) → indice d'ACTION", () => {
     const store = useGameStore();
     const deck = createMockDeck();
     store.startSandbox(deck, deck, "A"); // matchPhase playing, perspective A, local
+    store.nextTurn();
+    store.nextTurn(); // tour 3 (A) : hors de l'interdit du 1er tour
     const w = mount(Harness);
     const h = hintOf(w);
     expect(h?.tone).toBe("action");
     expect(h?.text).toContain("À toi");
+  });
+
+  it("au PREMIER tour → indice INFO (pas d'attaque ni d'entrée dans le Monde)", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, deck, "A"); // turn.number === 1
+    const w = mount(Harness);
+    const h = hintOf(w);
+    expect(h?.tone).toBe("info");
+    expect(h?.text).toContain("Premier tour");
   });
 
   it("phase mulligan → indice INFO (tirage au sort annoncé après)", () => {
@@ -87,6 +99,8 @@ describe("useRuleAssistant", () => {
     const store = useGameStore();
     const deck = createMockDeck();
     store.startSandbox(deck, deck, "A");
+    store.nextTurn();
+    store.nextTurn(); // hors 1er tour → repli sur l'indice d'action après dismiss
     const w = mount(Harness);
     (store as unknown as { ruleError: string | null }).ruleError =
       "Le Havre-Sac est plein (Taille atteinte).";

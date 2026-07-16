@@ -234,6 +234,20 @@ export function useRuleAssistant() {
           tone: "info",
           text: "Au tour de l'adversaire — observe (tu pourras bloquer s'il attaque).",
         };
+      // PREMIER TOUR (603.2 / 506.3) : aucune carte n'entre dans le Monde et on
+      // ne peut pas attaquer — un Allié posé va au Havre-Sac. Sans ce cas, le
+      // hint « pose une carte / attaque » se fait refuser tout de suite (l'exact
+      // public tutoriel visé).
+      if (store.turn.number === 1)
+        return {
+          tone: "info",
+          text: "Premier tour : tu ne peux pas encore attaquer ni faire entrer une carte dans le Monde (un Allié posé rejoint ton Havre-Sac). Développe ton Havre-Sac ou finis ton tour.",
+          rule: {
+            ref: "506.3 / 603.2",
+            detail:
+              "Aucune carte n'entre dans le Monde au 1er tour de la partie, et on n'attaque pas avant d'avoir dépassé le 2e tour.",
+          },
+        };
       return {
         tone: "action",
         text: "À toi de jouer : pose une carte, sors/rentre ton Héros (⚔/🛡), déclare une attaque (⚔), ou finis ton tour.",

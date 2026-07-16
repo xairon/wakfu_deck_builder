@@ -148,6 +148,10 @@ export function useBotOpponent(
         store.perspective = human;
         store.passPending = false;
       }
+      // Filet (T2) : tout ruleError produit PENDANT le tour du bot est du bruit du
+      // bot (ex. « Main pleine » à son endTurn) — on l'efface AVANT que la vue ne
+      // se rende, pour ne pas le faire annoncer à l'humain.
+      store.clearRuleError();
       return;
     }
 

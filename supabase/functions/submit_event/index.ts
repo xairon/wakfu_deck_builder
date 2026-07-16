@@ -281,11 +281,49 @@ Deno.serve(async (req) => {
 
       try {
         for (const d of res.events) await appendOne(d);
-        if ("draws" in res && res.draws)
-          for (let i = 0; i < res.draws; i++)
-            await appendOne(
-              drawTop(deriveState(working), me.seat as "A" | "B"),
-            );
+        if ("draws" in res && res.draws) {
+          const seat = me.seat as "A" | "B";
+          for (let i = 0; i < res.draws; i++) {
+            let st = deriveState(working);
+            // 507.5 — Pioche vide : on RECYCLE la Défausse (move → Pioche + SHUFFLE
+            // serveur) avant de piocher, comme le chemin local. Si la Défausse est
+            // AUSSI vide, on s'arrête (pas de défaite par deck-out dans Wakfu) —
+            // sinon drawTop levait PIOCHE_VIDE → 409 + main jamais rechargée.
+            if (!st.seats[seat].pioche.length) {
+              const discard = [...st.seats[seat].defausse];
+              if (!discard.length) break;
+              for (const id of discard) {
+                const inst = st.instances[id];
+                await appendOne({
+                  actor: seat,
+                  type: "MOVE",
+                  payload: {
+                    instanceId: id,
+                    from: inst.location,
+                    to: { zone: "pioche", owner: seat },
+                    position: { at: "top" },
+                    visibility: { faceDown: true, visibleTo: "none" },
+                    preservesIdentity: false,
+                  },
+                });
+                st = deriveState(working);
+              }
+              // SHUFFLE nu : resolveDraft recalcule la permutation depuis la
+              // masterSeed (ordre secret), comme le mélange du MULLIGAN.
+              await appendOne({
+                actor: seat,
+                type: "SHUFFLE",
+                payload: {
+                  zone: { zone: "pioche", owner: seat },
+                  permutation: [],
+                },
+              });
+              st = deriveState(working);
+            }
+            if (!st.seats[seat].pioche.length) break;
+            await appendOne(drawTop(st, seat));
+          }
+        }
         // 103.3 — sauvetage d'égalité : si l'état résultant (typiquement après un
         // RESOLVE_COMBAT) a les DEUX Héros à ≤ 0 PV (K.O. simultané), on les
         // ramène à 1 PV via des events JOURNALISÉS, AVANT de tester la victoire.

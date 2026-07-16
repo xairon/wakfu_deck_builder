@@ -79,4 +79,26 @@ describe("ciblage obligatoire — « Passer » refusé (P2-10)", () => {
     expect(engine.effectTargeting.value).toBeNull();
     expect(dmg(f, instId("B", 0))).toBe(2);
   });
+
+  it("un damageTarget de magnitude 0 fizzle (pas de pick forcé pour 0 dégât) — E3", () => {
+    const f = fixture(
+      [makeAlly("a0", { force: 5 })],
+      [makeAlly("b0", { force: 5 })],
+    );
+    setTurn(f, "A", 3);
+    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 1 });
+    bringToMonde(f, "B", instId("B", 0)); // cible légale existe
+    const engine = createEffectEngine(
+      mockDeps(f, (drafts) => dispatch(f, ...(drafts as never[]))),
+    );
+    engine.enqueueEffect({
+      seat: "A",
+      cardName: "Parchemin (X=0)",
+      ops: [{ ...DAMAGE_OP, n: 0 }],
+    });
+    // Magnitude 0 → no-op fidèle : aucun picker n'est ouvert (P2-10 ne force donc
+    // pas un clic pour infliger 0), aucun dégât.
+    expect(engine.effectTargeting.value).toBeNull();
+    expect(dmg(f, instId("B", 0))).toBe(0);
+  });
 });

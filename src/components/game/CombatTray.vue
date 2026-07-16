@@ -207,14 +207,18 @@ const activeEffects = computed<string[]>(() => {
   max-width: 42vw;
   padding: 8px 12px 10px;
   border-radius: 12px;
+  /* Semi-transparent + flou : n'occulte pas totalement les cartes de l'aile
+     gauche adverse derrière lui (les clics passent déjà — pointer-events:none). */
   background: linear-gradient(
     180deg,
-    rgba(28, 22, 16, 0.96),
-    rgba(18, 14, 10, 0.96)
+    rgba(28, 22, 16, 0.82),
+    rgba(18, 14, 10, 0.82)
   );
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   border: 1px solid rgba(240, 78, 34, 0.35);
   box-shadow:
-    0 8px 26px rgba(0, 0, 0, 0.55),
+    0 8px 26px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   color: #f2ede4;
   font-size: 13px;

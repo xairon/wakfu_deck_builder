@@ -374,8 +374,8 @@
           <div class="welcome-body">
             <p>
               <strong>But :</strong> réduire les PV du Héros adverse à 0, ou
-              faire monter ton Héros au Niveau 3 (18 XP). Tu joues en bas ;
-              l'ordinateur commence.
+              faire monter ton Héros au Niveau 3 (18 XP). Tu joues en bas ; le
+              premier joueur est tiré au sort.
             </p>
             <p>
               <strong>Tout est automatisé pour toi</strong> — coûts en

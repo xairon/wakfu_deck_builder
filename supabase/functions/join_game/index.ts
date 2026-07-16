@@ -9,6 +9,7 @@ import {
   redactEventForSeat,
 } from "../../../src/game/engine/authority.ts";
 import { deriveState } from "../../../src/game/engine/reducer.ts";
+import { reconcileAndValidateDeck } from "../_shared/deck.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return preflight();
@@ -16,27 +17,15 @@ Deno.serve(async (req) => {
     const uid = await getUserId(req);
     if (!uid) return json({ error: "UNAUTHENTICATED" }, 401);
 
-    const { code, deck } = await req.json();
-    if (!deck?.hero || !deck?.havreSac)
-      return json({ error: "DECK_INVALIDE" }, 400);
-    // Garde-fou : la main de départ pioche 6 cartes par siège ; un deck dont la
-    // Pioche (cartes hors Réserve) compte < 6 cartes ferait planter setup
-    // (PIOCHE_VIDE). Le client valide déjà 48 cartes ; ceci protège l'API.
-    const entries =
-      (deck.cards as
-        | { quantity?: number; isReserve?: boolean }[]
-        | undefined) ?? [];
-    const piocheCount = entries.reduce(
-      (s, c) => s + (c?.isReserve ? 0 : (c?.quantity ?? 0)),
-      0,
-    );
-    if (piocheCount < 6) return json({ error: "DECK_TROP_PETIT" }, 400);
-    // Borne HAUTE (anti-DoS), cf. create_game.
-    const totalQty = entries.reduce((s, c) => s + (c?.quantity ?? 0), 0);
-    if (entries.length > 120 || totalQty > 200)
-      return json({ error: "DECK_TROP_GROS" }, 400);
+    const { code, deck: rawDeck } = await req.json();
 
     const db = adminClient();
+    // RÉCONCILIATION + VALIDATION autoritative (C1/M2), cf. create_game : stats de
+    // confiance (anti-forge PV/PA/PM/Résistance) + légalité (48/réserve/types/
+    // copies). Le deck RÉCONCILIÉ est stocké et alimente setupEvents.
+    const rec = await reconcileAndValidateDeck(db, rawDeck);
+    if (!rec.ok || !rec.deck) return json({ error: rec.error }, 400);
+    const deck = rec.deck;
     const { data: game } = await db
       .from("games")
       .select("id, status, seat_a, seat_b")

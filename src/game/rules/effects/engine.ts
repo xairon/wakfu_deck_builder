@@ -1070,7 +1070,18 @@ export function createEffectEngine(deps: EffectEngineDeps) {
             op.op === "untapMultiTarget" ||
             // RÉPARTITION LIBRE : X=0 (aucune Ressource payée) → rien à répartir
             // (no-op fidèle, jouable hors combat — ruling Colère de Iop).
-            op.op === "distributeDamage") &&
+            op.op === "distributeDamage" ||
+            // CIBLE UNIQUE à magnitude FIXE nulle (E3) : « infligez 0 » / « +0 en
+            // Force » (Parchemin X=0, Flétrissement 0) = no-op → on ne force pas
+            // un clic de cible (P2-10) pour un effet nul. RESTREINT aux magnitudes
+            // que `opMagnitude` sait calculer d'avance (n / value / fromCount) :
+            // on EXCLUT les montants dépendants du CONTEXTE (doubleForce =
+            // Coup Critique ; appearedLevel = Assassin Grouilleux) qui valent 0
+            // AVANT le binding et ne doivent PAS fizzler.
+            ((op.op === "damageTarget" || op.op === "buffForceTarget") &&
+              !("doubleForce" in op && op.doubleForce) &&
+              !("appearedLevel" in op && op.appearedLevel) &&
+              !("value" in op && op.value))) &&
           opMagnitude(op, frame) === 0
         ) {
           deps.dispatch(
@@ -1368,6 +1379,10 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           action: "discard",
           remaining: op.n ?? 1,
           sourceId,
+          // COÛT payé (« Défaussez … : CORPS ») : « Passer » ABANDONNE la frame
+          // (corps non exécuté), comme costRecycle. Sans ça, décliner la défausse
+          // exécutait le corps GRATIS (Bwork Mage / Amulette Akwadala).
+          cost: true,
         };
         holdRest(frame, ops.slice(i + 1));
         return true;

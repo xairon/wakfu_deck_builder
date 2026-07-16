@@ -90,6 +90,31 @@ function makeDeckPoweredHero(tag: string): { deck: Deck; cards: Card[] } {
 describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
+  it("sonder une carte de main INJOUABLE ne laisse pas de ruleError visible (T1)", () => {
+    // Le bot sonde sa main via playFromHand ; une carte impayable (aucune
+    // Ressource au 1er tour) posait un ruleError remonté à l'humain (assistant +
+    // annonce lecteur d'écran) à CHAQUE tour du bot. Le sondage doit être muet.
+    const a = makeDeck("A");
+    const b = makeDeck("B");
+    useCardStore().cards = [...a.cards, ...b.cards];
+    const store = useGameStore();
+    store.startSandbox(a.deck, b.deck, "B"); // tour du bot (B), 0 Ressource
+    store.assistEffects = true;
+    store.botAggressive = false;
+
+    // Une carte du bot en main, injouable (coût non payable).
+    const bAllyId = store.state.seats.B.pioche.find(
+      (id) => store.state.instances[id]?.cardId === "B-ally",
+    )!;
+    store.moveTo(bAllyId, { zone: "main", owner: "B" });
+    store.perspective = "B";
+    store.ruleError = null;
+
+    botStep(store, new Set());
+
+    expect(store.ruleError).toBeNull();
+  });
+
   it("ne pose PAS de ruleError en sondant une carte SANS pouvoir (« Pas de pouvoir à inclinaison automatisé »)", () => {
     // Régression : mainPhase sondait activateTapPower sur TOUTES ses cartes ; sur
     // une carte sans pouvoir compilé, le rejet posait un ruleError VISIBLE par

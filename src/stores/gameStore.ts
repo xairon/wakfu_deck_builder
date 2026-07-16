@@ -2672,7 +2672,12 @@ export const useGameStore = defineStore("game", () => {
       );
       return true;
     }
-    if (inst.orientation !== "upright")
+    // Un coût sacrificeSelf/banishSelf REMPLACE l'inclinaison (la source quitte le
+    // jeu) : il n'exige donc pas une source dressée. Le garde « déjà inclinée » ne
+    // vaut que pour un pouvoir à inclinaison (E4).
+    const sacrifices =
+      atom.cost === "sacrificeSelf" || atom.cost === "banishSelf";
+    if (!sacrifices && inst.orientation !== "upright")
       return rejectMove("La carte est déjà inclinée.");
     // 706.5 — RÉACTION : idem chemin paidOps (Dora côté bloqueur).
     if (
@@ -2680,7 +2685,7 @@ export const useGameStore = defineStore("game", () => {
       state.value.turn.active !== perspective.value
     )
       return rejectMove("Ce n'est pas votre tour.");
-    if (atom.cost === "sacrificeSelf" || atom.cost === "banishSelf") {
+    if (sacrifices) {
       // « Détruisez [cette carte] : … » (sacrifice → Défausse) OU « Bannissez
       // [cette carte] : … » (banishSelf → Exil, retiré de la partie) : le coût
       // remplace l'inclinaison. Le bannissement n'est PAS une destruction : la

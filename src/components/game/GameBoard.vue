@@ -374,7 +374,11 @@
         store.turn.active === store.perspective &&
         !store.pendingChifumi &&
         !store.pendingResolution &&
-        !store.combat
+        !store.combat &&
+        !store.pendingPayment &&
+        !store.effectTargeting &&
+        !store.pendingBearer &&
+        !store.effectChoice
       "
       type="button"
       class="gendturn"
@@ -1464,6 +1468,14 @@ function slotCls(instanceId: string): Record<string, boolean> {
       "gslot--target-can": store.effectTargetIdsList.includes(instanceId),
     };
   }
+  // CIBLAGE DE PORTEUR (305.x) : surligne les créatures éligibles à porter
+  // l'équipement en attente — même affordance que le paiement/ciblage (sinon
+  // l'invite « choisis la créature » ne montre pas LESQUELLES).
+  if (store.pendingBearer) {
+    return {
+      "gslot--target-can": store.pendingBearer.eligible.includes(instanceId),
+    };
+  }
   const c = store.combat;
   if (!c) return {};
   return {
@@ -2147,6 +2159,14 @@ function manaBonus(seat: Seat): boolean {
   .gcombat--effect {
     top: 50vh;
   }
+  /* Mobile : le plateau devient une colonne défilante (height:auto), donc une
+     barre `absolute` tomberait au bas du board (souvent sous le pli). On l'ancre
+     au VIEWPORT pour que la boucle sélection→action reste atteignable au pouce. */
+  .gactionbar {
+    position: fixed;
+    bottom: 8px;
+    z-index: 40;
+  }
 }
 .gslot--atk-can :deep(.game-card),
 .gslot--target-can :deep(.game-card),
@@ -2231,7 +2251,9 @@ function manaBonus(seat: Seat): boolean {
   box-shadow:
     0 10px 34px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  z-index: 20;
+  /* Au-dessus des rappels manuels (z-30) : quand une carte est sélectionnée, ses
+     contrôles priment et ne sont pas couverts par le panneau de rappels. */
+  z-index: 40;
 }
 .gactionbar__name {
   font-family: Fraunces, Georgia, serif;

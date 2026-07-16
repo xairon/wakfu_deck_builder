@@ -42,6 +42,7 @@ import {
   whyCannotPlay,
   resolvedPlayDestination,
   whyCannotDeclareAttack,
+  whyCannotMoveCreature,
   eligibleAttackers,
   eligibleTargets,
   eligibleBlockers,
@@ -445,11 +446,21 @@ export function resolveIntent(
         return { error: "Destination interdite (zone privée adverse)." };
       const fromZone = inst.location.zone;
       const toZone = intent.to.zone;
-      // Monde↔Havre-Sac conserve l'identité (501.5) — worldHavenSwap.
+      // Monde↔Havre-Sac conserve l'identité (501.5) — worldHavenSwap. Autorité :
+      // on REVALIDE les règles de mouvement 414.x (dressé 414.2, sortie 1er tour,
+      // Taille) et non seulement la propriété — sinon un client trafiqué remettait
+      // un Héros incliné au sac (esquive) ou sortait au 1er tour.
       if (
         (fromZone === "monde" && toZone === "havreSac") ||
         (fromZone === "havreSac" && toZone === "monde")
       ) {
+        const why = whyCannotMoveCreature(
+          ctx,
+          seat,
+          intent.instanceId,
+          toZone as "monde" | "havreSac",
+        );
+        if (why) return { error: why };
         return {
           events: [
             worldHavenSwap(
