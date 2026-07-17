@@ -18,7 +18,12 @@
  *  - tour de l'humain : le bot ne fait que DÉFENDRE (déclare ses blocages).
  * On ne pose donc JAMAIS `passPending` pour le bot en jeu (plus de rideau).
  */
-import { botLiveStep, botReactInCombat } from "@/game/ai/botPolicy";
+import {
+  botLiveStep,
+  botReactInCombat,
+  botChifumiStep,
+  chifumiActingSeat,
+} from "@/game/ai/botPolicy";
 import type { useGameStore } from "@/stores/gameStore";
 
 type Store = ReturnType<typeof useGameStore>;
@@ -101,6 +106,23 @@ export function useBotOpponent(
     if (choice && choice.seat === bot) {
       if (choice.options?.length) store.effectChoiceSelect(0);
       else store.effectChoiceResolve(true);
+      return;
+    }
+
+    // ── CHI-FU-MI (Kanigrou) : fenêtre MODALE, quel que soit le tour. L'humain
+    // peut attaquer avec SON Kanigrou → le bot est l'ADVERSAIRE du mini-jeu et
+    // doit engager son signe (aucune branche de tour ne couvrait ce cas : la
+    // fenêtre attendait un choix bot qui ne venait jamais — attaque jamais
+    // résolue). Si c'est à l'humain d'agir, on ne fait rien (fenêtre modale).
+    if (store.pendingChifumi) {
+      if (chifumiActingSeat(store) === bot) {
+        botChifumiStep(store);
+        // Solo mono-écran : la vue reste TOUJOURS côté humain.
+        if (store.perspective !== human) {
+          store.perspective = human;
+          store.passPending = false;
+        }
+      }
       return;
     }
 

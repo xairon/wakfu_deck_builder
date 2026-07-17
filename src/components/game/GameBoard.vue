@@ -527,7 +527,10 @@
         aria-live="polite"
       >
         <span class="gcombat__step">
-          <template v-if="store.pendingChifumi.phase === 'offer'">
+          <template v-if="chifumiBotActing">
+            Chi-Fu-Mi — l'adversaire joue son coup…
+          </template>
+          <template v-else-if="store.pendingChifumi.phase === 'offer'">
             Le Kanigrou est sur le point de recevoir des Dommages — jouer à
             Chi-Fu-Mi ?
           </template>
@@ -536,7 +539,9 @@
           </template>
           <template v-else> Chi-Fu-Mi — à votre tour de choisir. </template>
         </span>
-        <div class="gcombat__btns">
+        <!-- Boutons masqués quand c'est au BOT d'agir (le driver répond pour
+             lui) — sinon l'humain pouvait cliquer À SA PLACE avant le tick. -->
+        <div v-if="!chifumiBotActing" class="gcombat__btns">
           <template v-if="store.pendingChifumi.phase === 'offer'">
             <button class="gbtn" @click="store.chifumiAccept()">Jouer</button>
             <button class="gbtn gbtn--ghost" @click="store.chifumiDecline()">
@@ -1016,6 +1021,10 @@
         <p class="gpilebrowser__hint">
           Du dessus (la plus récente) au dessous — clique une carte pour
           l'agrandir.
+          <template v-if="pileBrowse.seat === me">
+            Les effets « Récupérez… » se jouent d'ici : reprends la carte en
+            main, en jeu ou sur la Pioche.
+          </template>
         </p>
         <div class="gpilebrowser__grid">
           <div
@@ -1029,6 +1038,40 @@
               @select="zoomInst(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
             />
+            <!-- Récupération depuis MA Défausse (effets « Récupérez… ») —
+                 demandée par les playtesters : la Défausse était consultable
+                 mais inerte. moveTo/MOVE_CARD portent la légalité. -->
+            <div v-if="pileBrowse.seat === me" class="gpilebrowser__actions">
+              <button
+                class="gbtn gbtn--sm"
+                :data-testid="`pile-recover-main-${inst.instanceId}`"
+                title="Reprendre cette carte en main"
+                @click="recoverFromPile(inst.instanceId, 'main')"
+              >
+                → Main
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte en jeu dans le Monde"
+                @click="recoverFromPile(inst.instanceId, 'monde')"
+              >
+                → Monde
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte dans ton Havre-Sac"
+                @click="recoverFromPile(inst.instanceId, 'havreSac')"
+              >
+                → Socle
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Poser cette carte sur le dessus de ta Pioche"
+                @click="recoverFromPile(inst.instanceId, 'pioche')"
+              >
+                ↑ Pioche
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1065,6 +1108,7 @@ import PileStack from "./PileStack.vue";
 import CombatTray from "./CombatTray.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import { recetteOf, requiresBearer } from "@/game/rules";
+import { chifumiActingSeat } from "@/game/ai/botPolicy";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
@@ -1186,6 +1230,26 @@ const browsedPile = computed<RedactedInstance[]>(() =>
     ? instancesOf(view.value.seats[pileBrowse.value.seat].defausse)
     : [],
 );
+/**
+ * RÉCUPÉRATION depuis MA Défausse (effets « Récupérez… ») : déplace la carte
+ * vers la main / le jeu / le dessus de la Pioche. La légalité (tour, 506.3,
+ * Taille…) est portée par moveTo → MOVE_CARD (serveur en ligne) ; un refus
+ * revient en toast. Le browser reste ouvert (récupérations multiples).
+ */
+function recoverFromPile(
+  instanceId: string,
+  zone: "main" | "monde" | "havreSac" | "pioche",
+): void {
+  const ref =
+    zone === "monde"
+      ? ({ zone } as const)
+      : ({ zone, owner: me.value } as const);
+  store.moveTo(
+    instanceId,
+    ref,
+    zone === "pioche" ? { at: "top" } : { at: "any" },
+  );
+}
 function openPileBrowser(seat: Seat): void {
   pileBrowse.value = { seat };
   // Focus sur le dialogue → Échap fonctionne immédiatement.
@@ -1598,6 +1662,11 @@ function attackWithSelected(): void {
   selectedId.value = null;
   if (id) store.beginCombat(id);
 }
+// CHI-FU-MI vs BOT : c'est au bot d'agir dans le mini-jeu → boutons masqués
+// (le driver useBotOpponent joue pour lui au prochain tick).
+const chifumiBotActing = computed(
+  () => !!store.botSeat && chifumiActingSeat(store) === store.botSeat,
+);
 const canActivateSelected = computed(() => {
   const inst = selectedInst.value;
   // CADRE : les pouvoirs (onTap) restent activables en ligne — activateTapPower
@@ -2532,6 +2601,14 @@ function manaBonus(seat: Seat): boolean {
   grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
   gap: 10px;
   padding: 2px;
+}
+/* Récupération depuis MA Défausse : mini-boutons sous chaque carte. */
+.gpilebrowser__actions {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
 }
 @media (max-width: 640px) {
   .gpilebrowser {

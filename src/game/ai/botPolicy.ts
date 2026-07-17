@@ -209,6 +209,39 @@ function driveCombat(store: Store): void {
   store.combatCancel();
 }
 
+/**
+ * CHI-FU-MI (Kanigrou) — le siège du mini-jeu qui doit AGIR maintenant :
+ * l'offre revient au contrôleur ; au reveal, l'adversaire engage (caché) puis
+ * le contrôleur tranche. Exporté pour que le driver solo (useBotOpponent)
+ * fasse répondre le bot MÊME pendant le tour de l'humain (l'humain attaque
+ * avec SON Kanigrou → le bot est l'adversaire du mini-jeu) — sans cette voie,
+ * la fenêtre attendait un choix bot qui ne venait jamais (attaque jamais
+ * résolue, bug playtest « Apprendre en jouant »).
+ */
+export function chifumiActingSeat(store: Store): Seat | null {
+  const p = store.pendingChifumi;
+  if (!p) return null;
+  if (p.phase === "offer") return p.controller;
+  return p.oppChoice === null ? p.opponent : p.controller;
+}
+
+/** Fait jouer AU BOT son coup du mini-jeu Chi-Fu-Mi (offre ou signe). */
+export function botChifumiStep(
+  store: Store,
+  rng: () => number = Math.random,
+): void {
+  const p = store.pendingChifumi;
+  if (!p) return;
+  if (p.phase === "offer") {
+    const f = forceOf(store, p.kanigrouId);
+    const dmg = instOf(store, p.kanigrouId)?.counters.damage ?? 0;
+    if (f >= 3 && dmg === 0) store.chifumiAccept();
+    else store.chifumiDecline();
+  } else {
+    store.chifumiChoose(CHIFUMI[Math.floor(rng() * 3) % 3]);
+  }
+}
+
 /** Résout une FENÊTRE d'interaction ouverte pour l'acteur ; `true` si traitée. */
 function resolveInteraction(
   store: Store,
@@ -216,15 +249,7 @@ function resolveInteraction(
   rng: () => number,
 ): boolean {
   if (store.pendingChifumi) {
-    const p = store.pendingChifumi;
-    if (p.phase === "offer") {
-      const f = forceOf(store, p.kanigrouId);
-      const dmg = instOf(store, p.kanigrouId)?.counters.damage ?? 0;
-      if (f >= 3 && dmg === 0) store.chifumiAccept();
-      else store.chifumiDecline();
-    } else {
-      store.chifumiChoose(CHIFUMI[Math.floor(rng() * 3) % 3]);
-    }
+    botChifumiStep(store, rng);
     return true;
   }
   if (store.pendingResolution) {

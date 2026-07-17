@@ -1898,6 +1898,13 @@ export const useGameStore = defineStore("game", () => {
   }
 
   /** Ouvre le mini-jeu pour le Kanigrou `kid` (offre au contrôleur : jouer ou subir). */
+  /** Passe la vue au siège qui doit agir au Chi-Fu-Mi — SAUF si c'est le BOT
+   *  (solo mono-écran : la vue reste humaine, le driver useBotOpponent répond
+   *  pour lui — sinon l'écran basculait côté bot et dévoilait sa main). */
+  function chifumiShow(s: Seat): void {
+    perspective.value = botSeat.value === s ? otherSeat(s) : s;
+  }
+
   function openChifumi(kid: string): void {
     const inst = state.value.instances[kid];
     const controller = inst.controller;
@@ -1908,7 +1915,7 @@ export const useGameStore = defineStore("game", () => {
       phase: "offer",
       oppChoice: null,
     };
-    perspective.value = controller; // le contrôleur décide d'abord (« vous pouvez »)
+    chifumiShow(controller); // le contrôleur décide d'abord (« vous pouvez »)
   }
 
   /** Le contrôleur accepte de jouer à Chi-Fu-Mi → phase pierre-feuille-ciseaux. */
@@ -1917,7 +1924,7 @@ export const useGameStore = defineStore("game", () => {
     if (!p || p.phase !== "offer") return;
     p.phase = "reveal";
     p.oppChoice = null;
-    perspective.value = p.opponent; // l'adversaire engage son choix en premier (caché)
+    chifumiShow(p.opponent); // l'adversaire engage son choix en premier (caché)
   }
 
   /** Le contrôleur renonce (subit les Dommages) → le Kanigrou ne sera plus proposé. */
@@ -1937,14 +1944,14 @@ export const useGameStore = defineStore("game", () => {
     if (p.oppChoice === null) {
       // engagement de l'adversaire → au tour du contrôleur de choisir.
       p.oppChoice = choice;
-      perspective.value = p.controller;
+      chifumiShow(p.controller);
       return;
     }
     const w = chifumiWinner(choice, p.oppChoice);
     if (w === "tie") {
       // égalité → on rejoue (nouvel engagement de l'adversaire).
       p.oppChoice = null;
-      perspective.value = p.opponent;
+      chifumiShow(p.opponent);
       return;
     }
     const kid = p.kanigrouId;

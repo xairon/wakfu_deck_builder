@@ -185,6 +185,37 @@ describe("Kanigrou — Chi-Fu-Mi (prévention pré-dégâts en combat)", () => {
     expect(store.state.instances[kani].counters.damage).toBe(3);
   });
 
+  // #6 (tutoriel/vs BOT) — quand le BOT est un siège du mini-jeu, le driver
+  // doit répondre pour lui et la VUE rester côté humain. Sans ça (bug
+  // « Apprendre en jouant ») : l'humain acceptait le Chi-Fu-Mi de SON Kanigrou,
+  // la fenêtre attendait l'engagement du bot qui ne venait jamais → attaque
+  // jamais résolue.
+  it("#6 vs bot — le bot engage son signe, la vue reste humaine, le combat se résout", async () => {
+    const { botChifumiStep, chifumiActingSeat } = await import(
+      "@/game/ai/botPolicy"
+    );
+    const { store, kani } = setupCombat();
+    store.botSeat = "A"; // A (attaquant) est le BOT ; B (contrôleur du Kanigrou) est humain
+    store.perspective = "B";
+    store.combatResolve();
+    // Offre : au contrôleur humain (B) — pas au bot.
+    expect(chifumiActingSeat(store)).toBe("B");
+    expect(store.perspective).toBe("B");
+    store.chifumiAccept();
+    // Engagement : à l'ADVERSAIRE (A = bot) — la vue NE bascule PAS côté bot.
+    expect(chifumiActingSeat(store)).toBe("A");
+    expect(store.perspective).toBe("B");
+    botChifumiStep(store, () => 0); // le bot engage « pierre »
+    // Retour au contrôleur humain pour trancher.
+    expect(chifumiActingSeat(store)).toBe("B");
+    expect(store.perspective).toBe("B");
+    store.chifumiChoose("feuille"); // feuille bat pierre → contrôleur gagne
+    // Mini-jeu clos, combat résolu, bouclier appliqué (0 Dommage sur le Kanigrou).
+    expect(store.pendingChifumi).toBeNull();
+    expect(store.combat).toBeNull();
+    expect(store.state.instances[kani].counters.damage ?? 0).toBe(0);
+  });
+
   // #6 — EN LIGNE, le mini-jeu ne doit JAMAIS s'ouvrir : la résolution est
   // autoritative (RESOLVE_COMBAT côté serveur) et le Chi-Fu-Mi hot-seat n'a pas
   // d'intent cross-client → s'il s'ouvrait, `pendingChifumi` bloquerait `endTurn`
