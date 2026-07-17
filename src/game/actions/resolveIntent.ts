@@ -48,6 +48,7 @@ import {
   eligibleBlockers,
   blockerBlockedByAgilite,
   pmOf,
+  havreSacHasRoom,
 } from "../rules/legality.ts";
 import { planCost } from "../rules/resources.ts";
 import {
@@ -515,17 +516,37 @@ export function resolveIntent(
           ],
         };
       }
-      const toHidden = toZone === "pioche";
+      // 506.3 — PREMIER TOUR du premier joueur : rien n'entre dans le Monde,
+      // même en table libre (parité starter, bug playtesters). Un Allié / une
+      // Salle est ROUTÉ vers son Havre-Sac (303.1, comme playFromHand) ; les
+      // cartes exclusivement Monde (Zone/Protecteur/Dofus…) sont refusées.
+      // L'échange Monde↔Havre-Sac est déjà gardé plus haut (whyCannotMoveCreature).
+      let dest: ZoneRef = intent.to;
+      if (toZone === "monde" && state.turn.number === 1) {
+        const played = getCard(inst.cardId);
+        const routed = played
+          ? resolvedPlayDestination(ctx, seat, played, "monde")
+          : ({ zone: "monde" } as ZoneRef);
+        if (routed.zone !== "havreSac")
+          return {
+            error: `${played?.mainType ?? "Carte"} : cette carte entre dans le Monde, interdit au premier tour (506.3). Un Allié, lui, irait dans ton Havre-Sac.`,
+          };
+        if (!havreSacHasRoom(ctx, seat))
+          return { error: "Le Havre-Sac est plein (Taille atteinte)." };
+        dest = routed;
+      }
+      const destZone = dest.zone;
+      const toHidden = destZone === "pioche";
       const toPublic =
-        toZone === "monde" ||
-        toZone === "havreSac" ||
-        toZone === "defausse" ||
-        toZone === "fileAttente" ||
-        toZone === "exil";
+        destZone === "monde" ||
+        destZone === "havreSac" ||
+        destZone === "defausse" ||
+        destZone === "fileAttente" ||
+        destZone === "exil";
       const payload: MovePayload = {
         instanceId: intent.instanceId,
         from: inst.location,
-        to: intent.to,
+        to: dest,
         position: intent.position ?? { at: "any" },
         visibility: toHidden
           ? { faceDown: true, visibleTo: "none" }
@@ -534,12 +555,12 @@ export function resolveIntent(
             : { faceDown: false, visibleTo: [inst.owner] },
         preservesIdentity: false,
         orientationOnArrival:
-          toZone === "monde" || toZone === "havreSac" ? "upright" : null,
+          destZone === "monde" || destZone === "havreSac" ? "upright" : null,
       };
       const events: DraftEvent[] = [move(seat, payload)];
       // Entrée en jeu (hors échange Monde↔Havre-Sac, traité plus haut) : jeton du
       // tour d'arrivée pour le mal d'invocation (1821).
-      if (toZone === "monde" || toZone === "havreSac") {
+      if (destZone === "monde" || destZone === "havreSac") {
         events.push(
           setCounter(
             seat,
