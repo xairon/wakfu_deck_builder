@@ -111,12 +111,12 @@
         <p class="eyebrow text-primary">Jouer en ligne</p>
         <p class="mt-1 text-sm text-base-content/65">
           Affronte un ami à distance, en temps réel, avec un code de salon —
-          avec le deck complet de ton choix. Tu peux activer les Règles
-          assistées (coûts, combat et victoire calculés pour vous deux),
+          avec le deck complet de ton choix. La table applique un cadre solide
+          (tours, pioche, combat et victoire calculés pour vous deux),
           <span class="font-semibold text-base-content/80"
-            >mais les effets des cartes se jouent toujours à la main</span
+            >et les effets des cartes se jouent à la main</span
           >
-          : c'est à toi de les lire et de les appliquer, comme sur une vraie
+          : c'est à vous de les lire et de les appliquer, comme sur une vraie
           table.
         </p>
       </div>
@@ -152,20 +152,8 @@
           Deck incomplet : {{ onlineDeckErrors[0] }}
         </p>
 
-        <!-- Héberger une nouvelle partie. -->
+        <!-- Héberger une nouvelle partie (CADRE : un seul mode en ligne). -->
         <div class="flex flex-wrap items-center gap-3">
-          <label
-            class="flex items-center gap-2 text-sm"
-            title="Coûts en Ressources, légalité des coups, combat et victoire automatiques — partagé par les deux joueurs"
-          >
-            <input
-              v-model="onlineAssisted"
-              type="checkbox"
-              class="checkbox checkbox-sm"
-              data-testid="online-assisted-toggle"
-            />
-            <span>Règles assistées</span>
-          </label>
           <button
             class="btn btn-primary btn-sm"
             :disabled="!onlineDeckId || onlineBusy || !onlineDeckValid"
@@ -884,8 +872,6 @@ const ONLINE_PLAY_ENABLED = true;
 // de bascule), et le deck est pré-sélectionné (cf. watcher plus bas) pour que
 // « Créer la partie » soit cliquable tout de suite.
 const onlineDeckId = ref<string | null>(null);
-// Mode de règles assistées choisi par le créateur, propagé aux deux clients.
-const onlineAssisted = ref(false);
 const joinCode = ref("");
 const createdCode = ref("");
 const onlineBusy = ref(false);
@@ -904,7 +890,7 @@ function resumeGame(): void {
   const g = resumable.value;
   if (!g) return;
   resumable.value = null;
-  store.connectOnline(g.gameId, g.seat, onlineTransport, g.assisted);
+  store.connectOnline(g.gameId, g.seat, onlineTransport);
 }
 
 /** Abandonne la partie en cours détectée (forfait serveur) sans s'y reconnecter. */
@@ -995,9 +981,10 @@ async function onlineCreate(): Promise<void> {
   onlineBusy.value = true;
   onlineError.value = "";
   try {
-    const { gameId, code } = await createOnlineGame(deck, onlineAssisted.value);
+    // CADRE : une seule expérience en ligne — plus de mode assisté à la création.
+    const { gameId, code } = await createOnlineGame(deck, false);
     createdCode.value = code;
-    store.connectOnline(gameId, "A", onlineTransport, onlineAssisted.value);
+    store.connectOnline(gameId, "A", onlineTransport);
   } catch (e) {
     onlineError.value = await fnErrorMessage(e);
   } finally {
@@ -1021,8 +1008,8 @@ async function onlineJoin(): Promise<void> {
       onlineError.value = "Partie introuvable (vérifie le code).";
       return;
     }
-    // s'abonner AVANT join ; mode de règles partagé hérité du créateur
-    store.connectOnline(g.id, "B", onlineTransport, g.assisted);
+    // s'abonner AVANT join (CADRE : un seul mode en ligne)
+    store.connectOnline(g.id, "B", onlineTransport);
     await joinGame(code, deck);
     // joinGame vient de créer GAME_STARTED + mélanges + mains de départ. Le pull
     // de connexion a tourné sur un journal ENCORE VIDE (events créés seulement

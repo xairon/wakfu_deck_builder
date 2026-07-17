@@ -1092,7 +1092,7 @@ describe("fin autoritative serveur (GAME_OVER) + mode assisté partagé", () => 
     expect(store.winner).toBe("A");
   });
 
-  it("connectOnline(..., assisted=true) active les règles assistées (mode partagé)", () => {
+  it("connectOnline force le CADRE : jamais de règles assistées en ligne", () => {
     const store = useGameStore();
     const transport = {
       submit: async () => ({ seq: 0 }),
@@ -1100,11 +1100,12 @@ describe("fin autoritative serveur (GAME_OVER) + mode assisté partagé", () => 
       pull: async () => [] as RedactedEvent[],
       concede: async () => {},
     };
-    store.connectOnline("g", "A", transport, true);
-    expect(store.assist).toBe(true);
-    // par défaut (omis) → règles libres
+    // Même si le mode assisté était actif en local (solo), la connexion en
+    // ligne bascule sur la table manuelle encadrée (spec 2026-07-17).
+    store.assist = true;
     store.connectOnline("g", "A", transport);
     expect(store.assist).toBe(false);
+    expect(store.manualTable).toBe(true); // gestes table libre disponibles
   });
 });
 

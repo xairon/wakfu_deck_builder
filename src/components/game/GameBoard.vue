@@ -1583,8 +1583,10 @@ const canAttackSelected = computed(() => {
   // N'offrir « Attaquer » que si la carte est un attaquant LÉGAL (redressé, hors
   // mal d'invocation, type combattant) ET qu'une attaque est déclarable ce tour
   // (1/tour, pas au premier tour) — sinon le bouton ouvrait un combat vide + erreur.
+  // CADRE : le combat automatisé fait partie du socle de TOUTE partie en ligne
+  // (la résolution est serveur) — plus seulement du mode assisté local.
   return (
-    store.assist &&
+    (store.assist || store.online) &&
     !store.combat &&
     !!inst &&
     store.canDeclareAttack &&
@@ -1598,7 +1600,10 @@ function attackWithSelected(): void {
 }
 const canActivateSelected = computed(() => {
   const inst = selectedInst.value;
-  if (!store.assist || store.effectTargeting || !inst) return false;
+  // CADRE : les pouvoirs (onTap) restent activables en ligne — activateTapPower
+  // gère déjà les relâchements table libre (hors-tour, coût manuel).
+  if ((!store.assist && !store.online) || store.effectTargeting || !inst)
+    return false;
   if (inst.controller !== me.value) return false;
   // POUVOIR DEPUIS LA MAIN (Polter Tofu) : carte en main portant un pouvoir
   // activable depuis la main — orientation non pertinente ; la légalité de timing

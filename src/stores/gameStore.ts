@@ -825,21 +825,21 @@ export const useGameStore = defineStore("game", () => {
   }
 
   /**
-   * Connecte la table à une partie en ligne, au siège `seat`. `assisted` est le
-   * mode de règles PARTAGÉ (choisi par le créateur, plumb depuis findGameByCode/
-   * findMyActiveGame) : les deux clients tournent dans le même mode pour le
-   * match. `assistEffects` reste OFF en ligne (automatisation séparée, risque de
-   * double-soumission).
+   * Connecte la table à une partie en ligne, au siège `seat`. CADRE (spec
+   * 2026-07-17) : le 1v1 online est TOUJOURS la table manuelle encadrée —
+   * structure de tour + combat serveur + anti-triche imposés par le serveur,
+   * tout le reste (coûts, conditions, effets, compteurs) à la main. Le mode
+   * 100 % assisté reste réservé au solo/tutoriel/vs bot. `assistEffects` reste
+   * OFF en ligne (automatisation séparée, risque de double-soumission).
    */
   function connectOnline(
     id: string,
     seat: Seat,
     transport: OnlineTransport,
-    assisted = false,
   ): void {
     disconnectOnline();
     online.value = true;
-    assist.value = assisted; // mode de règles partagé (choisi à la création)
+    assist.value = false; // CADRE : jamais de règles assistées en ligne
     gameId.value = id;
     mySeat.value = seat;
     perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
@@ -2083,25 +2083,11 @@ export const useGameStore = defineStore("game", () => {
     if (free && online.value)
       return rejectMove("La fabrication n'est pas encore disponible en ligne.");
     // EN LIGNE (P2) : intention PLAY_CARD — le serveur valide tour/zone/coût et
-    // résout la destination (Salle → Havre-Sac ; Allié → Monde ou Havre-Sac au
-    // choix, 303.1), incline les producteurs, pose le jeton d'arrivée. Un refus
-    // revient en français via ruleError.
-    // 305.x (lot F) — EN LIGNE, un Équipement se joue ATTACHÉ comme en local :
-    // le prompt de Porteur s'ouvre AVANT l'envoi de l'intention ; le choix
-    // (attachToBearer) renvoie ici avec bearerId, transmis au serveur qui le
-    // REVALIDE (eligibleBearers) et émet l'ATTACH autoritatif.
-    if (online.value && assist.value && bearerId === undefined) {
-      const c0 = getCard(state.value.instances[instanceId]?.cardId ?? null);
-      if (c0 && requiresBearer(c0)) {
-        const eligible = eligibleBearers(rulesCtx(), seat, instanceId);
-        if (!eligible.length)
-          return rejectMove(
-            `Aucune créature en jeu ne peut porter ${c0.name}.`,
-          );
-        pendingBearer.value = { equipmentId: instanceId, eligible };
-        return true; // en attente du clic sur le Porteur (attachToBearer)
-      }
-    }
+    // résout la destination (303.1), incline les producteurs, pose le jeton
+    // d'arrivée. Un refus revient en français via ruleError. NB CADRE : le 1v1
+    // online est toujours manuel (assist=false) → GameBoard route les poses par
+    // moveTo/MOVE_CARD ; ce chemin ne sert plus qu'en défensif (l'équipement
+    // manuel passe par attachSelected → intent ATTACH).
     if (tryIntent({ kind: "PLAY_CARD", instanceId, destination, bearerId }))
       return true;
     if (!assist.value) {
