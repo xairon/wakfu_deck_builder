@@ -128,6 +128,12 @@ export function effectiveForce(
     0,
     force +
       (inst.counters.tokens?.forceMod ?? 0) +
-      (inst.counters.tokens?.forceCombatMod ?? 0),
+      (inst.counters.tokens?.forceCombatMod ?? 0) +
+      // TABLE MANUELLE (Cadre) — compteur NOMMÉ « force » ajustable par le
+      // joueur (boutons ± Force) : représente les effets « +N Force » joués à
+      // la main, pour que le combat SERVEUR calcule juste. Les jetons moteur
+      // (forceMod…) restent verrouillés côté intents (anti-triche) ; ce
+      // compteur-ci est public, journalisé et visible de l'adversaire.
+      (inst.counters.force ?? 0),
   );
 }

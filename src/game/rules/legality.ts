@@ -426,8 +426,11 @@ function whyCannotMoveCommon(
     return hero
       ? "Un Héros incliné ne peut pas se déplacer (414.2)."
       : "Une créature inclinée ne peut pas se déplacer (414.2).";
-  if (to === "monde" && ctx.state.turn.number === 1)
-    return "Aucune sortie dans le Monde au premier tour de la partie.";
+  // 603.3 — « Aucun joueur ne peut effectuer de mouvement durant le premier
+  // tour du premier joueur » : TOUT mouvement 414.x est interdit au tour 1
+  // (pas seulement la sortie dans le Monde — l'entrée au Havre-Sac aussi).
+  if (ctx.state.turn.number === 1)
+    return "Aucun mouvement au premier tour de la partie (603.3).";
   if (to === "havreSac" && !havreSacHasRoom(ctx, seat))
     return "Le Havre-Sac est plein (Taille atteinte).";
   return null;

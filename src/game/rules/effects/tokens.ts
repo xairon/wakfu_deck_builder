@@ -110,10 +110,37 @@ export function ensureTokenCard(spec: TokenSpec): Card {
   return card;
 }
 
-/** Carte synthétique d'un `cardId` de jeton, ou null si inconnu / non-jeton. */
+/**
+ * Re-décode un `cardId` synthétique en gabarit. Le format est
+ * `__token__:<nom>:<force>:<élément>:<famille>` — le nom peut contenir des
+ * `:` (on reprend tout le milieu), les 3 derniers champs sont fixes.
+ */
+export function parseTokenCardId(
+  cardId: string | null | undefined,
+): TokenSpec | null {
+  if (!isTokenCardId(cardId)) return null;
+  const parts = (cardId as string).split(":");
+  if (parts.length < 5) return null;
+  const sub = parts[parts.length - 1];
+  const element = parts[parts.length - 2];
+  const force = Number(parts[parts.length - 3]);
+  const name = parts.slice(1, parts.length - 3).join(":");
+  if (!name || !Number.isFinite(force)) return null;
+  return { name, force, element, ...(sub ? { sub } : {}) };
+}
+
+/**
+ * Carte synthétique d'un `cardId` de jeton, ou null si non-jeton. AUTO-RÉPARANT :
+ * un jeton reçu du RÉSEAU (CREATE_TOKEN adverse, resync) n'a jamais été minté
+ * localement — on reconstruit la carte depuis le cardId (déterministe) plutôt
+ * que de renvoyer null (rendu cassé côté pair).
+ */
 export function getTokenCard(cardId: string | null | undefined): Card | null {
   if (!isTokenCardId(cardId)) return null;
-  return registry.get(cardId as string) ?? null;
+  const existing = registry.get(cardId as string);
+  if (existing) return existing;
+  const spec = parseTokenCardId(cardId);
+  return spec ? ensureTokenCard(spec) : null;
 }
 
 /** @internal — vide le registre (tests). */

@@ -14,6 +14,9 @@ export interface CardCounters {
   damage?: number; // Dommages cumulés, purgés fin de tour (410.8)
   level?: number; // 1→2→3 (307.4/307.5)
   xp?: number; // 6→N2, 18→N3
+  /** Table manuelle (Cadre) : delta de Force posé À LA MAIN (± Force) — lu par
+   *  effectiveForce pour que le combat serveur intègre les effets manuels. */
+  force?: number;
   tokens?: Record<string, number>; // jetons génériques nommés
 }
 

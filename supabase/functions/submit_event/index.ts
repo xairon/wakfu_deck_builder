@@ -10,7 +10,11 @@ import {
   authorizeDraft,
   redactEventForSeat,
 } from "../../../src/game/engine/authority.ts";
-import { drawTop, recycleToPiocheTop } from "../../../src/game/engine/verbs.ts";
+import {
+  drawTop,
+  recycleToPiocheTop,
+  formatRoll,
+} from "../../../src/game/engine/verbs.ts";
 import { victoryFromState } from "../../../src/game/rules/victory.ts";
 import { equalityRescueEvents } from "../../../src/game/rules/progress.ts";
 import { resolveIntent } from "../../../src/game/actions/resolveIntent.ts";
@@ -166,6 +170,52 @@ Deno.serve(async (req) => {
         return json({ error: "ADVERSAIRE_ENCORE_ACTIF" }, 409);
       await finishGame(me.seat as "A" | "B", "disconnect");
       return json({ ok: true });
+    }
+
+    // Meta-brouillon ROLL_DIE (Cadre) : DÉ PARTAGÉ tiré PAR LE SERVEUR
+    // (incontestable — un client ne peut pas forger « j'ai fait 6 »), inscrit au
+    // journal comme un SAID de l'acteur. d3 = Chi-Fu-Mi (Kanigrou, Tirlangue…).
+    if ((draft as { type?: string })?.type === "ROLL_DIE") {
+      const rawSides = Number((draft as { sides?: unknown }).sides ?? 6);
+      const sides = Math.min(
+        100,
+        Math.max(2, Number.isFinite(rawSides) ? Math.floor(rawSides) : 6),
+      );
+      const value = 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % sides);
+      const ev = resolveDraft(
+        state,
+        {
+          actor: me.seat as "A" | "B",
+          type: "SAID",
+          payload: { text: formatRoll(sides, value) },
+        },
+        {
+          gameId,
+          seq: state.seq + 1,
+          ts: Date.now(),
+          masterSeed: secret!.master_seed,
+        },
+      );
+      const { error: rollErr } = await db.rpc("append_event", {
+        p_game_id: gameId,
+        p_parent_seq: state.seq,
+        p_actor: ev.actor,
+        p_type: ev.type,
+        p_payload: ev.payload,
+        p_payload_private: null,
+      });
+      if (rollErr) return json({ error: rollErr.message }, 409);
+      const postRoll = deriveState([...rowEvents, ev]);
+      for (const seat of ["A", "B"] as const) {
+        await db
+          .channel(`game:${gameId}:${seat}`, { config: { private: true } })
+          .send({
+            type: "broadcast",
+            event: "game_event",
+            payload: redactEventForSeat(ev, seat, state, postRoll),
+          });
+      }
+      return json({ seq: ev.seq });
     }
 
     // Meta-intent MULLIGAN : recycle la main → mélange (RNG serveur) → repioche

@@ -88,30 +88,27 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
   });
 
   // ── findGameByCode ──────────────────────────────────────────────────────
-  it("devrait interroger games via select('id, assisted').eq('code', …).maybeSingle() et renvoyer { id, assisted }", async () => {
-    const maybeSingle = vi.fn().mockResolvedValue({
-      data: { id: "game-42", assisted: true },
+  // 0011 — le lobby n'est plus énumérable : la découverte par code passe par
+  // la RPC SECURITY DEFINER `find_game_by_code` (périmètre minimal).
+  it("devrait interroger la RPC find_game_by_code et renvoyer { id, assisted }", async () => {
+    const rpc = vi.fn().mockResolvedValue({
+      data: [{ id: "game-42", assisted: true }],
       error: null,
     });
-    const eq = vi.fn(() => ({ maybeSingle }));
-    const select = vi.fn(() => ({ eq }));
-    const from = vi.fn(() => ({ select }));
-    supabaseStub = { from };
+    supabaseStub = { rpc };
 
     const res = await findGameByCode("CODE1");
 
     expect(res).toEqual({ id: "game-42", assisted: true });
-    expect(from).toHaveBeenCalledWith("games");
-    expect(select).toHaveBeenCalledWith("id, assisted");
-    expect(eq).toHaveBeenCalledWith("code", "CODE1");
-    expect(maybeSingle).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("find_game_by_code", {
+      p_code: "CODE1",
+    });
   });
 
-  it("devrait renvoyer null quand aucune partie ne correspond au code (data null)", async () => {
-    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
-    const eq = vi.fn(() => ({ maybeSingle }));
-    const select = vi.fn(() => ({ eq }));
-    supabaseStub = { from: vi.fn(() => ({ select })) };
+  it("devrait renvoyer null quand aucune partie ne correspond au code (data vide)", async () => {
+    supabaseStub = {
+      rpc: vi.fn().mockResolvedValue({ data: [], error: null }),
+    };
 
     const res = await findGameByCode("INCONNU");
 
@@ -120,10 +117,9 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
 
   it("devrait propager l'erreur de la requête findGameByCode", async () => {
     const err = new Error("query boom");
-    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: err });
-    const eq = vi.fn(() => ({ maybeSingle }));
-    const select = vi.fn(() => ({ eq }));
-    supabaseStub = { from: vi.fn(() => ({ select })) };
+    supabaseStub = {
+      rpc: vi.fn().mockResolvedValue({ data: null, error: err }),
+    };
 
     await expect(findGameByCode("CODE1")).rejects.toThrow("query boom");
   });

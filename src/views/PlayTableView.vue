@@ -339,6 +339,24 @@
       <GameBoard class="glayout__board" />
       <aside v-if="showJournal" class="glayout__journal">
         <ActionLog :lines="store.log" />
+        <!-- Chat de table (Cadre) : journalisé (SAID), visible des deux
+             joueurs — indispensable pour annoncer les effets joués à la main. -->
+        <form
+          v-if="store.online"
+          class="gchat"
+          @submit.prevent="sendChatMessage"
+        >
+          <input
+            v-model="chatText"
+            class="gchat__input"
+            data-testid="chat-input"
+            placeholder="Dire à la table… (effets, annonces)"
+            maxlength="300"
+          />
+          <button class="gchat__send" type="submit" aria-label="Envoyer">
+            ➤
+          </button>
+        </form>
       </aside>
     </div>
 
@@ -842,6 +860,12 @@ const botDriver = useBotOpponent(store, 550, {
 // Masqué par défaut : le plateau occupe toute la largeur (cartes plus grandes).
 // Le joueur ouvre le journal à la demande via le bouton « Journal ».
 const showJournal = ref(false);
+// Chat de table (Cadre) : SAID journalisé.
+const chatText = ref("");
+function sendChatMessage(): void {
+  store.sendChat(chatText.value);
+  chatText.value = "";
+}
 // Pendant un tutoriel, on force l'ouverture du journal : une étape le met en
 // lumière (« tout est tracé dans le journal ») et le débutant le voit se remplir.
 watch(
@@ -1572,6 +1596,29 @@ onUnmounted(() => {
   border-radius: 10px;
   padding: 12px 14px;
   overflow: hidden;
+}
+/* Chat de table (Cadre). */
+.gchat {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.gchat__input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(246, 245, 241, 0.18);
+  border-radius: 8px;
+  padding: 6px 9px;
+  font-size: 12px;
+  color: inherit;
+}
+.gchat__send {
+  border: 1px solid rgba(246, 245, 241, 0.18);
+  border-radius: 8px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
 }
 
 /* ── Overlays (passation / mulligan / fin) ── */

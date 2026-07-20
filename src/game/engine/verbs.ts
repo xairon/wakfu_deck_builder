@@ -230,6 +230,16 @@ export function say(actor: Seat | "system", text: string): DraftEvent {
   return { actor, type: "SAID", payload: { text } };
 }
 
+/** Texte JOURNAL d'un jet de dé partagé (même rendu client/serveur).
+ *  d3 = Chi-Fu-Mi (✊✋✌), sinon dN numérique. */
+export function formatRoll(sides: number, value: number): string {
+  if (sides === 3) {
+    const signs = ["✊ Pierre", "✋ Feuille", "✌ Ciseaux"] as const;
+    return `🎲 Chi-Fu-Mi : ${signs[(value - 1) % 3]}`;
+  }
+  return `🎲 lance un d${sides} : ${value}`;
+}
+
 /**
  * RÉVÉLATION de main (Filouterie / « montrer sa main ») : marque `instanceIds`
  * comme révélés à `to`. Monotone (le reducer n'ajoute qu'au `revealedTo`) → geste
@@ -242,6 +252,20 @@ export function revealHand(
   to: Seat[],
 ): DraftEvent<LookRevealPayload> {
   return { actor, type: "REVEAL", payload: { instanceIds, to } };
+}
+
+/**
+ * CONSULTATION privée (« chercher dans sa Pioche », regarder des cartes) :
+ * marque `instanceIds` comme vus par `to` SEULEMENT (LOOK — l'adversaire ne
+ * voit rien). Autorisé côté serveur pour ses propres cartes (anti-peek pour
+ * celles de l'adversaire). Un SHUFFLE de la zone purge ces révélations.
+ */
+export function lookCards(
+  actor: Seat,
+  instanceIds: InstanceId[],
+  to: Seat[],
+): DraftEvent<LookRevealPayload> {
+  return { actor, type: "LOOK", payload: { instanceIds, to } };
 }
 
 /** Met à jour le tour (joueur actif, numéro, phase) — assistance non bloquante. */

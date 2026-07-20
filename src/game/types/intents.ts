@@ -59,6 +59,19 @@ export type GameIntent =
     }
   | { kind: "ATTACH"; equipmentId: InstanceId; bearerId: InstanceId }
   | { kind: "DETACH"; equipmentId: InstanceId; to: ZoneRef; position: Position }
+  | {
+      /** TABLE MANUELLE (Cadre) — geste « Mettez en jeu un jeton "Monstre - X"
+       *  de Force N [Élément] » : le serveur dérive le cardId synthétique du
+       *  GABARIT (jamais fourni par le client) et mint l'instance dans le
+       *  Monde. Refusé hors table manuelle (en assisté, les jetons dérivent
+       *  des effets). */
+      kind: "CREATE_TOKEN";
+      name: string;
+      force: number;
+      element?: string;
+      sub?: string;
+      tapped?: boolean;
+    }
   | { kind: "END_TURN" }
   // ── Combat (P3) — combat-au-journal, le serveur l'adjuge (702–708) ──────────
   // L'acteur est imposé serveur : DECLARE_ATTACK/RESOLVE/CANCEL = l'attaquant

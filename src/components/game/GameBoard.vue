@@ -386,6 +386,44 @@
             >
               👁 Montrer ma main
             </button>
+            <!-- F2 — tuteurs « Cherchez dans votre Pioche… » : consultation
+                 privée + mélange OBLIGATOIRE à la fermeture. -->
+            <button
+              v-if="canManualDraw"
+              class="gbtn gbtn--sm"
+              data-testid="action-search-deck"
+              title="Chercher dans ta Pioche (elle sera mélangée en refermant)."
+              @click="openDeckSearch"
+            >
+              🔍 Chercher
+            </button>
+            <!-- F4 — « Mettez en jeu un jeton "Monstre - X" de Force N ». -->
+            <button
+              v-if="canManualDraw"
+              class="gbtn gbtn--sm"
+              data-testid="action-create-token"
+              title="Mettre en jeu un jeton de créature (effet joué à la main)."
+              @click="tokenDialog = true"
+            >
+              ⬚ Jeton
+            </button>
+            <!-- F3 — aléa PARTAGÉ journalisé (tiré par le serveur en ligne). -->
+            <button
+              v-if="canManualDraw"
+              class="gbtn gbtn--sm"
+              title="Lancer un d6 (résultat au journal, tiré par le serveur)."
+              @click="store.rollDie(6)"
+            >
+              🎲 Dé
+            </button>
+            <button
+              v-if="canManualDraw"
+              class="gbtn gbtn--sm"
+              title="Chi-Fu-Mi aléatoire (résultat au journal, tiré par le serveur)."
+              @click="store.rollDie(3)"
+            >
+              ✊✋✌
+            </button>
           </span>
         </div>
       </div>
@@ -948,6 +986,16 @@
           >
             🔗 Équiper
           </button>
+          <!-- F5 — « révélez une carte » : montrer CETTE carte de ma main. -->
+          <button
+            v-if="canShowSelected"
+            class="gbtn"
+            data-testid="action-show-card"
+            title="Montrer cette carte à l'adversaire (elle reste en main)."
+            @click="showSelectedCard"
+          >
+            👁 Montrer
+          </button>
           <span class="gactionbar__sep"></span>
           <button class="gbtn" @click="moveSelected('monde')">→ Monde</button>
           <button class="gbtn" @click="moveSelected('havreSac')">
@@ -973,6 +1021,25 @@
           <button class="gbtn gbtn--counter" @click="bumpDamage(-1)">
             − Dmg
           </button>
+          <!-- CADRE — effets « ±N Force » joués à la main : compteur nommé
+               « force », public et LU PAR LE COMBAT SERVEUR (effectiveForce). -->
+          <template v-if="store.manualTable">
+            <button
+              class="gbtn gbtn--counter"
+              data-testid="bump-force-up"
+              title="Effet manuel : +1 Force (pris en compte par le combat)"
+              @click="bumpForce(1)"
+            >
+              + Force
+            </button>
+            <button
+              class="gbtn gbtn--counter"
+              title="Effet manuel : −1 Force (pris en compte par le combat)"
+              @click="bumpForce(-1)"
+            >
+              − Force
+            </button>
+          </template>
           <button class="gbtn" @click="zoomInst(selectedInst.instanceId)">
             ⤢ Agrandir
           </button>
@@ -1074,6 +1141,150 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ════ F2 — Recherche dans MA Pioche (tuteur) ════ -->
+    <div
+      v-if="deckBrowse"
+      class="gpilebrowser"
+      data-testid="deck-browser"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Recherche dans ta Pioche"
+      tabindex="-1"
+      @click.self="closeDeckSearch"
+      @keydown.esc.prevent="closeDeckSearch"
+    >
+      <div class="gpilebrowser__panel">
+        <header class="gpilebrowser__head">
+          <h2 class="gpilebrowser__title">
+            Ta Pioche
+            <span class="gpilebrowser__count"
+              >{{ myDeckCards.length }} carte(s)</span
+            >
+          </h2>
+          <button
+            class="gbtn gbtn--ghost"
+            aria-label="Fermer et mélanger"
+            @click="closeDeckSearch"
+          >
+            ✕
+          </button>
+        </header>
+        <p class="gpilebrowser__hint">
+          Consultation privée (l'adversaire est prévenu au journal, sans voir
+          les cartes). En refermant, ta Pioche est
+          <strong>mélangée</strong> (507.4).
+        </p>
+        <div class="gpilebrowser__grid">
+          <div
+            v-for="inst in myDeckCards"
+            :key="inst.instanceId"
+            class="gpilebrowser__slot"
+          >
+            <GameCard
+              :instance="inst"
+              :card="resolveCard(inst.cardId)"
+              @select="zoomInst(inst.instanceId)"
+              @zoom="zoomInst(inst.instanceId)"
+            />
+            <div class="gpilebrowser__actions">
+              <button
+                class="gbtn gbtn--sm"
+                :data-testid="`deck-take-main-${inst.instanceId}`"
+                title="Prendre cette carte en main"
+                @click="takeFromDeck(inst.instanceId, 'main')"
+              >
+                → Main
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte en jeu dans le Monde"
+                @click="takeFromDeck(inst.instanceId, 'monde')"
+              >
+                → Monde
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte dans ton Havre-Sac"
+                @click="takeFromDeck(inst.instanceId, 'havreSac')"
+              >
+                → Socle
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ F4 — Créer un jeton de créature ════ -->
+    <div
+      v-if="tokenDialog"
+      class="gpilebrowser"
+      data-testid="token-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Créer un jeton de créature"
+      tabindex="-1"
+      @click.self="tokenDialog = false"
+      @keydown.esc.prevent="tokenDialog = false"
+    >
+      <div class="gpilebrowser__panel gtokendialog">
+        <header class="gpilebrowser__head">
+          <h2 class="gpilebrowser__title">Créer un jeton</h2>
+          <button
+            class="gbtn gbtn--ghost"
+            aria-label="Fermer"
+            @click="tokenDialog = false"
+          >
+            ✕
+          </button>
+        </header>
+        <p class="gpilebrowser__hint">
+          Pour les effets « Mettez en jeu un jeton "Monstre - X" de Force N
+          [Élément] ». Le jeton apparaît dans le Monde, avec le mal
+          d'invocation.
+        </p>
+        <form class="gtokendialog__form" @submit.prevent="submitToken">
+          <label class="gtokendialog__field">
+            <span>Nom</span>
+            <input
+              v-model="tokenName"
+              data-testid="token-name"
+              placeholder="Monstre - Arakne"
+              maxlength="60"
+              required
+            />
+          </label>
+          <label class="gtokendialog__field">
+            <span>Force</span>
+            <input
+              v-model.number="tokenForce"
+              type="number"
+              min="0"
+              max="99"
+              required
+            />
+          </label>
+          <label class="gtokendialog__field">
+            <span>Élément</span>
+            <select v-model="tokenElement">
+              <option value="">Neutre</option>
+              <option value="Air">Air</option>
+              <option value="Eau">Eau</option>
+              <option value="Feu">Feu</option>
+              <option value="Terre">Terre</option>
+            </select>
+          </label>
+          <button
+            class="gbtn gbtn--accent"
+            type="submit"
+            data-testid="token-create"
+          >
+            Mettre en jeu
+          </button>
+        </form>
       </div>
     </div>
 
@@ -1250,6 +1461,65 @@ function recoverFromPile(
     zone === "pioche" ? { at: "top" } : { at: "any" },
   );
 }
+// ── F2 — Recherche dans MA Pioche (tuteur « Cherchez… ») ────────────────────
+const deckBrowse = ref(false);
+/** Instances de MA Pioche (identités révélées à MOI par le LOOK de
+ *  searchMyDeck ; l'ordre affiché n'est PAS l'ordre réel — sans importance,
+ *  la fermeture mélange). */
+const myDeckCards = computed<RedactedInstance[]>(() =>
+  deckBrowse.value
+    ? store.state.seats[me.value].pioche.map((id) => {
+        const inst = store.state.instances[id];
+        return {
+          instanceId: id,
+          cardId: inst?.cardId ?? null,
+          owner: me.value,
+          controller: me.value,
+          face: "recto",
+          orientation: null,
+          counters: inst?.counters ?? {},
+          attachments: [],
+        } as RedactedInstance;
+      })
+    : [],
+);
+function openDeckSearch(): void {
+  if (store.searchMyDeck()) deckBrowse.value = true;
+}
+function closeDeckSearch(): void {
+  deckBrowse.value = false;
+  store.shuffleMyDeck(); // 507.4 — l'ordre a été vu → mélange obligatoire
+}
+function takeFromDeck(
+  instanceId: string,
+  zone: "main" | "monde" | "havreSac",
+): void {
+  const ref =
+    zone === "monde"
+      ? ({ zone } as const)
+      : ({ zone, owner: me.value } as const);
+  store.moveTo(instanceId, ref, { at: "any" });
+}
+
+// ── F4 — Créer un jeton de créature (effet joué à la main) ──────────────────
+const tokenDialog = ref(false);
+const tokenName = ref("");
+const tokenForce = ref(1);
+const tokenElement = ref("");
+function submitToken(): void {
+  const ok = store.createManualToken({
+    name: tokenName.value,
+    force: tokenForce.value,
+    ...(tokenElement.value ? { element: tokenElement.value } : {}),
+  });
+  if (ok) {
+    tokenDialog.value = false;
+    tokenName.value = "";
+    tokenForce.value = 1;
+    tokenElement.value = "";
+  }
+}
+
 function openPileBrowser(seat: Seat): void {
   pileBrowse.value = { seat };
   // Focus sur le dialogue → Échap fonctionne immédiatement.
@@ -1742,6 +2012,21 @@ function equipSelected(): void {
   if (!id) return;
   if (store.attachSelected(id)) selectedId.value = null; // le plateau prend le relais (clic Porteur)
 }
+// F5 — montrer UNE carte de ma main (« révélez une carte ») : en ligne
+// uniquement (en local hot-seat tout est déjà visible).
+const canShowSelected = computed(() => {
+  const inst = selectedInst.value;
+  return (
+    store.online &&
+    !!inst &&
+    inst.owner === me.value &&
+    inst.location.zone === "main"
+  );
+});
+function showSelectedCard(): void {
+  const id = selectedInst.value?.instanceId;
+  if (id) store.revealCardToOpponent(id);
+}
 // TL5 — MONTRER SA MAIN (Filouterie / geste manuel) : révèle toute ma main à
 // l'adversaire. Réservé au jeu en ligne (en local hot-seat, tout est déjà
 // visible). Bouton global (indépendant de la carte sélectionnée).
@@ -1778,6 +2063,11 @@ function craftSelected(): void {
 function bumpDamage(delta: number): void {
   if (selectedInst.value)
     store.adjustCounter(selectedInst.value.instanceId, "damage", delta);
+}
+// CADRE : delta de Force manuel (compteur nommé « force », lu par le combat).
+function bumpForce(delta: number): void {
+  if (selectedInst.value)
+    store.adjustCounter(selectedInst.value.instanceId, "force", delta);
 }
 
 // ── Zoom ─────────────────────────────────────────────────────────────────────
@@ -2609,6 +2899,36 @@ function manaBonus(seat: Seat): boolean {
   flex-wrap: wrap;
   gap: 3px;
   justify-content: center;
+}
+/* F4 — dialog de création de jeton. */
+.gtokendialog {
+  max-width: 420px;
+}
+.gtokendialog__form {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gtokendialog__field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(246, 245, 241, 0.8);
+}
+.gtokendialog__field span {
+  width: 64px;
+}
+.gtokendialog__field input,
+.gtokendialog__field select {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(246, 245, 241, 0.2);
+  border-radius: 6px;
+  padding: 5px 8px;
+  color: inherit;
+  font-size: 13px;
 }
 @media (max-width: 640px) {
   .gpilebrowser {

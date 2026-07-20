@@ -123,13 +123,17 @@ export async function joinGame(
 export async function findGameByCode(
   code: string,
 ): Promise<{ id: string; assisted: boolean } | null> {
-  const { data, error } = await client()
-    .from("games")
-    .select("id, assisted")
-    .eq("code", code)
-    .maybeSingle();
+  // 0011 — le lobby n'est plus énumérable (SELECT réservé aux participants) :
+  // la découverte par code passe par la RPC SECURITY DEFINER au périmètre
+  // minimal (id + assisted, salons lobby/actifs seulement).
+  const { data, error } = await client().rpc("find_game_by_code", {
+    p_code: code,
+  });
   if (error) throw error;
-  const row = data as { id: string; assisted: boolean } | null;
+  const row = (Array.isArray(data) ? data[0] : data) as {
+    id: string;
+    assisted: boolean;
+  } | null;
   return row ? { id: row.id, assisted: !!row.assisted } : null;
 }
 
