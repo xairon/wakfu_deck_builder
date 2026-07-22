@@ -5,11 +5,18 @@
 import type { Card } from "@/types/cards";
 import { elementColor } from "@/config/elementColors";
 
-/** Élément dominant d'une carte, en minuscule. Repli « neutre ». */
+/**
+ * Élément dominant d'une carte, en minuscule. Repli « neutre ».
+ * Priorité : orbe imprimé `card.element` (Actions/Équipements/Zones/…) → symbole
+ * de Force (Alliés/Héros) → élément de Niveau. NB : on n'enchaîne PAS avec `||`
+ * (« Neutre » est truthy → un Niveau Neutre masquerait la vraie couleur) ; le
+ * repli se fait champ par champ en `??`.
+ */
 export function cardElement(card: Card): string {
   return (
-    card.stats?.niveau?.element ||
-    card.stats?.force?.element ||
+    card.element ??
+    card.stats?.force?.element ??
+    card.stats?.niveau?.element ??
     "neutre"
   ).toLowerCase();
 }

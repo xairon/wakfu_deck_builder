@@ -166,6 +166,28 @@ function extractElementalStat(
   };
 }
 
+/**
+ * ÉLÉMENT IMPRIMÉ (orbe « Élément : [X] ») — porté par les types SANS Force
+ * (Action / Équipement / Zone / Salle / Dofus / Protecteur / Havre-Sac). On
+ * repère le div dont le TEXTE PROPRE (hors descendants) commence par « Élément :»
+ * — `:contains` remonterait aux ancêtres et attraperait l'orbe du Niveau.
+ * Retourne `undefined` si la carte n'a pas d'orbe (Alliés/Héros = Élément de Force).
+ */
+function extractElementOrb($: CheerioAPI): CardElement | undefined {
+  let result: CardElement | undefined;
+  $("div").each((_, div) => {
+    const $div = $(div);
+    const ownText = $div.clone().children().remove().end().text().trim();
+    if (/^Élément\s*:/.test(ownText)) {
+      const img = $div.find("img.symbole-ressource").first();
+      if (img.length > 0) result = parseElementFromImg($, img[0]);
+      return false; // stop à la première correspondance
+    }
+    return undefined;
+  });
+  return result;
+}
+
 // Fonction pour parser les effets
 function parseEffects($: CheerioAPI): CardEffect[] {
   return $(SELECTORS.effects.items)
@@ -511,6 +533,8 @@ async function parseCard(filePath: string): Promise<Card | null> {
       },
       rarity: $(SELECTORS.rarity).attr("title") as CardRarity,
       elements: elements.length > 0 ? elements : undefined,
+      // Orbe imprimé « Élément : [X] » (types sans Force). undefined = pas d'orbe.
+      element: extractElementOrb($),
       imageUrl: $(SELECTORS.image).attr("src"),
       stats,
       effects: parseEffects($),

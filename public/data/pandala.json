@@ -166,7 +166,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "amulette-de-la-bouboule-pandala",
@@ -204,7 +205,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "amulette-du-kam-assutra-pandala",
@@ -264,7 +266,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "ancestral-z-pandala",
@@ -365,7 +368,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "atouin-pandala",
@@ -410,7 +414,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "baguette-ouratagou-pandala",
@@ -465,7 +470,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "bambouto-pandala",
@@ -559,7 +565,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "benediction-animale-pandala",
@@ -596,7 +603,8 @@
     "flavor": {
       "text": "Le dieu Osamodas aime tous les monstres. C'est pour cela qu'il leur accorde certains dons et sa protection."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "boing-pandala",
@@ -687,7 +695,8 @@
     "flavor": {
       "text": "Cette Boîte de Pandore ne contient pas d'or. Tout ce que vous risquez d'y trouver, c'est la mort !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "boomba-pandala",
@@ -968,7 +977,8 @@
     "flavor": {
       "text": "Certains disent \"écu de Féca\", mais ce sont des cancans d'Eca."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "bouclier-feudala-pandala",
@@ -1108,7 +1118,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bouclier-terrdala-pandala",
@@ -1325,7 +1336,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "brulure-de-sang-pandala",
@@ -1354,7 +1366,8 @@
     "flavor": {
       "text": "Quand il s'agit de massacrer l'ennemi, le Sacrieur est prêt à tout, même à sacrifier une partie de sa vie."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "brumen-tinctorias-pandala",
@@ -1481,7 +1494,8 @@
     "flavor": {
       "text": "Du papier s'il vous plaît !",
       "attribution": "Milicien Dryss Ôrtepneu en patrouille aux cabinets d'aisances d'Emelka."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "canon-dorf-pandala",
@@ -1574,7 +1588,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "cape-houte-pandala",
@@ -1694,7 +1709,8 @@
     "flavor": {
       "text": "Sur cette carte, c'est à vous d'écrire le nom de votre monture et toutes informations s'y rapportant. Oui oui ! écrire sur la carte, c'est bien ça !"
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "chafer-d-elite-pandala",
@@ -1799,7 +1815,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "chateau-du-comte-harebourg-pandala",
@@ -1831,7 +1848,8 @@
     "notes": [],
     "flavor": {
       "text": "La servante du Comte Harebourg ? Une vraie bombe !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "colere-de-zatoishwan-pandala",
@@ -1865,7 +1883,8 @@
       "text": "Lorsqu'un Pandawa est vénère, Zatoïshwan se met en colère !",
       "attribution": "Vieux proverbe pandawushu."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "cooleuvre-pandala",
@@ -2116,7 +2135,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "dante-sion-pandala",
@@ -2199,7 +2219,8 @@
     "notes": [],
     "flavor": {
       "text": "Entrée payante !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "demon-iii-pandala",
@@ -2378,7 +2399,8 @@
     "notes": [],
     "flavor": {
       "text": "Un donjon à l'ancienne, dans le plus pur style Bwork,avec cadavres d'aventuriers et armes qui rouillent."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dopeul-enutrof-pandala",
@@ -2958,7 +2980,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "drill-pandala",
@@ -3023,7 +3046,8 @@
     ],
     "flavor": {
       "text": "Tous les démons s'accordent à le dire : en s'unissant à Minuit, Midi a tiré le gros lot.Les joueurs jouent à tour de rôle à un petit jeu d'enchères sur l'Allié choisi par Enchère Démoniaque. Le joueur qui contrôle l'Allié choisi effectue la première enchère, puis tous les joueurs peuvent proposer une enchère supérieure. La première enchère peut être de 0 PV, mais ne peut pas être négative. Les enchères s'arrêtent lorsque plus personne ne veut proposer d'enchère supérieure à l'enchère actuelle la plus haute. Lors d'une enchère à 3 joueurs ou plus, un joueur peut refuser d'augmenter l'enchère une première fois, puis décider de l'augmenter par la suite lorsque c'est de nouveau à son tour de parler."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "engin-grouilleux-pandala",
@@ -3149,7 +3173,8 @@
       "text": "Réaction. Piochez deux cartes.Avant d'explorer Pandala, vaccinez",
       "attribution": "vous contre la Pandrista pour ne pas vous retrouver dans le…"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "fantome-apero-pandala",
@@ -3731,7 +3756,8 @@
     "flavor": {
       "text": "Fette déeffe n'accorde fes faveurs qu'à fes favoris ! Vous le faviez ?",
       "attribution": "Fofy Fafié."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "festino-pandala",
@@ -3835,7 +3861,8 @@
     "flavor": {
       "text": "Lorsqu'il est consommé en grande quantité, ce breuvage a le pouvoir de transformer votre visage en bois !"
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Eau"
   },
   {
     "id": "fiole-de-pandapiler-pandala",
@@ -3891,7 +3918,8 @@
     "flavor": {
       "text": "La Pandapiler est si légère que vous devrez en abuser si vous désirez entrapercevoir la déesse Pandawa."
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Terre"
   },
   {
     "id": "fiole-de-pandapils-pandala",
@@ -3947,7 +3975,8 @@
     "flavor": {
       "text": "Cette boisson a fait rentrer dans le langage courant l'expression \"mauvais comme du jus de Pils !\""
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Air"
   },
   {
     "id": "fiole-de-pandneken-pandala",
@@ -4006,7 +4035,8 @@
       "text": "Pour chaque verre vide, il y a un Pandawa plein.",
       "attribution": "Célèbre proverbe Pandawa."
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Feu"
   },
   {
     "id": "fleche-d-expiation-pandala",
@@ -4041,7 +4071,8 @@
       "text": "Une Flèfe d'Expiafion ?! Mais fa fuffit ! Reftez poli !",
       "attribution": "Fofy Fafié."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "frankula-pandala",
@@ -4474,7 +4505,8 @@
     ],
     "keywords": [],
     "artists": ["Jonathan Dhenry (Jonat)"],
-    "notes": []
+    "notes": [],
+    "element": "Neutre"
   },
   {
     "id": "igole-pandala",
@@ -4571,7 +4603,8 @@
     "notes": [],
     "flavor": {
       "text": "Le célèbre peintre Dany Wousso est tellement tombé amoureux de cette île qu'il y a passé sa lune de miel."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "intimidation-pandala",
@@ -4605,7 +4638,8 @@
     "flavor": {
       "text": "On peut se demander ce qu'il y a de plus intimidant chez un Iop : sa coupe de cheveux ou sa stupidité."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "jactance-alamogorda-pandala",
@@ -4736,7 +4770,8 @@
     ],
     "flavor": {
       "text": "Tom Krouz jonglait entre deux métiers : tavernier et saltimbanque. Un jour, il décida de mélanger les deux."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "kaiser-pandala",
@@ -4911,7 +4946,8 @@
     ],
     "flavor": {
       "text": "Bannissez jusqu'à X cartes de votre choix de la Défausse de l'adversaire de votre choix. Vous ne pouvez pas bannir plus d'une carteCe groupe de danseurs Kannibouls s'efforce de mettre en application le précepte suivant : \"manger, bouger\"."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "kanniboul-jav-pandala",
@@ -5326,7 +5362,8 @@
     ],
     "flavor": {
       "text": "Un jour, Hynd Yanajone s'aventura à goûter une fiole de Pandapils très ancienne. Ce fut hélas sa dernière rasade."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "le-chouque-pandala",
@@ -5800,7 +5837,8 @@
     "flavor": {
       "text": "Obtenir le Marteau de Moon, c'est un peu comme décrocher la lune !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "mise-a-sac-pandala",
@@ -5836,7 +5874,8 @@
     "flavor": {
       "text": "Ça y est, la faille est dans l'sac !",
       "attribution": "Lorand Macdalle, humoriste Enutrof qui a touché le fond…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "mishel-berger-pandala",
@@ -5926,7 +5965,8 @@
     "flavor": {
       "text": "Quand un simple \"pardon\" ne suffit pas, ce Mot est le moyen le plus sûr de trouver le salut en combat."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "nakunbra-pandala",
@@ -6035,7 +6075,8 @@
     "flavor": {
       "text": "Votre mission, si vous l'acceptez, est si impossible que cet ordre s'autodétruira avant que vous ne le lisiez."
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "parisse-milton-pandala",
@@ -6105,7 +6146,8 @@
     "notes": [],
     "flavor": {
       "text": "Le paradis rêvé des Dragodindes !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "peki-peki-pandala",
@@ -6215,7 +6257,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "percimol-heros-flaqueux-pandala",
@@ -6341,7 +6384,8 @@
     "notes": [],
     "flavor": {
       "text": "La plupart des aventuriers qui s'introduisent par cette porte en ressortent avec la banane."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "prespic-assiette-pandala",
@@ -6423,7 +6467,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "protege-tibias-ancestraux-pandala",
@@ -6812,7 +6857,8 @@
     "flavor": {
       "text": "Ce Protecteur a une sensibilité à fleur de peau : il ne supporte pas de se faire envoyer sur les roses."
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Eau"
   },
   {
     "id": "roulette-pandala",
@@ -6845,7 +6891,8 @@
     "flavor": {
       "text": "Ce sort marche comme sur des roulettes ! Enfin… sauf quand il ne marche pas."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "salbatroce-pandala",
@@ -7058,7 +7105,8 @@
     "flavor": {
       "text": "En Aperirel, Silouate ne se découvre pas d'une ficelle."
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Feu"
   },
   {
     "id": "silvosse-protecteur-de-flovore-pandala",
@@ -7097,7 +7145,8 @@
     "flavor": {
       "text": "Lorsqu'il était jeune, Silvosse bourgeonnait. Aujourd'hui, toutes les belles plantes sont folles de lui."
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Terre"
   },
   {
     "id": "sournoiserie-pandala",
@@ -7131,7 +7180,8 @@
       "text": "Quels sont ces Srams sournois qui agressent l'ennemi à distance ?",
       "attribution": "Du célèbre poète Aly Thérassion."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "spaice-bworkettes-pandala",
@@ -7315,7 +7365,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "touffe-pandala",
@@ -7387,7 +7438,8 @@
       "text": "Ça y est je suis touchée, je n'peux pas résister !",
       "attribution": "Doh Rotée, à propos de Tremblement de Terre."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "tromperelle-pandala",
@@ -7458,7 +7510,8 @@
     "flavor": {
       "text": "Depuis qu'Ulgrude du Tonnerre a eu le coup de foudre pour Jiva, il y a de l'orage dans l'air…"
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Air"
   },
   {
     "id": "vigueur-de-goultard-pandala",
@@ -7490,7 +7543,8 @@
     "notes": [],
     "flavor": {
       "text": "D'après ses admiratrices, la meilleure arme de Goultard, c'est son charme de destruction massive."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "viktor-yugo-pandala",
@@ -7583,7 +7637,8 @@
     "notes": [],
     "flavor": {
       "text": "Il n'y a pas meilleur endroit pour prendre un bol d'air frais !"
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "village-akwadala-pandala",
@@ -7621,7 +7676,8 @@
     "notes": [],
     "flavor": {
       "text": "Ça coule de source : Akwadala est le meilleur endroit pour se rincer le gosier !"
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "village-feudala-pandala",
@@ -7677,7 +7733,8 @@
     "flavor": {
       "text": "Mais alors ?! Qu'est",
       "attribution": "ce que vous attendez pour l'éteindre ?!"
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "village-terrdala-pandala",
@@ -7724,7 +7781,8 @@
     ],
     "flavor": {
       "text": "Si Zatoïshwan vient s'y terrer, c'est parce qu'il apprécie ce territoire pour sa cuisine de terroir."
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "vol-du-temps-pandala",
@@ -7758,7 +7816,8 @@
       "text": "Avec le temps, va, tout s'envole ! On oublie ses sorts et l'on oublie ses PA !",
       "attribution": "Léo Afferé, Xélor pressé."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "yokai-firefoux-pandala",

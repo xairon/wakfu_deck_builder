@@ -30,7 +30,8 @@
     "notes": [],
     "flavor": {
       "text": "Non, non et non ! On ne dit pas « Agression », mais « Agwession » ! C'est pouwtant simple ! — Wogew Wabbit."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bandeau-du-black-tiwabbit-ile-des-wabbits",
@@ -332,7 +333,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "cawotte-ile-des-wabbits",
@@ -382,7 +384,8 @@
     "flavor": {
       "text": "Klawa Owgane m'a dit un jouw qu'elle adowait les gwosses Cawottes. — Le Wa Wabbit."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "chateau-des-wabbits-ile-des-wabbits",
@@ -429,7 +432,8 @@
     "notes": [],
     "flavor": {
       "text": "Clé du Matin Pewlant, Clé du Midi Wayonnant et Clé du Soiw Woulant vous ouvriront les portes du Château des Wabbits."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "coffre-malveillant-ile-des-wabbits",
@@ -528,7 +532,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "echec-critique-ile-des-wabbits",
@@ -569,7 +574,8 @@
     ],
     "flavor": {
       "text": "Jèm Suyvotré détenait un grand nombre d'Échecs Critiques. Mais ça n'était rien à côté de ceux d'Ankor Loopé."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "festin-des-wabbits-ile-des-wabbits",
@@ -618,7 +624,8 @@
     "flavor": {
       "text": "Beaucoup aiment le Wabbit à la sauce chasseur. Les Wabbits, eux, préfèrent le chasseur à la sauce Cawotte."
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "flaqueux-ile-des-wabbits",
@@ -751,7 +758,8 @@
     "notes": [],
     "flavor": {
       "text": "Si vous cwoyez y twouver un Dofus Cawotte, vous pwenez vos wêves pouw des wéalités !"
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "ile-des-wabbits-ile-des-wabbits",
@@ -830,7 +838,8 @@
     "notes": [],
     "flavor": {
       "text": "Île des Wabbits ! Moins 10 % sur les allers sans retour ! — Employé de l'Agence Touriste."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "noob-ile-des-wabbits",
@@ -874,7 +883,8 @@
     "notes": [],
     "flavor": {
       "text": "Évitez de faire le malin alors que vous savez à peine aligner trois sorts ! Sinon, gare à la déculottée !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "petit-flaqueux-ile-des-wabbits",
@@ -997,7 +1007,8 @@
     "flavor": {
       "text": "Elle peut s'avérer très utile… si vous vous rappelez dans quel cas il faut la boire !"
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "salle-du-trone-du-wa-wabbit-ile-des-wabbits",
@@ -1029,7 +1040,8 @@
     "notes": [],
     "flavor": {
       "text": "On a beau y trouver la plus grosse réserve de Cawottes, ce n'est pas ça qui rend le Wa plus aimable !"
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "strategie-de-groupe-ile-des-wabbits",
@@ -1081,7 +1093,8 @@
     "flavor": {
       "text": "Dans le jeu online WAKFU, seuls les membres de votre groupe peuvent vous suivre en donjon. Choisissez",
       "attribution": "les donc avec soin !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "tiwabbit-kiafin-ile-des-wabbits",

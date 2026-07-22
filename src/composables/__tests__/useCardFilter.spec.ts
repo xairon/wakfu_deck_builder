@@ -182,4 +182,23 @@ describe("useCardFilter — filterCards", () => {
       filterCards([feu, eau], { ...base, element: "feu" }).map((c) => c.id),
     ).toEqual(["feu"]);
   });
+
+  it("element : matche l'orbe `card.element` (Niveau Neutre, sans Force)", () => {
+    // Régression du bug rapporté : un Équipement/Action à orbe coloré mais
+    // Niveau Neutre était introuvable par couleur (l'orbe n'était lu nulle part).
+    const terre = createMockActionCard({
+      id: "orbe-terre",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+      element: "Terre",
+    });
+    const neutre = createMockActionCard({
+      id: "vrai-neutre",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+    });
+    expect(
+      filterCards([terre, neutre], { ...base, element: "terre" }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(["orbe-terre"]);
+  });
 });

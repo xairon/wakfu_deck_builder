@@ -286,6 +286,19 @@
                     />
                   </p>
                 </div>
+                <div v-if="selectedCard?.element">
+                  <p class="eyebrow">Élément</p>
+                  <p
+                    class="mt-1 flex items-center gap-1.5 font-mono text-2xl tabular"
+                  >
+                    <img
+                      :src="`/images/elements/ressource-${selectedCard.element.toLowerCase()}.png`"
+                      :alt="selectedCard.element"
+                      :title="selectedCard.element"
+                      class="inline-block h-6 w-6"
+                    />
+                  </p>
+                </div>
                 <div v-if="displayedStats.force">
                   <p class="eyebrow">Force</p>
                   <p
@@ -695,6 +708,8 @@ const rarities = computed(() => {
 const elements = computed(() => {
   const elementSet = new Set<string>();
   cardStore.cards.forEach((card) => {
+    // Orbe imprimé `card.element` (Actions/Équipements/Zones/…) + Niveau + Force.
+    if (card.element) elementSet.add(card.element);
     if (card.stats?.niveau?.element) elementSet.add(card.stats.niveau.element);
     if (card.stats?.force?.element) elementSet.add(card.stats.force.element);
   });

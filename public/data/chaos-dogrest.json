@@ -148,7 +148,8 @@
     "notes": [],
     "flavor": {
       "text": "Affronter une créature aussi féroce qu'un Tofu demande forcément un minimum d'agressivité…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "amulette-cristaline-chaos-dogrest",
@@ -203,7 +204,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "anneau-cristalin-chaos-dogrest",
@@ -258,7 +260,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "anneau-mer-chaos-dogrest",
@@ -295,7 +298,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "anny-koleta-chaos-dogrest",
@@ -380,7 +384,8 @@
       "text": "Attends ! Je tue Toriel et après je viens t'aider, OK ?",
       "attribution": "Didak Tissiel, aventurier serviable."
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "arbre-hakam-chaos-dogrest",
@@ -413,7 +418,8 @@
     "flavor": {
       "text": "L'Arbre à Kam ? Je savais que Kam aimait les Chafers, mais pas qu'il aimait les arbres !",
       "attribution": "Etour Drif."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "arc-de-chasse-chaos-dogrest",
@@ -515,7 +521,8 @@
     "flavor": {
       "text": "Qui a dit que les Iops ne savaient pas se servir de leur tête ?!",
       "attribution": "Bêh Lyé, Iop impulsif."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bakkaluffy-chaos-dogrest",
@@ -1191,7 +1198,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "bulbiflore-chaos-dogrest",
@@ -1361,7 +1369,8 @@
     "flavor": {
       "text": "Attention, Météo Douze prévoir une grosse perturbation sur l'ensemble du monde. Sortez couverts !",
       "attribution": "Sofy Daprès."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "ceinture-bitoufale-chaos-dogrest",
@@ -1978,7 +1987,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "craqueleur-bedonnant-chaos-dogrest",
@@ -2752,7 +2762,8 @@
     "flavor": {
       "text": "Esquiiiiive ! Prouve que tu es agiiiiiile !",
       "attribution": "Fransh Lagâte, ménestrelle souple."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "eve-rett-chaos-dogrest",
@@ -3139,7 +3150,8 @@
     "flavor": {
       "text": "Nos ouvriers sont enchantés d'enchanter des artefacts à la chaîne !",
       "attribution": "Pat Rhon, contremaître aveugle."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "inoks-chaos-dogrest",
@@ -4073,7 +4085,8 @@
     "flavor": {
       "text": "La déesse Crâ est une archère hors pair. Toucher ses disciples en plein cœur, c'est dans ses cordes."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "l-ombre-de-sram-chaos-dogrest",
@@ -4114,7 +4127,8 @@
       "text": "Ce que Sram aime par",
       "attribution": "dessus tout : voler la vedette aux autres dieux et leur faire de l'ombre."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "la-chopine-de-pandawa-chaos-dogrest",
@@ -4163,7 +4177,8 @@
     "flavor": {
       "text": "La déesse Pandawa est une optimiste : elle voit toujours la Chopine à moitié pleine !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "la-piece-d-ecaflip-chaos-dogrest",
@@ -4202,7 +4217,8 @@
     "flavor": {
       "text": "Ne pariez pas qu'elle vous portera chance, car vous ne tarderiez pas à connaître le revers de la médaille !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "le-bouclier-de-feca-chaos-dogrest",
@@ -4300,7 +4316,8 @@
     "flavor": {
       "text": "Le dieu Iop a un cœur gros comme ça ! Ca compense un peu la taille de son intelligence…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "le-fouet-d-osamodas-chaos-dogrest",
@@ -4340,7 +4357,8 @@
     "flavor": {
       "text": "Attention : quand le dieu Osamodas se met à fouetter, ça sent mauvais…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "le-sablier-de-xelor-chaos-dogrest",
@@ -4390,7 +4408,8 @@
     "flavor": {
       "text": "Lorsque le dieu Xélor sort son sablier, soyez sûr que votre dernière heure a sonné !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "le-sang-de-sacrieur-chaos-dogrest",
@@ -4430,7 +4449,8 @@
     "flavor": {
       "text": "Se sacrifier pour ses disciples, la déesse Sacrieur à ça dans le sang."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "le-soulier-de-sadida-chaos-dogrest",
@@ -4478,7 +4498,8 @@
     "flavor": {
       "text": "Le dieu Sadida ne porte que des souliers en fibres végétales pour préserver ses plantes de pieds."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "leonardawa-chaos-dogrest",
@@ -4567,7 +4588,8 @@
     "flavor": {
       "text": "Qui s'endort avec le kama qui gratte se réveille avec le doigt doré. Heureusement, l'argent n'a pas d'odeur !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "les-mains-d-eniripsa-chaos-dogrest",
@@ -4606,7 +4628,8 @@
     "flavor": {
       "text": "En plus d'avoir la main sur le cœur, la déesse Eniripsa a des doigts de fée."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "lili-kea-chaos-dogrest",
@@ -5200,7 +5223,8 @@
     ],
     "flavor": {
       "text": "Les Démons des Heures ont une façon très particulière de faire le ménage chez eux…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "merci-bisous-chaos-dogrest",
@@ -5232,7 +5256,8 @@
     "notes": [],
     "flavor": {
       "text": "En séduction, Don Rouann lui a tout appris. Et pourtant, Kasa Nôva n'est toujours pas casé aujourd'hui…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "metaria-mage-bleue-chaos-dogrest",
@@ -5272,7 +5297,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "metaria-mage-jaune-chaos-dogrest",
@@ -5312,7 +5338,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "metaria-mage-rouge-chaos-dogrest",
@@ -5352,7 +5379,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "metaria-mage-verte-chaos-dogrest",
@@ -5405,7 +5433,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "meulou-chaos-dogrest",
@@ -5687,7 +5716,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "monsa-von-chaos-dogrest",
@@ -5905,7 +5935,8 @@
     "flavor": {
       "text": "Ogrest en représentation exceptionnelle, ce soir au Zinit ! Achat des billets aux points de vente habituels !"
     },
-    "spellSchool": "Unique"
+    "spellSchool": "Unique",
+    "element": "Neutre"
   },
   {
     "id": "ogrest-chaos-dogrest",
@@ -5998,7 +6029,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "oliphan-chaos-dogrest",
@@ -6082,7 +6114,8 @@
     "flavor": {
       "text": "Chérie, et si on se pactait ?",
       "attribution": "Jay Vôdan, futur adhérent au pacte des Mulous."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "padgref-demoel-chaos-dogrest",
@@ -7219,7 +7252,8 @@
     ],
     "flavor": {
       "text": "Mieux vaut ne pas vous prendre le bec avec ses occupants ! Vous risqueriez d'y laisser des plumes !"
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "tomy-bokeur-chaos-dogrest",
@@ -7412,7 +7446,8 @@
       "text": "Rendez",
       "attribution": "moi ma poupée ou je vous mets Chaos !"
     },
-    "spellSchool": "Unique"
+    "spellSchool": "Unique",
+    "element": "Neutre"
   },
   {
     "id": "viscere-chaos-dogrest",
@@ -7631,6 +7666,7 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   }
 ]

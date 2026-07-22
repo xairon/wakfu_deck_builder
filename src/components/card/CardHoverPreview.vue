@@ -132,18 +132,20 @@ const subtitle = computed(() => {
 
 const statRows = computed(() => {
   const s = card.value?.stats;
-  if (!s) return [] as { label: string; value: string }[];
   const rows: { label: string; value: string }[] = [];
-  if (s.niveau)
+  if (s?.niveau)
     rows.push({
       label: "Niveau",
       value: `${s.niveau.value} ${s.niveau.element}`,
     });
-  if (s.force)
+  // Orbe imprimé (« Élément : [X] ») — types sans Force (Action/Équipement/…).
+  if (card.value?.element)
+    rows.push({ label: "Élément", value: card.value.element });
+  if (s?.force)
     rows.push({ label: "Force", value: `${s.force.value} ${s.force.element}` });
-  if (s.pa !== undefined) rows.push({ label: "PA", value: String(s.pa) });
-  if (s.pm !== undefined) rows.push({ label: "PM", value: String(s.pm) });
-  if (s.pv !== undefined) rows.push({ label: "PV", value: String(s.pv) });
+  if (s?.pa !== undefined) rows.push({ label: "PA", value: String(s.pa) });
+  if (s?.pm !== undefined) rows.push({ label: "PM", value: String(s.pm) });
+  if (s?.pv !== undefined) rows.push({ label: "PV", value: String(s.pv) });
   return rows;
 });
 

@@ -50,7 +50,8 @@
     "flavor": {
       "text": "Si vous ne voulez pas vous faire sonner les cloches par Ogrest, évitez de courir après ses œufs !"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "abces-de-wakfu-incarnam",
@@ -91,7 +92,8 @@
     ],
     "flavor": {
       "text": "Enfle l'œuf d'Ankamaï, Dofus cosmique parfois plein, tel fruit mûr sur l'arbre des constellations."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "abrabottes-incarnam",
@@ -454,7 +456,8 @@
     ],
     "flavor": {
       "text": "Affronter une créature aussi féroce qu'un Tofu demande forcément un minimum d'agressivité."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "aiguille-gluante-incarnam",
@@ -511,7 +514,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "akoua-flesh-incarnam",
@@ -764,7 +768,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "amulette-du-tofu-incarnam",
@@ -801,7 +806,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "anerice-la-shushess-incarnam",
@@ -886,7 +892,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "anneau-de-l-invocateur-incarnam",
@@ -925,7 +932,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "anneau-du-prespic-incarnam",
@@ -989,7 +997,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "anneau-stradamus-incarnam",
@@ -1031,7 +1040,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "arakne-incarnam",
@@ -1177,7 +1187,8 @@
     "notes": [],
     "flavor": {
       "text": "La meilleure façon de tuer le temps pour un Démon des heures ? Regarder les aventuriers s'entretuer !"
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "ares-incarnam",
@@ -1260,7 +1271,8 @@
       "text": "Ne soyez pas timide ! Lancez",
       "attribution": "vous ! Enfin… pas au sens propre bien sûr, cervelle de Iop !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "arty-incarnam",
@@ -1344,7 +1356,8 @@
     "notes": [],
     "flavor": {
       "text": "A l'Auberge du Bouftou Croustillant, la viande est si coriace que même un Iop peut s'y casser les dents !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "ayma-ragie-incarnam",
@@ -1587,7 +1600,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "baguette-larvesque-incarnam",
@@ -1646,7 +1660,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "banni-incarnam",
@@ -1690,7 +1705,8 @@
     "flavor": {
       "text": "bjr ge me sui fé hacker on ma vole tous mes itesm mé ct pa moi alors svp vive les Iosp lol !",
       "attribution": "Message support."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "barbare-incarnam",
@@ -1724,7 +1740,8 @@
       "text": "Crom ! Moâ grand guerrier ! Toi pleurer pour moâ quand moi fracasser toâ !",
       "attribution": "Ronan le Barbare."
     },
-    "spellSchool": "Challenge"
+    "spellSchool": "Challenge",
+    "element": "Neutre"
   },
   {
     "id": "bashers-incarnam",
@@ -1869,7 +1886,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "belgodass-incarnam",
@@ -1991,7 +2009,8 @@
     "flavor": {
       "text": "Si les Iops peuvent bondir aussi loin sur la terre, c'est que leur tête est en grande partie remplie d'air !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "bonne-affaire-incarnam",
@@ -2035,7 +2054,8 @@
     "notes": [],
     "flavor": {
       "text": "Susurrez les mots rabais, liquidation ou solde à l'oreille d'une Enutrofette, et ce sera dans la poche…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "boo-incarnam",
@@ -2111,7 +2131,8 @@
     "flavor": {
       "text": "Je vous recommande la Boon Attitude.",
       "attribution": "Jean Blaire Maralafin."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "boucherie-de-bout-d-chair-incarnam",
@@ -2149,7 +2170,8 @@
     "notes": [],
     "flavor": {
       "text": "Venez donc à la Boucherie de Bout d'chair, très chère ! On y fait bonne chère, et pour pas cher !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "boufballe-incarnam",
@@ -2193,7 +2215,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "boufton-blanc-incarnam",
@@ -2264,7 +2287,8 @@
     "notes": ["Les joueurs sont libres d'imaginer ce qu'est la Bouftonik."],
     "flavor": {
       "text": "DJ Bouftou a inventé la Bouftonik… Le Gang de la Lune en a fait un art."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bouftou-royal-incarnam",
@@ -2442,7 +2466,8 @@
     "equipmentType": "Familier",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bowissette-incarnam",
@@ -2570,7 +2595,8 @@
     "notes": [],
     "flavor": {
       "text": "Une chose est sûre, vos adversaires vont tomber des nues."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bruss-ouilis-incarnam",
@@ -2870,7 +2896,8 @@
     "flavor": {
       "text": "Sur la plage abandonnée, Pichons Verts et Crustacés se sont fait sérieusement brutaliser !",
       "attribution": "Rigide Barjo."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "calin-de-bajaah-incarnam",
@@ -2902,7 +2929,8 @@
     "notes": [],
     "flavor": {
       "text": "Viens voir Papa !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "calt-aclysme-incarnam",
@@ -3060,7 +3088,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "cape-du-vampyre-incarnam",
@@ -3121,7 +3150,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "cape-du-wa-wabbit-incarnam",
@@ -3165,7 +3195,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "capture-d-ames-incarnam",
@@ -3219,7 +3250,8 @@
     "flavor": {
       "text": "Elle ne vous permettra pas de capturer l'âme soeur, mais celle d'une créature, ce n'est déjà pas si mal !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "ceinture-akwadala-incarnam",
@@ -3303,7 +3335,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "ceinture-du-prespic-incarnam",
@@ -3341,7 +3374,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "ceinture-du-vampyre-incarnam",
@@ -3378,7 +3412,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "chacha-noir-incarnam",
@@ -3547,7 +3582,8 @@
     "notes": [],
     "flavor": {
       "text": "C'est dans ces Champs que Francisque Kabroule, tombé malade, composa sa célèbre chanson Colique dans les prés."
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "charge-incarnam",
@@ -3607,7 +3643,8 @@
       "text": "Mes tarifs ? 100 kamas par combat, toutes Charges comprises.",
       "attribution": "Bigou Drif, mercenaire Astrubien."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "chauve-souris-vampyre-incarnam",
@@ -3885,7 +3922,8 @@
     "flavor": {
       "text": "C'est sûr, lorsqu'un Xélor accepte de révéler son âge, àa fout un sacré coup !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "coffre-malveillant-incarnam",
@@ -4042,7 +4080,8 @@
     "flavor": {
       "text": "Ne jamais fâcher un Iop ! Il pourrait devenir méchant ! En faisant la moue ou pire encore : en tapant du pied !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "combat-tactique-incarnam",
@@ -4075,7 +4114,8 @@
     "flavor": {
       "text": "Un combat bien préparé vaut mieux qu'un combat pas préparé du tout.",
       "attribution": "Célèbre proverbe Iop"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "comte-harebourg-incarnam",
@@ -4316,7 +4356,8 @@
       "text": "Pour savoir jusqu'à quel point un Enutrof est incorruptible, demandez",
       "attribution": "vous jusqu'à quel point vous êtes avare."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "coup-critique-incarnam",
@@ -4365,7 +4406,8 @@
     "flavor": {
       "text": "Mieux vaut un coup de boule dans les genoux que le contraire",
       "attribution": "Dicton Iop.Une fois le Coup Critique joué, le bonus de Force est fixé jusqu'à la fin du tour."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "coupure-temporelle-incarnam",
@@ -4422,7 +4464,8 @@
     "flavor": {
       "text": "Voilà ce qui arrive lorsqu'on ne paye pas sa facture à temps !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "couronne-du-wa-wabbit-incarnam",
@@ -4467,7 +4510,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "crapaud-mufle-incarnam",
@@ -4650,7 +4694,8 @@
     "notes": [],
     "flavor": {
       "text": "Lorsque Pi Fenvrak fourra son nez sous l'aisselle d'un Iop, il fit preuve de curiosité dangereuse…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dames-de-bouffe-incarnam",
@@ -4694,7 +4739,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "dark-vlad-incarnam",
@@ -4810,7 +4856,8 @@
     "flavor": {
       "text": "Est",
       "attribution": "ce vraiment le moment de jouer à pierre, papier, ciseaux ?"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "demi-finame-incarnam",
@@ -5043,7 +5090,8 @@
       "text": "On m'a désigné volontaire aux travaux forcés pour avoir volontairement forcé un coffre",
       "attribution": "fort."
     },
-    "spellSchool": "Challenge"
+    "spellSchool": "Challenge",
+    "element": "Neutre"
   },
   {
     "id": "deyko-nexion-incarnam",
@@ -5139,7 +5187,8 @@
       "text": "Je ne vous jette pas la pierre, Pierre !",
       "attribution": "Muskin le Sram, déconcentrant ses adversaires."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "djakky-chwan-incarnam",
@@ -5310,7 +5359,8 @@
     },
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-cawotte-incarnam",
@@ -5366,7 +5416,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-emeraude-incarnam",
@@ -5409,7 +5460,8 @@
     },
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-turquoise-incarnam",
@@ -5567,7 +5619,8 @@
     "flavor": {
       "text": "Avant de pénétrer dans ce donjon, munissez",
       "attribution": "vous d'une pince à linge ou fourrez"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "donjon-des-larves-incarnam",
@@ -5622,7 +5675,8 @@
     "notes": [],
     "flavor": {
       "text": "C'est dans ce donjon, en glissant sur une larve, que Mikel Jarkson fit ses premiers pas de danse."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "donjon-des-tofus-incarnam",
@@ -5680,7 +5734,8 @@
     ],
     "flavor": {
       "text": "Attention : ni de volatiles affamés ! Déconseillé aux Graines de Tournesols et aux Larves en bas âge."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dora-incarnam",
@@ -5895,7 +5950,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dwanlaposh-incarnam",
@@ -5976,7 +6032,8 @@
     "flavor": {
       "text": "Slip du Wabbit GM contre un Dofus, c'est une proposition que vous ne pouvez pas refuser…",
       "attribution": "Al Pachinko."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "echec-critique-incarnam",
@@ -6027,7 +6084,8 @@
     ],
     "flavor": {
       "text": "Jèm Suyvotré détenait un grand nombre d'Échecs Critique. Mais ça n'était rien à côté de ceux d'Ankor Loopé."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "edasse-le-trouble-fete-incarnam",
@@ -6199,7 +6257,8 @@
       "text": "Je te tiens, tu me tiens, par la barboufette",
       "attribution": "euh"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "eratz-le-revendicateur-incarnam",
@@ -6350,7 +6409,8 @@
     "flavor": {
       "text": "Sauvez les bébés Bworks !",
       "attribution": "Slogan culte de Rigide Barjo pour la protection des monstres sans défense."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "exclusion-incarnam",
@@ -6404,7 +6464,8 @@
     "flavor": {
       "text": "Tu n'es paaas ma meilleures amiiie !",
       "attribution": "Glaurie, ménestrelle longtemps exclue des cours de récré."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "experience-d-otomai-incarnam",
@@ -6445,7 +6506,8 @@
     ],
     "flavor": {
       "text": "Contre les problèmes de digestion, faites comme Ogrest, envoyez votre estomac dans une autre dimension."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "fecaline-la-sage-incarnam",
@@ -6546,7 +6608,8 @@
     "flavor": {
       "text": "Beaucoup aiment le Wabbit à la sauce chasseur. Les Wabbits, eux, préfèrent le chasseur à la sauce Cawotte."
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "flamiche-incarnam",
@@ -6600,7 +6663,8 @@
     "flavor": {
       "text": "Trop salissant, Flamquiche fut remplacé par ce sort. Une manière plus subtile de coller des tartes."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "flaqueux-incarnam",
@@ -6691,7 +6755,8 @@
     "flavor": {
       "text": "Blizzard ? Vous avez dit Blizzard ? Comme c'est Blizzard…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "fleche-chercheuse-incarnam",
@@ -6738,7 +6803,8 @@
     "flavor": {
       "text": "Le sort préféré des aventuriers qui n'ont pas envie de se fatiguer. Ou des gros fainéants comme vous voulez."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "fleche-d-immolation-incarnam",
@@ -6797,7 +6863,8 @@
     "flavor": {
       "text": "Une technique ultra moderne qui consiste à faire un magnifique feu de bois… sans bois."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "fletrissement-incarnam",
@@ -6851,7 +6918,8 @@
     "flavor": {
       "text": "Un sort popularisé par Chair, la ménestrelle Xélor, le jour où elle perdit ses bandelettes en combat."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "fofy-fafie-incarnam",
@@ -6941,7 +7009,8 @@
     "notes": [],
     "flavor": {
       "text": "Aaah la Forêt d'Astrub… Ses arbres, ses fleurs… Ses arbres, ses… fleurs… Tout ça, quoi !"
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "forge-de-deudoine-incarnam",
@@ -6979,7 +7048,8 @@
     "notes": [],
     "flavor": {
       "text": "Dasn le jeu online DOFUS, le personnage Deudoiné situé à AStrub permet aux joueurs d'apprendre le métier de Forgeron."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "fourberie-de-djaul-incarnam",
@@ -7011,7 +7081,8 @@
     "notes": [],
     "flavor": {
       "text": "Dites à Djaul qu'il est fourbe, il vous répondra que c'est la moindre des choses pour un démon tel que lui…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "furie-incarnam",
@@ -7066,7 +7137,8 @@
       "text": "Quoi ? T'as craché dans mon Iop ???",
       "attribution": "Sultima."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "gambit-incarnam",
@@ -7108,7 +7180,8 @@
     "flavor": {
       "text": "Les jeux sont faits, rien ne va plus !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "gelamu-incarnam",
@@ -7167,7 +7240,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "gelano-incarnam",
@@ -7206,7 +7280,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "gelaxieme-dimension-incarnam",
@@ -7255,7 +7330,8 @@
     "notes": [],
     "flavor": {
       "text": "La dimension idéale pour ceux qui aiment les sucreries… Gare aux Caries Royales !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "gelee-bleue-incarnam",
@@ -7543,7 +7619,8 @@
     "flavor": {
       "text": "Pas besoin d'être adroit pour enflammer les pistes de danse : ce Glyphe s'en charge pour vous !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "glyphe-revigorant-incarnam",
@@ -7586,7 +7663,8 @@
     "flavor": {
       "text": "Un petit coup de barre ? Un Glyphe, et ça repart !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "gobelinet-incarnam",
@@ -7806,7 +7884,8 @@
     "notes": [],
     "flavor": {
       "text": "Sans petite laine, au lit reniflant : Mère Nature couchée sur bouillote, s'est fait un grog."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "gros-smare-incarnam",
@@ -8112,7 +8191,8 @@
     "flavor": {
       "text": "J'ai toujours plus d'un tour dans mon sac ! Pas vrai, Klodia ?",
       "attribution": "Divad Couplefil, magicien des temps modernes."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "havre-sac-du-bouftou-incarnam",
@@ -8139,7 +8219,8 @@
     "notes": [],
     "flavor": {
       "text": "Les aventuriers à l'odorat peu développé sauront apprécier cette laine de Bouftou de premier choix !"
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "havre-sac-du-prespic-incarnam",
@@ -8167,7 +8248,8 @@
     "flavor": {
       "text": "Ce Havre",
       "attribution": "Sac très désagréable au toucher conviendra aux Osamodas soucieux de leur confort intérieur."
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "havre-sac-du-tofu-incarnam",
@@ -8194,7 +8276,8 @@
     "notes": [],
     "flavor": {
       "text": "100% pures plumes de Tofu : de quoi s'aménager un petit nid douiller à transporter partout !"
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "havre-sac-du-wabbit-incarnam",
@@ -8218,7 +8301,8 @@
     "effects": [],
     "keywords": [],
     "artists": ["Sandrine Vanneste (Alhera)"],
-    "notes": []
+    "notes": [],
+    "element": "Eau"
   },
   {
     "id": "humour-de-pouchecot-incarnam",
@@ -8259,7 +8343,8 @@
     ],
     "flavor": {
       "text": "Si Pouchecot est surnommé le Grand Fruité, c'est que ses facéties peuvent donner la banane à n'importe qui."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "hynd-yanajone-incarnam",
@@ -8430,7 +8515,8 @@
     "flavor": {
       "text": "J'ai tellement marché lors de mes aventures que j'ai fini par avoir un ongle incarnamé !",
       "attribution": "Lykhen Lesurviven."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "intouchable-incarnam",
@@ -8464,7 +8550,8 @@
       "text": "Personne ne daigne me toucher. Pourquoi ? PArce que personne ne peut me sentir !",
       "attribution": "Pépé la Moufett."
     },
-    "spellSchool": "Challenge"
+    "spellSchool": "Challenge",
+    "element": "Neutre"
   },
   {
     "id": "invocation-incarnam",
@@ -8497,7 +8584,8 @@
     "flavor": {
       "text": "Original comme épaulette, vous ne trouvez pas ? Le souci c'est qu'il faut régulièrement changer de bras."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "jeunesse-d-ogrest-incarnam",
@@ -8554,7 +8642,8 @@
     ],
     "flavor": {
       "text": "C'est suite à une expérience de l'alchimiste Otomaï qu'Ogrest naquit de l'Ogrine, la forme solide du Wakfu."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "jice-aouaire-incarnam",
@@ -9517,7 +9606,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "la-complainte-de-lykhen-incarnam",
@@ -9544,7 +9634,8 @@
       "text": "Réaction. Gagnez 1 XP.Et vous, survivrez",
       "attribution": "vous au récit de ses longues et ennuyeuses péripéties ?"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "la-derniere-mode-incarnam",
@@ -9597,7 +9688,8 @@
     "flavor": {
       "text": "Grâce à sa nouvelle collection de Taïun Kostar, vous voilà habillé pour l'hiver !"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "la-folle-incarnam",
@@ -9673,7 +9765,8 @@
     "notes": [],
     "flavor": {
       "text": "Allister capture Uk'Not'Allag en le gavant de tant de sang de Bouftou que le démon en fit une indigestion !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "la-sacrifiee-incarnam",
@@ -9716,7 +9809,8 @@
     "flavor": {
       "text": "Il y en a qui s'éclatent à jouer à la poupée… et il y a des poupées qui jouent à éclater les autres."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "laboratoire-d-otomai-incarnam",
@@ -9760,7 +9854,8 @@
     "notes": [],
     "flavor": {
       "text": "Dans le labo d'Oto, y'a de drôles d'animaux qui vous mangent les boyaux…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "lame-ourduvis-incarnam",
@@ -9851,7 +9946,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "larve-bleue-incarnam",
@@ -10156,7 +10252,8 @@
     "flavor": {
       "text": "Dans le jeu online DOFUS, il s'agit d'un Challenge en combat rapportant un bonus d'XP et de butin."
     },
-    "spellSchool": "Challenge"
+    "spellSchool": "Challenge",
+    "element": "Neutre"
   },
   {
     "id": "lisa-modas-incarnam",
@@ -10241,7 +10338,8 @@
     "notes": [],
     "flavor": {
       "text": "Le secret de Ruel pour des auréoles aussi parfaites ? Ne pas utiliser le Chacha machine !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "maitre-bolet-incarnam",
@@ -10405,7 +10503,8 @@
     ],
     "flavor": {
       "text": "A force de la Bière d'Emelka, on finit forcément par avoir la tête comme une citrouille !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "marcassin-incarnam",
@@ -10566,7 +10665,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "merelyne-manro-incarnam",
@@ -10727,7 +10827,8 @@
     "notes": [],
     "flavor": {
       "text": "Pour éviter que les enfants ne se perdent dans la mine, son entrée avait été interdite aux mineurs !"
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "minotoror-incarnam",
@@ -10854,7 +10955,8 @@
     "notes": [],
     "flavor": {
       "text": "A vendre : Manuel d'orthographe pour les iops. Très peu servi…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "montrakristo-incarnam",
@@ -11068,7 +11170,8 @@
       "text": "N'ayez pas peur d'en abuser ! Avec un peu de chance, vous arriverez peut",
       "attribution": "être à effrayer un Bouftou."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "mot-de-purgation-incarnam",
@@ -11110,7 +11213,8 @@
     "flavor": {
       "text": "Rien de tel qu'une petite purge pour repartir au combat le cœur léger ! Le ventre aussi, d'ailleurs…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "mot-soignant-incarnam",
@@ -11161,7 +11265,8 @@
       "text": "Un soigneur sachant soigner doit savoir soigner un saigneur avec soin.",
       "attribution": "Précepte Eniripsa."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "mystique-incarnam",
@@ -11204,7 +11309,8 @@
       "text": "La meilleure tactique pour paraître mystique, c'est encore d'user de ses pouvoirs magiques !",
       "attribution": "Le Mage Ax."
     },
-    "spellSchool": "Challenge"
+    "spellSchool": "Challenge",
+    "element": "Neutre"
   },
   {
     "id": "nomekop-le-crapoteur-incarnam",
@@ -11304,7 +11410,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "odorat-incarnam",
@@ -11346,7 +11453,8 @@
     "flavor": {
       "text": "Au combat, le port de la laine de Bouftou devrait vraiment être prohibé…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "opee-tissoin-incarnam",
@@ -11666,7 +11774,8 @@
     "notes": [],
     "flavor": {
       "text": "De quoi vous donner un maximum d'énergie pour coller un maximum de pains !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "pandatak-incarnam",
@@ -11725,7 +11834,8 @@
       "text": "Ce sort fait polémique. Généralement, quand les Pandawas Pandattakent, Rigide Barjo contre",
       "attribution": "attaque !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "pandrista-incarnam",
@@ -11778,7 +11888,8 @@
     ],
     "flavor": {
       "text": "On lui avait pourtant dit de ne pas abuser des Dragées Fulca de Nelli…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "pantoufles-du-tofu-incarnam",
@@ -11829,7 +11940,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "parchemin-blanc-incarnam",
@@ -11872,7 +11984,8 @@
     "flavor": {
       "text": "Avant d'avoir la crampe de l'écrivain, le poète Broidelair a souvent connu l'angoisse du Parchemin Blanc."
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "parchemin-d-agilite-incarnam",
@@ -11925,7 +12038,8 @@
     "flavor": {
       "text": "Un parchemin qui vous rendra beaucoup plus agile que vous ne l'êtes sur une piste de danse."
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "parchemin-d-intelligence-incarnam",
@@ -11980,7 +12094,8 @@
     "flavor": {
       "text": "Ce Parchemin vous rendra plus intelligent… à condition de l'être déjà suffisamment pour le lire !"
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "parchemin-de-chance-incarnam",
@@ -12033,7 +12148,8 @@
       "text": "Avec un peu de Chance, vous arriverez peut",
       "attribution": "être à déchiffrer ce Parchemin !"
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "parchemin-de-force-incarnam",
@@ -12087,7 +12203,8 @@
     "flavor": {
       "text": "L'incroyable Bouze Bannère devint verte de rage quand elle comprit qu'elle avait gaspillé tous ses Parchemins."
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "passion-d-ulgrude-incarnam",
@@ -12119,7 +12236,8 @@
     "notes": [],
     "flavor": {
       "text": "Même Ulgrude du Tonnerre n'échappe pas au coup de foudre : le charme de Jiva l'a littéralement électrisé."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "pelle-mechba-incarnam",
@@ -12188,7 +12306,8 @@
     "flavor": {
       "text": "Pour briser la glace, rien de tel qu'un bon patin ! C'est le genre de truc qui la fait fondre…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "piou-bleu-incarnam",
@@ -12446,7 +12565,8 @@
       "text": "Piou pioupiou ! Pioupiou piou piou pioupiou ! Piou pioupiou !",
       "attribution": "Proverbe Piou."
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "pissenlit-diabolique-incarnam",
@@ -12763,7 +12883,8 @@
     "flavor": {
       "text": "Dans le port de Madrestam, y a des Pichons qui sentent, la marée descendante, au large de Madrestam.",
       "attribution": "Jark Broul."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "porter-incarnam",
@@ -12796,7 +12917,8 @@
     "flavor": {
       "text": "Une vieille technique qu'utilisent les Pandawas pour se remettre les vertèbres en place après une nuit agitée."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "potion-d-oubli-de-sort-incarnam",
@@ -12828,7 +12950,8 @@
     "notes": [],
     "flavor": {
       "text": "Une chance de réparer vos erreurs … ou d'en commettre de nouvelles ! C'est ce qu'on appelle l'ironie du sort."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "potion-de-rappel-incarnam",
@@ -12860,7 +12983,8 @@
     "notes": [],
     "flavor": {
       "text": "Elle peut s'avérer très utile… si vous vous rappelez dans quel cas il faut la boire !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "poudre-d-eniripsa-incarnam",
@@ -12905,7 +13029,8 @@
     "notes": [],
     "flavor": {
       "text": "Dans le jeu online DOFUS, la poudre d'Eniripsa est idéale pour soigner un Familier épuisé par un combat."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "poum-ondacie-incarnam",
@@ -13075,7 +13200,8 @@
       "text": "Toute première fois, toute toute première fois !",
       "attribution": "Jeanne Alamass."
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "prespic-royal-incarnam",
@@ -13263,7 +13389,8 @@
     "flavor": {
       "text": "La pêche est bonne ! Pour une fois, c'est pas un thon !",
       "attribution": "Zorisse l'Enutrof."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "protege-incarnam",
@@ -13296,7 +13423,8 @@
     "flavor": {
       "text": "On ne le dira jamais assez : sortez couvert ! Particulièrement si vous êtes un Osamodas…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "puissance-d-ogrest-incarnam",
@@ -13342,7 +13470,8 @@
     "notes": [],
     "flavor": {
       "text": "Il est grand, il est puissant, il est beau… Euh, non, il n'est pas beau. Mais ne lui dites pas !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "queues-de-chatons-incarnam",
@@ -13455,7 +13584,8 @@
     "flavor": {
       "text": "Le seul sort qui rivalise avec l'agilité d'un Pandawa qui doit rattraper une chope de bière dans le noir."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "repos-incarnam",
@@ -13501,7 +13631,8 @@
     "flavor": {
       "text": "Rien de tel qu'une sieste pour retrouver la forme après un combat !",
       "attribution": "Méthode approuvée par le dieu Sadida."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "repulsion-incarnam",
@@ -13544,7 +13675,8 @@
     "notes": [],
     "flavor": {
       "text": "Certaines personnes sont si repoussantes qu'elles en deviennent de véritables attractions !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "reviens-incarnam",
@@ -13600,7 +13732,8 @@
       "text": "Ne me quitte pas !",
       "attribution": "Chanson de Jark Broul l'Osamodas à son Bouftou préféré."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "roi-gelax-incarnam",
@@ -13727,7 +13860,8 @@
     "notes": [],
     "flavor": {
       "text": "Ogrest le confesse : les fesses des jolies princesses en mal de caresses ont toujours été sa faiblesse…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "ronce-incarnam",
@@ -13774,7 +13908,8 @@
     "flavor": {
       "text": "Le sort favori d'Aga Dou, un Sadida qui a toujours su tomber à pic pour résoudre les problèmes épineux."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "sacrifice-incarnam",
@@ -13807,7 +13942,8 @@
     "flavor": {
       "text": "Remercier un Sacrieur de s'être sacrifié ? Et pourquoi pas torturer un Osamodas !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "salle-des-tresors-de-ruel-incarnam",
@@ -13845,7 +13981,8 @@
     "notes": [],
     "flavor": {
       "text": "Il paraît qu'elle est plus remplie qu'une panse de Bouftou et mieux gardée qu'un nid de Tofus."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "salle-des-trophees-de-kabrok-incarnam",
@@ -13903,7 +14040,8 @@
     "notes": [],
     "flavor": {
       "text": "Non, il ne s'agit pas des toilettes de Kabrok, elles aussi souvent remplies de jolis trophées."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "savoir-des-objets-incarnam",
@@ -13971,7 +14109,8 @@
       "text": "J'ai 100 kamas. Je veux acheter un Kaskofu sans dépenser une seule pièce. Comment faire ?",
       "attribution": "Problème Enutrof."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "scaracape-blanche-incarnam",
@@ -14012,7 +14151,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "scaracoiffe-blanche-incarnam",
@@ -14094,7 +14234,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "selk-ator-incarnam",
@@ -14442,7 +14583,8 @@
     "flavor": {
       "text": "Ne vous approchez pas du stade si vous ne voulez pas finir comme papa !",
       "attribution": "Boufette à ses jeunes Bouftons Blancs."
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "strategie-de-groupe-incarnam",
@@ -14494,7 +14636,8 @@
     "flavor": {
       "text": "Dans le jeu online WAKFU, seuls les membres de votre groupe peuvent vous suivre en donjon. Choisissez",
       "attribution": "les donc avec soin !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "string-du-mulou-incarnam",
@@ -14640,7 +14783,8 @@
     "notes": [],
     "flavor": {
       "text": "Vanilla la Sram n'a jamais laissé fuir aucun de ses ennemis. C'était quand même une sacrée nana !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "tempete-de-wakfu-incarnam",
@@ -14685,7 +14829,8 @@
     "notes": [],
     "flavor": {
       "text": "Rompant l'équilibre des couleurs, nous cherchons en vain les motifs dans cette purée d'absence."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-cra-incarnam",
@@ -14734,7 +14879,8 @@
     "notes": [],
     "flavor": {
       "text": "Pour vous rendre au Temple Crâ, suivez les flèches !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-feca-incarnam",
@@ -14864,7 +15010,8 @@
     "notes": [],
     "flavor": {
       "text": "Beaucoup se sont demandé ce qu'à fait Hyne au Temple Féca. Aujourd'hui encore la question reste insoluble."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-iop-incarnam",
@@ -14914,7 +15061,8 @@
     "notes": [],
     "flavor": {
       "text": "Le temple Iop est toujours plein à craquer… contrairement à la boîte crânienne de ses disciples."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-xelor-incarnam",
@@ -14964,7 +15112,8 @@
     "flavor": {
       "text": "Au Temple Xélor, mieux vaut arriver à l'heure si l'on ne veut pas être en retard.",
       "attribution": "Koltard le Iop."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "tirlangue-portey-incarnam",
@@ -15278,7 +15427,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "tofu-celeste-incarnam",
@@ -15472,7 +15622,8 @@
     "notes": [],
     "flavor": {
       "text": "Elles ne sentent pas la Rose Démoniaque, mais vous êtes sûr de toujours y trouver un petit cadeau."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "tolot-incarnam",
@@ -15789,7 +15940,8 @@
     "flavor": {
       "text": "Que tous ceux qui ont envie d'aller au petit coin en profitent, c'est le moment ou jamais !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "tueuse-de-chenes-incarnam",
@@ -15886,7 +16038,8 @@
     "flavor": {
       "text": "Malgré ses habitants lunatiques, cette île est un endroit parfait pour passer sa Moon de Miel !"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "vague-tournoyante-incarnam",
@@ -15929,7 +16082,8 @@
     "flavor": {
       "text": "La Vague Tournoyante élimine toutes les taches, même les plus tenaces ! Oui oui, les Iops aussi !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "vaillance-de-jiva-incarnam",
@@ -15961,7 +16115,8 @@
     "notes": [],
     "flavor": {
       "text": "A cœur vaillant rien d'impossible. Gardienne de Javian, Jiva n'est pas du genre à avoir froid aux yeux…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "vampyro-incarnam",
@@ -16134,7 +16289,8 @@
     "flavor": {
       "text": "Quoi ma Goule, qu'est",
       "attribution": "ce qu'elle a ma Goule ?"
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "vol-de-vie-incarnam",
@@ -16169,7 +16325,8 @@
     "flavor": {
       "text": "La bourse ou la vie ? Peu importe ce que vous répondez, les Srams vous prennent généralement les deux."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "vrombyx-incarnam",
@@ -16377,7 +16534,8 @@
     "flavor": {
       "text": "Qui m'aime me \"ZAAP\"…",
       "attribution": "SebsokK le Sacrieur utilisant un Zaap."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "zatoishwan-incarnam",

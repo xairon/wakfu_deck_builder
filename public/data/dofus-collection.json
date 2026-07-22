@@ -187,7 +187,8 @@
     ],
     "flavor": {
       "text": "Affronter une créature aussi féroce qu'un Tofu demande forcément un minimum d'agressivité…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "amal-odoua-dofus-collection",
@@ -357,7 +358,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "anneau-de-bouze-le-clerc-dofus-collection",
@@ -393,7 +395,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "anneau-du-prespic-dofus-collection",
@@ -457,7 +460,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "arakne-dofus-collection",
@@ -1132,7 +1136,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "cape-du-tofu-dofus-collection",
@@ -1261,7 +1266,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "chacha-noir-dofus-collection",
@@ -1931,7 +1937,8 @@
     ],
     "flavor": {
       "text": "Mieux vaut un coup de boule dans les genoux que le contraire — Dicton Iop.Exemple : vous jouez Coup critique sur votre Vrombyx. Il vous reste 5 cartes en main. La Force du Vrombyx est donc de 10 (5 + 5). Pendant le tour, vous jouez encore une carte de votre main. La Force du Vrombyx devient alors égale à 9 (4 + 5)."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "craqueboule-dofus-collection",
@@ -2455,7 +2462,8 @@
     },
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-ebene-dofus-collection",
@@ -2497,7 +2505,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-emeraude-dofus-collection",
@@ -2540,7 +2549,8 @@
     },
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-ivoire-dofus-collection",
@@ -2598,7 +2608,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-ocre-dofus-collection",
@@ -2650,7 +2661,8 @@
     },
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-pourpre-dofus-collection",
@@ -2718,7 +2730,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-turquoise-dofus-collection",
@@ -2893,7 +2906,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "echec-critique-dofus-collection",
@@ -2934,7 +2948,8 @@
     ],
     "flavor": {
       "text": "Jèm Suyvotré détenait un grand nombre d'Échecs Critiques. Mais ça n'était rien à côté de ceux d'Ankor Loopé."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "epouvantail-dofus-collection",
@@ -4231,7 +4246,8 @@
     "notes": [],
     "flavor": {
       "text": "Évitez de faire le malin alors que vous savez à peine aligner trois sorts ! Sinon, gare à la déculottée !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "otomai-dofus-collection",
@@ -4404,7 +4420,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "parchemin-blanc-dofus-collection",
@@ -4447,7 +4464,8 @@
     "flavor": {
       "text": "Avant d'avoir la crampe de l'écrivain, le poète Broidelair a souvent connu l'angoisse du Parchemin Blanc."
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "pissenlit-diabolique-dofus-collection",
@@ -5223,6 +5241,7 @@
     "notes": [],
     "flavor": {
       "text": "Qui m'aime me *ZAAP*… — SebsokK le Sacrieur utilisant un Zaap."
-    }
+    },
+    "element": "Neutre"
   }
 ]

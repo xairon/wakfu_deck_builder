@@ -3405,9 +3405,15 @@ function compileDiscardCountCost(
  * Effets d'apparition automatisables de cette carte : forme compilée des
  * données si présente, sinon re-parsing strict du texte.
  */
-/** Élément d'une carte pour les Dommages de ses effets (410.1). */
+/** Élément d'une carte pour les Dommages de ses effets (410.1).
+ *  Priorité : orbe imprimé `card.element` → symbole de Force → Niveau. */
 export function effectSourceElement(card: Card): string {
-  return card.stats?.force?.element ?? card.stats?.niveau?.element ?? "Neutre";
+  return (
+    card.element ??
+    card.stats?.force?.element ??
+    card.stats?.niveau?.element ??
+    "Neutre"
+  );
 }
 
 /**

@@ -121,6 +121,8 @@ interface RawCard {
   name?: string;
   mainType?: string;
   metier?: string[];
+  // Élément imprimé (orbe « Élément : [X] ») — Actions/Équipements/Zones/…
+  element?: string;
   // Override d'Élément de Ressource produit (dérivé — Pious colorés). Cf.
   // promoteResourceProducerTrait / resourceElement (runtime).
   producesElement?: string;
@@ -132,10 +134,11 @@ interface RawCard {
   verso?: { stats?: RawStats; effects?: RawEffect[]; keywords?: RawKeyword[] };
 }
 
-/** Élément des Dommages des effets de la carte (410.1), après normalisation. */
+/** Élément des Dommages des effets de la carte (410.1), après normalisation.
+ *  Priorité : orbe imprimé `card.element` → symbole de Force → Niveau. */
 function sourceElementOf(card: RawCard): string {
   const s = card.stats ?? card.recto?.stats;
-  return s?.force?.element ?? s?.niveau?.element ?? "Neutre";
+  return card.element ?? s?.force?.element ?? s?.niveau?.element ?? "Neutre";
 }
 
 const stats = {

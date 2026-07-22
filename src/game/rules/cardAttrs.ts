@@ -82,7 +82,9 @@ export function requiredElement(card: Card): string | null {
 
 /**
  * Élément produit quand la carte s'incline (1337/8764), normalisé :
- * l'Élément de la carte = symbole de Force ; repli sur l'élément de Niveau.
+ * l'Élément IMPRIMÉ de la carte = l'orbe `card.element` (« Élément : [X] », porté
+ * par les Actions/Équipements/Zones/Salles/Dofus/Protecteurs/Havre-Sacs) ; repli
+ * sur le symbole de Force (Alliés/Héros), puis sur l'élément de Niveau.
  * NB : c'est AUSSI l'Élément des Dommages de combat (410.1, `damageElementOf`)
  * et l'Élément imprimé pour les filtres de pile (« une carte [X] ») — il reste
  * l'Élément IMPRIMÉ, sans override de production colorée (cf. `resourceElement`).
@@ -90,10 +92,14 @@ export function requiredElement(card: Card): string | null {
 export function producedElement(card: Card): string {
   if (isHeroCard(card)) {
     return normElement(
-      card.recto?.stats?.force?.element ?? card.recto?.stats?.niveau?.element,
+      card.element ??
+        card.recto?.stats?.force?.element ??
+        card.recto?.stats?.niveau?.element,
     );
   }
-  return normElement(card.stats?.force?.element ?? card.stats?.niveau?.element);
+  return normElement(
+    card.element ?? card.stats?.force?.element ?? card.stats?.niveau?.element,
+  );
 }
 
 /**

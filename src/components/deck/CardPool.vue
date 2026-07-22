@@ -243,7 +243,13 @@ const filterElements = computed(() => {
   // est insensible à la casse (cf. filterCards), l'affichage reste capitalisé.
   const set = new Set(
     cardStore.cards
-      .map((c) => c.stats?.niveau?.element || c.stats?.force?.element || "")
+      .map(
+        (c) =>
+          c.element ||
+          c.stats?.force?.element ||
+          c.stats?.niveau?.element ||
+          "",
+      )
       .filter(Boolean),
   );
   return Array.from(set).sort();
@@ -313,7 +319,11 @@ function addBlockReason(card: Card): string {
 }
 
 function elementColor(card: Card): string {
-  const el = card.stats?.niveau?.element || card.stats?.force?.element || null;
+  const el =
+    card.element ||
+    card.stats?.force?.element ||
+    card.stats?.niveau?.element ||
+    null;
   return elementColorByEl(el?.toString());
 }
 

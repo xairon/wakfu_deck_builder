@@ -97,10 +97,12 @@ export const useDeckStore = defineStore("deck", () => {
     const distribution: Record<string, number> = {};
 
     mainCards.value.forEach((deckCard) => {
-      // Déterminer l'élément de la carte à partir de ses attributs
+      // Élément imprimé : orbe `card.element` → Force → Niveau (le Niveau seul
+      // est souvent Neutre = coût libre et masquerait la vraie couleur).
       const element =
-        deckCard.card.stats?.niveau?.element ||
+        deckCard.card.element ||
         deckCard.card.stats?.force?.element ||
+        deckCard.card.stats?.niveau?.element ||
         "Neutre";
       distribution[element] = (distribution[element] || 0) + deckCard.quantity;
     });

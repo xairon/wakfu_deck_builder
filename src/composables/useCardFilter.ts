@@ -170,6 +170,9 @@ export const filterCards = useMemoize(
       const el = element.toLowerCase();
       filtered = filtered.filter(
         (card) =>
+          // orbe imprimé `card.element` (Actions/Équipements/Zones/… au Niveau
+          // souvent Neutre) OU symbole de Force OU élément de Niveau.
+          card.element?.toLowerCase() === el ||
           card.stats?.niveau?.element?.toLowerCase() === el ||
           card.stats?.force?.element?.toLowerCase() === el,
       );
