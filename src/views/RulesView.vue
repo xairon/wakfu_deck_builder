@@ -6,6 +6,9 @@
       <h1 class="mt-4 font-display text-4xl leading-[1.05] sm:text-5xl">
         Règles &amp; Glossaire
       </h1>
+      <router-link to="/regles/officielles" class="link link-primary">
+        Consulter les règles officielles complètes →
+      </router-link>
       <p class="mt-5 max-w-2xl text-lg leading-relaxed text-base-content/75">
         {{ rulesIntro }}
       </p>

@@ -78,6 +78,12 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
+      path: "/regles/officielles",
+      name: "rulesOfficial",
+      component: () => import("@/views/RulesOfficialView.vue"),
+      meta: { guest: true },
+    },
+    {
       path: "/errata",
       name: "errata",
       component: () => import("@/views/ErrataView.vue"),
