@@ -43,29 +43,58 @@ function check(label, ok, detail = "") {
   if (!ok) failures++;
 }
 
+/**
+ * Une écriture est « bloquée » SI ET SEULEMENT SI la base a répondu et a refusé.
+ * `status === 0` signifie qu'on n'a pas pu la joindre : ce n'est PAS une preuve
+ * que l'écriture est interdite, et le traiter comme un succès transformerait une
+ * panne réseau en faux feu vert de sécurité.
+ */
+function isBlocked(res) {
+  return res.status >= 400;
+}
+
+/**
+ * Un échec RÉSEAU n'est pas un verdict de sécurité : si l'URL est fausse ou
+ * l'hôte injoignable, il faut le dire clairement et sortir en erreur, JAMAIS
+ * laisser croire qu'un contrôle est passé. On distingue donc `status: 0`
+ * (contact impossible) d'un vrai code HTTP.
+ */
+let networkFailures = 0;
+
 async function rest(path, { method = "GET", token = ANON, body } = {}) {
-  const res = await fetch(`${URL}/rest/v1/${path}`, {
-    method,
-    headers: {
-      apikey: ANON,
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      Prefer: "return=minimal",
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  return { status: res.status, text: await res.text() };
+  try {
+    const res = await fetch(`${URL}/rest/v1/${path}`, {
+      method,
+      headers: {
+        apikey: ANON,
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return { status: res.status, text: await res.text() };
+  } catch (err) {
+    networkFailures++;
+    return { status: 0, text: `réseau injoignable : ${err?.message ?? err}` };
+  }
 }
 
 async function signIn(email, password) {
-  const res = await fetch(`${URL}/auth/v1/token?grant_type=password`, {
-    method: "POST",
-    headers: { apikey: ANON, "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!res.ok) return null;
-  const j = await res.json();
-  return { token: j.access_token, userId: j.user?.id };
+  try {
+    const res = await fetch(`${URL}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: { apikey: ANON, "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) return null;
+    const j = await res.json();
+    return { token: j.access_token, userId: j.user?.id };
+  } catch (err) {
+    networkFailures++;
+    console.error(`  Connexion impossible (réseau) : ${err?.message ?? err}`);
+    return null;
+  }
 }
 
 console.log("\n── Lecture publique (anon) ──────────────────");
@@ -89,21 +118,17 @@ console.log("\n── Écriture anonyme : tout doit échouer ─────");
     method: "POST",
     body: { number: "__rls_probe__", body: "x" },
   });
-  check(
-    "anon N'ÉCRIT PAS rules_overrides",
-    w1.status >= 400,
-    `HTTP ${w1.status}`,
-  );
+  check("anon N'ÉCRIT PAS rules_overrides", isBlocked(w1), `HTTP ${w1.status}`);
   const w2 = await rest("card_errata", {
     method: "POST",
     body: { card_id: "__rls_probe__", summary: "x" },
   });
-  check("anon N'ÉCRIT PAS card_errata", w2.status >= 400, `HTTP ${w2.status}`);
+  check("anon N'ÉCRIT PAS card_errata", isBlocked(w2), `HTTP ${w2.status}`);
   const w3 = await rest("admin_audit", {
     method: "POST",
     body: { action: "create", entity: "errata", entity_key: "x" },
   });
-  check("anon N'ÉCRIT PAS le journal", w3.status >= 400, `HTTP ${w3.status}`);
+  check("anon N'ÉCRIT PAS le journal", isBlocked(w3), `HTTP ${w3.status}`);
 }
 
 const email = process.env.TEST_EMAIL;
@@ -129,7 +154,7 @@ if (!email || !password) {
     });
     check(
       "non-admin N'ÉCRIT PAS rules_overrides",
-      w1.status >= 400,
+      isBlocked(w1),
       `HTTP ${w1.status}`,
     );
     const w2 = await rest("card_errata", {
@@ -139,7 +164,7 @@ if (!email || !password) {
     });
     check(
       "non-admin N'ÉCRIT PAS card_errata",
-      w2.status >= 400,
+      isBlocked(w2),
       `HTTP ${w2.status}`,
     );
 
@@ -151,7 +176,7 @@ if (!email || !password) {
     });
     check(
       "ne peut PAS se promouvoir par UPDATE",
-      p1.status >= 400,
+      isBlocked(p1),
       `HTTP ${p1.status}`,
     );
     const p2 = await rest("profiles", {
@@ -161,23 +186,21 @@ if (!email || !password) {
     });
     check(
       "ne peut PAS se promouvoir par INSERT",
-      p2.status >= 400,
+      isBlocked(p2),
       `HTTP ${p2.status}`,
     );
 
     console.log("\n── RPC de rôle : réservée à l'owner ─────────");
-    const rpc = await fetch(`${URL}/rest/v1/rpc/set_user_role`, {
+    // Passe par `rest()` comme tout le reste : un fetch brut ici échapperait au
+    // try/catch et ferait planter le script sur une simple coupure réseau.
+    const rpc = await rest("rpc/set_user_role", {
       method: "POST",
-      headers: {
-        apikey: ANON,
-        Authorization: `Bearer ${t}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ p_user_id: session.userId, p_role: "admin" }),
+      token: t,
+      body: { p_user_id: session.userId, p_role: "admin" },
     });
     check(
       "non-owner NE PEUT PAS appeler set_user_role",
-      rpc.status >= 400,
+      isBlocked(rpc),
       `HTTP ${rpc.status}`,
     );
 
@@ -194,9 +217,16 @@ if (!email || !password) {
   }
 }
 
+if (networkFailures > 0) {
+  console.error(
+    `\n⚠️  ${networkFailures} appel(s) n'ont pas pu joindre la base (URL ou réseau).\n` +
+      "   AUCUNE conclusion de sécurité ne peut être tirée de ce run.",
+  );
+}
+
 console.log(
-  failures === 0
+  failures === 0 && networkFailures === 0
     ? "\n✅ Toutes les garanties de sécurité tiennent.\n"
     : `\n❌ ${failures} garantie(s) EN DÉFAUT — ne pas déployer.\n`,
 );
-process.exit(failures === 0 ? 0 : 1);
+process.exit(failures === 0 && networkFailures === 0 ? 0 : 1);
