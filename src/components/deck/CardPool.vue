@@ -129,7 +129,7 @@
             <!-- Badge « Erraté » : signal visible sans ouvrir la fiche -->
             <ErrataBadge
               :card-id="card.id"
-              class="absolute bottom-[5px] left-[5px] z-10"
+              class="absolute bottom-[28px] left-[5px] z-10"
             />
             <!-- Bandeau loupe au survol -->
             <span

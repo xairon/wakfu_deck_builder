@@ -38,10 +38,7 @@
         </span>
 
         <!-- Badge « Erraté » : signal visible sans ouvrir la fiche -->
-        <ErrataBadge
-          :card-id="card.id"
-          class="absolute bottom-1 right-1 z-10"
-        />
+        <ErrataBadge :card-id="card.id" class="absolute top-1 right-1 z-10" />
 
         <!-- Pastille de possession / playset (permanente, lisible au tactile) -->
         <span
