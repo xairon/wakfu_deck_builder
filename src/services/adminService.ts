@@ -114,27 +114,64 @@ export async function setUserRole(
   return { ok: true };
 }
 
-/** Journal, du plus récent au plus ancien. Vide si non autorisé (RLS). */
+/**
+ * Journal, du plus récent au plus ancien. Vide si non autorisé (RLS).
+ *
+ * Dégradation : requête en échec / exception → liste vide, jamais
+ * d'exception (comme les services de lecture `rulesService`/`errataService` —
+ * « ne jamais lever » est une exigence dure de ce projet). Un échec est
+ * journalisé en `console.warn` : sans ça, une table ou une RLS cassée serait
+ * indiscernable de « aucune entrée ».
+ */
 export async function listAudit(limit = 200): Promise<AuditRow[]> {
   if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("admin_audit")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  if (error || !Array.isArray(data)) return [];
-  return data as AuditRow[];
+  try {
+    const { data, error } = await supabase
+      .from("admin_audit")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (error) {
+      console.warn("[adminService] requête `admin_audit` en échec :", error);
+      return [];
+    }
+    if (!Array.isArray(data)) return [];
+    return data as AuditRow[];
+  } catch (err) {
+    console.warn(
+      "[adminService] exception lors du chargement de `admin_audit` :",
+      err,
+    );
+    return [];
+  }
 }
 
-/** Profils + rôles (page de gestion des comptes). */
+/**
+ * Profils + rôles (page de gestion des comptes).
+ *
+ * Même dégradation que `listAudit` : jamais d'exception, `console.warn` sur
+ * échec de requête ou exception.
+ */
 export async function listProfiles(): Promise<
   { user_id: string; username: string; role: UserRole }[]
 > {
   if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("user_id, username, role")
-    .order("username", { ascending: true });
-  if (error || !Array.isArray(data)) return [];
-  return data as { user_id: string; username: string; role: UserRole }[];
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("user_id, username, role")
+      .order("username", { ascending: true });
+    if (error) {
+      console.warn("[adminService] requête `profiles` en échec :", error);
+      return [];
+    }
+    if (!Array.isArray(data)) return [];
+    return data as { user_id: string; username: string; role: UserRole }[];
+  } catch (err) {
+    console.warn(
+      "[adminService] exception lors du chargement de `profiles` :",
+      err,
+    );
+    return [];
+  }
 }
