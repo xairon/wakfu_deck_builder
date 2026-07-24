@@ -909,9 +909,14 @@ const rows = JSON.parse(json);
 
 const chapters = rows.filter((r) => r.kind === "chapter").length;
 const sections = rows.filter((r) => r.kind === "section").length;
-if (chapters !== 8 || sections < 70) {
+// Le compte de RÈGLES est vérifié séparément : l'extraction des chapitres/sections
+// (sur le texte des titres) est structurellement INDÉPENDANTE de celle des règles
+// (sur les div.regle-target[id]). Sans ce 3e garde-fou, un renommage de la classe
+// côté site donnerait rules=0 tout en passant chapitres=8 / sections=79.
+const ruleCount = rows.filter((r) => r.kind === "rule").length;
+if (chapters !== 8 || sections < 70 || ruleCount < 400) {
   console.error(
-    `Parsing suspect (chapitres=${chapters}, sections=${sections}) — seed annulé.`,
+    `Parsing suspect (chapitres=${chapters}, sections=${sections}, regles=${ruleCount}) — seed annulé.`,
   );
   process.exit(1);
 }

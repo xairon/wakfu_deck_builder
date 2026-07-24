@@ -258,6 +258,6 @@ liste, suppression de `public/data/errata.json` et de son JSON Schema.
 
 | Risque                                               | Mitigation                                                                                                                      |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Le parsing du scrape rate des sous-règles            | Gate Zod au seed + contrôle du nombre de sections (8 chapitres / 79 sections attendus)                                         |
+| Le parsing du scrape rate des sous-règles            | Gate Zod au seed + contrôle du nombre de sections (8 chapitres / 79 sections attendus)                                          |
 | Reproduction du texte officiel                       | Attribution visible + lien canonique par section ; cohérent avec l'usage déjà en place pour cartes/images                       |
 | Régression sur les 4 consommateurs d'`errataService` | Tests existants conservés et adaptés ; l'API du service reste `fetchErrata(cardId)` en surface, seule son implémentation change |
