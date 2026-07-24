@@ -27,6 +27,9 @@ async function load(): Promise<RuleRow[]> {
       .from("rules")
       .select("*")
       .order("sort_order", { ascending: true });
+    if (error) {
+      console.warn("[rulesService] requête `rules` en échec :", error);
+    }
     if (error || !Array.isArray(data)) {
       cache = [];
       return cache;
@@ -36,7 +39,11 @@ async function load(): Promise<RuleRow[]> {
       .filter((p): p is { success: true; data: RuleRow } => p.success)
       .map((p) => p.data);
     return cache;
-  } catch {
+  } catch (err) {
+    console.warn(
+      "[rulesService] exception lors du chargement de `rules` :",
+      err,
+    );
     cache = [];
     return cache;
   }

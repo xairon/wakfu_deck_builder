@@ -180,6 +180,25 @@ describe("rulesService", () => {
     await expect(loadRules()).resolves.toEqual([]);
   });
 
+  it("devrait logger un avertissement (console.warn) quand la requête échoue", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    stubData(ROWS, { message: "boom" });
+    await loadRules();
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  it("ne devrait PAS logger d'avertissement pour une simple ligne invalide (dégradation attendue)", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    stubData([
+      ...ROWS,
+      { number: "9.9", kind: "rule", chapter: 99, sort_order: 4 },
+    ]);
+    await loadRules();
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
   it("devrait ignorer une ligne invalide", async () => {
     stubData([
       ...ROWS,
