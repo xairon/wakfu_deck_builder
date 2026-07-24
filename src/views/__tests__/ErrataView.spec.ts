@@ -1,20 +1,39 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { mount } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
 import { setActivePinia, createPinia } from "pinia";
 
+// `vi.hoisted` : le mock factory de `vi.mock` est hissé au-dessus des imports
+// et exécuté avant toute déclaration `const` normale — les valeurs qu'il
+// référence doivent donc être créées via `vi.hoisted`, sinon on lit `undefined`
+// (TDZ) au moment où le factory tourne.
+const { getAllErrataMock, preloadErrataMock, DEFAULT_ERRATA } = vi.hoisted(
+  () => {
+    type ErrataIndex = Record<
+      string,
+      { date: string; summary: string; before?: string; after?: string }[]
+    >;
+    const DEFAULT_ERRATA: ErrataIndex = {
+      "opee-tissoin-incarnam": [
+        {
+          date: "2010-12-01",
+          summary: "Passe à 6 PA.",
+          before: "7 PA",
+          after: "6 PA",
+        },
+      ],
+      "skeunk-amakna": [{ date: "2009-10-13", summary: "Texte clarifié." }],
+    };
+    return {
+      DEFAULT_ERRATA,
+      getAllErrataMock: vi.fn((): ErrataIndex => DEFAULT_ERRATA),
+      preloadErrataMock: vi.fn(() => Promise.resolve()),
+    };
+  },
+);
+
 vi.mock("@/services/errataService", () => ({
-  preloadErrata: () => Promise.resolve(),
-  getAllErrata: () => ({
-    "opee-tissoin-incarnam": [
-      {
-        date: "2010-12-01",
-        summary: "Passe à 6 PA.",
-        before: "7 PA",
-        after: "6 PA",
-      },
-    ],
-    "skeunk-amakna": [{ date: "2009-10-13", summary: "Texte clarifié." }],
-  }),
+  preloadErrata: preloadErrataMock,
+  getAllErrata: getAllErrataMock,
 }));
 
 import ErrataView from "@/views/ErrataView.vue";
@@ -52,32 +71,40 @@ function mountView() {
 }
 
 describe("ErrataView", () => {
-  beforeEach(() => setActivePinia(createPinia()));
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    // Reset explicite : `mockReturnValue` (utilisé par les tests d'état
+    // d'erreur ci-dessous) persiste au-delà du test qui l'a posé — le
+    // `vi.clearAllMocks()` global (tests/setup.ts) ne restaure PAS
+    // l'implémentation par défaut posée à la création du mock.
+    getAllErrataMock.mockReturnValue(DEFAULT_ERRATA);
+    preloadErrataMock.mockImplementation(() => Promise.resolve());
+  });
 
   it("devrait afficher les cartes erratées avec leur résumé", async () => {
     const w = mountView();
-    await w.vm.$nextTick();
+    await flushPromises();
     expect(w.text()).toContain("Opée Tissoin");
     expect(w.text()).toContain("Passe à 6 PA.");
   });
 
   it("devrait grouper par extension de la carte (pas par suffixe d'id)", async () => {
     const w = mountView();
-    await w.vm.$nextTick();
+    await flushPromises();
     expect(w.text()).toContain("Incarnam");
     expect(w.text()).toContain("Amakna");
   });
 
   it("devrait afficher le avant/après quand il existe", async () => {
     const w = mountView();
-    await w.vm.$nextTick();
+    await flushPromises();
     expect(w.text()).toContain("7 PA");
     expect(w.text()).toContain("6 PA");
   });
 
   it("devrait filtrer par nom de carte", async () => {
     const w = mountView();
-    await w.vm.$nextTick();
+    await flushPromises();
     await w.find('input[type="search"]').setValue("Skeunk");
     expect(w.text()).toContain("Skeunk");
     expect(w.text()).not.toContain("Opée Tissoin");
@@ -85,7 +112,7 @@ describe("ErrataView", () => {
 
   it("devrait lier chaque entrée vers la carte", async () => {
     const w = mountView();
-    await w.vm.$nextTick();
+    await flushPromises();
 
     // Find all RouterLink components by the stub reference
     const routerLinks = w.findAllComponents(RouterLinkStub);
@@ -105,11 +132,36 @@ describe("ErrataView", () => {
 
   it("devrait basculer en tri par date (un seul groupe, récent d'abord)", async () => {
     const w = mountView();
-    await w.vm.$nextTick();
+    await flushPromises();
     await w.find("select").setValue("date");
     expect(w.findAll("section")).toHaveLength(1);
     // Opée Tissoin (2010-12-01) doit précéder Skeunk (2009-10-13).
     const text = w.text();
     expect(text.indexOf("Opée Tissoin")).toBeLessThan(text.indexOf("Skeunk"));
+  });
+
+  it("devrait afficher la date au format français (JJ/MM/AAAA), jamais l'ISO brut", async () => {
+    const w = mountView();
+    await flushPromises();
+    expect(w.text()).toContain("01/12/2010");
+    expect(w.text()).not.toContain("2010-12-01");
+  });
+
+  it("devrait afficher un état d'erreur explicite quand rien n'a pu être chargé", async () => {
+    getAllErrataMock.mockReturnValue({});
+    const w = mountView();
+    await flushPromises();
+    expect(w.text()).toMatch(/indisponible/i);
+    // La fausse réassurance à éviter : ne jamais dire "0 carte erratée" quand
+    // en réalité rien n'a pu charger.
+    expect(w.text()).not.toContain("carte(s) erratée(s)");
+  });
+
+  it("ne devrait PAS afficher l'état d'erreur quand le chargement a réussi mais que le filtre ne donne aucun résultat", async () => {
+    const w = mountView();
+    await flushPromises();
+    await w.find('input[type="search"]').setValue("Carte qui n'existe pas");
+    expect(w.text()).toContain("0 carte(s) erratée(s)");
+    expect(w.text()).not.toMatch(/indisponible/i);
   });
 });

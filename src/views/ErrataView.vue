@@ -3,8 +3,8 @@
     <h1 class="text-3xl font-bold">Errata</h1>
     <p class="mt-2 max-w-3xl opacity-80">
       Les cartes dont le texte ou les valeurs ont été officiellement corrigés.
-      Une carte errata­ée porte aussi un repère dans la collection et l'atelier
-      de deck.
+      Une carte erratée porte aussi un repère dans la collection et l'atelier de
+      deck.
     </p>
 
     <div class="mt-6 flex flex-wrap items-end gap-4">
@@ -13,7 +13,7 @@
         type="search"
         class="input input-bordered w-full max-w-md"
         placeholder="Rechercher une carte…"
-        aria-label="Rechercher une carte errataée"
+        aria-label="Rechercher une carte erratée"
       />
       <select
         v-model="sortMode"
@@ -25,7 +25,12 @@
       </select>
     </div>
 
-    <p class="mt-4 text-sm opacity-70">{{ total }} carte(s) erratée(s)</p>
+    <p v-if="failed" class="mt-6 alert alert-warning">
+      Errata indisponibles — vérifiez votre connexion.
+    </p>
+    <p v-else class="mt-4 text-sm opacity-70">
+      {{ total }} carte(s) erratée(s)
+    </p>
 
     <section v-for="group in groups" :key="group.extension" class="mt-8">
       <h2 class="text-xl font-semibold">{{ group.extension }}</h2>
@@ -49,8 +54,8 @@
                 class="link font-semibold"
                 >{{ item.name }}</RouterLink
               >
-              <span v-if="item.entry.date" class="text-sm opacity-70">{{
-                item.entry.date
+              <span v-if="item.dateLabel" class="text-sm opacity-70">{{
+                item.dateLabel
               }}</span>
             </div>
             <p class="mt-1">{{ item.entry.summary }}</p>
@@ -85,14 +90,22 @@ import {
 import { useCardStore } from "@/stores/cardStore";
 import { matchesSearch } from "@/utils/text";
 import { getThumbPath } from "@/utils/imagePaths";
+import { formatFrenchDate } from "@/utils/date";
 
 const cardStore = useCardStore();
 const query = ref("");
 const sortMode = ref<"extension" | "date">("extension");
 const loaded = ref(0); // incrémenté après préchargement pour recalculer
+// Distingue "chargé, zéro résultat après filtrage" (recherche sans résultat,
+// normal) de "rien n'a pu être chargé" (panne) — sinon une panne ressemble à
+// « 0 carte n'a jamais été errata'ée », la fausse réassurance que cette
+// fonctionnalité doit justement éviter. Calculé sur l'index BRUT, avant tout
+// filtrage par la recherche.
+const failed = ref(false);
 
 onMounted(async () => {
   await preloadErrata();
+  failed.value = Object.keys(getAllErrata()).length === 0;
   loaded.value++;
 });
 
@@ -102,6 +115,8 @@ interface Item {
   extension: string;
   thumb: string | null;
   entry: ErrataEntry;
+  /** Date affichable (FR, "JJ/MM/AAAA") — `entry.date` reste l'ISO, trié tel quel. */
+  dateLabel: string;
 }
 
 const items = computed<Item[]>(() => {
@@ -118,6 +133,7 @@ const items = computed<Item[]>(() => {
         extension: card?.extension?.name ?? "Autre",
         thumb: card?.imageUrl ? getThumbPath(card.imageUrl) : null,
         entry,
+        dateLabel: formatFrenchDate(entry.date),
       });
     }
   }
