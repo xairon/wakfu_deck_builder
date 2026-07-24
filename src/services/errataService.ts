@@ -5,22 +5,25 @@
  * L'index entier est chargé en un seul appel : afficher un badge « Erraté » sur
  * la grille imposerait sinon d'interroger les 1585 cartes une par une.
  *
- * Repli JSON : `public/data/errata.json` reste livré (copie vérifiée) et sert
- * de repli quand Supabase est absent, la requête échoue, ou renvoie un index
- * vide (ex. avant que la migration/seed `card_errata` n'ait tourné) — ce qui
- * rend la bascule Supabase sûre dans n'importe quel ordre. JAMAIS d'exception
- * (une panne d'errata ne doit pas casser la collection ni le deck builder).
+ * Source unique : la table `card_errata` (seedée depuis l'ex-`errata.json`, qui
+ * a été supprimé une fois le seed vérifié — 66 lignes, lecture anon confirmée).
+ *
+ * Dégradation : Supabase absent / requête en échec / ligne invalide → index vide
+ * ou ligne ignorée, JAMAIS d'exception (une panne d'errata ne doit casser ni la
+ * collection ni le deck builder). Un échec de requête est journalisé en
+ * `console.warn` : sans ça, une table ou une RLS cassée serait indiscernable de
+ * « aucun errata ».
  */
 import { supabase } from "@/services/supabase";
 import { errataRowSchema } from "@/schema";
 
 export interface ErrataEntry {
+  /** ISO "YYYY-MM-DD" (colonne `date` Postgres). Vide si absente. */
   date: string;
   source?: string;
   summary: string;
   before?: string;
   after?: string;
-  url?: string;
 }
 
 let cache: Record<string, ErrataEntry[]> | null = null;
@@ -32,56 +35,9 @@ export function __resetErrataCache(): void {
   loading = null;
 }
 
-/**
- * Normalise une date en ISO "YYYY-MM-DD" : accepte "DD/MM/YYYY" (JSON local)
- * et passe telle quelle une date déjà ISO (colonne `date` Postgres). Toute
- * autre valeur (vide, malformée) est renvoyée inchangée — l'affichage (voir
- * `utils/date.ts`) est seul responsable de ne jamais rendre "Invalid Date".
- */
-function toIsoDate(raw: string | null | undefined): string {
-  if (!raw) return "";
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw; // déjà ISO
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(raw);
-  return m ? `${m[3]}-${m[2]}-${m[1]}` : raw;
-}
-
-interface RawJsonErrataEntry {
-  date?: string;
-  source?: string;
-  summary: string;
-  before?: string;
-  after?: string;
-  url?: string;
-}
-
-/** Repli local : charge et normalise `public/data/errata.json`. */
-async function loadFromJson(): Promise<Record<string, ErrataEntry[]>> {
-  try {
-    const res = await fetch("/data/errata.json");
-    if (!res.ok) return {};
-    const parsed = (await res.json()) as {
-      errata?: Record<string, RawJsonErrataEntry[]>;
-    };
-    const index: Record<string, ErrataEntry[]> = {};
-    for (const [cardId, list] of Object.entries(parsed?.errata ?? {})) {
-      index[cardId] = list.map((e) => ({
-        date: toIsoDate(e.date),
-        source: e.source,
-        summary: e.summary,
-        before: e.before,
-        after: e.after,
-        url: e.url,
-      }));
-    }
-    return index;
-  } catch {
-    return {};
-  }
-}
-
 async function load(): Promise<void> {
   if (!supabase) {
-    cache = await loadFromJson();
+    cache = {};
     return;
   }
   try {
@@ -90,13 +46,12 @@ async function load(): Promise<void> {
       .select("*")
       .order("sort_order", { ascending: true });
     if (error) {
-      console.warn(
-        "[errataService] requête `card_errata` en échec, repli sur le JSON local :",
-        error,
-      );
+      console.warn("[errataService] requête `card_errata` en échec :", error);
+      cache = {};
+      return;
     }
-    if (error || !Array.isArray(data) || data.length === 0) {
-      cache = await loadFromJson();
+    if (!Array.isArray(data)) {
+      cache = {};
       return;
     }
     const index: Record<string, ErrataEntry[]> = {};
@@ -105,7 +60,7 @@ async function load(): Promise<void> {
       if (!parsed.success) continue; // ligne invalide → ignorée
       const r = parsed.data;
       (index[r.card_id] ??= []).push({
-        date: toIsoDate(r.errata_date),
+        date: r.errata_date ?? "",
         source: r.source ?? undefined,
         summary: r.summary,
         before: r.before_text ?? undefined,
@@ -115,10 +70,10 @@ async function load(): Promise<void> {
     cache = index;
   } catch (err) {
     console.warn(
-      "[errataService] exception lors du chargement de `card_errata`, repli sur le JSON local :",
+      "[errataService] exception lors du chargement de `card_errata` :",
       err,
     );
-    cache = await loadFromJson();
+    cache = {};
   }
 }
 

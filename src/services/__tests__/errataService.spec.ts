@@ -40,14 +40,6 @@ function stubRows(rows: unknown[] | null, error: unknown = null) {
   };
 }
 
-/** Stub `fetch("/data/errata.json")` — le repli local. */
-function stubJsonFallback(errata: Record<string, unknown[]> | null, ok = true) {
-  global.fetch = vi.fn().mockResolvedValue({
-    ok,
-    json: () => Promise.resolve({ errata: errata ?? {} }),
-  }) as unknown as typeof fetch;
-}
-
 const ROW = {
   card_id: "opee-tissoin-incarnam",
   errata_date: "2010-12-01",
@@ -129,73 +121,55 @@ describe("errataService — source Supabase", () => {
     expect(calls).toBe(1);
   });
 
-  it("devrait dégrader vers le JSON local si Supabase n'est pas configuré", async () => {
-    supabaseStub = null;
-    stubJsonFallback({
-      "x-incarnam": [{ date: "13/10/2009", summary: "Depuis le JSON." }],
-    });
-    await preloadErrata();
-    expect(getErrata("x-incarnam")).toEqual([
-      {
-        date: "2009-10-13",
-        summary: "Depuis le JSON.",
-        source: undefined,
-        before: undefined,
-        after: undefined,
-        url: undefined,
-      },
-    ]);
-  });
-
-  it("devrait replier sur le JSON local si la requête Supabase échoue", async () => {
-    stubRows(null, { message: "boom" });
-    stubJsonFallback({
-      "x-incarnam": [{ date: "13/10/2009", summary: "Depuis le JSON." }],
-    });
-    await preloadErrata();
-    expect(hasErrata("x-incarnam")).toBe(true);
-    expect(getErrata("x-incarnam")[0].summary).toBe("Depuis le JSON.");
-  });
-
-  it("devrait replier sur le JSON local si la requête renvoie zéro ligne", async () => {
-    stubRows([]); // aucune erreur, mais index vide
-    stubJsonFallback({
-      "x-incarnam": [{ date: "13/10/2009", summary: "Depuis le JSON." }],
-    });
-    await preloadErrata();
-    expect(hasErrata("x-incarnam")).toBe(true);
-  });
-
-  it("devrait préférer les données Supabase quand elles sont présentes (pas de repli JSON)", async () => {
+  it("devrait exposer la date ISO renvoyée par Postgres", async () => {
     stubRows([ROW]);
-    const fetchSpy = vi.fn();
-    global.fetch = fetchSpy as unknown as typeof fetch;
     await preloadErrata();
-    expect(fetchSpy).not.toHaveBeenCalled();
-    expect(getErrata("opee-tissoin-incarnam")[0].summary).toBe("Passe à 6 PA.");
+    expect(getErrata("opee-tissoin-incarnam")[0].date).toBe("2010-12-01");
   });
 
-  it("devrait convertir les dates du JSON (JJ/MM/AAAA) en ISO (AAAA-MM-JJ)", async () => {
-    supabaseStub = null;
-    stubJsonFallback({
-      "x-incarnam": [{ date: "05/01/2011", summary: "Test date." }],
-    });
+  it("devrait rendre une date vide (pas null) quand errata_date est absente", async () => {
+    stubRows([{ ...ROW, errata_date: null }]);
     await preloadErrata();
-    expect(getErrata("x-incarnam")[0].date).toBe("2011-01-05");
+    expect(getErrata("opee-tissoin-incarnam")[0].date).toBe("");
   });
 
-  it("devrait dégrader silencieusement si Supabase n'est pas configuré et que le JSON est aussi indisponible", async () => {
+  it("devrait dégrader vers un index vide si Supabase n'est pas configuré", async () => {
     supabaseStub = null;
     await expect(preloadErrata()).resolves.toBeUndefined();
     expect(getErrata("opee-tissoin-incarnam")).toEqual([]);
     expect(hasErrata("opee-tissoin-incarnam")).toBe(false);
   });
 
-  it("devrait dégrader silencieusement si la requête échoue et que le JSON est aussi indisponible", async () => {
+  it("devrait dégrader vers un index vide si la requête échoue", async () => {
     stubRows(null, { message: "boom" });
-    // fetch non stubbé → dégrade vers {} (voir tests/setup.ts : global.fetch = vi.fn()).
     await preloadErrata();
     expect(getErrata("opee-tissoin-incarnam")).toEqual([]);
+  });
+
+  it("devrait dégrader vers un index vide si `data` n'est pas un tableau", async () => {
+    stubRows(null);
+    await preloadErrata();
+    expect(getAllErrata()).toEqual({});
+  });
+
+  it("devrait dégrader vers un index vide si la requête renvoie zéro ligne", async () => {
+    stubRows([]);
+    await preloadErrata();
+    expect(getAllErrata()).toEqual({});
+  });
+
+  it("devrait dégrader sans lever si la requête jette une exception", async () => {
+    supabaseStub = {
+      from: () => ({
+        select: () => ({
+          order: () => {
+            throw new Error("réseau");
+          },
+        }),
+      }),
+    };
+    await expect(preloadErrata()).resolves.toBeUndefined();
+    expect(getAllErrata()).toEqual({});
   });
 
   it("devrait ignorer une ligne invalide sans casser les autres", async () => {
@@ -208,7 +182,6 @@ describe("errataService — source Supabase", () => {
   it("devrait logger un avertissement (console.warn) quand la requête échoue", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     stubRows(null, { message: "boom" });
-    stubJsonFallback({});
     await preloadErrata();
     expect(warnSpy).toHaveBeenCalled();
     warnSpy.mockRestore();
