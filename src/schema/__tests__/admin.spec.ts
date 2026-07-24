@@ -3,6 +3,7 @@ import {
   userRoleSchema,
   ruleEffectiveRowSchema,
   auditRowSchema,
+  ruleOverrideRowSchema,
 } from "../admin";
 
 describe("userRoleSchema", () => {
@@ -82,6 +83,59 @@ describe("auditRowSchema", () => {
         entity: "errata",
         entity_key: "42",
         created_at: "2026-07-24T10:00:00Z",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("ruleOverrideRowSchema", () => {
+  it("devrait accepter une correction minimale (number + body)", () => {
+    const ok = ruleOverrideRowSchema.safeParse({
+      number: "418.5b",
+      body: "Texte corrigé.",
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it("devrait accepter une règle AJOUTÉE (avec kind, chapter, sort_order)", () => {
+    const ok = ruleOverrideRowSchema.safeParse({
+      number: "418.5c",
+      kind: "rule",
+      chapter: 4,
+      body: "Règle ajoutée.",
+      sort_order: 512,
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it("devrait accepter une ligne lue de la base (avec updated_by et updated_at gérés par le serveur) et préserver ces champs", () => {
+    const input = {
+      number: "418.5d",
+      kind: "rule",
+      chapter: 4,
+      body: "Règle lue de la base.",
+      sort_order: 512,
+      updated_by: "11111111-1111-1111-1111-111111111111",
+      updated_at: "2026-07-24T10:00:00Z",
+    };
+    const result = ruleOverrideRowSchema.safeParse(input);
+    expect(result.success).toBe(true);
+    // CRITICAL: assert that updated_by and updated_at survive the parse
+    if (result.success) {
+      expect(result.data.updated_by).toBe(
+        "11111111-1111-1111-1111-111111111111",
+      );
+      expect(result.data.updated_at).toBe("2026-07-24T10:00:00Z");
+    }
+  });
+
+  it("devrait refuser une ligne sans number (clé primaire)", () => {
+    expect(
+      ruleOverrideRowSchema.safeParse({
+        kind: "rule",
+        chapter: 4,
+        body: "Sans numéro.",
+        sort_order: 512,
       }).success,
     ).toBe(false);
   });

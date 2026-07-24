@@ -18,7 +18,13 @@ export const ruleEffectiveRowSchema = z.object({
   updated_at: z.string().nullable().optional(),
 });
 
-/** Une ligne de `rules_overrides` (ce qu'on écrit). */
+/**
+ * Une ligne de `rules_overrides`.
+ *
+ * Champs gérés par le serveur (ne jamais fournis par l'appelant) :
+ * - `updated_by` : défini par `adminService.upsertRuleOverride()` à partir de la session
+ * - `updated_at` : défini automatiquement par un trigger PostgreSQL (now())
+ */
 export const ruleOverrideRowSchema = z.object({
   number: z.string().min(1),
   kind: z.enum(["chapter", "section", "rule"]).nullable().optional(),
@@ -26,6 +32,8 @@ export const ruleOverrideRowSchema = z.object({
   title: z.string().nullable().optional(),
   body: z.string().nullable().optional(),
   sort_order: z.number().int().nullable().optional(),
+  updated_by: z.string().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
 });
 
 /** Une ligne du journal. `actor` null = écriture système (seed). */
