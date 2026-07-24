@@ -17,6 +17,7 @@ if (!TOKEN) {
 const json = execFileSync("npx", ["tsx", "scripts/scrapeRules.ts"], {
   encoding: "utf8",
   maxBuffer: 64 * 1024 * 1024,
+  shell: process.platform === "win32", // npx.cmd resolution on Windows
 });
 const rows = JSON.parse(json);
 
