@@ -942,39 +942,39 @@ export async function refreshRules(): Promise<RuleEffectiveRow[]> {
   d'abandonner :
 
 ```ts
-    // La vue n'existe qu'après la migration 0013 : tant qu'elle n'est pas appliquée,
-    // on lit la table d'origine. Rend le déploiement sûr dans n'importe quel ordre.
-    if (error) {
-      console.warn(
-        "[rulesService] `rules_effective` indisponible, repli sur `rules` :",
-        error,
-      );
-      const fallback = await supabase
-        .from("rules")
-        .select("*")
-        .order("sort_order", { ascending: true })
-        .order("number", { ascending: true });
-      if (fallback.error || !Array.isArray(fallback.data)) {
-        cache = [];
-        return cache;
-      }
-      // Les colonnes de la vue absentes de la table prennent leur valeur neutre.
-      cache = fallback.data
-        .map((raw) =>
-          ruleEffectiveRowSchema.safeParse({
-            ...(raw as object),
-            is_edited: false,
-            body_official: null,
-          }),
-        )
-        .filter((p): p is { success: true; data: RuleEffectiveRow } => p.success)
-        .map((p) => p.data);
-      return cache;
-    }
+// La vue n'existe qu'après la migration 0013 : tant qu'elle n'est pas appliquée,
+// on lit la table d'origine. Rend le déploiement sûr dans n'importe quel ordre.
+if (error) {
+  console.warn(
+    "[rulesService] `rules_effective` indisponible, repli sur `rules` :",
+    error,
+  );
+  const fallback = await supabase
+    .from("rules")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("number", { ascending: true });
+  if (fallback.error || !Array.isArray(fallback.data)) {
+    cache = [];
+    return cache;
+  }
+  // Les colonnes de la vue absentes de la table prennent leur valeur neutre.
+  cache = fallback.data
+    .map((raw) =>
+      ruleEffectiveRowSchema.safeParse({
+        ...(raw as object),
+        is_edited: false,
+        body_official: null,
+      }),
+    )
+    .filter((p): p is { success: true; data: RuleEffectiveRow } => p.success)
+    .map((p) => p.data);
+  return cache;
+}
 ```
 
-  Ajouter deux tests : le repli est utilisé quand la vue échoue (et renvoie bien les règles
-  avec `is_edited: false`), et il n'est **pas** utilisé quand la vue répond.
+Ajouter deux tests : le repli est utilisé quand la vue échoue (et renvoie bien les règles
+avec `is_edited: false`), et il n'est **pas** utilisé quand la vue répond.
 
 - [ ] **Step 4: Ajouter `refreshErrata`**
 
