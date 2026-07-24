@@ -17,14 +17,23 @@ do $$ begin
 exception when duplicate_object then null;
 end $$;
 
--- ⛔ SÉCURITÉ — les DEUX revoke sont nécessaires.
--- `profiles_update_own` ET `profiles_insert_own` (0004) n'ont aucune restriction de
--- colonne, et profileService.setUsername() fait un UPSERT : sans ces deux lignes,
--- n'importe qui se promeut admin (par update OU par insert de son propre profil).
--- PostgREST refuse toute requête mentionnant une colonne non accordée ; `username`
--- continue de fonctionner et `role` prend son défaut 'user' à l'insertion.
-revoke update (role) on public.profiles from anon, authenticated;
-revoke insert (role) on public.profiles from anon, authenticated;
+-- ⛔ SÉCURITÉ — révoquer AU NIVEAU TABLE, puis re-accorder colonne par colonne.
+-- Un `revoke insert/update (role)` — au niveau colonne seul — NE RETIRE RIEN
+-- tant que le rôle détient encore le privilège au niveau table : Postgres
+-- consulte d'abord l'ACL de relation, et Supabase accorde `all privileges on
+-- all tables in schema public` à anon/authenticated au bootstrap (le serveur
+-- émet même `WARNING: no privileges could be revoked for column ...` — un
+-- avertissement silencieux, pas une erreur). Le seul revoke qui marche est
+-- donc au niveau table, suivi d'un grant explicite des colonnes autorisées.
+-- `profiles_update_own` ET `profiles_insert_own` (0004) n'ont aucune restriction
+-- de ligne sur les colonnes, et profileService.setUsername() fait un UPSERT :
+-- sans ce qui suit, n'importe qui se promeut admin (par update OU par insert
+-- de son propre profil). `user_id` doit être accordé en UPDATE : PostgREST le
+-- réécrit dans la clause `DO UPDATE` d'un upsert, même quand seul `username`
+-- change côté appelant ; l'omettre casse setUsername() sur un profil existant.
+revoke insert, update on public.profiles from anon, authenticated;
+grant  insert (user_id, username) on public.profiles to authenticated;
+grant  update (user_id, username) on public.profiles to authenticated;
 
 -- ── 2. Prédicats de rôle ─────────────────────────────────────────────────────
 create or replace function public.is_admin()
@@ -99,13 +108,22 @@ end;
 $$;
 
 -- ── 4. Corrections et ajouts de règles ───────────────────────────────────────
+-- `kind`/`chapter`/`sort_order` NOT NULL avec défaut : une règle AJOUTÉE (pas
+-- de ligne `r` en face dans `rules`) n'a que sa propre ligne pour renseigner
+-- la vue `rules_effective` — si ces colonnes sont NULL, `coalesce(o.x, r.x)`
+-- reste NULL, `ruleEffectiveRowSchema` (non-nullable sur ces champs) rejette
+-- la ligne au `safeParse`, et `rulesService` la fait silencieusement
+-- disparaître : un admin ajoute une règle, obtient `{ok: true}`, et ne la
+-- voit jamais. `chapter` est NOT NULL sans défaut : une règle ajoutée
+-- appartient toujours à un chapitre choisi par l'admin. `title`/`body`
+-- restent nullables (une correction peut ne modifier qu'un sous-ensemble).
 create table if not exists public.rules_overrides (
   number     text primary key,   -- même clé que rules.number, ou une NOUVELLE règle
-  kind       text check (kind in ('chapter','section','rule')),
-  chapter    int,
+  kind       text not null default 'rule' check (kind in ('chapter','section','rule')),
+  chapter    int not null,
   title      text,
   body       text,
-  sort_order int,
+  sort_order int not null default 0,
   updated_by uuid references public.profiles (user_id) on delete set null,
   updated_at timestamptz not null default now()
 );

@@ -104,7 +104,11 @@ describe("adminService", () => {
   });
 
   it("devrait échouer proprement sans backend", async () => {
-    const res = await upsertRuleOverride({ number: "418.5b", body: "x" });
+    const res = await upsertRuleOverride({
+      number: "418.5b",
+      chapter: 4,
+      body: "x",
+    });
     expect(res.ok).toBe(false);
     expect(res.error).toBeTruthy();
   });
@@ -114,7 +118,11 @@ describe("adminService", () => {
       error: { message: "row-level security" },
     });
     supabaseStub = stub;
-    const res = await upsertRuleOverride({ number: "418.5b", body: "x" });
+    const res = await upsertRuleOverride({
+      number: "418.5b",
+      chapter: 4,
+      body: "x",
+    });
     expect(res.ok).toBe(false);
     expect(res.error).toContain("row-level security");
     expect(refreshRules).not.toHaveBeenCalled();
@@ -124,7 +132,11 @@ describe("adminService", () => {
   it("devrait rafraîchir l'index après une écriture réussie", async () => {
     const { stub, calls } = makeSupabaseStub({ error: null });
     supabaseStub = stub;
-    const res = await upsertRuleOverride({ number: "418.5b", body: "x" });
+    const res = await upsertRuleOverride({
+      number: "418.5b",
+      chapter: 4,
+      body: "x",
+    });
     expect(res.ok).toBe(true);
     expect(refreshRules).toHaveBeenCalledTimes(1);
     expect(calls.from).toEqual(["rules_overrides"]);
@@ -222,6 +234,47 @@ describe("adminService", () => {
         args: [{ p_user_id: "user-2", p_role: "admin" }],
       },
     ]);
+  });
+
+  // Garde de non-régression pour le finding 4 : avant le fix, seules
+  // `listAudit`/`listProfiles` avaient un try/catch ; les 6 écritures
+  // laissaient une exception synchrone (client mal configuré, contexte
+  // sans Pinia, `refreshRules()`/`refreshErrata()` qui lève) rejeter la
+  // promesse au lieu de dégrader en `{ ok: false }`, ce qui viole
+  // l'invariant du projet « ce service ne lève jamais ».
+  it("devrait renvoyer { ok: false } — jamais rejeter — quand le client Supabase lève une exception synchrone, pour les 6 écritures", async () => {
+    const throwingStub = {
+      from: () => {
+        throw new Error("network down");
+      },
+      rpc: () => {
+        throw new Error("network down");
+      },
+    };
+    supabaseStub = throwingStub;
+
+    await expect(
+      upsertRuleOverride({ number: "418.5b", chapter: 4, body: "x" }),
+    ).resolves.toEqual({ ok: false, error: "network down" });
+    await expect(deleteRuleOverride("418.5b")).resolves.toEqual({
+      ok: false,
+      error: "network down",
+    });
+    await expect(
+      createErratum({ card_id: "opee-tissoin-incarnam", summary: "x" }),
+    ).resolves.toEqual({ ok: false, error: "network down" });
+    await expect(updateErratum(42, { summary: "x" })).resolves.toEqual({
+      ok: false,
+      error: "network down",
+    });
+    await expect(deleteErratum(42)).resolves.toEqual({
+      ok: false,
+      error: "network down",
+    });
+    await expect(setUserRole("user-2", "admin")).resolves.toEqual({
+      ok: false,
+      error: "network down",
+    });
   });
 
   describe("listAudit", () => {

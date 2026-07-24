@@ -35,25 +35,36 @@ export async function upsertRuleOverride(
   row: RuleOverrideRow,
 ): Promise<WriteResult> {
   if (!supabase) return { ok: false, error: NO_BACKEND };
-  const authStore = useAuthStore();
-  const { error } = await supabase
-    .from("rules_overrides")
-    .upsert({ ...row, updated_by: authStore.userId }, { onConflict: "number" });
-  if (error) return fail(error);
-  await refreshRules();
-  return { ok: true };
+  try {
+    const authStore = useAuthStore();
+    const { error } = await supabase
+      .from("rules_overrides")
+      .upsert(
+        { ...row, updated_by: authStore.userId },
+        { onConflict: "number" },
+      );
+    if (error) return fail(error);
+    await refreshRules();
+    return { ok: true };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 /** Supprime la correction — la règle officielle reprend sa place. */
 export async function deleteRuleOverride(number: string): Promise<WriteResult> {
   if (!supabase) return { ok: false, error: NO_BACKEND };
-  const { error } = await supabase
-    .from("rules_overrides")
-    .delete()
-    .eq("number", number);
-  if (error) return fail(error);
-  await refreshRules();
-  return { ok: true };
+  try {
+    const { error } = await supabase
+      .from("rules_overrides")
+      .delete()
+      .eq("number", number);
+    if (error) return fail(error);
+    await refreshRules();
+    return { ok: true };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 export interface ErratumInput {
@@ -68,13 +79,17 @@ export interface ErratumInput {
 
 export async function createErratum(input: ErratumInput): Promise<WriteResult> {
   if (!supabase) return { ok: false, error: NO_BACKEND };
-  const authStore = useAuthStore();
-  const { error } = await supabase
-    .from("card_errata")
-    .insert({ sort_order: 0, ...input, updated_by: authStore.userId });
-  if (error) return fail(error);
-  await refreshErrata();
-  return { ok: true };
+  try {
+    const authStore = useAuthStore();
+    const { error } = await supabase
+      .from("card_errata")
+      .insert({ sort_order: 0, ...input, updated_by: authStore.userId });
+    if (error) return fail(error);
+    await refreshErrata();
+    return { ok: true };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 export async function updateErratum(
@@ -82,22 +97,30 @@ export async function updateErratum(
   input: Partial<ErratumInput>,
 ): Promise<WriteResult> {
   if (!supabase) return { ok: false, error: NO_BACKEND };
-  const authStore = useAuthStore();
-  const { error } = await supabase
-    .from("card_errata")
-    .update({ ...input, updated_by: authStore.userId })
-    .eq("id", id);
-  if (error) return fail(error);
-  await refreshErrata();
-  return { ok: true };
+  try {
+    const authStore = useAuthStore();
+    const { error } = await supabase
+      .from("card_errata")
+      .update({ ...input, updated_by: authStore.userId })
+      .eq("id", id);
+    if (error) return fail(error);
+    await refreshErrata();
+    return { ok: true };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 export async function deleteErratum(id: number): Promise<WriteResult> {
   if (!supabase) return { ok: false, error: NO_BACKEND };
-  const { error } = await supabase.from("card_errata").delete().eq("id", id);
-  if (error) return fail(error);
-  await refreshErrata();
-  return { ok: true };
+  try {
+    const { error } = await supabase.from("card_errata").delete().eq("id", id);
+    if (error) return fail(error);
+    await refreshErrata();
+    return { ok: true };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 /** Attribue un rôle. Passe par la RPC : `role` n'est pas écrivable directement. */
@@ -106,12 +129,16 @@ export async function setUserRole(
   role: Exclude<UserRole, "owner">,
 ): Promise<WriteResult> {
   if (!supabase) return { ok: false, error: NO_BACKEND };
-  const { error } = await supabase.rpc("set_user_role", {
-    p_user_id: userId,
-    p_role: role,
-  });
-  if (error) return fail(error);
-  return { ok: true };
+  try {
+    const { error } = await supabase.rpc("set_user_role", {
+      p_user_id: userId,
+      p_role: role,
+    });
+    if (error) return fail(error);
+    return { ok: true };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 /**

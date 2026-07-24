@@ -24,14 +24,20 @@ export const ruleEffectiveRowSchema = z.object({
  * Champs gérés par le serveur (ne jamais fournis par l'appelant) :
  * - `updated_by` : défini par `adminService.upsertRuleOverride()` à partir de la session
  * - `updated_at` : défini automatiquement par un trigger PostgreSQL (now())
+ *
+ * `chapter` est requis (la colonne est `not null` en base, sans défaut : une
+ * règle ajoutée appartient toujours à un chapitre choisi par l'admin — sans
+ * ça, `rules_effective` ne peut pas la rendre). `kind`/`sort_order` sont
+ * optionnels EN ENTRÉE seulement : la colonne a un défaut ('rule' / 0) côté
+ * base, donc un appelant qui les omet obtient quand même une ligne valide.
  */
 export const ruleOverrideRowSchema = z.object({
   number: z.string().min(1),
-  kind: z.enum(["chapter", "section", "rule"]).nullable().optional(),
-  chapter: z.number().int().min(1).max(8).nullable().optional(),
+  kind: z.enum(["chapter", "section", "rule"]).default("rule"),
+  chapter: z.number().int().min(1).max(8),
   title: z.string().nullable().optional(),
   body: z.string().nullable().optional(),
-  sort_order: z.number().int().nullable().optional(),
+  sort_order: z.number().int().default(0),
   updated_by: z.string().nullable().optional(),
   updated_at: z.string().nullable().optional(),
 });
@@ -50,5 +56,12 @@ export const auditRowSchema = z.object({
 
 export type UserRole = z.infer<typeof userRoleSchema>;
 export type RuleEffectiveRow = z.infer<typeof ruleEffectiveRowSchema>;
-export type RuleOverrideRow = z.infer<typeof ruleOverrideRowSchema>;
+/**
+ * `z.input`, pas `z.infer`/`z.output` : `kind`/`sort_order` ont un
+ * `.default()`, donc l'appelant qui CONSTRUIT une ligne (avant parsing) peut
+ * les omettre — `z.infer` donnerait le type de SORTIE (après application du
+ * défaut), où ils redeviennent obligatoires, ce qui casserait tous les
+ * appels de `upsertRuleOverride()` qui ne précisent pas `kind`/`sort_order`.
+ */
+export type RuleOverrideRow = z.input<typeof ruleOverrideRowSchema>;
 export type AuditRow = z.infer<typeof auditRowSchema>;

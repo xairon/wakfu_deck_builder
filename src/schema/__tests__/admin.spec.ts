@@ -89,10 +89,54 @@ describe("auditRowSchema", () => {
 });
 
 describe("ruleOverrideRowSchema", () => {
-  it("devrait accepter une correction minimale (number + body)", () => {
+  it("devrait accepter une correction minimale (number + chapter + body)", () => {
     const ok = ruleOverrideRowSchema.safeParse({
       number: "418.5b",
+      chapter: 4,
       body: "Texte corrigé.",
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it("devrait refuser une ligne sans chapter — finding 5 : une règle AJOUTÉE n'a pas de ligne `r` en face dans la vue, donc `chapter` doit toujours venir de l'override", () => {
+    expect(
+      ruleOverrideRowSchema.safeParse({
+        number: "418.5b",
+        body: "Sans chapitre.",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("devrait appliquer les défauts kind='rule' et sort_order=0 quand ils sont omis (miroir des défauts colonne de la migration 0013)", () => {
+    const result = ruleOverrideRowSchema.safeParse({
+      number: "418.5b",
+      chapter: 4,
+      body: "Texte corrigé.",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.kind).toBe("rule");
+      expect(result.data.sort_order).toBe(0);
+    }
+  });
+
+  // Finding 5 : reproduit ce que la vue `rules_effective` émet pour une règle
+  // AJOUTÉE (aucune ligne `r` en face, `body_official` est donc null) une
+  // fois que `rules_overrides` garantit kind/chapter/sort_order non-null —
+  // avant le fix, ces trois colonnes pouvaient être NULL côté override et la
+  // ligne de vue échouait silencieusement au safeParse de ruleEffectiveRowSchema.
+  it("devrait accepter une ligne de vue pour une règle AJOUTÉE, sans ligne `r` en face", () => {
+    const ok = ruleEffectiveRowSchema.safeParse({
+      number: "418.5z",
+      kind: "rule",
+      chapter: 4,
+      title: "Nouvelle règle",
+      body: "Texte de la règle ajoutée.",
+      sort_order: 0,
+      is_edited: true,
+      body_official: null,
+      updated_by: "11111111-1111-1111-1111-111111111111",
+      updated_at: "2026-07-24T10:00:00Z",
     });
     expect(ok.success).toBe(true);
   });
