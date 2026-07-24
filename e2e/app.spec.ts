@@ -578,8 +578,18 @@ test("les règles officielles sont publiques et dégradent explicitement sans ba
   await expect(
     page.getByRole("heading", { name: "Règles officielles" }),
   ).toBeVisible();
-  // Sans base : message d'indisponibilité explicite, jamais une page blanche.
-  await expect(page.getByText(/Règles indisponibles/i)).toBeVisible();
+  // Ce test doit tenir DANS LES DEUX environnements : en CI les identifiants
+  // Supabase sont factices (aucune donnée → bannière d'indisponibilité), en local
+  // ils pointent la vraie base (445 règles seedées → contenu). La version
+  // précédente n'assertait que la bannière et cassait dès qu'on a seedé.
+  // L'invariant réel, lui, ne dépend pas de l'environnement : la page affiche
+  // soit les règles, soit un refus explicite — JAMAIS une page vide.
+  await expect(
+    page
+      .getByText(/Règles indisponibles/i)
+      .or(page.locator('[id="418.5b"]'))
+      .first(),
+  ).toBeVisible();
 });
 
 test("la page Règles renvoie vers les règles officielles", async ({ page }) => {
@@ -588,4 +598,23 @@ test("la page Règles renvoie vers les règles officielles", async ({ page }) =>
     .getByRole("link", { name: /règles officielles complètes/i })
     .click();
   await expect(page).toHaveURL(/\/regles\/officielles/);
+});
+
+// ── Administration : gardes de route ────────────────────────────────────────
+// Ces tests ne dépendent d'AUCUNE donnée : la base E2E est vide et aucun compte
+// admin n'existe. Le cas « connecté non-admin » est couvert par les tests
+// unitaires du routeur et, en réel, par scripts/checkAdminRls.mjs.
+
+test("l'administration est fermée à un visiteur anonyme", async ({ page }) => {
+  await page.goto("/admin");
+  // Le garde renvoie vers l'authentification en conservant la destination.
+  // vue-router n'encode PAS la barre oblique dans la query : /auth?redirect=/admin
+  await expect(page).toHaveURL(/\/auth\?redirect=\/admin/);
+});
+
+test("l'écran Accès réservé est atteignable et explicite", async ({ page }) => {
+  await page.goto("/acces-refuse");
+  await expect(
+    page.getByRole("heading", { name: "Accès réservé" }),
+  ).toBeVisible();
 });

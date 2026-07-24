@@ -90,6 +90,8 @@ src/
 - Sync : `hydrateForUser` (pull à la connexion) ; push différé sur modification (collection + decks) ; voir `src/services/cloudSync.ts`
 - RLS (Row Level Security) activé sur toutes les tables — voir `supabase/migrations/0001_init.sql`
 
+- **Rôles d'administration** : `profiles.role` ∈ `user` | `admin` | `owner` (migration `0013`). L'`owner` gère les comptes (posé **une fois en SQL**) ; l'`admin` édite règles et errata. Gardes de route `requiresAdmin` / `requiresOwner`, mais **la sécurité réelle est la RLS** (`is_admin()` / `is_owner()`) — `authStore.isAdmin` ne sert qu'à afficher ou masquer l'UI. `role` n'est écrivable **ni en `update` ni en `insert`** via l'API (double `revoke` de colonne : les deux portes étaient ouvertes) ; seule la RPC `set_user_role()` l'attribue, et `owner` n'est jamais attribuable. Corrections de règles dans `rules_overrides` + vue de fusion `rules_effective` → re-scraper reste sans risque. Journal `admin_audit` **append-only, écrit par des triggers** (un journal écrit par le client peut ne pas l'être). Preuve de la sécurité : `node scripts/checkAdminRls.mjs` — les tests unitaires moquent Supabase et ne prouvent rien sur la RLS.
+
 ## Données
 
 - `public/data/*.json` — Bases de cartes par extension (servis statiquement)
