@@ -45,8 +45,15 @@ export function parseRules(html: string): RuleRow[] {
       // corps dans un enfant séparé (le texte du <p> ne le répète pas).
       const id = $(el).attr("id") ?? "";
       if (!RULE_ID_RE.test(id)) return; // ignore les div englobantes chapitre/section
+      // Markup réel : les règles lettrées (ex. 418.5a/418.5b) sont des
+      // `div.regle-target[id]` IMBRIQUÉES à l'intérieur du `div.regle-target`
+      // de leur parent (ex. 418.5) — pas des soeurs. `.find()` ne matche que
+      // les descendants (jamais la racine du clone elle-même), donc retirer
+      // `.regle-target` élague les sous-règles enfants sans toucher au texte
+      // propre du parent. Sans ça, `clone.text()` concatène le corps du
+      // parent avec celui de TOUTES ses sous-règles imbriquées.
       const clone = $(el).clone();
-      clone.find(".flex-shrink-regle, .ps-5").remove(); // numéro + bloc "Exemple :"
+      clone.find(".flex-shrink-regle, .ps-5, .regle-target").remove(); // numéro + bloc "Exemple :" + sous-règles imbriquées
       const body = clone.text().replace(/\s+/g, " ").trim();
       if (!body) return;
       push({
