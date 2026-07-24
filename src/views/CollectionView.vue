@@ -636,7 +636,11 @@ import CollectionGrid from "@/components/collection/CollectionGrid.vue";
 import CollectionCompletion from "@/components/collection/CollectionCompletion.vue";
 import QuickAddModal from "@/components/collection/QuickAddModal.vue";
 import { highlightEffectHtml, splitEffectsAndNotes } from "@/utils/effectText";
-import { fetchErrata, type ErrataEntry } from "@/services/errataService";
+import {
+  fetchErrata,
+  preloadErrata,
+  type ErrataEntry,
+} from "@/services/errataService";
 import OptimizedImage from "@/components/common/OptimizedImage.vue";
 
 import { useRouter, useRoute } from "vue-router";
@@ -987,6 +991,11 @@ function closeModal() {
 
 // Initialisation
 onMounted(async () => {
+  // Précharge l'index d'erratas tôt (badge « Erraté » sur les tuiles) — en
+  // parallèle du chargement des cartes, dégradation silencieuse en cas
+  // d'échec (cf. errataService.ts).
+  void preloadErrata();
+
   try {
     if (!cardStore.isInitialized) {
       await cardStore.initialize();

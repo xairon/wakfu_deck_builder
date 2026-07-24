@@ -126,6 +126,11 @@
               "
               >{{ ownedQty(card.id) }}</span
             >
+            <!-- Badge « Erraté » : signal visible sans ouvrir la fiche -->
+            <ErrataBadge
+              :card-id="card.id"
+              class="absolute bottom-[5px] left-[5px] z-10"
+            />
             <!-- Bandeau loupe au survol -->
             <span
               class="absolute inset-x-[5px] bottom-[5px] z-10 grid place-items-center bg-base-content py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-base-100 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
@@ -185,6 +190,7 @@ import CollectionFilters from "@/components/collection/CollectionFilters.vue";
 import { getCardCopies } from "@/validators/deck";
 import { maxCopiesForCard } from "@/utils/cardRules";
 import type { Card } from "@/types/cards";
+import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 const cardStore = useCardStore();
 const deckStore = useDeckStore();

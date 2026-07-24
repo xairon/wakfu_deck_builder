@@ -37,6 +37,12 @@
           F×{{ foilQuantity }}
         </span>
 
+        <!-- Badge « Erraté » : signal visible sans ouvrir la fiche -->
+        <ErrataBadge
+          :card-id="card.id"
+          class="absolute bottom-1 right-1 z-10"
+        />
+
         <!-- Pastille de possession / playset (permanente, lisible au tactile) -->
         <span
           v-if="authStore.isAuthenticated && isOwned"
@@ -181,6 +187,7 @@ import { computed, ref } from "vue";
 import type { Card } from "@/types/cards";
 import { useAuthStore } from "@/stores/authStore";
 import { getThumbPath } from "@/utils/imagePaths";
+import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 // Définition des props
 interface Props {
