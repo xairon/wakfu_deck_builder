@@ -690,7 +690,9 @@ git commit -m "feat(errata): migration errata.json -> table card_errata, JSON su
 
 ```bash
 mkdir -p raw-card-data/pages/regles
-curl -sL https://www.wtcg-return.fr/regles/completes -o raw-card-data/pages/regles/completes.html
+# --ssl-no-revoke : sous Windows/schannel, la vérification de révocation du
+# certificat échoue (CRYPT_E_NO_REVOCATION_CHECK) et curl abandonne. Vérifié.
+curl -sSL --ssl-no-revoke https://www.wtcg-return.fr/regles/completes -o raw-card-data/pages/regles/completes.html
 wc -c raw-card-data/pages/regles/completes.html
 ```
 
