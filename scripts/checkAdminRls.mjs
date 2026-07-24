@@ -4,14 +4,25 @@
  * Les tests unitaires moquent Supabase : ils ne prouvent RIEN sur la RLS. Ce
  * script est le seul contrôle qui vaille.
  *
- * Il n'écrit jamais rien de durable : chaque tentative d'écriture DOIT échouer,
- * et les rares écritures censées réussir ne sont pas testées ici (elles le sont
- * par l'usage réel de l'UI).
+ * Le script lui-même n'écrit jamais rien de durable EXPRÈS : chaque tentative
+ * d'écriture DOIT échouer, et les rares écritures censées réussir ne sont pas
+ * testées ici (elles le sont par l'usage réel de l'UI). Si une sonde d'auto-
+ * promotion réussit malgré tout (la faille qu'elle cherche est réelle), le
+ * compte de test, LUI, reste promu en base — le script prévient bruyamment
+ * avec le SQL de nettoyage exact, mais ne corrige RIEN automatiquement.
  *
  * Usage :
  *   node scripts/checkAdminRls.mjs
  *   # optionnel, pour couvrir les points 3/4/5 (compte SANS rôle admin) :
  *   TEST_EMAIL=… TEST_PASSWORD=… node scripts/checkAdminRls.mjs
+ *
+ * Note sur les deux sondes d'auto-promotion (§ « Auto-promotion : les DEUX
+ * voies ») : elles ont des conditions CONTRAIRES pour être concluantes. La
+ * sonde INSERT a besoin d'un compte SANS ligne `profiles` (sinon 409, conflit
+ * de clé primaire) ; la sonde UPDATE a besoin d'un compte AVEC une ligne
+ * `profiles` déjà existante (sinon 0 ligne affectée). Un même run peut donc
+ * rendre une sonde concluante et l'autre non — chaque ⚠️ INCONCLUANT indique
+ * quel type de compte relancer avec.
  */
 import { readFileSync } from "node:fs";
 
@@ -54,6 +65,80 @@ function isBlocked(res) {
 }
 
 /**
+ * `≥ 400` ne suffit PAS pour les deux sondes d'auto-promotion sur
+ * `profiles.role` : un statut d'échec peut avoir une cause qui ne prouve
+ * RIEN sur le privilège de colonne testé.
+ *
+ * - "blocked"      : refus du privilège lui-même — 401 (session invalide) ou
+ *                     403 (`42501`, permission denied for column). C'est la
+ *                     SEULE preuve valable que la colonne n'est pas accordée.
+ * - "inconclusive" : échec pour une tout autre raison. Typiquement 409 côté
+ *                     INSERT : le compte de test a DÉJÀ une ligne `profiles`
+ *                     (cas normal, `setUsername()` en crée une) → Postgres
+ *                     rejette sur la contrainte `profiles_pkey` AVANT même
+ *                     d'examiner le privilège de colonne `role`. `isBlocked`
+ *                     seul classerait ça comme un ✅ sans jamais avoir
+ *                     réellement exercé la colonne — la porte pourrait être
+ *                     grande ouverte.
+ * - "allowed"      : la base a accepté l'écriture (2xx) — la faille est réelle.
+ */
+function classifyWrite(res) {
+  if (res.status === 401 || res.status === 403) return "blocked";
+  if (res.status === 409) return "inconclusive";
+  if (res.status === 0) return "inconclusive"; // panne réseau, déjà comptée à part
+  if (res.status >= 400) return "blocked";
+  return "allowed";
+}
+
+/**
+ * Sonde de self-promotion par UPDATE : elle matche TOUJOURS par clé primaire
+ * (`user_id=eq.<self>`), donc pas de conflit d'unicité façon INSERT — mais
+ * une ambiguïté SYMÉTRIQUE existe. Si le compte de test n'a PAS encore de
+ * ligne `profiles` (n'a jamais appelé `setUsername()`), l'UPDATE ne matche
+ * aucune ligne et PostgREST répond 2xx quand même : un « succès » qui ne
+ * prouve RIEN sur le privilège, exactement comme le 409 côté INSERT. On
+ * demande donc `Prefer: return=representation` pour distinguer « 0 ligne
+ * affectée » d'une vraie promotion réussie.
+ */
+function classifySelfUpdate(res) {
+  if (res.status === 401 || res.status === 403) return "blocked";
+  if (res.status === 0) return "inconclusive";
+  if (res.status >= 400) return "blocked";
+  try {
+    const rows = JSON.parse(res.text || "[]");
+    if (Array.isArray(rows) && rows.length === 0) return "inconclusive";
+  } catch {
+    // Statut 2xx mais corps non-JSON : impossible de confirmer « 0 ligne » —
+    // traiter comme "allowed" (hypothèse la plus prudente en sécurité).
+  }
+  return "allowed";
+}
+
+let inconclusive = 0;
+
+/**
+ * Comme `check()`, mais pour une preuve à trois issues : un "inconclusive"
+ * n'est ni un ✅ (rien n'est prouvé) ni un ❌ (rien ne prouve une faille non
+ * plus) — il est compté à part et fait échouer le run (comme un
+ * `networkFailures`), pour forcer l'opérateur à relancer dans des conditions
+ * qui prouvent réellement quelque chose.
+ */
+function checkPrivilege(label, classification, detail, inconclusiveHint) {
+  if (classification === "blocked") {
+    console.log(`  ✅ ${label}${detail ? ` — ${detail}` : ""}`);
+  } else if (classification === "inconclusive") {
+    inconclusive++;
+    console.log(
+      `  ⚠️  ${label} — INCONCLUANT${detail ? ` (${detail})` : ""} : ${inconclusiveHint}`,
+    );
+  } else {
+    failures++;
+    console.log(`  ❌ ${label}${detail ? ` — ${detail}` : ""}`);
+  }
+  return classification;
+}
+
+/**
  * Un échec RÉSEAU n'est pas un verdict de sécurité : si l'URL est fausse ou
  * l'hôte injoignable, il faut le dire clairement et sortir en erreur, JAMAIS
  * laisser croire qu'un contrôle est passé. On distingue donc `status: 0`
@@ -61,7 +146,10 @@ function isBlocked(res) {
  */
 let networkFailures = 0;
 
-async function rest(path, { method = "GET", token = ANON, body } = {}) {
+async function rest(
+  path,
+  { method = "GET", token = ANON, body, prefer = "return=minimal" } = {},
+) {
   try {
     const res = await fetch(`${URL}/rest/v1/${path}`, {
       method,
@@ -69,7 +157,7 @@ async function rest(path, { method = "GET", token = ANON, body } = {}) {
         apikey: ANON,
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-        Prefer: "return=minimal",
+        Prefer: prefer,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -169,26 +257,57 @@ if (!email || !password) {
     );
 
     console.log("\n── Auto-promotion : les DEUX voies ──────────");
+    // `Prefer: return=representation` : nécessaire pour que
+    // `classifySelfUpdate` puisse distinguer « 0 ligne affectée » d'une
+    // vraie promotion — cf. le commentaire de la fonction.
     const p1 = await rest(`profiles?user_id=eq.${session.userId}`, {
       method: "PATCH",
       token: t,
+      prefer: "return=representation",
       body: { role: "admin" },
     });
-    check(
+    const p1Class = checkPrivilege(
       "ne peut PAS se promouvoir par UPDATE",
-      isBlocked(p1),
+      classifySelfUpdate(p1),
       `HTTP ${p1.status}`,
+      "0 ligne affectée ne prouve rien — relance avec TEST_EMAIL/TEST_PASSWORD " +
+        "d'un compte qui a DÉJÀ un profil (connecte-toi une fois dans l'appli " +
+        "pour que setUsername() en crée un).",
     );
+
     const p2 = await rest("profiles", {
       method: "POST",
       token: t,
       body: { user_id: session.userId, username: "probe", role: "admin" },
     });
-    check(
+    const p2Class = checkPrivilege(
       "ne peut PAS se promouvoir par INSERT",
-      isBlocked(p2),
+      classifyWrite(p2),
       `HTTP ${p2.status}`,
+      "conflit de clé primaire (profil déjà existant), pas une preuve de " +
+        "privilège — relance avec TEST_EMAIL/TEST_PASSWORD d'un compte SANS " +
+        "ligne `profiles` existante.",
     );
+
+    // ⚠️ Nettoyage — le script n'écrit jamais rien de durable LUI-MÊME, mais
+    // si une des deux sondes ci-dessus a réellement réussi (la faille du
+    // finding 1 est réelle), le compte de test, LUI, est resté promu
+    // 'admin' en base. Le script ne corrige RIEN automatiquement (voir
+    // l'en-tête du fichier) : il prévient bruyamment, avec le SQL exact.
+    for (const [cls, via] of [
+      [p1Class, "UPDATE"],
+      [p2Class, "INSERT"],
+    ]) {
+      if (cls !== "allowed") continue;
+      console.error(
+        `\n🚨🚨🚨 FAILLE RÉELLE EXPLOITÉE PAR CE SCRIPT (via ${via}) 🚨🚨🚨\n` +
+          `   Le compte de test (user_id=${session.userId}${email ? `, ${email}` : ""}) a\n` +
+          "   maintenant role='admin' EN BASE. Ce script n'a RIEN nettoyé (il n'écrit\n" +
+          "   jamais rien de durable). Repasse-le à 'user' AVANT toute autre chose,\n" +
+          "   dans le SQL Editor :\n\n" +
+          `     update public.profiles set role = 'user' where user_id = '${session.userId}';\n`,
+      );
+    }
 
     console.log("\n── RPC de rôle : réservée à l'owner ─────────");
     // Passe par `rest()` comme tout le reste : un fetch brut ici échapperait au
@@ -224,9 +343,19 @@ if (networkFailures > 0) {
   );
 }
 
+if (inconclusive > 0) {
+  console.error(
+    `\n⚠️  ${inconclusive} contrôle(s) INCONCLUANT(S) (conflit de clé primaire ou 0\n` +
+      "   ligne affectée — pas une preuve de privilège). Relance en suivant le\n" +
+      "   conseil affiché à côté de chaque ⚠️ ci-dessus. AUCUNE conclusion de\n" +
+      "   sécurité ne peut être tirée de ce run pour ces points précis.",
+  );
+}
+
+const allGreen = failures === 0 && networkFailures === 0 && inconclusive === 0;
 console.log(
-  failures === 0 && networkFailures === 0
+  allGreen
     ? "\n✅ Toutes les garanties de sécurité tiennent.\n"
-    : `\n❌ ${failures} garantie(s) EN DÉFAUT — ne pas déployer.\n`,
+    : `\n❌ ${failures} garantie(s) EN DÉFAUT, ${inconclusive} INCONCLUANTE(S) — ne pas déployer.\n`,
 );
-process.exit(failures === 0 && networkFailures === 0 ? 0 : 1);
+process.exit(allGreen ? 0 : 1);
