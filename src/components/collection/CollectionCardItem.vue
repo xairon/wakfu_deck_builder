@@ -37,8 +37,13 @@
           F×{{ foilQuantity }}
         </span>
 
-        <!-- Badge « Erraté » : signal visible sans ouvrir la fiche -->
-        <ErrataBadge :card-id="card.id" class="absolute top-1 right-1 z-10" />
+        <!-- Badge « Erraté » : signal visible sans ouvrir la fiche.
+             Placé SOUS la rangée du haut : les 4 coins portent déjà des overlays
+             révélés au survol en z-20 (ajout au deck à gauche, retournement Héros
+             à droite, contrôles de possession en bas) qui masqueraient le badge
+             au moment même où l'utilisateur inspecte la carte. `top-9` dégage les
+             boutons de survol (h-7 + top-1 ≈ 32 px) et le tag foil. -->
+        <ErrataBadge :card-id="card.id" class="absolute right-1 top-9 z-10" />
 
         <!-- Pastille de possession / playset (permanente, lisible au tactile) -->
         <span
