@@ -639,7 +639,7 @@ import { highlightEffectHtml, splitEffectsAndNotes } from "@/utils/effectText";
 import { fetchErrata, type ErrataEntry } from "@/services/errataService";
 import OptimizedImage from "@/components/common/OptimizedImage.vue";
 
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const cardStore = useCardStore();
 const authStore = useAuthStore();
@@ -647,6 +647,9 @@ const toast = useToast();
 const router = useRouter();
 
 const searchQuery = ref("");
+const route = useRoute();
+// Pré-remplit la recherche depuis ?q= (lien « voir la carte » depuis /errata).
+if (typeof route.query.q === "string") searchQuery.value = route.query.q;
 const selectedExtension = ref("");
 const selectedMainType = ref("");
 const selectedSubType = ref("");
