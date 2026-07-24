@@ -114,6 +114,24 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
+      path: "/acces-refuse",
+      name: "accessDenied",
+      component: () => import("@/views/AccessDeniedView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("@/views/admin/AdminHomeView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: "/admin/comptes",
+      name: "adminAccounts",
+      component: () => import("@/views/admin/AdminAccountsView.vue"),
+      meta: { requiresAuth: true, requiresOwner: true },
+    },
+    {
       // « Partie » mène directement au module de jeu (lobby/table/tutoriel).
       // L'ancien compagnon de table (compteurs PV + chronomètre) a été retiré.
       // Redirection conservée pour les anciens liens /play.
@@ -205,6 +223,18 @@ router.beforeEach(async (to, from, next) => {
   // Déjà connecté et on ouvre /auth → vers la collection.
   if (to.name === "auth" && authStore.isAuthenticated) {
     next({ name: "collection" });
+    return;
+  }
+
+  // Rôles. `isAdmin`/`isOwner` ne servent qu'à l'aiguillage d'UI : la sécurité
+  // réelle est la RLS, qui refuse l'écriture même si quelqu'un force la route.
+  const requiresAdmin = to.matched.some((r) => r.meta.requiresAdmin);
+  const requiresOwner = to.matched.some((r) => r.meta.requiresOwner);
+  if (
+    (requiresAdmin && !authStore.isAdmin) ||
+    (requiresOwner && !authStore.isOwner)
+  ) {
+    next({ name: "accessDenied" });
     return;
   }
 
