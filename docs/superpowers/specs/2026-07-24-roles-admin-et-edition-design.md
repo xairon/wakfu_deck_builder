@@ -108,13 +108,23 @@ droit d'écriture sur cette seule colonne :
 
 ```sql
 -- `role` n'est modifiable QUE par le propriétaire du projet (SQL Editor / service_role,
--- qui contourne les privilèges de colonne). PostgREST refuse tout UPDATE mentionnant une
--- colonne non accordée : `profiles_update_own` continue de fonctionner pour `username`.
+-- qui contourne les privilèges de colonne) ou via set_user_role(). PostgREST refuse toute
+-- requête mentionnant une colonne non accordée : `profiles_update_own` continue de
+-- fonctionner pour `username`, et la colonne prend sa valeur par défaut ('user') à
+-- l'insertion.
 revoke update (role) on public.profiles from anon, authenticated;
+revoke insert (role) on public.profiles from anon, authenticated;
 ```
 
-L'ordre compte : la colonne est ajoutée **puis** le droit est retiré, dans la même
-migration, pour qu'il n'existe aucune fenêtre où `role` soit modifiable via l'API.
+⚠️ **Les DEUX `revoke` sont nécessaires.** Bloquer seulement l'`UPDATE` laisserait une
+seconde voie d'escalade : la policy `profiles_insert_own` (`0004`) autorise un utilisateur
+à **créer sa propre ligne de profil**, et `profileService.setUsername()` fait précisément un
+`upsert`. Sans `revoke insert (role)`, il suffirait de créer son profil avec
+`role: 'admin'` pour devenir administrateur. C'est le même trou que l'auto-promotion par
+update, par une porte différente.
+
+L'ordre compte : la colonne est ajoutée **puis** les droits sont retirés, dans la même
+migration, pour qu'il n'existe aucune fenêtre où `role` soit écrivable via l'API.
 
 Le point 4 de `scripts/checkAdminRls.mjs` (voir « Vérification ») existe précisément pour
 prouver que ce blocage tient en conditions réelles — et non parce qu'on l'a écrit.
@@ -411,7 +421,8 @@ vérifie que :
 1. un **anonyme** peut lire `rules_effective` et `card_errata` ;
 2. un **anonyme** ne peut **pas** écrire dans `rules_overrides` ni `card_errata` ;
 3. un **connecté non-admin** ne peut **pas** écrire non plus ;
-4. un utilisateur ne peut **pas** se promouvoir admin en écrivant `role` sur son profil ;
+4. un utilisateur ne peut **pas** se promouvoir admin en écrivant `role` sur son profil —
+   **ni par `update`, ni par `insert`/`upsert`** (les deux voies sont testées séparément) ;
 5. un **admin** ne peut **pas** appeler `set_user_role()` (réservée à l'`owner`), ni se
    promouvoir `owner`, ni rétrograder l'`owner` ;
 6. le **journal est infalsifiable** depuis l'API : une modification faite hors de l'UI
@@ -440,7 +451,7 @@ et `requiresOwner`), la base E2E étant vide comme en Phase 1.
 
 | Risque                                                                                                                                                              | Mitigation                                                                                                                                                                                                                                                                                                                                                            |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Auto-promotion** : la policy `profiles_update_own` (0004) n'a aucune restriction de colonne — ajouter `role` sans plus laisserait tout utilisateur se faire admin | `revoke update (role) on public.profiles from anon, authenticated;` **dans la même migration que l'ajout de la colonne**. Traité comme une exigence, pas comme un risque résiduel : voir « Blocage obligatoire de l'auto-promotion ». Prouvé en conditions réelles par le point 4 de `checkAdminRls.mjs`. **C'est le point de sécurité le plus important de ce lot.** |
+| **Auto-promotion, par DEUX voies** : `profiles_update_own` ET `profiles_insert_own` (0004) n'ont aucune restriction de colonne — et `setUsername()` fait un `upsert` | `revoke update (role)` **ET** `revoke insert (role)` `on public.profiles from anon, authenticated;` **dans la même migration que l'ajout de la colonne** — n'en bloquer qu'une laisse l'autre ouverte. Traité comme une exigence, pas comme un risque résiduel : voir « Blocage obligatoire de l'auto-promotion ». Prouvé en conditions réelles par le point 4 de `checkAdminRls.mjs`. **C'est le point de sécurité le plus important de ce lot.** |
 | Un admin dégrade le texte officiel des règles                                                                                                                       | `body_official` conserve l'original, « rétablir l'officiel » est une suppression d'override, et le marqueur « corrigé » informe le lecteur                                                                                                                                                                                                                            |
 | Le seed errata détruit le travail admin                                                                                                                             | Garde « refuse si non vide » + `--force` explicite                                                                                                                                                                                                                                                                                                                    |
 | `is_admin()` en `security definer` mal cadrée                                                                                                                       | `search_path` figé à `public`, fonction `stable`, ne lit que `profiles`                                                                                                                                                                                                                                                                                               |
