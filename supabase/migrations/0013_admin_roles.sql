@@ -46,7 +46,7 @@ $$;
 -- ── 3. Journal (append-only, alimenté par TRIGGERS) ──────────────────────────
 create table if not exists public.admin_audit (
   id          bigint generated always as identity primary key,
-  actor       uuid references public.profiles (user_id),  -- null = seed / système
+  actor       uuid references public.profiles (user_id) on delete set null,  -- null = seed / système, ou acteur supprimé
   action      text not null check (action in ('create','update','delete')),
   entity      text not null check (entity in ('rule_override','errata','role')),
   entity_key  text not null,
@@ -67,6 +67,9 @@ create policy "admin_audit_select_admin" on public.admin_audit
 -- AUCUNE policy insert/update/delete : seuls les triggers `security definer`
 -- (et service_role) écrivent. Le journal est donc infalsifiable depuis l'API.
 
+-- Extraction de la clé via JSONB : `rules_overrides` a `number` (pas d'`id`),
+-- `card_errata` a `id` (pas de `number`) ; le coalesce prend celle qui existe
+-- sur la ligne réellement fournie par OLD/NEW, sans branche par table.
 create or replace function public.log_admin_change()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare
@@ -74,11 +77,9 @@ declare
   v_key    text;
 begin
   if tg_op = 'DELETE' then
-    v_key := case v_entity when 'rule_override' then old.number::text
-                           else old.id::text end;
+    v_key := coalesce(to_jsonb(old) ->> 'number', to_jsonb(old) ->> 'id');
   else
-    v_key := case v_entity when 'rule_override' then new.number::text
-                           else new.id::text end;
+    v_key := coalesce(to_jsonb(new) ->> 'number', to_jsonb(new) ->> 'id');
   end if;
 
   insert into public.admin_audit
@@ -105,7 +106,7 @@ create table if not exists public.rules_overrides (
   title      text,
   body       text,
   sort_order int,
-  updated_by uuid references public.profiles (user_id),
+  updated_by uuid references public.profiles (user_id) on delete set null,
   updated_at timestamptz not null default now()
 );
 
@@ -148,7 +149,7 @@ full outer join public.rules_overrides o using (number);
 
 -- ── 5. Errata : écriture admin + journal ─────────────────────────────────────
 alter table public.card_errata
-  add column if not exists updated_by uuid references public.profiles (user_id);
+  add column if not exists updated_by uuid references public.profiles (user_id) on delete set null;
 
 drop policy if exists "card_errata_write_admin" on public.card_errata;
 create policy "card_errata_write_admin" on public.card_errata
@@ -175,6 +176,10 @@ begin
   end if;
 
   update public.profiles set role = p_role where user_id = p_user_id;
+
+  if not found then
+    raise exception 'Utilisateur introuvable : %', p_user_id;
+  end if;
 
   insert into public.admin_audit (actor, action, entity, entity_key, after_data)
   values (auth.uid(), 'update', 'role', p_user_id::text,
