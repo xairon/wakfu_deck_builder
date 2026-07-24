@@ -34,14 +34,14 @@ problème qui ne se pose pas. À réexaminer au moment du lot 2.
 
 ## Décisions structurantes
 
-| Décision               | Choix retenu                                                                                 | Raison                                                                                  |
-| ---------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Modèle de confiance    | **Un seul rôle `admin`**, écriture directe, sans validation                                  | Colle à la demande : le rôle n'est donné qu'à des gens connus                           |
-| Attribution du rôle    | **En SQL par le propriétaire**, pas d'UI                                                     | Évite le problème d'amorçage (il faut un admin pour créer un admin) ; coût réel ≈ 30 s  |
-| Périmètre errata       | **CRUD complet**                                                                             | Contenu curé, plus aucune source amont depuis la suppression d'`errata.json`            |
-| Périmètre règles       | **Corriger le texte + ajouter des règles manquantes**, corpus ancré sur la source officielle | Répond au « il manque quelques points de règles » sans renoncer au re-scrape            |
-| Survie des corrections | **Table d'overrides + vue de fusion**                                                        | Le re-scrape reste une opération anodine ; annuler une correction = supprimer une ligne |
-| Traçabilité            | **Attribution simple** (`updated_by` / `updated_at`)                                         | Quasi gratuit ; l'historique complet est le lot 3                                       |
+| Décision               | Choix retenu                                                                                       | Raison                                                                                   |
+| ---------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Modèle de confiance    | **Écriture directe, sans validation** — `owner` / `admin` / `user`                                 | Colle à la demande : le rôle n'est donné qu'à des gens connus                            |
+| Attribution du rôle    | **Page `/admin/comptes` réservée à l'`owner`** ; le rôle `owner` lui-même se pose en SQL, une fois | Résout l'amorçage sans permettre à un admin de révoquer le propriétaire                  |
+| Périmètre errata       | **CRUD complet**                                                                                   | Contenu curé, plus aucune source amont depuis la suppression d'`errata.json`             |
+| Périmètre règles       | **Corriger le texte + ajouter des règles manquantes**, corpus ancré sur la source officielle       | Répond au « il manque quelques points de règles » sans renoncer au re-scrape             |
+| Survie des corrections | **Table d'overrides + vue de fusion**                                                              | Le re-scrape reste une opération anodine ; annuler une correction = supprimer une ligne  |
+| Traçabilité            | **Journal append-only** (`admin_audit`) écrit par des **triggers**, consultable et filtrable       | Un journal écrit par le client peut ne pas l'être ; la restauration reste hors périmètre |
 
 ## Modèle de données
 
@@ -52,21 +52,43 @@ Migration `supabase/migrations/0013_admin_roles.sql`, idempotente, applicable au
 ```sql
 alter table public.profiles
   add column if not exists role text not null default 'user'
-  check (role in ('user','admin'));
+  check (role in ('user','admin','owner'));
 
--- Lue par TOUTES les policies d'écriture. `security definer` + search_path figé :
--- idiome déjà utilisé dans le projet (append_event, find_game_by_code).
+-- Lue par TOUTES les policies d'écriture de contenu. `owner` peut tout ce que peut
+-- `admin`. `security definer` + search_path figé : idiome déjà utilisé dans le
+-- projet (append_event, find_game_by_code).
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
     select 1 from public.profiles
-    where user_id = auth.uid() and role = 'admin'
+    where user_id = auth.uid() and role in ('admin','owner')
+  );
+$$;
+
+-- Gestion des comptes : réservée au propriétaire.
+create or replace function public.is_owner()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.profiles
+    where user_id = auth.uid() and role = 'owner'
   );
 $$;
 ```
 
-Attribution : `update public.profiles set role='admin' where user_id='…'`, exécuté par le
-propriétaire dans le SQL Editor.
+### Trois niveaux
+
+| Rôle    | Édite règles / errata | Gère les comptes | Comment on l'obtient            |
+| ------- | --------------------- | ---------------- | ------------------------------- |
+| `user`  | non                   | non              | par défaut                      |
+| `admin` | **oui**               | non              | promu par l'`owner` depuis l'UI |
+| `owner` | oui                   | **oui**          | **SQL uniquement**, une fois    |
+
+Conséquence voulue : **aucun admin ne peut révoquer le propriétaire ni se promouvoir
+`owner`** — le rôle `owner` n'est jamais attribuable via l'API (voir la RPC ci-dessous).
+
+**Amorçage, une seule fois** : `update public.profiles set role='owner' where user_id='…'`
+dans le SQL Editor. C'est le seul rôle posé à la main — les `admin` sont ensuite promus
+depuis `/admin/comptes`.
 
 #### ⛔ Blocage obligatoire de l'auto-promotion — la partie critique de ce lot
 
@@ -96,6 +118,113 @@ migration, pour qu'il n'existe aucune fenêtre où `role` soit modifiable via l'
 
 Le point 4 de `scripts/checkAdminRls.mjs` (voir « Vérification ») existe précisément pour
 prouver que ce blocage tient en conditions réelles — et non parce qu'on l'a écrit.
+
+### Attribuer un rôle depuis l'UI (réservé à l'`owner`)
+
+Le `revoke` ci-dessus ferme l'écriture directe de `role` **pour tout le monde**. La page de
+gestion des comptes passe donc par une RPC contrôlée, seul chemin d'attribution :
+
+```sql
+create or replace function public.set_user_role(p_user_id uuid, p_role text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_owner() then
+    raise exception 'Réservé au propriétaire';
+  end if;
+  -- `owner` n'est JAMAIS attribuable via l'API : il se pose en SQL, une fois.
+  if p_role not in ('user','admin') then
+    raise exception 'Rôle non attribuable : %', p_role;
+  end if;
+  -- On ne rétrograde pas un owner (y compris soi-même) : sinon le projet peut
+  -- se retrouver sans personne pour gérer les comptes.
+  if exists (select 1 from public.profiles
+             where user_id = p_user_id and role = 'owner') then
+    raise exception 'Le propriétaire ne peut pas être modifié depuis l''UI';
+  end if;
+
+  update public.profiles set role = p_role where user_id = p_user_id;
+
+  insert into public.admin_audit (actor, action, entity, entity_key, after_data)
+  values (auth.uid(), 'update', 'role', p_user_id::text,
+          jsonb_build_object('role', p_role));
+end;
+$$;
+
+revoke all on function public.set_user_role(uuid, text) from public, anon;
+grant execute on function public.set_user_role(uuid, text) to authenticated;
+```
+
+Trois garde-fous délibérés : seul l'`owner` l'appelle, `owner` n'est pas attribuable, et un
+`owner` ne peut pas être rétrogradé — le projet ne peut donc jamais se retrouver orphelin
+de gestion des comptes.
+
+### Journal de modifications
+
+Append-only, **écrit par des triggers en base**, jamais par le client :
+
+```sql
+create table if not exists public.admin_audit (
+  id          bigint generated always as identity primary key,
+  actor       uuid references public.profiles (user_id),  -- null = seed / système
+  action      text not null check (action in ('create','update','delete')),
+  entity      text not null check (entity in ('rule_override','errata','role')),
+  entity_key  text not null,   -- rules_overrides.number | card_errata.id | user_id ciblé
+  before_data jsonb,
+  after_data  jsonb,
+  created_at  timestamptz not null default now()
+);
+create index if not exists admin_audit_created_at_idx
+  on public.admin_audit (created_at desc);
+
+create or replace function public.log_admin_change()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_entity text := tg_argv[0];
+  v_key    text;
+begin
+  v_key := case when tg_op = 'DELETE' then
+              case v_entity when 'rule_override' then old.number::text
+                            else old.id::text end
+           else
+              case v_entity when 'rule_override' then new.number::text
+                            else new.id::text end
+           end;
+
+  insert into public.admin_audit (actor, action, entity, entity_key, before_data, after_data)
+  values (
+    auth.uid(),
+    lower(case tg_op when 'INSERT' then 'create' else tg_op end),
+    v_entity,
+    v_key,
+    case when tg_op in ('UPDATE','DELETE') then to_jsonb(old) end,
+    case when tg_op in ('INSERT','UPDATE') then to_jsonb(new) end
+  );
+  return null;  -- trigger AFTER : la valeur de retour est ignorée
+end;
+$$;
+
+drop trigger if exists rules_overrides_audit on public.rules_overrides;
+create trigger rules_overrides_audit
+  after insert or update or delete on public.rules_overrides
+  for each row execute function public.log_admin_change('rule_override');
+
+drop trigger if exists card_errata_audit on public.card_errata;
+create trigger card_errata_audit
+  after insert or update or delete on public.card_errata
+  for each row execute function public.log_admin_change('errata');
+```
+
+**Pourquoi des triggers et pas le client** : un journal écrit par le front peut simplement
+ne pas être écrit — il suffit d'appeler l'API directement. Avec des triggers, toute
+écriture qui passe laisse une trace, y compris celles faites hors de l'UI. C'est la
+différence entre un journal et une décoration.
+
+`actor` est nullable : un seed (`service_role`) n'a pas d'`auth.uid()`, et une ligne
+`actor = null` se lit « système » plutôt que d'être faussement attribuée à quelqu'un.
+
+Le journal est **en lecture pour les admins et l'owner uniquement** (il dit qui a fait quoi)
+et **en écriture pour personne** via l'API : seuls les triggers `security definer` y
+insèrent.
 
 ### Corrections et ajouts de règles
 
@@ -147,13 +276,14 @@ corrections, ce qui était la contrainte posée.
 
 ### Policies
 
-| Table / vue       | Lecture                              | Écriture                                |
-| ----------------- | ------------------------------------ | --------------------------------------- |
-| `profiles.role`   | publique (déjà)                      | **aucune** via l'API — SQL uniquement   |
-| `rules`           | anon (déjà)                          | `service_role` seulement (le seed)      |
-| `rules_overrides` | anon                                 | `is_admin()` (insert / update / delete) |
-| `card_errata`     | anon (déjà)                          | `is_admin()` (insert / update / delete) |
-| `rules_effective` | hérite des tables (security_invoker) | — (vue)                                 |
+| Table / vue       | Lecture                              | Écriture                                                                                                                   |
+| ----------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `profiles.role`   | publique (déjà)                      | **aucune écriture directe** (`revoke update (role)`) — uniquement via `set_user_role()`, réservée à l'`owner`              |
+| `rules`           | anon (déjà)                          | `service_role` seulement (le seed)                                                                                         |
+| `rules_overrides` | anon                                 | `is_admin()` (insert / update / delete)                                                                                    |
+| `card_errata`     | anon (déjà)                          | `is_admin()` (insert / update / delete)                                                                                    |
+| `rules_effective` | hérite des tables (security_invoker) | — (vue)                                                                                                                    |
+| `admin_audit`     | `is_admin()` seulement               | **personne** via l'API — seuls les triggers `security definer` insèrent ; aucun `update`/`delete` nulle part (append-only) |
 
 ## Neutralisation d'un piège créé en Phase 1
 
@@ -172,7 +302,7 @@ dans `rules_overrides`, qu'il ne touche pas.
 
 ### Authentification
 
-`authStore` gagne `role` et `isAdmin`, chargés depuis `profiles` à l'initialisation de
+`authStore` gagne `role`, `isAdmin` (admin **ou** owner) et `isOwner`, chargés depuis `profiles` à l'initialisation de
 session (là où le pseudo est déjà lu).
 
 ⚠️ **`isAdmin` côté client ne sert QU'À afficher ou masquer l'UI.** La sécurité réelle est
@@ -181,7 +311,12 @@ base pour un non-admin, même en forçant la route ou en appelant l'API directem
 
 ### Routes
 
-`/admin` (index), `/admin/errata`, `/admin/regles` — `meta: { requiresAdmin: true }`, lazy.
+`/admin` (index), `/admin/errata`, `/admin/regles`, `/admin/journal` —
+`meta: { requiresAdmin: true }`, lazy.
+
+`/admin/comptes` — `meta: { requiresOwner: true }` : gestion des rôles, visible et
+accessible **uniquement** pour l'`owner`. Un admin qui l'atteint reçoit le même écran
+« Accès réservé », et la RPC le refuserait de toute façon.
 
 Le garde `beforeEach` s'étend d'une branche : non connecté → `/auth?redirect=`
 (comportement existant) ; connecté **non admin** → écran **« Accès réservé »** explicite,
@@ -233,6 +368,23 @@ Réutilise la liste et la recherche de `/regles/officielles`. Sur une règle :
 ajoutée **reprend le `sort_order` de la règle qui la précède**, et la lecture trie par
 **`(sort_order, number)`** : `418.5c` se range donc après `418.5b` sans toucher au reste.
 
+### `/admin/journal`
+
+Le journal, du plus récent au plus ancien : date, auteur (pseudo depuis `profiles`),
+action, entité et clé, avec le **avant / après** dépliable. Filtres par **auteur**, par
+**date** et par **type d'entité**. Lecture seule — c'est un journal, on n'y touche pas.
+
+Les lignes `actor = null` s'affichent « système » (un seed n'a pas d'utilisateur connecté).
+
+### `/admin/comptes` — réservé à l'`owner`
+
+Liste des profils (pseudo, rôle actuel), avec promotion `user` → `admin` et révocation
+`admin` → `user`, chacune derrière le `ConfirmDialog`. Tout passe par `set_user_role()`.
+
+L'`owner` apparaît dans la liste mais **sans action possible** : la RPC refuse de le
+modifier, et l'UI le reflète plutôt que de proposer un bouton qui échouera. Le rôle `owner`
+n'est jamais proposé à l'attribution — il se pose en SQL, une fois.
+
 ### Côté lecteur (non-admin)
 
 Rien ne change, **sauf** un point d'honnêteté : une règle dont le texte officiel a été
@@ -259,22 +411,30 @@ vérifie que :
 1. un **anonyme** peut lire `rules_effective` et `card_errata` ;
 2. un **anonyme** ne peut **pas** écrire dans `rules_overrides` ni `card_errata` ;
 3. un **connecté non-admin** ne peut **pas** écrire non plus ;
-4. un utilisateur ne peut **pas** se promouvoir admin en modifiant son propre profil.
+4. un utilisateur ne peut **pas** se promouvoir admin en écrivant `role` sur son profil ;
+5. un **admin** ne peut **pas** appeler `set_user_role()` (réservée à l'`owner`), ni se
+   promouvoir `owner`, ni rétrograder l'`owner` ;
+6. le **journal est infalsifiable** depuis l'API : une modification faite hors de l'UI
+   laisse quand même une ligne, et personne ne peut ni modifier ni supprimer une ligne
+   existante d'`admin_audit` ;
+7. `admin_audit` n'est **pas lisible** par un anonyme ni par un simple utilisateur.
 
 C'est exactement le contrôle qui a rattrapé la Phase 1 : le seed passait en `service_role`,
 qui **contourne** la RLS — sans lecture en anon, on aurait cru la policy bonne alors que
 rien ne le prouvait.
 
 Le reste : tests unitaires sur `adminService` (Supabase moqué) et sur le rafraîchissement
-de cache ; tests de composants sur les écrans d'admin et sur le marqueur « corrigé » ; E2E
-limité au comportement du garde de route (la base E2E est vide, comme en Phase 1).
+de cache ; tests de composants sur les écrans d'admin, le journal, la gestion des comptes
+et le marqueur « corrigé » ; E2E limité au comportement des gardes de route (`requiresAdmin`
+et `requiresOwner`), la base E2E étant vide comme en Phase 1.
 
 ## Hors périmètre de ce lot
 
-- UI de gestion des comptes (attribution du rôle en SQL).
-- Historique, versions, revert (lot 3).
+- **Restauration** d'une version antérieure (le journal est consultable, pas réversible) —
+  pour les règles, « rétablir l'officiel » couvre déjà le cas courant.
 - Édition des **cartes** (lot 2).
 - Workflow de propositions / modération (écarté : modèle de confiance directe retenu).
+- Attribution du rôle `owner` via l'UI (SQL uniquement, par conception).
 
 ## Risques
 
@@ -285,3 +445,7 @@ limité au comportement du garde de route (la base E2E est vide, comme en Phase 
 | Le seed errata détruit le travail admin                                                                                                                             | Garde « refuse si non vide » + `--force` explicite                                                                                                                                                                                                                                                                                                                    |
 | `is_admin()` en `security definer` mal cadrée                                                                                                                       | `search_path` figé à `public`, fonction `stable`, ne lit que `profiles`                                                                                                                                                                                                                                                                                               |
 | Cache client périmé après écriture                                                                                                                                  | `refresh()` appelé après chaque écriture réussie                                                                                                                                                                                                                                                                                                                      |
+| **Un admin se promeut `owner`** ou révoque le propriétaire                                                                                                          | `set_user_role()` n'accepte que `user`/`admin`, exige `is_owner()`, et refuse toute cible déjà `owner`. Le rôle `owner` ne s'obtient qu'en SQL. Vérifié par le point 5 de `checkAdminRls.mjs`                                                                                                                                                                         |
+| **Journal contourné** : une modification faite hors de l'UI ne laisserait pas de trace                                                                              | Le journal est écrit par des **triggers en base**, pas par le client — toute écriture qui passe la RLS est tracée. Aucun `update`/`delete` n'est accordé sur `admin_audit` (append-only). Vérifié par le point 6                                                                                                                                                      |
+| Projet orphelin de gestion des comptes (plus aucun `owner`)                                                                                                         | La RPC refuse de modifier un `owner`, y compris soi-même ; la rétrogradation ne peut donc pas se faire depuis l'UI                                                                                                                                                                                                                                                    |
+| `admin_audit` grossit indéfiniment                                                                                                                                  | Volume attendu très faible (quelques éditions par semaine, poignée d'admins). Aucune purge dans ce lot — à revoir si le rythme change                                                                                                                                                                                                                                 |
