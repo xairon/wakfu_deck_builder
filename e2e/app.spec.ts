@@ -96,6 +96,17 @@ test.describe("Navigation principale", () => {
     await expect(page).toHaveURL(/\/collection/);
   });
 
+  test("devrait naviguer vers Errata depuis la navigation principale", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Errata", exact: true }).click();
+    await expect(page).toHaveURL(/\/errata/);
+    await expect(
+      page.getByRole("heading", { name: "Errata", level: 1 }),
+    ).toBeVisible();
+  });
+
   test("devrait naviguer vers les decks (utilisateur connecté)", async ({
     page,
   }) => {

@@ -204,6 +204,7 @@ const navItems = [
   { to: "/decks", label: "Decks", match: ["/decks", "/deck"] },
   { to: "/play/table", label: "Partie", match: ["/play"] },
   { to: "/regles", label: "Règles", match: ["/regles"] },
+  { to: "/errata", label: "Errata", match: ["/errata"] },
 ];
 function isActive(item: (typeof navItems)[number]): boolean {
   if (item.to === "/") return route.path === "/";
