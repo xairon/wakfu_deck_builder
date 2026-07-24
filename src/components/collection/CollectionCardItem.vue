@@ -37,6 +37,14 @@
           F×{{ foilQuantity }}
         </span>
 
+        <!-- Badge « Erraté » : signal visible sans ouvrir la fiche.
+             Placé SOUS la rangée du haut : les 4 coins portent déjà des overlays
+             révélés au survol en z-20 (ajout au deck à gauche, retournement Héros
+             à droite, contrôles de possession en bas) qui masqueraient le badge
+             au moment même où l'utilisateur inspecte la carte. `top-9` dégage les
+             boutons de survol (h-7 + top-1 ≈ 32 px) et le tag foil. -->
+        <ErrataBadge :card-id="card.id" class="absolute right-1 top-9 z-10" />
+
         <!-- Pastille de possession / playset (permanente, lisible au tactile) -->
         <span
           v-if="authStore.isAuthenticated && isOwned"
@@ -181,6 +189,7 @@ import { computed, ref } from "vue";
 import type { Card } from "@/types/cards";
 import { useAuthStore } from "@/stores/authStore";
 import { getThumbPath } from "@/utils/imagePaths";
+import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 // Définition des props
 interface Props {

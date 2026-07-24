@@ -73,7 +73,11 @@ vi.mock("@/composables/useCardFilter", async (importOriginal) => {
 // Services externes
 vi.mock("@/services/supabase", () => ({ isSupabaseConfigured: () => false }));
 vi.mock("@/services/cloudSync", () => ({}));
-vi.mock("@/services/errataService", () => ({ fetchErrata: async () => [] }));
+vi.mock("@/services/errataService", () => ({
+  fetchErrata: async () => [],
+  hasErrata: () => false,
+  preloadErrata: async () => {},
+}));
 vi.mock("@/utils/effectText", () => ({
   highlightEffectHtml: (t: string) => t,
 }));

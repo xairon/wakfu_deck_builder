@@ -147,7 +147,8 @@
             <p
               class="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-base-content/45"
             >
-              {{ e.date }}<span v-if="e.source"> · {{ e.source }}</span>
+              {{ formatFrenchDate(e.date)
+              }}<span v-if="e.source"> · {{ e.source }}</span>
             </p>
           </li>
         </ul>
@@ -193,6 +194,7 @@ import {
   type EffectAnnotationKind,
 } from "@/utils/effectText";
 import { glossaryHints } from "@/utils/glossaryHints";
+import { formatFrenchDate } from "@/utils/date";
 
 type DisplayEffect = { description: string; kind?: EffectAnnotationKind };
 

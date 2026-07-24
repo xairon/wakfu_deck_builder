@@ -475,7 +475,8 @@
                     <p
                       class="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-base-content/45"
                     >
-                      {{ e.date }}<span v-if="e.source"> · {{ e.source }}</span>
+                      {{ formatFrenchDate(e.date)
+                      }}<span v-if="e.source"> · {{ e.source }}</span>
                     </p>
                   </div>
                 </div>
@@ -636,10 +637,15 @@ import CollectionGrid from "@/components/collection/CollectionGrid.vue";
 import CollectionCompletion from "@/components/collection/CollectionCompletion.vue";
 import QuickAddModal from "@/components/collection/QuickAddModal.vue";
 import { highlightEffectHtml, splitEffectsAndNotes } from "@/utils/effectText";
-import { fetchErrata, type ErrataEntry } from "@/services/errataService";
+import {
+  fetchErrata,
+  preloadErrata,
+  type ErrataEntry,
+} from "@/services/errataService";
+import { formatFrenchDate } from "@/utils/date";
 import OptimizedImage from "@/components/common/OptimizedImage.vue";
 
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const cardStore = useCardStore();
 const authStore = useAuthStore();
@@ -647,6 +653,9 @@ const toast = useToast();
 const router = useRouter();
 
 const searchQuery = ref("");
+const route = useRoute();
+// Pré-remplit la recherche depuis ?q= (lien « voir la carte » depuis /errata).
+if (typeof route.query.q === "string") searchQuery.value = route.query.q;
 const selectedExtension = ref("");
 const selectedMainType = ref("");
 const selectedSubType = ref("");
@@ -984,6 +993,11 @@ function closeModal() {
 
 // Initialisation
 onMounted(async () => {
+  // Précharge l'index d'erratas tôt (badge « Erraté » sur les tuiles) — en
+  // parallèle du chargement des cartes, dégradation silencieuse en cas
+  // d'échec (cf. errataService.ts).
+  void preloadErrata();
+
   try {
     if (!cardStore.isInitialized) {
       await cardStore.initialize();

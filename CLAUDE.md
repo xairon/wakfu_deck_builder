@@ -14,9 +14,9 @@ aux decks.
 - **State**: Pinia 3
 - **Styling**: Tailwind CSS 3 + DaisyUI 4 + Headless UI
 - **Auth**: Supabase (REQUIS — application cloud-only)
-- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~1664 tests unitaires, 134 fichiers
+- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~2235 tests unitaires, 248 fichiers
 - **Type-check**: `npm run type-check` (`vue-tsc --noEmit`) — **seul garde-fou de types** (le build esbuild ne type-check pas) ; branché en CI (job « Lint & Types »)
-- **E2E**: Playwright + Chromium — ~30 tests, 2 fichiers (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat)
+- **E2E**: Playwright + Chromium — ~33 tests, 2 fichiers (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat, errata, règles officielles)
 - **PWA**: vite-plugin-pwa + Workbox (installable, cache d'assets, install prompt)
 - **Linting**: ESLint 9 + Prettier
 - **Déploiement web**: Vercel (SPA)
@@ -32,12 +32,12 @@ src/
 ├── game/           # Moteur de jeu event-sourced (engine, rules, types)
 ├── router/         # Vue Router (routes lazy-loadées, guards auth)
 ├── server/         # Serveur Express (dev uniquement)
-├── services/       # Logique métier (cardLoader, localStorage, supabase, cloudSync...)
+├── services/       # Logique métier (cardLoader, localStorage, supabase, cloudSync, errataService, rulesService...)
 ├── stores/         # Stores Pinia (cardStore, deckStore, authStore, gameStore, tutorialStore)
 ├── types/          # Types TypeScript canoniques (cards.ts = source unique)
 ├── utils/          # Utilitaires (errors, logger, performance, imagePaths, deckSharing)
 ├── validators/     # Validation (règles de deck)
-└── views/          # Pages (Home, Collection, DeckBuilder, Decks, DeckDetail, Official(Decks|DeckDetail), CommunityDecks, SharedDeck, Auth, Profile, PlayTable, Rules, FirstSteps, About, Credits, LegalNotice, Terms)
+└── views/          # Pages (Home, Collection, DeckBuilder, Decks, DeckDetail, Official(Decks|DeckDetail), CommunityDecks, SharedDeck, Auth, Profile, PlayTable, Rules, RulesOfficial, Errata, FirstSteps, About, Credits, LegalNotice, Terms)
 ```
 
 ## Commandes
@@ -47,7 +47,7 @@ src/
 - `npm run type-check` — Vérif TypeScript (`vue-tsc --noEmit`) — le seul gate de types
 - `npm run test` — Tests unitaires (watch)
 - `npm run test:unit` — Tests unitaires jsdom
-- `npx vitest run` — Tests en mode CI (~1664 tests)
+- `npx vitest run` — Tests en mode CI (~2235 tests)
 - `npm run coverage` — Rapport de couverture
 - `npm run test:e2e` — Tests E2E Playwright (build + preview requis)
 - `npm run optimize-images` — Optimisation WebP + thumbnails (sharp)
@@ -106,6 +106,7 @@ src/
 - **PWA** : Application installable (écran d'accueil), cache d'assets via Workbox, prompt d'installation
 - **Optimisation d'images** : Pipeline WebP + thumbnails via sharp (`scripts/optimizeImages.ts`)
 - **Accessibilité** : Skip nav, labels ARIA, `lang="fr"`, meta descriptions, contraste thèmes
+- **Errata & règles officielles** : page `/errata` (liste groupée par extension, recherche, avant/après) + badge « Erraté » sur les cartes concernées (collection + atelier de deck, `ErrataBadge.vue`) ; `/regles/officielles` = texte intégral des règles officielles, chaque règle adressable par son numéro (ancre `#418.5b`, défilement auto + recherche). Contenu servi depuis Supabase (tables `rules` / `card_errata`, migration `supabase/migrations/0012_rules_errata.sql`), importé par `scripts/seedRules.mjs` et `scripts/seedErrata.mjs`. **Au 2026-07-24, ces deux tables sont encore vides** : le seed n'a volontairement pas été lancé par l'agent (aucun accès Supabase) — un humain doit exécuter les deux scripts avec `SUPABASE_MGMT_TOKEN` une fois la migration appliquée avant que les pages n'affichent du contenu (elles se dégradent proprement en attendant). `public/data/errata.json` reste présent intentionnellement (source du seed one-shot) et ne sera supprimé qu'une fois le seed vérifié.
 
 ## CI/CD
 
@@ -115,7 +116,7 @@ src/
 ## E2E Tests (Playwright)
 
 - Config : `playwright.config.ts` — Chromium, `vite preview` sur `127.0.0.1:4173`
-- Tests : `e2e/app.spec.ts` (~29) + `e2e/a11y.spec.ts` — ~30 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, **table de jeu** : lobby→plateau, tutoriel, combat). Auth e2e via injection user Pinia + nav SPA ; build CI avec `VITE_SUPABASE_*` factices (sinon overlay « Configuration requise »)
+- Tests : `e2e/app.spec.ts` (~32) + `e2e/a11y.spec.ts` — ~33 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, **table de jeu** : lobby→plateau, tutoriel, combat, **errata** : page publique + contrôles, **règles officielles** : dégradation explicite sans données + renvoi depuis `/regles`). Auth e2e via injection user Pinia + nav SPA ; build CI avec `VITE_SUPABASE_*` factices (sinon overlay « Configuration requise »)
 - Lancer : `npm run build && npm run test:e2e` (CI : `workers:1`)
 
 ## Aliases

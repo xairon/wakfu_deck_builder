@@ -96,6 +96,17 @@ test.describe("Navigation principale", () => {
     await expect(page).toHaveURL(/\/collection/);
   });
 
+  test("devrait naviguer vers Errata depuis la navigation principale", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Errata", exact: true }).click();
+    await expect(page).toHaveURL(/\/errata/);
+    await expect(
+      page.getByRole("heading", { name: "Errata", level: 1 }),
+    ).toBeVisible();
+  });
+
   test("devrait naviguer vers les decks (utilisateur connecté)", async ({
     page,
   }) => {
@@ -538,4 +549,43 @@ test.describe("Accessibilité", () => {
       expect(ariaLabel || id || placeholder).toBeTruthy();
     }
   });
+});
+
+// IMPORTANT : la CI construit avec des VITE_SUPABASE_* FACTICES → aucune base
+// réelle, donc `rules` et `card_errata` sont vides en E2E. Ces tests valident
+// donc le SQUELETTE (route publique, titre, contrôles, dégradation explicite),
+// jamais un contenu seedé — sinon ils échoueraient systématiquement en CI.
+
+test("la page Errata est publique et expose ses contrôles", async ({
+  page,
+}) => {
+  await page.goto("/errata");
+  await expect(
+    page.getByRole("heading", { name: "Errata", level: 1 }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("searchbox", { name: /Rechercher une carte/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("combobox", { name: /Trier les errata/i }),
+  ).toBeVisible();
+});
+
+test("les règles officielles sont publiques et dégradent explicitement sans base", async ({
+  page,
+}) => {
+  await page.goto("/regles/officielles#418.5b");
+  await expect(
+    page.getByRole("heading", { name: "Règles officielles" }),
+  ).toBeVisible();
+  // Sans base : message d'indisponibilité explicite, jamais une page blanche.
+  await expect(page.getByText(/Règles indisponibles/i)).toBeVisible();
+});
+
+test("la page Règles renvoie vers les règles officielles", async ({ page }) => {
+  await page.goto("/regles");
+  await page
+    .getByRole("link", { name: /règles officielles complètes/i })
+    .click();
+  await expect(page).toHaveURL(/\/regles\/officielles/);
 });
