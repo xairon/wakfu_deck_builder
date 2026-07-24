@@ -20,6 +20,12 @@ vi.mock("@/services/errataService", () => ({
 import ErrataView from "@/views/ErrataView.vue";
 import { useCardStore } from "@/stores/cardStore";
 
+// RouterLink stub with `props` declared so the `to` prop can be inspected
+const RouterLinkStub = {
+  props: ["to"],
+  template: "<a><slot /></a>",
+};
+
 function mountView() {
   const store = useCardStore();
   store.cards = [
@@ -40,7 +46,7 @@ function mountView() {
   // pas le contenu par défaut, et le nom de la carte disparaîtrait de text().
   return mount(ErrataView, {
     global: {
-      stubs: { RouterLink: { template: "<a><slot /></a>" } },
+      stubs: { RouterLink: RouterLinkStub },
     },
   });
 }
@@ -80,7 +86,21 @@ describe("ErrataView", () => {
   it("devrait lier chaque entrée vers la carte", async () => {
     const w = mountView();
     await w.vm.$nextTick();
-    expect(w.findAll("a").length).toBeGreaterThan(0);
+
+    // Find all RouterLink components by the stub reference
+    const routerLinks = w.findAllComponents(RouterLinkStub);
+    expect(routerLinks.length).toBeGreaterThan(0);
+
+    // Find the link for "Opée Tissoin" and verify the `to` prop includes the query
+    const opeeLink = routerLinks.find((link) =>
+      link.text().includes("Opée Tissoin"),
+    );
+
+    expect(opeeLink).toBeDefined();
+    expect(opeeLink?.props("to")).toEqual({
+      name: "collection",
+      query: { q: "Opée Tissoin" },
+    });
   });
 
   it("devrait basculer en tri par date (un seul groupe, récent d'abord)", async () => {
