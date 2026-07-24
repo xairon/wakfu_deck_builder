@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rendre les errata découvrables (page liste + badge sur les cartes) et publier les règles officielles complètes (112 sections ancrées par numéro), le tout servi depuis Supabase.
+**Goal:** Rendre les errata découvrables (page liste + badge sur les cartes) et publier les règles officielles complètes (79 sections ancrées par numéro), le tout servi depuis Supabase.
 
 **Architecture :** Deux nouvelles tables Supabase (`rules`, `card_errata`) en lecture publique (anon) / écriture `service_role`. Le contenu est importé par des scripts (scrape des règles officielles ; migration one-shot d'`errata.json`) puis servi au front par deux services symétriques qui chargent l'index complet **une seule fois** et le mettent en cache (mémoire + `localStorage`), exactement comme `cardLoader`. Deux nouvelles vues lazy-loadées consomment ces services. Les 1585 cartes restent en JSON statique.
 
@@ -858,7 +858,7 @@ npx tsx scripts/scrapeRules.ts > /tmp/rules.json
 node -e "const r=require('/tmp/rules.json');console.log('chapitres',r.filter(x=>x.kind==='chapter').length,'sections',r.filter(x=>x.kind==='section').length,'regles',r.filter(x=>x.kind==='rule').length)"
 ```
 
-Expected: **8 chapitres** et **112 sections** (valeurs attendues du spec). Si l'écart est important, ajuster les regex **avant** de passer à la Task 6 — le seed ne doit jamais peupler la base avec un parsing douteux.
+Expected: **8 chapitres** et **79 sections** (valeurs VÉRIFIÉES sur la page réelle). Si l'écart est important, ajuster les regex **avant** de passer à la Task 6 — le seed ne doit jamais peupler la base avec un parsing douteux.
 
 - [ ] **Step 7: Commit**
 
@@ -909,7 +909,7 @@ const rows = JSON.parse(json);
 
 const chapters = rows.filter((r) => r.kind === "chapter").length;
 const sections = rows.filter((r) => r.kind === "section").length;
-if (chapters !== 8 || sections < 100) {
+if (chapters !== 8 || sections < 70) {
   console.error(
     `Parsing suspect (chapitres=${chapters}, sections=${sections}) — seed annulé.`,
   );
