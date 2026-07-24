@@ -57,4 +57,29 @@ describe("profileService.getMyRole", () => {
     stubRole(null);
     await expect(getMyRole()).resolves.toBe("user");
   });
+
+  it("devrait renvoyer 'user' (et ne PAS rejeter) si le client Supabase jette une exception (ex. `.from` absent)", async () => {
+    // Reproduit la forme de mock déjà présente dans authStore.spec.ts : un
+    // objet Supabase sans `.from` du tout. `getMyRole` doit dégrader vers
+    // "user" au lieu de laisser l'exception se propager (ce qui deviendrait
+    // un rejet de promesse non intercepté via `void loadRole()`).
+    supabaseStub = {} as unknown;
+    await expect(getMyRole()).resolves.toBe("user");
+  });
+
+  it("devrait journaliser un avertissement (console.warn) quand la requête jette une exception", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    supabaseStub = {} as unknown;
+    await getMyRole();
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  it("devrait journaliser un avertissement (console.warn) quand la requête renvoie une erreur", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    stubRole(null, { message: "boom" });
+    await getMyRole();
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
 });

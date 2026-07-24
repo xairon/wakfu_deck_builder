@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { flushPromises } from "@vue/test-utils";
+import type { UserRole } from "@/schema";
 
 // ---- Mocks ----
 
@@ -11,6 +12,17 @@ vi.mock("@/services/supabase", () => ({
     return mockSupabaseInstance;
   },
   isSupabaseConfigured: () => !!mockSupabaseInstance,
+}));
+
+// setSession() fait un `void loadRole()` en fire-and-forget, qui appelle
+// `getMyRole()` de profileService via un import dynamique. On mocke ce
+// service directement pour fixer le rôle de façon déterministe plutôt que de
+// dépendre du repli "user" implicite du mock Supabase (qui n'a pas de
+// `.from`) — voir la note de finding 1 : ce repli n'est plus une exception
+// non gérée, mais reste asynchrone et non contrôlable précisément par test.
+let mockRole: UserRole = "user";
+vi.mock("@/services/profileService", () => ({
+  getMyRole: () => Promise.resolve(mockRole),
 }));
 
 // hydrateForUser importe ces stores : on les neutralise pour isoler l'auth.
@@ -76,6 +88,7 @@ describe("authStore (cloud-only)", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     mockSupabaseInstance = createMockSupabase();
+    mockRole = "user";
     vi.clearAllMocks();
   });
 
@@ -232,5 +245,77 @@ describe("authStore (cloud-only)", () => {
     await flushPromises();
     expect(cardStub.clearCollection).toHaveBeenCalled();
     expect(deckStub.clearAll).toHaveBeenCalled();
+  });
+});
+
+describe("authStore — rôle & permissions d'affichage (isAdmin / isOwner)", () => {
+  let store: ReturnType<typeof useAuthStore>;
+
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    // Une session existante déclenche `setSession` → `void loadRole()` dans
+    // `initialize()`, ce qui appelle le `getMyRole` mocké ci-dessus.
+    mockSupabaseInstance = createMockSupabase({
+      session: { access_token: "t", user: { id: "u-1", email: "a@b.com" } },
+    });
+    mockRole = "user";
+    vi.clearAllMocks();
+  });
+
+  it("isAdmin est vrai quand le rôle est 'owner' (cas qui casserait silencieusement une garde `role === 'admin'` seule)", async () => {
+    mockRole = "owner";
+    store = useAuthStore();
+    await store.initialize();
+    await flushPromises();
+    expect(store.role).toBe("owner");
+    expect(store.isAdmin).toBe(true);
+  });
+
+  it("isAdmin est vrai pour 'admin'", async () => {
+    mockRole = "admin";
+    store = useAuthStore();
+    await store.initialize();
+    await flushPromises();
+    expect(store.isAdmin).toBe(true);
+  });
+
+  it("isAdmin est faux pour 'user'", async () => {
+    mockRole = "user";
+    store = useAuthStore();
+    await store.initialize();
+    await flushPromises();
+    expect(store.isAdmin).toBe(false);
+  });
+
+  it("isOwner est vrai uniquement pour 'owner' (faux pour 'admin')", async () => {
+    mockRole = "admin";
+    store = useAuthStore();
+    await store.initialize();
+    await flushPromises();
+    expect(store.role).toBe("admin");
+    expect(store.isOwner).toBe(false);
+  });
+
+  it("isOwner est vrai pour 'owner'", async () => {
+    mockRole = "owner";
+    store = useAuthStore();
+    await store.initialize();
+    await flushPromises();
+    expect(store.isOwner).toBe(true);
+  });
+
+  it("après déconnexion (setSession(null) via signOut), le rôle revient à 'user' et isAdmin/isOwner redeviennent faux", async () => {
+    mockRole = "owner";
+    store = useAuthStore();
+    await store.initialize();
+    await flushPromises();
+    expect(store.isAdmin).toBe(true);
+    expect(store.isOwner).toBe(true);
+
+    await store.signOut();
+
+    expect(store.role).toBe("user");
+    expect(store.isAdmin).toBe(false);
+    expect(store.isOwner).toBe(false);
   });
 });
