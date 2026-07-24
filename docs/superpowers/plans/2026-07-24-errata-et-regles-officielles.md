@@ -901,9 +901,12 @@ if (!TOKEN) {
 }
 
 // Réutilise le parser (source unique) via tsx.
+// shell: true sous Windows — sans lui, execFileSync ne résout pas `npx.cmd`
+// et plante en ENOENT (même parade que scripts/deployEdgeFunctions.mjs).
 const json = execFileSync("npx", ["tsx", "scripts/scrapeRules.ts"], {
   encoding: "utf8",
   maxBuffer: 64 * 1024 * 1024,
+  shell: process.platform === "win32",
 });
 const rows = JSON.parse(json);
 
