@@ -108,3 +108,10 @@ export function hasErrata(cardId: string): boolean {
 export function getAllErrata(): Record<string, ErrataEntry[]> {
   return cache ?? {};
 }
+
+/** Force un rechargement de l'index au prochain accès (après une écriture admin). */
+export async function refreshErrata(): Promise<void> {
+  cache = null;
+  loading = null;
+  await preloadErrata();
+}

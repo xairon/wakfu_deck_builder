@@ -15,6 +15,7 @@ import {
   fetchErrata,
   hasErrata,
   getAllErrata,
+  refreshErrata,
   __resetErrataCache,
 } from "@/services/errataService";
 
@@ -199,5 +200,24 @@ describe("errataService — source Supabase", () => {
     stubRows([ROW]);
     await preloadErrata();
     expect(Object.keys(getAllErrata())).toEqual(["opee-tissoin-incarnam"]);
+  });
+
+  it("refreshErrata devrait forcer une nouvelle requête", async () => {
+    let calls = 0;
+    supabaseStub = {
+      from: () => ({
+        select: () => ({
+          order: () => {
+            calls++;
+            return Promise.resolve({ data: [ROW], error: null });
+          },
+        }),
+      }),
+    };
+    await preloadErrata();
+    await preloadErrata();
+    expect(calls).toBe(1);
+    await refreshErrata();
+    expect(calls).toBe(2);
   });
 });
