@@ -150,8 +150,11 @@ plus la base du tout.
 
 Hors-ligne, un visiteur qui n'a **jamais** chargé la page n'aura ni règles ni errata (le
 cache ne peut pas préchauffer). Le projet n'annonce pas l'offline (PWA = installable +
-cache d'assets), donc c'est acceptable — mais c'est bien une régression par rapport au
-stockage statique, actée en connaissance de cause.
+cache d'assets), donc c'est acceptable.
+
+**Décision produit explicite (2026-07-24) : cette régression est acceptée et le sujet est
+clos.** Aucun préchargement au build ne sera mis en place. Ne pas rouvrir ce point sans
+nouvelle demande — le coût (préchargement + double source) ne vaut pas le bénéfice ici.
 
 ## Interface
 
@@ -178,12 +181,21 @@ devenir cliquables plus tard sans rien re-concevoir.
 
 ### `/errata` (nouveau)
 
-- les 66 cartes erratées ;
-- recherche par nom de carte ;
-- **tri par date décroissante par défaut** — c'est littéralement « ce qui a changé », la
-  demande de Tavoshel ;
+- les 66 cartes erratées (1 errata par carte) ;
+- recherche par nom de carte — le chemin rapide pour « cette carte a-t-elle changé ? » ;
+- **groupé par extension par défaut**, alphabétique à l'intérieur de chaque groupe ;
+- tri par date décroissante disponible en option (lecture chronologique) ;
 - par entrée : vignette, date, source, résumé, et le **avant / après** ;
 - lien vers la carte.
+
+**Pourquoi pas la date par défaut** (décidé sur la donnée, pas à l'intuition) : les 66
+errata se répartissent sur **15 dates très déséquilibrées** — `01/12/2010` (18),
+`13/10/2009` (14), `10/11/2010` (7), soit 59 % sur trois dates — et tout est daté
+2009-2011. Un tri chronologique produit donc des paquets bancals sans valeur de
+navigation : pour un joueur qui revient, _tout_ est également ancien. Le regroupement par
+extension (Incarnam 32, Dofus Collection 13, Amakna 7, Bonta-Brakmar 6, Astrub 4,
+Pandala 4) donne 6 groupes équilibrés et reprend l'axe d'organisation déjà utilisé
+partout ailleurs dans l'app.
 
 ### Badge « Erraté »
 
