@@ -475,7 +475,8 @@
                     <p
                       class="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-base-content/45"
                     >
-                      {{ e.date }}<span v-if="e.source"> · {{ e.source }}</span>
+                      {{ formatFrenchDate(e.date)
+                      }}<span v-if="e.source"> · {{ e.source }}</span>
                     </p>
                   </div>
                 </div>
@@ -641,6 +642,7 @@ import {
   preloadErrata,
   type ErrataEntry,
 } from "@/services/errataService";
+import { formatFrenchDate } from "@/utils/date";
 import OptimizedImage from "@/components/common/OptimizedImage.vue";
 
 import { useRouter, useRoute } from "vue-router";
