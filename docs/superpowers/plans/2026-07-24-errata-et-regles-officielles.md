@@ -18,10 +18,24 @@
 - `npm run type-check` (vue-tsc) est **le seul gate de types** — il doit rester vert.
 - Lecture RLS des deux nouvelles tables : `using (true)` (**anon inclus**) ; écriture `service_role` uniquement.
 - `supabase` peut être `null` (backend non configuré) : **tout service doit dégrader sans lancer d'exception**.
-- Les 4 consommateurs d'`errataService` (`CardZoomInner.vue`, `CardZoomModal.vue`, `CardHoverPreview.vue`, `CollectionView.vue`) **ne doivent pas être modifiés** — leurs tests existants servent de filet de régression.
+- Les 4 consommateurs d'`errataService` (`CardZoomInner.vue`, `CardZoomModal.vue`, `CardHoverPreview.vue`, `CollectionView.vue`) **ne doivent pas changer leurs appels à `errataService`** : `fetchErrata` / `getErrata` gardent signature et sémantique, et les tests existants de ces 4 fichiers doivent rester verts sans être réécrits. Ces fichiers peuvent en revanche être modifiés pour d'autres raisons prévues au plan (badge en Task 10, lecture de `?q=` en Task 8) — ce n'est pas une violation.
 - Ne **pas** déplacer les cartes (`public/data/*.json`) en base.
 - Migrations : SQL **idempotent**, applicable au SQL Editor (convention du projet).
 - Seed via Management API (`SUPABASE_MGMT_TOKEN`, `PROJECT_REF`), patron de `scripts/seedCardsViaManagement.mjs`.
+
+> ## ⛔ Étapes DIFFÉRÉES — décision d'exécution 2026-07-24
+>
+> **Aucun agent ne dispose des accès Supabase.** Toute étape marquée
+> **`[DIFFÉRÉ — humain]`** ci-dessous ne doit **PAS** être exécutée par un
+> implémenteur : il écrit le fichier, vérifie ce qui est vérifiable hors base
+> (lint, types, tests unitaires avec Supabase mocké), puis **passe à l'étape
+> suivante** en le signalant dans son rapport. Ne jamais tenter d'appliquer une
+> migration, de lancer un seed, ni de deviner un token.
+>
+> **`public/data/errata.json` ne doit être supprimé sous AUCUN prétexte** dans
+> cette exécution : c'est l'unique copie des 66 errata tant que le seed n'a pas
+> été vérifié en base par l'humain. La suppression fera l'objet d'un commit
+> séparé, plus tard.
 
 ---
 
@@ -103,12 +117,12 @@ create trigger card_errata_set_updated_at
   for each row execute function public.set_updated_at();
 ```
 
-- [ ] **Step 2: Vérifier l'idempotence**
+- [ ] **Step 2: Vérifier l'idempotence** `[DIFFÉRÉ — humain]`
 
 Appliquer le fichier **deux fois** dans le SQL Editor Supabase (Dashboard → SQL Editor → coller → Run).
 Attendu : aucune erreur au second passage (`create ... if not exists`, `drop policy if exists`).
 
-- [ ] **Step 3: Vérifier la lecture anonyme**
+- [ ] **Step 3: Vérifier la lecture anonyme** `[DIFFÉRÉ — humain]`
 
 Dans le SQL Editor :
 
@@ -611,7 +625,7 @@ console.log(
 );
 ```
 
-- [ ] **Step 2: Exécuter le seed**
+- [ ] **Step 2: Exécuter le seed** `[DIFFÉRÉ — humain]`
 
 ```bash
 SUPABASE_MGMT_TOKEN=<token sbp_…> node scripts/seedErrata.mjs
@@ -619,7 +633,7 @@ SUPABASE_MGMT_TOKEN=<token sbp_…> node scripts/seedErrata.mjs
 
 Expected: `Seed terminé : 66 lignes envoyées, [{"n":66}] en base.`
 
-- [ ] **Step 3: Vérifier les deux cartes du rapport**
+- [ ] **Step 3: Vérifier les deux cartes du rapport** `[DIFFÉRÉ — humain]`
 
 Dans le SQL Editor :
 
@@ -631,16 +645,19 @@ where card_id in ('opee-tissoin-incarnam','aeron-zeklox-incarnam');
 
 Expected: 2 lignes, `errata_date` non nulle.
 
-- [ ] **Step 4: Supprimer le JSON (seulement après le Step 3)**
+- [ ] **Step 4: Supprimer le JSON** `[DIFFÉRÉ — humain]` ⛔ NE PAS EXÉCUTER
 
 ```bash
 git rm public/data/errata.json schemas/errata.schema.json
 ```
 
-- [ ] **Step 5: Vérifier qu'aucune référence ne subsiste**
+- [ ] **Step 5: Vérifier qu'aucune référence ne subsiste** `[DIFFÉRÉ — humain]`
 
-Run: `grep -rn "errata.json\|errata.schema" src/ scripts/ public/ --include=* 2>/dev/null | grep -v seedErrata`
-Expected: aucune sortie.
+Ne vaut qu'APRÈS la suppression du JSON (elle-même différée). À ce stade, vérifier
+seulement que **le code applicatif** ne lit plus le fichier :
+
+Run: `grep -rn "data/errata.json" src/`
+Expected: aucune sortie (seul `scripts/seedErrata.mjs` peut encore le lire).
 
 - [ ] **Step 6: Lancer la suite complète**
 
@@ -947,7 +964,7 @@ SUPABASE_MGMT_TOKEN=<token sbp_…> node scripts/seedRules.mjs
 
 Expected: `Seed terminé : N lignes envoyées, [{"n":N}] en base.` avec N > 400.
 
-- [ ] **Step 3: Vérifier une règle citée par le moteur**
+- [ ] **Step 3: Vérifier une règle citée par le moteur** `[DIFFÉRÉ — humain]`
 
 ```sql
 select number, kind, chapter, left(body, 60) from public.rules where number = '418.5b';
@@ -1928,26 +1945,35 @@ git commit -m "feat(errata): badge « Erraté » en collection et atelier de dec
 Ajouter à la fin de `e2e/app.spec.ts` :
 
 ```ts
-test("la page Errata liste les cartes erratées et filtre par nom", async ({
+// IMPORTANT : la CI construit avec des VITE_SUPABASE_* FACTICES → aucune base
+// réelle, donc `rules` et `card_errata` sont vides en E2E. Ces tests valident
+// donc le SQUELETTE (route publique, titre, contrôles, dégradation explicite),
+// jamais un contenu seedé — sinon ils échoueraient systématiquement en CI.
+
+test("la page Errata est publique et expose ses contrôles", async ({
   page,
 }) => {
   await page.goto("/errata");
   await expect(
     page.getByRole("heading", { name: "Errata", level: 1 }),
   ).toBeVisible();
-  const search = page.getByRole("searchbox", { name: /Rechercher une carte/i });
-  await search.fill("Opée");
-  await expect(page.getByText(/Opée/i).first()).toBeVisible();
+  await expect(
+    page.getByRole("searchbox", { name: /Rechercher une carte/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("combobox", { name: /Trier les errata/i }),
+  ).toBeVisible();
 });
 
-test("les règles officielles sont adressables par numéro (deep-link)", async ({
+test("les règles officielles sont publiques et dégradent explicitement sans base", async ({
   page,
 }) => {
   await page.goto("/regles/officielles#418.5b");
   await expect(
     page.getByRole("heading", { name: "Règles officielles" }),
   ).toBeVisible();
-  await expect(page.locator("#418\\.5b")).toBeVisible();
+  // Sans base : message d'indisponibilité explicite, jamais une page blanche.
+  await expect(page.getByText(/Règles indisponibles/i)).toBeVisible();
 });
 
 test("la page Règles renvoie vers les règles officielles", async ({ page }) => {
@@ -1992,7 +2018,7 @@ Expected: aucune sortie d'erreur.
 Run: `npm run build`
 Expected: build réussi.
 
-- [ ] **Step 4: Vérification navigateur**
+- [ ] **Step 4: Vérification navigateur** `[DIFFÉRÉ — humain]`
 
 Démarrer le serveur de dev, puis contrôler :
 
