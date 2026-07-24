@@ -122,14 +122,22 @@ numéroté (`418.1`, `418.5`, `418.5a`, `418.5b`…), ce qui permet une ligne pa
 Deux services symétriques, `src/services/rulesService.ts` et la réécriture de
 `src/services/errataService.ts`.
 
-**Surface d'API d'`errataService`** — pour limiter la casse chez les 4 consommateurs :
+**État réel de l'existant** (vérifié dans `src/services/errataService.ts`) : le service
+charge **déjà** le fichier entier une seule fois (`ensureLoaded`), le met en cache mémoire,
+et expose `getErrata(cardId)` de façon **synchrone** plus un `preloadErrata()`. Il ne fait
+donc **pas** de requête par carte. Le chantier est par conséquent bien plus petit que
+« réécriture » : seule la **source** change.
 
-- `fetchErrata(cardId)` est **conservée** (même signature, même type de retour
-  `ErrataEntry[]`) ; seule son implémentation change : elle lit l'index en mémoire au lieu
-  de faire un fetch réseau. Les 4 consommateurs actuels n'ont donc pas à changer d'appel.
-- `loadErrataIndex()` (nouveau) : charge et met en cache l'index complet ; appelée une fois
-  au démarrage / à la première lecture.
-- `hasErrata(cardId): boolean` (nouveau) : le prédicat du **badge**, en O(1) sur l'index.
+**Surface d'API d'`errataService`** :
+
+- `fetchErrata(cardId)` et `getErrata(cardId)` : **conservées à l'identique** (mêmes
+  signatures, même type `ErrataEntry[]`, `getErrata` reste synchrone). Les 4 consommateurs
+  actuels ne changent pas d'une ligne.
+- `preloadErrata()` : conservée, sert de point de chargement.
+- `hasErrata(cardId): boolean` (**seul ajout**) : le prédicat du badge, O(1) sur l'index
+  déjà en mémoire.
+- Interne : `ensureLoaded()` remplace `fetch("/data/errata.json")` par une requête Supabase
+  sur `card_errata`, regroupée par `card_id`.
 
 Caractéristiques communes aux deux services :
 
@@ -140,11 +148,10 @@ Caractéristiques communes aux deux services :
 
 ### Pourquoi l'index complet (et pas une requête par carte)
 
-`fetchErrata(cardId)` fait aujourd'hui une lecture **par carte**. Afficher un badge
-imposerait d'interroger les 1585 cartes une par une — intenable. Charger l'index entier
-(66 entrées, quelques Ko) une seule fois sert **le badge, le zoom, le survol et la page
-liste** avec une requête unique. Effet de bord positif : le survol de carte ne touchera
-plus la base du tout.
+Afficher un badge sur la grille imposerait sinon d'interroger les 1585 cartes une par une —
+intenable. L'index entier (66 entrées, quelques Ko) chargé une seule fois sert **le badge,
+le zoom, le survol et la page liste**. C'est déjà le comportement actuel avec le JSON
+statique : on le préserve en changeant simplement la source.
 
 ### Régression assumée
 
@@ -230,16 +237,15 @@ sujet.
 
 ## Périmètre de modification
 
-Le point le plus invasif : `errataService` passe de « fetch statique par carte » à « index
-chargé une fois depuis la base ». Consommateurs impactés, **avec leurs tests existants** :
+Dans `errataService`, seul le **corps d'`ensureLoaded()`** change (source JSON → Supabase),
+plus l'ajout de `hasErrata()`. Les signatures publiques étant préservées, ses 4
+consommateurs — `CardZoomInner.vue`, `CardZoomModal.vue`, `CardHoverPreview.vue`,
+`CollectionView.vue` — **ne sont pas modifiés**. Leurs tests existants doivent continuer à
+passer tels quels ; ils servent de filet de régression (seul le mock de source change).
 
-- `src/components/card/CardZoomInner.vue`
-- `src/components/card/CardZoomModal.vue`
-- `src/components/card/CardHoverPreview.vue`
-- `src/views/CollectionView.vue`
-
-Autres fichiers : nouvelle migration, deux scripts (`scrapeRules.ts`, `seedErrata.mjs`),
-nouveau `rulesService.ts`, deux nouvelles vues + deux routes, badge dans les composants de
+Fichiers réellement touchés : nouvelle migration `0012_rules_errata.sql`, deux scripts
+(`scrapeRules.ts`, `seedErrata.mjs`), nouveau `rulesService.ts`, `errataService.ts`
+(source + `hasErrata`), deux nouvelles vues + deux routes, badge dans les composants de
 liste, suppression de `public/data/errata.json` et de son JSON Schema.
 
 ## Hors périmètre (Phase 2)
