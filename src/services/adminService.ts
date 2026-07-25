@@ -13,7 +13,12 @@ import { supabase } from "./supabase";
 import { useAuthStore } from "@/stores/authStore";
 import { refreshRules } from "./rulesService";
 import { refreshErrata } from "./errataService";
-import type { RuleOverrideRow, UserRole, AuditRow } from "@/schema";
+import type {
+  RuleOverrideRow,
+  UserRole,
+  AuditRow,
+  ErrataChange,
+} from "@/schema";
 
 export interface WriteResult {
   ok: boolean;
@@ -75,6 +80,7 @@ export interface ErratumInput {
   before_text?: string | null;
   after_text?: string | null;
   sort_order?: number;
+  changes?: ErrataChange[];
 }
 
 export async function createErratum(input: ErratumInput): Promise<WriteResult> {
@@ -212,6 +218,7 @@ export interface AdminErratum {
   before_text: string | null;
   after_text: string | null;
   sort_order: number;
+  changes: ErrataChange[];
 }
 
 /**

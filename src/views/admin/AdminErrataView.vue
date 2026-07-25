@@ -26,87 +26,17 @@
         {{ form.id != null ? "Modifier l'errata" : "Nouvel errata" }}
       </h2>
 
-      <div class="mt-4 grid gap-4 sm:grid-cols-2">
-        <label class="form-control">
-          <span class="label-text">Carte</span>
-          <input
-            v-model="form.card_id"
-            list="admin-errata-cards"
-            type="text"
-            class="input input-bordered"
-            data-testid="f-card"
-            placeholder="Identifiant de carte"
-          />
-          <datalist id="admin-errata-cards">
-            <option v-for="c in cardStore.cards" :key="c.id" :value="c.id">
-              {{ c.name }}
-            </option>
-          </datalist>
-        </label>
-
-        <label class="form-control">
-          <span class="label-text">Date</span>
-          <input
-            v-model="form.errata_date"
-            type="date"
-            class="input input-bordered"
-            data-testid="f-date"
-          />
-        </label>
-
-        <label class="form-control">
-          <span class="label-text">Source</span>
-          <input
-            v-model="form.source"
-            type="text"
-            class="input input-bordered"
-            data-testid="f-source"
-          />
-        </label>
-
-        <label class="form-control sm:col-span-2">
-          <span class="label-text">Résumé *</span>
-          <input
-            v-model="form.summary"
-            type="text"
-            class="input input-bordered"
-            data-testid="f-summary"
-          />
-        </label>
-
-        <label class="form-control sm:col-span-2">
-          <span class="label-text">Avant</span>
-          <textarea
-            v-model="form.before_text"
-            class="textarea textarea-bordered"
-            data-testid="f-before"
-          ></textarea>
-        </label>
-
-        <label class="form-control sm:col-span-2">
-          <span class="label-text">Après</span>
-          <textarea
-            v-model="form.after_text"
-            class="textarea textarea-bordered"
-            data-testid="f-after"
-          ></textarea>
-        </label>
-      </div>
+      <ErrataForm
+        class="mt-4"
+        :model-value="form"
+        :cards="cardStore.cards"
+        @submit="submit"
+        @cancel="closeForm"
+      />
 
       <p v-if="formError" class="mt-3 text-sm text-error" role="alert">
         {{ formError }}
       </p>
-
-      <div class="mt-4 flex gap-2">
-        <button
-          class="btn btn-primary"
-          data-testid="errata-submit"
-          @click="submit"
-        >
-          Enregistrer
-        </button>
-        <button class="btn btn-ghost" @click="closeForm">Annuler</button>
-      </div>
     </section>
 
     <p v-if="loading" class="mt-6 text-sm opacity-70">Chargement…</p>
@@ -183,6 +113,9 @@ import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import { getThumbPath } from "@/utils/imagePaths";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
+import ErrataForm, {
+  type ErrataFormState,
+} from "@/components/admin/ErrataForm.vue";
 
 const cardStore = useCardStore();
 const toast = useToast();
@@ -216,17 +149,7 @@ const items = computed<Item[]>(() => {
 });
 
 // ── Formulaire ────────────────────────────────────────────────────────────
-interface FormState {
-  id?: number;
-  card_id: string;
-  errata_date: string;
-  source: string;
-  summary: string;
-  before_text: string;
-  after_text: string;
-}
-
-function emptyForm(): FormState {
+function emptyForm(): ErrataFormState {
   return {
     id: undefined,
     card_id: "",
@@ -235,10 +158,11 @@ function emptyForm(): FormState {
     summary: "",
     before_text: "",
     after_text: "",
+    changes: [],
   };
 }
 
-const form = reactive<FormState>(emptyForm());
+const form = reactive<ErrataFormState>(emptyForm());
 const formOpen = ref(false);
 const formError = ref<string | null>(null);
 
@@ -256,6 +180,7 @@ function openEditForm(entry: AdminErratum) {
   form.summary = entry.summary ?? "";
   form.before_text = entry.before_text ?? "";
   form.after_text = entry.after_text ?? "";
+  form.changes = entry.changes ? entry.changes.map((c) => ({ ...c })) : [];
   formError.value = null;
   formOpen.value = true;
 }
@@ -280,6 +205,7 @@ async function submit() {
     summary,
     before_text: form.before_text || null,
     after_text: form.after_text || null,
+    changes: form.changes,
   };
 
   const res =
