@@ -18,6 +18,22 @@
       </button>
     </div>
 
+    <p
+      v-if="reuseError"
+      class="mt-6 rounded-lg bg-error/10 p-3 text-sm text-error"
+      role="alert"
+      data-testid="reuse-error"
+    >
+      {{ reuseError }}
+    </p>
+    <p
+      v-if="reuseBanner"
+      class="mt-6 rounded-lg bg-info/10 p-3 text-sm"
+      data-testid="reuse-banner"
+    >
+      {{ reuseBanner }}
+    </p>
+
     <section
       v-if="newFormOpen"
       class="mt-6 rounded-lg border border-base-content/20 p-4"
@@ -178,6 +194,7 @@ import {
   upsertRuleOverride,
   deleteRuleOverride,
 } from "@/services/adminService";
+import { useReuseFromAudit } from "@/composables/useReuseFromAudit";
 import { useToast } from "@/composables/useToast";
 import { matchesSearch } from "@/utils/text";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
@@ -194,7 +211,10 @@ async function reload() {
   loading.value = false;
 }
 
-onMounted(reload);
+onMounted(async () => {
+  await reload();
+  await consumeReuseParam();
+});
 
 const visible = computed(() =>
   query.value
@@ -214,6 +234,8 @@ const editError = ref<string | null>(null);
 
 function openEditForm(row: RuleEffectiveRow) {
   editing.value = row.number;
+  reuseBanner.value = null;
+  reuseError.value = null;
   editBody.value = row.body ?? "";
   editError.value = null;
 }
@@ -294,6 +316,8 @@ const newFormError = ref<string | null>(null);
 
 function openNewForm() {
   Object.assign(newForm, emptyNewForm());
+  reuseBanner.value = null;
+  reuseError.value = null;
   newFormError.value = null;
   newFormOpen.value = true;
 }
@@ -346,4 +370,35 @@ async function submitNewRule() {
     toast.error(message);
   }
 }
+
+// ── Reprise d'une version du journal ──────────────────────────────────────
+/** Chaîne sûre : un instantané JSONB peut contenir n'importe quel type. */
+function str(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+const { reuseBanner, reuseError, consumeReuseParam } = useReuseFromAudit(
+  "rule_override",
+  (snap) => {
+    const number = str(snap.number);
+    const body = str(snap.body);
+    if (rows.value.some((r) => r.number === number)) {
+      // La règle est toujours là : éditeur inline, comme un clic sur Modifier.
+      closeNewForm();
+      editing.value = number;
+      editBody.value = body;
+      editError.value = null;
+      return;
+    }
+    // Règle ajoutée puis rétablie : plus aucune ligne où ouvrir l'éditeur
+    // inline — on bascule sur le formulaire d'ajout, qui recréera l'override.
+    cancelEdit();
+    Object.assign(newForm, emptyNewForm());
+    newForm.number = number;
+    newForm.chapter = typeof snap.chapter === "number" ? snap.chapter : null;
+    newForm.body = body;
+    newFormError.value = null;
+    newFormOpen.value = true;
+  },
+);
 </script>
