@@ -100,9 +100,9 @@
         <p class="leading-relaxed">
           <span class="font-mono text-sm opacity-70">{{ row.number }}</span>
           {{ row.body }}
-          <span v-if="row.is_edited" class="badge badge-sm badge-info ml-2"
-            >Corrigée</span
-          >
+          <span v-if="row.is_edited" class="badge badge-sm badge-info ml-2">{{
+            row.body_official != null ? "Corrigée" : "Ajoutée"
+          }}</span>
         </p>
 
         <p
@@ -225,10 +225,22 @@ function cancelEdit() {
 }
 
 async function saveEdit(row: RuleEffectiveRow) {
+  const body = editBody.value.trim();
+  if (!body) {
+    editError.value = "Le texte ne peut pas être vide.";
+    return;
+  }
+  // `sort_order`/`kind` : l'override reprend TOUJOURS les valeurs actuelles
+  // de la ligne (déjà fusionnée par `rules_effective`). Les omettre enverrait
+  // les défauts de `rules_overrides` (sort_order 0) au lieu de la valeur en
+  // vigueur — la correction gagne le coalesce et la règle saute en tête de
+  // la page publique.
   const res = await upsertRuleOverride({
     number: row.number,
     chapter: row.chapter,
-    body: editBody.value,
+    kind: row.kind,
+    body,
+    sort_order: row.sort_order,
   });
   if (res.ok) {
     toast.success("Règle enregistrée.");
@@ -292,6 +304,24 @@ function closeNewForm() {
   Object.assign(newForm, emptyNewForm());
 }
 
+/**
+ * `sort_order` de la règle qui précède `number` dans l'ordre de lecture
+ * actuellement chargé (`rows.value`, déjà trié par sort_order puis number).
+ * Une règle AJOUTÉE reprend ce même sort_order : le tri secondaire par
+ * `number` la range juste après sa devancière, sans renuméroter le reste.
+ */
+function predecessorSortOrder(number: string): number {
+  let sortOrder = 0;
+  for (const row of rows.value) {
+    if (row.number < number) {
+      sortOrder = row.sort_order;
+    } else {
+      break;
+    }
+  }
+  return sortOrder;
+}
+
 async function submitNewRule() {
   const number = newForm.number.trim();
   const body = newForm.body.trim();
@@ -304,6 +334,7 @@ async function submitNewRule() {
     number,
     chapter: newForm.chapter,
     body,
+    sort_order: predecessorSortOrder(number),
   });
   if (res.ok) {
     toast.success("Règle ajoutée.");
