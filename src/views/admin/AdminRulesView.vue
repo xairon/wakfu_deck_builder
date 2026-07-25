@@ -26,8 +26,11 @@
     >
       {{ reuseError }}
     </p>
+    <!-- Lié à l'éditeur qu'il décrit : il disparaît mécaniquement avec lui.
+         Sinon « Rien n'est encore modifié » survivrait à l'enregistrement,
+         donc mentirait. -->
     <p
-      v-if="reuseBanner"
+      v-if="reuseBanner && (editing || newFormOpen)"
       class="mt-6 rounded-lg bg-info/10 p-3 text-sm"
       data-testid="reuse-banner"
     >

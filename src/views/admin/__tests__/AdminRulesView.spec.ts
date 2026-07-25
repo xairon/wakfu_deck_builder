@@ -299,6 +299,37 @@ describe("AdminRulesView — reprise d'une version du journal", () => {
     ).toBe("9");
   });
 
+  it("devrait retirer le bandeau apres un enregistrement reussi", async () => {
+    // « Rien n'est encore modifié » deviendrait FAUX : la règle vient d'être
+    // écrite en base.
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    upsertRuleOverride.mockResolvedValue({ ok: true });
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(true);
+
+    await w.find('[data-testid="save-418.5b"]').trigger("click");
+    await flushPromises();
+    expect(upsertRuleOverride).toHaveBeenCalled();
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(false);
+  });
+
+  it("devrait retirer le bandeau si l'admin annule", async () => {
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(true);
+
+    const cancel = w
+      .findAll("button")
+      .find((b) => b.text().trim() === "Annuler");
+    expect(cancel).toBeTruthy();
+    await cancel!.trigger("click");
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(false);
+  });
+
   it("devrait afficher une erreur si la version est introuvable, sans planter", async () => {
     routeQuery.value = { reuse: "999", side: "after" };
     getAuditEntry.mockResolvedValue(null);
