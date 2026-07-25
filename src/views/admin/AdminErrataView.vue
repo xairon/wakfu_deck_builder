@@ -18,10 +18,27 @@
       </button>
     </div>
 
+    <p
+      v-if="reuseError"
+      class="mt-6 rounded-lg bg-error/10 p-3 text-sm text-error"
+      role="alert"
+      data-testid="reuse-error"
+    >
+      {{ reuseError }}
+    </p>
+
     <section
       v-if="formOpen"
       class="mt-6 rounded-lg border border-base-content/20 p-4"
     >
+      <p
+        v-if="reuseBanner"
+        class="mb-4 rounded bg-info/10 p-3 text-sm"
+        data-testid="reuse-banner"
+      >
+        {{ reuseBanner }}
+      </p>
+
       <h2 class="text-lg font-semibold">
         {{ form.id != null ? "Modifier l'errata" : "Nouvel errata" }}
       </h2>
@@ -116,6 +133,8 @@ import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import ErrataForm, {
   type ErrataFormState,
 } from "@/components/admin/ErrataForm.vue";
+import { useReuseFromAudit } from "@/composables/useReuseFromAudit";
+import type { ErrataChange } from "@/schema";
 
 const cardStore = useCardStore();
 const toast = useToast();
@@ -128,7 +147,10 @@ async function reload() {
   loading.value = false;
 }
 
-onMounted(reload);
+onMounted(async () => {
+  await reload();
+  await consumeReuseParam();
+});
 
 interface Item {
   name: string;
@@ -168,12 +190,16 @@ const formError = ref<string | null>(null);
 
 function openNewForm() {
   Object.assign(form, emptyForm());
+  reuseBanner.value = null;
+  reuseError.value = null;
   formError.value = null;
   formOpen.value = true;
 }
 
 function openEditForm(entry: AdminErratum) {
   form.id = entry.id;
+  reuseBanner.value = null;
+  reuseError.value = null;
   form.card_id = entry.card_id;
   form.errata_date = entry.errata_date ?? "";
   form.source = entry.source ?? "";
@@ -187,9 +213,51 @@ function openEditForm(entry: AdminErratum) {
 
 function closeForm() {
   formOpen.value = false;
+  reuseBanner.value = null;
+  reuseError.value = null;
   formError.value = null;
   Object.assign(form, emptyForm());
 }
+
+// ── Reprise d'une version du journal ──────────────────────────────────────
+/** Chaîne sûre : un instantané JSONB peut contenir n'importe quel type. */
+function str(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+const { reuseBanner, reuseError, consumeReuseParam } = useReuseFromAudit(
+  "errata",
+  (snap) => {
+    Object.assign(form, emptyForm());
+    const snapId = typeof snap.id === "number" ? snap.id : undefined;
+    // Si l'errata a été supprimé depuis, on rouvre en CRÉATION : un update sur
+    // un id disparu ne toucherait aucune ligne — sans erreur, l'admin croirait
+    // avoir rétabli quelque chose.
+    form.id =
+      snapId != null && errata.value.some((e) => e.id === snapId)
+        ? snapId
+        : undefined;
+    form.card_id = str(snap.card_id);
+    form.errata_date = str(snap.errata_date);
+    form.source = str(snap.source);
+    form.summary = str(snap.summary);
+    form.before_text = str(snap.before_text);
+    form.after_text = str(snap.after_text);
+    form.changes = Array.isArray(snap.changes)
+      ? (snap.changes as unknown[])
+          .filter(
+            (c): c is Record<string, unknown> => !!c && typeof c === "object",
+          )
+          .map<ErrataChange>((c) => ({
+            label: str(c.label),
+            before: str(c.before),
+            after: str(c.after),
+          }))
+      : [];
+    formError.value = null;
+    formOpen.value = true;
+  },
+);
 
 async function submit() {
   const summary = form.summary.trim();
