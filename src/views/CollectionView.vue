@@ -447,7 +447,7 @@
               </div>
 
               <!-- Errata officiels : composant partagé avec le zoom de carte. -->
-              <ErrataPanel :errata="cardErrata" />
+              <ErrataPanel :errata="cardErrata" :card-id="selectedCard?.id" />
 
               <!-- Collection -->
               <p class="section-rule eyebrow">Collection</p>

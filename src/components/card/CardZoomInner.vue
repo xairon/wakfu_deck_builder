@@ -135,7 +135,7 @@
       </div>
 
       <!-- Errata officiels : composant partagé avec le panneau de la Collection. -->
-      <ErrataPanel :errata="errata" />
+      <ErrataPanel :errata="errata" :card-id="card.id" />
 
       <!-- Saveur -->
       <p
