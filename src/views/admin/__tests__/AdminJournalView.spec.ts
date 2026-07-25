@@ -127,7 +127,7 @@ describe("AdminJournalView — réutiliser une version", () => {
   // ici on veut asserter la CIBLE EXACTE — une mauvaise cible enverrait l'admin
   // éditer la mauvaise entité.
   const stubs = {
-    RouterLink: { props: ["to"], template: "<a :href=\"to\"><slot /></a>" },
+    RouterLink: { props: ["to"], template: '<a :href="to"><slot /></a>' },
   };
 
   beforeEach(() => {
@@ -187,7 +187,12 @@ describe("AdminJournalView — réutiliser une version", () => {
     // `set_user_role()` est le seul chemin d'écriture d'un rôle ; rejouer un
     // instantané contournerait ses garde-fous.
     listAudit.mockResolvedValue([
-      entry({ id: 10, entity: "role", entity_key: "user-1", before_data: null }),
+      entry({
+        id: 10,
+        entity: "role",
+        entity_key: "user-1",
+        before_data: null,
+      }),
     ]);
     const w = mount(AdminJournalView, { global: { stubs } });
     await flushPromises();
