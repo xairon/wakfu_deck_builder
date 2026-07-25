@@ -31,6 +31,7 @@ import {
   setUserRole,
   listAudit,
   listProfiles,
+  listErrataAdmin,
 } from "@/services/adminService";
 
 interface StubCall {
@@ -331,6 +332,43 @@ describe("adminService", () => {
         },
       };
       expect(await listProfiles()).toEqual([]);
+    });
+  });
+
+  describe("listErrataAdmin", () => {
+    it("listErrataAdmin devrait renvoyer les errata AVEC leur id", async () => {
+      const rows = [
+        {
+          id: 7,
+          card_id: "opee-tissoin-incarnam",
+          errata_date: "2010-12-01",
+          source: "Forum",
+          summary: "Passe à 6 PA.",
+          before_text: "7 PA",
+          after_text: "6 PA",
+          sort_order: 0,
+        },
+      ];
+      let table = "";
+      supabaseStub = {
+        from: (t: string) => {
+          table = t;
+          return {
+            select: () => ({
+              order: () => Promise.resolve({ data: rows, error: null }),
+            }),
+          };
+        },
+      };
+      const out = await listErrataAdmin();
+      expect(table).toBe("card_errata");
+      expect(out[0].id).toBe(7);
+      expect(out[0].summary).toBe("Passe à 6 PA.");
+    });
+
+    it("listErrataAdmin devrait renvoyer [] sans backend et sans lever si la requête jette", async () => {
+      supabaseStub = null;
+      await expect(listErrataAdmin()).resolves.toEqual([]);
     });
   });
 });
