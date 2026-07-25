@@ -446,41 +446,8 @@
                 </div>
               </div>
 
-              <!-- Errata (officiels) -->
-              <template v-if="cardErrata.length">
-                <p class="section-rule eyebrow text-primary">
-                  Errata · {{ cardErrata.length }}
-                </p>
-                <div class="space-y-2">
-                  <div
-                    v-for="(e, i) in cardErrata"
-                    :key="i"
-                    class="border-l-2 border-primary bg-primary/5 p-3"
-                  >
-                    <p class="text-sm leading-relaxed">{{ e.summary }}</p>
-                    <p
-                      v-if="e.before || e.after"
-                      class="mt-1 font-mono text-xs"
-                    >
-                      <span
-                        v-if="e.before"
-                        class="text-base-content/50 line-through"
-                        >{{ e.before }}</span
-                      >
-                      <span v-if="e.before && e.after"> → </span>
-                      <span v-if="e.after" class="text-base-content">{{
-                        e.after
-                      }}</span>
-                    </p>
-                    <p
-                      class="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-base-content/45"
-                    >
-                      {{ formatFrenchDate(e.date)
-                      }}<span v-if="e.source"> · {{ e.source }}</span>
-                    </p>
-                  </div>
-                </div>
-              </template>
+              <!-- Errata officiels : composant partagé avec le zoom de carte. -->
+              <ErrataPanel :errata="cardErrata" />
 
               <!-- Collection -->
               <p class="section-rule eyebrow">Collection</p>
@@ -642,8 +609,8 @@ import {
   preloadErrata,
   type ErrataEntry,
 } from "@/services/errataService";
-import { formatFrenchDate } from "@/utils/date";
 import OptimizedImage from "@/components/common/OptimizedImage.vue";
+import ErrataPanel from "@/components/card/ErrataPanel.vue";
 
 import { useRouter, useRoute } from "vue-router";
 

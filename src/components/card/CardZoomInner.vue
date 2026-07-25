@@ -134,25 +134,8 @@
         </dl>
       </div>
 
-      <!-- Erratas -->
-      <div v-if="errata.length" class="mt-4">
-        <p class="eyebrow mb-2 text-primary">Errata</p>
-        <ul class="space-y-2">
-          <li
-            v-for="(e, i) in errata"
-            :key="i"
-            class="border-l-2 border-primary pl-3 text-sm"
-          >
-            <p>{{ e.summary }}</p>
-            <p
-              class="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-base-content/45"
-            >
-              {{ formatFrenchDate(e.date)
-              }}<span v-if="e.source"> · {{ e.source }}</span>
-            </p>
-          </li>
-        </ul>
-      </div>
+      <!-- Errata officiels : composant partagé avec le panneau de la Collection. -->
+      <ErrataPanel :errata="errata" />
 
       <!-- Saveur -->
       <p
@@ -194,7 +177,7 @@ import {
   type EffectAnnotationKind,
 } from "@/utils/effectText";
 import { glossaryHints } from "@/utils/glossaryHints";
-import { formatFrenchDate } from "@/utils/date";
+import ErrataPanel from "@/components/card/ErrataPanel.vue";
 
 type DisplayEffect = { description: string; kind?: EffectAnnotationKind };
 
