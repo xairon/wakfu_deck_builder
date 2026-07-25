@@ -680,3 +680,17 @@ Dans `CLAUDE.md`, compléter la ligne « Rôles d'administration » : depuis `/a
 git add CLAUDE.md
 git commit -m "docs: reprise d'une version depuis le journal"
 ```
+
+---
+
+## Journal d'exécution
+
+- Task 1 — `getAuditEntry` : OK (`b76eb034`). Le sous-agent dépêché est mort sur une
+  erreur API 529 ; tests écrits et RED observé à la main.
+- Task 2 — liens de reprise dans le journal : OK (`ac4826a1`). Le stub global de
+  `tests/setup.ts` ne rend PAS `href` — sur-stub local obligatoire, sinon l'assertion
+  de cible exacte (le point du test) ne teste rien.
+- Task 3 — `/admin/errata?reuse=` : OK (`abb2a207`). La logique commune est partie dans
+  `useReuseFromAudit` plutôt que d'être écrite deux fois.
+- Task 4 — `/admin/regles?reuse=` : OK (`67f4fc5e`).
+- Task 5 — vérification : 2391/2391 tests, `vue-tsc` propre, build OK, CLAUDE.md à jour.

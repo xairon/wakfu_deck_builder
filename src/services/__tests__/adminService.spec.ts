@@ -32,6 +32,7 @@ import {
   listAudit,
   listProfiles,
   listErrataAdmin,
+  getAuditEntry,
 } from "@/services/adminService";
 
 interface StubCall {
@@ -416,5 +417,66 @@ describe("adminService", () => {
       supabaseStub = null;
       await expect(listErrataAdmin()).resolves.toEqual([]);
     });
+  });
+});
+
+describe("adminService.getAuditEntry", () => {
+  const ROW = {
+    id: 7,
+    actor: null,
+    action: "update",
+    entity: "errata",
+    entity_key: "42",
+    before_data: { summary: "avant" },
+    after_data: { summary: "après" },
+    created_at: "2026-07-25T10:00:00Z",
+  };
+
+  function stubEntry(data: unknown, error: unknown = null) {
+    let table = "";
+    supabaseStub = {
+      from: (t: string) => {
+        table = t;
+        return {
+          select: () => ({
+            eq: () => ({ maybeSingle: () => Promise.resolve({ data, error }) }),
+          }),
+        };
+      },
+    };
+    return () => table;
+  }
+
+  it("devrait renvoyer l'entrée demandée depuis admin_audit", async () => {
+    const readTable = stubEntry(ROW);
+    const out = await getAuditEntry(7);
+    expect(readTable()).toBe("admin_audit");
+    expect(out?.id).toBe(7);
+    expect(out?.before_data).toEqual({ summary: "avant" });
+  });
+
+  it("devrait renvoyer null sans backend", async () => {
+    supabaseStub = null;
+    await expect(getAuditEntry(7)).resolves.toBeNull();
+  });
+
+  it("devrait renvoyer null si la requête échoue (RLS, réseau)", async () => {
+    stubEntry(null, { message: "denied" });
+    await expect(getAuditEntry(7)).resolves.toBeNull();
+  });
+
+  it("devrait renvoyer null SANS LEVER si la requête jette", async () => {
+    supabaseStub = {
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            maybeSingle: () => {
+              throw new Error("réseau");
+            },
+          }),
+        }),
+      }),
+    };
+    await expect(getAuditEntry(7)).resolves.toBeNull();
   });
 });

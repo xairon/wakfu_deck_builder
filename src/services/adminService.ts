@@ -180,6 +180,37 @@ export async function listAudit(limit = 200): Promise<AuditRow[]> {
 }
 
 /**
+ * Une entrée du journal par son id — sert à « réutiliser cette version » depuis
+ * `/admin/journal`. Même dégradation que `listAudit` : `null` si pas de backend,
+ * si la requête échoue ou si la RLS refuse ; `console.warn` sur échec de requête ;
+ * JAMAIS d'exception.
+ */
+export async function getAuditEntry(id: number): Promise<AuditRow | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from("admin_audit")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) {
+      console.warn(
+        "[adminService] lecture d'une entrée `admin_audit` en échec :",
+        error,
+      );
+      return null;
+    }
+    return (data as AuditRow | null) ?? null;
+  } catch (err) {
+    console.warn(
+      "[adminService] exception lors de la lecture d'`admin_audit` :",
+      err,
+    );
+    return null;
+  }
+}
+
+/**
  * Profils + rôles (page de gestion des comptes).
  *
  * Même dégradation que `listAudit` : jamais d'exception, `console.warn` sur

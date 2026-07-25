@@ -5,13 +5,33 @@ import { mount, flushPromises } from "@vue/test-utils";
 // module (imports compris), donc un `const x = vi.fn()` référencé par
 // raccourci dans la factory serait en TDZ dès que AdminRulesView.vue (qui
 // importe @/services/adminService) est chargé. `vi.hoisted` évite ça.
-const { loadRules, upsertRuleOverride, deleteRuleOverride } = vi.hoisted(
-  () => ({
-    loadRules: vi.fn(),
-    upsertRuleOverride: vi.fn(),
-    deleteRuleOverride: vi.fn(),
+const {
+  loadRules,
+  upsertRuleOverride,
+  deleteRuleOverride,
+  getAuditEntry,
+  listProfiles,
+} = vi.hoisted(() => ({
+  loadRules: vi.fn(),
+  upsertRuleOverride: vi.fn(),
+  deleteRuleOverride: vi.fn(),
+  getAuditEntry: vi.fn(),
+  listProfiles: vi.fn(),
+}));
+
+// Le composable de reprise lit `?reuse=` et nettoie l'URL.
+const { routeQuery, routerReplace } = vi.hoisted(() => ({
+  routeQuery: { value: {} as Record<string, unknown> },
+  routerReplace: vi.fn(),
+}));
+vi.mock("vue-router", () => ({
+  useRoute: () => ({
+    get query() {
+      return routeQuery.value;
+    },
   }),
-);
+  useRouter: () => ({ replace: routerReplace }),
+}));
 
 const ROWS = [
   {
@@ -33,6 +53,8 @@ vi.mock("@/services/rulesService", () => ({
 vi.mock("@/services/adminService", () => ({
   upsertRuleOverride,
   deleteRuleOverride,
+  getAuditEntry,
+  listProfiles,
 }));
 
 import AdminRulesView from "@/views/admin/AdminRulesView.vue";
@@ -173,5 +195,166 @@ describe("AdminRulesView", () => {
 
     expect(deleteRuleOverride).toHaveBeenCalledWith("418.5b");
     expect(loadRules).toHaveBeenCalledTimes(2); // montage + après rétablissement
+  });
+});
+
+describe("AdminRulesView — reprise d'une version du journal", () => {
+  function auditEntry(over: Record<string, unknown> = {}) {
+    return {
+      id: 21,
+      actor: "u-1",
+      action: "update",
+      entity: "rule_override",
+      entity_key: "418.5b",
+      before_data: null,
+      after_data: {
+        number: "418.5b",
+        chapter: 4,
+        kind: "rule",
+        body: "Texte corrigé repris du journal.",
+        sort_order: 3,
+      },
+      created_at: "2026-07-24T09:00:00Z",
+      ...over,
+    };
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    routeQuery.value = {};
+    loadRules.mockResolvedValue(ROWS);
+    listProfiles.mockResolvedValue([
+      { user_id: "u-1", username: "Tavoshel", role: "admin" },
+    ]);
+  });
+
+  it("devrait ouvrir l'éditeur de LA bonne règle, pré-rempli", async () => {
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+
+    expect(getAuditEntry).toHaveBeenCalledWith(21);
+    const area = w.find('[data-testid="body-418.5b"]');
+    expect(area.exists()).toBe(true);
+    expect((area.element as HTMLTextAreaElement).value).toBe(
+      "Texte corrigé repris du journal.",
+    );
+  });
+
+  it("ne devrait RIEN écrire tant que l'admin n'enregistre pas", async () => {
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(upsertRuleOverride).not.toHaveBeenCalled();
+    expect(deleteRuleOverride).not.toHaveBeenCalled();
+  });
+
+  it("devrait afficher un bandeau nommant la version et son auteur", async () => {
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    const banner = w.find('[data-testid="reuse-banner"]');
+    expect(banner.exists()).toBe(true);
+    expect(banner.text()).toContain("Tavoshel");
+    expect(banner.text()).toContain("relis puis enregistre");
+  });
+
+  it("devrait nettoyer ?reuse= de l'URL", async () => {
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(routerReplace).toHaveBeenCalledWith({ query: {} });
+  });
+
+  it("devrait basculer sur le formulaire d'AJOUT si la règle n'existe plus", async () => {
+    // Une règle ajoutée puis rétablie n'est plus dans `rules_effective` :
+    // il n'y a aucune ligne où ouvrir l'éditeur inline.
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(
+      auditEntry({
+        entity_key: "999.1",
+        after_data: {
+          number: "999.1",
+          chapter: 9,
+          kind: "rule",
+          body: "Règle disparue.",
+          sort_order: 0,
+        },
+      }),
+    );
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(
+      (w.find('[data-testid="f-number"]').element as HTMLInputElement).value,
+    ).toBe("999.1");
+    expect(
+      (w.find('[data-testid="f-body"]').element as HTMLTextAreaElement).value,
+    ).toBe("Règle disparue.");
+    expect(
+      (w.find('[data-testid="f-chapter"]').element as HTMLInputElement).value,
+    ).toBe("9");
+  });
+
+  it("devrait retirer le bandeau apres un enregistrement reussi", async () => {
+    // « Rien n'est encore modifié » deviendrait FAUX : la règle vient d'être
+    // écrite en base.
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    upsertRuleOverride.mockResolvedValue({ ok: true });
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(true);
+
+    await w.find('[data-testid="save-418.5b"]').trigger("click");
+    await flushPromises();
+    expect(upsertRuleOverride).toHaveBeenCalled();
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(false);
+  });
+
+  it("devrait retirer le bandeau si l'admin annule", async () => {
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry());
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(true);
+
+    const cancel = w
+      .findAll("button")
+      .find((b) => b.text().trim() === "Annuler");
+    expect(cancel).toBeTruthy();
+    await cancel!.trigger("click");
+    expect(w.find('[data-testid="reuse-banner"]').exists()).toBe(false);
+  });
+
+  it("devrait afficher une erreur si la version est introuvable, sans planter", async () => {
+    routeQuery.value = { reuse: "999", side: "after" };
+    getAuditEntry.mockResolvedValue(null);
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-error"]').text()).toContain(
+      "introuvable",
+    );
+    expect(w.find('[data-testid="body-418.5b"]').exists()).toBe(false);
+  });
+
+  it("devrait refuser un instantané d'une AUTRE entité", async () => {
+    routeQuery.value = { reuse: "21", side: "after" };
+    getAuditEntry.mockResolvedValue(auditEntry({ entity: "errata" }));
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-error"]').exists()).toBe(true);
+    expect(w.find('[data-testid="body-418.5b"]').exists()).toBe(false);
+  });
+
+  it("devrait ignorer silencieusement un ?reuse= non numérique", async () => {
+    routeQuery.value = { reuse: "abc" };
+    const w = mount(AdminRulesView, { global: { stubs } });
+    await flushPromises();
+    expect(getAuditEntry).not.toHaveBeenCalled();
+    expect(w.find('[data-testid="reuse-error"]').exists()).toBe(false);
   });
 });
