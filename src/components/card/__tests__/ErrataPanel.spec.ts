@@ -212,10 +212,22 @@ describe("ErrataPanel — édition en place", () => {
     await w.find('[data-testid="errata-submit"]').trigger("click");
     await flushPromises();
 
-    expect(updateErratum).toHaveBeenCalledWith(
-      42,
-      expect.objectContaining({ card_id: "opee-tissoin-incarnam" }),
-    );
+    // Payload EXACT, pas objectContaining : au lot précédent, une clé omise
+    // (`sort_order`) est passée en production précisément parce que
+    // objectContaining est aveugle à une clé manquante. Ici c'est `changes` qui
+    // porte toute la fonctionnalité — omis, l'errata structuré ne serait jamais
+    // enregistré, sans qu'aucun test ne bronche.
+    expect(updateErratum).toHaveBeenCalledWith(42, {
+      card_id: "opee-tissoin-incarnam",
+      errata_date: "2011-10-05",
+      source: "Forum officiel Wakfu",
+      summary: "Coût en PA ramené à 6.",
+      // null (et non "") : le pré-remplissage reprend la valeur de la ligne
+      // existante telle quelle ; la colonne est nullable, les deux conviennent.
+      before_text: null,
+      after_text: null,
+      changes: [],
+    });
     expect(createErratum).not.toHaveBeenCalled();
     expect(refreshErrata).toHaveBeenCalled();
     expect(toastSuccess).toHaveBeenCalled();
