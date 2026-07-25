@@ -214,7 +214,7 @@ describe("RulesOfficialView — marqueur « corrigé » et texte officiel d'orig
     expect(details.exists()).toBe(true);
   });
 
-  it("devrait afficher le marqueur « corrigé » sans <details> pour une règle ajoutée (body_official null)", async () => {
+  it("devrait afficher le marqueur « ajoutée » (PAS « corrigé ») sans <details> pour une règle ajoutée (body_official null)", async () => {
     const ROWS_WITH_ADDED = [
       {
         number: "418.5c",
@@ -233,11 +233,13 @@ describe("RulesOfficialView — marqueur « corrigé » et texte officiel d'orig
     const w = mount(RulesOfficialView);
     await w.vm.$nextTick();
 
-    // Doit afficher le marqueur « corrigé »
-    expect(w.text()).toContain("corrigé");
-
     // Doit contenir le texte de la règle
     expect(w.text()).toContain("Règle nouvellement ajoutée.");
+
+    // Doit afficher le marqueur « ajoutée » : il n'y a pas de texte officiel
+    // en face, donc « corrigé » (qui prétendrait le contraire) serait faux.
+    expect(w.text()).toContain("ajoutée");
+    expect(w.text()).not.toContain("corrigé");
 
     // Ne doit PAS afficher de <details> (pas de texte officiel à montrer)
     const details = w.find("details");

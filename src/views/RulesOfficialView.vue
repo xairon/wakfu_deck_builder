@@ -57,9 +57,9 @@
       <p v-else class="leading-relaxed">
         <span class="font-mono text-sm opacity-70">{{ row.number }}</span>
         {{ row.body }}
-        <span v-if="row.is_edited" class="badge badge-sm badge-warning ml-2"
-          >corrigé</span
-        >
+        <span v-if="row.is_edited" class="badge badge-sm badge-warning ml-2">{{
+          row.body_official != null ? "corrigé" : "ajoutée"
+        }}</span>
       </p>
       <details
         v-if="row.is_edited && row.body_official"
