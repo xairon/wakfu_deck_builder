@@ -166,6 +166,37 @@ describe("adminService", () => {
     expect(calls.from).toEqual(["card_errata"]);
   });
 
+  // Garde de non-régression pour le finding 2 : `res.ok` et la table ciblée
+  // ne prouvent rien sur CE QUI est réellement inséré — une clé manquante ou
+  // mal nommée passerait ces deux assertions sans être détectée (c'est
+  // exactement la forme du bug `sort_order` déjà livré en prod sur ce
+  // projet). On vérifie ici l'objet EXACT transmis à `.insert()`.
+  it("devrait insérer exactement { sort_order: 0, ...input, updated_by }", async () => {
+    const { stub, calls } = makeSupabaseStub({ error: null });
+    supabaseStub = stub;
+    const changes = [{ label: "PA", before: "7", after: "6" }];
+    const res = await createErratum({
+      card_id: "opee-tissoin-incarnam",
+      summary: "Passe à 6 PA.",
+      errata_date: "2011-10-05",
+      source: "Forum officiel Wakfu",
+      changes,
+    });
+    expect(res.ok).toBe(true);
+    const insertCall = calls.chain.find((c) => c.method === "insert");
+    expect(insertCall?.args).toEqual([
+      {
+        sort_order: 0,
+        card_id: "opee-tissoin-incarnam",
+        summary: "Passe à 6 PA.",
+        errata_date: "2011-10-05",
+        source: "Forum officiel Wakfu",
+        changes,
+        updated_by: "user-1",
+      },
+    ]);
+  });
+
   it("devrait rafraîchir l'index errata après une mise à jour réussie", async () => {
     const { stub, calls } = makeSupabaseStub({ error: null });
     supabaseStub = stub;
@@ -175,6 +206,21 @@ describe("adminService", () => {
     expect(calls.from).toEqual(["card_errata"]);
     const eqCall = calls.chain.find((c) => c.method === "eq");
     expect(eqCall?.args).toEqual(["id", 42]);
+  });
+
+  // Même garde que createErratum, côté mise à jour : `changes` doit être
+  // transmis tel quel jusqu'à `.update()`, pas seulement présent dans
+  // l'input de la fonction.
+  it("devrait passer `changes` tel quel à .update()", async () => {
+    const { stub, calls } = makeSupabaseStub({ error: null });
+    supabaseStub = stub;
+    const changes = [{ label: "PA", before: "7", after: "6" }];
+    const res = await updateErratum(42, { summary: "Corrigé.", changes });
+    expect(res.ok).toBe(true);
+    const updateCall = calls.chain.find((c) => c.method === "update");
+    expect(updateCall?.args).toEqual([
+      { summary: "Corrigé.", changes, updated_by: "user-1" },
+    ]);
   });
 
   it("ne devrait pas rafraîchir l'index errata si la mise à jour est refusée", async () => {

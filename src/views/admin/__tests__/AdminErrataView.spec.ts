@@ -82,6 +82,43 @@ describe("AdminErrataView", () => {
     expect(listErrataAdmin).toHaveBeenCalledTimes(2); // montage + après suppression
   });
 
+  it("devrait envoyer le payload EXACT à createErratum, changes inclus (pas objectContaining)", async () => {
+    // Payload EXACT et non `objectContaining` : au lot précédent, une clé
+    // omise (`sort_order`) est passée en production précisément parce
+    // qu'`objectContaining` est aveugle à une clé manquante. `changes:
+    // form.changes` porte toute la fonctionnalité errata structurée — si
+    // cette ligne disparaît de AdminErrataView.vue, ce test doit échouer
+    // (vérifié : suppression temporaire de la ligne → RED ; restauration →
+    // GREEN).
+    const w = mountView();
+    await flushPromises();
+    await w.find('[data-testid="new-errata"]').trigger("click");
+    await w.find('[data-testid="f-card"]').setValue("opee-tissoin-incarnam");
+    await w.find('[data-testid="f-date"]').setValue("2011-10-05");
+    await w.find('[data-testid="f-source"]').setValue("Forum officiel Wakfu");
+    await w
+      .find('[data-testid="f-summary"]')
+      .setValue("Coût en PA ramené à 6.");
+    await w.find('[data-testid="f-before"]').setValue("7 PA");
+    await w.find('[data-testid="f-after"]').setValue("6 PA");
+    await w.find('[data-testid="add-change"]').trigger("click");
+    await w.find('[data-testid="change-label-0"]').setValue("PA");
+    await w.find('[data-testid="change-before-0"]').setValue("7");
+    await w.find('[data-testid="change-after-0"]').setValue("6");
+    await w.find('[data-testid="errata-submit"]').trigger("click");
+    await flushPromises();
+
+    expect(createErratum).toHaveBeenCalledWith({
+      card_id: "opee-tissoin-incarnam",
+      errata_date: "2011-10-05",
+      source: "Forum officiel Wakfu",
+      summary: "Coût en PA ramené à 6.",
+      before_text: "7 PA",
+      after_text: "6 PA",
+      changes: [{ label: "PA", before: "7", after: "6" }],
+    });
+  });
+
   it("devrait afficher l'erreur de la base et conserver la saisie si la création échoue", async () => {
     createErratum.mockResolvedValue({ ok: false, error: "row-level security" });
     const w = mountView();
