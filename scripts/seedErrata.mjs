@@ -65,6 +65,22 @@ if (rows.length === 0) {
   process.exit(1);
 }
 
+// ⛔ Les errata sont désormais CRÉÉS À LA MAIN par les admins : ce script n'a plus
+// de source amont, et son `delete` détruirait leur travail. Il ne s'exécute donc
+// que sur une table vide, sauf --force explicite.
+const force = process.argv.includes("--force");
+const [{ n: existing }] = await runSql(
+  "select count(*)::int as n from public.card_errata;",
+);
+if (existing > 0 && !force) {
+  console.error(
+    `Refus : card_errata contient déjà ${existing} ligne(s).\n` +
+      "Ce seed EFFACE la table — relancer écraserait les errata saisis par les admins.\n" +
+      "Si c'est vraiment ce que tu veux : node scripts/seedErrata.mjs --force",
+  );
+  process.exit(1);
+}
+
 await runSql("delete from public.card_errata;");
 await runSql(
   "insert into public.card_errata " +

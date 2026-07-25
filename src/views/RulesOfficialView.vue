@@ -66,10 +66,10 @@
 import { computed, onMounted, ref } from "vue";
 import { loadRules, getRules } from "@/services/rulesService";
 import { matchesSearch } from "@/utils/text";
-import type { RuleRow } from "@/schema";
+import type { RuleEffectiveRow } from "@/schema";
 
 const query = ref("");
-const rows = ref<RuleRow[]>(getRules());
+const rows = ref<RuleEffectiveRow[]>(getRules());
 const failed = ref(false);
 
 onMounted(async () => {

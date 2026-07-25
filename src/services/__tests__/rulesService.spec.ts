@@ -12,6 +12,7 @@ vi.mock("@/services/supabase", () => ({
 import {
   loadRules,
   getRules,
+  refreshRules,
   __resetRulesCache,
 } from "@/services/rulesService";
 
@@ -23,6 +24,7 @@ const ROWS = [
     title: "Concepts",
     body: null,
     sort_order: 1,
+    is_edited: false,
   },
   {
     number: "418",
@@ -31,6 +33,7 @@ const ROWS = [
     title: "Ressources",
     body: null,
     sort_order: 2,
+    is_edited: false,
   },
   {
     number: "418.5b",
@@ -39,6 +42,7 @@ const ROWS = [
     title: null,
     body: "Allié…",
     sort_order: 3,
+    is_edited: false,
   },
 ];
 
@@ -47,18 +51,29 @@ let orderCalls: unknown[][] = [];
 
 /**
  * Stub Supabase renvoyant `{ data, error }` figés et capturant les arguments
- * passés à `.order(...)` dans `orderCalls`. Le mock est délibérément
- * agnostique à ces arguments (il renvoie toujours `data` tel quel) : c'est
- * `orderCalls` — pas l'ordre du tableau renvoyé — qui prouve que le service
- * demande le bon tri à la requête.
+ * passés à `.order(...)` dans `orderCalls`. Reproduit le double tri chaîné du
+ * service (`.order("sort_order", …).order("number", …)`), comme le vrai
+ * client Postgrest : le builder renvoyé par le premier `.order()` expose
+ * lui-même `.order()`, seul le second maillon résout la promesse. Le mock est
+ * délibérément agnostique aux arguments (il renvoie toujours `data` tel
+ * quel) : c'est `orderCalls` — pas l'ordre du tableau renvoyé — qui prouve
+ * que le service demande le bon tri à la requête. Le mock est aussi
+ * agnostique à la table interrogée (`from()` ignore son argument) : les
+ * tests de repli plus bas définissent leurs propres stubs différenciés par
+ * table.
  */
 function stubData(data: unknown, error: unknown = null) {
   supabaseStub = {
     from: () => ({
       select: () => ({
-        order: (...args: unknown[]) => {
-          orderCalls.push(args);
-          return Promise.resolve({ data, error });
+        order: (...args1: unknown[]) => {
+          orderCalls.push(args1);
+          return {
+            order: (...args2: unknown[]) => {
+              orderCalls.push(args2);
+              return Promise.resolve({ data, error });
+            },
+          };
         },
       }),
     }),
@@ -72,15 +87,76 @@ describe("rulesService", () => {
     __resetRulesCache();
   });
 
-  it("devrait demander le tri par sort_order ascendant à Supabase (arguments de .order)", async () => {
+  it("devrait lire la vue rules_effective (pas la table rules)", async () => {
+    let table = "";
+    supabaseStub = {
+      from: (t: string) => {
+        table = t;
+        return {
+          select: () => ({
+            order: () => ({
+              order: () => Promise.resolve({ data: [], error: null }),
+            }),
+          }),
+        };
+      },
+    };
+    await loadRules();
+    expect(table).toBe("rules_effective");
+  });
+
+  it("devrait exposer is_edited et body_official", async () => {
+    stubData([
+      {
+        number: "418.5b",
+        kind: "rule",
+        chapter: 4,
+        title: null,
+        body: "Corrigé.",
+        sort_order: 3,
+        is_edited: true,
+        body_official: "Officiel.",
+      },
+    ]);
+    const rules = await loadRules();
+    expect(rules[0].is_edited).toBe(true);
+    expect(rules[0].body_official).toBe("Officiel.");
+  });
+
+  it("refreshRules devrait forcer une nouvelle requête", async () => {
+    let calls = 0;
+    supabaseStub = {
+      from: () => ({
+        select: () => ({
+          order: () => {
+            calls++;
+            return {
+              order: () => Promise.resolve({ data: [], error: null }),
+            };
+          },
+        }),
+      }),
+    };
+    await loadRules();
+    await loadRules();
+    expect(calls).toBe(1);
+    await refreshRules();
+    expect(calls).toBe(2);
+  });
+
+  it("devrait demander le tri par sort_order puis number, tous deux ascendants (arguments de .order)", async () => {
     // Le mock est order-agnostique (voir stubData) : si l'implémentation
-    // régressait vers `.order("number")` ou `.order("sort_order", { ascending: false })`,
-    // les données renvoyées seraient identiques et un test qui se contente de
-    // vérifier `rules.map(r => r.number)` ne verrait rien. Seule l'assertion
-    // sur les arguments réellement transmis prouve que le tri demandé est le bon.
+    // régressait vers un seul `.order("sort_order")` ou vers un ordre
+    // descendant, les données renvoyées seraient identiques et un test qui se
+    // contente de vérifier `rules.map(r => r.number)` ne verrait rien. Seule
+    // l'assertion sur les arguments réellement transmis (et leur nombre)
+    // prouve que le tri demandé est le bon.
     stubData(ROWS);
     await loadRules();
-    expect(orderCalls).toEqual([["sort_order", { ascending: true }]]);
+    expect(orderCalls).toEqual([
+      ["sort_order", { ascending: true }],
+      ["number", { ascending: true }],
+    ]);
   });
 
   it("ne trie pas côté client : l'ordre renvoyé par loadRules suit tel quel celui de la requête (pas de re-tri)", async () => {
@@ -113,7 +189,9 @@ describe("rulesService", () => {
         select: () => ({
           order: () => {
             calls++;
-            return Promise.resolve({ data: ROWS, error: null });
+            return {
+              order: () => Promise.resolve({ data: ROWS, error: null }),
+            };
           },
         }),
       }),
@@ -135,7 +213,9 @@ describe("rulesService", () => {
         select: () => ({
           order: () => {
             calls++;
-            return Promise.resolve({ data: ROWS, error: null });
+            return {
+              order: () => Promise.resolve({ data: ROWS, error: null }),
+            };
           },
         }),
       }),
@@ -155,9 +235,10 @@ describe("rulesService", () => {
     await expect(loadRules()).resolves.toEqual([]);
   });
 
-  it("devrait renvoyer une liste vide si la requête renvoie une erreur", async () => {
+  it("devrait renvoyer une liste vide si la requête renvoie une erreur (et que le repli échoue aussi)", async () => {
     // `data` reste un tableau de lignes valides : seule la présence de
-    // `error` doit forcer la dégradation vers [].
+    // `error` doit forcer la dégradation vers [] — ici via le repli sur
+    // `rules`, qui échoue également (stubData est agnostique à la table).
     stubData(ROWS, { message: "boom" });
     await expect(loadRules()).resolves.toEqual([]);
   });
@@ -206,5 +287,98 @@ describe("rulesService", () => {
     ]);
     const rules = await loadRules();
     expect(rules).toHaveLength(3);
+  });
+
+  describe("repli sur la table `rules` (vue `rules_effective` pas encore migrée)", () => {
+    /**
+     * Stub différencié PAR TABLE : contrairement à `stubData`, il distingue
+     * `rules_effective` de `rules` et enregistre chaque nom de table
+     * interrogé dans `tablesQueried`, dans l'ordre. C'est la seule façon de
+     * prouver que le repli a (ou n'a pas) réellement tapé la table `rules` —
+     * un test qui se contenterait de vérifier le contenu renvoyé ne
+     * distinguerait pas « la vue a répondu » de « le repli a répondu à sa
+     * place avec des données qui ressemblent ».
+     */
+    function stubByTable(opts: {
+      view: { data: unknown; error: unknown };
+      table: { data: unknown; error: unknown };
+    }) {
+      const tablesQueried: string[] = [];
+      supabaseStub = {
+        from: (t: string) => {
+          tablesQueried.push(t);
+          const result = t === "rules_effective" ? opts.view : opts.table;
+          return {
+            select: () => ({
+              order: () => ({
+                order: () => Promise.resolve(result),
+              }),
+            }),
+          };
+        },
+      };
+      return tablesQueried;
+    }
+
+    it("est utilisé quand la vue échoue : interroge bien `rules` et renvoie is_edited: false", async () => {
+      const tablesQueried = stubByTable({
+        view: { data: null, error: { message: "relation does not exist" } },
+        table: {
+          data: [
+            {
+              number: "418.5b",
+              kind: "rule",
+              chapter: 4,
+              title: null,
+              body: "Allié…",
+              sort_order: 3,
+            },
+          ],
+          error: null,
+        },
+      });
+
+      const rules = await loadRules();
+
+      // Preuve que le repli a réellement été déclenché (pas juste que le
+      // résultat "ressemble" à celui de la table `rules`) : la table `rules`
+      // a effectivement été interrogée, après `rules_effective`.
+      expect(tablesQueried).toEqual(["rules_effective", "rules"]);
+      expect(rules).toHaveLength(1);
+      expect(rules[0].is_edited).toBe(false);
+      expect(rules[0].body_official).toBeNull();
+    });
+
+    it("n'est PAS utilisé quand la vue répond : `rules` n'est jamais interrogée", async () => {
+      const tablesQueried = stubByTable({
+        view: {
+          data: [
+            {
+              number: "418.5b",
+              kind: "rule",
+              chapter: 4,
+              title: null,
+              body: "Corrigé.",
+              sort_order: 3,
+              is_edited: true,
+              body_official: "Officiel.",
+            },
+          ],
+          error: null,
+        },
+        // Si le service interrogeait `rules` malgré une vue qui répond, ce
+        // stub le révélerait : ces données n'ont pas `is_edited`/
+        // `body_official`, donc la ligne serait rejetée par le schéma et le
+        // test échouerait sur `rules` ci-dessous — mais la preuve décisive
+        // reste `tablesQueried`, pas ce contenu.
+        table: { data: [], error: null },
+      });
+
+      const rules = await loadRules();
+
+      expect(tablesQueried).toEqual(["rules_effective"]);
+      expect(rules).toHaveLength(1);
+      expect(rules[0].is_edited).toBe(true);
+    });
   });
 });

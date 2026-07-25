@@ -10,6 +10,9 @@
  * Chaque étape s'arrête au premier échec : on ne seed jamais par-dessus une
  * migration qui n'est pas passée. Tout est idempotent (rejouable sans danger).
  *
+ * ⚠️ Depuis la Phase 2, les errata sont édités par les admins : le seed refuse de
+ * tourner si `card_errata` n'est pas vide (--force pour passer outre).
+ *
  * Le token n'est JAMAIS écrit dans la sortie.
  *
  * Usage :
@@ -28,6 +31,8 @@ if (!TOKEN) {
 }
 
 const shell = process.platform === "win32";
+const forceArgs = process.argv.includes("--force") ? ["--force"] : [];
+
 function step(label, args) {
   console.log(`\n── ${label} ─────────────────────────────────`);
   execFileSync("node", args, { stdio: "inherit", shell });
@@ -59,7 +64,7 @@ step("1/4 · Migration 0012 (tables + RLS)", [
   "scripts/applyMigration.mjs",
   "supabase/migrations/0012_rules_errata.sql",
 ]);
-step("2/4 · Seed des errata", ["scripts/seedErrata.mjs"]);
+step("2/4 · Seed des errata", ["scripts/seedErrata.mjs", ...forceArgs]);
 step("3/4 · Seed des règles", ["scripts/seedRules.mjs"]);
 
 console.log("\n── 4/4 · Vérification en base ───────────────");

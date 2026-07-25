@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { getAuthProvider } from "@/services/auth";
 import type { AuthSession, AuthUser } from "@/services/auth";
 import { setActiveUser } from "@/services/storageNamespace";
+import type { UserRole } from "@/schema";
 
 /**
  * Store d'authentification — application web cloud-only (Supabase).
@@ -18,6 +19,8 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
   /** Vrai au retour d'un lien de réinitialisation → afficher le formulaire mdp. */
   const passwordRecovery = ref(false);
+  /** Rôle du compte courant. Repli initial « user » (cf. setSession). */
+  const role = ref<UserRole>("user");
 
   let unsubscribe: (() => void) | null = null;
   let initPromise: Promise<void> | null = null;
@@ -26,10 +29,26 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthenticated = computed(() => !!user.value);
   const userEmail = computed(() => user.value?.email ?? null);
   const userId = computed(() => user.value?.id ?? null);
+  /** Affichage UI uniquement — la sécurité réelle est la RLS côté serveur. */
+  const isAdmin = computed(
+    () => role.value === "admin" || role.value === "owner",
+  );
+  /** Affichage UI uniquement — la sécurité réelle est la RLS côté serveur. */
+  const isOwner = computed(() => role.value === "owner");
+
+  /** Charge le rôle depuis `profiles`. Silencieux : le repli est déjà « user ». */
+  async function loadRole() {
+    const { getMyRole } = await import("@/services/profileService");
+    role.value = await getMyRole();
+  }
 
   function setSession(next: AuthSession | null) {
     session.value = next;
     user.value = next?.user ?? null;
+    // Le rôle suit la session. Repli IMMÉDIAT sur « user » : aucun privilège tant
+    // que le rôle réel n'est pas revenu, et remise à zéro à la déconnexion.
+    role.value = "user";
+    if (next) void loadRole();
   }
 
   function messageFrom(err: unknown, fallback: string): string {
@@ -204,15 +223,19 @@ export const useAuthStore = defineStore("auth", () => {
     loading,
     error,
     passwordRecovery,
+    role,
     isAuthenticated,
     userEmail,
     userId,
+    isAdmin,
+    isOwner,
     initialize,
     signUp,
     signIn,
     signOut,
     resetPassword,
     updatePassword,
+    loadRole,
     dispose,
   };
 });
