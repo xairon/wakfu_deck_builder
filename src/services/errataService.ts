@@ -16,6 +16,7 @@
  */
 import { supabase } from "@/services/supabase";
 import { errataRowSchema } from "@/schema";
+import type { ErrataChange } from "@/schema";
 
 export interface ErrataEntry {
   /** ISO "YYYY-MM-DD" (colonne `date` Postgres). Vide si absente. */
@@ -24,6 +25,8 @@ export interface ErrataEntry {
   summary: string;
   before?: string;
   after?: string;
+  /** Changements structurés (« PA : 7 → 6 »). Vide = errata non encore structuré. */
+  changes: ErrataChange[];
 }
 
 let cache: Record<string, ErrataEntry[]> | null = null;
@@ -65,6 +68,7 @@ async function load(): Promise<void> {
         summary: r.summary,
         before: r.before_text ?? undefined,
         after: r.after_text ?? undefined,
+        changes: r.changes,
       });
     }
     cache = index;

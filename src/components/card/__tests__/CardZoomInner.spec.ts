@@ -54,7 +54,7 @@ describe("CardZoomInner — date d'un errata officiel", () => {
     const wrapper = mount(CardZoomInner, {
       props: {
         card,
-        errata: [{ date: "2010-12-01", summary: "Passe à 6 PA." }],
+        errata: [{ date: "2010-12-01", summary: "Passe à 6 PA.", changes: [] }],
         elementColor: "#888",
         cardImg: "/x.webp",
         displayEffects: [],

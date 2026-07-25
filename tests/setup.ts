@@ -16,6 +16,16 @@ config.global.mocks = {
   },
 };
 
+// Stub global de RouterLink : évite le `[Vue warn]: Failed to resolve
+// component: RouterLink` (bruit dans la sortie des tests) quand un composant
+// qui l'utilise (ex. ErrataPanel) est monté sans router installé. Un test qui
+// a besoin d'inspecter le lien (ex. sa prop `to`) peut toujours le
+// sur-stubber localement via `global: { stubs: { RouterLink: ... } } }`.
+config.global.stubs = {
+  ...config.global.stubs,
+  RouterLink: { props: ["to"], template: "<a><slot /></a>" },
+};
+
 // Mock de ResizeObserver
 class ResizeObserverMock {
   observe = vi.fn();
