@@ -39,7 +39,7 @@ vi.mock("@/services/rulesService", () => ({
 }));
 
 import RulesOfficialView from "@/views/RulesOfficialView.vue";
-import { getRules } from "@/services/rulesService";
+import { getRules, loadRules } from "@/services/rulesService";
 
 describe("RulesOfficialView", () => {
   it("devrait afficher les chapitres, sections et règles", async () => {
@@ -177,5 +177,102 @@ describe("RulesOfficialView — deep-link scroll (chargement async)", () => {
     // est celui dont l'id est "418.5b".
     const scrolledElement = scrollMock.mock.instances[0] as unknown as Element;
     expect(scrolledElement.id).toBe("418.5b");
+  });
+});
+
+describe("RulesOfficialView — marqueur « corrigé » et texte officiel d'origine", () => {
+  it("devrait afficher le marqueur « corrigé » et le texte officiel pour une règle éditée", async () => {
+    const ROWS_WITH_EDITED = [
+      {
+        number: "418.5b",
+        kind: "rule" as const,
+        chapter: 4,
+        title: null,
+        body: "Texte corrigé.",
+        sort_order: 1,
+        is_edited: true,
+        body_official: "Texte officiel.",
+      },
+    ];
+    vi.mocked(getRules).mockReturnValueOnce(ROWS_WITH_EDITED);
+    vi.mocked(loadRules).mockResolvedValueOnce(ROWS_WITH_EDITED);
+
+    const w = mount(RulesOfficialView);
+    await w.vm.$nextTick();
+
+    // Doit contenir le texte corrigé (le body affiché)
+    expect(w.text()).toContain("Texte corrigé.");
+
+    // Doit afficher le marqueur « corrigé »
+    expect(w.text()).toContain("corrigé");
+
+    // Doit contenir le texte officiel d'origine
+    expect(w.text()).toContain("Texte officiel.");
+
+    // Doit avoir un élément <details> visible (contenant le texte officiel)
+    const details = w.find("details");
+    expect(details.exists()).toBe(true);
+  });
+
+  it("devrait afficher le marqueur « corrigé » sans <details> pour une règle ajoutée (body_official null)", async () => {
+    const ROWS_WITH_ADDED = [
+      {
+        number: "418.5c",
+        kind: "rule" as const,
+        chapter: 4,
+        title: null,
+        body: "Règle nouvellement ajoutée.",
+        sort_order: 1,
+        is_edited: true,
+        body_official: null,
+      },
+    ];
+    vi.mocked(getRules).mockReturnValueOnce(ROWS_WITH_ADDED);
+    vi.mocked(loadRules).mockResolvedValueOnce(ROWS_WITH_ADDED);
+
+    const w = mount(RulesOfficialView);
+    await w.vm.$nextTick();
+
+    // Doit afficher le marqueur « corrigé »
+    expect(w.text()).toContain("corrigé");
+
+    // Doit contenir le texte de la règle
+    expect(w.text()).toContain("Règle nouvellement ajoutée.");
+
+    // Ne doit PAS afficher de <details> (pas de texte officiel à montrer)
+    const details = w.find("details");
+    expect(details.exists()).toBe(false);
+  });
+
+  it("ne devrait pas afficher de marqueur pour une règle non éditée", async () => {
+    const ROWS_WITH_UNEDITED = [
+      {
+        number: "418.5b",
+        kind: "rule" as const,
+        chapter: 4,
+        title: null,
+        body: "Texte officiel inchangé.",
+        sort_order: 1,
+        is_edited: false,
+        body_official: "Texte officiel inchangé.",
+      },
+    ];
+    vi.mocked(getRules).mockReturnValueOnce(ROWS_WITH_UNEDITED);
+    vi.mocked(loadRules).mockResolvedValueOnce(ROWS_WITH_UNEDITED);
+
+    const w = mount(RulesOfficialView);
+    await w.vm.$nextTick();
+
+    // Doit contenir le texte de la règle
+    expect(w.text()).toContain("Texte officiel inchangé.");
+
+    // Ne doit PAS afficher le marqueur « corrigé »
+    // On va utiliser une assertion négative stricte : compter les occurrences
+    const textContent = w.text();
+    expect(textContent.match(/corrigé/g)).toBe(null);
+
+    // Ne doit PAS afficher de <details>
+    const details = w.find("details");
+    expect(details.exists()).toBe(false);
   });
 });

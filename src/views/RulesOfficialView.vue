@@ -57,7 +57,19 @@
       <p v-else class="leading-relaxed">
         <span class="font-mono text-sm opacity-70">{{ row.number }}</span>
         {{ row.body }}
+        <span v-if="row.is_edited" class="badge badge-sm badge-warning ml-2"
+          >corrigé</span
+        >
       </p>
+      <details
+        v-if="row.is_edited && row.body_official"
+        class="mt-2 ml-8 text-sm opacity-80"
+      >
+        <summary class="cursor-pointer font-semibold">
+          Texte officiel d'origine
+        </summary>
+        <p class="mt-2">{{ row.body_official }}</p>
+      </details>
     </div>
   </main>
 </template>
