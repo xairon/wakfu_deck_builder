@@ -24,12 +24,19 @@ describe("ErrataPanel", () => {
       },
     });
     expect(w.find("table").exists()).toBe(true);
-    expect(w.text()).toContain("PA");
-    expect(w.text()).toContain("7");
-    expect(w.text()).toContain("6");
-    // Le libellé de colonne parle des exemplaires physiques, pas de l'image
-    // affichée à côté (qui, elle, montre déjà la valeur corrigée).
-    expect(w.text()).toContain("Version imprimée");
+
+    // ORDRE des colonnes, pas seulement leur présence : si « Version imprimée »
+    // et « À jouer » s'inversaient, le panneau annoncerait exactement l'inverse
+    // de la vérité (« imprimé 6, à jouer 7 ») — et un toContain ne le verrait pas.
+    const headers = w.findAll("thead th").map((h) => h.text());
+    expect(headers).toEqual(["Champ", "Version imprimée", "À jouer"]);
+
+    // Idem pour les cellules : valeurs distinctes (7 vs 6) pour qu'une inversion
+    // change réellement l'assertion.
+    const rows = w.findAll("tbody tr");
+    expect(rows).toHaveLength(1);
+    const cells = rows[0].findAll("td").map((td) => td.text());
+    expect(cells).toEqual(["PA", "7", "6"]);
   });
 
   it("devrait retomber sur la prose quand changes est vide", () => {
@@ -55,13 +62,24 @@ describe("ErrataPanel", () => {
           {
             ...BASE,
             changes: [
-              { label: "", before: "x", after: "y" },
+              { label: "  ", before: "a", after: "b" },
               { label: "PA", before: "7", after: "6" },
             ] as never,
           },
         ],
       },
     });
-    expect(w.text()).toContain("PA");
+
+    // Une seule ligne rendue : celle au libellé blanc est écartée (une cellule
+    // « Champ » vide serait muette). On assert sur les CELLULES et non sur
+    // w.text() : un `not.toContain("a")` buterait sur le « a » de « ramené »
+    // dans le résumé — assertion fragile qui teste la prose, pas le filtrage.
+    const rows = w.findAll("tbody tr");
+    expect(rows).toHaveLength(1);
+    expect(rows[0].findAll("td").map((td) => td.text())).toEqual([
+      "PA",
+      "7",
+      "6",
+    ]);
   });
 });
