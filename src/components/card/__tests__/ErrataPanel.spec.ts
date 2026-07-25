@@ -18,9 +18,6 @@ vi.mock("@/services/adminService", () => ({
   updateErratum,
 }));
 
-const { refreshErrata } = vi.hoisted(() => ({ refreshErrata: vi.fn() }));
-vi.mock("@/services/errataService", () => ({ refreshErrata }));
-
 const { toastSuccess, toastError } = vi.hoisted(() => ({
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
@@ -121,7 +118,6 @@ describe("ErrataPanel — édition en place", () => {
     listErrataAdmin.mockReset().mockResolvedValue([]);
     createErratum.mockReset().mockResolvedValue({ ok: true });
     updateErratum.mockReset().mockResolvedValue({ ok: true });
-    refreshErrata.mockReset();
     toastSuccess.mockReset();
     toastError.mockReset();
   });
@@ -229,7 +225,10 @@ describe("ErrataPanel — édition en place", () => {
       changes: [],
     });
     expect(createErratum).not.toHaveBeenCalled();
-    expect(refreshErrata).toHaveBeenCalled();
+    // ErrataPanel n'appelle plus refreshErrata lui-même (adminService s'en
+    // charge déjà, une seule fois) — ce qu'il doit faire, c'est prévenir
+    // son parent pour qu'il re-fetche SA copie de la prop `errata`.
+    expect(w.emitted("saved")).toHaveLength(1);
     expect(toastSuccess).toHaveBeenCalled();
     expect(w.find('[data-testid="errata-edit-form"]').exists()).toBe(false);
   });
@@ -249,14 +248,20 @@ describe("ErrataPanel — édition en place", () => {
     await w.find('[data-testid="errata-submit"]').trigger("click");
     await flushPromises();
 
-    expect(createErratum).toHaveBeenCalledWith(
-      expect.objectContaining({
-        card_id: "bouftou-incarnam",
-        summary: "Nouveau résumé",
-      }),
-    );
+    // Payload EXACT, pas objectContaining — même raison que le cas
+    // updateErratum ci-dessus : une clé manquante (ex. `changes`) doit faire
+    // échouer ce test, pas passer inaperçue.
+    expect(createErratum).toHaveBeenCalledWith({
+      card_id: "bouftou-incarnam",
+      errata_date: null,
+      source: null,
+      summary: "Nouveau résumé",
+      before_text: null,
+      after_text: null,
+      changes: [],
+    });
     expect(updateErratum).not.toHaveBeenCalled();
-    expect(refreshErrata).toHaveBeenCalled();
+    expect(w.emitted("saved")).toHaveLength(1);
     expect(toastSuccess).toHaveBeenCalled();
   });
 
@@ -284,7 +289,7 @@ describe("ErrataPanel — édition en place", () => {
     expect(
       (w.find('[data-testid="f-summary"]').element as HTMLInputElement).value,
     ).toBe("Test refusé");
-    expect(refreshErrata).not.toHaveBeenCalled();
+    expect(w.emitted("saved")).toBeUndefined();
     expect(toastSuccess).not.toHaveBeenCalled();
   });
 });

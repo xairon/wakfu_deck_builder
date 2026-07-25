@@ -135,7 +135,7 @@
       </div>
 
       <!-- Errata officiels : composant partagé avec le panneau de la Collection. -->
-      <ErrataPanel :errata="errata" :card-id="card.id" />
+      <ErrataPanel :errata="errata" :card-id="card.id" @saved="emit('saved')" />
 
       <!-- Saveur -->
       <p
@@ -193,6 +193,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "imgError", event: Event): void;
+  /** Rebond de l'événement `saved` d'ErrataPanel — voir CardZoomModal. */
+  (e: "saved"): void;
 }>();
 
 // Sépare les vrais effets de jeu des annotations (rulings/errata) : ces

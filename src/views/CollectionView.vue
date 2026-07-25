@@ -447,7 +447,11 @@
               </div>
 
               <!-- Errata officiels : composant partagé avec le zoom de carte. -->
-              <ErrataPanel :errata="cardErrata" :card-id="selectedCard?.id" />
+              <ErrataPanel
+                :errata="cardErrata"
+                :card-id="selectedCard?.id"
+                @saved="refreshCardErrata"
+              />
 
               <!-- Collection -->
               <p class="section-rule eyebrow">Collection</p>
@@ -640,13 +644,12 @@ const selectedCard = ref<Card | null>(null);
 
 // Erratas officiels de la carte sélectionnée
 const cardErrata = ref<ErrataEntry[]>([]);
-watch(
-  selectedCard,
-  async (c) => {
-    cardErrata.value = c ? await fetchErrata(c.id) : [];
-  },
-  { immediate: true },
-);
+async function refreshCardErrata() {
+  cardErrata.value = selectedCard.value
+    ? await fetchErrata(selectedCard.value.id)
+    : [];
+}
+watch(selectedCard, refreshCardErrata, { immediate: true });
 const selectedSortField = ref("number");
 const isDescending = ref(false);
 const hideNotOwned = ref(false);

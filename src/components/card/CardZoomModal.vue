@@ -23,6 +23,7 @@
         :card-img="cardImg"
         @img-error="onImgError"
         @close="emit('close')"
+        @saved="loadErrata"
         show-close
       >
         <template v-if="$slots.actions" #actions>
@@ -46,6 +47,7 @@
         :card-img="cardImg"
         @img-error="onImgError"
         @close="emit('close')"
+        @saved="loadErrata"
         show-close
       >
         <template v-if="$slots.actions" #actions>
@@ -74,21 +76,18 @@ const props = defineProps<{
 const emit = defineEmits<{ (e: "close"): void }>();
 
 const errata = ref<ErrataEntry[]>([]);
-watch(
-  () => [props.open, props.card?.id],
-  async () => {
-    errata.value = [];
-    // For panel variant, open is always true; watch card changes instead
-    const shouldFetch =
-      props.variant === "panel"
-        ? !!props.card?.id
-        : props.open && !!props.card?.id;
-    if (shouldFetch && props.card?.id) {
-      errata.value = await fetchErrata(props.card.id);
-    }
-  },
-  { immediate: true },
-);
+async function loadErrata() {
+  errata.value = [];
+  // For panel variant, open is always true; watch card changes instead
+  const shouldFetch =
+    props.variant === "panel"
+      ? !!props.card?.id
+      : props.open && !!props.card?.id;
+  if (shouldFetch && props.card?.id) {
+    errata.value = await fetchErrata(props.card.id);
+  }
+}
+watch(() => [props.open, props.card?.id], loadErrata, { immediate: true });
 
 const displayEffects = computed(() => {
   const c = props.card;

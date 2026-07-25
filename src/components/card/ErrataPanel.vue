@@ -90,7 +90,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 import type { ErrataEntry } from "@/services/errataService";
-import { refreshErrata } from "@/services/errataService";
 import { formatFrenchDate } from "@/utils/date";
 import { useAuthStore } from "@/stores/authStore";
 import { useCardStore } from "@/stores/cardStore";
@@ -110,6 +109,16 @@ const props = defineProps<{
   /** Fournie ET admin → affiche l'affordance d'édition en place. */
   cardId?: string;
 }>();
+
+/**
+ * Émis après une écriture RÉUSSIE (création ou mise à jour). La prop `errata`
+ * est possédée par le parent (`CollectionView`/`CardZoomModal`, via
+ * `fetchErrata`) : ce composant ne peut pas se rafraîchir lui-même, il ne
+ * fait que prévenir que la base a changé. Le parent doit re-fetch sur cet
+ * événement, sinon le panneau reste affiché avec le contenu périmé jusqu'à
+ * ce que l'utilisateur re-sélectionne la carte.
+ */
+const emit = defineEmits<{ saved: [] }>();
 
 const authStore = useAuthStore();
 const cardStore = useCardStore();
@@ -158,6 +167,10 @@ const formError = ref<string | null>(null);
 async function openForm() {
   formError.value = null;
   const rows = props.cardId ? await listErrataAdmin() : [];
+  // Hypothèse actuelle : au plus un erratum par carte (vérifié — 66 cartes /
+  // 66 errata). Le rendu ci-dessus boucle sur TOUS les `errata` de la carte ;
+  // cette édition ne cible que le premier. À corriger (choix de la ligne à
+  // éditer) le jour où une carte a plusieurs errata.
   const existing = rows.find((r) => r.card_id === props.cardId);
 
   if (existing) {
@@ -208,7 +221,11 @@ async function submit() {
 
   if (res.ok) {
     toast.success("Errata enregistré.");
-    await refreshErrata();
+    // Le cache module (errataService) est déjà rafraîchi par
+    // createErratum/updateErratum (adminService) — pas la peine de le
+    // refaire ici. `saved` prévient le parent que SA copie (la prop
+    // `errata`) doit être re-fetchée.
+    emit("saved");
     closeForm();
   } else {
     // Refus (RLS ou autre) : le formulaire reste ouvert avec la saisie
