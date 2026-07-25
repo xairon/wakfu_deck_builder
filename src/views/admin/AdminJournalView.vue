@@ -71,12 +71,26 @@
                 <pre class="mt-1 overflow-x-auto rounded bg-base-200 p-2">{{
                   JSON.stringify(entry.before_data ?? null, null, 2)
                 }}</pre>
+                <RouterLink
+                  v-if="reuseLink(entry, 'before')"
+                  :to="reuseLink(entry, 'before')!"
+                  class="link mt-1 inline-block text-xs"
+                  :data-testid="`reuse-${entry.id}-before`"
+                  >Réutiliser cette version</RouterLink
+                >
               </div>
               <div>
                 <p class="font-medium opacity-70">Après</p>
                 <pre class="mt-1 overflow-x-auto rounded bg-base-200 p-2">{{
                   JSON.stringify(entry.after_data ?? null, null, 2)
                 }}</pre>
+                <RouterLink
+                  v-if="reuseLink(entry, 'after')"
+                  :to="reuseLink(entry, 'after')!"
+                  class="link mt-1 inline-block text-xs"
+                  :data-testid="`reuse-${entry.id}-after`"
+                  >Réutiliser cette version</RouterLink
+                >
               </div>
             </div>
           </details>
@@ -148,6 +162,29 @@ function formatTimestamp(iso: string): string {
 }
 
 // ── Filtres (client-side, sur la liste déjà chargée) ────────────────────
+/**
+ * Écrans capables de reprendre un instantané. `role` n'y figure PAS : le seul
+ * chemin d'écriture d'un rôle est la RPC `set_user_role()`, dont rejouer un
+ * instantané contournerait les garde-fous (owner non attribuable, etc.).
+ */
+const reuseTargets: Partial<Record<AuditRow["entity"], string>> = {
+  errata: "/admin/errata",
+  rule_override: "/admin/regles",
+};
+
+/**
+ * URL de reprise d'un instantané, ou null s'il n'y a rien à reprendre :
+ * entité sans éditeur, ou instantané nul (une création n'a pas d'« avant »,
+ * une suppression pas d'« après » — pas de bouton mort).
+ */
+function reuseLink(entry: AuditRow, side: "before" | "after"): string | null {
+  const target = reuseTargets[entry.entity];
+  if (!target) return null;
+  const snapshot = side === "before" ? entry.before_data : entry.after_data;
+  if (snapshot == null) return null;
+  return `${target}?reuse=${entry.id}&side=${side}`;
+}
+
 const entityFilter = ref<"all" | AuditRow["entity"]>("all");
 const authorFilter = ref<string>("all");
 

@@ -121,3 +121,76 @@ describe("AdminJournalView", () => {
     expect(w.text().toLowerCase()).not.toContain("erreur");
   });
 });
+
+describe("AdminJournalView — réutiliser une version", () => {
+  // Sur-stub local : le stub global de `tests/setup.ts` ne rend pas `href`, et
+  // ici on veut asserter la CIBLE EXACTE — une mauvaise cible enverrait l'admin
+  // éditer la mauvaise entité.
+  const stubs = {
+    RouterLink: { props: ["to"], template: "<a :href=\"to\"><slot /></a>" },
+  };
+
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    listProfiles.mockResolvedValue([]);
+  });
+
+  function entry(over: Record<string, unknown> = {}) {
+    return {
+      id: 7,
+      actor: null,
+      action: "update",
+      entity: "errata",
+      entity_key: "42",
+      before_data: { summary: "avant" },
+      after_data: { summary: "après" },
+      created_at: "2026-07-25T10:00:00Z",
+      ...over,
+    };
+  }
+
+  it("devrait proposer de réutiliser chaque instantané non nul d'un errata", async () => {
+    listAudit.mockResolvedValue([entry()]);
+    const w = mount(AdminJournalView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-7-before"]').attributes("href")).toBe(
+      "/admin/errata?reuse=7&side=before",
+    );
+    expect(w.find('[data-testid="reuse-7-after"]').attributes("href")).toBe(
+      "/admin/errata?reuse=7&side=after",
+    );
+  });
+
+  it("devrait pointer vers l'écran des règles pour une correction de règle", async () => {
+    listAudit.mockResolvedValue([
+      entry({ id: 8, entity: "rule_override", entity_key: "418.5b" }),
+    ]);
+    const w = mount(AdminJournalView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-8-before"]').attributes("href")).toBe(
+      "/admin/regles?reuse=8&side=before",
+    );
+  });
+
+  it("ne devrait pas proposer de réutiliser un instantané nul", async () => {
+    // Une création n'a pas d'« avant » : pas de bouton mort.
+    listAudit.mockResolvedValue([
+      entry({ id: 9, action: "create", before_data: null }),
+    ]);
+    const w = mount(AdminJournalView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-9-before"]').exists()).toBe(false);
+    expect(w.find('[data-testid="reuse-9-after"]').exists()).toBe(true);
+  });
+
+  it("ne devrait rien proposer pour un changement de rôle", async () => {
+    // `set_user_role()` est le seul chemin d'écriture d'un rôle ; rejouer un
+    // instantané contournerait ses garde-fous.
+    listAudit.mockResolvedValue([
+      entry({ id: 10, entity: "role", entity_key: "user-1", before_data: null }),
+    ]);
+    const w = mount(AdminJournalView, { global: { stubs } });
+    await flushPromises();
+    expect(w.find('[data-testid="reuse-10-after"]').exists()).toBe(false);
+  });
+});
