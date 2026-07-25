@@ -132,6 +132,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresOwner: true },
     },
     {
+      path: "/admin/errata",
+      name: "adminErrata",
+      component: () => import("@/views/admin/AdminErrataView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       // « Partie » mène directement au module de jeu (lobby/table/tutoriel).
       // L'ancien compagnon de table (compteurs PV + chronomètre) a été retiré.
       // Redirection conservée pour les anciens liens /play.
