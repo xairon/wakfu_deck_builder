@@ -58,3 +58,36 @@ describe("errataRowSchema", () => {
     expect(ko.success).toBe(false);
   });
 });
+
+describe("errataChangeSchema / changes", () => {
+  it("devrait accepter un errata avec des changements structurés", () => {
+    const ok = errataRowSchema.safeParse({
+      card_id: "opee-tissoin-incarnam",
+      summary: "Passe à 6 PA.",
+      sort_order: 0,
+      changes: [{ label: "PA", before: "7", after: "6" }],
+    });
+    expect(ok.success).toBe(true);
+    if (ok.success) expect(ok.data.changes).toHaveLength(1);
+  });
+
+  it("devrait défaut à [] quand changes est absent (colonne pas encore migrée)", () => {
+    const ok = errataRowSchema.safeParse({
+      card_id: "x-incarnam",
+      summary: "Texte.",
+      sort_order: 0,
+    });
+    expect(ok.success).toBe(true);
+    if (ok.success) expect(ok.data.changes).toEqual([]);
+  });
+
+  it("devrait refuser un changement sans label", () => {
+    const ko = errataRowSchema.safeParse({
+      card_id: "x-incarnam",
+      summary: "Texte.",
+      sort_order: 0,
+      changes: [{ before: "7", after: "6" }],
+    });
+    expect(ko.success).toBe(false);
+  });
+});

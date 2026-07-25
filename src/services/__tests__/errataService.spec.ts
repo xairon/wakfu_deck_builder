@@ -220,4 +220,17 @@ describe("errataService — source Supabase", () => {
     await refreshErrata();
     expect(calls).toBe(2);
   });
+
+  it("devrait exposer les changements structurés sur l'entrée", async () => {
+    stubRows([{ ...ROW, changes: [{ label: "PA", before: "7", after: "6" }] }]);
+    await preloadErrata();
+    const e = getErrata("opee-tissoin-incarnam")[0];
+    expect(e.changes).toEqual([{ label: "PA", before: "7", after: "6" }]);
+  });
+
+  it("devrait exposer un tableau vide quand la colonne changes est absente", async () => {
+    stubRows([ROW]); // ROW n'a pas de `changes`
+    await preloadErrata();
+    expect(getErrata("opee-tissoin-incarnam")[0].changes).toEqual([]);
+  });
 });
