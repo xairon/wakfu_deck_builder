@@ -618,3 +618,17 @@ test("l'écran Accès réservé est atteignable et explicite", async ({ page }) 
     page.getByRole("heading", { name: "Accès réservé" }),
   ).toBeVisible();
 });
+
+test("les écrans d'admin sont fermés à un anonyme", async ({ page }) => {
+  for (const path of [
+    "/admin/errata",
+    "/admin/regles",
+    "/admin/journal",
+    "/admin/comptes",
+  ]) {
+    await page.goto(path);
+    // vue-router n'encode PAS la barre oblique dans la query (comme pour
+    // /admin ci-dessus) : l'URL réelle est /auth?redirect=/admin/errata.
+    await expect(page).toHaveURL(/\/auth\?redirect=/);
+  }
+});
