@@ -3,6 +3,9 @@
     <div class="grid gap-4 sm:grid-cols-2">
       <label class="form-control">
         <span class="label-text">Carte</span>
+        <!-- Mutation volontaire de modelValue (objet réactif partagé avec
+             l'appelant) : cf. justification sur ErrataFormState ci-dessous. -->
+        <!-- eslint-disable vue/no-mutating-props -->
         <input
           v-model="modelValue.card_id"
           list="admin-errata-cards"
@@ -11,6 +14,7 @@
           data-testid="f-card"
           placeholder="Identifiant de carte"
         />
+        <!-- eslint-enable vue/no-mutating-props -->
         <datalist id="admin-errata-cards">
           <option v-for="c in cards" :key="c.id" :value="c.id">
             {{ c.name }}
@@ -20,50 +24,65 @@
 
       <label class="form-control">
         <span class="label-text">Date</span>
+        <!-- Mutation volontaire de modelValue : cf. justification sur ErrataFormState ci-dessous. -->
+        <!-- eslint-disable vue/no-mutating-props -->
         <input
           v-model="modelValue.errata_date"
           type="date"
           class="input input-bordered"
           data-testid="f-date"
         />
+        <!-- eslint-enable vue/no-mutating-props -->
       </label>
 
       <label class="form-control">
         <span class="label-text">Source</span>
+        <!-- Mutation volontaire de modelValue : cf. justification sur ErrataFormState ci-dessous. -->
+        <!-- eslint-disable vue/no-mutating-props -->
         <input
           v-model="modelValue.source"
           type="text"
           class="input input-bordered"
           data-testid="f-source"
         />
+        <!-- eslint-enable vue/no-mutating-props -->
       </label>
 
       <label class="form-control sm:col-span-2">
         <span class="label-text">Résumé *</span>
+        <!-- Mutation volontaire de modelValue : cf. justification sur ErrataFormState ci-dessous. -->
+        <!-- eslint-disable vue/no-mutating-props -->
         <input
           v-model="modelValue.summary"
           type="text"
           class="input input-bordered"
           data-testid="f-summary"
         />
+        <!-- eslint-enable vue/no-mutating-props -->
       </label>
 
       <label class="form-control sm:col-span-2">
         <span class="label-text">Avant</span>
+        <!-- Mutation volontaire de modelValue : cf. justification sur ErrataFormState ci-dessous. -->
+        <!-- eslint-disable vue/no-mutating-props -->
         <textarea
           v-model="modelValue.before_text"
           class="textarea textarea-bordered"
           data-testid="f-before"
         ></textarea>
+        <!-- eslint-enable vue/no-mutating-props -->
       </label>
 
       <label class="form-control sm:col-span-2">
         <span class="label-text">Après</span>
+        <!-- Mutation volontaire de modelValue : cf. justification sur ErrataFormState ci-dessous. -->
+        <!-- eslint-disable vue/no-mutating-props -->
         <textarea
           v-model="modelValue.after_text"
           class="textarea textarea-bordered"
           data-testid="f-after"
         ></textarea>
+        <!-- eslint-enable vue/no-mutating-props -->
       </label>
     </div>
 
@@ -173,11 +192,15 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
+// Mutation volontaire de modelValue (objet réactif partagé avec l'appelant) :
+// cf. justification sur ErrataFormState ci-dessus.
 function addChange() {
+  // eslint-disable-next-line vue/no-mutating-props
   props.modelValue.changes.push({ label: "", before: "", after: "" });
 }
 
 function removeChange(index: number) {
+  // eslint-disable-next-line vue/no-mutating-props
   props.modelValue.changes.splice(index, 1);
 }
 </script>
