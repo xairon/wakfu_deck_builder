@@ -138,6 +138,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: "/admin/regles",
+      name: "adminRules",
+      component: () => import("@/views/admin/AdminRulesView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       // « Partie » mène directement au module de jeu (lobby/table/tutoriel).
       // L'ancien compagnon de table (compteurs PV + chronomètre) a été retiré.
       // Redirection conservée pour les anciens liens /play.
