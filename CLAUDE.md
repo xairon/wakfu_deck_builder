@@ -14,9 +14,9 @@ aux decks.
 - **State**: Pinia 3
 - **Styling**: Tailwind CSS 3 + DaisyUI 4 + Headless UI
 - **Auth**: Supabase (REQUIS — application cloud-only)
-- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~2235 tests unitaires, 248 fichiers
+- **Tests**: Vitest 3 + @vue/test-utils (jsdom) — ~2334 tests unitaires, 258 fichiers
 - **Type-check**: `npm run type-check` (`vue-tsc --noEmit`) — **seul garde-fou de types** (le build esbuild ne type-check pas) ; branché en CI (job « Lint & Types »)
-- **E2E**: Playwright + Chromium — ~33 tests, 2 fichiers (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat, errata, règles officielles)
+- **E2E**: Playwright + Chromium — ~40 tests, 2 fichiers (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, table de jeu : lobby/tutoriel/combat, errata, règles officielles, administration : gardes de route)
 - **PWA**: vite-plugin-pwa + Workbox (installable, cache d'assets, install prompt)
 - **Linting**: ESLint 9 + Prettier
 - **Déploiement web**: Vercel (SPA)
@@ -37,7 +37,7 @@ src/
 ├── types/          # Types TypeScript canoniques (cards.ts = source unique)
 ├── utils/          # Utilitaires (errors, logger, performance, imagePaths, deckSharing)
 ├── validators/     # Validation (règles de deck)
-└── views/          # Pages (Home, Collection, DeckBuilder, Decks, DeckDetail, Official(Decks|DeckDetail), CommunityDecks, SharedDeck, Auth, Profile, PlayTable, Rules, RulesOfficial, Errata, FirstSteps, About, Credits, LegalNotice, Terms)
+└── views/          # Pages (Home, Collection, DeckBuilder, Decks, DeckDetail, Official(Decks|DeckDetail), CommunityDecks, SharedDeck, Auth, Profile, PlayTable, Rules, RulesOfficial, Errata, FirstSteps, About, Credits, LegalNotice, Terms, AccessDenied, admin/(AdminHome, AdminErrata, AdminRules, AdminJournal, AdminAccounts))
 ```
 
 ## Commandes
@@ -90,7 +90,7 @@ src/
 - Sync : `hydrateForUser` (pull à la connexion) ; push différé sur modification (collection + decks) ; voir `src/services/cloudSync.ts`
 - RLS (Row Level Security) activé sur toutes les tables — voir `supabase/migrations/0001_init.sql`
 
-- **Rôles d'administration (socle EN PROD, sans UI d'édition)** : `profiles.role` ∈ `user` | `admin` | `owner`, migration `supabase/migrations/0013_admin_roles.sql` — **appliquée en prod le 2026-07-24 et RLS prouvée** (`node scripts/checkAdminRls.mjs` exécuté contre la vraie base : tout ✅, dont l'auto-promotion bloquée par UPDATE **et** par INSERT en 403). Ce qui existe : le modèle de rôles, les gardes de route `requiresAdmin` / `requiresOwner` (écran « Accès réservé »), `src/services/adminService.ts` (écritures règles/errata/rôles). Ce qui N'EXISTE PAS encore : **aucune UI d'administration réelle** (vues placeholder `/admin`, `/admin/comptes` seulement) — c'est le lot 2. `role` n'est écrivable **ni en `update` ni en `insert`** via l'API PostgREST : la migration révoque `insert, update` sur `public.profiles` **au niveau TABLE** puis ré-accorde `insert`/`update` colonne par colonne sur `user_id, username` seulement (un `revoke` au niveau colonne seul ne suffit pas — Postgres consulte l'ACL de relation en premier, et Supabase accorde `all privileges` au bootstrap ; PostgREST transmet la requête telle quelle et c'est PostgreSQL qui répond `permission denied for column`). Seule la RPC `set_user_role()` attribue `role`, et `owner` n'y est jamais attribuable — le premier `owner` se pose **à la main en SQL** (`update public.profiles set role = 'owner' where user_id = '<uuid>';`), pas d'autre chemin par design. Corrections de règles dans `rules_overrides` (`kind`/`sort_order` avec défaut, `chapter` obligatoire) + vue de fusion `rules_effective` (lue par `rulesService`) → re-scraper reste sans risque. Journal `admin_audit` **append-only, écrit par des triggers**.
+- **Rôles d'administration (socle EN PROD, UI livrée)** : `profiles.role` ∈ `user` | `admin` | `owner`, migration `supabase/migrations/0013_admin_roles.sql` — **appliquée en prod le 2026-07-24 et RLS prouvée** (`node scripts/checkAdminRls.mjs` exécuté contre la vraie base : tout ✅, dont l'auto-promotion bloquée par UPDATE **et** par INSERT en 403). Écrans (derrière les gardes de route `requiresAdmin` / `requiresOwner`, écran « Accès réservé » sinon) : `/admin` (accueil, liens vers les écrans ci-dessous), `/admin/errata` (CRUD errata, autocomplétion carte, confirmation de suppression), `/admin/regles` (corriger le texte officiel, ajouter une règle manquante, rétablir l'officiel), `/admin/journal` (lecture de `admin_audit`, filtres auteur/entité), `/admin/comptes` (`requiresOwner` : promouvoir/rétrograder via `set_user_role`). Toute règle corrigée affiche un badge « corrigé » sur la page publique `/regles/officielles`, avec le texte officiel d'origine consultable dans un `<details>` ; une règle ajoutée (`body_official` nul) n'a pas de texte source à afficher. `src/services/adminService.ts` porte les écritures règles/errata/rôles. `role` n'est écrivable **ni en `update` ni en `insert`** via l'API PostgREST : la migration révoque `insert, update` sur `public.profiles` **au niveau TABLE** puis ré-accorde `insert`/`update` colonne par colonne sur `user_id, username` seulement (un `revoke` au niveau colonne seul ne suffit pas — Postgres consulte l'ACL de relation en premier, et Supabase accorde `all privileges` au bootstrap ; PostgREST transmet la requête telle quelle et c'est PostgreSQL qui répond `permission denied for column`). Seule la RPC `set_user_role()` attribue `role`, et `owner` n'y est jamais attribuable — le premier `owner` se pose **à la main en SQL** (`update public.profiles set role = 'owner' where user_id = '<uuid>';`), pas d'autre chemin par design. Corrections de règles dans `rules_overrides` (`kind`/`sort_order` avec défaut, `chapter` obligatoire) + vue de fusion `rules_effective` (lue par `rulesService`) → re-scraper reste sans risque. Journal `admin_audit` **append-only, écrit par des triggers**. La base E2E n'a ni admin ni owner : les tests E2E n'assertent que la redirection anonyme vers `/auth?redirect=`, le cas « connecté non-admin » est couvert par `src/router/__tests__/adminGuards.spec.ts`.
 
 ## Données
 
@@ -118,7 +118,7 @@ src/
 ## E2E Tests (Playwright)
 
 - Config : `playwright.config.ts` — Chromium, `vite preview` sur `127.0.0.1:4173`
-- Tests : `e2e/app.spec.ts` (~32) + `e2e/a11y.spec.ts` — ~33 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, **table de jeu** : lobby→plateau, tutoriel, combat, **errata** : page publique + contrôles, **règles officielles** : dégradation explicite sans données + renvoi depuis `/regles`). Auth e2e via injection user Pinia + nav SPA ; build CI avec `VITE_SUPABASE_*` factices (sinon overlay « Configuration requise »)
+- Tests : `e2e/app.spec.ts` (~36) + `e2e/a11y.spec.ts` (4, skippés si `@axe-core/playwright` non installé) — ~40 tests (navigation, thème, collection, decks, deck builder, partage, PWA, a11y, **table de jeu** : lobby→plateau, tutoriel, combat, **errata** : page publique + contrôles, **règles officielles** : dégradation explicite sans données + renvoi depuis `/regles`, **administration** : gardes de route (`/admin`, `/admin/errata`, `/admin/regles`, `/admin/journal`, `/admin/comptes`) fermés à un anonyme, écran « Accès réservé » atteignable). Auth e2e via injection user Pinia + nav SPA ; build CI avec `VITE_SUPABASE_*` factices (sinon overlay « Configuration requise »). La base E2E n'a ni admin ni owner : ces tests ne couvrent que la redirection anonyme, pas le contenu des écrans
 - Lancer : `npm run build && npm run test:e2e` (CI : `workers:1`)
 
 ## Aliases

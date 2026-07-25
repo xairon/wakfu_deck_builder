@@ -202,3 +202,43 @@ export async function listProfiles(): Promise<
     return [];
   }
 }
+
+export interface AdminErratum {
+  id: number;
+  card_id: string;
+  errata_date: string | null;
+  source: string | null;
+  summary: string;
+  before_text: string | null;
+  after_text: string | null;
+  sort_order: number;
+}
+
+/**
+ * Errata AVEC leur `id` (clé primaire) — nécessaire à l'édition/suppression,
+ * que `errataService.getAllErrata()` ne fournit pas (son type public omet l'id).
+ * Même dégradation que `listAudit` : jamais d'exception, `console.warn` sur échec.
+ */
+export async function listErrataAdmin(): Promise<AdminErratum[]> {
+  if (!supabase) return [];
+  try {
+    const { data, error } = await supabase
+      .from("card_errata")
+      .select("*")
+      .order("card_id", { ascending: true });
+    if (error) {
+      console.warn(
+        "[adminService] requête `card_errata` (admin) en échec :",
+        error,
+      );
+      return [];
+    }
+    return Array.isArray(data) ? (data as AdminErratum[]) : [];
+  } catch (err) {
+    console.warn(
+      "[adminService] exception lors du chargement des errata (admin) :",
+      err,
+    );
+    return [];
+  }
+}
