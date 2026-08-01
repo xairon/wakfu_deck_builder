@@ -6477,7 +6477,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "abrature-ancestrale-otomai",
@@ -6513,7 +6514,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "sandales-du-minotot-otomai",
@@ -6564,7 +6566,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "cape-du-petit-chapon-rouge-otomai",
@@ -6608,7 +6611,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "ceinture-des-vents-otomai",
@@ -6651,7 +6655,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "coiffe-du-minotot-otomai",
@@ -6694,7 +6699,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "dagues-de-fouraille-otomai",
@@ -6747,7 +6753,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "marteau-de-forgemagie-otomai",
@@ -6888,7 +6895,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "hache-de-feuhekel-otomai",
@@ -6944,7 +6952,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "epee-du-khebab-otomai",
@@ -7000,7 +7009,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "marteau-de-cokelocu-otomai",
@@ -7056,7 +7066,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "l-hyldegarde-otomai",
@@ -7155,7 +7166,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "marteau-mato-otomai",
@@ -7209,7 +7221,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "amulette-des-abimes-otomai",
@@ -7309,7 +7322,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "annolamour-otomai",
@@ -7352,7 +7366,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "kralano-otomai",
@@ -7389,7 +7404,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "kralamansion-otomai",
@@ -7620,7 +7636,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "bouclier-du-bawbawe-otomai",
@@ -7679,7 +7696,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "bouclier-du-captain-amakna-otomai",

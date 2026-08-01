@@ -50,7 +50,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "abraknyde-perchoir-pandala",
@@ -825,7 +826,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "bouclier-aerdala-pandala",
@@ -885,7 +887,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "bouclier-akwadala-pandala",
@@ -935,7 +938,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "bouclier-feca-pandala",
@@ -1052,7 +1056,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "bouclier-fi-squal-pandala",
@@ -1174,7 +1179,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "bouclier-volant-pandala",
@@ -1646,7 +1652,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "certificat-de-monture-pandala",
@@ -4306,7 +4313,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "grobot-pandala",
@@ -4474,7 +4482,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "havre-sac-du-fotome-pandala",
@@ -5524,7 +5533,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "les-300-bonsiates-pandala",
@@ -6515,7 +6525,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "ranger-bleu-pandala",

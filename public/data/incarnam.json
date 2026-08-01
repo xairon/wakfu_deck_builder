@@ -136,7 +136,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "abraknyde-incarnam",
@@ -240,7 +241,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "aeron-zeklox-incarnam",
@@ -1130,7 +1132,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "arene-des-demons-des-heures-incarnam",
@@ -1227,7 +1230,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "art-du-lancer-incarnam",
@@ -1777,7 +1781,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "baton-du-wa-wabbit-incarnam",
@@ -1821,7 +1826,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "bebe-panda-incarnam",
@@ -3016,7 +3022,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "cape-du-prespic-incarnam",
@@ -3473,7 +3480,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "chafer-incarnam",
@@ -4017,7 +4025,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "colere-de-iop-incarnam",
@@ -5790,7 +5799,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "dragodinde-rousse-sauvage-incarnam",
@@ -7565,7 +7575,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "glyphe-incandescent-incarnam",
@@ -8170,7 +8181,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "havrasacadabra-incarnam",
@@ -9401,7 +9413,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "kwakobottes-de-glace-incarnam",
@@ -9444,7 +9457,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "kwakoiffe-de-glace-incarnam",
@@ -9487,7 +9501,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "l-homme-louf-incarnam",
@@ -10568,7 +10583,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "marteau-du-bouftou-incarnam",
@@ -10605,7 +10621,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "marteau-toh-lo-incarnam",
@@ -12273,7 +12290,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "piege-glacial-incarnam",
@@ -13507,7 +13525,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "razielle-incarnam",
@@ -13551,7 +13570,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "reflexes-incarnam",
@@ -14193,7 +14213,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "scaranneau-blanc-incarnam",
@@ -14684,7 +14705,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "sylvine-folherbe-incarnam",
@@ -15985,7 +16007,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "vacances-sur-l-ile-de-moon-incarnam",

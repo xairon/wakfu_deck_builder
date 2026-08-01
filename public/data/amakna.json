@@ -410,7 +410,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "anneau-fioutioure-amakna",
@@ -667,7 +668,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "atelier-de-forgemagie-amakna",
@@ -755,7 +757,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "berlanette-chichi-amakna",
@@ -940,7 +943,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "bony-parc-ur-amakna",
@@ -2179,7 +2183,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "craqueboule-amakna",
@@ -4652,7 +4657,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "megabottes-amakna",
@@ -4723,7 +4729,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "megacoiffe-amakna",
@@ -6212,7 +6219,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "science-dimensionnelle-d-otomai-amakna",

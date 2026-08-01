@@ -272,7 +272,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "amulette-du-scarabosse-dore-bonta-brakmar",
@@ -460,7 +461,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "apparition-d-ogrest-bonta-brakmar",
@@ -744,7 +746,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "arc-hord-eon-bonta-brakmar",
@@ -2077,7 +2080,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "bebe-crocodaille-bonta-brakmar",
@@ -2836,7 +2840,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "bottes-dorees-d-hogmeiser-bonta-brakmar",
@@ -2880,7 +2885,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "bottes-du-koulosse-bonta-brakmar",
@@ -2923,7 +2929,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "boufcoul-bonta-brakmar",
@@ -3408,7 +3415,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "cape-du-koalak-bonta-brakmar",
@@ -3451,7 +3459,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "ceinture-du-boufcoul-bonta-brakmar",
@@ -3488,7 +3497,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "ceinture-du-chef-crocodaille-bonta-brakmar",
@@ -3546,7 +3556,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "ceinture-du-rat-blanc-bonta-brakmar",
@@ -3597,7 +3608,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "chaman-d-egoutant-bonta-brakmar",
@@ -4647,7 +4659,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "collier-du-dragon-cochon-bonta-brakmar",
@@ -4701,7 +4714,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "collier-du-rat-blanc-bonta-brakmar",
@@ -4888,7 +4902,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "corbottes-bonta-brakmar",
@@ -4924,7 +4939,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "corvee-de-patates-bonta-brakmar",
@@ -5376,7 +5392,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "dagues-haih-ri-don-bonta-brakmar",
@@ -5458,7 +5475,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "daie-gueri-bonta-brakmar",
@@ -7119,7 +7137,8 @@
     "requirements": {
       "level": 5,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "epee-du-rat-blanc-bonta-brakmar",
@@ -7163,7 +7182,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "epron-krashva-bonta-brakmar",
@@ -10194,7 +10214,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "lagoyave-bonta-brakmar",
@@ -10329,7 +10350,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "lame-du-chef-crocodaille-bonta-brakmar",
@@ -10387,7 +10409,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "landes-de-sidimote-bonta-brakmar",
@@ -10457,7 +10480,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "le-s-mesme-bonta-brakmar",
@@ -11130,7 +11154,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "masque-du-rat-noir-bonta-brakmar",
@@ -11173,7 +11198,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "mawy-blodie-bonta-brakmar",
@@ -11720,7 +11746,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "myko-bonta-brakmar",
@@ -12787,7 +12814,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "pied-du-sacrieur-bonta-brakmar",
@@ -13130,7 +13158,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "puzie-lanym-bonta-brakmar",
@@ -14839,7 +14868,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "sournoiserie-d-oto-mustam-bonta-brakmar",

@@ -41,7 +41,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "amukwak-de-flammes-astrub",
@@ -101,7 +102,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "amulette-du-bandit-astrub",
@@ -145,7 +147,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "anneau-rigami-astrub",
@@ -357,7 +360,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "ash-tur-astrub",
@@ -1085,7 +1089,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "boufrog-astrub",
@@ -1377,7 +1382,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "caravane-marchande-astrub",
@@ -1615,7 +1621,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "chafer-archer-astrub",
@@ -2230,7 +2237,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "dejaded-astrub",
@@ -3105,7 +3113,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "ewesson-smisse-astrub",
@@ -3573,7 +3582,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "glyphe-d-aveuglement-astrub",
@@ -3833,7 +3843,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "haka-des-taures-pilleurs-astrub",
@@ -4472,7 +4483,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "kwaklame-de-flammes-astrub",
@@ -4513,7 +4525,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "l-empoisonneuse-astrub",
@@ -5199,7 +5212,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "mik-skofil-astrub",
@@ -5955,7 +5969,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "peluche-de-pleur-nicheuz-astrub",

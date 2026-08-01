@@ -75,7 +75,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "baton-du-wa-wabbit-ile-des-wabbits",
@@ -119,7 +120,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "black-tiwabbit-ile-des-wabbits",
