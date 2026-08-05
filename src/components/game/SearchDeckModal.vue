@@ -1,98 +1,121 @@
 <template>
   <Teleport to="body">
-    <div v-if="open" class="search-deck-backdrop" @click="close">
-      <div class="search-deck-modal" @click.stop>
-        <div class="search-deck-modal__header">
-          <h3>🔍 Sac de Deck ({{ deckCards.length }} cartes restantes)</h3>
-          <button type="button" class="search-deck-modal__close" @click="close">
+    <div v-if="open" class="gtuto-backdrop" @click="close">
+      <div class="gtuto-modal" @click.stop>
+        <div class="gtuto-modal__header">
+          <h3>
+            🔍 Tutoriser le Deck
+            <span class="gtuto-modal__count">({{ deckCards.length }} cartes restantes)</span>
+          </h3>
+          <button type="button" class="gtuto-modal__close" title="Fermer" @click="close">
             ✕
           </button>
         </div>
 
-        <div class="search-deck-modal__filter">
+        <div class="gtuto-modal__filter">
           <input
             v-model="searchQuery"
             type="search"
-            placeholder="Filtrer par nom de carte..."
-            class="search-deck-modal__input"
+            placeholder="Rechercher une carte par son nom..."
+            class="gtuto-modal__input"
           />
         </div>
 
-        <div class="search-deck-modal__grid">
+        <div class="gtuto-modal__grid">
           <div
             v-for="item in filteredCards"
             :key="item.instanceId"
-            class="search-deck-card"
+            class="gtuto-card"
+            :class="{ 'gtuto-card--selected': selectedInstanceId === item.instanceId }"
+            @click="selectCard(item.instanceId)"
           >
-            <img
-              :src="getThumb(item.card)"
-              :alt="item.card?.name || 'Carte du sac'"
-              class="search-deck-card__img"
-            />
-            <div class="search-deck-card__info">
-              <span class="search-deck-card__name">{{ item.card?.name || 'Carte Inconnue' }}</span>
-              <span class="search-deck-card__type">{{ item.card?.mainType || '' }}</span>
+            <div class="gtuto-card__img-wrapper">
+              <img
+                :src="item.imgSrc"
+                :alt="item.name"
+                class="gtuto-card__img"
+                @error="onImgError($event)"
+              />
+              <span v-if="item.level" class="gtuto-card__badge">
+                Niv. {{ item.level }}
+              </span>
             </div>
-            <div class="search-deck-card__actions">
+
+            <div class="gtuto-card__info">
+              <span class="gtuto-card__name" :title="item.name">{{ item.name }}</span>
+              <span v-if="item.mainType" class="gtuto-card__type">
+                {{ item.mainType }} {{ item.subTypes ? `• ${item.subTypes}` : '' }}
+              </span>
+            </div>
+
+            <div class="gtuto-card__actions" @click.stop>
               <button
                 type="button"
-                class="search-deck-btn"
-                title="Mettre dans la main"
-                @click="takeTo(item.instanceId, 'hand')"
-              >
-                ✋ En Main
-              </button>
-              <button
-                type="button"
-                class="search-deck-btn"
-                title="Placer sur le terrain"
+                class="gbtn gbtn--accent"
+                title="Déplacer sur le terrain (Monde)"
                 @click="takeTo(item.instanceId, 'board')"
               >
-                ⚔️ Sur le Terrain
+                → Monde
               </button>
               <button
                 type="button"
-                class="search-deck-btn search-deck-btn--discard"
-                title="Défausser au cimetière"
+                class="gbtn gbtn--accent"
+                title="Ajouter à ta main"
+                @click="takeTo(item.instanceId, 'hand')"
+              >
+                → Main
+              </button>
+              <button
+                type="button"
+                class="gbtn gbtn--discard"
+                title="Défausser au Cimetière"
                 @click="takeTo(item.instanceId, 'discard')"
               >
-                🪦 Cimetière
+                Défausser
               </button>
               <button
                 type="button"
-                class="search-deck-btn"
-                title="Placer au dessus du sac"
+                class="gbtn gbtn--banish"
+                title="Bannir (Exil)"
+                @click="takeTo(item.instanceId, 'exile')"
+              >
+                🚫 Bannir
+              </button>
+              <button
+                type="button"
+                class="gbtn"
+                title="Placer au dessus du Deck"
                 @click="takeTo(item.instanceId, 'deck_top')"
               >
-                🔝 Dessus Sac
+                ↑ Pioche
               </button>
               <button
                 type="button"
-                class="search-deck-btn"
-                title="Placer au dessous du sac"
+                class="gbtn"
+                title="Placer en dessous du Deck"
                 @click="takeTo(item.instanceId, 'deck_bottom')"
               >
-                📥 Dessous Sac
+                ↓ Pioche
               </button>
             </div>
           </div>
 
-          <div v-if="filteredCards.length === 0" class="search-deck-modal__empty">
-            Aucune carte ne correspond à la recherche.
+          <div v-if="filteredCards.length === 0" class="gtuto-modal__empty">
+            {{ searchQuery.trim() ? "Aucune carte ne correspond à la recherche." : "Aucune carte restante dans le deck." }}
           </div>
         </div>
 
-        <div class="search-deck-modal__footer">
+        <div class="gtuto-modal__footer">
           <button
             type="button"
-            class="search-deck-footer-btn search-deck-footer-btn--shuffle"
+            class="gbtn gbtn--accent"
             @click="shuffle"
           >
-            🔀 Mélanger le Sac
+            🔀 Mélanger le Deck
           </button>
           <button
             type="button"
-            class="search-deck-footer-btn"
+            class="gbtn gbtn--ghost"
             @click="close"
           >
             Fermer
@@ -104,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import type { CardInstance } from "@/game";
 import type { Card } from "@/types/cards";
 import { getThumbPath } from "@/utils/imagePaths";
@@ -113,29 +136,68 @@ import { useCardStore } from "@/stores/cardStore";
 const props = defineProps<{
   open: boolean;
   deckInstances: CardInstance[];
-  resolveCard: (cardId: string | null) => Card | null;
+  resolveCard: (cardIdOrInstId: string | null) => Card | null;
 }>();
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "move-card", instanceId: string, targetZone: "hand" | "board" | "discard" | "deck_top" | "deck_bottom"): void;
+  (e: "move-card", instanceId: string, targetZone: "hand" | "board" | "discard" | "exile" | "deck_top" | "deck_bottom"): void;
   (e: "shuffle"): void;
 }>();
 
 const cardStore = useCardStore();
-
 const searchQuery = ref("");
+const selectedInstanceId = ref<string | null>(null);
+
+onMounted(() => {
+  if (!cardStore.cards.length) {
+    void cardStore.initialize();
+  }
+});
+
+function cardLevel(card: Card | null): number | null {
+  if (!card) return null;
+  return "level" in card && typeof card.level === "number" ? card.level : null;
+}
 
 const deckCards = computed(() => {
   return props.deckInstances.map((inst) => {
-    // inst est omniscient : cardId est toujours présent
-    let card = props.resolveCard(inst.cardId);
+    let card = props.resolveCard(inst.instanceId);
     if (!card && inst.cardId) {
-      card = cardStore.cards.find((c) => c.id === inst.cardId) ?? null;
+      card = props.resolveCard(inst.cardId);
     }
+    if (!card && inst.cardId) {
+      const rawId = String(inst.cardId);
+      card = cardStore.cards.find(
+        (c) => String(c.id) === rawId || String((c as any).code) === rawId,
+      ) ?? null;
+    }
+
+    const rawId = card?.id ?? inst.cardId ?? null;
+
+    let imgSrc = getThumbPath("/images/card-back.webp");
+    if (card) {
+      const isHero = card.mainType === "Héros";
+      const path = isHero ? `/images/cards/${card.id}_recto.webp` : `/images/cards/${card.id}.webp`;
+      imgSrc = getThumbPath(path);
+    } else if (rawId) {
+      imgSrc = getThumbPath(`/images/cards/${rawId}.webp`);
+    }
+
+    const name = card?.name || (rawId ? String(rawId) : "Carte Inconnue");
+    const mainType = card?.mainType || "";
+    const subTypes = card?.subTypes?.length ? card.subTypes.join(", ") : "";
+    const level = cardLevel(card);
+
     return {
       instanceId: inst.instanceId,
+      cardId: rawId,
       card,
+      name,
+      mainType,
+      subTypes,
+      level,
+      imgSrc,
     };
   });
 });
@@ -144,217 +206,306 @@ const filteredCards = computed(() => {
   if (!searchQuery.value.trim()) return deckCards.value;
   const q = searchQuery.value.toLowerCase().trim();
   return deckCards.value.filter((item) =>
-    item.card?.name.toLowerCase().includes(q),
+    item.name.toLowerCase().includes(q) || item.mainType.toLowerCase().includes(q),
   );
 });
 
-function getThumb(card: Card | null): string {
-  if (!card) return getThumbPath("/images/card-back.webp");
-  const path = card.mainType === "Héros" ? `/images/cards/${card.id}_recto.webp` : `/images/cards/${card.id}.webp`;
-  return getThumbPath(path);
+function selectCard(instanceId: string): void {
+  selectedInstanceId.value = selectedInstanceId.value === instanceId ? null : instanceId;
 }
 
 function close(): void {
+  selectedInstanceId.value = null;
   emit("close");
 }
 
 function takeTo(
   instanceId: string,
-  targetZone: "hand" | "board" | "discard" | "deck_top" | "deck_bottom",
+  targetZone: "hand" | "board" | "discard" | "exile" | "deck_top" | "deck_bottom",
 ): void {
+  if (selectedInstanceId.value === instanceId) {
+    selectedInstanceId.value = null;
+  }
   emit("move-card", instanceId, targetZone);
 }
 
 function shuffle(): void {
   emit("shuffle");
 }
+
+function onImgError(event: Event): void {
+  const target = event.target as HTMLImageElement;
+  if (target && !target.dataset.failed) {
+    target.dataset.failed = "true";
+    target.src = getThumbPath("/images/card-back.webp");
+  }
+}
 </script>
 
 <style scoped>
-.search-deck-backdrop {
+.gtuto-backdrop {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
+  background: rgba(10, 8, 6, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 16px;
+  animation: gtuto-fade-in 0.2s ease-out;
 }
 
-.search-deck-modal {
-  width: 90%;
-  max-width: 800px;
-  max-height: 85vh;
-  background: #111827;
-  border: 1px solid #374151;
-  border-radius: 12px;
+@keyframes gtuto-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gtuto-modal {
+  width: min(960px, 95vw);
+  max-height: 88vh;
+  background: linear-gradient(180deg, #241d16 0%, #1a1510 100%);
+  border: 1px solid rgba(246, 245, 241, 0.18);
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 25px rgba(240, 78, 34, 0.15);
   overflow: hidden;
 }
 
-.search-deck-modal__header {
-  padding: 16px 20px;
-  border-bottom: 1px solid #1f2937;
+.gtuto-modal__header {
+  padding: 14px 20px;
+  background: rgba(26, 21, 16, 0.9);
+  border-bottom: 1px solid rgba(246, 245, 241, 0.12);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #f3f4f6;
 }
 
-.search-deck-modal__header h3 {
+.gtuto-modal__header h3 {
   margin: 0;
-  font-size: 1.15rem;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #fbbf24;
+  color: #f6f5f1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.search-deck-modal__close {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  font-size: 1.2rem;
+.gtuto-modal__count {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 0.82rem;
+  color: rgba(246, 245, 241, 0.65);
+}
+
+.gtuto-modal__close {
+  background: rgba(246, 245, 241, 0.08);
+  border: 1px solid rgba(246, 245, 241, 0.16);
+  border-radius: 999px;
+  color: #f6f5f1;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.search-deck-modal__close:hover {
+.gtuto-modal__close:hover {
+  background: rgba(240, 78, 34, 0.35);
+  border-color: #f04e22;
   color: #ffffff;
 }
 
-.search-deck-modal__filter {
-  padding: 12px 20px;
-  background: #1f2937;
+.gtuto-modal__filter {
+  padding: 10px 20px;
+  background: rgba(10, 8, 6, 0.4);
+  border-bottom: 1px solid rgba(246, 245, 241, 0.08);
 }
 
-.search-deck-modal__input {
+.gtuto-modal__input {
   width: 100%;
   padding: 8px 14px;
-  background: #111827;
-  border: 1px solid #374151;
-  border-radius: 6px;
-  color: #f3f4f6;
+  background: rgba(10, 8, 6, 0.6);
+  border: 1px solid rgba(246, 245, 241, 0.2);
+  border-radius: 8px;
+  color: #f6f5f1;
   font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.search-deck-modal__grid {
+.gtuto-modal__input:focus {
+  outline: none;
+  border-color: #f04e22;
+  box-shadow: 0 0 10px rgba(240, 78, 34, 0.3);
+}
+
+.gtuto-modal__grid {
   padding: 20px;
   overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
-  max-height: 55vh;
+  max-height: 60vh;
 }
 
-.search-deck-card {
-  background: #1f2937;
-  border: 1px solid #374151;
-  border-radius: 8px;
-  padding: 10px;
+.gtuto-card {
+  background: rgba(246, 245, 241, 0.05);
+  border: 1px solid rgba(246, 245, 241, 0.12);
+  border-radius: 12px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.search-deck-card__img {
+.gtuto-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(240, 78, 34, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.gtuto-card--selected {
+  border-color: #f04e22 !important;
+  box-shadow: 0 0 20px rgba(240, 78, 34, 0.5) !important;
+  background: rgba(240, 78, 34, 0.08);
+}
+
+.gtuto-card__img-wrapper {
+  position: relative;
   width: 90px;
   height: 126px;
+}
+
+.gtuto-card__img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.gtuto-card__badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(10, 8, 6, 0.85);
+  border: 1px solid #f04e22;
+  color: #f04e22;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 5px;
   border-radius: 4px;
 }
 
-.search-deck-card__info {
+.gtuto-card__info {
   text-align: center;
-}
-
-.search-deck-card__name {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #f9fafb;
-}
-
-.search-deck-card__type {
-  display: block;
-  font-size: 0.75rem;
-  color: #9ca3af;
-}
-
-.search-deck-card__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  justify-content: center;
   width: 100%;
 }
 
-.search-deck-btn {
-  padding: 4px 8px;
+.gtuto-card__name {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f6f5f1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gtuto-card__type {
+  display: block;
   font-size: 0.72rem;
+  color: rgba(246, 245, 241, 0.6);
+  margin-top: 2px;
+}
+
+.gtuto-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.gbtn {
+  font-size: 11px;
   font-weight: 600;
-  border-radius: 4px;
-  border: 1px solid #4b5563;
-  background: #374151;
-  color: #f3f4f6;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(246, 245, 241, 0.1);
+  color: #f6f5f1;
+  border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  text-align: center;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.search-deck-btn:hover {
-  background: #4b5563;
-  border-color: #fbbf24;
-  color: #fbbf24;
+.gbtn:hover {
+  background: rgba(246, 245, 241, 0.22);
+  transform: translateY(-1px);
 }
 
-.search-deck-btn--discard {
-  border-color: #7f1d1d;
-  background: #991b1b;
-  color: #fef2f2;
+.gbtn--accent {
+  background: rgba(240, 78, 34, 0.32);
+  color: #f6f5f1;
 }
 
-.search-deck-btn--discard:hover {
-  background: #dc2626;
-  border-color: #f87171;
+.gbtn--accent:hover {
+  background: #f04e22;
   color: #ffffff;
 }
 
-.search-deck-modal__empty {
+.gbtn--discard {
+  background: rgba(220, 38, 38, 0.32);
+  color: #fca5a5;
+}
+
+.gbtn--discard:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.gbtn--banish {
+  background: rgba(147, 51, 234, 0.32);
+  color: #e9d5ff;
+}
+
+.gbtn--banish:hover {
+  background: #9333ea;
+  color: #ffffff;
+}
+
+.gbtn--ghost {
+  background: transparent;
+  outline: 1px solid rgba(246, 245, 241, 0.25);
+  color: #f6f5f1;
+}
+
+.gbtn--ghost:hover {
+  background: rgba(246, 245, 241, 0.15);
+}
+
+.gtuto-modal__empty {
   grid-column: 1 / -1;
   text-align: center;
-  color: #9ca3af;
-  padding: 20px;
+  color: rgba(246, 245, 241, 0.6);
+  padding: 30px 20px;
+  font-size: 0.95rem;
 }
 
-.search-deck-modal__footer {
-  padding: 12px 20px;
-  border-top: 1px solid #1f2937;
+.gtuto-modal__footer {
+  padding: 14px 20px;
+  background: rgba(26, 21, 16, 0.9);
+  border-top: 1px solid rgba(246, 245, 241, 0.12);
   display: flex;
   justify-content: space-between;
-}
-
-.search-deck-footer-btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #374151;
-  background: #1f2937;
-  color: #f3f4f6;
-  cursor: pointer;
-}
-
-.search-deck-footer-btn:hover {
-  background: #374151;
-}
-
-.search-deck-footer-btn--shuffle {
-  background: #d97706;
-  border-color: #b45309;
-  color: #fff;
-  font-weight: 600;
-}
-
-.search-deck-footer-btn--shuffle:hover {
-  background: #f59e0b;
 }
 </style>

@@ -841,6 +841,7 @@ export const useGameStore = defineStore("game", () => {
     id: string,
     seat: Seat,
     transport: OnlineTransport,
+    myDeck?: Deck | null,
   ): void {
     disconnectOnline();
     online.value = true;
@@ -848,6 +849,9 @@ export const useGameStore = defineStore("game", () => {
     gameId.value = id;
     mySeat.value = seat;
     perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
+    if (myDeck) {
+      activeDecks.value[seat] = myDeck;
+    }
     events.value = [];
     revealed.value = {};
     // Dérivée du journal (vide ici → "lobby") ; le pull de connexion la fera
@@ -890,6 +894,8 @@ export const useGameStore = defineStore("game", () => {
     revealed.value = {};
     gameId.value = "local";
     matchPhase.value = "lobby";
+    activeDecks.value = { A: null, B: null };
+    instanceCardMap.clear();
     // Présence/grâce : minuteur coupé (test-safe) + état réinitialisé.
     clearGraceTimer();
     opponentPresent.value = true;
@@ -899,16 +905,103 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
   }
 
+  const instanceCardMap = new Map<string, Card>();
+  const activeDecks = ref<{ A: Deck | null; B: Deck | null }>({ A: null, B: null });
+
+  function populateInstanceCardMap(deckA: Deck | null, deckB: Deck | null, currentState: GameState | null): void {
+    if (!currentState) return;
+    const processSeat = (seat: Seat, deck: Deck | null) => {
+      if (!deck || !currentState?.seats?.[seat]) return;
+      const board = currentState.seats[seat];
+
+      if (board.heroInstanceId && deck.hero) {
+        instanceCardMap.set(board.heroInstanceId, deck.hero);
+      }
+      if (board.havreSacInstanceId && deck.havreSac) {
+        instanceCardMap.set(board.havreSacInstanceId, deck.havreSac);
+      }
+
+      const deckCardList: Card[] = [];
+      for (const dc of deck.cards ?? []) {
+        if (!dc?.card) continue;
+        for (let q = 0; q < dc.quantity; q++) {
+          deckCardList.push(dc.card);
+        }
+      }
+
+      for (const instId of Object.keys(currentState.instances)) {
+        const inst = currentState.instances[instId];
+        if (inst && inst.owner === seat) {
+          if (inst.cardId) {
+            const foundCard =
+              deckCardList.find(
+                (c) => String(c.id) === String(inst.cardId) || String((c as any).code) === String(inst.cardId),
+              ) ??
+              cardStore.cards.find(
+                (c) => String(c.id) === String(inst.cardId) || String((c as any).code) === String(inst.cardId),
+              );
+            if (foundCard) {
+              instanceCardMap.set(instId, foundCard);
+            }
+          }
+        }
+      }
+
+      const seatInstances = Object.values(currentState.instances).filter(
+        (inst) =>
+          inst.owner === seat &&
+          inst.instanceId !== board.heroInstanceId &&
+          inst.instanceId !== board.havreSacInstanceId,
+      );
+
+      let deckIdx = 0;
+      for (const inst of seatInstances) {
+        if (!instanceCardMap.has(inst.instanceId) && deckIdx < deckCardList.length) {
+          instanceCardMap.set(inst.instanceId, deckCardList[deckIdx]);
+          deckIdx++;
+        }
+      }
+    };
+
+    if (deckA) processSeat("A", deckA);
+    if (deckB) processSeat("B", deckB);
+  }
+
+  function resolveInstanceCard(instanceId: string | null | undefined): Card | null {
+    if (!instanceId) return null;
+    if (instanceCardMap.has(instanceId)) {
+      return instanceCardMap.get(instanceId)!;
+    }
+    if ((activeDecks.value.A || activeDecks.value.B) && state.value) {
+      populateInstanceCardMap(activeDecks.value.A, activeDecks.value.B, state.value);
+      if (instanceCardMap.has(instanceId)) {
+        return instanceCardMap.get(instanceId)!;
+      }
+    }
+    const inst = state.value?.instances?.[instanceId];
+    const cardId = inst?.cardId ?? null;
+    if (cardId) {
+      return (
+        cardStore.cards.find(
+          (c) => String(c.id) === String(cardId) || String((c as any).code) === String(cardId),
+        ) ?? null
+      );
+    }
+    return null;
+  }
+
   // ── Cycle de match ───────────────────────────────────────────────────────
   function initEngine(deckA: Deck, deckB: Deck, first: Seat): void {
     gameId.value = "local";
     winner.value = null;
-    const { events: evs } = createGame(
+    activeDecks.value = { A: deckA, B: deckB };
+    const { events: evs, state: initialState } = createGame(
       "local",
       { A: deckA, B: deckB },
       { firstPlayer: first, seedA: rndSeed(), seedB: rndSeed() },
     );
     events.value = evs;
+    populateInstanceCardMap(deckA, deckB, initialState);
   }
 
   /** Démarre une partie complète (lobby → mulligan). Premier joueur = pile/face. */
@@ -1272,7 +1365,13 @@ export const useGameStore = defineStore("game", () => {
     chifumiDoomed.value = new Set();
     pendingBearer.value = null;
     botSeat.value = null;
+    tutorOpenSeats.value = { A: false, B: false };
     clearEffectSpotlight();
+  }
+
+  const tutorOpenSeats = ref<Record<Seat, boolean>>({ A: false, B: false });
+  function setTutorOpen(seat: Seat, open: boolean): void {
+    tutorOpenSeats.value[seat] = open;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -4147,6 +4246,9 @@ export const useGameStore = defineStore("game", () => {
     adjustCounter,
     shufflePioche,
     nextTurn,
+    tutorOpenSeats,
+    setTutorOpen,
+    resolveInstanceCard,
     undoLast,
     // moteur de règles (R1)
     assist,

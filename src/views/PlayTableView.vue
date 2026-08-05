@@ -890,7 +890,7 @@ function resumeGame(): void {
   const g = resumable.value;
   if (!g) return;
   resumable.value = null;
-  store.connectOnline(g.gameId, g.seat, onlineTransport);
+  store.connectOnline(g.gameId, g.seat, onlineTransport, onlineDeck.value);
 }
 
 /** Abandonne la partie en cours détectée (forfait serveur) sans s'y reconnecter. */
@@ -984,7 +984,7 @@ async function onlineCreate(): Promise<void> {
     // CADRE : une seule expérience en ligne — plus de mode assisté à la création.
     const { gameId, code } = await createOnlineGame(deck, false);
     createdCode.value = code;
-    store.connectOnline(gameId, "A", onlineTransport);
+    store.connectOnline(gameId, "A", onlineTransport, deck);
   } catch (e) {
     onlineError.value = await fnErrorMessage(e);
   } finally {
@@ -1009,7 +1009,7 @@ async function onlineJoin(): Promise<void> {
       return;
     }
     // s'abonner AVANT join (CADRE : un seul mode en ligne)
-    store.connectOnline(g.id, "B", onlineTransport);
+    store.connectOnline(g.id, "B", onlineTransport, deck);
     await joinGame(code, deck);
     // joinGame vient de créer GAME_STARTED + mélanges + mains de départ. Le pull
     // de connexion a tourné sur un journal ENCORE VIDE (events créés seulement
