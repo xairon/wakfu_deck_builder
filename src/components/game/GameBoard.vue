@@ -427,14 +427,7 @@
           <span
             class="gpiles__slot gpiles__manual"
           >
-            <button
-              class="gbtn gbtn--sm gbtn--accent"
-              data-testid="action-tuto"
-              title="Tutoriser : ouvrir et chercher une carte dans ton deck."
-              @click="openSearchDeck"
-            >
-              🔍 Tuto
-            </button>
+
             <button
               v-if="canManualDraw"
               class="gbtn gbtn--sm"
@@ -510,20 +503,7 @@
       </div>
     </section>
 
-    <!-- ════════ Bandeau d'AVERTISSEMENT TUTORAT ADVERSE ════════ -->
-    <Transition name="slidedown">
-      <div
-        v-if="isOpponentTutoring"
-        class="gtutor-warning"
-        role="alert"
-        data-testid="tutor-warning-banner"
-      >
-        <span class="gtutor-warning__icon">⚠️</span>
-        <span class="gtutor-warning__txt">
-          L'ADVERSAIRE EXAMINE ET TUTORISE SON DECK !
-        </span>
-      </div>
-    </Transition>
+
 
     <!-- ════════ Bouton Fin du tour (façon MTGA) ════════ -->
     <!-- N'apparaît que pour le joueur DONT c'est le tour : en local hot-seat la
@@ -1295,7 +1275,7 @@
           >
             <GameCard
               :instance="inst"
-              :card="resolveCard(inst.cardId)"
+              :card="resolveCard(inst.instanceId) || resolveCard(inst.cardId)"
               @select="zoomInst(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
             />
@@ -1404,14 +1384,7 @@
       @close="zoomOpen = false"
     />
 
-    <SearchDeckModal
-      :open="searchDeckOpen"
-      :deck-instances="myDeckInstances"
-      :resolve-card="resolveCard"
-      @close="closeSearchDeck"
-      @move-card="handleSearchDeckMove"
-      @shuffle="handleSearchDeckShuffle"
-    />
+
   </div>
 </template>
 
@@ -1437,7 +1410,7 @@ import SeatHud from "./SeatHud.vue";
 import PileStack from "./PileStack.vue";
 import CombatTray from "./CombatTray.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
-import SearchDeckModal from "./SearchDeckModal.vue";
+
 import { recetteOf, requiresBearer } from "@/game/rules";
 import { chifumiActingSeat } from "@/game/ai/botPolicy";
 import { getThumbPath } from "@/utils/imagePaths";
@@ -1548,56 +1521,7 @@ function handleContextAction(act: string, instanceId?: string): void {
   ctxMenuVisible.value = false;
 }
 
-// ── Modal de Recherche de Sac (Tutoriser) ──────────────────────────────────
-const searchDeckOpen = ref(false);
 
-const isOpponentTutoring = computed(() => {
-  return store.tutorOpenSeats?.[opp.value] === true;
-});
-
-function openSearchDeck(): void {
-  searchDeckOpen.value = true;
-  store.setTutorOpen(me.value, true);
-  const name = store.players[me.value]?.name ?? "Le joueur";
-  store.say(me.value, `⚠️ TUTORISER : ${name} examine et cherche une carte dans son Deck.`);
-}
-
-function closeSearchDeck(): void {
-  searchDeckOpen.value = false;
-  store.setTutorOpen(me.value, false);
-  store.say(me.value, "Fin du tutorat de deck.");
-}
-
-const myDeckInstances = computed(() => {
-  const seat = store.perspective;
-  const ids = store.state.seats[seat]?.pioche ?? [];
-  return ids
-    .map((id) => store.state.instances[id])
-    .filter((inst): inst is NonNullable<typeof inst> => Boolean(inst));
-});
-
-function handleSearchDeckMove(
-  instanceId: string,
-  targetZone: "hand" | "board" | "discard" | "exile" | "deck_top" | "deck_bottom",
-): void {
-  if (targetZone === "hand") {
-    store.moveTo(instanceId, { zone: "main", owner: store.perspective });
-  } else if (targetZone === "board") {
-    store.moveTo(instanceId, { zone: "monde" });
-  } else if (targetZone === "discard") {
-    store.moveTo(instanceId, { zone: "defausse", owner: store.perspective });
-  } else if (targetZone === "exile") {
-    store.moveTo(instanceId, { zone: "exil", owner: store.perspective });
-  } else if (targetZone === "deck_top") {
-    store.moveTo(instanceId, { zone: "pioche", owner: store.perspective }, { at: "top" });
-  } else if (targetZone === "deck_bottom") {
-    store.moveTo(instanceId, { zone: "pioche", owner: store.perspective }, { at: "bottom" });
-  }
-}
-
-function handleSearchDeckShuffle(): void {
-  store.shufflePioche(store.perspective);
-}
 
 function instancesOf(z: RedactedZone | null): RedactedInstance[] {
   return z && z.kind === "full" ? z.instances : [];
@@ -3410,41 +3334,5 @@ function manaBonus(seat: Seat): boolean {
   }
 }
 
-.gtutor-warning {
-  position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.95), rgba(180, 83, 9, 0.95));
-  border: 2px solid #fbbf24;
-  border-radius: 30px;
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: 0.5px;
-  box-shadow:
-    0 0 25px rgba(239, 68, 68, 0.8),
-    0 0 15px rgba(251, 191, 36, 0.6);
-  animation: gtutor-pulse 1.2s ease-in-out infinite alternate;
-}
 
-@keyframes gtutor-pulse {
-  from {
-    transform: translateX(-50%) scale(1);
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.7), 0 0 10px rgba(251, 191, 36, 0.5);
-  }
-  to {
-    transform: translateX(-50%) scale(1.04);
-    box-shadow: 0 0 35px rgba(239, 68, 68, 1), 0 0 20px rgba(251, 191, 36, 0.9);
-  }
-}
-
-.gtutor-warning__icon {
-  font-size: 1.3rem;
-}
 </style>
