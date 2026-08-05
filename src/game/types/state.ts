@@ -15,6 +15,8 @@ export interface CardCounters {
   level?: number; // 1→2→3 (307.4/307.5)
   xp?: number; // 6→N2, 18→N3
   tokens?: Record<string, number>; // jetons génériques nommés
+  combatState?: "attacking" | "blocking" | null; // état de combat explicite (overlay attaquant / bloquant)
+  rotation?: number; // angle de rotation personnalisé en degrés (tilt multi-niveaux)
 }
 
 export interface CardInstance {

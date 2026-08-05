@@ -244,6 +244,14 @@ export function revealHand(
   return { actor, type: "REVEAL", payload: { instanceIds, to } };
 }
 
+export function unrevealHand(
+  actor: Seat,
+  instanceIds: InstanceId[],
+  to: Seat[],
+): DraftEvent<LookRevealPayload> {
+  return { actor, type: "UNREVEAL", payload: { instanceIds, to } };
+}
+
 /** Met à jour le tour (joueur actif, numéro, phase) — assistance non bloquante. */
 export function setPhase(
   actor: Seat | "system",

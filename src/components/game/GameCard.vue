@@ -73,6 +73,24 @@
     >
       🛡{{ resistance }}
     </span>
+
+    <!-- ── Overlay de combat (Attaquant / Bloquant semi-transparent) ── -->
+    <div
+      v-if="isAttacking"
+      class="game-card__overlay game-card__overlay--attacking"
+      aria-hidden="true"
+      title="Carte Attaquante"
+    >
+      ⚔️
+    </div>
+    <div
+      v-else-if="isBlocking"
+      class="game-card__overlay game-card__overlay--blocking"
+      aria-hidden="true"
+      title="Carte Bloquante"
+    >
+      🛡️
+    </div>
   </button>
 </template>
 
@@ -156,6 +174,20 @@ const combatRole = computed<string | null>(() => {
   if (id in c.blocks) return "bloqueur";
   return null;
 });
+const explicitCombatState = computed(
+  () => props.instance.counters?.combatState,
+);
+
+const isAttacking = computed(() => {
+  if (explicitCombatState.value === "attacking") return true;
+  return combatRole.value === "attaquant";
+});
+
+const isBlocking = computed(() => {
+  if (explicitCombatState.value === "blocking") return true;
+  return combatRole.value === "bloqueur";
+});
+
 const willDie = computed(
   () => game.combatPreview?.lethal.includes(props.instance.instanceId) ?? false,
 );
@@ -329,6 +361,52 @@ const ariaLabel = computed(() => {
   right: 3px;
   background: linear-gradient(180deg, #4a90c2, #2c5f8f);
 }
+
+/* ── Overlays de combat (Attaquant / Bloquant) ── */
+.game-card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  font-size: 2.8rem;
+  pointer-events: none;
+  user-select: none;
+  backdrop-filter: blur(1px);
+  animation: overlay-pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.game-card__overlay--attacking {
+  background: rgba(220, 38, 38, 0.32);
+  color: #f87171;
+  text-shadow:
+    0 0 16px rgba(239, 68, 68, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+  border: 2px dashed rgba(248, 113, 113, 0.85);
+  box-sizing: border-box;
+}
+
+.game-card__overlay--blocking {
+  background: rgba(37, 99, 235, 0.32);
+  color: #60a5fa;
+  text-shadow:
+    0 0 16px rgba(96, 165, 250, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+  border: 2px dashed rgba(96, 165, 250, 0.85);
+  box-sizing: border-box;
+}
+
+@keyframes overlay-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .game-card,
   .game-card:hover {
@@ -339,7 +417,8 @@ const ariaLabel = computed(() => {
   .game-card--tapped:hover {
     transform: rotate(var(--tap-angle)) scale(0.92);
   }
-  .game-card__badge {
+  .game-card__badge,
+  .game-card__overlay {
     animation: none;
   }
 }

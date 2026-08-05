@@ -60,7 +60,15 @@ const items = computed<{ inst: RedactedInstance; card: Card | null }[]>(() => {
     aria-label="Équipements attachés"
     data-testid="attached-equip"
   >
-    <div v-for="a in items" :key="a.inst.instanceId" class="attach__card">
+    <div
+      v-for="(a, idx) in items"
+      :key="a.inst.instanceId"
+      class="attach__card"
+      :style="{
+        zIndex: 6 + idx,
+        transform: `translate(${idx * 4}px, ${idx * -3}px)`,
+      }"
+    >
       <GameCard
         :instance="a.inst"
         :card="a.card"

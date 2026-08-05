@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <!-- ═══════════ LOBBY : choix des decks (J1 puis J2) ═══════════ -->
   <div v-if="store.matchPhase === 'lobby' && !store.online" class="space-y-6">
     <header class="flex flex-wrap items-end justify-between gap-4">
@@ -837,7 +837,7 @@ function startVsBot(): void {
 // premier joueur jouait son tour EN FOND pendant l'animation). Le getter est
 // évalué à chaque battement du driver, après l'init du script (pas de TDZ).
 const botDriver = useBotOpponent(store, 550, {
-  hold: () => diceVisible.value,
+  hold: () => false,
 });
 // Masqué par défaut : le plateau occupe toute la largeur (cartes plus grandes).
 // Le joueur ouvre le journal à la demande via le bouton « Journal ».

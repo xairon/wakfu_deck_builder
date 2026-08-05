@@ -59,6 +59,7 @@ export type GameIntent =
     }
   | { kind: "ATTACH"; equipmentId: InstanceId; bearerId: InstanceId }
   | { kind: "DETACH"; equipmentId: InstanceId; to: ZoneRef; position: Position }
+  | { kind: "DRAW" }
   | { kind: "END_TURN" }
   // ── Combat (P3) — combat-au-journal, le serveur l'adjuge (702–708) ──────────
   // L'acteur est imposé serveur : DECLARE_ATTACK/RESOLVE/CANCEL = l'attaquant

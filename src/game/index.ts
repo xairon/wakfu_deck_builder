@@ -44,6 +44,7 @@ export {
   undo,
   say,
   revealHand,
+  unrevealHand,
   setPhase,
   setCombat,
   sequence,
