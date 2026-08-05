@@ -158,6 +158,19 @@ describe("rules/stats — Force effective composée (lot B)", () => {
     expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(3);
   });
 
+  it("compteur NOMMÉ « force » (± Force manuel, Cadre) : lu par effectiveForce", () => {
+    const ally = makeAlly("mf", { force: 3 });
+    const f = fixture([ally], []);
+    bringToMonde(f, "A", instId("A", 0));
+    expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(3);
+    // +2 Force posé à la main (effet manuel en table libre)
+    dispatch(f, setCounter("A", instId("A", 0), "force", 2));
+    expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(5);
+    // un malus manuel peut descendre la Force… jamais sous 0 (clamp)
+    dispatch(f, setCounter("A", instId("A", 0), "force", -5));
+    expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(0);
+  });
+
   it("forceAura : +1 à vos AUTRES Alliés Bouftous du Monde, et rien d'autre", () => {
     const chef = withStatic(makeAlly("chef", { force: 3 }), {
       kind: "forceAura",

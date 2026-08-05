@@ -198,14 +198,21 @@ const syncSquareClass = computed(() => {
   return authStore.isAuthenticated ? "bg-base-content" : "bg-base-content/30";
 });
 
-const navItems = [
-  { to: "/", label: "Accueil", match: ["/"] },
-  { to: "/collection", label: "Collection", match: ["/collection"] },
-  { to: "/decks", label: "Decks", match: ["/decks", "/deck"] },
-  { to: "/play/table", label: "Partie", match: ["/play"] },
-  { to: "/regles", label: "Règles", match: ["/regles"] },
-];
-function isActive(item: (typeof navItems)[number]): boolean {
+const navItems = computed(() => {
+  const items = [
+    { to: "/", label: "Accueil", match: ["/"] },
+    { to: "/collection", label: "Collection", match: ["/collection"] },
+    { to: "/decks", label: "Decks", match: ["/decks", "/deck"] },
+    { to: "/play/table", label: "Partie", match: ["/play"] },
+    { to: "/regles", label: "Règles", match: ["/regles"] },
+    { to: "/errata", label: "Errata", match: ["/errata"] },
+  ];
+  // Réservé à l'UI : la RLS reste la barrière réelle.
+  if (authStore.isAdmin)
+    items.push({ to: "/admin", label: "Admin", match: ["/admin"] });
+  return items;
+});
+function isActive(item: (typeof navItems.value)[number]): boolean {
   if (item.to === "/") return route.path === "/";
   return item.match.some((m) => route.path.startsWith(m));
 }

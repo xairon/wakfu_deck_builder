@@ -25,6 +25,13 @@ export const baseCardSchema = z.object({
   metier: z
     .array(z.enum(["Bricoleur", "Forgeron", "Bijoutier", "Armurier"]))
     .optional(),
+  // ÉLÉMENT IMPRIMÉ (« Élément : [X] » — l'orbe en haut à droite). Porté par les
+  // types SANS Force (Action / Équipement / Zone / Salle / Dofus / Protecteur /
+  // Havre-Sac) : c'est LEUR Élément de carte, distinct du Niveau (souvent Neutre
+  // = coût libre, 4398). Les Alliés/Héros n'en ont pas (leur Élément = symbole de
+  // Force). Source unique de l'Élément de carte, lu en priorité par
+  // `producedElement`/`cardElement` (repli Force puis Niveau). Absent = pas d'orbe.
+  element: cardElementSchema.optional(),
   // ÉLÉMENT DE RESSOURCE PRODUIT (dérivé — 4261). Un producteur COLORÉ
   // (« Produisez une Ressource [X] », un seul Élément) produit cet Élément en
   // s'inclinant, indépendamment de son Élément imprimé (les Pious sont Neutre en

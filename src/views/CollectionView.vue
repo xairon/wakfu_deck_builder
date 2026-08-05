@@ -286,6 +286,19 @@
                     />
                   </p>
                 </div>
+                <div v-if="selectedCard?.element">
+                  <p class="eyebrow">Élément</p>
+                  <p
+                    class="mt-1 flex items-center gap-1.5 font-mono text-2xl tabular"
+                  >
+                    <img
+                      :src="`/images/elements/ressource-${selectedCard.element.toLowerCase()}.png`"
+                      :alt="selectedCard.element"
+                      :title="selectedCard.element"
+                      class="inline-block h-6 w-6"
+                    />
+                  </p>
+                </div>
                 <div v-if="displayedStats.force">
                   <p class="eyebrow">Force</p>
                   <p
@@ -433,40 +446,12 @@
                 </div>
               </div>
 
-              <!-- Errata (officiels) -->
-              <template v-if="cardErrata.length">
-                <p class="section-rule eyebrow text-primary">
-                  Errata · {{ cardErrata.length }}
-                </p>
-                <div class="space-y-2">
-                  <div
-                    v-for="(e, i) in cardErrata"
-                    :key="i"
-                    class="border-l-2 border-primary bg-primary/5 p-3"
-                  >
-                    <p class="text-sm leading-relaxed">{{ e.summary }}</p>
-                    <p
-                      v-if="e.before || e.after"
-                      class="mt-1 font-mono text-xs"
-                    >
-                      <span
-                        v-if="e.before"
-                        class="text-base-content/50 line-through"
-                        >{{ e.before }}</span
-                      >
-                      <span v-if="e.before && e.after"> → </span>
-                      <span v-if="e.after" class="text-base-content">{{
-                        e.after
-                      }}</span>
-                    </p>
-                    <p
-                      class="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-base-content/45"
-                    >
-                      {{ e.date }}<span v-if="e.source"> · {{ e.source }}</span>
-                    </p>
-                  </div>
-                </div>
-              </template>
+              <!-- Errata officiels : composant partagé avec le zoom de carte. -->
+              <ErrataPanel
+                :errata="cardErrata"
+                :card-id="selectedCard?.id"
+                @saved="refreshCardErrata"
+              />
 
               <!-- Collection -->
               <p class="section-rule eyebrow">Collection</p>
@@ -623,10 +608,15 @@ import CollectionGrid from "@/components/collection/CollectionGrid.vue";
 import CollectionCompletion from "@/components/collection/CollectionCompletion.vue";
 import QuickAddModal from "@/components/collection/QuickAddModal.vue";
 import { highlightEffectHtml, splitEffectsAndNotes } from "@/utils/effectText";
-import { fetchErrata, type ErrataEntry } from "@/services/errataService";
+import {
+  fetchErrata,
+  preloadErrata,
+  type ErrataEntry,
+} from "@/services/errataService";
 import OptimizedImage from "@/components/common/OptimizedImage.vue";
+import ErrataPanel from "@/components/card/ErrataPanel.vue";
 
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const cardStore = useCardStore();
 const authStore = useAuthStore();
@@ -634,6 +624,9 @@ const toast = useToast();
 const router = useRouter();
 
 const searchQuery = ref("");
+const route = useRoute();
+// Pré-remplit la recherche depuis ?q= (lien « voir la carte » depuis /errata).
+if (typeof route.query.q === "string") searchQuery.value = route.query.q;
 const selectedExtension = ref("");
 const selectedMainType = ref("");
 const selectedSubType = ref("");
@@ -651,13 +644,12 @@ const selectedCard = ref<Card | null>(null);
 
 // Erratas officiels de la carte sélectionnée
 const cardErrata = ref<ErrataEntry[]>([]);
-watch(
-  selectedCard,
-  async (c) => {
-    cardErrata.value = c ? await fetchErrata(c.id) : [];
-  },
-  { immediate: true },
-);
+async function refreshCardErrata() {
+  cardErrata.value = selectedCard.value
+    ? await fetchErrata(selectedCard.value.id)
+    : [];
+}
+watch(selectedCard, refreshCardErrata, { immediate: true });
 const selectedSortField = ref("number");
 const isDescending = ref(false);
 const hideNotOwned = ref(false);
@@ -695,6 +687,8 @@ const rarities = computed(() => {
 const elements = computed(() => {
   const elementSet = new Set<string>();
   cardStore.cards.forEach((card) => {
+    // Orbe imprimé `card.element` (Actions/Équipements/Zones/…) + Niveau + Force.
+    if (card.element) elementSet.add(card.element);
     if (card.stats?.niveau?.element) elementSet.add(card.stats.niveau.element);
     if (card.stats?.force?.element) elementSet.add(card.stats.force.element);
   });
@@ -969,6 +963,11 @@ function closeModal() {
 
 // Initialisation
 onMounted(async () => {
+  // Précharge l'index d'erratas tôt (badge « Erraté » sur les tuiles) — en
+  // parallèle du chargement des cartes, dégradation silencieuse en cas
+  // d'échec (cf. errataService.ts).
+  void preloadErrata();
+
   try {
     if (!cardStore.isInitialized) {
       await cardStore.initialize();

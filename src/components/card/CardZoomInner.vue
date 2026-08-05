@@ -134,24 +134,8 @@
         </dl>
       </div>
 
-      <!-- Erratas -->
-      <div v-if="errata.length" class="mt-4">
-        <p class="eyebrow mb-2 text-primary">Errata</p>
-        <ul class="space-y-2">
-          <li
-            v-for="(e, i) in errata"
-            :key="i"
-            class="border-l-2 border-primary pl-3 text-sm"
-          >
-            <p>{{ e.summary }}</p>
-            <p
-              class="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-base-content/45"
-            >
-              {{ e.date }}<span v-if="e.source"> · {{ e.source }}</span>
-            </p>
-          </li>
-        </ul>
-      </div>
+      <!-- Errata officiels : composant partagé avec le panneau de la Collection. -->
+      <ErrataPanel :errata="errata" :card-id="card.id" @saved="emit('saved')" />
 
       <!-- Saveur -->
       <p
@@ -193,6 +177,7 @@ import {
   type EffectAnnotationKind,
 } from "@/utils/effectText";
 import { glossaryHints } from "@/utils/glossaryHints";
+import ErrataPanel from "@/components/card/ErrataPanel.vue";
 
 type DisplayEffect = { description: string; kind?: EffectAnnotationKind };
 
@@ -208,6 +193,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "imgError", event: Event): void;
+  /** Rebond de l'événement `saved` d'ErrataPanel — voir CardZoomModal. */
+  (e: "saved"): void;
 }>();
 
 // Sépare les vrais effets de jeu des annotations (rulings/errata) : ces
@@ -236,18 +223,20 @@ const glossary = computed(() =>
 
 const statRows = computed(() => {
   const s = props.card?.stats;
-  if (!s) return [];
   const rows: { label: string; value: string }[] = [];
-  if (s.niveau)
+  if (s?.niveau)
     rows.push({
       label: "Niveau",
       value: `${s.niveau.value} ${s.niveau.element}`,
     });
-  if (s.force)
+  // Orbe imprimé (« Élément : [X] ») — types sans Force (Action/Équipement/…).
+  if (props.card?.element)
+    rows.push({ label: "Élément", value: props.card.element });
+  if (s?.force)
     rows.push({ label: "Force", value: `${s.force.value} ${s.force.element}` });
-  if (s.pa !== undefined) rows.push({ label: "PA", value: String(s.pa) });
-  if (s.pm !== undefined) rows.push({ label: "PM", value: String(s.pm) });
-  if (s.pv !== undefined) rows.push({ label: "PV", value: String(s.pv) });
+  if (s?.pa !== undefined) rows.push({ label: "PA", value: String(s.pa) });
+  if (s?.pm !== undefined) rows.push({ label: "PM", value: String(s.pm) });
+  if (s?.pv !== undefined) rows.push({ label: "PV", value: String(s.pv) });
   return rows;
 });
 </script>

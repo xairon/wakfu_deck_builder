@@ -108,20 +108,11 @@ for (const file of fs.readdirSync(DATA_DIR)) {
 }
 
 // ── Erratas ──
-if (fs.existsSync(path.join(DATA_DIR, "errata.json"))) {
-  try {
-    const e = readJson("errata.json") as any;
-    for (const id of Object.keys(e?.errata ?? {})) {
-      if (!byId.has(id)) err(`errata.json: id de carte inconnu "${id}"`);
-      for (const [k, entry] of (e.errata[id] as any[]).entries()) {
-        if (!entry?.date) err(`errata.json[${id}][${k}]: date manquante`);
-        if (!entry?.summary) err(`errata.json[${id}][${k}]: summary manquant`);
-      }
-    }
-  } catch (e) {
-    err(`errata.json: ${(e as Error).message}`);
-  }
-}
+// Plus rien à valider ici : les erratas ont migré de `public/data/errata.json`
+// vers la table Supabase `card_errata` (seed vérifié le 2026-07-24 : 66 lignes,
+// lecture anon confirmée). Leur validation vit désormais au seed
+// (`scripts/seedErrata.mjs`) et au runtime (`errataRowSchema`, qui écarte toute
+// ligne malformée sans casser l'index).
 
 // ── Decks externes ──
 function resolveName(name?: string): boolean {

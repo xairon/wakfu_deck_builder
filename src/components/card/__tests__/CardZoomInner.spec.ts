@@ -47,3 +47,20 @@ describe("CardZoomInner — séparation effets / notes", () => {
     expect(notes.text()).not.toContain("Piochez une carte");
   });
 });
+
+describe("CardZoomInner — date d'un errata officiel", () => {
+  it("affiche la date au format français (JJ/MM/AAAA), jamais l'ISO brut", () => {
+    const card = createMockAllyCard({ id: "c2", name: "Carte Errata" });
+    const wrapper = mount(CardZoomInner, {
+      props: {
+        card,
+        errata: [{ date: "2010-12-01", summary: "Passe à 6 PA.", changes: [] }],
+        elementColor: "#888",
+        cardImg: "/x.webp",
+        displayEffects: [],
+      },
+    });
+    expect(wrapper.text()).toContain("01/12/2010");
+    expect(wrapper.text()).not.toContain("2010-12-01");
+  });
+});

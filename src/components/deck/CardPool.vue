@@ -126,6 +126,11 @@
               "
               >{{ ownedQty(card.id) }}</span
             >
+            <!-- Badge « Erraté » : signal visible sans ouvrir la fiche -->
+            <ErrataBadge
+              :card-id="card.id"
+              class="absolute bottom-[28px] left-[5px] z-10"
+            />
             <!-- Bandeau loupe au survol -->
             <span
               class="absolute inset-x-[5px] bottom-[5px] z-10 grid place-items-center bg-base-content py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-base-100 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
@@ -185,6 +190,7 @@ import CollectionFilters from "@/components/collection/CollectionFilters.vue";
 import { getCardCopies } from "@/validators/deck";
 import { maxCopiesForCard } from "@/utils/cardRules";
 import type { Card } from "@/types/cards";
+import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
@@ -243,7 +249,13 @@ const filterElements = computed(() => {
   // est insensible à la casse (cf. filterCards), l'affichage reste capitalisé.
   const set = new Set(
     cardStore.cards
-      .map((c) => c.stats?.niveau?.element || c.stats?.force?.element || "")
+      .map(
+        (c) =>
+          c.element ||
+          c.stats?.force?.element ||
+          c.stats?.niveau?.element ||
+          "",
+      )
       .filter(Boolean),
   );
   return Array.from(set).sort();
@@ -313,7 +325,11 @@ function addBlockReason(card: Card): string {
 }
 
 function elementColor(card: Card): string {
-  const el = card.stats?.niveau?.element || card.stats?.force?.element || null;
+  const el =
+    card.element ||
+    card.stats?.force?.element ||
+    card.stats?.niveau?.element ||
+    null;
   return elementColorByEl(el?.toString());
 }
 

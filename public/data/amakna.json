@@ -90,7 +90,8 @@
     "flavor": {
       "text": "Il absorbe et protège deux fois plus qu'un sort ordinaire. Vos ennemis n'ont plus qu'à prendre la fuite."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "acceleration-amakna",
@@ -123,7 +124,8 @@
     "flavor": {
       "text": "Je vais vite, je m'entraaaîîîînne, à n'pas perdre une secoooooonnnde ! — Glaurie, ménestrelle dynamique."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "aiguille-chercheuse-amakna",
@@ -263,7 +265,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "allister-roi-d-amakna-amakna",
@@ -358,7 +361,8 @@
     "flavor": {
       "text": "Moiii j'aime scier ! Tutululututuluuu… Moi j'aime scier",
       "attribution": "er ! — Le peuple du Village."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "amukwak-de-glace-amakna",
@@ -406,7 +410,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "anneau-fioutioure-amakna",
@@ -459,7 +464,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "apioucalypse-amakna",
@@ -511,7 +517,8 @@
     "notes": [],
     "flavor": {
       "text": "J'adore l'odeur du guano au petit matin… L'odeur de la victoire. — Ekraz Lenoub."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "appel-de-la-garde-amakna",
@@ -553,7 +560,8 @@
     "flavor": {
       "text": "Sonnez la Laaarve ! Aux armes, miliciens ! Formez vos bataillons !",
       "attribution": "Sergent Gracia, chef de la milice d'Amakna."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "arbre-amakna",
@@ -660,7 +668,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "atelier-de-forgemagie-amakna",
@@ -698,7 +707,8 @@
     "notes": [],
     "flavor": {
       "text": "Atelier de Forgemagie Magie, et vos idées ont du géniiiiiiie !!"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "baton-des-rois-amakna",
@@ -747,7 +757,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "berlanette-chichi-amakna",
@@ -932,7 +943,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "bony-parc-ur-amakna",
@@ -1013,7 +1025,8 @@
     "notes": [],
     "flavor": {
       "text": "Dans la vie, quand je comprends pas quelque chose, j'utilise ma Botte Secrète. — Perse Oval, aventurier futé."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bottes-du-craqueleur-amakna",
@@ -1071,7 +1084,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "boufton-noir-amakna",
@@ -1187,7 +1201,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "calben-amakna",
@@ -1314,7 +1329,8 @@
     "flavor": {
       "text": "Klawa Owgane m'a dit un jouw qu'elle adowait les gwosses Cawottes. — Le Wa Wabbit."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "cervelle-de-iop-amakna",
@@ -1362,7 +1378,8 @@
     "notes": [],
     "flavor": {
       "text": "Organe chimérique qui a longtemps fait l'objet de recherches approfondies. — Définition donnée par Dikô la Rousse."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "chafer-lancier-amakna",
@@ -1427,7 +1444,8 @@
     "notes": [],
     "flavor": {
       "text": "Oh mon châteaaauuu, tu es le plus beau des châteaux, et tu me guides vers les flooots ! — Allister lors du déluge."
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "chateau-des-wabbits-amakna",
@@ -1474,7 +1492,8 @@
     "notes": [],
     "flavor": {
       "text": "Clé du Matin Pewlant, Clé du Midi Wayonnant et Clé du Soiw Woulant vous ouvriront les portes du Château des Wabbits."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "chevalier-feuille-amakna",
@@ -1812,7 +1831,8 @@
     "notes": [],
     "flavor": {
       "text": "Ultime date pour la tournée Zissizite. Les places dans la fosse commune vont être chères !"
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "coffre-anime-amakna",
@@ -1921,7 +1941,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "corbeau-amakna",
@@ -1956,7 +1977,8 @@
       "text": "Crrroâââ ! Shhh… ShtaAAAakk !! … Aïïïe",
       "attribution": "euh !! — Démonstration du lancer de Corbeau par un novice Osamodas."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "crabe-amakna",
@@ -2161,7 +2183,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "craqueboule-amakna",
@@ -2283,7 +2306,8 @@
     "notes": [],
     "flavor": {
       "text": "Ogrest n'a jamais été très adroit pour le point de crocher. Son point fort, c'est plutôt le crochet du gauche."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "crocodaille-amakna",
@@ -2401,7 +2425,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "cruel-amakna",
@@ -2434,7 +2459,8 @@
     "flavor": {
       "text": "Cruel est un Challenge dans le jeu online DOFUS rapportant de l'XP et un bonus au drop en combat."
     },
-    "spellSchool": "Challenge"
+    "spellSchool": "Challenge",
+    "element": "Neutre"
   },
   {
     "id": "cruelle-pelle-truelle-amakna",
@@ -2470,7 +2496,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "demon-x-amakna",
@@ -2644,7 +2671,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-ivoire-amakna",
@@ -2702,7 +2730,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-kaliptus-amakna",
@@ -2744,7 +2773,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "donjon-des-craqueleurs-amakna",
@@ -2805,7 +2835,8 @@
     "notes": [],
     "flavor": {
       "text": "Quand on s'attaque à ses Craqueboules, le Craqueleur a tendance à en faire toute une montagne…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "duc-rex-amakna",
@@ -2937,7 +2968,8 @@
     "flavor": {
       "text": "Joris, aussi discret qu'efficace, est l'émissaire du roi de Bonta."
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "emma-tenl-amakna",
@@ -3029,7 +3061,8 @@
     ],
     "flavor": {
       "text": "Rosal ne cesse de se vanter de son don d'empathie. À tel point que Pouchecot le surnomme « le coq empathe »."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "epee-du-petit-chevalier-amakna",
@@ -3224,7 +3257,8 @@
     "flavor": {
       "text": "Qui veut une mine épouvantable ménage sa gueule de bois. — Proverbe Pandawa."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "fallanster-amakna",
@@ -3397,7 +3431,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "fleche-d-immobilisation-amakna",
@@ -3430,7 +3465,8 @@
     "flavor": {
       "text": "Lors de sa sortie, ce sort créé par un dénommé Thasèr, provoqua de hautes tensions."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "fleche-harcelante-amakna",
@@ -3464,7 +3500,8 @@
     "flavor": {
       "text": "Arrêtez de me suivre ou j'appelle la milice ! — Nara, forgeron paranoïaque."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "froid-de-frigost-amakna",
@@ -3511,7 +3548,8 @@
     ],
     "flavor": {
       "text": "Le comte à Harebourg à la sale manie de toujours laisser sa porte ouverte…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "garde-kerubim-amakna",
@@ -3658,7 +3696,8 @@
     "flavor": {
       "text": "Kanniboul Lakterr affirme qu'il n'y a pas mieux que ce Glyphe pour réduire les Bouftons au silence."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "griffe-invocatrice-amakna",
@@ -3758,7 +3797,8 @@
     "flavor": {
       "text": "Pa besoin 2 guide ! G la bravitude dans le san ! — Key Vine, Iop qui aurait bien besoin d'un guide d'orthographe."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "intrigues-a-la-cour-amakna",
@@ -3790,7 +3830,8 @@
     "notes": [],
     "flavor": {
       "text": "Comment ça il y a un Trig à la cour ? Et puis c'est quoi un Trig d'abord ? — Iop Labooum."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "kabrok-amakna",
@@ -3875,7 +3916,8 @@
     "notes": [],
     "flavor": {
       "text": "Ben quoi ? J'ai amené mon canot et mon jet d'eau, moi… Fallait pas ?? — Etour Drif, Iop de premier choix."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "karla-blondie-amakna",
@@ -4110,7 +4152,8 @@
     "flavor": {
       "text": "Une Mesure de Sel et une de Poivre, une Cuisse de Bouftou et une Briochette, et c'est prêt !"
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "la-guilde-d-allister-amakna",
@@ -4143,7 +4186,8 @@
     "flavor": {
       "text": "Après avoir guidé son troupeau de Bouftous, Allister guilda son peuple…"
     },
-    "spellSchool": "Unique"
+    "spellSchool": "Unique",
+    "element": "Neutre"
   },
   {
     "id": "la-quete-des-6-dofus-amakna",
@@ -4191,7 +4235,8 @@
     "flavor": {
       "text": "Et ces Dofus prendront votre victoire pour écrin…"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "laeti-allume-amakna",
@@ -4253,7 +4298,8 @@
     "notes": [],
     "flavor": {
       "text": "Il paraît que l'amour rend aveugle. Vous feriez mieux de déjà fermer les yeux."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "lethaline-sigsibul-amakna",
@@ -4502,7 +4548,8 @@
     "flavor": {
       "text": "L'union fait la force ? L'union fait la farce oui !",
       "attribution": "Cordokou, Iop lucide."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "marzwel-le-gobelin-amakna",
@@ -4610,7 +4657,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "megabottes-amakna",
@@ -4681,7 +4729,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "megacoiffe-amakna",
@@ -4745,7 +4794,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "miranda-amakna",
@@ -4883,7 +4933,8 @@
     "flavor": {
       "text": "Dans le jeu online DOFUS, ce sort de Niveau 70 augmentera vos Résistances et vos Dommages."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "monstre-pain-amakna",
@@ -4966,7 +5017,8 @@
     "notes": [],
     "flavor": {
       "text": "Qui dort dans son tonneau, craint la montée des eaux ! — Proverbe Pandawa."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "mot-d-amitie-amakna",
@@ -5065,7 +5117,8 @@
     "flavor": {
       "text": "Avec Mot de Jouvence, mon Eni est débarrassé de ses envoûtements. Sa peau est repulpée, comme plus jeune."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "musha-l-oni-amakna",
@@ -5327,7 +5380,8 @@
       "text": "B",
       "attribution": "boire ou choi"
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "patty-ceriz-amakna",
@@ -5430,7 +5484,8 @@
     "flavor": {
       "text": "Il y a différentes manières de provoquer la peur. La vue d'une Enutrofette nue en fait partie."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "piege-repulsif-amakna",
@@ -5463,7 +5518,8 @@
     "flavor": {
       "text": "Parce qu'il n'est pas toujours évident d'avoir une Miss Moche sous la main, Sram a créé le Piège Répulsif."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "piqure-motivante-amakna",
@@ -5508,7 +5564,8 @@
     "flavor": {
       "text": "Une piqûre chaque zzzour et vous aurez la santé pour touzzzours ! Promis, zzzuré ! — Un Moskito anonyme."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "potion-de-crapaud-mufle-amakna",
@@ -5542,7 +5599,8 @@
       "text": "Une cuillère à soupe matin, midi et soir. — Posologie destinée aux Miss",
       "attribution": "Moches."
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "princesse-eenca-amakna",
@@ -5738,7 +5796,8 @@
     "flavor": {
       "text": "Whesh ! T'as un problème ?! Tu m'cherches, là ? Tu veux t'battre ?! Hein ! Hein ! — Kay Rah, Iop vénère."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "pym-amakna",
@@ -5839,7 +5898,8 @@
     "flavor": {
       "text": "Soit X lançant Retour de Bâton sur Y protégé par Renvoie de Sort. Quelle sera l'issue du combat ? — Problème Féca."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "rocco-fidelio-amakna",
@@ -5909,7 +5969,8 @@
     "flavor": {
       "text": "En tisane, en soupe ou en fouet, les ronces ont des vertus qui séduiront toutes les classes !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "rose-demoniaque-amakna",
@@ -6039,7 +6100,8 @@
     "notes": [],
     "flavor": {
       "text": "Lorsque son trône est de faïence, n'espérez point avoir audience — Proverbe amaknéen."
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "sanglier-des-plaines-amakna",
@@ -6157,7 +6219,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "science-dimensionnelle-d-otomai-amakna",
@@ -6189,7 +6252,8 @@
     "notes": [],
     "flavor": {
       "text": "Il n'y a que les portails d'Otomaï qui n'ont pas de failles ! — Otomaï."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "severum-amakna",
@@ -6222,7 +6286,8 @@
     "flavor": {
       "text": "Certains racontent qu'on peut créer un Severum de vérité avec cette sève. Malheureusement, il s'agit d'un mensonge !"
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "shak-shaka-roi-des-robomates-amakna",
@@ -6367,7 +6432,8 @@
     "notes": [],
     "flavor": {
       "text": "Pff… * Soupir * … Rhaahhh… Snif… — Raval, dans l'un de ses bons jours."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "skeunk-amakna",
@@ -6677,7 +6743,8 @@
     "notes": [],
     "flavor": {
       "text": "Oh, n'ayons pas peur des maux ! Aux grands mots, les grands remèdes ! — Elya Wood, gardienne du Temple."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-pandawa-amakna",
@@ -6716,7 +6783,8 @@
     "flavor": {
       "text": "P",
       "attribution": "p"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-sacrieur-amakna",
@@ -6763,7 +6831,8 @@
     ],
     "flavor": {
       "text": "Sacrieur m'a ôté le foie et un ptit doooiiigt, j'ai dans le cœur ce pieu qui guide mes paaas ! — Hymne Sacrieur."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-sadida-amakna",
@@ -6801,7 +6870,8 @@
     "notes": [],
     "flavor": {
       "text": "Ça te dit de venir boire un dernier ptit verre dans mon temple, poupée ? — Berkzoy, Sadida bourreau des cœurs."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "terril-hachterr-amakna",
@@ -6916,7 +6986,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "tofu-malefique-amakna",
@@ -7015,7 +7086,8 @@
     "flavor": {
       "text": "Dites",
       "attribution": "vous que ce n'est pas pire que la Tour des Miss Roussosses."
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "tourmenteur-amakna",
@@ -7088,7 +7160,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "tournesol-affame-amakna",
@@ -7179,7 +7252,8 @@
     "flavor": {
       "text": "Lorsqu'il est à fleur de peau, Meow Moew devient un as de Trèfle."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "tynril-amakna",

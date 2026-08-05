@@ -22,6 +22,7 @@ import type {
   MovePayload,
   AttachPayload,
   DetachPayload,
+  CreateTokenPayload,
 } from "../types/events";
 import type { Seat, ZoneRef } from "../types/zones";
 import { otherSeat, ZONE_SPECS, zoneOwner } from "../types/zones.ts";
@@ -61,6 +62,7 @@ import {
 import { whyCannotCraft } from "../rules/legality.ts";
 import { metierOf } from "../rules/effects/keywords.ts";
 import { attackPmBonus, cannotCarryEquipment } from "../rules/modifiers.ts";
+import { tokenCardId } from "../rules/effects/tokens.ts";
 import { resolveCombat } from "../rules/combat.ts";
 import { activeGlobalMods } from "../rules/effects/damageMods.ts";
 import type { RulesCtx } from "../rules/types";
@@ -83,6 +85,7 @@ const TURN_BOUND = new Set<GameIntent["kind"]>([
   "SET_LEVEL",
   "ATTACH",
   "DETACH",
+  "CREATE_TOKEN",
   "END_TURN",
 ]);
 
@@ -99,6 +102,7 @@ const MANUAL_OUT_OF_TURN = new Set<GameIntent["kind"]>([
   "INC_COUNTER",
   "ATTACH",
   "DETACH",
+  "CREATE_TOKEN",
 ]);
 
 /**
@@ -718,6 +722,38 @@ export function resolveIntent(
         position: intent.position,
       };
       return { events: [{ actor: seat, type: "DETACH", payload }] };
+    }
+
+    // TABLE MANUELLE (Cadre) — « Mettez en jeu un jeton "Monstre - X" de
+    // Force N [Élément] » joué à la main. Le serveur dérive le cardId
+    // SYNTHÉTIQUE du gabarit (le client ne fournit jamais de cardId → pas de
+    // forge d'une vraie carte), et mint sous le contrôle de l'acteur, dans le
+    // Monde (reducer applyCreateToken ; mal d'invocation posé là-bas).
+    case "CREATE_TOKEN": {
+      if (!manual)
+        return {
+          error:
+            "Les jetons dérivent des effets de cartes en partie assistée (non modifiables à la main).",
+        };
+      const name = intent.name.trim().slice(0, 60);
+      const force = Math.floor(intent.force);
+      if (!name) return { error: "Nomme le jeton (ex. « Monstre - Arakne »)." };
+      if (!Number.isFinite(force) || force < 0 || force > 99)
+        return { error: "Force de jeton invalide (0 à 99)." };
+      const cardId = tokenCardId({
+        name,
+        force,
+        ...(intent.element ? { element: intent.element } : {}),
+        ...(intent.sub ? { sub: intent.sub } : {}),
+      });
+      const payload: CreateTokenPayload = {
+        // Unique par construction : seq strictement croissant par partie.
+        instanceId: `tok_${seat}_${state.seq + 1}`,
+        cardId,
+        controller: seat,
+        ...(intent.tapped ? { orientation: "tapped" as const } : {}),
+      };
+      return { events: [{ actor: seat, type: "CREATE_TOKEN", payload }] };
     }
 
     case "END_TURN": {

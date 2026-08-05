@@ -96,6 +96,17 @@ test.describe("Navigation principale", () => {
     await expect(page).toHaveURL(/\/collection/);
   });
 
+  test("devrait naviguer vers Errata depuis la navigation principale", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Errata", exact: true }).click();
+    await expect(page).toHaveURL(/\/errata/);
+    await expect(
+      page.getByRole("heading", { name: "Errata", level: 1 }),
+    ).toBeVisible();
+  });
+
   test("devrait naviguer vers les decks (utilisateur connecté)", async ({
     page,
   }) => {
@@ -538,4 +549,86 @@ test.describe("Accessibilité", () => {
       expect(ariaLabel || id || placeholder).toBeTruthy();
     }
   });
+});
+
+// IMPORTANT : la CI construit avec des VITE_SUPABASE_* FACTICES → aucune base
+// réelle, donc `rules` et `card_errata` sont vides en E2E. Ces tests valident
+// donc le SQUELETTE (route publique, titre, contrôles, dégradation explicite),
+// jamais un contenu seedé — sinon ils échoueraient systématiquement en CI.
+
+test("la page Errata est publique et expose ses contrôles", async ({
+  page,
+}) => {
+  await page.goto("/errata");
+  await expect(
+    page.getByRole("heading", { name: "Errata", level: 1 }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("searchbox", { name: /Rechercher une carte/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("combobox", { name: /Trier les errata/i }),
+  ).toBeVisible();
+});
+
+test("les règles officielles sont publiques et dégradent explicitement sans base", async ({
+  page,
+}) => {
+  await page.goto("/regles/officielles#418.5b");
+  await expect(
+    page.getByRole("heading", { name: "Règles officielles" }),
+  ).toBeVisible();
+  // Ce test doit tenir DANS LES DEUX environnements : en CI les identifiants
+  // Supabase sont factices (aucune donnée → bannière d'indisponibilité), en local
+  // ils pointent la vraie base (445 règles seedées → contenu). La version
+  // précédente n'assertait que la bannière et cassait dès qu'on a seedé.
+  // L'invariant réel, lui, ne dépend pas de l'environnement : la page affiche
+  // soit les règles, soit un refus explicite — JAMAIS une page vide.
+  await expect(
+    page
+      .getByText(/Règles indisponibles/i)
+      .or(page.locator('[id="418.5b"]'))
+      .first(),
+  ).toBeVisible();
+});
+
+test("la page Règles renvoie vers les règles officielles", async ({ page }) => {
+  await page.goto("/regles");
+  await page
+    .getByRole("link", { name: /règles officielles complètes/i })
+    .click();
+  await expect(page).toHaveURL(/\/regles\/officielles/);
+});
+
+// ── Administration : gardes de route ────────────────────────────────────────
+// Ces tests ne dépendent d'AUCUNE donnée : la base E2E est vide et aucun compte
+// admin n'existe. Le cas « connecté non-admin » est couvert par les tests
+// unitaires du routeur et, en réel, par scripts/checkAdminRls.mjs.
+
+test("l'administration est fermée à un visiteur anonyme", async ({ page }) => {
+  await page.goto("/admin");
+  // Le garde renvoie vers l'authentification en conservant la destination.
+  // vue-router n'encode PAS la barre oblique dans la query : /auth?redirect=/admin
+  await expect(page).toHaveURL(/\/auth\?redirect=\/admin/);
+});
+
+test("l'écran Accès réservé est atteignable et explicite", async ({ page }) => {
+  await page.goto("/acces-refuse");
+  await expect(
+    page.getByRole("heading", { name: "Accès réservé" }),
+  ).toBeVisible();
+});
+
+test("les écrans d'admin sont fermés à un anonyme", async ({ page }) => {
+  for (const path of [
+    "/admin/errata",
+    "/admin/regles",
+    "/admin/journal",
+    "/admin/comptes",
+  ]) {
+    await page.goto(path);
+    // vue-router n'encode PAS la barre oblique dans la query (comme pour
+    // /admin ci-dessus) : l'URL réelle est /auth?redirect=/admin/errata.
+    await expect(page).toHaveURL(/\/auth\?redirect=/);
+  }
 });

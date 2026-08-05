@@ -12,6 +12,7 @@
     <span class="truncate font-display text-sm leading-tight">{{
       dc.card.name
     }}</span>
+    <ErrataBadge :card-id="dc.card.id" class="shrink-0" />
     <span class="leader"></span>
     <span
       v-if="hasMultipleEditions"
@@ -82,6 +83,7 @@ import type { Card, DeckCard } from "@/types/cards";
 import { computed } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
 import { useCardStore } from "@/stores/cardStore";
+import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 const preview = useCardPreview();
 const cardStore = useCardStore();

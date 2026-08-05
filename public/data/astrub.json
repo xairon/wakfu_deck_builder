@@ -41,7 +41,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "amukwak-de-flammes-astrub",
@@ -101,7 +102,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "amulette-du-bandit-astrub",
@@ -145,7 +147,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "anneau-rigami-astrub",
@@ -193,7 +196,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "apaisement-de-maimane-astrub",
@@ -225,7 +229,8 @@
     "notes": [],
     "flavor": {
       "text": "Là où Maimane passe, les émotions trépassent !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "araknamu-astrub",
@@ -282,7 +287,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "arc-du-bandit-archer-astrub",
@@ -354,7 +360,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "ash-tur-astrub",
@@ -451,7 +458,8 @@
     "flavor": {
       "text": "La Cité d'Astrub grouille de voyous ! Elle est le repère des non",
       "attribution": "nabots"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "attaque-des-roublards-astrub",
@@ -493,7 +501,8 @@
     "flavor": {
       "text": "Quand les Roublards attaquent, la milice de Bonta contre",
       "attribution": "attaque !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "attaque-naturelle-astrub",
@@ -536,7 +545,8 @@
     "flavor": {
       "text": "Pour qu'une attaque soit réussie, il faut savoir mettre les gaz ! — Féca Kaa, guerrier dans le vent."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "attirance-astrub",
@@ -569,7 +579,8 @@
     "flavor": {
       "text": "Qui du Pandawa ou de l'auberge aura vu l'autre en premier ? Personne ne le saura jamais."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "auberge-d-astrub-astrub",
@@ -618,7 +629,8 @@
     "notes": [],
     "flavor": {
       "text": "À l'auberge d'Astrub, mieux vaut être reçu comme des Pious en pâte que comme des pattes de Piou !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "avis-de-recherche-astrub",
@@ -667,7 +679,8 @@
     "flavor": {
       "text": "Vous recherchez quelqu'un ? Contactez l'association « Perdu de Recherche » et demandez Jack Predal !"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "baguette-du-bandit-ensorceleur-astrub",
@@ -758,7 +771,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "batofu-astrub",
@@ -866,7 +880,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "bazic-astik-astrub",
@@ -983,7 +998,8 @@
     "notes": [],
     "flavor": {
       "text": "Cette petite créature à la lourde et périlleuse tâche de faire de vous un héros… Et c'est pas gagné !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "black-wabbit-astrub",
@@ -1073,7 +1089,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "boufrog-astrub",
@@ -1153,7 +1170,8 @@
     ],
     "flavor": {
       "text": "Après Danse avec les Mulous, voici en exclusivité le dernier tube de DJ Bouftou !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "brutas-fondateur-d-astrub-astrub",
@@ -1260,7 +1278,8 @@
     "notes": [],
     "flavor": {
       "text": "Top ! Je suis gros, vert et je sens la panse de Bouftou en putréfaction. Je suis ? Je suis ? — Jupers Lelien."
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "campement-des-bandits-manchots-astrub",
@@ -1310,7 +1329,8 @@
     "notes": [],
     "flavor": {
       "text": "Pas de bras, pas de Dofus au chocolat ! — Proverbe du clan des Bandits Manchots."
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "cape-du-tofu-astrub",
@@ -1362,7 +1382,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "caravane-marchande-astrub",
@@ -1432,7 +1453,8 @@
     "notes": [],
     "flavor": {
       "text": "Elles sont belles mes Noix de Kokoko ! 10 kamas l'une, 60 les 5 ! On en profite ! — Bella Rnak."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "carte-du-grav-mar-av-astrub",
@@ -1497,7 +1519,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "cartes-seiz-astrub",
@@ -1546,7 +1569,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "ceinture-du-bandit-astrub",
@@ -1597,7 +1621,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "chafer-archer-astrub",
@@ -1733,7 +1758,8 @@
     "flavor": {
       "text": "La chaaance aux champiooons, la laaa la la laaa… — Paskwal Navrant, organisateur de tournois."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "chef-d-uvre-astrub",
@@ -1766,7 +1792,8 @@
     "flavor": {
       "text": "Rien de tel qu'une belle pièce en magasin pour avoir de belles pièces dans son porte",
       "attribution": "monnaie ! — Miranda."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "choub-nigourak-astrub",
@@ -1927,7 +1954,8 @@
     "notes": [],
     "flavor": {
       "text": "Avec sa belle petite Goule et son sourire ravageur, Vampyro est vraiment un saigneur qui a la classe !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "cochon-de-lait-astrub",
@@ -1992,7 +2020,8 @@
     "flavor": {
       "text": "Toooiiiii, contre mooooiii, c'est un combat, on se déchiffre, on se baaat ! — Karl Nazbravour.*"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "crapaud-a-moustache-astrub",
@@ -2091,7 +2120,8 @@
     "flavor": {
       "text": "GGggRRrrrRrRRrrRrAaaaAaaAAAa aAAaoOooUuUUuuaaAaAAaAaaAh — Léo Barnumuze."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "croissant-de-xav-le-boulanger-astrub",
@@ -2123,7 +2153,8 @@
     "notes": [],
     "flavor": {
       "text": "Il vient toujours au bon moment, avec son pain et ses croissants : l'ami du petit déjeuner, Xav le Boulanger."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "crustorail-passaoh-astrub",
@@ -2206,7 +2237,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "dejaded-astrub",
@@ -2288,7 +2320,8 @@
     "flavor": {
       "text": "Les premiers pleurs d'Ogrest firent tout de suite des vagues et déclenchèrent la larme fatale…"
     },
-    "spellSchool": "Unique"
+    "spellSchool": "Unique",
+    "element": "Neutre"
   },
   {
     "id": "demena-astrub",
@@ -2576,7 +2609,8 @@
     "flavor": {
       "text": "Un max de goût, pour donner un max de coups !"
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "dofus-ocre-astrub",
@@ -2628,7 +2662,8 @@
     },
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-pourpre-astrub",
@@ -2696,7 +2731,8 @@
     "requirements": {
       "level": 0,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dofus-vulbis-astrub",
@@ -2748,7 +2784,8 @@
     },
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "donjon-des-prespics-astrub",
@@ -2797,7 +2834,8 @@
     "notes": [],
     "flavor": {
       "text": "Vous feriez mieux d'éviter de vous y frottez si vous ne voulez pas vous faire piquer !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "donky-l-bouffy-astrub",
@@ -2924,7 +2962,8 @@
     "flavor": {
       "text": "Le meilleur moyen de faire des économies, c'est encore de ne rien dépenser ! — Parole d'un sage Enutrof."
     },
-    "spellSchool": "Challenge"
+    "spellSchool": "Challenge",
+    "element": "Neutre"
   },
   {
     "id": "ecureuil-chenapan-astrub",
@@ -2978,7 +3017,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "edna-fraust-astrub",
@@ -3073,7 +3113,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "ewesson-smisse-astrub",
@@ -3177,7 +3218,8 @@
     "notes": [],
     "flavor": {
       "text": "Mamie Gross'dall le dit souvent : les transports en commun, c'est plus ce que c'était !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "fleche-de-recul-astrub",
@@ -3221,7 +3263,8 @@
       "text": "Si tu lances une Flèche de Recul, comment veux",
       "attribution": "tu que j'enlève mon pull ? — Dicton Iop."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "fleche-glacee-astrub",
@@ -3264,7 +3307,8 @@
     "flavor": {
       "text": "Lorsqu'elle est subtilement placée, la Flèche Glacée sait calmer les ardeurs des ennemis un peu trop empressés."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "fotome-astrub",
@@ -3316,7 +3360,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "fouet-astrub",
@@ -3364,7 +3409,8 @@
     "flavor": {
       "text": "Tous les Osamodas fouettent. Même ceux qui ont une hygiène irréprochable."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "frakacia-leukocityne-astrub",
@@ -3492,7 +3538,8 @@
     "flavor": {
       "text": "Ben alors ? Tu viens plus aux soirées ? Hier c'était soirée « geôles » à Astrub… On était dé",
       "attribution": "chaî"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "geta-akwadala-astrub",
@@ -3535,7 +3582,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "glyphe-d-aveuglement-astrub",
@@ -3568,7 +3616,8 @@
     "flavor": {
       "text": "Bizarrement, ce Glyphe est un bon moyen d'en faire voir de toutes les couleurs à un ennemi !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "gourlo-le-terrible-astrub",
@@ -3794,7 +3843,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "haka-des-taures-pilleurs-astrub",
@@ -3835,7 +3885,8 @@
     ],
     "flavor": {
       "text": "La Ligue à Taures sait se donner en spectacle : les Taures pillent, les Taures tuent… et se tortillent aussi !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "herdegrize-le-mystique-astrub",
@@ -3907,7 +3958,8 @@
     "flavor": {
       "text": "Tu m'vois, tu m'vois pas. Tu m'vois, tu m'vois pas. Tu vois ta bourse, tu la vois plus. — Kartapusse, espionne Sram."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "isletate-le-vampyre-astrub",
@@ -4431,7 +4483,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "kwaklame-de-flammes-astrub",
@@ -4472,7 +4525,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "l-empoisonneuse-astrub",
@@ -4552,7 +4606,8 @@
     "flavor": {
       "text": "Prenez quelques brutes, ajoutez",
       "attribution": "y un ou deux as, et vous obtiendrez la Bande à Brutas !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "la-bloqueuse-astrub",
@@ -4746,7 +4801,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "larve-rubis-astrub",
@@ -4905,7 +4961,8 @@
       "text": "Quand tu te sens Chachatte et que tu deviens Chiechienne, que je t'aime, que je t'aime",
       "attribution": "euh ! — Djony Allumé."
     },
-    "spellSchool": "Unique"
+    "spellSchool": "Unique",
+    "element": "Neutre"
   },
   {
     "id": "liberation-astrub",
@@ -4947,7 +5004,8 @@
     "flavor": {
       "text": "Lorsqu'on veut repousser ses ennemis, il existe d'autres moyens que ceux utilisés par le célèbre Brutagaz…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "liroye-merline-astrub",
@@ -5154,7 +5212,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "mik-skofil-astrub",
@@ -5319,7 +5378,8 @@
     "flavor": {
       "text": "Il n'existe aucun sort plus blessant que celui qui consiste à traiter votre adversaire de « cervelle de Iop »…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "mot-de-prevention-astrub",
@@ -5352,7 +5412,8 @@
     "flavor": {
       "text": "On vous avait pourtant prévenu !! Mais, euh… De quoi, au fait ?"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "mutilation-astrub",
@@ -5395,7 +5456,8 @@
     "flavor": {
       "text": "Whouaïïïe aïe aïe ! Gnééé ! Humpfff ! Ouille ouille ouille ! Mes… — Rok Elreuss, Iop qui a les boules."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "mylaise-astrub",
@@ -5458,7 +5520,8 @@
     "notes": [],
     "flavor": {
       "text": "Quelle que soit la forme que prenait Hécate, aucune ne parvient à faire chavirer le cœur d'Ulgrude…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "narnya-totep-astrub",
@@ -5579,7 +5642,8 @@
     "notes": [],
     "flavor": {
       "text": "Évitez de faire le malin alors que vous savez à peine aligner trois sorts ! Sinon, gare à la déculottée !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "ogivol-scalarcin-astrub",
@@ -5811,7 +5875,8 @@
     "flavor": {
       "text": "Faire preuve de vitalité tout au long d'une vie alitée donne l'assurance d'une longue descendance."
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "pelle-fantomatique-astrub",
@@ -5845,7 +5910,8 @@
     "flavor": {
       "text": "Ce genre de pelle laisse un goût d'ectoplasme dans la bouche… Étrange, non ?"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "pelle-ikan-astrub",
@@ -5903,7 +5969,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "peluche-de-pleur-nicheuz-astrub",
@@ -5978,7 +6045,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "perception-astrub",
@@ -6011,7 +6079,8 @@
     "flavor": {
       "text": "Quoi ? Un piège ?! Où çaaaaaa ? J'vois rien !! — Jilber Montaniar."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "petit-flaqueux-astrub",
@@ -6144,7 +6213,8 @@
       "text": "Allez viens boire un ptit coup à la maison ! Ya du blanc, ya du rouge, du Boufcisson !",
       "attribution": "Coryn Pticou."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "piege-sournois-astrub",
@@ -6187,7 +6257,8 @@
     "flavor": {
       "text": "Beark ! Qui a mis de la Bave de Dragodinde dans ma gourde ? — Tristepin."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "pile-ou-face-astrub",
@@ -6221,7 +6292,8 @@
     "flavor": {
       "text": "Le meilleur moyen d'éviter les mauvais choix, c'est de ne pas prendre de décision. — Parole du sage Phrou Sahr."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "pious-de-baradaize-astrub",
@@ -6327,7 +6399,8 @@
     "flavor": {
       "text": "Cette petite pleure si souvent qu'on finit par se demander si ce ne sont pas des larmes de Crocodaille !"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "potion-d-oubli-de-metier-astrub",
@@ -6367,7 +6440,8 @@
     "flavor": {
       "text": "Al Kholo en abuse tant qu'il essaie de pêcher des Bouftous à l'aide d'un pendentif cuit au feu de bois !"
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "poubelles-d-astrub-astrub",
@@ -6423,7 +6497,8 @@
     ],
     "flavor": {
       "text": "Ce soir je serai la poubeeeellleeeuu pour aller daaaannssser, daaaannnssssseeeeer !! — Silvie Vatan."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "poussiere-temporelle-astrub",
@@ -6466,7 +6541,8 @@
     "flavor": {
       "text": "Nous sommes nés poussière, et nous redeviendrons pouss… kof ! kof ! atchoum ! — Ekzé Mha, Xélorette allergique."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "prespicot-astrub",
@@ -6577,7 +6653,8 @@
     "flavor": {
       "text": "Les jeunes Iops utilisent parfois ce sort pour percer leur acné, d'où l'expression « boutons à pression »."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "pris-en-chasse-astrub",
@@ -6610,7 +6687,8 @@
     "notes": [],
     "flavor": {
       "text": "Tous ceux qui ont tenté de rattraper Musha l'Oni se sont fait refaire la dentition !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "punition-astrub",
@@ -6653,7 +6731,8 @@
     "flavor": {
       "text": "Aujourd'hui, j'ai été très très vilain, maître. — Mémoires de Vil Smisse."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "qil-bil-astrub",
@@ -6880,7 +6959,8 @@
     "flavor": {
       "text": "Piquantes, ces petites merguez végétales ! — Ogrest."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "rouille-de-stasis-astrub",
@@ -6912,7 +6992,8 @@
     "notes": [],
     "flavor": {
       "text": "Quand le Wakfu cesse d'être libre, quand tout mouvement semble impossible : l'impasse."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "scarlate-jwanson-astrub",
@@ -7178,7 +7259,8 @@
     "notes": [],
     "flavor": {
       "text": "— Papa, comment ont fait les bébés ?\n— Jamais exprès mon fils, jamais exprès…"
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "temple-ecaflip-astrub",
@@ -7216,7 +7298,8 @@
     "notes": [],
     "flavor": {
       "text": "Au Temple Ecaflip, on aime jouer avec sa vie, mais aussi et surtout avec celle des autres…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-enutrof-astrub",
@@ -7263,7 +7346,8 @@
     ],
     "flavor": {
       "text": "Au temple Enutrof, on cire les escaliers avec du Mucus de Larve Dorée, oui monsieur !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-osamodas-astrub",
@@ -7337,7 +7421,8 @@
     "notes": [],
     "flavor": {
       "text": "Au Temple Osamodas, il fait bon se prélasser sur une chaise cloutée ou s'allonger sur un tapis de braises…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "temple-sram-astrub",
@@ -7386,7 +7471,8 @@
     "flavor": {
       "text": "Au Temple Sram, large choix de sépultures ! Allez… Laissez",
       "attribution": "vous tenter par le marbre !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "tofu-royal-astrub",
@@ -7614,7 +7700,8 @@
     "notes": [],
     "flavor": {
       "text": "Spécialité de Kamas en chocolat : fond dans la bouche, pas dans la poche."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "vente-a-la-sauvette-astrub",
@@ -7646,7 +7733,8 @@
     "notes": [],
     "flavor": {
       "text": "Le matin, le midi, le soir, tout le temps : Bowissette adore ça… faire la vente à la sauvette."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "vil-smisse-astrub",
@@ -7738,7 +7826,8 @@
     "flavor": {
       "text": "Vous devriez faire attention à vos cartes, une nouvelle menace sévit, ça s'appelle le Carte",
       "attribution": "Jacking !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "vulnerabilite-astrub",
@@ -7771,6 +7860,7 @@
     "flavor": {
       "text": "Tout ce qui est petit est mignon… et nous ne sommes pas mignons du tout ! — Proverbe Iop."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   }
 ]

@@ -5,6 +5,7 @@
  */
 import { supabase } from "./supabase";
 import { useAuthStore } from "@/stores/authStore";
+import { userRoleSchema, type UserRole } from "@/schema";
 
 /** Pseudo de l'utilisateur courant, ou null si non défini / hors-ligne. */
 export async function getMyProfile(): Promise<{ username: string } | null> {
@@ -62,4 +63,43 @@ export async function getUsernames(
   for (const r of data as { user_id: string; username: string }[])
     map[r.user_id] = r.username;
   return map;
+}
+
+/**
+ * Rôle de l'utilisateur courant. **Replie sur `"user"` à la moindre incertitude**
+ * (pas de backend, requête en échec, exception levée par le client, valeur
+ * inattendue) : en cas de doute, aucun privilège. Ce rôle ne sert QU'À
+ * l'affichage — la sécurité réelle est la RLS. JAMAIS d'exception : la
+ * requête est protégée par un `try/catch` (le client Supabase peut lever,
+ * pas seulement renvoyer `{ error }`). Un échec de requête ou une exception
+ * sont journalisés en `console.warn`, sinon une table ou une RLS cassée
+ * serait indiscernable de « rôle par défaut ».
+ */
+export async function getMyRole(): Promise<UserRole> {
+  if (!supabase) return "user";
+  const authStore = useAuthStore();
+  if (!authStore.userId) return "user";
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("user_id", authStore.userId)
+      .maybeSingle();
+    if (error) {
+      console.warn(
+        "[profileService] requête `profiles.role` en échec :",
+        error,
+      );
+      return "user";
+    }
+    if (!data) return "user";
+    const parsed = userRoleSchema.safeParse((data as { role?: unknown }).role);
+    return parsed.success ? parsed.data : "user";
+  } catch (err) {
+    console.warn(
+      "[profileService] exception lors de la lecture du rôle :",
+      err,
+    );
+    return "user";
+  }
 }

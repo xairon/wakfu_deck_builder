@@ -30,7 +30,8 @@
     "flavor": {
       "text": "Allez, allez messieurs",
       "attribution": "dames ! Accrochez vos Ceintures du Bouftou, c'est parti pour un tour ! — Leon Zitrool."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "alie-zele-bonta-brakmar",
@@ -271,7 +272,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "amulette-du-scarabosse-dore-bonta-brakmar",
@@ -315,7 +317,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "anneau-ceremonial-bonta-brakmar",
@@ -370,7 +373,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "anneau-du-champ-champ-bonta-brakmar",
@@ -413,7 +417,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "anneau-du-rat-noir-bonta-brakmar",
@@ -456,7 +461,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "apparition-d-ogrest-bonta-brakmar",
@@ -499,7 +505,8 @@
     "notes": [],
     "flavor": {
       "text": "Après la disparition de Dathura, Ogrest allait moins vivre d'amour que d'eau fraîche…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "arakne-majeure-bonta-brakmar",
@@ -694,7 +701,8 @@
     "flavor": {
       "text": "I, i, i, donne de, de l'eau de, de l'eau de vee, vee, viiie cet arbre ? — Coryn Pticou, Pandawa déshydraté."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "arc-du-koalak-bonta-brakmar",
@@ -738,7 +746,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "arc-hord-eon-bonta-brakmar",
@@ -834,7 +843,8 @@
     "flavor": {
       "text": "Pour éviter les arnaques, contactez Janpir Pernouille ! Il vous dira combien ça croûte !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "assassin-grouilleux-bonta-brakmar",
@@ -972,7 +982,8 @@
     "notes": [],
     "flavor": {
       "text": "Ceux qui y travaillent sont traités de « tas d'fioles » par les aventuriers qui abusent de la bouteille."
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "atelier-de-bijoutier-bonta-brakmar",
@@ -1011,7 +1022,8 @@
     "notes": [],
     "flavor": {
       "text": "Dans un atelier de Bijoutier, il est toujours très mal vu de lâcher une perle."
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "atelier-de-boulanger-bonta-brakmar",
@@ -1050,7 +1062,8 @@
     "notes": [],
     "flavor": {
       "text": "Une chose est sûre : dans cet atelier, les artisans ont toujours du pain sur la planche !"
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "atelier-de-pecheur-bonta-brakmar",
@@ -1089,7 +1102,8 @@
     "notes": [],
     "flavor": {
       "text": "Quand la pêche a été bonne, les artisans y sont serrés comme des sardines !"
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "atog-bonta-brakmar",
@@ -1184,7 +1198,8 @@
     "notes": [],
     "flavor": {
       "text": "Lorsque Bonta attaque, les Brâkmariens se braquent !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "attaque-brakmarienne-bonta-brakmar",
@@ -1232,7 +1247,8 @@
     "notes": [],
     "flavor": {
       "text": "Lorsque Brâkmar cherche la bagarre, les Bontariens ripostent comme des barbares !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "au-champ-d-honneur-bonta-brakmar",
@@ -1264,7 +1280,8 @@
     "notes": [],
     "flavor": {
       "text": "C'est la première fois que vous voyez vos pieds d'aussi prêts ? Pas de panique, il paraît que ça repousse !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "avarice-de-sumens-bonta-brakmar",
@@ -1296,7 +1313,8 @@
     "notes": [],
     "flavor": {
       "text": "Comment ça, Sumens a des varices ? — Etour Drif, Iop désespérant."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "az-bonta-brakmar",
@@ -1590,7 +1608,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "baguette-des-limbes-bonta-brakmar",
@@ -1637,7 +1656,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "baguette-du-scarabosse-dore-bonta-brakmar",
@@ -1680,7 +1700,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "balise-ardente-bonta-brakmar",
@@ -1883,7 +1904,8 @@
     "flavor": {
       "text": "La guerre, c'est comme la banque : il ne faut jamais y aller à découvert ! — Kredy Fonceur, soldat",
       "attribution": "économe."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "barak-okteil-bonta-brakmar",
@@ -1975,7 +1997,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "baton-bah-pik-bonta-brakmar",
@@ -2057,7 +2080,8 @@
     "equipmentType": "Arme",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "bebe-crocodaille-bonta-brakmar",
@@ -2120,7 +2144,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "bebe-dragodinde-bonta-brakmar",
@@ -2245,7 +2270,8 @@
     "notes": [],
     "flavor": {
       "text": "Tant de livres, tant de feuilles, tant de bois… Pour un immense Barbok ! — Flan Bô, allumant son Moskitorsh."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "ble-d-or-bonta-brakmar",
@@ -2280,7 +2306,8 @@
     ],
     "flavor": {
       "text": "Quand Gère Bhai inventa ce Blé aux pouvoirs magiques, il n'eut aucun rendu !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "blop-coco-bonta-brakmar",
@@ -2723,7 +2750,8 @@
     "notes": [],
     "flavor": {
       "text": "« Bonhomme de Neige » : c'est comme ça qu'on surnomme un Frigostien qui s'attarde trop longtemps dehors !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bonta-cite-de-lumiere-bonta-brakmar",
@@ -2767,7 +2795,8 @@
     "notes": [],
     "flavor": {
       "text": "La cité blanche a beau faire rayonner le bien autour d'elle, ses habitants sont loin d'être tous des lumières !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "bottes-ceremoniales-bonta-brakmar",
@@ -2811,7 +2840,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "bottes-dorees-d-hogmeiser-bonta-brakmar",
@@ -2855,7 +2885,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "bottes-du-koulosse-bonta-brakmar",
@@ -2898,7 +2929,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "boufcoul-bonta-brakmar",
@@ -3093,7 +3125,8 @@
     "notes": [],
     "flavor": {
       "text": "Wesh ! À Brâkmar, si j'te braque, tu te marres ! — Diss Islapète, comique de mauvais goût."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "brik-enbroc-bonta-brakmar",
@@ -3174,7 +3207,8 @@
       "text": "Brokeul… br",
       "attribution": "brôkeuleuh… b"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "brumaire-protecteur-de-novamaire-bonta-brakmar",
@@ -3213,7 +3247,8 @@
     "flavor": {
       "text": "Evitez de lui faire la bise, car vous risquez d'attraper un froid et froid !"
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Eau"
   },
   {
     "id": "buveur-bonta-brakmar",
@@ -3380,7 +3415,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "cape-du-koalak-bonta-brakmar",
@@ -3423,7 +3459,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "ceinture-du-boufcoul-bonta-brakmar",
@@ -3460,7 +3497,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "ceinture-du-chef-crocodaille-bonta-brakmar",
@@ -3518,7 +3556,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "ceinture-du-rat-blanc-bonta-brakmar",
@@ -3569,7 +3608,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "chaman-d-egoutant-bonta-brakmar",
@@ -4013,7 +4053,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "champmane-bonta-brakmar",
@@ -4081,7 +4122,8 @@
     "flavor": {
       "text": "Lancer un allié ou un ennemi n'est pas à la portée de n'importe qui. Mais parfois, il faut oser se lancer !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "chauchane-bonta-brakmar",
@@ -4617,7 +4659,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "collier-du-dragon-cochon-bonta-brakmar",
@@ -4671,7 +4714,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "collier-du-rat-blanc-bonta-brakmar",
@@ -4714,7 +4758,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "corbac-albinos-bonta-brakmar",
@@ -4857,7 +4902,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "corbottes-bonta-brakmar",
@@ -4893,7 +4939,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "corvee-de-patates-bonta-brakmar",
@@ -4925,7 +4972,8 @@
     "notes": [],
     "flavor": {
       "text": "Voilà une corvée dont beaucoup se passeraient volontiers, préférant de loin faire dégorger les poireaux…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "crapaud-bonta-brakmar",
@@ -4958,7 +5006,8 @@
     "flavor": {
       "text": "Vos ennemis vont en baver…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "craqueleur-legendaire-bonta-brakmar",
@@ -5343,7 +5392,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "dagues-haih-ri-don-bonta-brakmar",
@@ -5425,7 +5475,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "daie-gueri-bonta-brakmar",
@@ -5817,7 +5868,8 @@
     "flavor": {
       "text": "Ils m'émerveillent jusqu'au bout de la nuiiit, les Démooons de Minuiiiit. — Comptine d'un barde Brâkmarien."
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "djaul-protecteur-de-descendre-bonta-brakmar",
@@ -5856,7 +5908,8 @@
     "flavor": {
       "text": "Quand ses plans machiavéliques tombent à l'eau, le Grand Pataugeur noie son chagrin dans l'alcool…"
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Feu"
   },
   {
     "id": "do-bonta-brakmar",
@@ -6019,7 +6072,8 @@
     "notes": [],
     "flavor": {
       "text": "Si vous vous ennuyez comme un Rat mort, n'hésitez pas à y faire un petit tour !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "donjon-fungus-bonta-brakmar",
@@ -6068,7 +6122,8 @@
     "notes": [],
     "flavor": {
       "text": "Le propriétaire de ces lieux devrait faire plus attention ! Les murs sont infestés de champignons !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "dopeul-eniripsa-bonta-brakmar",
@@ -6361,7 +6416,8 @@
     "flavor": {
       "text": "Un sort évoqué par certains prêtres lorsqu'ils unissent deux aventuriers par les liens sacrés du mariage…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "dragodinde-ebene-bonta-brakmar",
@@ -6689,7 +6745,8 @@
     "flavor": {
       "text": "Quelle que soit la situation, ce membre du Grand Conseil sait faire preuve de fermeté."
     },
-    "spellSchool": "Bonta"
+    "spellSchool": "Bonta",
+    "element": "Neutre"
   },
   {
     "id": "dureden-taille-l-air-bonta-brakmar",
@@ -6775,7 +6832,8 @@
     "flavor": {
       "text": "Je sais que tu sors tout juste de prison, mais c'est pas une raison pour être aussi froid !"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "ecumouth-bonta-brakmar",
@@ -6919,7 +6977,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "embuscade-bonta-brakmar",
@@ -6952,7 +7011,8 @@
     "flavor": {
       "text": "L'invention de l'arc à lunette a totalement révolutionné l'art de l'embuscade !",
       "attribution": "Snaïe Peur, archer embusqué."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "enclos-de-dragodindes-bonta-brakmar",
@@ -6985,7 +7045,8 @@
     "notes": [],
     "flavor": {
       "text": "À l'approche de Fanks Guivingue, elles deviennent toutes complètement dindes !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "epee-celeste-bonta-brakmar",
@@ -7018,7 +7079,8 @@
     "flavor": {
       "text": "Épaisse et leste ? Mais de quoi vous parlez ? — Etour Drif, les quiproquos ça le connaît."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Air"
   },
   {
     "id": "epee-de-rubilax-bonta-brakmar",
@@ -7075,7 +7137,8 @@
     "requirements": {
       "level": 5,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "epee-du-rat-blanc-bonta-brakmar",
@@ -7119,7 +7182,8 @@
     "requirements": {
       "level": 4,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "epron-krashva-bonta-brakmar",
@@ -7190,7 +7254,8 @@
     "notes": [],
     "flavor": {
       "text": "Avec la tête que vous avez, elle vous drague et vous ne vous doutez de rien ?!"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "explosion-de-kir-bonta-brakmar",
@@ -7223,7 +7288,8 @@
     "flavor": {
       "text": "L'Explosion de Kir est un sort plein de pêche : utilisé sur un Champ Champ, son effet est carrément royal !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "faille-temporelle-bonta-brakmar",
@@ -7251,7 +7317,8 @@
     "flavor": {
       "text": "Faaaaaaaailles, je vous aiiiiiiiiiime ! — Chulien Clair, ménestrel Xélor."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "faim-de-goules-bonta-brakmar",
@@ -7283,7 +7350,8 @@
     "notes": [],
     "flavor": {
       "text": "Ces Goules adorent les Iops. Avec un peu de sel et une sauce au poivre."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "fee-d-artifice-bonta-brakmar",
@@ -7315,7 +7383,8 @@
     "notes": [],
     "flavor": {
       "text": "Coquette, cette petite Fée adore être allumée. Ça la fait monter au septième ciel et exploser de joie !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "felintion-bonta-brakmar",
@@ -7355,7 +7424,8 @@
     "flavor": {
       "text": "Sus à l'ennemi !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "feu-de-brousse-bonta-brakmar",
@@ -7389,7 +7459,8 @@
     "flavor": {
       "text": "Quand Katsou Mee est perdue en pleine forêt, on n'a aucun mal à la repérer…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "filet-de-capture-bonta-brakmar",
@@ -7432,7 +7503,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "flagellation-bonta-brakmar",
@@ -7487,7 +7559,8 @@
     "flavor": {
       "text": "Eh non ! Les Osamodas ne sont pas les seuls à apprécier un petit coup de fouet de temps en temps !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "fleche-de-dispersion-bonta-brakmar",
@@ -7526,7 +7599,8 @@
     "flavor": {
       "text": "Après la voix de Féline Fion, sans doute le meilleur moyen de disperser une foule !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "flix-flax-bonta-brakmar",
@@ -7701,7 +7775,8 @@
     "flavor": {
       "text": "On va Flusheeerr, sur une plage ou sous un Kokokoooooo ! — Jilber Montaniar, barde visionnaire."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "foret-des-abraknydes-bonta-brakmar",
@@ -7735,7 +7810,8 @@
     "flavor": {
       "text": "Avant de vous endormir contre un arbre, assurez",
       "attribution": "vous que celui"
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "forgeron-sombre-bonta-brakmar",
@@ -7815,7 +7891,8 @@
     "flavor": {
       "text": "Il y a certains coups de foudre auxquels même les gens les plus romantiques préféreraient échapper."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "fouduglen-l-ecureuil-bonta-brakmar",
@@ -8175,7 +8252,8 @@
     "flavor": {
       "text": "La vengeance est un glyphe qui se déclenche à froid ! — Proverbe Féca."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "grand-shushu-craquele-bonta-brakmar",
@@ -8334,7 +8412,8 @@
     "flavor": {
       "text": "La Griffe de Ceangal, la Griffe qui fait très mal ! — Franchiche Laliane, poète raté."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "grine-piz-bonta-brakmar",
@@ -8714,7 +8793,8 @@
     "notes": [],
     "flavor": {
       "text": "Toute la difficulté de l'ouverture de ce sac réside dans le choix du bon bouton…"
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "havre-sac-du-corbac-bonta-brakmar",
@@ -8752,7 +8832,8 @@
     "notes": [],
     "flavor": {
       "text": "Avec ce magnifique Havre Sac, clouez le bec à vos amis en vivant comme un Corbac en pâte !"
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "havre-sac-du-craqueleur-bonta-brakmar",
@@ -8790,7 +8871,8 @@
     "notes": [],
     "flavor": {
       "text": "Vous ne craignez pas les lumbagos ? Vous êtes amateur de vieilles pierres ? Ce Havre Sac est fait pour vous !"
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "havre-sac-du-crocodaille-bonta-brakmar",
@@ -8828,7 +8910,8 @@
     "notes": [],
     "flavor": {
       "text": "Parisse Miltone fut la première à l'acheter. Elle s'en débarrassa dès qu'elle sut que Glaurie l'avait aussi."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "hilary-goll-bonta-brakmar",
@@ -9081,7 +9164,8 @@
     ],
     "flavor": {
       "text": "Quand Midi rentre tard et qu'il n'a pas la permission de Minuit, elle remet aussitôt les pendules à l'heure…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "hyrkul-le-tendancieux-bonta-brakmar",
@@ -9170,7 +9254,8 @@
     "flavor": {
       "text": "Quand on n'y voit goutte, la meilleure chose à faire, c'est d'aller se rincer l'œil !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "ivresse-bonta-brakmar",
@@ -9483,7 +9568,8 @@
       "text": "Si Jiva se déplace à la vitesse de la pensée, alors c'est sûrement celle d'un Iop !",
       "attribution": "Djaul, détracteur de Jiva."
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Air"
   },
   {
     "id": "jorbak-le-bourgeois-bonta-brakmar",
@@ -10039,7 +10125,8 @@
     "flavor": {
       "text": "L'Aurore Pourpre ? C'était l'horreur pure ! — Ulgrude du Tonnerre, ancien combattant."
     },
-    "spellSchool": "Unique"
+    "spellSchool": "Unique",
+    "element": "Neutre"
   },
   {
     "id": "la-feuille-d-automne-bonta-brakmar",
@@ -10083,7 +10170,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "la-guenille-bonta-brakmar",
@@ -10126,7 +10214,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "lagoyave-bonta-brakmar",
@@ -10211,7 +10300,8 @@
       "text": "Laissez",
       "attribution": "vous séduire par la Laisse Spirituelle pour ne pas laisser vos Alliés s'en aller !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "lame-du-chef-bwork-bonta-brakmar",
@@ -10260,7 +10350,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "lame-du-chef-crocodaille-bonta-brakmar",
@@ -10318,7 +10409,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "landes-de-sidimote-bonta-brakmar",
@@ -10351,7 +10443,8 @@
     "notes": [],
     "flavor": {
       "text": "Les aventuriers qui ont pénétré dans ce trou perdu sont formels : il n'y a ni touffe d'herbes, ni aucune motte."
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "le-floude-bonta-brakmar",
@@ -10387,7 +10480,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "le-s-mesme-bonta-brakmar",
@@ -10424,7 +10518,8 @@
     "equipmentType": "Bijou",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "lee-lou-bonta-brakmar",
@@ -10772,7 +10867,8 @@
     "flavor": {
       "text": "Maimane l'a bien compris : en Octolliard, on reste peinard !"
     },
-    "guardianType": "Unique"
+    "guardianType": "Unique",
+    "element": "Terre"
   },
   {
     "id": "maitre-joris-bonta-brakmar",
@@ -10871,7 +10967,8 @@
     "flavor": {
       "text": "Un sort pour les Sadidas exigeants qui aiment que leurs poupées soient tirées à quatre épingles !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "mama-koalak-bonta-brakmar",
@@ -10942,7 +11039,8 @@
     "notes": [],
     "flavor": {
       "text": "Ne vous fiez pas aux apparences : ce n'est pas parce que c'est dans un bol que ça se mange."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "maman-flaqueuse-bonta-brakmar",
@@ -11056,7 +11154,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "masque-du-rat-noir-bonta-brakmar",
@@ -11099,7 +11198,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "mawy-blodie-bonta-brakmar",
@@ -11260,7 +11360,8 @@
     "notes": [],
     "flavor": {
       "text": "Les gros navires marchands ont complètement investi la Mer Kantil, laissant les plus petits dans la Mer d'Asse."
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "meuch-bonta-brakmar",
@@ -11298,7 +11399,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "milo-zotis-bonta-brakmar",
@@ -11439,7 +11541,8 @@
     "flavor": {
       "text": "Je ne te le dirai pas deux fois, hein ! — Une maman Féca à son petit."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "morbidon-bonta-brakmar",
@@ -11520,7 +11623,8 @@
     "flavor": {
       "text": "Et tu tapeu, tapeu, tapeu, l'ennemi qui te plaaaiiit ! — Refrain Eniripsa de début de combat."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Eau"
   },
   {
     "id": "mot-de-sacrifice-bonta-brakmar",
@@ -11553,7 +11657,8 @@
     "flavor": {
       "text": "Ce mot est si abject que, pour un Eniripsa, le simple fait de le prononcer est déjà un sacrifice en soi."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "mot-lotof-bonta-brakmar",
@@ -11593,7 +11698,8 @@
     "flavor": {
       "text": "Il y a des cocktails auxquels il vaut mieux ne pas être convié, surtout quand l'hôte ne mâche pas ses mots !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "mules-du-dragon-cochon-bonta-brakmar",
@@ -11640,7 +11746,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "myko-bonta-brakmar",
@@ -11758,7 +11865,8 @@
     "notes": [],
     "flavor": {
       "text": "Ô ma mie, si tu savais, tout le malt que j'ai broyé… — Chant d'amour des Boulangers écrit pas Djony Allumé."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "olaf-requiem-bonta-brakmar",
@@ -12154,7 +12262,8 @@
     "notes": [],
     "flavor": {
       "text": "Dans ce genre de situation, une seule solution : fuyezzzzzz !!!! — Lope Haite."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "parchemin-dore-bonta-brakmar",
@@ -12197,7 +12306,8 @@
     "flavor": {
       "text": "L'occasion en or de gagner de l'expérience sans prendre de risques !"
     },
-    "spellSchool": "Parchemin"
+    "spellSchool": "Parchemin",
+    "element": "Neutre"
   },
   {
     "id": "pecora-bonta-brakmar",
@@ -12279,7 +12389,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "pelle-rin-bonta-brakmar",
@@ -12437,7 +12548,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "petit-anneau-d-intelligence-bonta-brakmar",
@@ -12512,7 +12624,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "petit-anneau-de-chance-bonta-brakmar",
@@ -12587,7 +12700,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Eau"
   },
   {
     "id": "petit-anneau-de-force-bonta-brakmar",
@@ -12662,7 +12776,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "petit-koalak-bonta-brakmar",
@@ -12699,7 +12814,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Terre"
   },
   {
     "id": "pied-du-sacrieur-bonta-brakmar",
@@ -12733,7 +12849,8 @@
     "flavor": {
       "text": "Mesdames, quand un Sacrieur vous fait du pied, c'est rarement pour vous demander votre main…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Terre"
   },
   {
     "id": "plaines-de-cania-bonta-brakmar",
@@ -12766,7 +12883,8 @@
     "notes": [],
     "flavor": {
       "text": "Si vous y croisez les trois célèbres bandits, il y a de fortes chances pour que vous vous fassiez Eratzdiquer !"
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "poisse-bonta-brakmar",
@@ -12805,7 +12923,8 @@
     "flavor": {
       "text": "Si vous ne voulez pas attirer le mauvais œil, ouvrez le bon !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "posho-le-puant-bonta-brakmar",
@@ -12895,7 +13014,8 @@
     "flavor": {
       "text": "On raconte qu'étant petit, Mik Thaï Son' est tombé dedans…"
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "potion-de-camouflage-bonta-brakmar",
@@ -12928,7 +13048,8 @@
     "flavor": {
       "text": "Un procédé qu'un alchimiste a tenté d'inverser pour rendre visible le cerveau des Iops. En vain."
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "prets-a-se-battre-dans-l-arene-bonta-brakmar",
@@ -12960,7 +13081,8 @@
     "notes": [],
     "flavor": {
       "text": "Oui ! Mais dans quelle reine, au fait ? — Etour Drif, grand maître du quiproquo."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "prison-de-brakmar-bonta-brakmar",
@@ -12998,7 +13120,8 @@
     "notes": [],
     "flavor": {
       "text": "Dans la prison de Brâkmar, les détenus passent leur temps à astiquer leurs barreaux…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "puissante-ceinture-fulgurante-bonta-brakmar",
@@ -13035,7 +13158,8 @@
     "equipmentType": "Armure",
     "requirements": {
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "puzie-lanym-bonta-brakmar",
@@ -13539,7 +13663,8 @@
     "flavor": {
       "text": "Quand un combattant a un comportement déplacé, il ne faut pas hésiter à le remettre en place !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "razortemps-bonta-brakmar",
@@ -13645,7 +13770,8 @@
     "flavor": {
       "text": "Les Iops vont enfin arrêter de s'enduire de Vivel Blop pour empêcher leurs adversaires de se détacler…"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "relidium-metrens-bonta-brakmar",
@@ -13723,7 +13849,8 @@
     "flavor": {
       "text": "Jeunevieille Defontenouille en a fait les frais …"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "rex-presso-bonta-brakmar",
@@ -13800,7 +13927,8 @@
     "notes": [],
     "flavor": {
       "text": "Craignez le feu des ténèbres ! Craignez votre pire cauchemar ! Tremblez devant la puissance du Corbeau Noir !"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "roulage-de-pelle-bonta-brakmar",
@@ -13834,7 +13962,8 @@
     "flavor": {
       "text": "Si vous ne voulez pas prendre un râteau, évitez de manier ce sort à la légère !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Feu"
   },
   {
     "id": "rubilax-bonta-brakmar",
@@ -13936,7 +14065,8 @@
     "notes": [],
     "flavor": {
       "text": "Tu connais pas la dernière ? Paraît que Rhô Jay l'est plus avec sa femme ! — Pouha Vrô, pilier de bar qualifié."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "sac-anime-bonta-brakmar",
@@ -13978,7 +14108,8 @@
     "flavor": {
       "text": "Avec ce sort en poche, il n'y a aucun doute : l'affaire est dans le sac !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "sagesse-de-silouate-bonta-brakmar",
@@ -14029,7 +14160,8 @@
     "notes": [],
     "flavor": {
       "text": "Avant que Brumaire ne lui lance son sortilège, Silouate était très soucieux de sa silhouette…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "salle-de-garde-bonta-brakmar",
@@ -14067,7 +14199,8 @@
     "notes": [],
     "flavor": {
       "text": "Gare à vous, les gardes de Bonta gardent l'œil ouvert, et le bon…"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "sang-de-phenix-bonta-brakmar",
@@ -14100,7 +14233,8 @@
     "flavor": {
       "text": "Pour ramener un défunt à la vie, mieux vaut ne pas y aller de main morte avec cette potion !"
     },
-    "spellSchool": "Potion"
+    "spellSchool": "Potion",
+    "element": "Neutre"
   },
   {
     "id": "scarabosse-dore-bonta-brakmar",
@@ -14431,7 +14565,8 @@
     "flavor": {
       "text": "Un sort très efficace contre les Iops. Deuh Meurai succomba après avoir tenté de le prononcer 10 fois."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "science-du-baton-bonta-brakmar",
@@ -14459,7 +14594,8 @@
     "flavor": {
       "text": "À force de recevoir des coups de Bâton, Florent Fuquier en a fait une science."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "scorbute-bonta-brakmar",
@@ -14531,7 +14667,8 @@
     "flavor": {
       "text": "Leur célibat prolongé cache effectivement un secret… Mais êtes",
       "attribution": "vous sûr de vouloir le connaître ?"
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "sellor-noob-bonta-brakmar",
@@ -14731,7 +14868,8 @@
     "requirements": {
       "level": 3,
       "elements": []
-    }
+    },
+    "element": "Feu"
   },
   {
     "id": "sournoiserie-d-oto-mustam-bonta-brakmar",
@@ -14765,7 +14903,8 @@
     "flavor": {
       "text": "Comment ça, Oto Mustam aime les viennoiseries ? Vous êtes sérieux ?! — « Etour Drif, Iop et sourd à la fois. »"
     },
-    "spellSchool": "Brâkmar"
+    "spellSchool": "Brâkmar",
+    "element": "Neutre"
   },
   {
     "id": "sphincter-cell-bonta-brakmar",
@@ -14958,7 +15097,8 @@
     "flavor": {
       "text": "Je le savais !! Et avec mon meilleur ami en plus !! — Téko Khu, après avoir utilisé le sort Téléportation."
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "thapa-sambal-bonta-brakmar",
@@ -15233,7 +15373,8 @@
     "flavor": {
       "text": "…"
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "vengeance-de-minuit-bonta-brakmar",
@@ -15265,7 +15406,8 @@
     "notes": [],
     "flavor": {
       "text": "Ceux qui l'ont subie parlent des Douze coups de Minuit."
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "venin-de-scorbute-bonta-brakmar",
@@ -15321,7 +15463,8 @@
     "requirements": {
       "level": 1,
       "elements": []
-    }
+    },
+    "element": "Neutre"
   },
   {
     "id": "vers-la-renommee-et-au-dela-bonta-brakmar",
@@ -15361,7 +15504,8 @@
       "text": "Au",
       "attribution": "delà de la renommée ? Il y a moi. — Skeunk."
     },
-    "spellSchool": "Quête"
+    "spellSchool": "Quête",
+    "element": "Neutre"
   },
   {
     "id": "vilain-petit-corbac-bonta-brakmar",
@@ -15398,7 +15542,8 @@
     "requirements": {
       "level": 2,
       "elements": []
-    }
+    },
+    "element": "Air"
   },
   {
     "id": "vol-sacre-bonta-brakmar",
@@ -15440,7 +15585,8 @@
     "flavor": {
       "text": "Le nom de ce sort est presque un pléonasme. En effet, chez les Srams, le vol est toujours sacré !"
     },
-    "spellSchool": "Sort"
+    "spellSchool": "Sort",
+    "element": "Neutre"
   },
   {
     "id": "vola-latir-bonta-brakmar",

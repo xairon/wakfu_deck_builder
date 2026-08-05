@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { filterCards, type FilterCriteria } from "../useCardFilter";
+import { filterCards, sortCards, type FilterCriteria } from "../useCardFilter";
 import {
   createMockAllyCard,
   createMockHeroCard,
@@ -181,5 +181,99 @@ describe("useCardFilter — filterCards", () => {
     expect(
       filterCards([feu, eau], { ...base, element: "feu" }).map((c) => c.id),
     ).toEqual(["feu"]);
+  });
+
+  it("element : matche l'orbe `card.element` (Niveau Neutre, sans Force)", () => {
+    // Régression du bug rapporté : un Équipement/Action à orbe coloré mais
+    // Niveau Neutre était introuvable par couleur (l'orbe n'était lu nulle part).
+    const terre = createMockActionCard({
+      id: "orbe-terre",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+      element: "Terre",
+    });
+    const neutre = createMockActionCard({
+      id: "vrai-neutre",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+    });
+    expect(
+      filterCards([terre, neutre], { ...base, element: "terre" }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(["orbe-terre"]);
+  });
+
+  it("element : « Neutre » exclut les cartes au Niveau Neutre mais colorées", () => {
+    // Régression du bug rapporté : le Niveau d'un Équipement/Action coloré est
+    // Neutre, donc matcher le Niveau versait TOUTES ces cartes dans « Neutre ».
+    const terre = createMockActionCard({
+      id: "orbe-terre",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+      element: "Terre",
+    });
+    const neutre = createMockActionCard({
+      id: "vrai-neutre",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+    });
+    expect(
+      filterCards([terre, neutre], { ...base, element: "neutre" }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(["vrai-neutre"]);
+  });
+
+  it("element : matche le symbole de Force (Alliés/Héros)", () => {
+    const feu = createMockAllyCard({
+      id: "force-feu",
+      stats: {
+        niveau: { value: 1, element: "Neutre" },
+        force: { value: 2, element: "Feu" },
+      },
+    });
+    expect(
+      filterCards([feu], { ...base, element: "feu" }).map((c) => c.id),
+    ).toEqual(["force-feu"]);
+    expect(filterCards([feu], { ...base, element: "neutre" })).toEqual([]);
+  });
+});
+
+describe("useCardFilter — sortCards", () => {
+  it("element : trie sur l'Élément imprimé, pas sur le Niveau", () => {
+    // Le Niveau d'un Équipement est Neutre : trier dessus les range TOUS en
+    // « neutre ». L'Élément imprimé vit dans `card.element` (cf. cardElement).
+    const terre = createMockActionCard({
+      id: "terre",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+      element: "Terre",
+    });
+    const air = createMockActionCard({
+      id: "air",
+      stats: { niveau: { value: 2, element: "Neutre" } },
+      element: "Air",
+    });
+    expect(sortCards([terre, air], "element", false).map((c) => c.id)).toEqual([
+      "air",
+      "terre",
+    ]);
+  });
+
+  it("element : lit la Force à défaut d'Élément imprimé (Alliés/Héros)", () => {
+    const feu = createMockAllyCard({
+      id: "feu",
+      stats: {
+        niveau: { value: 1, element: "Neutre" },
+        force: { value: 2, element: "Feu" },
+      },
+    });
+    const eau = createMockAllyCard({
+      id: "eau",
+      stats: {
+        niveau: { value: 1, element: "Neutre" },
+        force: { value: 2, element: "Eau" },
+      },
+    });
+    expect(sortCards([feu, eau], "element", false).map((c) => c.id)).toEqual([
+      "eau",
+      "feu",
+    ]);
   });
 });

@@ -78,6 +78,18 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
+      path: "/regles/officielles",
+      name: "rulesOfficial",
+      component: () => import("@/views/RulesOfficialView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/errata",
+      name: "errata",
+      component: () => import("@/views/ErrataView.vue"),
+      meta: { guest: true },
+    },
+    {
       path: "/a-propos",
       name: "about",
       component: () => import("@/views/AboutView.vue"),
@@ -100,6 +112,42 @@ const router = createRouter({
       name: "terms",
       component: () => import("@/views/TermsView.vue"),
       meta: { guest: true },
+    },
+    {
+      path: "/acces-refuse",
+      name: "accessDenied",
+      component: () => import("@/views/AccessDeniedView.vue"),
+      meta: { guest: true },
+    },
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("@/views/admin/AdminHomeView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: "/admin/comptes",
+      name: "adminAccounts",
+      component: () => import("@/views/admin/AdminAccountsView.vue"),
+      meta: { requiresAuth: true, requiresOwner: true },
+    },
+    {
+      path: "/admin/errata",
+      name: "adminErrata",
+      component: () => import("@/views/admin/AdminErrataView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: "/admin/regles",
+      name: "adminRules",
+      component: () => import("@/views/admin/AdminRulesView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: "/admin/journal",
+      name: "adminJournal",
+      component: () => import("@/views/admin/AdminJournalView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       // « Partie » mène directement au module de jeu (lobby/table/tutoriel).
@@ -193,6 +241,18 @@ router.beforeEach(async (to, from, next) => {
   // Déjà connecté et on ouvre /auth → vers la collection.
   if (to.name === "auth" && authStore.isAuthenticated) {
     next({ name: "collection" });
+    return;
+  }
+
+  // Rôles. `isAdmin`/`isOwner` ne servent qu'à l'aiguillage d'UI : la sécurité
+  // réelle est la RLS, qui refuse l'écriture même si quelqu'un force la route.
+  const requiresAdmin = to.matched.some((r) => r.meta.requiresAdmin);
+  const requiresOwner = to.matched.some((r) => r.meta.requiresOwner);
+  if (
+    (requiresAdmin && !authStore.isAdmin) ||
+    (requiresOwner && !authStore.isOwner)
+  ) {
+    next({ name: "accessDenied" });
     return;
   }
 

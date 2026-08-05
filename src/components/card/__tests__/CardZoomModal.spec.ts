@@ -1,11 +1,31 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { mount } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
 import CardZoomModal from "../CardZoomModal.vue";
 import { createMockHeroCard, createMockAllyCard } from "tests/factories/card";
 
-// Stub fetchErrata so no real fetch is made
-vi.mock("@/services/errataService", () => ({
-  fetchErrata: async () => [],
+// Stub fetchErrata so no real fetch is made — un espion (pas juste un stub
+// statique) : le bloc « rafraîchissement après édition » ci-dessous doit
+// pouvoir compter les appels pour prouver que le panneau se met à jour SUR
+// PLACE après une sauvegarde (finding 1 de la revue finale).
+const { fetchErrata } = vi.hoisted(() => ({
+  fetchErrata: vi.fn().mockResolvedValue([]),
+}));
+vi.mock("@/services/errataService", () => ({ fetchErrata }));
+
+// Nécessaires pour exercer l'affordance d'édition d'ErrataPanel (canEdit =
+// cardId ET isAdmin) depuis CardZoomModal.
+let admin = false;
+vi.mock("@/stores/authStore", () => ({
+  useAuthStore: () => ({ isAdmin: admin }),
+}));
+const { listErrataAdmin, createErratum } = vi.hoisted(() => ({
+  listErrataAdmin: vi.fn().mockResolvedValue([]),
+  createErratum: vi.fn().mockResolvedValue({ ok: true }),
+}));
+vi.mock("@/services/adminService", () => ({
+  listErrataAdmin,
+  createErratum,
+  updateErratum: vi.fn(),
 }));
 
 // Stub highlightEffectHtml to return the description as-is (easier assertion),
@@ -17,6 +37,7 @@ vi.mock("@/utils/effectText", async (importActual) => {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  admin = false;
 });
 
 describe("CardZoomModal — effets des Héros", () => {
@@ -205,5 +226,35 @@ describe("CardZoomModal — variant modal (défaut)", () => {
     expect(wrapper.find('[data-testid="modal-action-btn"]').exists()).toBe(
       true,
     );
+  });
+});
+
+describe("CardZoomModal — rafraîchissement des errata après édition en place", () => {
+  // Garde de non-régression pour le finding 1 de la revue finale : avant le
+  // fix, ErrataPanel émettait un rafraîchissement du CACHE MODULE
+  // (refreshErrata) mais rien ne prévenait CardZoomModal — qui possède la
+  // prop `errata` passée à CardZoomInner/ErrataPanel — de re-fetcher SA
+  // copie. Résultat : le panneau restait affiché avec l'ancien contenu tant
+  // que la carte n'était pas re-sélectionnée.
+  it("devrait re-fetcher les errata (fetchErrata rappelé) après une sauvegarde réussie depuis le panneau", async () => {
+    admin = true;
+    const ally = createMockAllyCard({ id: "ally-errata-refresh" });
+    const wrapper = mount(CardZoomModal, {
+      props: { card: ally, open: true },
+      global: { stubs: { RouterLink: true } },
+    });
+
+    await wrapper.vm.$nextTick();
+    expect(fetchErrata).toHaveBeenCalledTimes(1);
+
+    await wrapper.find('[data-testid="edit-errata"]').trigger("click");
+    await flushPromises();
+    await wrapper.find('[data-testid="f-summary"]').setValue("Nouveau résumé");
+    await wrapper.find('[data-testid="errata-submit"]').trigger("click");
+    await flushPromises();
+
+    expect(createErratum).toHaveBeenCalledTimes(1);
+    // Deuxième appel = le re-fetch déclenché par l'événement `saved`.
+    expect(fetchErrata).toHaveBeenCalledTimes(2);
   });
 });

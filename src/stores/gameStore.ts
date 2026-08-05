@@ -38,7 +38,10 @@ import {
   otherSeat,
   redactStateFor,
   say,
+  formatRoll,
   revealHand,
+  lookCards,
+  createToken as createTokenVerb,
   sequence,
   setCounter as setCounterVerb,
   incCounter as incCounterVerb,
@@ -103,7 +106,11 @@ import {
   matchesPickFilter,
 } from "@/game/rules/effects/engine";
 import type { EffectFrame } from "@/game/rules/effects/engine";
-import { getTokenCard } from "@/game/rules/effects/tokens";
+import {
+  getTokenCard,
+  ensureTokenCard,
+  tokenCardId,
+} from "@/game/rules/effects/tokens";
 
 function rndSeed(): string {
   return Math.random().toString(36).slice(2);
@@ -631,10 +638,27 @@ export const useGameStore = defineStore("game", () => {
     const id = gameId.value;
     submitChain = submitChain
       .then(() => t.submitIntent!(id, intent))
-      .catch((e) => {
-        ruleError.value = (e as Error)?.message ?? String(e);
-        // Le refus peut être un conflit d'ordre (409) ou un échec partiel : on
-        // resynchronise sur l'état autoritaire plutôt que de rester divergent.
+      .catch(async (e) => {
+        const msg = (e as Error)?.message ?? String(e);
+        // CONFLIT D'ORDRE (OUT_OF_ORDER) : notre journal était en retard — un
+        // event est arrivé entre-temps. L'intention n'a PAS été appliquée
+        // (append refusé) → resynchroniser PUIS rejouer UNE fois le même geste
+        // (sans risque de double-application). Tout autre échec : resync +
+        // erreur affichée (le joueur rejoue s'il y tient).
+        if (msg.includes("OUT_OF_ORDER")) {
+          try {
+            await resyncFrom(lastSeq());
+            await t.submitIntent!(id, intent);
+            return;
+          } catch (e2) {
+            ruleError.value = (e2 as Error)?.message ?? String(e2);
+            void resyncFrom(lastSeq());
+            return;
+          }
+        }
+        ruleError.value = msg;
+        // Le refus peut être un échec partiel : on resynchronise sur l'état
+        // autoritaire plutôt que de rester divergent.
         void resyncFrom(lastSeq());
       });
     return true;
@@ -2148,6 +2172,101 @@ export const useGameStore = defineStore("game", () => {
     if (!ids.length) return rejectMove("Ta main est vide.");
     dispatch(revealHand(seat, [...ids], [otherSeat(seat)]));
     return true;
+  }
+
+  /** Montrer UNE carte de sa main à l'adversaire (« révélez une carte »). */
+  function revealCardToOpponent(instanceId: string): boolean {
+    const seat = perspective.value;
+    const inst = state.value.instances[instanceId];
+    if (!inst || inst.owner !== seat || inst.location.zone !== "main")
+      return rejectMove("Seule une carte de TA main peut être montrée.");
+    dispatch(revealHand(seat, [instanceId], [otherSeat(seat)]));
+    return true;
+  }
+
+  /** CADRE — recherche dans SA Pioche (tuteurs « Cherchez… ») : marque toutes
+   *  mes cartes de Pioche comme vues par MOI (LOOK — l'adversaire ne voit
+   *  rien), et l'annonce au journal (transparence, comme au physique). La
+   *  fermeture du browser DOIT mélanger (shuffleMyDeck) : l'ordre a été vu. */
+  function searchMyDeck(): boolean {
+    const seat = perspective.value;
+    const ids = state.value.seats[seat]?.pioche ?? [];
+    if (!ids.length) return rejectMove("Ta Pioche est vide.");
+    dispatch(
+      lookCards(seat, [...ids], [seat]),
+      say(seat, "🔍 cherche dans sa Pioche…"),
+    );
+    return true;
+  }
+
+  /** Mélange de SA Pioche (fin de recherche — 507.4). En ligne, la permutation
+   *  cliente est IGNORÉE et re-dérivée de la graine serveur (resolveDraft). */
+  function shuffleMyDeck(): void {
+    const seat = perspective.value;
+    const size = state.value.seats[seat]?.pioche.length ?? 0;
+    if (!size) return;
+    dispatch(
+      shuffleVerb(
+        seat,
+        { zone: "pioche", owner: seat },
+        size,
+        `${gameId.value}|${state.value.seq}|manual-shuffle`,
+      ),
+      say(seat, "🔀 mélange sa Pioche."),
+    );
+  }
+
+  /** CADRE — « Mettez en jeu un jeton "Monstre - X" de Force N [Élément] »
+   *  joué à la main. En ligne : intent CREATE_TOKEN (le serveur dérive le
+   *  cardId synthétique). En local libre : mint direct (mêmes règles). */
+  function createManualToken(spec: {
+    name: string;
+    force: number;
+    element?: string;
+    sub?: string;
+  }): boolean {
+    const name = spec.name.trim();
+    if (!name) return rejectMove("Nomme le jeton (ex. « Monstre - Arakne »).");
+    if (!Number.isFinite(spec.force) || spec.force < 0)
+      return rejectMove("Force de jeton invalide.");
+    const clean = { ...spec, name };
+    if (tryIntent({ kind: "CREATE_TOKEN", ...clean })) return true;
+    const seat = perspective.value;
+    ensureTokenCard(clean);
+    let n = 1;
+    while (state.value.instances[`tok_${seat}_${n}`]) n += 1;
+    dispatch(
+      createTokenVerb(seat, {
+        instanceId: `tok_${seat}_${n}`,
+        cardId: tokenCardId(clean),
+        controller: seat,
+      }),
+    );
+    return true;
+  }
+
+  /** Chat de table (SAID) — journalisé, visible des deux joueurs. */
+  function sendChat(text: string): void {
+    const t = text.trim().slice(0, 300);
+    if (t) dispatch(say(perspective.value, t));
+  }
+
+  /** CADRE — DÉ PARTAGÉ journalisé : en ligne le tirage est fait PAR LE
+   *  SERVEUR (incontestable) via le méta-brouillon ROLL_DIE ; en local, tirage
+   *  direct au journal. `sides` 3 = Chi-Fu-Mi (✊✋✌), sinon d6/dN. */
+  function rollDie(sides = 6): void {
+    if (online.value && onlineTransport) {
+      const t = onlineTransport;
+      const id = gameId.value;
+      submitChain = submitChain
+        .then(() => t.submit(id, { type: "ROLL_DIE", sides } as never))
+        .catch((e) => {
+          ruleError.value = (e as Error)?.message ?? String(e);
+        });
+      return;
+    }
+    const v = 1 + Math.floor(Math.random() * Math.max(2, Math.floor(sides)));
+    dispatch(say(perspective.value, formatRoll(sides, v)));
   }
 
   /**
@@ -4284,6 +4403,12 @@ export const useGameStore = defineStore("game", () => {
     attachToBearer,
     attachSelected,
     revealMyHand,
+    revealCardToOpponent,
+    searchMyDeck,
+    shuffleMyDeck,
+    createManualToken,
+    sendChat,
+    rollDie,
     cancelBearerTargeting,
     // Paiement au choix du joueur (local assisté).
     pendingPayment,

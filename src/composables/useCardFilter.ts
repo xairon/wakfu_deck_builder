@@ -12,6 +12,7 @@ import type { Card } from "@/types/cards";
 import { isHeroCard } from "@/types/cards";
 import { matchesSearch } from "@/utils/text";
 import { isEffectAnnotation } from "@/utils/effectText";
+import { cardElement } from "@/utils/cardDisplay";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -27,10 +28,10 @@ export interface FilterCriteria {
   /** Filtre par rareté */
   rarity: string;
   /**
-   * Filtre par élément — la comparaison est insensible à la casse : les
-   * données sont capitalisées ("Feu", "Eau"…) mais les appelants passent
-   * parfois la valeur en minuscules. Comparé à card.stats.niveau.element
-   * ou card.stats.force.element.
+   * Filtre par élément — comparé à l'Élément IMPRIMÉ résolu par `cardElement`
+   * (orbe `card.element` → symbole de Force → Niveau). Insensible à la casse :
+   * les données sont capitalisées ("Feu", "Eau"…) mais les appelants passent
+   * parfois la valeur en minuscules.
    */
   element: string;
   /** Niveau minimum (stats.niveau.value) */
@@ -164,15 +165,15 @@ export const filterCards = useMemoize(
       filtered = filtered.filter((card) => card.rarity === rarity);
     }
 
-    // Élément — comparaison insensible à la casse : les données sont
-    // capitalisées ("Feu"), les appelants passent parfois en minuscules.
+    // Élément — une carte n'en a QU'UN : celui imprimé, résolu par `cardElement`
+    // (orbe → Force → Niveau). Matcher en plus le Niveau versait toute carte
+    // colorée dans « Neutre » (le Niveau des Actions/Équipements l'est presque
+    // toujours) sans jamais rien ajouter à sa vraie couleur.
+    // `cardElement` renvoie déjà en minuscules ; les appelants passent parfois
+    // la valeur capitalisée ("Feu") venue des données.
     if (element) {
       const el = element.toLowerCase();
-      filtered = filtered.filter(
-        (card) =>
-          card.stats?.niveau?.element?.toLowerCase() === el ||
-          card.stats?.force?.element?.toLowerCase() === el,
-      );
+      filtered = filtered.filter((card) => cardElement(card) === el);
     }
 
     // Niveau minimum
@@ -314,15 +315,12 @@ export const sortCards = useMemoize(
         }
 
         case "element": {
-          const elementA =
-            cardA.stats?.niveau?.element ||
-            cardA.stats?.force?.element ||
-            "neutre";
-          const elementB =
-            cardB.stats?.niveau?.element ||
-            cardB.stats?.force?.element ||
-            "neutre";
-          const elementCompare = elementA.localeCompare(elementB);
+          // `cardElement` = source unique (orbe imprimé → Force → Niveau).
+          // Trier sur le Niveau rangeait TOUS les Équipements en « neutre » :
+          // leur Niveau est Neutre, leur Élément vit ailleurs.
+          const elementCompare = cardElement(cardA).localeCompare(
+            cardElement(cardB),
+          );
           if (elementCompare !== 0) return applyDirection(elementCompare);
           return compareExtensions();
         }

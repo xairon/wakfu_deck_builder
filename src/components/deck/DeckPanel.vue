@@ -393,8 +393,9 @@ const elementDist = computed(() => {
   for (const dc of currentDeck.value?.cards ?? []) {
     if (dc.isReserve) continue;
     const el = (
-      dc.card.stats?.niveau?.element ||
+      dc.card.element ||
       dc.card.stats?.force?.element ||
+      dc.card.stats?.niveau?.element ||
       "Neutre"
     ).toLowerCase();
     map[el] = (map[el] || 0) + dc.quantity;
@@ -449,7 +450,11 @@ function ownedQty(id: string): number {
 }
 
 function elementColor(card: Card): string {
-  const el = card.stats?.niveau?.element || card.stats?.force?.element || null;
+  const el =
+    card.element ||
+    card.stats?.force?.element ||
+    card.stats?.niveau?.element ||
+    null;
   return elementColorByEl(el?.toString());
 }
 
