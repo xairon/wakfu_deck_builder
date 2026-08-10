@@ -365,6 +365,7 @@
     <EffectSpotlight />
     <TurnBanner />
     <ManualEffectReminders />
+    <InGameChat v-if="store.matchPhase !== 'lobby'" />
 
     <!-- Accueil « Apprendre en jouant » : but + fonctionnement, une seule fois au
          démarrage — affiché AU-DESSUS du mulligan, qu'il révèle en se fermant. -->
@@ -710,6 +711,7 @@ import GameSoundLayer from "@/components/game/GameSoundLayer.vue";
 import { useGameSounds } from "@/composables/useGameSounds";
 import { useGameMusic } from "@/composables/useGameMusic";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
+import InGameChat from "@/components/game/InGameChat.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { OFFICIAL_DECKS } from "@/data/officialDecks";
 import { buildOfficialDeck } from "@/composables/useOfficialDeckImport";
