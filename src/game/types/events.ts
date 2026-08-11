@@ -138,6 +138,7 @@ export type EventType =
   | "DETACH"
   | "LOOK"
   | "REVEAL"
+  | "UNREVEAL"
   | "SET_PHASE"
   | "SET_COMBAT"
   | "SAID"

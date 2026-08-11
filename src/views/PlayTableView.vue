@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <!-- ═══════════ LOBBY : choix des decks (J1 puis J2) ═══════════ -->
   <div v-if="store.matchPhase === 'lobby' && !store.online" class="space-y-6">
     <header class="flex flex-wrap items-end justify-between gap-4">
@@ -365,6 +365,7 @@
     <EffectSpotlight />
     <TurnBanner />
     <ManualEffectReminders />
+    <InGameChat v-if="store.matchPhase !== 'lobby'" />
 
     <!-- Accueil « Apprendre en jouant » : but + fonctionnement, une seule fois au
          démarrage — affiché AU-DESSUS du mulligan, qu'il révèle en se fermant. -->
@@ -710,6 +711,7 @@ import GameSoundLayer from "@/components/game/GameSoundLayer.vue";
 import { useGameSounds } from "@/composables/useGameSounds";
 import { useGameMusic } from "@/composables/useGameMusic";
 import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
+import InGameChat from "@/components/game/InGameChat.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { OFFICIAL_DECKS } from "@/data/officialDecks";
 import { buildOfficialDeck } from "@/composables/useOfficialDeckImport";
@@ -855,7 +857,7 @@ function startVsBot(): void {
 // premier joueur jouait son tour EN FOND pendant l'animation). Le getter est
 // évalué à chaque battement du driver, après l'init du script (pas de TDZ).
 const botDriver = useBotOpponent(store, 550, {
-  hold: () => diceVisible.value,
+  hold: () => false,
 });
 // Masqué par défaut : le plateau occupe toute la largeur (cartes plus grandes).
 // Le joueur ouvre le journal à la demande via le bouton « Journal ».
@@ -914,7 +916,7 @@ function resumeGame(): void {
   const g = resumable.value;
   if (!g) return;
   resumable.value = null;
-  store.connectOnline(g.gameId, g.seat, onlineTransport);
+  store.connectOnline(g.gameId, g.seat, onlineTransport, onlineDeck.value);
 }
 
 /** Abandonne la partie en cours détectée (forfait serveur) sans s'y reconnecter. */
@@ -1008,7 +1010,7 @@ async function onlineCreate(): Promise<void> {
     // CADRE : une seule expérience en ligne — plus de mode assisté à la création.
     const { gameId, code } = await createOnlineGame(deck, false);
     createdCode.value = code;
-    store.connectOnline(gameId, "A", onlineTransport);
+    store.connectOnline(gameId, "A", onlineTransport, deck);
   } catch (e) {
     onlineError.value = await fnErrorMessage(e);
   } finally {
@@ -1033,7 +1035,7 @@ async function onlineJoin(): Promise<void> {
       return;
     }
     // s'abonner AVANT join (CADRE : un seul mode en ligne)
-    store.connectOnline(g.id, "B", onlineTransport);
+    store.connectOnline(g.id, "B", onlineTransport, deck);
     await joinGame(code, deck);
     // joinGame vient de créer GAME_STARTED + mélanges + mains de départ. Le pull
     // de connexion a tourné sur un journal ENCORE VIDE (events créés seulement

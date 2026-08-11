@@ -123,18 +123,34 @@ export async function joinGame(
 export async function findGameByCode(
   code: string,
 ): Promise<{ id: string; assisted: boolean } | null> {
-  // 0011 — le lobby n'est plus énumérable (SELECT réservé aux participants) :
-  // la découverte par code passe par la RPC SECURITY DEFINER au périmètre
-  // minimal (id + assisted, salons lobby/actifs seulement).
-  const { data, error } = await client().rpc("find_game_by_code", {
+  const c = client();
+  const { data, error } = await c.rpc("find_game_by_code", {
     p_code: code,
   });
-  if (error) throw error;
-  const row = (Array.isArray(data) ? data[0] : data) as {
-    id: string;
-    assisted: boolean;
-  } | null;
-  return row ? { id: row.id, assisted: !!row.assisted } : null;
+  if (!error) {
+    const row = (Array.isArray(data) ? data[0] : data) as {
+      id: string;
+      assisted: boolean;
+    } | null;
+    return row ? { id: row.id, assisted: !!row.assisted } : null;
+  }
+
+  // Repli direct sur la table `games` si la RPC n'est pas trouvée (ex: 404 / migration non jouée)
+  if (typeof c.from === "function") {
+    const { data: tblData, error: tblErr } = await c
+      .from("games")
+      .select("id, assisted")
+      .eq("code", code)
+      .in("status", ["lobby", "active"])
+      .maybeSingle();
+
+    if (!tblErr && tblData) {
+      const row = tblData as { id: string; assisted: boolean };
+      return { id: row.id, assisted: !!row.assisted };
+    }
+  }
+
+  throw error;
 }
 
 /**

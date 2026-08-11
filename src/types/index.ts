@@ -4,3 +4,4 @@ export type {
   CollectionStats,
   CollectionFilters,
 } from "./collection";
+export * from "./chat";

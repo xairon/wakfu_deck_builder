@@ -86,10 +86,12 @@ export async function getMyRole(): Promise<UserRole> {
       .eq("user_id", authStore.userId)
       .maybeSingle();
     if (error) {
-      console.warn(
-        "[profileService] requête `profiles.role` en échec :",
-        error,
-      );
+      if (error.code !== "42703" && error.code !== "PGRST204") {
+        console.warn(
+          "[profileService] requête `profiles.role` en échec :",
+          error,
+        );
+      }
       return "user";
     }
     if (!data) return "user";

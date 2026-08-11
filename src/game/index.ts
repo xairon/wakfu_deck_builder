@@ -45,6 +45,7 @@ export {
   say,
   formatRoll,
   revealHand,
+  unrevealHand,
   lookCards,
   setPhase,
   setCombat,

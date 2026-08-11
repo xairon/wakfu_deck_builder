@@ -1,4 +1,4 @@
-﻿/**
+/**
  * gameStore — partie guidée hot-seat « façon MTGA, sauce Wakfu TCG ».
  * Réf. docs/superpowers/specs/2026-06-09-table-jeu-mtga-design.md.
  *
@@ -20,10 +20,15 @@ import type {
   RedactedEvent,
   RedactedGameState,
   Seat,
+  TurnPhase,
   ZoneRef,
 } from "@/game";
 import {
   attach,
+  detach,
+  flipLevel,
+  setPhase,
+  unrevealHand,
   createGame,
   deriveState,
   drawTop,
@@ -860,6 +865,7 @@ export const useGameStore = defineStore("game", () => {
     id: string,
     seat: Seat,
     transport: OnlineTransport,
+    myDeck?: Deck | null,
   ): void {
     disconnectOnline();
     online.value = true;
@@ -867,6 +873,9 @@ export const useGameStore = defineStore("game", () => {
     gameId.value = id;
     mySeat.value = seat;
     perspective.value = seat; // vue figée sur SON siège (info cachée à l'écran)
+    if (myDeck) {
+      activeDecks.value[seat] = myDeck;
+    }
     events.value = [];
     revealed.value = {};
     // Dérivée du journal (vide ici → "lobby") ; le pull de connexion la fera
@@ -909,6 +918,8 @@ export const useGameStore = defineStore("game", () => {
     revealed.value = {};
     gameId.value = "local";
     matchPhase.value = "lobby";
+    activeDecks.value = { A: null, B: null };
+    instanceCardMap.clear();
     // Présence/grâce : minuteur coupé (test-safe) + état réinitialisé.
     clearGraceTimer();
     opponentPresent.value = true;
@@ -918,16 +929,103 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
   }
 
+  const instanceCardMap = new Map<string, Card>();
+  const activeDecks = ref<{ A: Deck | null; B: Deck | null }>({ A: null, B: null });
+
+  function populateInstanceCardMap(deckA: Deck | null, deckB: Deck | null, currentState: GameState | null): void {
+    if (!currentState) return;
+    const processSeat = (seat: Seat, deck: Deck | null) => {
+      if (!deck || !currentState?.seats?.[seat]) return;
+      const board = currentState.seats[seat];
+
+      if (board.heroInstanceId && deck.hero) {
+        instanceCardMap.set(board.heroInstanceId, deck.hero);
+      }
+      if (board.havreSacInstanceId && deck.havreSac) {
+        instanceCardMap.set(board.havreSacInstanceId, deck.havreSac);
+      }
+
+      const deckCardList: Card[] = [];
+      for (const dc of deck.cards ?? []) {
+        if (!dc?.card) continue;
+        for (let q = 0; q < dc.quantity; q++) {
+          deckCardList.push(dc.card);
+        }
+      }
+
+      for (const instId of Object.keys(currentState.instances)) {
+        const inst = currentState.instances[instId];
+        if (inst && inst.owner === seat) {
+          if (inst.cardId) {
+            const foundCard =
+              deckCardList.find(
+                (c) => String(c.id) === String(inst.cardId) || String((c as any).code) === String(inst.cardId),
+              ) ??
+              cardStore.cards.find(
+                (c) => String(c.id) === String(inst.cardId) || String((c as any).code) === String(inst.cardId),
+              );
+            if (foundCard) {
+              instanceCardMap.set(instId, foundCard);
+            }
+          }
+        }
+      }
+
+      const seatInstances = Object.values(currentState.instances).filter(
+        (inst) =>
+          inst.owner === seat &&
+          inst.instanceId !== board.heroInstanceId &&
+          inst.instanceId !== board.havreSacInstanceId,
+      );
+
+      let deckIdx = 0;
+      for (const inst of seatInstances) {
+        if (!instanceCardMap.has(inst.instanceId) && deckIdx < deckCardList.length) {
+          instanceCardMap.set(inst.instanceId, deckCardList[deckIdx]);
+          deckIdx++;
+        }
+      }
+    };
+
+    if (deckA) processSeat("A", deckA);
+    if (deckB) processSeat("B", deckB);
+  }
+
+  function resolveInstanceCard(instanceId: string | null | undefined): Card | null {
+    if (!instanceId) return null;
+    if (instanceCardMap.has(instanceId)) {
+      return instanceCardMap.get(instanceId)!;
+    }
+    if ((activeDecks.value.A || activeDecks.value.B) && state.value) {
+      populateInstanceCardMap(activeDecks.value.A, activeDecks.value.B, state.value);
+      if (instanceCardMap.has(instanceId)) {
+        return instanceCardMap.get(instanceId)!;
+      }
+    }
+    const inst = state.value?.instances?.[instanceId];
+    const cardId = inst?.cardId ?? null;
+    if (cardId) {
+      return (
+        cardStore.cards.find(
+          (c) => String(c.id) === String(cardId) || String((c as any).code) === String(cardId),
+        ) ?? null
+      );
+    }
+    return null;
+  }
+
   // ── Cycle de match ───────────────────────────────────────────────────────
   function initEngine(deckA: Deck, deckB: Deck, first: Seat): void {
     gameId.value = "local";
     winner.value = null;
-    const { events: evs } = createGame(
+    activeDecks.value = { A: deckA, B: deckB };
+    const { events: evs, state: initialState } = createGame(
       "local",
       { A: deckA, B: deckB },
       { firstPlayer: first, seedA: rndSeed(), seedB: rndSeed() },
     );
     events.value = evs;
+    populateInstanceCardMap(deckA, deckB, initialState);
   }
 
   /** Démarre une partie complète (lobby → mulligan). Premier joueur = pile/face. */
@@ -1291,7 +1389,13 @@ export const useGameStore = defineStore("game", () => {
     chifumiDoomed.value = new Set();
     pendingBearer.value = null;
     botSeat.value = null;
+    tutorOpenSeats.value = { A: false, B: false };
     clearEffectSpotlight();
+  }
+
+  const tutorOpenSeats = ref<Record<Seat, boolean>>({ A: false, B: false });
+  function setTutorOpen(seat: Seat, open: boolean): void {
+    tutorOpenSeats.value[seat] = open;
   }
 
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
@@ -1313,13 +1417,15 @@ export const useGameStore = defineStore("game", () => {
   function draw(seat: Seat = perspective.value, n = 1): void {
     for (let i = 0; i < n; i++) {
       // 507.5 : si la Pioche est vide, remélanger la Défausse avant de piocher.
-      // (Pas de défaite par deck-out dans Wakfu : on s'arrête si tout est vide.)
       if (!state.value.seats[seat].pioche.length) {
         if (!state.value.seats[seat].defausse.length) break;
         reshuffleDiscardIntoDeck(seat);
       }
-      if (!state.value.seats[seat].pioche.length) break;
-      dispatch(drawTop(state.value, seat));
+      const pioche = state.value.seats[seat].pioche;
+      if (!pioche.length) break;
+      const topId = pioche[0];
+      if (!topId) break;
+      moveTo(topId, { zone: "main", owner: seat });
     }
     engine.enforceHandLimit(seat);
   }
@@ -3009,6 +3115,170 @@ export const useGameStore = defineStore("game", () => {
     });
   }
 
+  /** Poser ou effacer un état de combat explicite (overlay attaquant / bloquant / neutre) */
+  function setCardCombatState(
+    instanceId: string,
+    combatState: "attacking" | "blocking" | null,
+  ): void {
+    const inst = state.value.instances[instanceId];
+    if (!inst) return;
+    if (online.value) {
+      inst.counters.combatState = combatState;
+      return;
+    }
+    dispatch({
+      actor: inst.controller,
+      type: "SET_COUNTER",
+      payload: { instanceId, counter: "combatState", value: combatState },
+    });
+  }
+
+  /** Trouve la racine d'un porteur (si cardId est un équipement rattaché à une autre carte). */
+  function findRootBearerId(id: string): string {
+    for (const inst of Object.values(state.value.instances)) {
+      if (inst.attachments?.includes(id)) {
+        return findRootBearerId(inst.instanceId);
+      }
+    }
+    return id;
+  }
+
+  /** Incliner toutes les cartes en jeu contrôlées par le joueur (Monde + Havre-Sac) */
+  function tapAllOnBoard(seat?: Seat | unknown): void {
+    const filterSeat = typeof seat === "string" ? (seat as Seat) : perspective.value;
+    for (const inst of Object.values(state.value.instances)) {
+      if (
+        inst.location.zone === "monde" ||
+        inst.location.zone === "havreSac"
+      ) {
+        if (inst.controller === filterSeat) {
+          if (inst.orientation !== "tapped") {
+            if (tryIntent({ kind: "TAP", instanceId: inst.instanceId })) {
+              continue;
+            }
+            dispatch({
+              actor: inst.controller,
+              type: "SET_ORIENTATION",
+              payload: { instanceId: inst.instanceId, orientation: "tapped" },
+            });
+          }
+        }
+      }
+    }
+  }
+
+  /** Redresser toutes les cartes en jeu contrôlées par le joueur (Monde + Havre-Sac) */
+  function untapAllOnBoard(seat?: Seat | unknown): void {
+    const filterSeat = typeof seat === "string" ? (seat as Seat) : perspective.value;
+    for (const inst of Object.values(state.value.instances)) {
+      if (
+        inst.location.zone === "monde" ||
+        inst.location.zone === "havreSac"
+      ) {
+        if (inst.controller === filterSeat) {
+          if (inst.orientation === "tapped") {
+            if (tryIntent({ kind: "UNTAP", instanceId: inst.instanceId })) {
+              continue;
+            }
+            dispatch({
+              actor: inst.controller,
+              type: "SET_ORIENTATION",
+              payload: { instanceId: inst.instanceId, orientation: "upright" },
+            });
+          }
+        }
+      }
+    }
+  }
+
+  /** Incliner toute la pile (le Porteur + tous ses Équipements attachés) */
+  function tapStack(cardIdOrBearerId: string): void {
+    const rootId = findRootBearerId(cardIdOrBearerId);
+    const inst = state.value.instances[rootId];
+    if (!inst) return;
+    const ids = [rootId, ...(inst.attachments ?? [])];
+    for (const id of ids) {
+      const target = state.value.instances[id];
+      if (target && target.orientation !== "tapped") {
+        if (tryIntent({ kind: "TAP", instanceId: id })) {
+          continue;
+        }
+        dispatch({
+          actor: target.controller,
+          type: "SET_ORIENTATION",
+          payload: { instanceId: id, orientation: "tapped" },
+        });
+      }
+    }
+  }
+
+  /** Redresser toute la pile (le Porteur + tous ses Équipements attachés) */
+  function untapStack(cardIdOrBearerId: string): void {
+    const rootId = findRootBearerId(cardIdOrBearerId);
+    const inst = state.value.instances[rootId];
+    if (!inst) return;
+    const ids = [rootId, ...(inst.attachments ?? [])];
+    for (const id of ids) {
+      const target = state.value.instances[id];
+      if (target && target.orientation === "tapped") {
+        if (tryIntent({ kind: "UNTAP", instanceId: id })) {
+          continue;
+        }
+        dispatch({
+          actor: target.controller,
+          type: "SET_ORIENTATION",
+          payload: { instanceId: id, orientation: "upright" },
+        });
+      }
+    }
+  }
+
+  function toggleFlip(instanceId: string): void {
+    const inst = state.value.instances[instanceId];
+    if (!inst) return;
+    dispatch(flipLevel(inst.controller, instanceId, inst.face === "hidden" ? "recto" : "verso"));
+  }
+
+  function detachCard(instanceId: string, toZone: "monde" | "havreSac" = "monde"): void {
+    const inst = state.value.instances[instanceId];
+    if (!inst) return;
+    dispatch(detach(inst.controller, instanceId, toZone === "monde" ? { zone: "monde" } : { zone: "havreSac", owner: inst.owner }));
+  }
+
+  function resetCounter(instanceId: string, counter: string): void {
+    const inst = state.value.instances[instanceId];
+    if (!inst) return;
+    dispatch(setCounterVerb(inst.controller, instanceId, counter, 0));
+  }
+
+  function setTurnPhase(phase: TurnPhase): void {
+    if (matchPhase.value !== "playing") return;
+    dispatch(
+      setPhase(perspective.value, {
+        active: state.value.turn.active,
+        number: state.value.turn.number,
+        phase,
+      }),
+    );
+  }
+
+  function hideMyHand(): void {
+    const seat = perspective.value;
+    const ids = state.value.seats[seat]?.main ?? [];
+    if (!ids.length) return;
+    dispatch(unrevealHand(seat, [...ids], [otherSeat(seat)]));
+  }
+
+  const isMyHandRevealed = computed(() => {
+    const seat = perspective.value;
+    const oppSeat = otherSeat(seat);
+    const ids = state.value.seats[seat]?.main ?? [];
+    if (!ids.length) return false;
+    return ids.every((id) =>
+      state.value.instances[id]?.revealedTo?.includes(oppSeat),
+    );
+  });
+
   function adjustCounter(
     instanceId: string,
     counter: string,
@@ -4095,6 +4365,9 @@ export const useGameStore = defineStore("game", () => {
     adjustCounter,
     shufflePioche,
     nextTurn,
+    tutorOpenSeats,
+    setTutorOpen,
+    resolveInstanceCard,
     undoLast,
     // moteur de règles (R1)
     assist,
@@ -4182,6 +4455,18 @@ export const useGameStore = defineStore("game", () => {
     combatChooseRiposte,
     combatCancel,
     effectiveForceOf,
+    setCardCombatState,
+    tapAllOnBoard,
+    untapAllOnBoard,
+    tapStack,
+    untapStack,
+    toggleFlip,
+    say: (actor: Seat | "system", text: string) => dispatch(say(actor, text)),
+    detachCard,
+    resetCounter,
+    setTurnPhase,
+    hideMyHand,
+    isMyHandRevealed,
     cannotPlayReason,
     // A19 — légalité de FABRICATION (Recette) du point de vue du siège affiché.
     whyCannotCraft: whyCannotCraftFromHand,

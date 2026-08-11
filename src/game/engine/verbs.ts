@@ -254,6 +254,14 @@ export function revealHand(
   return { actor, type: "REVEAL", payload: { instanceIds, to } };
 }
 
+export function unrevealHand(
+  actor: Seat,
+  instanceIds: InstanceId[],
+  to: Seat[],
+): DraftEvent<LookRevealPayload> {
+  return { actor, type: "UNREVEAL", payload: { instanceIds, to } };
+}
+
 /**
  * CONSULTATION privée (« chercher dans sa Pioche », regarder des cartes) :
  * marque `instanceIds` comme vus par `to` SEULEMENT (LOOK — l'adversaire ne

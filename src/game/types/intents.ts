@@ -59,6 +59,7 @@ export type GameIntent =
     }
   | { kind: "ATTACH"; equipmentId: InstanceId; bearerId: InstanceId }
   | { kind: "DETACH"; equipmentId: InstanceId; to: ZoneRef; position: Position }
+  | { kind: "DRAW" }
   | {
       /** TABLE MANUELLE (Cadre) — geste « Mettez en jeu un jeton "Monstre - X"
        *  de Force N [Élément] » : le serveur dérive le cardId synthétique du
