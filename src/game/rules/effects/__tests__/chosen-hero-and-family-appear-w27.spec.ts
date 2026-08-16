@@ -27,8 +27,8 @@ import {
   compileAppearanceTriggerText,
 } from "../dsl";
 
-const tapOps = (t: string, n = "Test", e = "Feu") =>
-  compileTapEffectText(t, n, e)?.ops ?? null;
+
+
 const actOps = (t: string, n = "Test", e = "Feu") =>
   compileActionEffectText(t, n, e)?.ops ?? null;
 

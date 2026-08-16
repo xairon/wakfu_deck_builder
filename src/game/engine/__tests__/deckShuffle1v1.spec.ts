@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useGameStore } from "@/stores/gameStore";
-import { createGame, buildInitialLayout } from "@/game/engine/setup";
+import { buildInitialLayout } from "@/game/engine/setup";
+
 import { createMockDeck, createMockAllyCard } from "tests/factories/card";
 
 describe("Validation du mélange du deck en mode partie 1v1", () => {

@@ -38,17 +38,7 @@ const cards: RawCard[] = EXTENSION_FILES.flatMap(
   (f) => JSON.parse(readFileSync(join(DATA_DIR, f), "utf8")) as RawCard[],
 );
 
-const PROMOTED = new Set([
-  "Géant",
-  "Agilité",
-  "Agressivité",
-  "Tacle",
-  "Renfort",
-  "Défense",
-  "Fantôme",
-  "Capture",
-  "Éthérée",
-]);
+
 const norm = (s: string) =>
   s
     .normalize("NFD")

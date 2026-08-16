@@ -31,8 +31,8 @@ import {
   unrevealHand,
   createGame,
   deriveState,
-  drawTop,
   move,
+
   nextTurnEvents,
   turnEndDestroyEvents,
   otherSeat,
@@ -68,8 +68,8 @@ import {
   eligibleBlockers,
   eligibleTargets,
   equalityRescueEvents,
-  grantsBearerBonus,
   requiresBearer,
+
   forceValue,
   havreSacHasRoom,
   havreSacBonusAvailable,

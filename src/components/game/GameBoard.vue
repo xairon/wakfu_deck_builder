@@ -1460,71 +1460,8 @@ onMounted(() => {
 
 const view = computed(() => store.view);
 
-// ── Menu Contextuel de carte ──────────────────────────────────────────────
-const ctxMenuVisible = ref(false);
-const ctxMenuX = ref(0);
-const ctxMenuY = ref(0);
-const ctxMenuInst = ref<RedactedInstance | null>(null);
 
-const isCtxInstAttached = computed(() => {
-  if (!ctxMenuInst.value) return false;
-  const id = ctxMenuInst.value.instanceId;
-  return Object.values(store.state.instances).some((inst) =>
-    (inst.attachments ?? []).includes(id),
-  );
-});
 
-function openContextMenu(e: MouseEvent, inst: RedactedInstance): void {
-  e.preventDefault();
-  ctxMenuX.value = e.clientX;
-  ctxMenuY.value = e.clientY;
-  ctxMenuInst.value = inst;
-  ctxMenuVisible.value = true;
-}
-
-function handleContextAction(act: string, instanceId?: string): void {
-  const targetId = instanceId ?? ctxMenuInst.value?.instanceId;
-  if (!targetId) return;
-
-  if (act === "detach") {
-    store.detachCard(targetId, "monde");
-  } else if (act === "toggle_tap") {
-    store.toggleTap(targetId);
-  } else if (act === "tap_stack") {
-    store.tapStack(targetId);
-  } else if (act === "untap_stack") {
-    store.untapStack(targetId);
-  } else if (act === "set_combat_attacking") {
-    store.setCardCombatState(targetId, "attacking");
-  } else if (act === "set_combat_blocking") {
-    store.setCardCombatState(targetId, "blocking");
-  } else if (act === "clear_combat_state") {
-    store.setCardCombatState(targetId, null);
-  } else if (act === "toggle_flip") {
-    store.toggleFlip(targetId);
-  } else if (act === "dmg_plus") {
-    store.adjustCounter(targetId, "damage", 1);
-  } else if (act === "dmg_minus") {
-    store.adjustCounter(targetId, "damage", -1);
-  } else if (act === "dmg_reset") {
-    store.resetCounter(targetId, "damage");
-  } else if (act === "move_to_hand") {
-    store.moveTo(targetId, { zone: "main", owner: store.perspective });
-  } else if (act === "move_to_board") {
-    store.moveTo(targetId, { zone: "monde" });
-  } else if (act === "move_to_discard") {
-    store.moveTo(targetId, { zone: "defausse", owner: store.perspective });
-  } else if (act === "move_to_exile") {
-    store.moveTo(targetId, { zone: "exil", owner: store.perspective });
-  } else if (act === "move_to_deck_top") {
-    store.moveTo(targetId, { zone: "pioche", owner: store.perspective }, { at: "top" });
-  } else if (act === "move_to_deck_bottom") {
-    store.moveTo(targetId, { zone: "pioche", owner: store.perspective }, { at: "bottom" });
-  } else if (act === "zoom") {
-    zoomInst(targetId);
-  }
-  ctxMenuVisible.value = false;
-}
 
 
 
@@ -2318,25 +2255,8 @@ function launchCombatProjectile(
   }, 650);
 }
 
-function setCardCombatStateSelected(state: "attacking" | "blocking" | null): void {
-  const id = selectedInst.value?.instanceId;
-  if (!id) return;
-  if (state === null) {
-    if (typeof store.setCardCombatState === "function") {
-      store.setCardCombatState(id, null);
-    }
-    pendingCombatTarget.value = null;
-    return;
-  }
-  pendingCombatTarget.value = {
-    sourceId: id,
-    role: state,
-  };
-  selectedId.value = null;
-  announce(
-    `Mode ciblage ${state === "attacking" ? "Attaquant" : "Bloquant"} activé. Cliquez sur la cible.`,
-  );
-}
+
+
 // TL3 — ÉQUIPER (table libre) : bouton pour attacher À LA MAIN un Équipement
 // sélectionné (de ma main ou déjà posé) sur un Porteur, via le ciblage
 // pendingBearer → intent ATTACH. Le jeu assisté attache déjà à la pose ; ce

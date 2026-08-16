@@ -724,7 +724,8 @@ function setupReveal(root: HTMLElement) {
   );
 }
 
-function setupStatsCount(root: HTMLElement) {
+function setupStatsCount(_root: HTMLElement) {
+
   const target = statsEl.value;
   if (!target) return;
   if (reduceMotion || !("IntersectionObserver" in window)) {

@@ -3,7 +3,8 @@
  * Ces fonctions manipulent l'état de jeu (GameState) pour attacher, détacher, déplacer et défausser
  * des cartes avec leurs équipements associés.
  */
-import type { GameState, CardInstance } from "../types/state";
+import type { GameState } from "../types/state";
+
 import type { ZoneRef } from "../types/zones";
 
 /**
