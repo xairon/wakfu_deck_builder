@@ -23,13 +23,17 @@
 
         <div class="gtuto-modal__grid">
           <div
-            v-for="item in filteredCards"
+            v-for="(item, idx) in filteredCards"
             :key="item.instanceId"
             class="gtuto-card"
             :class="{ 'gtuto-card--selected': selectedInstanceId === item.instanceId }"
             @click="selectCard(item.instanceId)"
           >
+            <div class="gtuto-card__pos">
+              Position #{{ idx + 1 }} {{ idx === 0 ? '· (Sommet)' : idx === filteredCards.length - 1 ? '· (Fond)' : '' }}
+            </div>
             <div class="gtuto-card__img-wrapper">
+
               <img
                 :src="item.imgSrc"
                 :alt="item.name"
@@ -151,9 +155,10 @@ const selectedInstanceId = ref<string | null>(null);
 
 onMounted(() => {
   if (!cardStore.cards.length) {
-    void cardStore.initialize();
+    void cardStore.initialize().catch(() => {});
   }
 });
+
 
 function cardLevel(card: Card | null): number | null {
   if (!card) return null;
@@ -366,7 +371,21 @@ function onImgError(event: Event): void {
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+.gtuto-card__pos {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  padding: 2px 8px;
+  border-radius: 6px;
+  width: 100%;
+  text-align: center;
+}
+
 .gtuto-card:hover {
+
   transform: translateY(-2px);
   border-color: rgba(240, 78, 34, 0.5);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);

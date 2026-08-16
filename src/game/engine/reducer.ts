@@ -28,6 +28,8 @@ import type {
 import type { CardInstance, GameState } from "../types/state";
 import type { ZoneRef } from "../types/zones";
 import { isTokenCardId } from "../rules/effects/tokens.ts";
+import { makeRng } from "./rng.ts";
+
 
 export class EngineError extends Error {
   constructor(
@@ -224,15 +226,23 @@ function applyCreateToken(s: GameState, p: CreateTokenPayload): void {
 }
 
 function applyShuffle(s: GameState, p: ShufflePayload): void {
+
   const arr = getZoneArray(s, p.zone);
-  // Mélange REDACTÉ : diffusé/pullé sans permutation (l'ordre est SECRET pour ce
-  // viewer — cf. redactEventForBroadcast). La zone (Pioche) lui est opaque, donc
-  // on n'altère pas l'ordre local ; on invalide quand même la connaissance
-  // d'ordre (C3), exactement comme un vrai mélange.
-  if (p.permutation.length === 0 && arr.length > 0) {
+  if (arr.length <= 1) return;
+
+  if (p.permutation.length === 0) {
+    // Si la permutation est omise ou masquée, mélanger la pioche localement avec makeRng
+    const rng = makeRng(`${s.gameId}|${s.seq}|${p.zone.zone}|${"owner" in p.zone ? p.zone.owner : "-"}`);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      const tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
     for (const id of arr) s.instances[id].revealedTo = [];
     return;
   }
+
   if (p.permutation.length !== arr.length) {
     throw new EngineError("BAD_PERMUTATION", {
       expected: arr.length,
@@ -263,8 +273,31 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
   if (ev.type === "GAME_STARTED") {
     const next = structuredClone((ev.payload as { state: GameState }).state);
     next.seq = ev.seq;
+
+    // Sécurité anti-tri : si la pioche d'un siège est dans son ordre d'association initial
+    // (ci_A_001, ci_A_002, ci_A_003...), la mélanger immédiatement avec makeRng
+    for (const seat of ["A", "B"] as const) {
+      const pioche = next.seats[seat]?.pioche ?? [];
+      if (pioche.length > 1) {
+        const isSequential = pioche.every((id, idx) => {
+          const expectedNum = String(idx + 1).padStart(3, "0");
+          return id.endsWith(`_${expectedNum}`);
+        });
+        if (isSequential) {
+          const rng = makeRng(`${ev.gameId}:${seat}:game-started-fallback`);
+          for (let i = pioche.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+            const tmp = pioche[i];
+            pioche[i] = pioche[j];
+            pioche[j] = tmp;
+          }
+        }
+      }
+    }
+
     return next;
   }
+
   // UNDONE, SAID, MULLIGAN_DONE & GAME_OVER : pas de mutation d'état (gérés au
   // fold / log / dérivation de matchPhase + issue depuis le journal).
   if (
@@ -359,6 +392,18 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
       }
       break;
     }
+    case "UNREVEAL": {
+      const p = ev.payload as LookRevealPayload;
+      for (const id of p.instanceIds) {
+        const inst = getInstance(next, id);
+        for (const seat of p.to) {
+          const idx = inst.revealedTo.indexOf(seat);
+          if (idx >= 0) inst.revealedTo.splice(idx, 1);
+        }
+      }
+      break;
+    }
+
     case "SET_PHASE": {
       const p = ev.payload as Partial<GameState["turn"]>;
       next.turn = { ...next.turn, ...p };

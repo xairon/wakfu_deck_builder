@@ -10,6 +10,8 @@ import type { Seat } from "../types/zones";
 import { emptyState } from "./reducer.ts";
 import { deriveState } from "./reducer.ts";
 import { shuffle, sequence } from "./verbs.ts";
+import { permutationFromSeed } from "./rng.ts";
+
 
 /** Lit défensivement les PV du Héros (forme de stats variable selon les cartes). */
 function getHeroPv(hero: unknown): number | undefined {
@@ -41,11 +43,12 @@ export interface SetupOptions {
   seedB?: string;
 }
 
-/** Layout déterministe AVANT mélange (Pioche dans l'ordre du deck). */
+/** Layout déterministe AVANT mélange (Pioche initiale mélangée d'emblée). */
 export function buildInitialLayout(
   gameId: string,
   decks: Record<Seat, Deck>,
   firstPlayer: Seat = "A",
+  opts: SetupOptions = {},
 ): GameState {
   const state = emptyState();
   state.gameId = gameId;
@@ -132,6 +135,16 @@ export function buildInitialLayout(
         board[zone].push(id);
       }
     }
+
+    const piocheSize = board.pioche.length;
+    if (piocheSize > 1) {
+      const seed =
+        seat === "A"
+          ? (opts.seedA ?? `${gameId}:A:init:${Math.random().toString(36).slice(2)}`)
+          : (opts.seedB ?? `${gameId}:B:init:${Math.random().toString(36).slice(2)}`);
+      const perm = permutationFromSeed(piocheSize, seed);
+      board.pioche = perm.map((i) => board.pioche[i]);
+    }
   }
   return state;
 }
@@ -142,15 +155,16 @@ export function setupEvents(
   decks: Record<Seat, Deck>,
   opts: SetupOptions = {},
 ): DraftEvent[] {
-  const layout = buildInitialLayout(gameId, decks, opts.firstPlayer ?? "A");
+  const layout = buildInitialLayout(gameId, decks, opts.firstPlayer ?? "A", opts);
   layout.rng.masterSeedHash = opts.masterSeedHash ?? "";
   const events: DraftEvent[] = [
     { actor: "system", type: "GAME_STARTED", payload: { state: layout } },
   ];
   const seeds: Record<Seat, string> = {
-    A: opts.seedA ?? `${gameId}:A`,
-    B: opts.seedB ?? `${gameId}:B`,
+    A: opts.seedA ?? `${gameId}:A:${Math.random().toString(36).slice(2)}`,
+    B: opts.seedB ?? `${gameId}:B:${Math.random().toString(36).slice(2)}`,
   };
+
   for (const seat of ["A", "B"] as Seat[]) {
     const size = layout.seats[seat].pioche.length;
     if (size > 1) {

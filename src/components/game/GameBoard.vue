@@ -1088,7 +1088,9 @@
           </button>
           <span class="gactionbar__sep"></span>
           <button class="gbtn" @click="moveSelected('monde')">→ Monde</button>
+          <button class="gbtn" @click="moveSelected('havreSac')">→ Socle</button>
           <button class="gbtn" @click="moveSelected('main')">→ Main</button>
+
           <button class="gbtn" @click="moveSelected('defausse', { at: 'top' })">
             Défausser
           </button>
@@ -1249,7 +1251,7 @@
       <div class="gpilebrowser__panel">
         <header class="gpilebrowser__head">
           <h2 class="gpilebrowser__title">
-            Ta Pioche
+            Ta Pioche (Ordre réel du deck)
             <span class="gpilebrowser__count"
               >{{ myDeckCards.length }} carte(s)</span
             >
@@ -1263,16 +1265,17 @@
           </button>
         </header>
         <p class="gpilebrowser__hint">
-          Consultation privée (l'adversaire est prévenu au journal, sans voir
-          les cartes). En refermant, ta Pioche est
-          <strong>mélangée</strong> (507.4).
+          Consultation privée : les cartes sont présentées dans <strong>l'ordre exact de la pioche</strong> (du sommet #1 au fond du deck). En refermant, ta Pioche sera <strong>mélangée</strong> (507.4).
         </p>
         <div class="gpilebrowser__grid">
           <div
-            v-for="inst in myDeckCards"
+            v-for="(inst, idx) in myDeckCards"
             :key="inst.instanceId"
             class="gpilebrowser__slot"
           >
+            <div class="gpilebrowser__pos">
+              #{{ idx + 1 }} {{ idx === 0 ? '· (Sommet)' : idx === myDeckCards.length - 1 ? '· (Fond)' : '' }}
+            </div>
             <GameCard
               :instance="inst"
               :card="resolveCard(inst.instanceId) || resolveCard(inst.cardId)"
@@ -1305,6 +1308,7 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -1449,8 +1453,9 @@ function resolveCard(cardId: string | null): Card | null {
 
 onMounted(() => {
   if (!cardStore.cards.length) {
-    void cardStore.initialize();
+    void cardStore.initialize().catch(() => {});
   }
+
 });
 
 const view = computed(() => store.view);
@@ -3221,7 +3226,20 @@ function manaBonus(seat: Seat): boolean {
   font-size: 12px;
   color: rgba(246, 245, 241, 0.6);
 }
+.gpilebrowser__pos {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+  text-align: center;
+  margin-bottom: 3px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
 .gpilebrowser__grid {
+
   margin-top: 12px;
   overflow-y: auto;
   display: grid;

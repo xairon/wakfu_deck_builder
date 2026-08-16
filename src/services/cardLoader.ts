@@ -169,13 +169,15 @@ function fixSpecialCharacters(str: string): string {
 // complet fait jeter les cartes des extensions manquantes lors de la
 // reconstruction des decks cloud (perte de cartes constatée en prod).
 async function loadExtensionCards(extension: string): Promise<Card[]> {
+  if (typeof fetch === "undefined") return [];
   try {
     const response = await fetch(`/data/${extension}.json`);
-    if (!response.ok) {
+    if (!response?.ok) {
       throw new Error(
-        `Échec du chargement des cartes pour l'extension ${extension}: ${response.status} ${response.statusText}`,
+        `Échec du chargement des cartes pour l'extension ${extension}: ${response?.status} ${response?.statusText}`,
       );
     }
+
 
     let cards;
     try {

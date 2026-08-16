@@ -102,10 +102,6 @@ export function redactEventForBroadcast(
   viewer: Viewer,
 ): PersistedEvent {
   let payload = event.payload;
-  if (event.type === "SHUFFLE") {
-    const p = event.payload as ShufflePayload;
-    payload = { zone: p.zone, permutation: [] }; // ordre masqué
-  }
 
   // GAME_STARTED transporte l'état initial COMPLET (tous les cardId). Avant
   // diffusion, on masque le cardId des cartes non révélées au destinataire
@@ -152,8 +148,10 @@ const ALLOWED_TYPES = new Set<EventType>([
   "SHUFFLE", // mélange de sa propre pioche (garde de zone ci-dessous)
   "LOOK",
   "REVEAL",
+  "UNREVEAL",
   "SAID",
   "MULLIGAN_DONE",
+
   // NB : "UNDONE" est VOLONTAIREMENT absent. L'annulation est une commodité
   // LOCALE (désactivée en ligne, cf. gameStore.undoLast) ; l'accepter côté
   // serveur laissait un client annuler N'IMPORTE QUEL seq (paiement d'un
@@ -161,11 +159,13 @@ const ALLOWED_TYPES = new Set<EventType>([
   // sans garde de propriété/tour/adjacence. Un joueur ne peut donc pas l'émettre.
 ]);
 
-// Types « liés au tour » restant sur le chemin draft : seul SHUFFLE (mélange de
-// sa pioche) doit venir du joueur actif. Le JEU est passé aux intentions (P4),
-// donc MOVE/SET_*/ATTACH/DETACH ne sont plus acceptés ici (cf. ALLOWED_TYPES) ;
-// LOOK/REVEAL/SAID/MULLIGAN_DONE/UNDONE ne sont pas liés au tour.
-const TURN_BOUND_TYPES = new Set<EventType>(["SHUFFLE"]);
+// Types « liés au tour » : SHUFFLE n'est plus restreint au joueur actif
+// afin de permettre à n'importe quel joueur de mélanger SA PROPRE pioche
+// à la fermeture de la recherche dans le deck, même hors de son tour.
+const TURN_BOUND_TYPES = new Set<EventType>();
+
+
+
 
 /** Instances ciblées par un brouillon (pour les vérifs de propriété). */
 function targetedIds(draft: DraftEvent): InstanceId[] {
