@@ -11,8 +11,8 @@
  * compile un chooseOne QUE si les DEUX tokens sont des octrois fidèlement câblés.
  */
 import { describe, it, expect, vi } from "vitest";
-import type { GameState } from "@/game";
-import type { Card } from "@/types/cards";
+
+
 import { compileTapEffectText } from "../dsl";
 import { createEffectEngine } from "../engine";
 import type { EffectEngineDeps } from "../engine";

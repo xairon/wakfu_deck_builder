@@ -11,7 +11,8 @@
 import { describe, it, expect } from "vitest";
 import type { Card } from "@/types/cards";
 import { createMockAllyCard } from "tests/factories/card";
-import { effectiveForce } from "@/game/rules";
+
+
 import { makeEffectSandbox, placeInZone } from "./effectPipeline.harness";
 
 const KATSOU: Card = createMockAllyCard({

@@ -13,9 +13,9 @@
 import { describe, it, expect } from "vitest";
 import type { Card } from "@/types/cards";
 import {
-  createMockAllyCard,
   createMockEquipmentCard,
 } from "tests/factories/card";
+
 import {
   makeEffectSandbox,
   placeInZone,

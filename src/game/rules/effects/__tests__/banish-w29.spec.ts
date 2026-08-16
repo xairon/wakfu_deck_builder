@@ -36,8 +36,8 @@ import type { EffectEngineDeps } from "../engine";
 import { ensureTokenCard, resetTokenRegistry, tokenCardId } from "../tokens";
 import {
   HERO_A,
-  HERO_B,
   bringToMonde,
+
   ctxOf,
   dispatch,
   fixture,

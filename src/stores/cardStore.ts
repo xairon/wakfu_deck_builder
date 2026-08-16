@@ -220,11 +220,14 @@ export const useCardStore = defineStore("cards", () => {
         setCards(loadedCards);
       } catch {
         // Fallback: essayer de charger depuis l'API
+        if (typeof fetch === "undefined") {
+          throw new Error("fetch non disponible");
+        }
         const response = await fetch("/api/collection/initial");
 
-        if (!response.ok) {
+        if (!response?.ok) {
           throw new Error(
-            `Erreur lors du chargement des cartes: ${response.status}`,
+            `Erreur lors du chargement des cartes: ${response?.status}`,
           );
         }
 
@@ -236,6 +239,8 @@ export const useCardStore = defineStore("cards", () => {
           setCards([]);
         }
       }
+
+
 
       // S'assurer que la collection est initialisée comme un objet vide si elle ne l'est pas déjà
       if (!collection.value) {

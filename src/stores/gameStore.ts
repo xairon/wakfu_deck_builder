@@ -31,8 +31,8 @@ import {
   unrevealHand,
   createGame,
   deriveState,
-  drawTop,
   move,
+
   nextTurnEvents,
   turnEndDestroyEvents,
   otherSeat,
@@ -48,7 +48,10 @@ import {
   shuffle as shuffleVerb,
   undo as undoVerb,
 } from "@/game";
+import { makeRng } from "@/game/engine/rng";
 import type { CombatTarget, RuleEvent, RulesCtx } from "@/game/rules";
+
+
 import type { ForceStance } from "@/game/rules";
 import {
   activeGlobalMods,
@@ -65,8 +68,8 @@ import {
   eligibleBlockers,
   eligibleTargets,
   equalityRescueEvents,
-  grantsBearerBonus,
   requiresBearer,
+
   forceValue,
   havreSacHasRoom,
   havreSacBonusAvailable,
@@ -1018,7 +1021,10 @@ export const useGameStore = defineStore("game", () => {
   function initEngine(deckA: Deck, deckB: Deck, first: Seat): void {
     gameId.value = "local";
     winner.value = null;
+    instanceCardMap.clear();
+    revealed.value = {};
     activeDecks.value = { A: deckA, B: deckB };
+
     const { events: evs, state: initialState } = createGame(
       "local",
       { A: deckA, B: deckB },
@@ -2203,18 +2209,30 @@ export const useGameStore = defineStore("game", () => {
    *  cliente est IGNORÉE et re-dérivée de la graine serveur (resolveDraft). */
   function shuffleMyDeck(): void {
     const seat = perspective.value;
-    const size = state.value.seats[seat]?.pioche.length ?? 0;
-    if (!size) return;
+    const pioche = state.value.seats[seat]?.pioche;
+    if (!pioche || pioche.length < 2) return;
+
+    // Mélange local immédiat pour garantie instantanée sur l'UI (que ce soit son tour ou non)
+    const rng = makeRng(rndSeed());
+    for (let i = pioche.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      const tmp = pioche[i];
+      pioche[i] = pioche[j];
+      pioche[j] = tmp;
+    }
+
     dispatch(
       shuffleVerb(
         seat,
         { zone: "pioche", owner: seat },
-        size,
-        `${gameId.value}|${state.value.seq}|manual-shuffle`,
+        pioche.length,
+        rndSeed(),
       ),
       say(seat, "🔀 mélange sa Pioche."),
     );
   }
+
+
 
   /** CADRE — « Mettez en jeu un jeton "Monstre - X" de Force N [Élément] »
    *  joué à la main. En ligne : intent CREATE_TOKEN (le serveur dérive le

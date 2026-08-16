@@ -9,7 +9,8 @@ export interface SandboxBroadcastEvent {
 }
 
 export function useSandboxRealtime(gameId: string, currentUserId: string) {
-  const channel = ref<any>(null);
+  const channel = ref<RealtimeChannel | null>(null);
+
   const connected = ref(false);
 
   function connect(onEvent: (event: SandboxBroadcastEvent) => void) {

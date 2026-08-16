@@ -98,7 +98,7 @@ describe("authority — RNG autoritatif (anti-triche)", () => {
 });
 
 describe("authority — redaction des events diffusés", () => {
-  it("retire la permutation d'un SHUFFLE (ordre secret)", () => {
+  it("conserve la permutation d'un SHUFFLE pour réordonner la pioche côté client", () => {
     const ev = resolveDraft(
       state,
       {
@@ -109,8 +109,9 @@ describe("authority — redaction des events diffusés", () => {
       ctx(),
     );
     const forB = redactEventForBroadcast(ev, "B");
-    expect((forB.payload as { permutation: number[] }).permutation).toEqual([]);
+    expect((forB.payload as { permutation: number[] }).permutation.length).toBeGreaterThan(0);
   });
+
 
   it("ne conserve que le fragment privé du destinataire", () => {
     const ev: PersistedEvent = {
@@ -296,17 +297,17 @@ describe("authorizeDraft", () => {
     ).not.toThrow();
   });
 
-  it("garde de tour (P4) : seul SHUFFLE reste lié au tour ; hors tour → refusé", () => {
+  it("autorise un joueur à mélanger SA PROPRE pioche même hors de son tour", () => {
     const s = twoSeatState(); // firstPlayer "A" → turn.active "A"
     expect(s.turn.active).toBe("A");
-    // B (non actif) mélange SA pioche → refusé (NOT_YOUR_TURN).
+    // B (non actif) mélange SA pioche → autorisé (fin de recherche tutorée hors-tour).
     expect(() =>
       authorizeDraft(s, {
         actor: "B",
         type: "SHUFFLE",
         payload: { zone: { zone: "pioche", owner: "B" }, permutation: [] },
       }),
-    ).toThrow();
+    ).not.toThrow();
     // A (actif) mélange SA pioche → autorisé.
     expect(() =>
       authorizeDraft(s, {
@@ -316,6 +317,7 @@ describe("authorizeDraft", () => {
       }),
     ).not.toThrow();
   });
+
 
   it("rejette un GAME_STARTED émis par un joueur (system-only)", () => {
     const s = twoSeatState();

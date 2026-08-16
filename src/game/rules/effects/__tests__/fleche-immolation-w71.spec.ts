@@ -52,7 +52,9 @@ describe("Flèche d'Immolation — filtre recentlyInclined", () => {
   });
 
   it("sans le flag recentlyInclined : toutes les créatures redeviennent ciblables", () => {
-    const { recentlyInclined: _omit, ...noFilter } = OP;
+    const noFilter = { ...OP };
+    delete (noFilter as any).recentlyInclined;
+
     const ids = effectTargetIds(ctx(), noFilter, "A");
     expect(ids).toContain("atkNew");
     expect(ids).toContain("atkOld");
