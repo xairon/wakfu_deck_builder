@@ -89,7 +89,7 @@ import { elementColor } from "@/config/elementColors";
 import { highlightEffectHtml, isEffectAnnotation } from "@/utils/effectText";
 import { glossaryHints } from "@/utils/glossaryHints";
 
-const { card, mouseX, mouseY, hide } = useCardPreview();
+const { card, cardFace, mouseX, mouseY, hide } = useCardPreview();
 
 // `card` est un singleton partagé (cf. CardPreviewLayer du plateau). Sans ce
 // nettoyage, quitter l'atelier alors qu'une carte est survolée laisserait
@@ -103,8 +103,10 @@ const measured = ref(440);
 const img = computed(() => {
   const c = card.value;
   if (!c) return "";
+  const faceSuffix = cardFace.value === "verso" ? "verso" : "recto";
+  const cleanId = c.id.replace(/_(recto|verso)$/, "");
+  if (c.mainType === "Héros") return `/images/cards/${cleanId}_${faceSuffix}.webp`;
   if (c.imageUrl) return c.imageUrl;
-  if (c.mainType === "Héros") return `/images/cards/${c.id}_recto.webp`;
   return `/images/cards/${c.id}.webp`;
 });
 

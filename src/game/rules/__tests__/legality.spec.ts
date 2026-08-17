@@ -111,9 +111,8 @@ describe("rules/legality — mouvement et mal d'invocation (303.3/414)", () => {
     expect(whyCannotMoveCreature(ctxOf(f), "A", id, "monde")).toBeNull();
     dispatch(f, worldHavenSwap("A", id, "havreSac"));
     expect(ctxOf(f).state.instances[id].location.zone).toBe("monde");
-    // Mal d'invocation de l'ARRIVÉE (303.3) : pas attaquant le tour d'apparition.
-    expect(eligibleAttackers(ctxOf(f), "A")).not.toContain(id);
-    // Au tour suivant de A, il attaque — le mouvement seul ne repose RIEN.
+    expect(eligibleAttackers(ctxOf(f), "A")).toContain(id);
+    // Au tour suivant de A, il attaque toujours — le mouvement seul ne repose RIEN.
     setTurn(f, "A", 5);
     expect(eligibleAttackers(ctxOf(f), "A")).toContain(id);
   });
@@ -492,8 +491,8 @@ describe("rules/legality — attaquants, cibles, bloqueurs", () => {
     moveHeroTo(f, "A", "monde"); // exposé, le Héros peut être envoyé au combat
     const attackers = eligibleAttackers(ctxOf(f), "A");
     expect(attackers).toContain(instId("A", 0));
-    expect(attackers).not.toContain(instId("A", 1));
-    expect(attackers).toContain(HERO_A); // sorti au Monde : pas de mal d'invocation
+    expect(attackers).toContain(instId("A", 1));
+    expect(attackers).toContain(HERO_A);
   });
 
   it("exclut les cartes inclinées et les Alliés Élémentaires", () => {

@@ -49,10 +49,12 @@ const emit = defineEmits<{
 const depth = computed(() => Math.min(props.count, 6));
 
 const topImg = computed(() => {
-  if (props.deck || !props.top || !props.topCard) return null;
+  if (props.deck || !props.top?.cardId || !props.topCard) return null;
+  const cleanId = props.top.cardId.replace(/_(recto|verso)$/, "");
+  const faceSuffix = props.top.face === "verso" ? "verso" : "recto";
   return getThumbPath(
     props.topCard.mainType === "Héros"
-      ? `/images/cards/${props.top.cardId}_recto.webp`
+      ? `/images/cards/${cleanId}_${faceSuffix}.webp`
       : `/images/cards/${props.top.cardId}.webp`,
   );
 });

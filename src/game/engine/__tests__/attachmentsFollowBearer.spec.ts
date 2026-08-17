@@ -154,4 +154,23 @@ describe("reducer — les portés suivent leur Porteur (305.x)", () => {
     expect(defausse.filter((id) => id === ids[1])).toHaveLength(1);
     expect(new Set(defausse).size).toBe(defausse.length);
   });
+
+  it("défausse directe d'un Équipement attaché → détaché du Porteur et placé dans la Défausse", () => {
+    let ids: [string, string, string] = ["", "", ""];
+    const { state } = play(
+      (s) => {
+        const r = setupBearer(s);
+        ids = r.ids;
+        return r.drafts;
+      },
+      (s) => [
+        discard("A", ids[1], s.instances[ids[1]].location), // défausse de l'équipement e1 directement
+      ],
+    );
+    const [bearer, e1, e2] = ids;
+    expect(state.seats.A.defausse).toContain(e1);
+    expect(state.instances[e1].location.zone).toBe("defausse");
+    // e1 n'est plus dans les attachments du Porteur
+    expect(state.instances[bearer].attachments).toEqual([e2]);
+  });
 });

@@ -12,7 +12,7 @@
 import { computed, onUnmounted } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
 
-const { card, mouseX, mouseY, hide } = useCardPreview();
+const { card, cardFace, mouseX, mouseY, hide } = useCardPreview();
 
 // Le calque démonté → on vide le singleton partagé pour qu'aucun aperçu ne
 // reste « armé » et ne réapparaisse sur une autre page (cf. CardHoverPreview).
@@ -24,8 +24,9 @@ const PREVIEW_H = Math.round((PREVIEW_W * 88) / 63);
 const img = computed(() => {
   const c = card.value;
   if (!c) return "";
+  const cleanId = c.id.replace(/_(recto|verso)$/, "");
   return c.mainType === "Héros"
-    ? `/images/cards/${c.id}_recto.webp`
+    ? `/images/cards/${cleanId}_${cardFace.value}.webp`
     : `/images/cards/${c.id}.webp`;
 });
 

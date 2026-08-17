@@ -151,6 +151,16 @@ function applyMove(s: GameState, p: MovePayload): void {
   const inst = getInstance(s, p.instanceId);
   removeFromZone(s, inst);
 
+  // Si cette carte était attachée à un Porteur (Équipement/Sort), la détacher de l'hôte
+  for (const other of Object.values(s.instances)) {
+    if (other.attachments) {
+      const idx = other.attachments.indexOf(p.instanceId);
+      if (idx >= 0) {
+        other.attachments.splice(idx, 1);
+      }
+    }
+  }
+
   // JETON quittant le jeu (502.x / glossaire « jeton ») : un jeton n'a pas de
   // carte de deck — il CESSE D'EXISTER dès qu'il quitte le Monde / un Havre-Sac
   // (jamais de Défausse, Pioche, Exil…). On le retire complètement des instances

@@ -161,6 +161,7 @@ export interface OnlineTransport {
     seat: Seat,
     onEvent: (e: RedactedEvent) => void,
     onPresence?: (present: boolean) => void,
+    onOpponentTarget?: (targetId: string | null) => void,
   ): () => void;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
   /**
@@ -650,11 +651,16 @@ export const useGameStore = defineStore("game", () => {
         // erreur affichée (le joueur rejoue s'il y tient).
         if (msg.includes("OUT_OF_ORDER")) {
           try {
+            pulling = false; // Réinitialise l'état de tirage si bloqué
             await resyncFrom(lastSeq());
             await t.submitIntent!(id, intent);
             return;
           } catch (e2) {
-            ruleError.value = (e2 as Error)?.message ?? String(e2);
+            const m2 = (e2 as Error)?.message ?? String(e2);
+            ruleError.value = m2.includes("OUT_OF_ORDER")
+              ? "Action resynchronisée suite à une action simultanée."
+              : m2;
+            pulling = false;
             void resyncFrom(lastSeq());
             return;
           }
@@ -903,8 +909,23 @@ export const useGameStore = defineStore("game", () => {
       seat,
       applyServerEvent,
       onOpponentPresence,
+      (targetId) => {
+        opponentTargetedCardId.value = targetId;
+      },
     );
     void resyncFrom(0); // rattrape tout event émis avant que l'abonnement soit vivant
+  }
+
+  const opponentTargetedCardId = ref<string | null>(null);
+
+  function setTargetedCard(instanceId: string | null): void {
+    if (online.value && gameId.value && mySeat.value) {
+      import("@/services/gameClient").then(({ broadcastTargetCard }) => {
+        if (gameId.value && mySeat.value) {
+          broadcastTargetCard(gameId.value, mySeat.value, instanceId);
+        }
+      });
+    }
   }
 
   function disconnectOnline(): void {
@@ -2154,14 +2175,23 @@ export const useGameStore = defineStore("game", () => {
    */
   function attachSelected(equipmentId: string): boolean {
     const seat = perspective.value;
-    const card = getCard(state.value.instances[equipmentId]?.cardId ?? null);
-    if (!card || !requiresBearer(card))
-      return rejectMove("Cette carte n'est pas un Équipement à porter.");
-    const eligible = eligibleBearers(rulesCtx(), seat, equipmentId);
+    const inst = state.value.instances[equipmentId];
+    if (!inst) return rejectMove("Carte introuvable.");
+    let eligible = eligibleBearers(rulesCtx(), seat, equipmentId);
+    if (!eligible.length) {
+      eligible = Object.values(state.value.instances)
+        .filter(
+          (i) =>
+            i.controller === seat &&
+            i.instanceId !== equipmentId &&
+            (i.location.zone === "monde" || i.location.zone === "havreSac"),
+        )
+        .map((i) => i.instanceId);
+    }
     if (!eligible.length)
-      return rejectMove(`Aucune créature en jeu ne peut porter ${card.name}.`);
+      return rejectMove("Aucune créature en jeu à qui attacher cette carte.");
     pendingBearer.value = { equipmentId, eligible, manual: true };
-    return true; // en attente du clic sur le Porteur (attachToBearer)
+    return true;
   }
 
   /**
@@ -3254,7 +3284,17 @@ export const useGameStore = defineStore("game", () => {
   function toggleFlip(instanceId: string): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
-    dispatch(flipLevel(inst.controller, instanceId, inst.face === "hidden" ? "recto" : "verso"));
+    const nextFace = inst.face === "verso" ? "recto" : "verso";
+    if (tryIntent({ kind: "SET_LEVEL", instanceId, face: nextFace })) return;
+    dispatch(flipLevel(inst.controller, instanceId, nextFace));
+  }
+
+  /** Envoyer la carte du dessus de la Pioche vers la Défausse (Mill) */
+  function millTopDeck(seat?: Seat): void {
+    const targetSeat = (typeof seat === "string" ? seat : perspective.value) as Seat;
+    const topId = state.value.seats[targetSeat]?.pioche[0];
+    if (!topId) return;
+    moveTo(topId, { zone: "defausse", owner: targetSeat });
   }
 
   function detachCard(instanceId: string, toZone: "monde" | "havreSac" = "monde"): void {
@@ -3304,6 +3344,24 @@ export const useGameStore = defineStore("game", () => {
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    if (counter === "level") {
+      const currentLvl = inst.counters.level || (inst.face === "verso" ? 2 : 1);
+      const nextLvl = Math.max(1, currentLvl + delta);
+      const nextFace = nextLvl >= 2 ? "verso" : "recto";
+      if (tryIntent({ kind: "SET_LEVEL", instanceId, level: nextLvl, face: nextFace })) return;
+      dispatch(flipLevel(inst.controller, instanceId, nextFace, nextLvl));
+      checkVictory();
+      return;
+    }
+    if (counter === "xp") {
+      const currentXp = inst.counters.xp || 0;
+      const nextXp = Math.max(0, currentXp + delta);
+      const currentFace: "recto" | "verso" = inst.face === "verso" ? "verso" : "recto";
+      if (tryIntent({ kind: "SET_LEVEL", instanceId, face: currentFace, xp: nextXp })) return;
+      dispatch(flipLevel(inst.controller, instanceId, currentFace, inst.counters.level, nextXp));
+      checkVictory();
+      return;
+    }
     // EN LIGNE (P2) : intention INC_COUNTER (autorité serveur, gardée en tour).
     if (tryIntent({ kind: "INC_COUNTER", instanceId, counter, delta })) return;
     dispatch(incCounterVerb(inst.controller, instanceId, counter, delta));
@@ -3609,9 +3667,11 @@ export const useGameStore = defineStore("game", () => {
     return [...union];
   });
   /** Attaquants légaux du joueur actif HORS combat — gate du bouton « Attaquer ». */
-  const eligibleAttackerIds = computed(() =>
-    eligibleAttackers(rulesCtx(), turn.value.active),
-  );
+  const eligibleAttackerIds = computed(() => {
+    const ctx = rulesCtx();
+    ctx.state.options = { ...ctx.state.options, bypassSummoningSickness: true };
+    return eligibleAttackers(ctx, turn.value.active);
+  });
   /** Une attaque peut-elle être déclarée maintenant ? (tour, phase, 1/tour, premier tour) */
   const canDeclareAttack = computed(
     () =>
@@ -4479,6 +4539,7 @@ export const useGameStore = defineStore("game", () => {
     tapStack,
     untapStack,
     toggleFlip,
+    millTopDeck,
     say: (actor: Seat | "system", text: string) => dispatch(say(actor, text)),
     detachCard,
     resetCounter,
@@ -4508,6 +4569,8 @@ export const useGameStore = defineStore("game", () => {
     effectPick: engine.effectPick,
     effectPickSkip: engine.effectPickSkip,
     enqueueEffect: engine.enqueueEffect,
+    opponentTargetedCardId,
+    setTargetedCard,
     manualReminders: engine.manualReminders,
     dismissManualReminder: engine.dismissManualReminder,
   };

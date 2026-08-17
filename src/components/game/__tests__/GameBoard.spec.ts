@@ -3,6 +3,7 @@ import { setActivePinia, createPinia } from "pinia";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import GameBoard from "../GameBoard.vue";
 import { useGameStore } from "@/stores/gameStore";
+import { useCardStore } from "@/stores/cardStore";
 import { createMockDeck } from "tests/factories/card";
 
 describe("GameBoard — rendu", () => {
@@ -175,5 +176,62 @@ describe("GameBoard — a11y clavier (barre d'action)", () => {
     expect(wrapper.find(".gactionbar").exists()).toBe(false);
 
     wrapper.unmount();
+  });
+});
+
+describe("GameBoard — Level Up du Héros", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("devrait afficher le bouton Level Up quand un Héros est sélectionné et basculer son Niveau", async () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, createMockDeck());
+    const me = store.perspective;
+    const heroId = store.state.seats[me].heroInstanceId!;
+
+    const cardStore = useCardStore();
+    if (deck.hero) cardStore.cards = [deck.hero];
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Sélectionner le Héros → la barre d'action s'ouvre sans bouton action-levelup (géré par le HUD)
+    await wrapper.get(`[data-testid="card-${heroId}"]`).trigger("click");
+    const levelUpBtn = wrapper.find('[data-testid="action-levelup"]');
+    expect(levelUpBtn.exists()).toBe(false);
+
+    // Basculer au niveau 2 via le store
+    store.toggleFlip(heroId);
+    expect(store.state.instances[heroId].face).toBe("verso");
+  });
+});
+
+describe("GameBoard — menu regroupé ... & action Mill", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("ouvre le menu ... et permet d'exécuter l'action Mill", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const me = store.perspective;
+    const initialPioche = store.state.seats[me].pioche.length;
+    const topCardId = store.state.seats[me].pioche[0];
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    const moreBtn = wrapper.find('[data-testid="action-more-menu"]');
+    expect(moreBtn.exists()).toBe(true);
+
+    // Ouvre le menu ...
+    await moreBtn.trigger("click");
+    const millBtn = wrapper.find('[data-testid="action-mill"]');
+    expect(millBtn.exists()).toBe(true);
+
+    // Exécute l'action Mill
+    await millBtn.trigger("click");
+    expect(store.state.seats[me].pioche.length).toBe(initialPioche - 1);
+    expect(store.state.seats[me].defausse).toContain(topCardId);
   });
 });

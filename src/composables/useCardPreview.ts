@@ -7,6 +7,7 @@ import { ref } from "vue";
 import type { Card } from "@/types/cards";
 
 const card = ref<Card | null>(null);
+const cardFace = ref<"recto" | "verso">("recto");
 const mouseX = ref(0);
 const mouseY = ref(0);
 let listening = false;
@@ -17,16 +18,18 @@ function onMove(e: MouseEvent): void {
 }
 
 export function useCardPreview() {
-  function show(c: Card | null): void {
+  function show(c: Card | null, face: "recto" | "verso" = "recto"): void {
     if (!c) return;
     if (!listening && typeof window !== "undefined") {
       window.addEventListener("mousemove", onMove);
       listening = true;
     }
     card.value = c;
+    cardFace.value = face;
   }
   function hide(): void {
     card.value = null;
+    cardFace.value = "recto";
   }
-  return { card, mouseX, mouseY, show, hide };
+  return { card, cardFace, mouseX, mouseY, show, hide };
 }

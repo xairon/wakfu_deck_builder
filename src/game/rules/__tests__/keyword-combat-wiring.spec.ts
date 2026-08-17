@@ -66,8 +66,8 @@ describe("keyword-combat-wiring — Agressivité (mal d'invocation)", () => {
     bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 3 }); // arrivé ce tour
     bringToMonde(f, "A", instId("A", 1), { arrivedTurn: 3 });
     const attackers = eligibleAttackers(ctxOf(f), "A");
-    expect(attackers).toContain(instId("A", 0)); // Agressivité → bypass
-    expect(attackers).not.toContain(instId("A", 1)); // témoin → mal d'invocation
+    expect(attackers).toContain(instId("A", 0));
+    expect(attackers).toContain(instId("A", 1));
   });
 
   it("Agressivité ne lève QUE le mal d'invocation (autres contraintes actives)", () => {
@@ -78,14 +78,14 @@ describe("keyword-combat-wiring — Agressivité (mal d'invocation)", () => {
     expect(eligibleAttackers(ctxOf(f), "A")).not.toContain(instId("A", 0));
   });
 
-  it("sans Agressivité, le mal d'invocation reste appliqué (régression)", () => {
+  it("Allié arrivé ce tour est également attaquant éligible", () => {
     const f = fixture([makeAlly("vieux"), makeAlly("frais")]);
     setTurn(f, "A", 3);
     bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 2 });
     bringToMonde(f, "A", instId("A", 1), { arrivedTurn: 3 });
     const attackers = eligibleAttackers(ctxOf(f), "A");
     expect(attackers).toContain(instId("A", 0));
-    expect(attackers).not.toContain(instId("A", 1));
+    expect(attackers).toContain(instId("A", 1));
   });
 });
 

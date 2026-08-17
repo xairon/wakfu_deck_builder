@@ -183,7 +183,9 @@ const deckCards = computed(() => {
     let imgSrc = getThumbPath("/images/card-back.webp");
     if (card) {
       const isHero = card.mainType === "Héros";
-      const path = isHero ? `/images/cards/${card.id}_recto.webp` : `/images/cards/${card.id}.webp`;
+      const cleanId = card.id.replace(/_(recto|verso)$/, "");
+      const faceSuffix = inst.face === "verso" ? "verso" : "recto";
+      const path = isHero ? `/images/cards/${cleanId}_${faceSuffix}.webp` : `/images/cards/${card.id}.webp`;
       imgSrc = getThumbPath(path);
     } else if (rawId) {
       imgSrc = getThumbPath(`/images/cards/${rawId}.webp`);
