@@ -1443,7 +1443,7 @@ import PileStack from "./PileStack.vue";
 import CombatTray from "./CombatTray.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 
-import { recetteOf, requiresBearer } from "@/game/rules";
+import { recetteOf } from "@/game/rules";
 import { chifumiActingSeat } from "@/game/ai/botPolicy";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
@@ -1778,17 +1778,7 @@ const selectedIsMyHero = computed(
     !!heroMove.value &&
     selectedInst.value.instanceId === heroMove.value.heroInstanceId,
 );
-const selectedIsHero = computed(() => {
-  const inst = selectedInst.value;
-  if (!inst) return false;
-  const card = resolveCard(inst.cardId);
-  return card?.mainType === "Héros";
-});
-function toggleFlipSelected(): void {
-  const inst = selectedInst.value;
-  if (inst) store.toggleFlip(inst.instanceId);
-  selectedId.value = null;
-}
+
 function moveHeroSelected(): void {
   const opt = heroMove.value;
   if (!opt) return;
@@ -2358,10 +2348,7 @@ const canRevealHand = computed(
 function revealHandToOpponent(): void {
   store.revealMyHand();
 }
-// TL4 — PIOCHER (table libre / non assisté) : bouton explicite doublant le clic
-// sur la pile Pioche (onPiocheClick), plus découvrable. Masqué en mode assisté
-// (pioche automatique). Piocher reste borné au tour côté serveur.
-const canManualDraw = computed(() => !store.assist);
+
 function drawOne(): void {
   store.draw(me.value);
 }
