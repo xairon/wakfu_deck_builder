@@ -127,10 +127,7 @@ function paOf(state: GameState, seat: Seat): number {
 /** Compteurs dont la valeur DÉRIVE du jeu (combat/progression/tour) : le client
  *  ne doit JAMAIS les écrire via une intention. xp/level → victoire forgée ;
  *  hp → kill ; pa/pm → ressources infinies ; resistance/damage → combat faussé. */
-const PROTECTED_COUNTERS = new Set([
-  "pa",
-  "pm",
-]);
+const PROTECTED_COUNTERS = new Set(["pa", "pm"]);
 /** La couche de JETONS (`counters.tokens.*`) alimente le combat (forceMod,
  *  geantMod, pmMod, chifumiShield…), les mots-clés et la PA (paMod). Elle n'est
  *  JAMAIS écrite légitimement par une intention client (seul le moteur d'effets
@@ -670,7 +667,9 @@ export function resolveIntent(
             seat,
             intent.instanceId,
             targetFace,
-            intent.level ?? inst.counters.level ?? (targetFace === "verso" ? 2 : 1),
+            intent.level ??
+              inst.counters.level ??
+              (targetFace === "verso" ? 2 : 1),
             intent.xp ?? inst.counters.xp ?? 0,
           ),
         ],
@@ -684,7 +683,12 @@ export function resolveIntent(
       if (e2) return { error: e2 };
       // N'importe quelle carte contrôlée peut être attachée à un Porteur en jeu.
       const bearerInst = state.instances[intent.bearerId];
-      if (!bearerInst || bearerInst.controller !== seat || (bearerInst.location.zone !== "monde" && bearerInst.location.zone !== "havreSac")) {
+      if (
+        !bearerInst ||
+        bearerInst.controller !== seat ||
+        (bearerInst.location.zone !== "monde" &&
+          bearerInst.location.zone !== "havreSac")
+      ) {
         return { error: "Porteur invalide (non contrôlé ou hors jeu)." };
       }
       // « [bearer] ne peut pas porter d'Équipement. » (Allies Élémentaires) —
@@ -801,7 +805,10 @@ export function resolveIntent(
       // compte la longueur, donc les doublons passeraient) → dégâts multipliés.
       if (new Set(intent.attackers).size !== intent.attackers.length)
         return { error: "Attaquant en double." };
-      ctx.state.options = { ...ctx.state.options, bypassSummoningSickness: true };
+      ctx.state.options = {
+        ...ctx.state.options,
+        bypassSummoningSickness: true,
+      };
       const eligibleA = new Set(eligibleAttackers(ctx, seat));
       for (const a of intent.attackers) {
         if (!eligibleA.has(a))

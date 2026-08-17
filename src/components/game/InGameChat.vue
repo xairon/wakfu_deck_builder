@@ -29,7 +29,7 @@
         class="badge badge-error badge-sm absolute -top-1 -right-1 animate-pulse font-bold text-white shadow"
         data-testid="ingame-chat-unread-badge"
       >
-        {{ unreadCount > 99 ? '99+' : unreadCount }}
+        {{ unreadCount > 99 ? "99+" : unreadCount }}
       </span>
     </button>
 
@@ -40,10 +40,16 @@
       data-testid="ingame-chat-window"
     >
       <!-- En-tête -->
-      <div class="chat-header flex items-center justify-between border-b border-base-content/10 px-4 py-3 bg-base-800/80 rounded-t-2xl">
+      <div
+        class="chat-header flex items-center justify-between border-b border-base-content/10 px-4 py-3 bg-base-800/80 rounded-t-2xl"
+      >
         <div class="flex items-center gap-2">
-          <span class="inline-block h-2.5 w-2.5 rounded-full bg-success animate-pulse"></span>
-          <h3 class="font-display font-bold text-sm tracking-wide text-base-content">
+          <span
+            class="inline-block h-2.5 w-2.5 rounded-full bg-success animate-pulse"
+          ></span>
+          <h3
+            class="font-display font-bold text-sm tracking-wide text-base-content"
+          >
             Chat de partie 1v1
           </h3>
         </div>
@@ -63,7 +69,10 @@
         class="messages-scroll-area flex-1 overflow-y-auto p-4 space-y-3 min-h-[220px] max-h-[340px]"
         data-testid="ingame-chat-messages-list"
       >
-        <div v-if="messagesList.length === 0" class="empty-state text-center text-xs text-base-content/40 italic py-8">
+        <div
+          v-if="messagesList.length === 0"
+          class="empty-state text-center text-xs text-base-content/40 italic py-8"
+        >
           Aucun message pour l'instant. Dites bonjour à votre adversaire !
         </div>
 
@@ -74,7 +83,7 @@
           :class="{
             'items-end': msg.isSelf,
             'items-start': !msg.isSelf && msg.type !== 'system',
-            'items-center': msg.type === 'system'
+            'items-center': msg.type === 'system',
           }"
         >
           <!-- Message système -->
@@ -92,12 +101,14 @@
             :class="[
               msg.isSelf
                 ? 'bg-orange-950/90 border-orange-500/60 text-orange-50 rounded-br-xs'
-                : 'bg-slate-800/95 border-amber-400/60 text-slate-50 rounded-bl-xs'
+                : 'bg-slate-800/95 border-amber-400/60 text-slate-50 rounded-bl-xs',
             ]"
           >
             <div
               class="message-meta flex items-center justify-between gap-3 text-[10px] mb-1.5 pb-0.5 border-b"
-              :class="msg.isSelf ? 'border-orange-500/20' : 'border-amber-400/25'"
+              :class="
+                msg.isSelf ? 'border-orange-500/20' : 'border-amber-400/25'
+              "
             >
               <span
                 class="font-bold truncate max-w-[120px] text-[11px]"

@@ -26,7 +26,9 @@ describe("InGameChat.vue", () => {
     // Ouverture
     await toggleBtn.trigger("click");
     await wrapper.vm.$nextTick();
-    expect(wrapper.find('[data-testid="ingame-chat-window"]').isVisible()).toBe(true);
+    expect(wrapper.find('[data-testid="ingame-chat-window"]').isVisible()).toBe(
+      true,
+    );
 
     // Saisie et envoi d'un message
     const input = wrapper.find('[data-testid="ingame-chat-input"]');
@@ -47,7 +49,9 @@ describe("InGameChat.vue", () => {
     // Réouverture : la liste contient toujours le message
     await toggleBtn.trigger("click");
     await wrapper.vm.$nextTick();
-    expect(wrapper.find('[data-testid="ingame-chat-window"]').isVisible()).toBe(true);
+    expect(wrapper.find('[data-testid="ingame-chat-window"]').isVisible()).toBe(
+      true,
+    );
     expect(wrapper.text()).toContain("Message test retention");
   });
 
@@ -56,8 +60,12 @@ describe("InGameChat.vue", () => {
     const store = useGameStore();
 
     // S'assurer que le chat est fermé
-    expect(wrapper.find('[data-testid="ingame-chat-window"]').isVisible()).toBe(false);
-    expect(wrapper.find('[data-testid="ingame-chat-unread-badge"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="ingame-chat-window"]').isVisible()).toBe(
+      false,
+    );
+    expect(
+      wrapper.find('[data-testid="ingame-chat-unread-badge"]').exists(),
+    ).toBe(false);
 
     // Simulation d'un événement SAID d'un autre joueur (adversaire)
     store.events = [
@@ -84,7 +92,9 @@ describe("InGameChat.vue", () => {
     await toggleBtn.trigger("click");
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.find('[data-testid="ingame-chat-unread-badge"]').exists()).toBe(false);
+    expect(
+      wrapper.find('[data-testid="ingame-chat-unread-badge"]').exists(),
+    ).toBe(false);
   });
 
   it("devrait permettre d'envoyer un message via le champ de saisie et la touche Entrée", async () => {

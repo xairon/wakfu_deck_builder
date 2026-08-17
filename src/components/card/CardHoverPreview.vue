@@ -105,7 +105,8 @@ const img = computed(() => {
   if (!c) return "";
   const faceSuffix = cardFace.value === "verso" ? "verso" : "recto";
   const cleanId = c.id.replace(/_(recto|verso)$/, "");
-  if (c.mainType === "Héros") return `/images/cards/${cleanId}_${faceSuffix}.webp`;
+  if (c.mainType === "Héros")
+    return `/images/cards/${cleanId}_${faceSuffix}.webp`;
   if (c.imageUrl) return c.imageUrl;
   return `/images/cards/${c.id}.webp`;
 });

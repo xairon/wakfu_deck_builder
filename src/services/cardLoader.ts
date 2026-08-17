@@ -178,7 +178,6 @@ async function loadExtensionCards(extension: string): Promise<Card[]> {
       );
     }
 
-
     let cards;
     try {
       // On convertit d'abord en texte pour détecter les problèmes d'encodage

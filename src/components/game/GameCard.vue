@@ -134,7 +134,10 @@ function onEnter(): void {
   // preview ; la lecture passe par le zoom explicite (sélection / Agrandir).
   if (window.matchMedia?.("(hover: none)")?.matches) return;
   if (!hidden.value && !dnd.isDragging.value)
-    preview.show(props.card, props.instance.face === "verso" ? "verso" : "recto");
+    preview.show(
+      props.card,
+      props.instance.face === "verso" ? "verso" : "recto",
+    );
 }
 function onLeave(): void {
   preview.hide();

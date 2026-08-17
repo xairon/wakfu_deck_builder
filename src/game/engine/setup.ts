@@ -12,7 +12,6 @@ import { deriveState } from "./reducer.ts";
 import { shuffle, sequence } from "./verbs.ts";
 import { permutationFromSeed } from "./rng.ts";
 
-
 /** Lit défensivement les PV du Héros (forme de stats variable selon les cartes). */
 function getHeroPv(hero: unknown): number | undefined {
   const h = hero as {
@@ -140,8 +139,10 @@ export function buildInitialLayout(
     if (piocheSize > 1) {
       const seed =
         seat === "A"
-          ? (opts.seedA ?? `${gameId}:A:init:${Math.random().toString(36).slice(2)}`)
-          : (opts.seedB ?? `${gameId}:B:init:${Math.random().toString(36).slice(2)}`);
+          ? (opts.seedA ??
+            `${gameId}:A:init:${Math.random().toString(36).slice(2)}`)
+          : (opts.seedB ??
+            `${gameId}:B:init:${Math.random().toString(36).slice(2)}`);
       const perm = permutationFromSeed(piocheSize, seed);
       board.pioche = perm.map((i) => board.pioche[i]);
     }
@@ -155,7 +156,12 @@ export function setupEvents(
   decks: Record<Seat, Deck>,
   opts: SetupOptions = {},
 ): DraftEvent[] {
-  const layout = buildInitialLayout(gameId, decks, opts.firstPlayer ?? "A", opts);
+  const layout = buildInitialLayout(
+    gameId,
+    decks,
+    opts.firstPlayer ?? "A",
+    opts,
+  );
   layout.rng.masterSeedHash = opts.masterSeedHash ?? "";
   const events: DraftEvent[] = [
     { actor: "system", type: "GAME_STARTED", payload: { state: layout } },

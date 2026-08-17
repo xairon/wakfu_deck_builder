@@ -280,7 +280,10 @@ export function subscribeToGame(
       .on("presence", { event: "join" }, computeOtherPresent)
       .on("presence", { event: "leave" }, computeOtherPresent)
       .on("broadcast", { event: "card_targeted" }, (msg) => {
-        const payload = msg.payload as { seat?: Seat; instanceId?: string | null };
+        const payload = msg.payload as {
+          seat?: Seat;
+          instanceId?: string | null;
+        };
         if (payload && payload.seat !== seat && onOpponentTarget) {
           onOpponentTarget(payload.instanceId ?? null);
         }

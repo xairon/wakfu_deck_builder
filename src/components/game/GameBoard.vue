@@ -7,8 +7,9 @@
       data-testid="combat-targeting-banner"
     >
       <span>
-        {{ pendingCombatTarget.role === 'attacking' ? '⚔️' : '🛡️' }}
-        <strong>Ciblage de combat</strong> : Cliquez sur une carte dans le Monde pour la cibler
+        {{ pendingCombatTarget.role === "attacking" ? "⚔️" : "🛡️" }}
+        <strong>Ciblage de combat</strong> : Cliquez sur une carte dans le Monde
+        pour la cibler
       </span>
       <button
         class="gbtn gbtn--sm gbtn--ghost"
@@ -435,10 +436,7 @@
           <!-- TL4 / TL5 — gestes manuels (table libre non assistée) : Piocher
                (double le clic sur la pile) + Montrer sa main à l'adversaire
                (Filouterie). Masqués en mode assisté / hors ligne. -->
-          <span
-            class="gpiles__slot gpiles__manual"
-          >
-
+          <span class="gpiles__slot gpiles__manual">
             <div class="gmore-wrapper">
               <button
                 type="button"
@@ -450,11 +448,7 @@
                 💬 ...
               </button>
 
-              <div
-                v-if="showMoreMenu"
-                class="gmore-dropdown"
-                @click.stop
-              >
+              <div v-if="showMoreMenu" class="gmore-dropdown" @click.stop>
                 <button
                   class="gmore-item"
                   data-testid="action-draw"
@@ -506,7 +500,11 @@
                   class="gmore-item"
                   data-testid="action-create-token"
                   title="Mettre en jeu un jeton de créature (effet joué à la main)."
-                  @click="runMoreAction(() => { tokenDialog = true; })"
+                  @click="
+                    runMoreAction(() => {
+                      tokenDialog = true;
+                    })
+                  "
                 >
                   ⬚ Créer un Jeton
                 </button>
@@ -530,8 +528,6 @@
         </div>
       </div>
     </section>
-
-
 
     <!-- ════════ Bouton Fin du tour (façon MTGA) ════════ -->
     <!-- N'apparaît que pour le joueur DONT c'est le tour : en local hot-seat la
@@ -1116,7 +1112,9 @@
           </button>
           <span class="gactionbar__sep"></span>
           <button class="gbtn" @click="moveSelected('monde')">→ Monde</button>
-          <button class="gbtn" @click="moveSelected('havreSac')">→ Socle</button>
+          <button class="gbtn" @click="moveSelected('havreSac')">
+            → Socle
+          </button>
           <button class="gbtn" @click="moveSelected('main')">→ Main</button>
 
           <button class="gbtn" @click="moveSelected('defausse', { at: 'top' })">
@@ -1160,7 +1158,13 @@
               − Force
             </button>
           </template>
-          <button class="gbtn" @click="zoomInst(selectedInst.instanceId); selectedId = null">
+          <button
+            class="gbtn"
+            @click="
+              zoomInst(selectedInst.instanceId);
+              selectedId = null;
+            "
+          >
             ⤢ Agrandir
           </button>
           <button
@@ -1191,7 +1195,12 @@
       <div class="gpilebrowser__panel">
         <header class="gpilebrowser__head">
           <h2 class="gpilebrowser__title">
-            {{ pileBrowse.zone === 'exil' ? 'Zone Bannie (Exil)' : 'Défausse (Cimetière)' }} — {{ store.players[pileBrowse.seat].name }}
+            {{
+              pileBrowse.zone === "exil"
+                ? "Zone Bannie (Exil)"
+                : "Défausse (Cimetière)"
+            }}
+            — {{ store.players[pileBrowse.seat].name }}
             <span class="gpilebrowser__count"
               >{{ browsedPile.length }} carte(s)</span
             >
@@ -1293,7 +1302,9 @@
           </button>
         </header>
         <p class="gpilebrowser__hint">
-          Consultation privée : les cartes sont présentées dans <strong>l'ordre exact de la pioche</strong> (du sommet #1 au fond du deck). En refermant, ta Pioche sera <strong>mélangée</strong> (507.4).
+          Consultation privée : les cartes sont présentées dans
+          <strong>l'ordre exact de la pioche</strong> (du sommet #1 au fond du
+          deck). En refermant, ta Pioche sera <strong>mélangée</strong> (507.4).
         </p>
         <div class="gpilebrowser__grid">
           <div
@@ -1302,7 +1313,14 @@
             class="gpilebrowser__slot"
           >
             <div class="gpilebrowser__pos">
-              #{{ idx + 1 }} {{ idx === 0 ? '· (Sommet)' : idx === myDeckCards.length - 1 ? '· (Fond)' : '' }}
+              #{{ idx + 1 }}
+              {{
+                idx === 0
+                  ? "· (Sommet)"
+                  : idx === myDeckCards.length - 1
+                    ? "· (Fond)"
+                    : ""
+              }}
             </div>
             <GameCard
               :instance="inst"
@@ -1336,7 +1354,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -1415,8 +1432,6 @@
       :open="zoomOpen"
       @close="zoomOpen = false"
     />
-
-
   </div>
 </template>
 
@@ -1476,22 +1491,23 @@ function resolveCard(cardId: string | null): Card | null {
   const fromInstance = store.resolveInstanceCard(cardId);
   if (fromInstance) return fromInstance;
   const s = String(cardId);
-  return cardIndex.value.get(s) ?? cardIndex.value.get(cardId) ?? cardStore.cards.find((c) => String(c.id) === s || String((c as any).code) === s) ?? null;
+  return (
+    cardIndex.value.get(s) ??
+    cardIndex.value.get(cardId) ??
+    cardStore.cards.find(
+      (c) => String(c.id) === s || String((c as any).code) === s,
+    ) ??
+    null
+  );
 }
 
 onMounted(() => {
   if (!cardStore.cards.length) {
     void cardStore.initialize().catch(() => {});
   }
-
 });
 
 const view = computed(() => store.view);
-
-
-
-
-
 
 function instancesOf(z: RedactedZone | null): RedactedInstance[] {
   return z && z.kind === "full" ? z.instances : [];
@@ -1667,7 +1683,10 @@ function submitToken(): void {
   }
 }
 
-function openPileBrowser(seat: Seat, zone: "defausse" | "exil" = "defausse"): void {
+function openPileBrowser(
+  seat: Seat,
+  zone: "defausse" | "exil" = "defausse",
+): void {
   pileBrowse.value = { seat, zone };
   // Focus sur le dialogue → Échap fonctionne immédiatement.
   nextTick(() => {
@@ -1892,7 +1911,11 @@ function select(instanceId: string): void {
         store.setCardCombatState(sourceId, role);
       }
       if (role === "attacking") {
-        if (!store.combat && store.canDeclareAttack && store.eligibleAttackerIds.includes(sourceId)) {
+        if (
+          !store.combat &&
+          store.canDeclareAttack &&
+          store.eligibleAttackerIds.includes(sourceId)
+        ) {
           store.beginCombat(sourceId);
           if (store.combatTargetIds.includes(targetId)) {
             store.combatChooseTarget(targetId);
@@ -1902,8 +1925,15 @@ function select(instanceId: string): void {
             store.combatChooseTarget(targetId);
           }
         }
-      } else if (role === "blocking" && store.combat && store.combat.step === "blockers") {
-        if (store.combat.pendingBlocker && store.combat.attackers.includes(targetId)) {
+      } else if (
+        role === "blocking" &&
+        store.combat &&
+        store.combat.step === "blockers"
+      ) {
+        if (
+          store.combat.pendingBlocker &&
+          store.combat.attackers.includes(targetId)
+        ) {
           store.combatChooseBlockTarget(targetId);
         } else {
           store.combatToggleBlock(sourceId);
@@ -2299,12 +2329,12 @@ function launchCombatProjectile(
   activeProjectiles.value.push(proj);
 
   setTimeout(() => {
-    activeProjectiles.value = activeProjectiles.value.filter((p) => p.id !== proj.id);
+    activeProjectiles.value = activeProjectiles.value.filter(
+      (p) => p.id !== proj.id,
+    );
     if (onComplete) onComplete();
   }, 650);
 }
-
-
 
 // TL3 — ÉQUIPER (table libre) : bouton pour attacher À LA MAIN un Équipement
 // sélectionné (de ma main ou déjà posé) sur un Porteur, via le ciblage
@@ -2470,7 +2500,9 @@ function manaBonus(seat: Seat): boolean {
   font-size: 12px;
   font-weight: 500;
   text-align: left;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 .gmore-item:hover {
   background: rgba(240, 166, 43, 0.2);
@@ -3259,7 +3291,6 @@ function manaBonus(seat: Seat): boolean {
   border: 1px solid rgba(251, 191, 36, 0.25);
 }
 .gpilebrowser__grid {
-
   margin-top: 12px;
   overflow-y: auto;
   display: grid;
@@ -3315,7 +3346,11 @@ function manaBonus(seat: Seat): boolean {
 }
 .gcombat-banner--targeting {
   border-color: rgba(255, 200, 0, 0.7);
-  background: linear-gradient(135deg, rgba(40, 25, 10, 0.95), rgba(70, 45, 15, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(40, 25, 10, 0.95),
+    rgba(70, 45, 15, 0.95)
+  );
   color: #ffea9f;
   box-shadow: 0 4px 20px rgba(255, 200, 0, 0.35);
 }
@@ -3328,7 +3363,9 @@ function manaBonus(seat: Seat): boolean {
     0 0 16px rgba(255, 120, 0, 0.9),
     inset 0 0 16px rgba(255, 51, 0, 0.4) !important;
   transform: scale(1.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   animation: gtarget-strong-pulse 1.1s ease-in-out infinite !important;
 }
 
@@ -3366,8 +3403,13 @@ function manaBonus(seat: Seat): boolean {
 }
 
 @keyframes gtarget-badge-pulse {
-  0%, 100% { transform: translateX(-50%) scale(1); }
-  50% { transform: translateX(-50%) scale(1.08); }
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.08);
+  }
 }
 
 .flying-projectile {
@@ -3383,15 +3425,21 @@ function manaBonus(seat: Seat): boolean {
 
 @keyframes fly-projectile {
   0% {
-    transform: translate(var(--start-x), var(--start-y)) scale(0.5) rotate(var(--angle));
+    transform: translate(var(--start-x), var(--start-y)) scale(0.5)
+      rotate(var(--angle));
     opacity: 0.2;
   }
   25% {
-    transform: translate(calc(var(--start-x) + (var(--end-x) - var(--start-x)) * 0.25), calc(var(--start-y) + (var(--end-y) - var(--start-y)) * 0.25)) scale(1.5) rotate(var(--angle));
+    transform: translate(
+        calc(var(--start-x) + (var(--end-x) - var(--start-x)) * 0.25),
+        calc(var(--start-y) + (var(--end-y) - var(--start-y)) * 0.25)
+      )
+      scale(1.5) rotate(var(--angle));
     opacity: 1;
   }
   100% {
-    transform: translate(var(--end-x), var(--end-y)) scale(0.9) rotate(calc(var(--angle) + 360deg));
+    transform: translate(var(--end-x), var(--end-y)) scale(0.9)
+      rotate(calc(var(--angle) + 360deg));
     opacity: 0;
   }
 }
@@ -3447,5 +3495,4 @@ function manaBonus(seat: Seat): boolean {
     justify-content: center;
   }
 }
-
 </style>

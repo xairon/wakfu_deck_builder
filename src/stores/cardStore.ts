@@ -240,8 +240,6 @@ export const useCardStore = defineStore("cards", () => {
         }
       }
 
-
-
       // S'assurer que la collection est initialisée comme un objet vide si elle ne l'est pas déjà
       if (!collection.value) {
         collection.value = {};

@@ -109,9 +109,10 @@ describe("authority — redaction des events diffusés", () => {
       ctx(),
     );
     const forB = redactEventForBroadcast(ev, "B");
-    expect((forB.payload as { permutation: number[] }).permutation.length).toBeGreaterThan(0);
+    expect(
+      (forB.payload as { permutation: number[] }).permutation.length,
+    ).toBeGreaterThan(0);
   });
-
 
   it("ne conserve que le fragment privé du destinataire", () => {
     const ev: PersistedEvent = {
@@ -317,7 +318,6 @@ describe("authorizeDraft", () => {
       }),
     ).not.toThrow();
   });
-
 
   it("rejette un GAME_STARTED émis par un joueur (system-only)", () => {
     const s = twoSeatState();

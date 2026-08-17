@@ -38,7 +38,8 @@ describe("useInGameChat", () => {
   });
 
   it("devrait conserver l'historique des messages lors des bascules d'état UI", () => {
-    const { isChatOpen, messagesList, openChat, closeChat, addMessage } = useInGameChat();
+    const { isChatOpen, messagesList, openChat, closeChat, addMessage } =
+      useInGameChat();
 
     addMessage({
       senderId: "A",

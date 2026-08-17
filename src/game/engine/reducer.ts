@@ -30,7 +30,6 @@ import type { ZoneRef } from "../types/zones";
 import { isTokenCardId } from "../rules/effects/tokens.ts";
 import { makeRng } from "./rng.ts";
 
-
 export class EngineError extends Error {
   constructor(
     public code: string,
@@ -236,13 +235,14 @@ function applyCreateToken(s: GameState, p: CreateTokenPayload): void {
 }
 
 function applyShuffle(s: GameState, p: ShufflePayload): void {
-
   const arr = getZoneArray(s, p.zone);
   if (arr.length <= 1) return;
 
   if (p.permutation.length === 0) {
     // Si la permutation est omise ou masquée, mélanger la pioche localement avec makeRng
-    const rng = makeRng(`${s.gameId}|${s.seq}|${p.zone.zone}|${"owner" in p.zone ? p.zone.owner : "-"}`);
+    const rng = makeRng(
+      `${s.gameId}|${s.seq}|${p.zone.zone}|${"owner" in p.zone ? p.zone.owner : "-"}`,
+    );
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(rng() * (i + 1));
       const tmp = arr[i];

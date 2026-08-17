@@ -164,9 +164,6 @@ const ALLOWED_TYPES = new Set<EventType>([
 // à la fermeture de la recherche dans le deck, même hors de son tour.
 const TURN_BOUND_TYPES = new Set<EventType>();
 
-
-
-
 /** Instances ciblées par un brouillon (pour les vérifs de propriété). */
 function targetedIds(draft: DraftEvent): InstanceId[] {
   const p = draft.payload as Record<string, unknown>;

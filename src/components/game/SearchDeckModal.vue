@@ -5,9 +5,16 @@
         <div class="gtuto-modal__header">
           <h3>
             🔍 Tutoriser le Deck
-            <span class="gtuto-modal__count">({{ deckCards.length }} cartes restantes)</span>
+            <span class="gtuto-modal__count"
+              >({{ deckCards.length }} cartes restantes)</span
+            >
           </h3>
-          <button type="button" class="gtuto-modal__close" title="Fermer" @click="close">
+          <button
+            type="button"
+            class="gtuto-modal__close"
+            title="Fermer"
+            @click="close"
+          >
             ✕
           </button>
         </div>
@@ -26,14 +33,22 @@
             v-for="(item, idx) in filteredCards"
             :key="item.instanceId"
             class="gtuto-card"
-            :class="{ 'gtuto-card--selected': selectedInstanceId === item.instanceId }"
+            :class="{
+              'gtuto-card--selected': selectedInstanceId === item.instanceId,
+            }"
             @click="selectCard(item.instanceId)"
           >
             <div class="gtuto-card__pos">
-              Position #{{ idx + 1 }} {{ idx === 0 ? '· (Sommet)' : idx === filteredCards.length - 1 ? '· (Fond)' : '' }}
+              Position #{{ idx + 1 }}
+              {{
+                idx === 0
+                  ? "· (Sommet)"
+                  : idx === filteredCards.length - 1
+                    ? "· (Fond)"
+                    : ""
+              }}
             </div>
             <div class="gtuto-card__img-wrapper">
-
               <img
                 :src="item.imgSrc"
                 :alt="item.name"
@@ -46,9 +61,12 @@
             </div>
 
             <div class="gtuto-card__info">
-              <span class="gtuto-card__name" :title="item.name">{{ item.name }}</span>
+              <span class="gtuto-card__name" :title="item.name">{{
+                item.name
+              }}</span>
               <span v-if="item.mainType" class="gtuto-card__type">
-                {{ item.mainType }} {{ item.subTypes ? `• ${item.subTypes}` : '' }}
+                {{ item.mainType }}
+                {{ item.subTypes ? `• ${item.subTypes}` : "" }}
               </span>
             </div>
 
@@ -105,23 +123,19 @@
           </div>
 
           <div v-if="filteredCards.length === 0" class="gtuto-modal__empty">
-            {{ searchQuery.trim() ? "Aucune carte ne correspond à la recherche." : "Aucune carte restante dans le deck." }}
+            {{
+              searchQuery.trim()
+                ? "Aucune carte ne correspond à la recherche."
+                : "Aucune carte restante dans le deck."
+            }}
           </div>
         </div>
 
         <div class="gtuto-modal__footer">
-          <button
-            type="button"
-            class="gbtn gbtn--accent"
-            @click="shuffle"
-          >
+          <button type="button" class="gbtn gbtn--accent" @click="shuffle">
             🔀 Mélanger le Deck
           </button>
-          <button
-            type="button"
-            class="gbtn gbtn--ghost"
-            @click="close"
-          >
+          <button type="button" class="gbtn gbtn--ghost" @click="close">
             Fermer
           </button>
         </div>
@@ -145,7 +159,17 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "move-card", instanceId: string, targetZone: "hand" | "board" | "discard" | "exile" | "deck_top" | "deck_bottom"): void;
+  (
+    e: "move-card",
+    instanceId: string,
+    targetZone:
+      | "hand"
+      | "board"
+      | "discard"
+      | "exile"
+      | "deck_top"
+      | "deck_bottom",
+  ): void;
   (e: "shuffle"): void;
 }>();
 
@@ -158,7 +182,6 @@ onMounted(() => {
     void cardStore.initialize().catch(() => {});
   }
 });
-
 
 function cardLevel(card: Card | null): number | null {
   if (!card) return null;
@@ -173,9 +196,10 @@ const deckCards = computed(() => {
     }
     if (!card && inst.cardId) {
       const rawId = String(inst.cardId);
-      card = cardStore.cards.find(
-        (c) => String(c.id) === rawId || String((c as any).code) === rawId,
-      ) ?? null;
+      card =
+        cardStore.cards.find(
+          (c) => String(c.id) === rawId || String((c as any).code) === rawId,
+        ) ?? null;
     }
 
     const rawId = card?.id ?? inst.cardId ?? null;
@@ -185,7 +209,9 @@ const deckCards = computed(() => {
       const isHero = card.mainType === "Héros";
       const cleanId = card.id.replace(/_(recto|verso)$/, "");
       const faceSuffix = inst.face === "verso" ? "verso" : "recto";
-      const path = isHero ? `/images/cards/${cleanId}_${faceSuffix}.webp` : `/images/cards/${card.id}.webp`;
+      const path = isHero
+        ? `/images/cards/${cleanId}_${faceSuffix}.webp`
+        : `/images/cards/${card.id}.webp`;
       imgSrc = getThumbPath(path);
     } else if (rawId) {
       imgSrc = getThumbPath(`/images/cards/${rawId}.webp`);
@@ -212,13 +238,16 @@ const deckCards = computed(() => {
 const filteredCards = computed(() => {
   if (!searchQuery.value.trim()) return deckCards.value;
   const q = searchQuery.value.toLowerCase().trim();
-  return deckCards.value.filter((item) =>
-    item.name.toLowerCase().includes(q) || item.mainType.toLowerCase().includes(q),
+  return deckCards.value.filter(
+    (item) =>
+      item.name.toLowerCase().includes(q) ||
+      item.mainType.toLowerCase().includes(q),
   );
 });
 
 function selectCard(instanceId: string): void {
-  selectedInstanceId.value = selectedInstanceId.value === instanceId ? null : instanceId;
+  selectedInstanceId.value =
+    selectedInstanceId.value === instanceId ? null : instanceId;
 }
 
 function close(): void {
@@ -228,7 +257,13 @@ function close(): void {
 
 function takeTo(
   instanceId: string,
-  targetZone: "hand" | "board" | "discard" | "exile" | "deck_top" | "deck_bottom",
+  targetZone:
+    | "hand"
+    | "board"
+    | "discard"
+    | "exile"
+    | "deck_top"
+    | "deck_bottom",
 ): void {
   if (selectedInstanceId.value === instanceId) {
     selectedInstanceId.value = null;
@@ -265,8 +300,12 @@ function onImgError(event: Event): void {
 }
 
 @keyframes gtuto-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .gtuto-modal {
@@ -277,7 +316,9 @@ function onImgError(event: Event): void {
   border-radius: 14px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 25px rgba(240, 78, 34, 0.15);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 25px rgba(240, 78, 34, 0.15);
   overflow: hidden;
 }
 
@@ -342,7 +383,9 @@ function onImgError(event: Event): void {
   border-radius: 8px;
   color: #f6f5f1;
   font-size: 0.9rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .gtuto-modal__input:focus {
@@ -370,7 +413,10 @@ function onImgError(event: Event): void {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .gtuto-card__pos {
@@ -387,7 +433,6 @@ function onImgError(event: Event): void {
 }
 
 .gtuto-card:hover {
-
   transform: translateY(-2px);
   border-color: rgba(240, 78, 34, 0.5);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
@@ -466,7 +511,9 @@ function onImgError(event: Event): void {
   border: none;
   cursor: pointer;
   text-align: center;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
 }
 
 .gbtn:hover {

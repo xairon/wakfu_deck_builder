@@ -32,7 +32,6 @@ import {
   createGame,
   deriveState,
   move,
-
   nextTurnEvents,
   turnEndDestroyEvents,
   otherSeat,
@@ -51,7 +50,6 @@ import {
 import { makeRng } from "@/game/engine/rng";
 import type { CombatTarget, RuleEvent, RulesCtx } from "@/game/rules";
 
-
 import type { ForceStance } from "@/game/rules";
 import {
   activeGlobalMods,
@@ -69,7 +67,6 @@ import {
   eligibleTargets,
   equalityRescueEvents,
   requiresBearer,
-
   forceValue,
   havreSacHasRoom,
   havreSacBonusAvailable,
@@ -954,9 +951,16 @@ export const useGameStore = defineStore("game", () => {
   }
 
   const instanceCardMap = new Map<string, Card>();
-  const activeDecks = ref<{ A: Deck | null; B: Deck | null }>({ A: null, B: null });
+  const activeDecks = ref<{ A: Deck | null; B: Deck | null }>({
+    A: null,
+    B: null,
+  });
 
-  function populateInstanceCardMap(deckA: Deck | null, deckB: Deck | null, currentState: GameState | null): void {
+  function populateInstanceCardMap(
+    deckA: Deck | null,
+    deckB: Deck | null,
+    currentState: GameState | null,
+  ): void {
     if (!currentState) return;
     const processSeat = (seat: Seat, deck: Deck | null) => {
       if (!deck || !currentState?.seats?.[seat]) return;
@@ -983,10 +987,14 @@ export const useGameStore = defineStore("game", () => {
           if (inst.cardId) {
             const foundCard =
               deckCardList.find(
-                (c) => String(c.id) === String(inst.cardId) || String((c as any).code) === String(inst.cardId),
+                (c) =>
+                  String(c.id) === String(inst.cardId) ||
+                  String((c as any).code) === String(inst.cardId),
               ) ??
               cardStore.cards.find(
-                (c) => String(c.id) === String(inst.cardId) || String((c as any).code) === String(inst.cardId),
+                (c) =>
+                  String(c.id) === String(inst.cardId) ||
+                  String((c as any).code) === String(inst.cardId),
               );
             if (foundCard) {
               instanceCardMap.set(instId, foundCard);
@@ -1004,7 +1012,10 @@ export const useGameStore = defineStore("game", () => {
 
       let deckIdx = 0;
       for (const inst of seatInstances) {
-        if (!instanceCardMap.has(inst.instanceId) && deckIdx < deckCardList.length) {
+        if (
+          !instanceCardMap.has(inst.instanceId) &&
+          deckIdx < deckCardList.length
+        ) {
           instanceCardMap.set(inst.instanceId, deckCardList[deckIdx]);
           deckIdx++;
         }
@@ -1015,13 +1026,19 @@ export const useGameStore = defineStore("game", () => {
     if (deckB) processSeat("B", deckB);
   }
 
-  function resolveInstanceCard(instanceId: string | null | undefined): Card | null {
+  function resolveInstanceCard(
+    instanceId: string | null | undefined,
+  ): Card | null {
     if (!instanceId) return null;
     if (instanceCardMap.has(instanceId)) {
       return instanceCardMap.get(instanceId)!;
     }
     if ((activeDecks.value.A || activeDecks.value.B) && state.value) {
-      populateInstanceCardMap(activeDecks.value.A, activeDecks.value.B, state.value);
+      populateInstanceCardMap(
+        activeDecks.value.A,
+        activeDecks.value.B,
+        state.value,
+      );
       if (instanceCardMap.has(instanceId)) {
         return instanceCardMap.get(instanceId)!;
       }
@@ -1031,7 +1048,9 @@ export const useGameStore = defineStore("game", () => {
     if (cardId) {
       return (
         cardStore.cards.find(
-          (c) => String(c.id) === String(cardId) || String((c as any).code) === String(cardId),
+          (c) =>
+            String(c.id) === String(cardId) ||
+            String((c as any).code) === String(cardId),
         ) ?? null
       );
     }
@@ -2262,8 +2281,6 @@ export const useGameStore = defineStore("game", () => {
     );
   }
 
-
-
   /** CADRE — « Mettez en jeu un jeton "Monstre - X" de Force N [Élément] »
    *  joué à la main. En ligne : intent CREATE_TOKEN (le serveur dérive le
    *  cardId synthétique). En local libre : mint direct (mêmes règles). */
@@ -3193,12 +3210,10 @@ export const useGameStore = defineStore("game", () => {
 
   /** Incliner toutes les cartes en jeu contrôlées par le joueur (Monde + Havre-Sac) */
   function tapAllOnBoard(seat?: Seat | unknown): void {
-    const filterSeat = typeof seat === "string" ? (seat as Seat) : perspective.value;
+    const filterSeat =
+      typeof seat === "string" ? (seat as Seat) : perspective.value;
     for (const inst of Object.values(state.value.instances)) {
-      if (
-        inst.location.zone === "monde" ||
-        inst.location.zone === "havreSac"
-      ) {
+      if (inst.location.zone === "monde" || inst.location.zone === "havreSac") {
         if (inst.controller === filterSeat) {
           if (inst.orientation !== "tapped") {
             if (tryIntent({ kind: "TAP", instanceId: inst.instanceId })) {
@@ -3217,12 +3232,10 @@ export const useGameStore = defineStore("game", () => {
 
   /** Redresser toutes les cartes en jeu contrôlées par le joueur (Monde + Havre-Sac) */
   function untapAllOnBoard(seat?: Seat | unknown): void {
-    const filterSeat = typeof seat === "string" ? (seat as Seat) : perspective.value;
+    const filterSeat =
+      typeof seat === "string" ? (seat as Seat) : perspective.value;
     for (const inst of Object.values(state.value.instances)) {
-      if (
-        inst.location.zone === "monde" ||
-        inst.location.zone === "havreSac"
-      ) {
+      if (inst.location.zone === "monde" || inst.location.zone === "havreSac") {
         if (inst.controller === filterSeat) {
           if (inst.orientation === "tapped") {
             if (tryIntent({ kind: "UNTAP", instanceId: inst.instanceId })) {
@@ -3291,16 +3304,29 @@ export const useGameStore = defineStore("game", () => {
 
   /** Envoyer la carte du dessus de la Pioche vers la Défausse (Mill) */
   function millTopDeck(seat?: Seat): void {
-    const targetSeat = (typeof seat === "string" ? seat : perspective.value) as Seat;
+    const targetSeat = (
+      typeof seat === "string" ? seat : perspective.value
+    ) as Seat;
     const topId = state.value.seats[targetSeat]?.pioche[0];
     if (!topId) return;
     moveTo(topId, { zone: "defausse", owner: targetSeat });
   }
 
-  function detachCard(instanceId: string, toZone: "monde" | "havreSac" = "monde"): void {
+  function detachCard(
+    instanceId: string,
+    toZone: "monde" | "havreSac" = "monde",
+  ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
-    dispatch(detach(inst.controller, instanceId, toZone === "monde" ? { zone: "monde" } : { zone: "havreSac", owner: inst.owner }));
+    dispatch(
+      detach(
+        inst.controller,
+        instanceId,
+        toZone === "monde"
+          ? { zone: "monde" }
+          : { zone: "havreSac", owner: inst.owner },
+      ),
+    );
   }
 
   function resetCounter(instanceId: string, counter: string): void {
@@ -3348,7 +3374,15 @@ export const useGameStore = defineStore("game", () => {
       const currentLvl = inst.counters.level || (inst.face === "verso" ? 2 : 1);
       const nextLvl = Math.max(1, currentLvl + delta);
       const nextFace = nextLvl >= 2 ? "verso" : "recto";
-      if (tryIntent({ kind: "SET_LEVEL", instanceId, level: nextLvl, face: nextFace })) return;
+      if (
+        tryIntent({
+          kind: "SET_LEVEL",
+          instanceId,
+          level: nextLvl,
+          face: nextFace,
+        })
+      )
+        return;
       dispatch(flipLevel(inst.controller, instanceId, nextFace, nextLvl));
       checkVictory();
       return;
@@ -3356,9 +3390,26 @@ export const useGameStore = defineStore("game", () => {
     if (counter === "xp") {
       const currentXp = inst.counters.xp || 0;
       const nextXp = Math.max(0, currentXp + delta);
-      const currentFace: "recto" | "verso" = inst.face === "verso" ? "verso" : "recto";
-      if (tryIntent({ kind: "SET_LEVEL", instanceId, face: currentFace, xp: nextXp })) return;
-      dispatch(flipLevel(inst.controller, instanceId, currentFace, inst.counters.level, nextXp));
+      const currentFace: "recto" | "verso" =
+        inst.face === "verso" ? "verso" : "recto";
+      if (
+        tryIntent({
+          kind: "SET_LEVEL",
+          instanceId,
+          face: currentFace,
+          xp: nextXp,
+        })
+      )
+        return;
+      dispatch(
+        flipLevel(
+          inst.controller,
+          instanceId,
+          currentFace,
+          inst.counters.level,
+          nextXp,
+        ),
+      );
       checkVictory();
       return;
     }
