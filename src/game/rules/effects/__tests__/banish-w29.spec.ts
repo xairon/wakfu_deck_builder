@@ -37,7 +37,6 @@ import { ensureTokenCard, resetTokenRegistry, tokenCardId } from "../tokens";
 import {
   HERO_A,
   bringToMonde,
-
   ctxOf,
   dispatch,
   fixture,

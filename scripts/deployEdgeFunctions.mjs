@@ -24,7 +24,7 @@ import { dirname, resolve } from "node:path";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
-let projectRef = "ehqalhzvmgkepgbaxbzu";
+let projectRef = "hrtaviahtritcbtuyuim";
 const slugs = [];
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--ref") projectRef = argv[++i];

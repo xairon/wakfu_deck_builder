@@ -1150,7 +1150,9 @@ const perspectivePortrait = computed<string | null>(() => {
   const id = store.view.seats[store.perspective].heroInstanceId;
   const inst = id ? store.state.instances[id] : null;
   if (!inst?.cardId) return null;
-  return getThumbPath(`/images/cards/${inst.cardId}_recto.webp`);
+  const cleanId = inst.cardId.replace(/_(recto|verso)$/, "");
+  const faceSuffix = inst.face === "verso" ? "verso" : "recto";
+  return getThumbPath(`/images/cards/${cleanId}_${faceSuffix}.webp`);
 });
 
 /** Tour de l'adversaire auto-piloté (tutoriel : joueur = siège A, bot = B).

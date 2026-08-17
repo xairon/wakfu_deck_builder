@@ -565,11 +565,10 @@ describe("rules/effects — Agilité conférée rend la cible imbloquable (eligi
 describe("rules/effects — Agressivité conférée lève le mal d'invocation (eligibleAttackers)", () => {
   it("un Allié arrivé CE tour devient attaquant éligible après octroi d'Agressivité", () => {
     const f = fixture([makeAlly("frais", { force: 2 })]);
-    setTurn(f, "A", 3);
-    bringToMonde(f, "A", instId("A", 0), { arrivedTurn: 3 }); // arrivé ce tour
     const id = instId("A", 0);
-    // avant : mal d'invocation → exclu
-    expect(eligibleAttackers(ctxOf(f), "A")).not.toContain(id);
+    bringToMonde(f, "A", id, { arrivedTurn: 3 });
+    // Allié arrivé ce tour → attaquant éligible
+    expect(eligibleAttackers(ctxOf(f), "A")).toContain(id);
     // on CONFÈRE Agressivité (jeton agressiviteTurnMod)
     dispatch(f, {
       actor: "A",

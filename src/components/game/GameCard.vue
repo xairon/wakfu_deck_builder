@@ -13,6 +13,7 @@
     :data-testid="`card-${instance.instanceId}`"
     @click="onClick"
     @dblclick="emit('zoom')"
+    @contextmenu="onContextMenu"
     @mouseenter="onEnter"
     @mouseleave="onLeave"
     @focus="onEnter"
@@ -26,6 +27,7 @@
       loading="lazy"
       decoding="async"
       draggable="false"
+      @error="onImgError"
     />
     <span class="game-card__sheen" aria-hidden="true"></span>
     <span
@@ -131,7 +133,11 @@ function onEnter(): void {
   // (doublon avec le zoom/sélection du clic). Pas de vrai survol → pas de
   // preview ; la lecture passe par le zoom explicite (sélection / Agrandir).
   if (window.matchMedia?.("(hover: none)")?.matches) return;
-  if (!hidden.value && !dnd.isDragging.value) preview.show(props.card);
+  if (!hidden.value && !dnd.isDragging.value)
+    preview.show(
+      props.card,
+      props.instance.face === "verso" ? "verso" : "recto",
+    );
 }
 function onLeave(): void {
   preview.hide();
@@ -139,6 +145,10 @@ function onLeave(): void {
 function onClick(): void {
   if (dnd.consumeClick()) return;
   emit("select");
+}
+function onContextMenu(e: MouseEvent): void {
+  e.preventDefault();
+  game.toggleTap(props.instance.instanceId);
 }
 function onPointerDown(e: PointerEvent): void {
   if (!props.draggable || hidden.value) return;
@@ -155,7 +165,21 @@ const game = useGameStore();
 const tapped = computed(() => props.instance.orientation === "tapped");
 const damage = computed(() => props.instance.counters.damage || 0);
 const hp = computed(() => props.instance.counters.hp);
-const level = computed(() => props.instance.counters.level);
+function onImgError(e: Event): void {
+  const img = e.target as HTMLImageElement;
+  if (img.src.includes("/thumbs/")) {
+    img.src = img.src.replace("/thumbs/", "/");
+  } else if (!img.src.endsWith("/images/card-back.webp")) {
+    img.src = "/images/card-back.webp";
+  }
+}
+
+const level = computed(() => {
+  if (props.card?.mainType === "Héros" && props.instance.face === "verso") {
+    return 2;
+  }
+  return props.instance.counters.level;
+});
 const resistance = computed(() => props.instance.counters.resistance);
 /** Force EFFECTIVE (auras, Vrombyx, jetons) — pas le jeton forceMod brut. */
 const force = computed(() => game.effectiveForceOf(props.instance.instanceId));
@@ -196,8 +220,9 @@ const imgSrc = computed(() => {
   if (hidden.value) return "/images/card-back.webp";
   const id = props.instance.cardId as string;
   const isHero = props.card?.mainType === "Héros";
+  const cleanId = id.replace(/_(recto|verso)$/, "");
   const base = isHero
-    ? `/images/cards/${id}_${props.instance.face === "verso" ? "verso" : "recto"}.webp`
+    ? `/images/cards/${cleanId}_${props.instance.face === "verso" ? "verso" : "recto"}.webp`
     : `/images/cards/${id}.webp`;
   return getThumbPath(base);
 });

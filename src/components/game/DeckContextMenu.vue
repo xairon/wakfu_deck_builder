@@ -129,7 +129,9 @@ function action(act: string): void {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 215, 0, 0.3);
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.15);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(255, 215, 0, 0.15);
   padding: 8px;
   color: #e2e8f0;
   font-family: inherit;
@@ -196,7 +198,9 @@ function action(act: string): void {
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .deck-ctx-menu__item:hover {

@@ -49,12 +49,12 @@ describe("TL3 — attachSelected (ciblage de Porteur manuel)", () => {
     expect(store.pendingBearer?.eligible).toContain(heroA);
   });
 
-  it("carte non-Équipement : refuse (rien à attacher)", () => {
+  it("carte non-Équipement : accepte (peut être attachée à un Porteur)", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     store.state.turn.number = 3;
     const ally = placeInZone(store, "A", { zone: "monde" });
-    const ok = store.attachSelected(ally); // un Allié n'est pas un Équipement
-    expect(ok).toBe(false);
-    expect(store.pendingBearer).toBeNull();
+    const ok = store.attachSelected(ally);
+    expect(ok).toBe(true);
+    expect(store.pendingBearer).not.toBeNull();
   });
 });

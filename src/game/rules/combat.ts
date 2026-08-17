@@ -274,8 +274,6 @@ export function resolveCombat(
     if (!blockers?.length) continue;
     const aForce = forceOf(ctx, attacker, stance);
 
-
-
     if (effectiveKeywords(ctx, attacker).geant) {
       // 6135 — répartition CHOISIE par l'attaquant (plan.geantAssign) si elle
       // est légale (whyBadGeantAssign) ; sinon politique automatique (fallback

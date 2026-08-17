@@ -40,8 +40,9 @@ describe("GameBoard — clic sur la Pioche", () => {
     expect(err).toMatch(/pioche est automatique/i);
   });
 
-  it("mode manuel : le clic pioche une carte (affordance table libre)", async () => {
-    const { drew } = await clickMyPioche(false);
-    expect(drew).toBe(1);
+  it("mode manuel : ne pioche pas au clic sur le deck", async () => {
+    const { drew, err } = await clickMyPioche(false);
+    expect(drew).toBe(0);
+    expect(err).toMatch(/utilisez le bouton « Piocher »/i);
   });
 });

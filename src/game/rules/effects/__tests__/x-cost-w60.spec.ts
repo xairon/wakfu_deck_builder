@@ -12,9 +12,7 @@
  */
 import { describe, it, expect } from "vitest";
 import type { Card } from "@/types/cards";
-import {
-  createMockEquipmentCard,
-} from "tests/factories/card";
+import { createMockEquipmentCard } from "tests/factories/card";
 
 import {
   makeEffectSandbox,

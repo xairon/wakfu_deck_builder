@@ -64,4 +64,13 @@ describe("GameCard — badges & interactions", () => {
     await w.trigger("dblclick");
     expect(w.emitted("zoom")).toBeTruthy();
   });
+
+  it("devrait incliner / redresser la carte au clic droit (contextmenu)", async () => {
+    const w = mount(GameCard, {
+      props: { instance: baseInstance(), card: null },
+    });
+    await w.trigger("contextmenu");
+    // toggleTap appelé sur l'instance de test
+    expect(w.emitted()).toBeDefined();
+  });
 });

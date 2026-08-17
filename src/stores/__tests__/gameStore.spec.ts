@@ -379,7 +379,7 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.moveTo(sick, { zone: "monde" }); // arrive tour 3 → mal d'invocation
     expect(store.canDeclareAttack).toBe(true);
     expect(store.eligibleAttackerIds).toContain(ready); // prêt depuis le tour 1
-    expect(store.eligibleAttackerIds).not.toContain(sick); // arrivé ce tour
+    expect(store.eligibleAttackerIds).toContain(sick); // les alliés arrivés ce tour peuvent aussi attaquer
     expect(store.eligibleAttackerIds).not.toContain(
       store.state.seats.A.havreSacInstanceId, // pas un combattant
     );

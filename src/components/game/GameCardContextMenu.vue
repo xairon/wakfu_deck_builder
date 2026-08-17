@@ -13,7 +13,9 @@
       >
         <div v-if="cardName" class="card-ctx-menu__header">
           <span class="card-ctx-menu__title">{{ cardName }}</span>
-          <span v-if="zoneName" class="card-ctx-menu__zone">({{ zoneName }})</span>
+          <span v-if="zoneName" class="card-ctx-menu__zone"
+            >({{ zoneName }})</span
+          >
         </div>
 
         <div class="card-ctx-menu__group">
@@ -33,7 +35,9 @@
             @click="action('toggle_tap')"
           >
             <span class="card-ctx-menu__icon">🔄</span>
-            <span>{{ isTapped ? 'Redresser cette carte' : 'Incurver cette carte' }}</span>
+            <span>{{
+              isTapped ? "Redresser cette carte" : "Incurver cette carte"
+            }}</span>
           </button>
 
           <button
@@ -62,7 +66,9 @@
             @click="action('toggle_flip')"
           >
             <span class="card-ctx-menu__icon">👁️</span>
-            <span>{{ isFaceDown ? 'Mettre face visible' : 'Mettre face cachée' }}</span>
+            <span>{{
+              isFaceDown ? "Mettre face visible" : "Mettre face cachée"
+            }}</span>
           </button>
         </div>
 
@@ -73,7 +79,9 @@
           <button
             type="button"
             class="card-ctx-menu__item"
-            :class="{ 'card-ctx-menu__item--active': currentCombatState === 'attacking' }"
+            :class="{
+              'card-ctx-menu__item--active': currentCombatState === 'attacking',
+            }"
             @click="action('set_combat_attacking')"
           >
             <span class="card-ctx-menu__icon">⚔️</span>
@@ -83,7 +91,9 @@
           <button
             type="button"
             class="card-ctx-menu__item"
-            :class="{ 'card-ctx-menu__item--active': currentCombatState === 'blocking' }"
+            :class="{
+              'card-ctx-menu__item--active': currentCombatState === 'blocking',
+            }"
             @click="action('set_combat_blocking')"
           >
             <span class="card-ctx-menu__icon">🛡️</span>
@@ -246,9 +256,7 @@ const currentDamage = computed(() => props.instance?.counters.damage || 0);
 const hasAttachments = computed(
   () => (props.instance?.attachments?.length ?? 0) > 0,
 );
-const currentCombatState = computed(
-  () => props.instance?.counters.combatState,
-);
+const currentCombatState = computed(() => props.instance?.counters.combatState);
 
 // Évite que le menu ne sorte de la fenêtre
 const adjustedX = computed(() => {
@@ -294,7 +302,9 @@ function action(act: string): void {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 215, 0, 0.3);
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.15);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(255, 215, 0, 0.15);
   padding: 8px;
   color: #e2e8f0;
   font-family: inherit;
@@ -362,7 +372,9 @@ function action(act: string): void {
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .card-ctx-menu__item:hover {

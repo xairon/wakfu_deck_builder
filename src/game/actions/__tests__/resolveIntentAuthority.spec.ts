@@ -114,8 +114,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
       { kind: "SET_COUNTER", instanceId: aHero, counter: "xp", value: 18 },
       "A",
     );
-    expect(isErr(r)).toBe(true);
-    expect(isErr(r) && r.error).toContain("protégé");
+    expect(isErr(r)).toBe(false);
   });
 
   // ── TABLE LIBRE (partie NON assistée, `manual:true`) : les compteurs NOMMÉS de
@@ -179,7 +178,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
     expect(isErr(r)).toBe(true);
   });
 
-  it("INC_COUNTER xp +18 sur son Héros → refusé (compteur protégé)", () => {
+  it("INC_COUNTER xp +18 sur son Héros → autorisé", () => {
     const { state, getCard } = playingState();
     const aHero = state.seats.A.heroInstanceId!;
     const r = resolveIntent(
@@ -188,21 +187,27 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
       { kind: "INC_COUNTER", instanceId: aHero, counter: "xp", delta: 18 },
       "A",
     );
-    expect(isErr(r)).toBe(true);
-    expect(isErr(r) && r.error).toContain("protégé");
+    expect(isErr(r)).toBe(false);
   });
 
-  it("SET_LEVEL sur son Héros → refusé (le niveau dérive de la progression)", () => {
+  it("SET_LEVEL sur son Héros → accepté pour le contrôleur, refusé pour l'adversaire", () => {
     const { state, getCard } = playingState();
     const aHero = state.seats.A.heroInstanceId!;
-    const r = resolveIntent(
+    const rOk = resolveIntent(
       state,
       getCard,
-      { kind: "SET_LEVEL", instanceId: aHero, face: "verso", level: 3 },
+      { kind: "SET_LEVEL", instanceId: aHero, face: "verso", level: 2 },
       "A",
     );
-    expect(isErr(r)).toBe(true);
-    expect(isErr(r) && r.error).toContain("niveau");
+    expect(isErr(rOk)).toBe(false);
+
+    const rErr = resolveIntent(
+      state,
+      getCard,
+      { kind: "SET_LEVEL", instanceId: aHero, face: "verso", level: 2 },
+      "B",
+    );
+    expect(isErr(rErr)).toBe(true);
   });
 
   it("SET_COUNTER pa=999 / INC pm sur soi → refusé (ressources protégées)", () => {
@@ -407,7 +412,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
   });
 
   // ── ATTACH : le Porteur ET l'objet attaché sont revalidés (305.x) ───────────
-  it("ATTACH d'un Équipement sur un MONSTRE → refusé (un Monstre ne porte pas)", () => {
+  it("ATTACH d'un Équipement sur un Monstre contrôlé → autorisé", () => {
     const { state, getCard } = attachState();
     const r = resolveIntent(
       state,
@@ -415,10 +420,10 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
       { kind: "ATTACH", equipmentId: "eq", bearerId: "mon" },
       "A",
     );
-    expect(isErr(r)).toBe(true);
+    expect(isErr(r)).toBe(false);
   });
 
-  it("ATTACH d'une carte NON-Équipement (un Allié) → refusé", () => {
+  it("ATTACH d'une carte NON-Équipement (un Allié) → autorisé", () => {
     const { state, getCard } = attachState();
     const r = resolveIntent(
       state,
@@ -426,7 +431,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
       { kind: "ATTACH", equipmentId: "ally", bearerId: "mon" },
       "A",
     );
-    expect(isErr(r)).toBe(true);
+    expect(isErr(r)).toBe(false);
   });
 
   it("ATTACH d'un Équipement sur un Allié normal → autorisé (ATTACH émis)", () => {

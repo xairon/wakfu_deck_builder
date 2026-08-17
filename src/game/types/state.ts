@@ -90,6 +90,7 @@ export interface GameState {
   combat?: CombatState | null;
   /** Dernier tour où chaque siège a attaqué (règle 1 attaque/tour, 603). */
   lastAttackTurn?: Partial<Record<Seat, number>>;
+  options?: { bypassSummoningSickness?: boolean; [key: string]: any };
   rng: { masterSeedHash: string };
   seq: number; // dernier event appliqué
 }

@@ -228,11 +228,26 @@ export async function submitIntent(
  * ligne (sync/join/leave). Sert la fenêtre de grâce sur déconnexion adverse
  * (cf. gameStore). Optionnel pour ne pas casser les abonnements existants.
  */
+export function broadcastTargetCard(
+  gameId: string,
+  seat: Seat,
+  instanceId: string | null,
+): void {
+  const c = client();
+  const presenceChannel = c.channel(`game:${gameId}:presence`);
+  void presenceChannel.send({
+    type: "broadcast",
+    event: "card_targeted",
+    payload: { seat, instanceId },
+  });
+}
+
 export function subscribeToGame(
   gameId: string,
   seat: Seat,
   onEvent: (event: RedactedEvent) => void,
   onPresence?: (present: boolean) => void,
+  onOpponentTarget?: (instanceId: string | null) => void,
 ): () => void {
   const c = client();
   const channel = c
@@ -241,8 +256,6 @@ export function subscribeToGame(
       onEvent(msg.payload as RedactedEvent);
     })
     .subscribe((status) => {
-      // Canal privé refusé (mauvais siège / autorisation Realtime) ou perdu :
-      // on le signale (la reconnexion/resync complète est un lot P1).
       if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
         console.error(
           `[gameClient] canal Realtime ${status} : game:${gameId}:${seat}`,
@@ -250,25 +263,34 @@ export function subscribeToGame(
       }
     });
 
-  // Canal de présence partagé (les deux sièges y trackent leur siège). On
-  // calcule la présence de l'AUTRE siège depuis l'état de présence agrégé.
   const other: Seat = seat === "A" ? "B" : "A";
   let presence: ReturnType<typeof c.channel> | null = null;
-  if (onPresence) {
+  if (onPresence || onOpponentTarget) {
     presence = c.channel(`game:${gameId}:presence`, {
       config: { presence: { key: seat } },
     });
     const computeOtherPresent = (): void => {
-      const stateMap = presence!.presenceState() as Record<string, unknown[]>;
-      onPresence(!!stateMap[other]?.length);
+      if (onPresence && presence) {
+        const stateMap = presence.presenceState() as Record<string, unknown[]>;
+        onPresence(!!stateMap[other]?.length);
+      }
     };
     presence
       .on("presence", { event: "sync" }, computeOtherPresent)
       .on("presence", { event: "join" }, computeOtherPresent)
       .on("presence", { event: "leave" }, computeOtherPresent)
+      .on("broadcast", { event: "card_targeted" }, (msg) => {
+        const payload = msg.payload as {
+          seat?: Seat;
+          instanceId?: string | null;
+        };
+        if (payload && payload.seat !== seat && onOpponentTarget) {
+          onOpponentTarget(payload.instanceId ?? null);
+        }
+      })
       .subscribe((status) => {
-        if (status === "SUBSCRIBED") {
-          void presence!.track({ seat });
+        if (status === "SUBSCRIBED" && presence) {
+          void presence.track({ seat });
         }
       });
   }

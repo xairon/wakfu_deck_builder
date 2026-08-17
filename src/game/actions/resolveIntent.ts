@@ -34,6 +34,7 @@ import {
   untap,
   setCounter,
   incCounter,
+  flipLevel,
   setCombat,
   say,
 } from "../engine/verbs.ts";
@@ -100,6 +101,7 @@ const MANUAL_OUT_OF_TURN = new Set<GameIntent["kind"]>([
   "UNTAP",
   "SET_COUNTER",
   "INC_COUNTER",
+  "SET_LEVEL",
   "ATTACH",
   "DETACH",
   "CREATE_TOKEN",
@@ -125,15 +127,7 @@ function paOf(state: GameState, seat: Seat): number {
 /** Compteurs dont la valeur DÉRIVE du jeu (combat/progression/tour) : le client
  *  ne doit JAMAIS les écrire via une intention. xp/level → victoire forgée ;
  *  hp → kill ; pa/pm → ressources infinies ; resistance/damage → combat faussé. */
-const PROTECTED_COUNTERS = new Set([
-  "hp",
-  "xp",
-  "level",
-  "pa",
-  "pm",
-  "resistance",
-  "damage",
-]);
+const PROTECTED_COUNTERS = new Set(["pa", "pm"]);
 /** La couche de JETONS (`counters.tokens.*`) alimente le combat (forceMod,
  *  geantMod, pmMod, chifumiShield…), les mots-clés et la PA (paMod). Elle n'est
  *  JAMAIS écrite légitimement par une intention client (seul le moteur d'effets
@@ -145,15 +139,7 @@ function counterIsProtected(
   token?: boolean,
   manual?: boolean,
 ): boolean {
-  // Les JETONS moteur (forceMod/geantMod/paMod…) sont TOUJOURS bloqués : un
-  // joueur ne les écrit jamais à la main et les ouvrir rouvrirait la forge
-  // SILENCIEUSE de combat.
   if (token) return true;
-  // TABLE LIBRE (partie NON assistée, `manual`) : les compteurs NOMMÉS de table
-  // (PV/Résistance/dégâts/PA/PM/XP/Niveau) sont ajustables sur SES PROPRES cartes
-  // — journalisés et VISIBLES par l'adversaire, comme au physique (l'ownership
-  // reste vérifié par controlError). En partie ASSISTÉE (automatisée), ils
-  // restent protégés (dérivés du moteur) pour l'anti-triche.
   if (manual) return false;
   return PROTECTED_COUNTERS.has(counter);
 }
@@ -668,38 +654,43 @@ export function resolveIntent(
       };
     }
 
-    // Le Niveau/XP dérivent EXCLUSIVEMENT de la progression (combat →
-    // grantXpEvents, côté serveur). Un SET_LEVEL client serait une victoire
-    // forgée (level/xp = condition de victoire) → refusé en ligne.
-    case "SET_LEVEL":
+    case "SET_LEVEL": {
+      const inst = state.instances[intent.instanceId];
+      if (!inst) return { error: "Instance inconnue." };
+      if (inst.controller !== seat && inst.owner !== seat) {
+        return { error: "Vous ne contrôlez pas cette carte." };
+      }
+      const targetFace = intent.face ?? inst.face ?? "recto";
       return {
-        error:
-          "Le niveau dérive de la progression (combat), non modifiable manuellement en ligne.",
+        events: [
+          flipLevel(
+            seat,
+            intent.instanceId,
+            targetFace,
+            intent.level ??
+              inst.counters.level ??
+              (targetFace === "verso" ? 2 : 1),
+            intent.xp ?? inst.counters.xp ?? 0,
+          ),
+        ],
       };
+    }
 
     case "ATTACH": {
       const e1 = controlError(state, seat, intent.equipmentId);
       if (e1) return { error: e1 };
       const e2 = controlError(state, seat, intent.bearerId);
       if (e2) return { error: e2 };
-      // Anti-triche (305.x) : l'objet attaché DOIT être un Équipement (ou une
-      // carte à bonus de Porteur) — un client forgé ne peut pas attacher n'importe
-      // quelle carte pour lui conférer des bonus. Miroir de PLAY_CARD/CRAFT.
-      const eqCard = getCard(
-        state.instances[intent.equipmentId]?.cardId ?? null,
-      );
-      if (!requiresBearer(eqCard))
-        return { error: "Cette carte ne s'attache pas (pas un Équipement)." };
-      // Le Porteur DOIT pouvoir porter un Équipement (Allié non-Monstre / Héros
-      // contrôlé, en jeu) — sinon un Monstre s'octroierait des bonus de Porteur.
+      // N'importe quelle carte contrôlée peut être attachée à un Porteur en jeu.
+      const bearerInst = state.instances[intent.bearerId];
       if (
-        !eligibleBearers(ctx, seat, intent.equipmentId).includes(
-          intent.bearerId,
-        )
-      )
-        return {
-          error: "Porteur invalide (Monstre, type non valide, ou hors jeu).",
-        };
+        !bearerInst ||
+        bearerInst.controller !== seat ||
+        (bearerInst.location.zone !== "monde" &&
+          bearerInst.location.zone !== "havreSac")
+      ) {
+        return { error: "Porteur invalide (non contrôlé ou hors jeu)." };
+      }
       // « [bearer] ne peut pas porter d'Équipement. » (Allies Élémentaires) —
       // pouvoir continu refusant à cette créature le rôle de Porteur.
       if (cannotCarryEquipment(ctx, intent.bearerId))
@@ -814,6 +805,10 @@ export function resolveIntent(
       // compte la longueur, donc les doublons passeraient) → dégâts multipliés.
       if (new Set(intent.attackers).size !== intent.attackers.length)
         return { error: "Attaquant en double." };
+      ctx.state.options = {
+        ...ctx.state.options,
+        bypassSummoningSickness: true,
+      };
       const eligibleA = new Set(eligibleAttackers(ctx, seat));
       for (const a of intent.attackers) {
         if (!eligibleA.has(a))

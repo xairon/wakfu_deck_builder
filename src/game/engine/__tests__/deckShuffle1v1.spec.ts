@@ -23,10 +23,14 @@ describe("Validation du mélange du deck en mode partie 1v1", () => {
     });
 
     const layout = buildInitialLayout("partie-test", { A: deck, B: deck });
-    const piocheInitiale = layout.seats.A.pioche.map((id) => layout.instances[id].cardId);
+    const piocheInitiale = layout.seats.A.pioche.map(
+      (id) => layout.instances[id].cardId,
+    );
 
     // Les 16 premières cartes ne doivent PAS être toutes identiques ("carte-a")
-    const les16PremieresIdentiques = piocheInitiale.slice(0, 16).every((id) => id === "carte-a");
+    const les16PremieresIdentiques = piocheInitiale
+      .slice(0, 16)
+      .every((id) => id === "carte-a");
     expect(les16PremieresIdentiques).toBe(false);
   });
 
@@ -47,14 +51,20 @@ describe("Validation du mélange du deck en mode partie 1v1", () => {
     store.startMatch(deckA, deckB, { first: "A" });
 
     const piocheIds = store.state.seats.A.pioche;
-    const cartesPioche = piocheIds.map((id) => store.resolveInstanceCard(id)?.id);
+    const cartesPioche = piocheIds.map(
+      (id) => store.resolveInstanceCard(id)?.id,
+    );
 
     // La pioche ne doit pas être un bloc contigu de 16 cartes "carte-a"
-    const les16PremieresSontIdentiques = cartesPioche.slice(0, 16).every((id) => id === "carte-a");
+    const les16PremieresSontIdentiques = cartesPioche
+      .slice(0, 16)
+      .every((id) => id === "carte-a");
     expect(les16PremieresSontIdentiques).toBe(false);
 
     // Lorsqu'on pioche 5 cartes, la main contient une variété de cartes et non toujours la même
-    const mainCartes = store.state.seats.A.main.map((id) => store.resolveInstanceCard(id)?.id);
+    const mainCartes = store.state.seats.A.main.map(
+      (id) => store.resolveInstanceCard(id)?.id,
+    );
     const cartesUniquesPiochees = new Set(mainCartes);
     expect(cartesUniquesPiochees.size).toBeGreaterThan(1);
   });
@@ -127,4 +137,3 @@ describe("Validation du mélange du deck en mode partie 1v1", () => {
     expect(ordreAvantChercher).not.toEqual(ordreApresFermetureModal);
   });
 });
-

@@ -104,8 +104,14 @@ describe("attachmentHelpers", () => {
     attachCard(state, "equip_1", "ally_1");
     moveHostCard(state, "ally_1", { zone: "havreSac", owner: "A" });
 
-    expect(state.instances.ally_1.location).toEqual({ zone: "havreSac", owner: "A" });
-    expect(state.instances.equip_1.location).toEqual({ zone: "havreSac", owner: "A" });
+    expect(state.instances.ally_1.location).toEqual({
+      zone: "havreSac",
+      owner: "A",
+    });
+    expect(state.instances.equip_1.location).toEqual({
+      zone: "havreSac",
+      owner: "A",
+    });
   });
 
   it("discardCardWithEquipment sends host and all attached equipments to discard", () => {
@@ -113,8 +119,14 @@ describe("attachmentHelpers", () => {
     attachCard(state, "equip_1", "ally_1");
     discardCardWithEquipment(state, "ally_1");
 
-    expect(state.instances.ally_1.location).toEqual({ zone: "defausse", owner: "A" });
-    expect(state.instances.equip_1.location).toEqual({ zone: "defausse", owner: "A" });
+    expect(state.instances.ally_1.location).toEqual({
+      zone: "defausse",
+      owner: "A",
+    });
+    expect(state.instances.equip_1.location).toEqual({
+      zone: "defausse",
+      owner: "A",
+    });
     expect(state.instances.ally_1.attachments).toHaveLength(0);
   });
 });

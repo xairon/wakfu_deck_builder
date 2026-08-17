@@ -41,7 +41,8 @@ export function useInGameChat(options: UseInGameChatOptions = {}) {
           behavior,
         });
       } else {
-        messagesContainerRef.value.scrollTop = messagesContainerRef.value.scrollHeight;
+        messagesContainerRef.value.scrollTop =
+          messagesContainerRef.value.scrollHeight;
       }
     }
   }
@@ -82,7 +83,9 @@ export function useInGameChat(options: UseInGameChatOptions = {}) {
   }) {
     const createdAt = msg.createdAt ?? Date.now();
     const formattedMessage: ChatMessage = {
-      id: msg.id ?? `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id:
+        msg.id ??
+        `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       senderId: msg.senderId,
       senderName: msg.senderName,
       text: msg.text,

@@ -7,8 +7,9 @@
       data-testid="combat-targeting-banner"
     >
       <span>
-        {{ pendingCombatTarget.role === 'attacking' ? '⚔️' : '🛡️' }}
-        <strong>Ciblage de combat</strong> : Cliquez sur une carte dans le Monde pour la cibler
+        {{ pendingCombatTarget.role === "attacking" ? "⚔️" : "🛡️" }}
+        <strong>Ciblage de combat</strong> : Cliquez sur une carte dans le Monde
+        pour la cibler
       </span>
       <button
         class="gbtn gbtn--sm gbtn--ghost"
@@ -55,7 +56,6 @@
                 :selected="inst.instanceId === selectedId"
                 @select="select(inst.instanceId)"
                 @zoom="zoomInst(inst.instanceId)"
-                @contextmenu.prevent
               />
             </div>
           </div>
@@ -82,7 +82,6 @@
                   :selected="inst.instanceId === selectedId"
                   @select="select(inst.instanceId)"
                   @zoom="zoomInst(inst.instanceId)"
-                  @contextmenu.prevent
                 />
                 <AttachedEquip
                   :bearer="inst"
@@ -143,13 +142,18 @@
             :class="slotCls(inst.instanceId)"
             :data-iid="inst.instanceId"
           >
+            <div
+              v-if="inst.instanceId === store.opponentTargetedCardId"
+              class="gslot__target-badge"
+            >
+              🎯 Ciblée par l'adversaire
+            </div>
             <GameCard
               :instance="inst"
               :card="resolveCard(inst.cardId)"
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
-              @contextmenu.prevent
             />
             <AttachedEquip
               :bearer="inst"
@@ -187,7 +191,6 @@
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
-              @contextmenu.prevent
             />
           </div>
         </TransitionGroup>
@@ -214,6 +217,12 @@
             :class="slotCls(inst.instanceId)"
             :data-iid="inst.instanceId"
           >
+            <div
+              v-if="inst.instanceId === store.opponentTargetedCardId"
+              class="gslot__target-badge"
+            >
+              🎯 Ciblée par l'adversaire
+            </div>
             <GameCard
               :instance="inst"
               :card="resolveCard(inst.cardId)"
@@ -221,7 +230,6 @@
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
-              @contextmenu.prevent
             />
             <AttachedEquip
               :bearer="inst"
@@ -254,13 +262,18 @@
               :class="slotCls(inst.instanceId)"
               :data-iid="inst.instanceId"
             >
+              <div
+                v-if="inst.instanceId === store.opponentTargetedCardId"
+                class="gslot__target-badge"
+              >
+                🎯 Ciblée par l'adversaire
+              </div>
               <GameCard
                 :instance="inst"
                 :card="resolveCard(inst.cardId)"
                 :selected="inst.instanceId === selectedId"
                 @select="select(inst.instanceId)"
                 @zoom="zoomInst(inst.instanceId)"
-                @contextmenu.prevent
               />
             </div>
           </div>
@@ -298,7 +311,6 @@
                   :selected="inst.instanceId === selectedId"
                   @select="select(inst.instanceId)"
                   @zoom="zoomInst(inst.instanceId)"
-                  @contextmenu.prevent
                 />
                 <AttachedEquip
                   :bearer="inst"
@@ -424,86 +436,98 @@
           <!-- TL4 / TL5 — gestes manuels (table libre non assistée) : Piocher
                (double le clic sur la pile) + Montrer sa main à l'adversaire
                (Filouterie). Masqués en mode assisté / hors ligne. -->
-          <span
-            class="gpiles__slot gpiles__manual"
-          >
+          <span class="gpiles__slot gpiles__manual">
+            <div class="gmore-wrapper">
+              <button
+                type="button"
+                class="gbtn gbtn--sm gbtn--more"
+                data-testid="action-more-menu"
+                title="Actions de table et utilitaires…"
+                @click.stop="showMoreMenu = !showMoreMenu"
+              >
+                💬 ...
+              </button>
 
-            <button
-              v-if="canManualDraw"
-              class="gbtn gbtn--sm"
-              data-testid="action-draw"
-              title="Piocher une carte de ta Pioche."
-              @click="drawOne"
-            >
-              🎴 Piocher
-            </button>
-            <button
-              v-if="canRevealHand"
-              class="gbtn gbtn--sm"
-              data-testid="action-reveal-hand"
-              title="Montrer ta main à l'adversaire (Filouterie)."
-              @click="revealHandToOpponent"
-            >
-              👁 Montrer ma main
-            </button>
-            <button
-              class="gbtn gbtn--sm"
-              title="Incliner toutes les cartes sur le plateau"
-              @click="tapAllOnBoard"
-            >
-              🔄 Incliner tout
-            </button>
-            <button
-              class="gbtn gbtn--sm"
-              title="Redresser toutes les cartes sur le plateau"
-              @click="untapAllOnBoard"
-            >
-              ⬆️ Redresser tout
-            </button>
-            <!-- F2 — tuteurs « Cherchez dans votre Pioche… » : consultation
-                 privée + mélange OBLIGATOIRE à la fermeture. -->
-            <button
-              v-if="canManualDraw"
-              class="gbtn gbtn--sm"
-              data-testid="action-search-deck"
-              title="Chercher dans ta Pioche (elle sera mélangée en refermant)."
-              @click="openDeckSearch"
-            >
-              🔍 Chercher
-            </button>
-            <!-- F4 — « Mettez en jeu un jeton "Monstre - X" de Force N ». -->
-            <button
-              v-if="canManualDraw"
-              class="gbtn gbtn--sm"
-              data-testid="action-create-token"
-              title="Mettre en jeu un jeton de créature (effet joué à la main)."
-              @click="tokenDialog = true"
-            >
-              ⬚ Jeton
-            </button>
-            <!-- F3 — aléa PARTAGÉ journalisé (tiré par le serveur en ligne). -->
-            <button
-              v-if="canManualDraw"
-              class="gbtn gbtn--sm"
-              title="Lancer un d6 (résultat au journal, tiré par le serveur)."
-              @click="store.rollDie(6)"
-            >
-              🎲 Dé
-            </button>
-            <button
-              v-if="canManualDraw"
-              class="gbtn gbtn--sm"
-              title="Chi-Fu-Mi aléatoire (résultat au journal, tiré par le serveur)."
-              @click="store.rollDie(3)"
-            >
-              ✊✋✌
-            </button>
+              <div v-if="showMoreMenu" class="gmore-dropdown" @click.stop>
+                <button
+                  class="gmore-item"
+                  data-testid="action-draw"
+                  title="Piocher une carte de ta Pioche."
+                  @click="runMoreAction(drawOne)"
+                >
+                  🎴 Piocher
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-mill"
+                  title="Envoyer la carte du dessus de la Pioche à la Défausse (Mill)."
+                  @click="runMoreAction(millOne)"
+                >
+                  💀 Mill (Défausser du dessus)
+                </button>
+                <button
+                  v-if="canRevealHand"
+                  class="gmore-item"
+                  data-testid="action-reveal-hand"
+                  title="Montrer ta main à l'adversaire (Filouterie)."
+                  @click="runMoreAction(revealHandToOpponent)"
+                >
+                  👁 Montrer ma main
+                </button>
+                <button
+                  class="gmore-item"
+                  title="Incliner toutes les cartes sur le plateau"
+                  @click="runMoreAction(tapAllOnBoard)"
+                >
+                  🔄 Incliner tout
+                </button>
+                <button
+                  class="gmore-item"
+                  title="Redresser toutes les cartes sur le plateau"
+                  @click="runMoreAction(untapAllOnBoard)"
+                >
+                  ⬆️ Redresser tout
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-search-deck"
+                  title="Chercher dans ta Pioche (elle sera mélangée en refermant)."
+                  @click="runMoreAction(openDeckSearch)"
+                >
+                  🔍 Chercher dans la pioche
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-create-token"
+                  title="Mettre en jeu un jeton de créature (effet joué à la main)."
+                  @click="
+                    runMoreAction(() => {
+                      tokenDialog = true;
+                    })
+                  "
+                >
+                  ⬚ Créer un Jeton
+                </button>
+                <button
+                  class="gmore-item"
+                  title="Lancer un d6 (résultat au journal, tiré par le serveur)."
+                  @click="runMoreAction(() => store.rollDie(6))"
+                >
+                  🎲 Lancer un Dé (d6)
+                </button>
+                <button
+                  class="gmore-item"
+                  title="Chi-Fu-Mi aléatoire (résultat au journal, tiré par le serveur)."
+                  @click="runMoreAction(() => store.rollDie(3))"
+                >
+                  ✊✋✌ Pierre - Feuille - Ciseaux
+                </button>
+              </div>
+            </div>
           </span>
         </div>
       </div>
     </section>
-
-
 
     <!-- ════════ Bouton Fin du tour (façon MTGA) ════════ -->
     <!-- N'apparaît que pour le joueur DONT c'est le tour : en local hot-seat la
@@ -1088,7 +1112,9 @@
           </button>
           <span class="gactionbar__sep"></span>
           <button class="gbtn" @click="moveSelected('monde')">→ Monde</button>
-          <button class="gbtn" @click="moveSelected('havreSac')">→ Socle</button>
+          <button class="gbtn" @click="moveSelected('havreSac')">
+            → Socle
+          </button>
           <button class="gbtn" @click="moveSelected('main')">→ Main</button>
 
           <button class="gbtn" @click="moveSelected('defausse', { at: 'top' })">
@@ -1132,7 +1158,13 @@
               − Force
             </button>
           </template>
-          <button class="gbtn" @click="zoomInst(selectedInst.instanceId)">
+          <button
+            class="gbtn"
+            @click="
+              zoomInst(selectedInst.instanceId);
+              selectedId = null;
+            "
+          >
             ⤢ Agrandir
           </button>
           <button
@@ -1163,7 +1195,12 @@
       <div class="gpilebrowser__panel">
         <header class="gpilebrowser__head">
           <h2 class="gpilebrowser__title">
-            {{ pileBrowse.zone === 'exil' ? 'Zone Bannie (Exil)' : 'Défausse (Cimetière)' }} — {{ store.players[pileBrowse.seat].name }}
+            {{
+              pileBrowse.zone === "exil"
+                ? "Zone Bannie (Exil)"
+                : "Défausse (Cimetière)"
+            }}
+            — {{ store.players[pileBrowse.seat].name }}
             <span class="gpilebrowser__count"
               >{{ browsedPile.length }} carte(s)</span
             >
@@ -1265,7 +1302,9 @@
           </button>
         </header>
         <p class="gpilebrowser__hint">
-          Consultation privée : les cartes sont présentées dans <strong>l'ordre exact de la pioche</strong> (du sommet #1 au fond du deck). En refermant, ta Pioche sera <strong>mélangée</strong> (507.4).
+          Consultation privée : les cartes sont présentées dans
+          <strong>l'ordre exact de la pioche</strong> (du sommet #1 au fond du
+          deck). En refermant, ta Pioche sera <strong>mélangée</strong> (507.4).
         </p>
         <div class="gpilebrowser__grid">
           <div
@@ -1274,7 +1313,14 @@
             class="gpilebrowser__slot"
           >
             <div class="gpilebrowser__pos">
-              #{{ idx + 1 }} {{ idx === 0 ? '· (Sommet)' : idx === myDeckCards.length - 1 ? '· (Fond)' : '' }}
+              #{{ idx + 1 }}
+              {{
+                idx === 0
+                  ? "· (Sommet)"
+                  : idx === myDeckCards.length - 1
+                    ? "· (Fond)"
+                    : ""
+              }}
             </div>
             <GameCard
               :instance="inst"
@@ -1308,7 +1354,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -1387,8 +1432,6 @@
       :open="zoomOpen"
       @close="zoomOpen = false"
     />
-
-
   </div>
 </template>
 
@@ -1415,7 +1458,7 @@ import PileStack from "./PileStack.vue";
 import CombatTray from "./CombatTray.vue";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 
-import { recetteOf, requiresBearer } from "@/game/rules";
+import { recetteOf } from "@/game/rules";
 import { chifumiActingSeat } from "@/game/ai/botPolicy";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
@@ -1448,22 +1491,23 @@ function resolveCard(cardId: string | null): Card | null {
   const fromInstance = store.resolveInstanceCard(cardId);
   if (fromInstance) return fromInstance;
   const s = String(cardId);
-  return cardIndex.value.get(s) ?? cardIndex.value.get(cardId) ?? cardStore.cards.find((c) => String(c.id) === s || String((c as any).code) === s) ?? null;
+  return (
+    cardIndex.value.get(s) ??
+    cardIndex.value.get(cardId) ??
+    cardStore.cards.find(
+      (c) => String(c.id) === s || String((c as any).code) === s,
+    ) ??
+    null
+  );
 }
 
 onMounted(() => {
   if (!cardStore.cards.length) {
     void cardStore.initialize().catch(() => {});
   }
-
 });
 
 const view = computed(() => store.view);
-
-
-
-
-
 
 function instancesOf(z: RedactedZone | null): RedactedInstance[] {
   return z && z.kind === "full" ? z.instances : [];
@@ -1533,15 +1577,13 @@ function piocheCount(seat: Seat): number {
  * (assist désactivé, table libre).
  */
 function onPiocheClick(): void {
-  // Clé = `assist` (LA bascule « Règles assistées » de l'en-tête), pas
-  // `assistEffects` (automatisation des effets, drapeau interne distinct) :
-  // la gouvernance de la pioche appartient aux règles assistées.
   if (store.assist) {
     store.ruleError =
       "La pioche est automatique : en finissant ton tour, ta main est complétée jusqu'à tes PA (et les effets « Piochez … » se résolvent seuls).";
     return;
   }
-  store.draw(me.value);
+  store.ruleError =
+    "Pour piocher une carte en mode manuel, utilisez le bouton « Piocher ».";
 }
 function discardCount(seat: Seat): number {
   return instancesOf(view.value.seats[seat].defausse).length;
@@ -1641,7 +1683,10 @@ function submitToken(): void {
   }
 }
 
-function openPileBrowser(seat: Seat, zone: "defausse" | "exil" = "defausse"): void {
+function openPileBrowser(
+  seat: Seat,
+  zone: "defausse" | "exil" = "defausse",
+): void {
   pileBrowse.value = { seat, zone };
   // Focus sur le dialogue → Échap fonctionne immédiatement.
   nextTick(() => {
@@ -1752,6 +1797,7 @@ const selectedIsMyHero = computed(
     !!heroMove.value &&
     selectedInst.value.instanceId === heroMove.value.heroInstanceId,
 );
+
 function moveHeroSelected(): void {
   const opt = heroMove.value;
   if (!opt) return;
@@ -1865,7 +1911,11 @@ function select(instanceId: string): void {
         store.setCardCombatState(sourceId, role);
       }
       if (role === "attacking") {
-        if (!store.combat && store.canDeclareAttack && store.eligibleAttackerIds.includes(sourceId)) {
+        if (
+          !store.combat &&
+          store.canDeclareAttack &&
+          store.eligibleAttackerIds.includes(sourceId)
+        ) {
           store.beginCombat(sourceId);
           if (store.combatTargetIds.includes(targetId)) {
             store.combatChooseTarget(targetId);
@@ -1875,8 +1925,15 @@ function select(instanceId: string): void {
             store.combatChooseTarget(targetId);
           }
         }
-      } else if (role === "blocking" && store.combat && store.combat.step === "blockers") {
-        if (store.combat.pendingBlocker && store.combat.attackers.includes(targetId)) {
+      } else if (
+        role === "blocking" &&
+        store.combat &&
+        store.combat.step === "blockers"
+      ) {
+        if (
+          store.combat.pendingBlocker &&
+          store.combat.attackers.includes(targetId)
+        ) {
           store.combatChooseBlockTarget(targetId);
         } else {
           store.combatToggleBlock(sourceId);
@@ -1972,11 +2029,17 @@ watch(
   },
 );
 
+watch(selectedId, (newId) => {
+  store.setTargetedCard(newId);
+});
+
 // ── Combat assisté : surbrillances + bouton Attaquer ────────────────────────
 function slotCls(instanceId: string): Record<string, boolean> {
   const inst = store.state.instances[instanceId];
   const isSelected = selectedId.value === instanceId;
   const isAdverse = inst?.controller !== me.value;
+  const isTargetedByOpponent = store.opponentTargetedCardId === instanceId;
+  const isTargeted = (isSelected && isAdverse) || isTargetedByOpponent;
 
   if (pendingCombatTarget.value) {
     const isSource = pendingCombatTarget.value.sourceId === instanceId;
@@ -1986,7 +2049,7 @@ function slotCls(instanceId: string): Record<string, boolean> {
     return {
       "gslot--atk": isSource,
       "gslot--target-can": isEligibleTarget,
-      "gslot--targeted-strong": isSelected,
+      "gslot--targeted-strong": isTargeted,
     };
   }
   if (store.pendingPayment) {
@@ -1995,25 +2058,25 @@ function slotCls(instanceId: string): Record<string, boolean> {
         store.pendingPayment.eligible.includes(instanceId) &&
         !store.pendingPayment.chosen.includes(instanceId),
       "gslot--atk": store.pendingPayment.chosen.includes(instanceId),
-      "gslot--targeted-strong": isSelected && isAdverse,
+      "gslot--targeted-strong": isTargeted,
     };
   }
   if (store.effectTargeting) {
     return {
       "gslot--target-can": store.effectTargetIdsList.includes(instanceId),
-      "gslot--targeted-strong": isSelected && isAdverse,
+      "gslot--targeted-strong": isTargeted,
     };
   }
   if (store.pendingBearer) {
     return {
       "gslot--target-can": store.pendingBearer.eligible.includes(instanceId),
-      "gslot--targeted-strong": isSelected && isAdverse,
+      "gslot--targeted-strong": isTargeted,
     };
   }
   const c = store.combat;
   if (!c) {
     return {
-      "gslot--targeted-strong": isSelected && isAdverse,
+      "gslot--targeted-strong": isTargeted,
     };
   }
   return {
@@ -2038,7 +2101,7 @@ function slotCls(instanceId: string): Record<string, boolean> {
       (c.step === "blockers" && !!c.blocks[instanceId]) ||
       c.pendingBlocker === instanceId,
     "gslot--lethal": store.combatPreview?.lethal.includes(instanceId) ?? false,
-    "gslot--targeted-strong": isSelected && isAdverse,
+    "gslot--targeted-strong": isTargeted,
   };
 }
 /** PV/Résistance projetés d'une cible (Héros/Havre-Sac) après résolution, ou null. */
@@ -2161,6 +2224,7 @@ function moveSelected(
 }
 function tapSelected(): void {
   if (selectedInst.value) store.toggleTap(selectedInst.value.instanceId);
+  selectedId.value = null;
 }
 function tapAllOnBoard(): void {
   if (typeof store.tapAllOnBoard === "function") {
@@ -2172,17 +2236,32 @@ function untapAllOnBoard(): void {
     store.untapAllOnBoard();
   }
 }
+const showMoreMenu = ref(false);
+function runMoreAction(fn: () => void): void {
+  showMoreMenu.value = false;
+  fn();
+}
+function millOne(): void {
+  store.millTopDeck(me.value);
+}
+function onDocClick(): void {
+  showMoreMenu.value = false;
+}
+onMounted(() => window.addEventListener("click", onDocClick));
+onUnmounted(() => window.removeEventListener("click", onDocClick));
 function tapStackSelected(): void {
   const id = selectedInst.value?.instanceId;
   if (id && typeof store.tapStack === "function") {
     store.tapStack(id);
   }
+  selectedId.value = null;
 }
 function untapStackSelected(): void {
   const id = selectedInst.value?.instanceId;
   if (id && typeof store.untapStack === "function") {
     store.untapStack(id);
   }
+  selectedId.value = null;
 }
 interface PendingCombatTarget {
   sourceId: string;
@@ -2250,12 +2329,12 @@ function launchCombatProjectile(
   activeProjectiles.value.push(proj);
 
   setTimeout(() => {
-    activeProjectiles.value = activeProjectiles.value.filter((p) => p.id !== proj.id);
+    activeProjectiles.value = activeProjectiles.value.filter(
+      (p) => p.id !== proj.id,
+    );
     if (onComplete) onComplete();
   }, 650);
 }
-
-
 
 // TL3 — ÉQUIPER (table libre) : bouton pour attacher À LA MAIN un Équipement
 // sélectionné (de ma main ou déjà posé) sur un Porteur, via le ciblage
@@ -2264,10 +2343,10 @@ function launchCombatProjectile(
 // laissait posé sans Porteur.
 const canEquipSelected = computed(() => {
   const inst = selectedInst.value;
-  if (!store.manualTable || store.combat || !inst) return false;
+  if (store.combat || !inst) return false;
   if (inst.controller !== me.value) return false;
   const card = resolveCard(inst.cardId);
-  return !!card && requiresBearer(card);
+  return !!card;
 });
 function equipSelected(): void {
   const id = selectedInst.value?.instanceId;
@@ -2288,6 +2367,7 @@ const canShowSelected = computed(() => {
 function showSelectedCard(): void {
   const id = selectedInst.value?.instanceId;
   if (id) store.revealCardToOpponent(id);
+  selectedId.value = null;
 }
 // TL5 — MONTRER SA MAIN (Filouterie / geste manuel) : révèle toute ma main à
 // l'adversaire. Réservé au jeu en ligne (en local hot-seat, tout est déjà
@@ -2298,10 +2378,7 @@ const canRevealHand = computed(
 function revealHandToOpponent(): void {
   store.revealMyHand();
 }
-// TL4 — PIOCHER (table libre / non assisté) : bouton explicite doublant le clic
-// sur la pile Pioche (onPiocheClick), plus découvrable. Masqué en mode assisté
-// (pioche automatique). Piocher reste borné au tour côté serveur.
-const canManualDraw = computed(() => !store.assist);
+
 function drawOne(): void {
   store.draw(me.value);
 }
@@ -2325,11 +2402,13 @@ function craftSelected(): void {
 function bumpDamage(delta: number): void {
   if (selectedInst.value)
     store.adjustCounter(selectedInst.value.instanceId, "damage", delta);
+  selectedId.value = null;
 }
 // CADRE : delta de Force manuel (compteur nommé « force », lu par le combat).
 function bumpForce(delta: number): void {
   if (selectedInst.value)
     store.adjustCounter(selectedInst.value.instanceId, "force", delta);
+  selectedId.value = null;
 }
 
 // ── Zoom ─────────────────────────────────────────────────────────────────────
@@ -2352,7 +2431,9 @@ function heroInst(seat: Seat) {
 function heroPortrait(seat: Seat): string | null {
   const inst = heroInst(seat);
   if (!inst?.cardId) return null;
-  return getThumbPath(`/images/cards/${inst.cardId}_recto.webp`);
+  const cleanId = inst.cardId.replace(/_(recto|verso)$/, "");
+  const faceSuffix = inst.face === "verso" ? "verso" : "recto";
+  return getThumbPath(`/images/cards/${cleanId}_${faceSuffix}.webp`);
 }
 function heroName(seat: Seat): string | null {
   return resolveCard(heroInst(seat)?.cardId ?? null)?.name ?? null;
@@ -2366,7 +2447,12 @@ function heroCounters(seat: Seat): CardCounters {
 }
 function bumpHero(seat: Seat, counter: string, delta: number): void {
   const id = view.value.seats[seat].heroInstanceId;
-  if (id) store.adjustCounter(id, counter, delta);
+  if (!id) return;
+  if (counter === "level") {
+    store.toggleFlip(id);
+  } else {
+    store.adjustCounter(id, counter, delta);
+  }
 }
 /** Bonus du 2e joueur à son 1er tour : Havre-Sac ×2 Ressources (règle 2342).
  *  Disparaît dès que le bonus est CONSOMMÉ (Havre-Sac incliné / jeton d'usage),
@@ -2377,6 +2463,52 @@ function manaBonus(seat: Seat): boolean {
 </script>
 
 <style scoped>
+.gtable {
+  /* Menu déroulant utilitaire "..." */
+}
+.gmore-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.gmore-dropdown {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 8px;
+  width: 240px;
+  background: rgba(18, 14, 10, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(240, 166, 43, 0.4);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+}
+.gmore-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  color: #f6f5f1;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.gmore-item:hover {
+  background: rgba(240, 166, 43, 0.2);
+  color: #f0a62b;
+}
+
 .gtable {
   /* Largeur des cartes : bornée à la fois par la largeur (vw) ET la hauteur
      (vh) du viewport. Sur grand écran le terme vw (ou le plafond du clamp)
@@ -3159,7 +3291,6 @@ function manaBonus(seat: Seat): boolean {
   border: 1px solid rgba(251, 191, 36, 0.25);
 }
 .gpilebrowser__grid {
-
   margin-top: 12px;
   overflow-y: auto;
   display: grid;
@@ -3215,7 +3346,11 @@ function manaBonus(seat: Seat): boolean {
 }
 .gcombat-banner--targeting {
   border-color: rgba(255, 200, 0, 0.7);
-  background: linear-gradient(135deg, rgba(40, 25, 10, 0.95), rgba(70, 45, 15, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(40, 25, 10, 0.95),
+    rgba(70, 45, 15, 0.95)
+  );
   color: #ffea9f;
   box-shadow: 0 4px 20px rgba(255, 200, 0, 0.35);
 }
@@ -3228,7 +3363,9 @@ function manaBonus(seat: Seat): boolean {
     0 0 16px rgba(255, 120, 0, 0.9),
     inset 0 0 16px rgba(255, 51, 0, 0.4) !important;
   transform: scale(1.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   animation: gtarget-strong-pulse 1.1s ease-in-out infinite !important;
 }
 
@@ -3246,6 +3383,35 @@ function manaBonus(seat: Seat): boolean {
   }
 }
 
+.gslot__target-badge {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ff3300, #ff8800);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 2px 10px rgba(255, 51, 0, 0.85);
+  z-index: 100;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: gtarget-badge-pulse 1s ease-in-out infinite;
+}
+
+@keyframes gtarget-badge-pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
 .flying-projectile {
   position: fixed;
   top: 0;
@@ -3259,18 +3425,74 @@ function manaBonus(seat: Seat): boolean {
 
 @keyframes fly-projectile {
   0% {
-    transform: translate(var(--start-x), var(--start-y)) scale(0.5) rotate(var(--angle));
+    transform: translate(var(--start-x), var(--start-y)) scale(0.5)
+      rotate(var(--angle));
     opacity: 0.2;
   }
   25% {
-    transform: translate(calc(var(--start-x) + (var(--end-x) - var(--start-x)) * 0.25), calc(var(--start-y) + (var(--end-y) - var(--start-y)) * 0.25)) scale(1.5) rotate(var(--angle));
+    transform: translate(
+        calc(var(--start-x) + (var(--end-x) - var(--start-x)) * 0.25),
+        calc(var(--start-y) + (var(--end-y) - var(--start-y)) * 0.25)
+      )
+      scale(1.5) rotate(var(--angle));
     opacity: 1;
   }
   100% {
-    transform: translate(var(--end-x), var(--end-y)) scale(0.9) rotate(calc(var(--angle) + 360deg));
+    transform: translate(var(--end-x), var(--end-y)) scale(0.9)
+      rotate(calc(var(--angle) + 360deg));
     opacity: 0;
   }
 }
 
+/* ── Adaptation responsive mobile & petites réso ── */
+@media (max-width: 900px) {
+  .gactionbar {
+    width: 95vw;
+    border-radius: 16px;
+    padding: 8px 12px;
+    gap: 8px;
+    max-height: 42vh;
+    overflow-y: auto;
+  }
+  .gactionbar__name {
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+  }
+}
 
+@media (max-width: 768px) {
+  .gtable {
+    --card-field: clamp(58px, 13vw, 92px);
+    --card-wide: clamp(52px, 11vw, 84px);
+    --card-hand: clamp(68px, 15vw, 112px);
+    --card-opp: clamp(42px, 9vw, 68px);
+    --card-havre: clamp(60px, 13vw, 92px);
+    --pile: clamp(42px, 9vw, 68px);
+    padding: 4px;
+  }
+  .gseat__strip {
+    gap: 6px;
+  }
+  .gmid {
+    gap: 8px;
+    padding: 4px 8px;
+  }
+  .gmid__label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+  }
+  .gbtn {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gseat__strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
 </style>

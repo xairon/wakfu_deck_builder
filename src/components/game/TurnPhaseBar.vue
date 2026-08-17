@@ -17,7 +17,11 @@
       >
         <span class="phase-btn__icon">{{ ph.icon }}</span>
         <span class="phase-btn__label">{{ ph.label }}</span>
-        <span v-if="isPhaseActive(ph.id)" class="phase-btn__pip" aria-hidden="true"></span>
+        <span
+          v-if="isPhaseActive(ph.id)"
+          class="phase-btn__pip"
+          aria-hidden="true"
+        ></span>
       </button>
 
       <span class="phase-bar__divider"></span>
@@ -39,7 +43,9 @@
     <!-- ── Sous-phases de la Phase Principale / Combat ── -->
     <Transition name="combat-sub">
       <div v-if="showCombatSubs" class="phase-bar__combat">
-        <span class="phase-bar__combat-label">Sous-phases (Combat & Actions ⚔)</span>
+        <span class="phase-bar__combat-label"
+          >Sous-phases (Combat & Actions ⚔)</span
+        >
         <div class="phase-bar__combat-steps">
           <button
             v-for="sub in combatSubPhases"
@@ -85,15 +91,18 @@ const canEndTurn = computed(() => {
 
 /** Indique si la phase active est la Principale (combat peut survenir) */
 const showCombatSubs = computed(
-  () =>
-    store.turn.phase === "principale" ||
-    store.combat != null,
+  () => store.turn.phase === "principale" || store.combat != null,
 );
 
 const localSubPhase = ref<string | null>(null);
 
 // ── 4 phases de tour (règle structure d'un tour §602-605) ───────────────────
-const TURN_PHASE_ORDER: TurnPhase[] = ["redressement", "principale", "pioche", "fin"];
+const TURN_PHASE_ORDER: TurnPhase[] = [
+  "redressement",
+  "principale",
+  "pioche",
+  "fin",
+];
 
 interface PhaseInfo {
   id: TurnPhase;
@@ -107,13 +116,15 @@ const mainPhases: PhaseInfo[] = [
     id: "redressement",
     icon: "⟳",
     label: "Redressement",
-    description: "602 — Redressez toutes vos cartes inclinées. Les pouvoirs « Au début de votre tour » se déclenchent.",
+    description:
+      "602 — Redressez toutes vos cartes inclinées. Les pouvoirs « Au début de votre tour » se déclenchent.",
   },
   {
     id: "principale",
     icon: "⚔",
     label: "Principale",
-    description: "603 — Jouez vos cartes, utilisez vos pouvoirs, déclarez une attaque (une seule par tour).",
+    description:
+      "603 — Jouez vos cartes, utilisez vos pouvoirs, déclarez une attaque (une seule par tour).",
   },
   {
     id: "pioche",
@@ -125,7 +136,8 @@ const mainPhases: PhaseInfo[] = [
     id: "fin",
     icon: "🌙",
     label: "Fin de Tour",
-    description: "605 — Les effets de fin de tour se résolvent, les dommages des Alliés sont retirés.",
+    description:
+      "605 — Les effets de fin de tour se résolvent, les dommages des Alliés sont retirés.",
   },
 ];
 
@@ -142,7 +154,8 @@ const combatSubPhases: CombatSubPhase[] = [
     id: "target",
     num: "702",
     label: "Déclaration Cible",
-    description: "702. Phase de Déclaration de la Cible (Héros, Allié ou Havre-Sac).",
+    description:
+      "702. Phase de Déclaration de la Cible (Héros, Allié ou Havre-Sac).",
   },
   {
     id: "attackers",
@@ -358,8 +371,15 @@ function endTurn(): void {
 }
 
 @keyframes pip-pulse {
-  0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
-  50% { opacity: 0.4; transform: translateX(-50%) scale(0.6); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateX(-50%) scale(0.6);
+  }
 }
 
 /* ── Sous-phases de combat ── */
@@ -400,7 +420,10 @@ function endTurn(): void {
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
   min-width: 42px;
 }
 

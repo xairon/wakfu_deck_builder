@@ -95,11 +95,15 @@ describe("Recherche et Tutorat de Deck — Accès au Nom et Image des cartes", (
       expect(card).not.toBeNull();
       expect(card?.name).toBeDefined();
       expect(card?.name).not.toBe("Carte Inconnue");
-      expect(["Piou Rouge", "Vrombyx", "Fécaline la Sage"]).toContain(card?.name);
+      expect(["Piou Rouge", "Vrombyx", "Fécaline la Sage"]).toContain(
+        card?.name,
+      );
 
       // 2. Construction de l'image (Logique SearchDeckModal)
       const isHero = card?.mainType === "Héros";
-      const path = isHero ? `/images/cards/${card?.id}_recto.webp` : `/images/cards/${card?.id}.webp`;
+      const path = isHero
+        ? `/images/cards/${card?.id}_recto.webp`
+        : `/images/cards/${card?.id}.webp`;
       const imgSrc = getThumbPath(path);
 
       // L'image DOIT pointer vers l'illustration de la carte et PAS le dos de carte

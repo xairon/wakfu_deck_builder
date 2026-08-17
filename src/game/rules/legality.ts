@@ -391,8 +391,7 @@ export function whyCannotDeclareAttack(
   if (turn.active !== seat) return "Ce n'est pas votre tour.";
   if (turn.phase !== "principale")
     return "On déclare une attaque en Phase Principale.";
-  // 603.2 — turn.number<=2 couvre le 1er tour de CHAQUE joueur (tour 1 =
-  // firstPlayer, tour 2 = 2nd joueur). turn.active===seat est déjà garanti l.68.
+  // 603.2 — durant le premier tour de chaque joueur (tours 1 et 2), personne ne peut attaquer.
   if (turn.number <= 2)
     return "Pas d'attaque possible durant votre premier tour.";
   if (attackedOnTurn === turn.number) return "Une seule attaque par tour.";
@@ -500,21 +499,7 @@ export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
     if (inst.orientation !== "upright") continue;
     const card = ctx.getCard(inst.cardId);
     if (!card || !canAttackCard(card)) continue;
-    // « ne peut ni attaquer, ni bloquer » (pouvoir continu) — exclu des
-    // attaquants éligibles (volet blocage géré par eligibleBlockers/cannotBlock).
     if (cannotAttackOrBlock(ctx, inst.instanceId)) continue;
-    // le Héros n'a pas le mal d'invocation (en jeu depuis la mise en place).
-    // Agressivité (glossaire) : un Allié possédant ce mot-clé PEUT être déclaré
-    // attaquant le tour où il apparaît — on lève UNIQUEMENT le mal d'invocation
-    // (toutes les autres contraintes ci-dessus restent vérifiées). Lu via
-    // effectiveKeywords : l'Agressivité IMPRIMÉE comme celle CONFÉRÉE « jusqu'à
-    // la fin du tour » (jeton agressiviteTurnMod) lèvent toutes deux le mal.
-    if (
-      card.mainType === "Allié" &&
-      arrivedTurnOf(inst) >= ctx.state.turn.number &&
-      !effectiveKeywords(ctx, inst.instanceId).agressivite
-    )
-      continue;
     out.push(inst.instanceId);
   }
   return out;
