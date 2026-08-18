@@ -40,7 +40,7 @@ export type GameIntent =
       kind: "SET_COUNTER";
       instanceId: InstanceId;
       counter: string;
-      value: number;
+      value: number | string | null;
       token?: boolean;
     }
   | {

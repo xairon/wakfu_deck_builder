@@ -4,9 +4,9 @@
       <div class="gtuto-modal" @click.stop>
         <div class="gtuto-modal__header">
           <h3>
-            🔍 Tutoriser le Deck
+            {{ mode === 'reserve' ? '🔍 Réserve' : '🔍 Tutoriser le Deck' }}
             <span class="gtuto-modal__count"
-              >({{ deckCards.length }} cartes restantes)</span
+              >({{ deckCards.length }} cartes)</span
             >
           </h3>
           <button
@@ -72,6 +72,24 @@
 
             <div class="gtuto-card__actions" @click.stop>
               <button
+                v-if="mode === 'reserve'"
+                type="button"
+                class="gbtn gbtn--accent"
+                title="Placer dans la Pioche (Deck)"
+                @click="takeTo(item.instanceId, 'deck')"
+              >
+                → Deck
+              </button>
+              <button
+                v-else
+                type="button"
+                class="gbtn gbtn--accent"
+                title="Envoyer à la Réserve"
+                @click="takeTo(item.instanceId, 'reserve')"
+              >
+                → Réserve
+              </button>
+              <button
                 type="button"
                 class="gbtn gbtn--accent"
                 title="Déplacer sur le terrain (Monde)"
@@ -104,6 +122,7 @@
                 🚫 Bannir
               </button>
               <button
+                v-if="mode !== 'reserve'"
                 type="button"
                 class="gbtn"
                 title="Placer au dessus du Deck"
@@ -112,6 +131,7 @@
                 ↑ Pioche
               </button>
               <button
+                v-if="mode !== 'reserve'"
                 type="button"
                 class="gbtn"
                 title="Placer en dessous du Deck"
@@ -151,11 +171,17 @@ import type { Card } from "@/types/cards";
 import { getThumbPath } from "@/utils/imagePaths";
 import { useCardStore } from "@/stores/cardStore";
 
-const props = defineProps<{
-  open: boolean;
-  deckInstances: CardInstance[];
-  resolveCard: (cardIdOrInstId: string | null) => Card | null;
-}>();
+const props = withDefaults(
+  defineProps<{
+    open: boolean;
+    deckInstances: CardInstance[];
+    resolveCard: (cardIdOrInstId: string | null) => Card | null;
+    mode?: "deck" | "reserve";
+  }>(),
+  {
+    mode: "deck",
+  },
+);
 
 const emit = defineEmits<{
   (e: "close"): void;
@@ -168,7 +194,9 @@ const emit = defineEmits<{
       | "discard"
       | "exile"
       | "deck_top"
-      | "deck_bottom",
+      | "deck_bottom"
+      | "reserve"
+      | "deck",
   ): void;
   (e: "shuffle"): void;
 }>();
@@ -263,7 +291,9 @@ function takeTo(
     | "discard"
     | "exile"
     | "deck_top"
-    | "deck_bottom",
+    | "deck_bottom"
+    | "reserve"
+    | "deck",
 ): void {
   if (selectedInstanceId.value === instanceId) {
     selectedInstanceId.value = null;

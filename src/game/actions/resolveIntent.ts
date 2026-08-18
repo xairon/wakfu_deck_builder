@@ -74,7 +74,9 @@ export type IntentResult =
   | { error: string }
   | { events: DraftEvent[]; draws: number };
 
-/** Toutes les intentions de P1 sont liées au tour (le combat hors-tour viendra en P3). */
+/** Toutes les intentions de P1 sont liées au tour (le combat hors-tour viendra en P3).
+ * NOTE: SET_LEVEL est hors de TURN_BOUND pour permettre au joueur d'ajuster son XP hors-tour.
+ * La garde de contrôle (inst.controller === seat || inst.owner === seat) reste stricte. */
 const TURN_BOUND = new Set<GameIntent["kind"]>([
   "PLAY_CARD",
   "CRAFT",
@@ -83,7 +85,6 @@ const TURN_BOUND = new Set<GameIntent["kind"]>([
   "UNTAP",
   "SET_COUNTER",
   "INC_COUNTER",
-  "SET_LEVEL",
   "ATTACH",
   "DETACH",
   "CREATE_TOKEN",
@@ -829,11 +830,11 @@ export function resolveIntent(
       const cap = pmOf(ctx, seat) + attackPmBonus(ctx, intent.attackers);
       if (intent.attackers.length > cap)
         return { error: `Maximum ${cap} attaquant(s) — limite de PM (703).` };
-      // 703/A6 : les attaquants s'inclinent dès la DÉCLARATION.
+      // Les attaquants s'inclinent en fin de combat lors de la RESOLUTION (RESOLVE_COMBAT).
       const newlyInclined = intent.attackers.filter(
         (id) => state.instances[id]?.orientation !== "tapped",
       );
-      const events: DraftEvent[] = newlyInclined.map((id) => tap(seat, id));
+      const events: DraftEvent[] = [];
       // « … qui vient de s'incliner » (Flèche) : réinitialise `justInclined` puis
       // le pose sur les nouveaux inclinés — miroir de gameStore.combatDeclareAttack.
       for (const inst of Object.values(state.instances))

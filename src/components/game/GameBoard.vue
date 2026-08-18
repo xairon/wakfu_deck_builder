@@ -1,19 +1,44 @@
 <template>
   <div class="gtable" :class="{ 'gtable--dragging': dnd.isDragging.value }">
-    <!-- Bandeau de ciblage combat (Attaquant / Bloquant) -->
+    <!-- Bandeau de ciblage combat (Attaquants sélectionnés - Joueur du tour) -->
     <div
-      v-if="pendingCombatTarget"
+      v-if="pendingAttackerIds.length"
       class="gcombat-banner gcombat-banner--targeting"
       data-testid="combat-targeting-banner"
     >
       <span>
-        {{ pendingCombatTarget.role === "attacking" ? "⚔️" : "🛡️" }}
-        <strong>Ciblage de combat</strong> : Cliquez sur une carte dans le Monde
-        pour la cibler
+        ⚔️
+        <strong>{{ pendingAttackerIds.length }} attaquant(s) sélectionné(s)</strong> :
+        Ctrl+clic sur d'autres attaquants ou sur la cible adverse (Héros, Allié ou Havre-Sac)
       </span>
       <button
         class="gbtn gbtn--sm gbtn--ghost"
-        @click="pendingCombatTarget = null"
+        @click="
+          pendingAttackerIds.forEach((id) => store.setCardCombatState(id, null, null));
+          pendingAttackerIds = [];
+        "
+      >
+        ✕ Annuler
+      </button>
+    </div>
+
+    <!-- Bandeau de ciblage combat (Bloqueur sélectionné - Défenseur) -->
+    <div
+      v-if="pendingBlockerId"
+      class="gcombat-banner gcombat-banner--targeting"
+      data-testid="combat-targeting-banner"
+    >
+      <span>
+        🛡️
+        <strong>Bloqueur sélectionné</strong> :
+        Ctrl+clic (ou clic) sur l'attaquant adverse à bloquer
+      </span>
+      <button
+        class="gbtn gbtn--sm gbtn--ghost"
+        @click="
+          store.setCardCombatState(pendingBlockerId, null, null);
+          pendingBlockerId = null;
+        "
       >
         ✕ Annuler
       </button>
@@ -56,6 +81,7 @@
                 :selected="inst.instanceId === selectedId"
                 @select="select(inst.instanceId)"
                 @zoom="zoomInst(inst.instanceId)"
+                @ctrl-click="onCardCtrlClick(inst.instanceId)"
               />
             </div>
           </div>
@@ -82,12 +108,14 @@
                   :selected="inst.instanceId === selectedId"
                   @select="select(inst.instanceId)"
                   @zoom="zoomInst(inst.instanceId)"
+                  @ctrl-click="onCardCtrlClick(inst.instanceId)"
                 />
                 <AttachedEquip
                   :bearer="inst"
                   :selected-id="selectedId"
                   @select="select"
                   @zoom="zoomInst"
+                  @ctrl-click="onCardCtrlClick"
                 />
               </div>
               <div
@@ -154,12 +182,14 @@
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
+              @ctrl-click="onCardCtrlClick(inst.instanceId)"
             />
             <AttachedEquip
               :bearer="inst"
               :selected-id="selectedId"
               @select="select"
               @zoom="zoomInst"
+              @ctrl-click="onCardCtrlClick"
             />
           </div>
         </TransitionGroup>
@@ -230,12 +260,14 @@
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
+              @ctrl-click="onCardCtrlClick(inst.instanceId)"
             />
             <AttachedEquip
               :bearer="inst"
               :selected-id="selectedId"
               @select="select"
               @zoom="zoomInst"
+              @ctrl-click="onCardCtrlClick"
             />
           </div>
         </TransitionGroup>
@@ -311,12 +343,14 @@
                   :selected="inst.instanceId === selectedId"
                   @select="select(inst.instanceId)"
                   @zoom="zoomInst(inst.instanceId)"
+                  @ctrl-click="onCardCtrlClick(inst.instanceId)"
                 />
                 <AttachedEquip
                   :bearer="inst"
                   :selected-id="selectedId"
                   @select="select"
                   @zoom="zoomInst"
+                  @ctrl-click="onCardCtrlClick"
                 />
               </div>
               <div
@@ -431,7 +465,7 @@
           >
             <!-- 101.4 : la Réserve est un sideboard (entre les parties) — affichée
                  pour info mais NON piochable en jeu. -->
-            <PileStack label="Réserve" :count="reserveCount(me)" reserve />
+            <PileStack label="Réserve" :count="reserveCount(me)" reserve browse @browse="openReserveSearch" @act="openReserveSearch" />
           </span>
           <!-- TL4 / TL5 — gestes manuels (table libre non assistée) : Piocher
                (double le clic sur la pile) + Montrer sa main à l'adversaire
@@ -495,6 +529,14 @@
                   @click="runMoreAction(openDeckSearch)"
                 >
                   🔍 Chercher dans la pioche
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-reset-table"
+                  title="Renvoyer toutes les cartes au deck et réinitialiser le Héros et Havre-Sac"
+                  @click="runMoreAction(() => store.resetTableAndDeck(me))"
+                >
+                  🔄 Réinitialiser ma table & deck
                 </button>
                 <button
                   class="gmore-item"
@@ -704,7 +746,7 @@
     <!-- ════════ Bandeau de combat (déclaration → blocage → résolution) ════════ -->
     <Transition name="slidedown">
       <div
-        v-if="store.combat"
+        v-if="store.combat && !store.online"
         ref="combatBar"
         tabindex="-1"
         class="gcombat"
@@ -1255,17 +1297,10 @@
               </button>
               <button
                 class="gbtn gbtn--sm"
-                title="Mettre cette carte dans ton Havre-Sac"
-                @click="recoverFromPile(inst.instanceId, 'havreSac')"
-              >
-                → Socle
-              </button>
-              <button
-                class="gbtn gbtn--sm"
-                title="Poser cette carte sur le dessus de ta Pioche"
+                title="Poser cette carte en dessous de ta Pioche"
                 @click="recoverFromPile(inst.instanceId, 'pioche')"
               >
-                ↑ Pioche
+                ↓ Pioche
               </button>
             </div>
           </div>
@@ -1346,12 +1381,101 @@
               </button>
               <button
                 class="gbtn gbtn--sm"
-                title="Mettre cette carte dans ton Havre-Sac"
-                @click="takeFromDeck(inst.instanceId, 'havreSac')"
+                title="Mettre cette carte dans ta Défausse"
+                @click="takeFromDeck(inst.instanceId, 'defausse')"
               >
-                → Socle
+                → Défausse
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte dans ta Réserve"
+                @click="takeFromDeck(inst.instanceId, 'reserve')"
+              >
+                → Réserve
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ F2.1 — Recherche / Consultation de la RÉSERVE ════ -->
+    <div
+      v-if="reserveBrowse"
+      class="gpilebrowser"
+      data-testid="reserve-browser"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Recherche dans ta Réserve"
+      tabindex="-1"
+      @click.self="closeReserveSearch"
+      @keydown.esc.prevent="closeReserveSearch"
+    >
+      <div class="gpilebrowser__panel">
+        <header class="gpilebrowser__head">
+          <h2 class="gpilebrowser__title">
+            Ta Réserve
+            <span class="gpilebrowser__count"
+              >{{ myReserveCards.length }} carte(s)</span
+            >
+          </h2>
+          <button
+            class="gbtn gbtn--ghost"
+            aria-label="Fermer"
+            @click="closeReserveSearch"
+          >
+            ✕
+          </button>
+        </header>
+        <p class="gpilebrowser__hint">
+          Cartes en Réserve : tu peux transférer des cartes vers ton Deck, ta Main ou le Monde.
+        </p>
+        <div class="gpilebrowser__grid">
+          <div
+            v-for="(inst, idx) in myReserveCards"
+            :key="inst.instanceId"
+            class="gpilebrowser__slot"
+          >
+            <div class="gpilebrowser__pos">#{{ idx + 1 }}</div>
+            <GameCard
+              :instance="inst"
+              :card="resolveCard(inst.instanceId) || resolveCard(inst.cardId)"
+              @select="zoomInst(inst.instanceId)"
+              @zoom="zoomInst(inst.instanceId)"
+            />
+            <div class="gpilebrowser__actions">
+              <button
+                class="gbtn gbtn--sm gbtn--accent"
+                title="Placer cette carte dans la Pioche (Deck)"
+                @click="takeFromReserve(inst.instanceId, 'pioche')"
+              >
+                → Deck
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Prendre cette carte en main"
+                @click="takeFromReserve(inst.instanceId, 'main')"
+              >
+                → Main
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte en jeu dans le Monde"
+                @click="takeFromReserve(inst.instanceId, 'monde')"
+              >
+                → Monde
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte dans ta Défausse"
+                @click="takeFromReserve(inst.instanceId, 'defausse')"
+              >
+                → Défausse
+              </button>
+            </div>
+          </div>
+          <div v-if="myReserveCards.length === 0" class="gpilebrowser__empty">
+            Aucune carte dans la Réserve.
           </div>
         </div>
       </div>
@@ -1432,6 +1556,50 @@
       :open="zoomOpen"
       @close="zoomOpen = false"
     />
+
+    <!-- SVG overlay des flèches de combat pointant vers leurs cibles -->
+    <svg v-if="activeCombatLinks.length" class="gcombat-arrows-svg">
+      <defs>
+        <marker
+          id="arrow-attack"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+        </marker>
+        <marker
+          id="arrow-block"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+        </marker>
+      </defs>
+
+      <g v-for="link in activeCombatLinks" :key="link.id">
+        <line
+          :x1="link.x1"
+          :y1="link.y1"
+          :x2="link.x2"
+          :y2="link.y2"
+          :stroke="link.type === 'attack' ? '#ef4444' : '#3b82f6'"
+          stroke-width="3.5"
+          stroke-dasharray="8,5"
+          :marker-end="
+            link.type === 'attack' ? 'url(#arrow-attack)' : 'url(#arrow-block)'
+          "
+          class="combat-arrow-line"
+        />
+      </g>
+    </svg>
   </div>
 </template>
 
@@ -1589,24 +1757,26 @@ function discardCount(seat: Seat): number {
   return instancesOf(view.value.seats[seat].defausse).length;
 }
 function topDiscard(seat: Seat): RedactedInstance | null {
-  return instancesOf(view.value.seats[seat].defausse)[0] ?? null;
+  const arr = instancesOf(view.value.seats[seat].defausse);
+  return arr.length ? arr[arr.length - 1] : null;
 }
 function exileCount(seat: Seat): number {
   return instancesOf(view.value.seats[seat].exil).length;
 }
 function topExile(seat: Seat): RedactedInstance | null {
-  return instancesOf(view.value.seats[seat].exil)[0] ?? null;
+  const arr = instancesOf(view.value.seats[seat].exil);
+  return arr.length ? arr[arr.length - 1] : null;
 }
 // ── Consultation d'une pile publique (Défausse / Exil) ─────────────────────
 const pileBrowse = ref<{ seat: Seat; zone?: "defausse" | "exil" } | null>(null);
 const browsedPile = computed<RedactedInstance[]>(() => {
   if (!pileBrowse.value) return [];
   const z = pileBrowse.value.zone ?? "defausse";
-  return instancesOf(view.value.seats[pileBrowse.value.seat][z]);
+  return [...instancesOf(view.value.seats[pileBrowse.value.seat][z])].reverse();
 });
 /**
  * RÉCUPÉRATION depuis MA Défausse (effets « Récupérez… ») : déplace la carte
- * vers la main / le jeu / le dessus de la Pioche. La légalité (tour, 506.3,
+ * vers la main / le jeu / le dessous de la Pioche. La légalité (tour, 506.3,
  * Taille…) est portée par moveTo → MOVE_CARD (serveur en ligne) ; un refus
  * revient en toast. Le browser reste ouvert (récupérations multiples).
  */
@@ -1621,7 +1791,7 @@ function recoverFromPile(
   store.moveTo(
     instanceId,
     ref,
-    zone === "pioche" ? { at: "top" } : { at: "any" },
+    zone === "pioche" ? { at: "bottom" } : { at: "any" },
   );
 }
 // ── F2 — Recherche dans MA Pioche (tuteur « Cherchez… ») ────────────────────
@@ -1655,7 +1825,30 @@ function closeDeckSearch(): void {
 }
 function takeFromDeck(
   instanceId: string,
-  zone: "main" | "monde" | "havreSac",
+  zone: "main" | "monde" | "defausse" | "reserve",
+): void {
+  const ref =
+    zone === "monde"
+      ? ({ zone } as const)
+      : ({ zone, owner: me.value } as const);
+  store.moveTo(instanceId, ref, { at: "any" });
+}
+
+// ── F2.1 — Recherche / Consultation de la Réserve ──────────────────────────
+const reserveBrowse = ref(false);
+function openReserveSearch(): void {
+  reserveBrowse.value = true;
+}
+function closeReserveSearch(): void {
+  reserveBrowse.value = false;
+}
+const myReserveCards = computed<RedactedInstance[]>(() => {
+  const ids = store.state.seats[me.value]?.reserve || [];
+  return ids.map((id) => store.state.instances[id]).filter(Boolean);
+});
+function takeFromReserve(
+  instanceId: string,
+  zone: "pioche" | "main" | "monde" | "defausse",
 ): void {
   const ref =
     zone === "monde"
@@ -1900,47 +2093,20 @@ function targetingLabel(
   }
 }
 function select(instanceId: string): void {
-  // ciblage combat (Attaquant / Bloquant) en cours : le clic désigne la cible et lance l'animation
-  if (pendingCombatTarget.value) {
-    const targetId = instanceId;
-    const { sourceId, role } = pendingCombatTarget.value;
-    pendingCombatTarget.value = null;
-
-    launchCombatProjectile(sourceId, targetId, role, () => {
-      if (typeof store.setCardCombatState === "function") {
-        store.setCardCombatState(sourceId, role);
-      }
-      if (role === "attacking") {
-        if (
-          !store.combat &&
-          store.canDeclareAttack &&
-          store.eligibleAttackerIds.includes(sourceId)
-        ) {
-          store.beginCombat(sourceId);
-          if (store.combatTargetIds.includes(targetId)) {
-            store.combatChooseTarget(targetId);
-          }
-        } else if (store.combat && store.combat.step === "attackers") {
-          if (store.combatTargetIds.includes(targetId)) {
-            store.combatChooseTarget(targetId);
-          }
-        }
-      } else if (
-        role === "blocking" &&
-        store.combat &&
-        store.combat.step === "blockers"
-      ) {
-        if (
-          store.combat.pendingBlocker &&
-          store.combat.attackers.includes(targetId)
-        ) {
-          store.combatChooseBlockTarget(targetId);
-        } else {
-          store.combatToggleBlock(sourceId);
-        }
-      }
-    });
-    return;
+  // Si un ciblage par Ctrl+clic est en cours pour le défenseur ou l'attaquant :
+  if (store.turn.active === me.value && pendingAttackerIds.value.length > 0) {
+    const inst = store.state.instances[instanceId];
+    if (inst && inst.controller !== me.value) {
+      onCardCtrlClick(instanceId);
+      return;
+    }
+  }
+  if (store.turn.active !== me.value && pendingBlockerId.value) {
+    const inst = store.state.instances[instanceId];
+    if (inst && inst.controller !== me.value) {
+      onCardCtrlClick(instanceId);
+      return;
+    }
   }
   // PAIEMENT au choix (coût de lancement) : le clic désigne un producteur à
   // incliner (re-clic = désélection) ; « Auto » / « Annuler » au bandeau.
@@ -1959,21 +2125,25 @@ function select(instanceId: string): void {
     store.effectTargetChoose(instanceId);
     return;
   }
-  // combat en cours : les clics désignent attaquants / cible / bloqueurs / riposte
-  if (store.combat) {
+  // combat en cours (mode local assisté uniquement) : les clics désignent attaquants / cible / bloqueurs / riposte
+  if (store.combat && !store.online) {
     if (store.combat.step === "attackers") {
       if (store.combatTargetIds.includes(instanceId))
         store.combatChooseTarget(instanceId);
       else store.combatToggleAttacker(instanceId);
+      return;
     } else if (store.combat.step === "strikes") {
       store.combatChooseStrike(instanceId);
+      return;
     } else if (store.combat.step === "geant") {
       // 6135 — clic sur un bloqueur (ou la Cible) = +1 Dommage (façon MTGA) ;
       // le réglage fin (−) se fait dans le bandeau de répartition.
       store.combatGeantAdjust(instanceId, +1);
+      return;
     } else if (store.combat.step === "riposte") {
       store.combatChooseRiposte(instanceId);
-    } else {
+      return;
+    } else if (store.combat.step === "blockers") {
       // blockers : un Équipement à pouvoir CONDITIONNÉ au combat (Dora) reste
       // SÉLECTIONNABLE pendant la fenêtre (l'action-bar propose l'activation) —
       // sans quoi tous les clics plateau seraient consommés par le blocage.
@@ -1985,13 +2155,83 @@ function select(instanceId: string): void {
       if (
         store.combat.pendingBlocker &&
         store.combat.attackers.includes(instanceId)
-      )
+      ) {
         store.combatChooseBlockTarget(instanceId);
-      else store.combatToggleBlock(instanceId);
+        return;
+      }
+      const isEligibleBlocker = store.combatBlockerIds.includes(instanceId);
+      const isCurrentBlocker = !!store.combat.blocks[instanceId];
+      if (isEligibleBlocker || isCurrentBlocker) {
+        store.combatToggleBlock(instanceId);
+        return;
+      }
     }
-    return;
   }
   selectedId.value = selectedId.value === instanceId ? null : instanceId;
+}
+
+function onCardCtrlClick(instanceId: string): void {
+  const inst = store.state.instances[instanceId];
+  if (!inst) return;
+
+  const isMyTurn = store.turn.active === me.value;
+
+  if (isMyTurn) {
+    // ── JOUEUR DU TOUR (Attaquant) ──
+    const isMyCard = inst.controller === me.value;
+    if (isMyCard) {
+      if (pendingAttackerIds.value.includes(instanceId)) {
+        pendingAttackerIds.value = pendingAttackerIds.value.filter(
+          (id) => id !== instanceId,
+        );
+        store.setCardCombatState(instanceId, null, null);
+      } else if (inst.counters?.combatState === "attacking") {
+        store.setCardCombatState(instanceId, null, null);
+      } else {
+        pendingAttackerIds.value.push(instanceId);
+        store.setCardCombatState(instanceId, "attacking", null);
+      }
+    } else {
+      const targetId = instanceId;
+      if (pendingAttackerIds.value.length > 0) {
+        for (const atkId of pendingAttackerIds.value) {
+          store.setCardCombatState(atkId, "attacking", targetId);
+        }
+        pendingAttackerIds.value = [];
+      } else {
+        for (const [id, item] of Object.entries(store.state.instances)) {
+          if (
+            item.controller === me.value &&
+            item.counters?.combatTargetId === targetId
+          ) {
+            store.setCardCombatState(id, null, null);
+          }
+        }
+      }
+    }
+  } else {
+    // ── JOUEUR DONT CE N'EST PAS LE TOUR (Défenseur / Bloqueur) ──
+    const isMyCard = inst.controller === me.value;
+    if (isMyCard) {
+      if (pendingBlockerId.value === instanceId) {
+        pendingBlockerId.value = null;
+        store.setCardCombatState(instanceId, null, null);
+      } else if (inst.counters?.combatState === "blocking") {
+        store.setCardCombatState(instanceId, null, null);
+        pendingBlockerId.value = null;
+      } else {
+        pendingBlockerId.value = instanceId;
+        store.setCardCombatState(instanceId, "blocking", null);
+      }
+    } else {
+      const attackerTargetId = instanceId;
+      if (pendingBlockerId.value) {
+        const blockerId = pendingBlockerId.value;
+        pendingBlockerId.value = null;
+        store.setCardCombatState(blockerId, "blocking", attackerTargetId);
+      }
+    }
+  }
 }
 
 // A11y clavier : le glisser-déposer souris reste dispo, mais n'est plus la
@@ -2041,10 +2281,23 @@ function slotCls(instanceId: string): Record<string, boolean> {
   const isTargetedByOpponent = store.opponentTargetedCardId === instanceId;
   const isTargeted = (isSelected && isAdverse) || isTargetedByOpponent;
 
-  if (pendingCombatTarget.value) {
-    const isSource = pendingCombatTarget.value.sourceId === instanceId;
+  if (pendingAttackerIds.value.length > 0) {
+    const isSource = pendingAttackerIds.value.includes(instanceId);
     const isEligibleTarget =
       !isSource &&
+      inst?.controller !== me.value &&
+      (inst?.location.zone === "monde" || inst?.location.zone === "havreSac");
+    return {
+      "gslot--atk": isSource,
+      "gslot--target-can": isEligibleTarget,
+      "gslot--targeted-strong": isTargeted,
+    };
+  }
+  if (pendingBlockerId.value) {
+    const isSource = pendingBlockerId.value === instanceId;
+    const isEligibleTarget =
+      !isSource &&
+      inst?.controller !== me.value &&
       (inst?.location.zone === "monde" || inst?.location.zone === "havreSac");
     return {
       "gslot--atk": isSource,
@@ -2160,7 +2413,15 @@ const canAttackSelected = computed(() => {
 function attackWithSelected(): void {
   const id = selectedInst.value?.instanceId;
   selectedId.value = null;
-  if (id) store.beginCombat(id);
+  if (!id) return;
+  if (store.online) {
+    if (!pendingAttackerIds.value.includes(id)) {
+      pendingAttackerIds.value.push(id);
+    }
+    store.setCardCombatState(id, "attacking", null);
+  } else {
+    store.beginCombat(id);
+  }
 }
 // CHI-FU-MI vs BOT : c'est au bot d'agir dans le mini-jeu → boutons masqués
 // (le driver useBotOpponent joue pour lui au prochain tick).
@@ -2247,8 +2508,14 @@ function millOne(): void {
 function onDocClick(): void {
   showMoreMenu.value = false;
 }
-onMounted(() => window.addEventListener("click", onDocClick));
-onUnmounted(() => window.removeEventListener("click", onDocClick));
+onMounted(() => {
+  window.addEventListener("click", onDocClick);
+  scheduleLinkUpdate();
+});
+onUnmounted(() => {
+  window.removeEventListener("click", onDocClick);
+  if (linkAnimationFrame !== null) cancelAnimationFrame(linkAnimationFrame);
+});
 function tapStackSelected(): void {
   const id = selectedInst.value?.instanceId;
   if (id && typeof store.tapStack === "function") {
@@ -2263,77 +2530,75 @@ function untapStackSelected(): void {
   }
   selectedId.value = null;
 }
-interface PendingCombatTarget {
-  sourceId: string;
-  role: "attacking" | "blocking";
+const pendingAttackerIds = ref<string[]>([]);
+const pendingBlockerId = ref<string | null>(null);
+
+interface CombatLink {
+  id: string;
+  type: "attack" | "block";
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
-const pendingCombatTarget = ref<PendingCombatTarget | null>(null);
+const activeCombatLinks = ref<CombatLink[]>([]);
 
-interface FlyingProjectile {
-  id: number;
-  icon: string;
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
-  angle: number;
-}
-const activeProjectiles = ref<FlyingProjectile[]>([]);
-let projectileIdCounter = 0;
-
-function launchCombatProjectile(
-  sourceId: string,
-  targetId: string,
-  role: "attacking" | "blocking",
-  onComplete?: () => void,
-): void {
-  const sourceEl =
-    document.querySelector(`[data-instance-id="${sourceId}"]`) ??
-    document.querySelector(`[data-id="${sourceId}"]`);
-  const targetEl =
-    document.querySelector(`[data-instance-id="${targetId}"]`) ??
-    document.querySelector(`[data-id="${targetId}"]`);
-
-  const icon = role === "attacking" ? "⚔️" : "🛡️";
-
-  let startX = window.innerWidth / 2;
-  let startY = window.innerHeight / 2;
-  let endX = window.innerWidth / 2;
-  let endY = window.innerHeight / 3;
-
-  if (sourceEl) {
-    const rect = sourceEl.getBoundingClientRect();
-    startX = rect.left + rect.width / 2;
-    startY = rect.top + rect.height / 2;
-  }
-  if (targetEl) {
-    const rect = targetEl.getBoundingClientRect();
-    endX = rect.left + rect.width / 2;
-    endY = rect.top + rect.height / 2;
+function updateCombatLinks(): void {
+  const links: CombatLink[] = [];
+  const instances = store.state?.instances;
+  if (!instances) {
+    activeCombatLinks.value = [];
+    return;
   }
 
-  const dx = endX - startX;
-  const dy = endY - startY;
-  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const boardEl = document.querySelector(".gtable");
+  if (!boardEl) {
+    activeCombatLinks.value = [];
+    return;
+  }
+  const boardRect = boardEl.getBoundingClientRect();
 
-  const proj: FlyingProjectile = {
-    id: ++projectileIdCounter,
-    icon,
-    startX,
-    startY,
-    endX,
-    endY,
-    angle,
-  };
+  for (const [id, inst] of Object.entries(instances)) {
+    const state = inst.counters?.combatState;
+    const targetId = inst.counters?.combatTargetId as string | undefined;
 
-  activeProjectiles.value.push(proj);
+    if (state && targetId) {
+      const srcEl =
+        document.querySelector(`[data-iid="${id}"]`) ??
+        document.querySelector(`[data-testid="card-${id}"]`);
+      const tgtEl =
+        document.querySelector(`[data-iid="${targetId}"]`) ??
+        document.querySelector(`[data-testid="card-${targetId}"]`);
 
-  setTimeout(() => {
-    activeProjectiles.value = activeProjectiles.value.filter(
-      (p) => p.id !== proj.id,
-    );
-    if (onComplete) onComplete();
-  }, 650);
+      if (srcEl && tgtEl) {
+        const srcRect = srcEl.getBoundingClientRect();
+        const tgtRect = tgtEl.getBoundingClientRect();
+
+        const x1 = srcRect.left + srcRect.width / 2 - boardRect.left;
+        const y1 = srcRect.top + srcRect.height / 2 - boardRect.top;
+        const x2 = tgtRect.left + tgtRect.width / 2 - boardRect.left;
+        const y2 = tgtRect.top + tgtRect.height / 2 - boardRect.top;
+
+        const type = state === "attacking" ? "attack" : "block";
+        links.push({
+          id: `${type}-${id}-${targetId}`,
+          type,
+          x1,
+          y1,
+          x2,
+          y2,
+        });
+      }
+    }
+  }
+
+  activeCombatLinks.value = links;
+}
+
+let linkAnimationFrame: number | null = null;
+function scheduleLinkUpdate() {
+  updateCombatLinks();
+  linkAnimationFrame = requestAnimationFrame(scheduleLinkUpdate);
 }
 
 // TL3 — ÉQUIPER (table libre) : bouton pour attacher À LA MAIN un Équipement
@@ -3412,35 +3677,23 @@ function manaBonus(seat: Seat): boolean {
   }
 }
 
-.flying-projectile {
-  position: fixed;
-  top: 0;
-  left: 0;
-  font-size: 3rem;
-  z-index: 9999;
+.gcombat-arrows-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  filter: drop-shadow(0 0 16px rgba(255, 200, 0, 0.95));
-  animation: fly-projectile 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  z-index: 20;
 }
 
-@keyframes fly-projectile {
-  0% {
-    transform: translate(var(--start-x), var(--start-y)) scale(0.5)
-      rotate(var(--angle));
-    opacity: 0.2;
-  }
-  25% {
-    transform: translate(
-        calc(var(--start-x) + (var(--end-x) - var(--start-x)) * 0.25),
-        calc(var(--start-y) + (var(--end-y) - var(--start-y)) * 0.25)
-      )
-      scale(1.5) rotate(var(--angle));
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--end-x), var(--end-y)) scale(0.9)
-      rotate(calc(var(--angle) + 360deg));
-    opacity: 0;
+.combat-arrow-line {
+  animation: combat-dash 1s linear infinite;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes combat-dash {
+  to {
+    stroke-dashoffset: -26;
   }
 }
 

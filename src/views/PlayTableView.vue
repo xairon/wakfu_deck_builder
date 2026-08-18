@@ -640,12 +640,16 @@
               :disabled="mulliganHand.length === 0"
               @click="onMulliganReplace"
             >
-              Mulligan (re-piocher
-              {{ Math.max(0, mulliganHand.length - 1) }})
+              <template v-if="store.mulliganCount(store.perspective) === 0">
+                Mulligan gratuit (re-piocher {{ mulliganHand.length }})
+              </template>
+              <template v-else>
+                Mulligan (re-piocher {{ Math.max(0, mulliganHand.length - 1) }})
+              </template>
             </button>
           </div>
           <p class="mt-3 text-xs text-base-content/50">
-            Règle Wakfu : on recommence avec une carte de moins à chaque fois.
+            Règle Wakfu : 1er mulligan gratuit (6 cartes), puis une carte de moins à chaque fois.
           </p>
         </div>
       </div>
@@ -667,24 +671,8 @@
       </div>
     </Transition>
 
-    <!-- Fin de partie -->
-    <Transition name="ovl">
-      <div v-if="store.matchPhase === 'finished'" class="overlay">
-        <div class="overlay__card">
-          <p class="eyebrow text-primary">Partie terminée</p>
-          <h2 class="mt-2 font-display text-4xl">
-            {{
-              store.winner
-                ? `${store.players[store.winner].name} l'emporte`
-                : "Match nul"
-            }}
-          </h2>
-          <button class="btn btn-primary mt-6" @click="store.quitMatch()">
-            Nouvelle partie
-          </button>
-        </div>
-      </div>
-    </Transition>
+    <!-- Fin de partie : animation plein écran Victoire / Défaite -->
+    <VictoryDefeatOverlay />
   </div>
 </template>
 
@@ -706,6 +694,7 @@ import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
 import DragLayer from "@/components/game/DragLayer.vue";
 import EffectSpotlight from "@/components/game/EffectSpotlight.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
+import VictoryDefeatOverlay from "@/components/game/VictoryDefeatOverlay.vue";
 import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import GameSoundLayer from "@/components/game/GameSoundLayer.vue";
 import { useGameSounds } from "@/composables/useGameSounds";

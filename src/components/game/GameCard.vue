@@ -93,6 +93,14 @@
     >
       🛡️
     </div>
+    <div
+      v-else-if="isTargeted"
+      class="game-card__overlay game-card__overlay--targeted"
+      aria-hidden="true"
+      title="Cible de l'attaque"
+    >
+      🎯
+    </div>
   </button>
 </template>
 
@@ -115,6 +123,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "select"): void;
   (e: "zoom"): void;
+  (e: "ctrlClick"): void;
 }>();
 
 const preview = useCardPreview();
@@ -142,8 +151,12 @@ function onEnter(): void {
 function onLeave(): void {
   preview.hide();
 }
-function onClick(): void {
+function onClick(e: MouseEvent): void {
   if (dnd.consumeClick()) return;
+  if (e.ctrlKey || e.metaKey) {
+    emit("ctrlClick");
+    return;
+  }
   emit("select");
 }
 function onContextMenu(e: MouseEvent): void {
@@ -210,6 +223,20 @@ const isAttacking = computed(() => {
 const isBlocking = computed(() => {
   if (explicitCombatState.value === "blocking") return true;
   return combatRole.value === "bloqueur";
+});
+
+const isTargeted = computed(() => {
+  if ((explicitCombatState.value as string | null) === "targeted") return true;
+  const myId = props.instance.instanceId;
+  for (const inst of Object.values(game.state.instances)) {
+    if (
+      inst.counters?.combatState === "attacking" &&
+      inst.counters?.combatTargetId === myId
+    ) {
+      return true;
+    }
+  }
+  return false;
 });
 
 const willDie = computed(
@@ -418,6 +445,16 @@ const ariaLabel = computed(() => {
     0 0 16px rgba(96, 165, 250, 0.9),
     0 2px 4px rgba(0, 0, 0, 0.9);
   border: 2px dashed rgba(96, 165, 250, 0.85);
+  box-sizing: border-box;
+}
+
+.game-card__overlay--targeted {
+  background: rgba(234, 179, 8, 0.32);
+  color: #fde047;
+  text-shadow:
+    0 0 16px rgba(234, 179, 8, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+  border: 2px dashed rgba(250, 204, 21, 0.85);
   box-sizing: border-box;
 }
 
