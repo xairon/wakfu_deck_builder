@@ -538,6 +538,17 @@ describe("rules/legality — attaquants, cibles, bloqueurs", () => {
     expect(blockers2).not.toContain(instId("B", 0));
   });
 
+  it("bloqueurs : un Héros dressé dans le Monde (non cible de l'attaque) peut bloquer (704)", () => {
+    const f = fixture([], [makeAlly("b0")]);
+    bringToMonde(f, "B", instId("B", 0));
+    bringToMonde(f, "B", HERO_B);
+    const blockers = eligibleBlockers(ctxOf(f), "B", {
+      kind: "ally",
+      instanceId: instId("B", 0),
+    });
+    expect(blockers).toContain(HERO_B);
+  });
+
   it("exclut un Allié au pouvoir « ne peut pas bloquer » (Jicé Aouaire)", () => {
     const jice = makeAlly("jice", { force: 3 });
     jice.effects = [

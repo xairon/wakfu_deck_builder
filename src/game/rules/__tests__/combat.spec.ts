@@ -204,9 +204,8 @@ describe("rules/combat — résolution", () => {
       blocks: {},
     });
     expect(state.instances[HERO_B].counters.hp).toBe(13); // 16 − 3
-    // A6 : l'inclinaison part de la DÉCLARATION (combatConfirmAttackers du
-    // store, 703) ; la résolution pure ne touche plus l'orientation.
-    expect(state.instances[instId("A", 0)].orientation).toBe("upright");
+    // Attaquant s'incline à la résolution du combat
+    expect(state.instances[instId("A", 0)].orientation).toBe("tapped");
     expect(result.winner).toBeNull();
   });
 

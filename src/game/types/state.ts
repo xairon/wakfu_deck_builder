@@ -19,6 +19,7 @@ export interface CardCounters {
   force?: number;
   tokens?: Record<string, number>; // jetons génériques nommés
   combatState?: "attacking" | "blocking" | null; // état de combat explicite (overlay attaquant / bloquant)
+  combatTargetId?: string | null; // ID de la carte ciblée par l'attaquant / bloquant
   rotation?: number; // angle de rotation personnalisé en degrés (tilt multi-niveaux)
 }
 

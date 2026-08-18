@@ -74,8 +74,17 @@ Deno.serve(async (req) => {
       .select("last_seq, status, updated_at, assisted")
       .eq("id", gameId)
       .single();
-    if (!game || game.status !== "active")
+    const isReset = (intent as { kind?: string })?.kind === "RESET_TABLE";
+    if (!game || (game.status !== "active" && !isReset))
       return json({ error: "PARTIE_INACTIVE" }, 409);
+
+    if (game.status === "finished" && isReset) {
+      await db
+        .from("games")
+        .update({ status: "active", winner: null, end_reason: null })
+        .eq("id", gameId);
+    }
+
     // TABLE LIBRE : une partie NON assistée est une table manuelle « de confiance »
     // — resolveIntent y relâche les gardes de tour/compteurs (gestes sur SES
     // cartes, journalisés + visibles). Une partie assistée reste stricte.
@@ -97,10 +106,9 @@ Deno.serve(async (req) => {
     const rowEvents = (rows ?? []).map(rowToEvent);
     const state = deriveState(rowEvents);
 
-    // Partie déjà terminée : aucun event ne peut plus être appendé. La garde
-    // `status !== 'active'` plus haut couvre le cas où `games.status` est passé à
-    // 'finished' ; ce garde-fou complémentaire bloque sur le journal lui-même.
-    if (rowEvents.some((e) => e.type === "GAME_OVER"))
+    // Partie déjà terminée : aucun event ne peut plus être appendé (sauf RESET_TABLE
+    // ou ajustements manuels en table libre si les joueurs restent dans la partie).
+    if (rowEvents.some((e) => e.type === "GAME_OVER") && !isReset && !manual)
       return json({ error: "PARTIE_TERMINEE" }, 409);
 
     // Termine la partie : append système GAME_OVER (résolu + diffusé redacté par
@@ -252,7 +260,13 @@ Deno.serve(async (req) => {
           type: "SHUFFLE",
           payload: { zone: { zone: "pioche", owner: seat }, permutation: [] },
         });
-        const redraw = Math.max(0, hand.length - 1);
+        const prevMulligans = rowEvents.filter(
+          (e) =>
+            e.actor === seat &&
+            e.type === "SHUFFLE" &&
+            (e.payload as { zone?: { zone?: string } })?.zone?.zone === "pioche",
+        ).length;
+        const redraw = prevMulligans === 0 ? Math.max(6, hand.length) : Math.max(0, hand.length - 1);
         for (let i = 0; i < redraw; i++)
           batch.add(drawTop(batch.state(), seat));
         await commitBatch(db, gameId, startSeq, batch.resolved);

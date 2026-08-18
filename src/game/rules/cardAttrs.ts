@@ -158,9 +158,9 @@ export function canAttackCard(card: Card): boolean {
   return card.mainType === "Allié" || card.mainType === "Héros";
 }
 
-/** Peut bloquer : Alliés du Monde (303.6 exclut les Élémentaires). */
+/** Peut bloquer : Alliés et Héros du Monde (303.6 exclut les Élémentaires). */
 export function canBlockCard(card: Card): boolean {
-  return card.mainType === "Allié";
+  return card.mainType === "Allié" || card.mainType === "Héros";
 }
 
 /**

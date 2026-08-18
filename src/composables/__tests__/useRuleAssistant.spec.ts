@@ -22,34 +22,30 @@ function hintOf(w: ReturnType<typeof mount>): AssistantHint | null {
 describe("useRuleAssistant", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
-  it("en jeu, à ton tour (hors 1er tour) → indice d'ACTION", () => {
+  it("en jeu, à ton tour → pas d'indication textuelle passive", () => {
     const store = useGameStore();
     const deck = createMockDeck();
     store.startSandbox(deck, deck, "A"); // matchPhase playing, perspective A, local
     store.nextTurn();
-    store.nextTurn(); // tour 3 (A) : hors de l'interdit du 1er tour
+    store.nextTurn();
     const w = mount(Harness);
-    const h = hintOf(w);
-    expect(h?.tone).toBe("action");
-    expect(h?.text).toContain("À toi");
+    expect(hintOf(w)).toBeNull();
   });
 
-  it("au PREMIER tour → indice INFO (pas d'attaque ni d'entrée dans le Monde)", () => {
+  it("au PREMIER tour → pas d'indication textuelle passive", () => {
     const store = useGameStore();
     const deck = createMockDeck();
-    store.startSandbox(deck, deck, "A"); // turn.number === 1
+    store.startSandbox(deck, deck, "A");
     const w = mount(Harness);
-    const h = hintOf(w);
-    expect(h?.tone).toBe("info");
-    expect(h?.text).toContain("Premier tour");
+    expect(hintOf(w)).toBeNull();
   });
 
-  it("phase mulligan → indice INFO (tirage au sort annoncé après)", () => {
+  it("phase mulligan → pas d'indication textuelle passive", () => {
     const store = useGameStore();
     const deck = createMockDeck();
-    store.startMatch(deck, deck, { first: "A" }); // matchPhase mulligan
+    store.startMatch(deck, deck, { first: "A" });
     const w = mount(Harness);
-    expect(hintOf(w)?.tone).toBe("info");
+    expect(hintOf(w)).toBeNull();
   });
 
   it("un refus de coup devient un indice WARN avec référence de règle", async () => {
@@ -109,7 +105,7 @@ describe("useRuleAssistant", () => {
     expect(hintOf(w)?.rule?.ref).toBe("2626");
     (w.vm as unknown as { dismiss: () => void }).dismiss();
     await nextTick();
-    // Plus de refus → on retombe sur l'indice d'action « à ton tour ».
-    expect(hintOf(w)?.tone).toBe("action");
+    // Plus de refus → l'assistant se ferme (null).
+    expect(hintOf(w)).toBeNull();
   });
 });

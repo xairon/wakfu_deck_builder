@@ -171,7 +171,7 @@ export function setCounter(
   seat: Seat,
   instanceId: InstanceId,
   counter: string,
-  value: number,
+  value: number | string | null,
   token = false,
 ): DraftEvent {
   return {

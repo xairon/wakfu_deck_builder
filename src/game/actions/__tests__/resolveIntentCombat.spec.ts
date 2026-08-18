@@ -60,7 +60,7 @@ describe("resolveIntent — combat (autorité serveur, P3)", () => {
     expect("error" in r && r.error).toContain("tour");
   });
 
-  it("DECLARE_ATTACK par l'attaquant → incline les attaquants + ouvre SET_COMBAT (blockers)", () => {
+  it("DECLARE_ATTACK par l'attaquant → n'incline pas immédiatement et ouvre SET_COMBAT (blockers)", () => {
     const { f, A0 } = combatReady();
     const r = run(
       f,
@@ -78,7 +78,7 @@ describe("resolveIntent — combat (autorité serveur, P3)", () => {
         (e.payload as { instanceId: string }).instanceId === A0 &&
         (e.payload as { orientation: string }).orientation === "tapped",
     );
-    expect(tap).toBeDefined();
+    expect(tap).toBeUndefined();
     const setC = r.events.find((e) => e.type === "SET_COMBAT");
     expect(setC).toBeDefined();
     const c = (setC!.payload as { combat: Record<string, unknown> }).combat;

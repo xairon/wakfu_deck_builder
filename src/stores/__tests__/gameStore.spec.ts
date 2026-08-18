@@ -154,11 +154,14 @@ describe("gameStore — flux de match (lobby/mulligan/tour)", () => {
     expect(store.passPending).toBe(false);
   });
 
-  it("mulligan re-pioche une carte de moins", () => {
+  it("1er mulligan gratuit (6 cartes), 2e mulligan re-pioche une carte de moins (5 cartes)", () => {
     const store = useGameStore();
     const deck = createMockDeck();
     store.startMatch(deck, deck, { first: "A" });
-    store.mulligan("A");
+    expect(store.state.seats.A.main.length).toBe(6);
+    store.mulligan("A"); // 1er mulligan gratuit → 6 cartes
+    expect(store.state.seats.A.main.length).toBe(6);
+    store.mulligan("A"); // 2e mulligan → 5 cartes
     expect(store.state.seats.A.main.length).toBe(5);
   });
 
@@ -330,8 +333,8 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
     store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true);
-    // A6 : incliné dès la déclaration
-    expect(store.state.instances[id].orientation).toBe("tapped");
+    // Attaquant reste dressé à la déclaration (incliné à la résolution)
+    expect(store.state.instances[id].orientation).toBe("upright");
     // bus : « Quand il attaque » a posé +2 Force (jeton de combat)
     expect(store.effectiveForceOf(id)).toEqual({ value: 4, delta: 2 });
   });

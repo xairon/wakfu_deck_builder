@@ -131,11 +131,7 @@ export function useRuleAssistant() {
         rule: rejection.value.rule,
       };
 
-    if (store.matchPhase === "mulligan")
-      return {
-        tone: "info",
-        text: "Garde ta main de départ, ou refais-la (une carte de moins à chaque fois). Le premier joueur est tiré au sort ensuite.",
-      };
+    if (store.matchPhase === "mulligan") return null;
 
     // 2) En combat : guider l'étape courante (selon le rôle en ligne).
     if (store.combat) {
@@ -215,44 +211,8 @@ export function useRuleAssistant() {
       };
     }
 
-    // 3) Hors combat, en jeu : selon à qui c'est de jouer.
-    if (store.matchPhase === "playing") {
-      // Héros exposé dans le Monde : rappel du risque (508.x) — persistant tant
-      // qu'il n'est pas rentré, mais discret (ton info, sans ✕).
-      if (store.heroMoveOption?.to === "havreSac")
-        return {
-          tone: "info",
-          text: "Ton Héros est exposé dans le Monde : il peut être ciblé et attaqué. Sélectionne-le pour le « Rentrer au Havre-Sac ».",
-          rule: {
-            ref: "508.1",
-            detail:
-              "Dans son Havre-Sac, ton Héros est hors de portée de l'adversaire ; il ne devient ciblable qu'exposé dans le Monde (où il peut, lui, attaquer).",
-          },
-        };
-      if (store.online && store.turn.active !== store.mySeat)
-        return {
-          tone: "info",
-          text: "Au tour de l'adversaire — observe (tu pourras bloquer s'il attaque).",
-        };
-      // PREMIER TOUR (603.2 / 506.3) : aucune carte n'entre dans le Monde et on
-      // ne peut pas attaquer — un Allié posé va au Havre-Sac. Sans ce cas, le
-      // hint « pose une carte / attaque » se fait refuser tout de suite (l'exact
-      // public tutoriel visé).
-      if (store.turn.number === 1)
-        return {
-          tone: "info",
-          text: "Premier tour : tu ne peux pas encore attaquer ni faire entrer une carte dans le Monde (un Allié posé rejoint ton Havre-Sac). Développe ton Havre-Sac ou finis ton tour.",
-          rule: {
-            ref: "506.3 / 603.2",
-            detail:
-              "Aucune carte n'entre dans le Monde au 1er tour de la partie, et on n'attaque pas avant d'avoir dépassé le 2e tour.",
-          },
-        };
-      return {
-        tone: "action",
-        text: "À toi de jouer : pose une carte, sors/rentre ton Héros (⚔/🛡), déclare une attaque (⚔), ou finis ton tour.",
-      };
-    }
+    // 3) Hors combat, en jeu : pas d'indications passives en haut de l'écran.
+    return null;
     return null;
   });
 

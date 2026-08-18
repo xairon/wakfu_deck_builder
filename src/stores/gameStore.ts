@@ -280,6 +280,7 @@ export const useGameStore = defineStore("game", () => {
   const passPending = ref(false);
   const mulliganSeat = ref<Seat | null>(null);
   const mulliganDone = ref<Record<Seat, boolean>>({ A: false, B: false });
+  const mulliganCounts = ref<Record<Seat, number>>({ A: 0, B: 0 });
   const winner = ref<Seat | null>(null);
 
   // ── Dérivés moteur ───────────────────────────────────────────────────────
@@ -1091,6 +1092,7 @@ export const useGameStore = defineStore("game", () => {
     draw("A", paOf("A"));
     draw("B", paOf("B"));
     mulliganDone.value = { A: false, B: false };
+    mulliganCounts.value = { A: 0, B: 0 };
     mulliganSeat.value = first;
     perspective.value = first;
     matchPhase.value = "mulligan";
@@ -1120,6 +1122,7 @@ export const useGameStore = defineStore("game", () => {
     initEngine(deckA, deckB, first);
     mulliganSeat.value = null;
     mulliganDone.value = { A: true, B: true };
+    mulliganCounts.value = { A: 0, B: 0 };
     perspective.value = first;
     matchPhase.value = "playing";
     passPending.value = false;
@@ -1148,10 +1151,25 @@ export const useGameStore = defineStore("game", () => {
     clearEffectSpotlight();
   }
 
-  /** Recycle toute la main du joueur, re-mélange, re-pioche (−1). */
+  /** Nombre de mulligans déjà effectués par un siège. */
+  function mulliganCount(seat: Seat): number {
+    if (online.value) {
+      return events.value.filter(
+        (e) =>
+          e.actor === seat &&
+          e.type === "SHUFFLE" &&
+          (e.payload as { zone?: { zone?: string } })?.zone?.zone === "pioche",
+      ).length;
+    }
+    return mulliganCounts.value[seat] ?? 0;
+  }
+
+  /** Recycle toute la main du joueur, re-mélange, re-pioche (1er mulligan gratuit → même nombre, puis -1). */
   function mulligan(seat: Seat): void {
+    const count = mulliganCount(seat);
     const hand = [...state.value.seats[seat].main];
-    const target = Math.max(0, hand.length - 1);
+    const target = count === 0 ? Math.max(6, hand.length) : Math.max(0, hand.length - 1);
+    mulliganCounts.value[seat] = count + 1;
     for (const id of hand)
       moveTo(id, { zone: "pioche", owner: seat }, { at: "top" });
     shufflePioche(seat);
@@ -3180,21 +3198,42 @@ export const useGameStore = defineStore("game", () => {
     });
   }
 
-  /** Poser ou effacer un état de combat explicite (overlay attaquant / bloquant / neutre) */
+  /** Poser ou effacer un état de combat explicite (overlay attaquant / bloquant / cible / neutre + cible de la flèche) */
   function setCardCombatState(
     instanceId: string,
-    combatState: "attacking" | "blocking" | null,
+    combatState: "attacking" | "blocking" | "targeted" | null,
+    combatTargetId?: string | null,
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
-    if (online.value) {
-      inst.counters.combatState = combatState;
+    const targetVal = combatState === null ? null : (combatTargetId ?? null);
+
+    if (
+      pushIntent({
+        kind: "SET_COUNTER",
+        instanceId,
+        counter: "combatState",
+        value: combatState,
+      })
+    ) {
+      pushIntent({
+        kind: "SET_COUNTER",
+        instanceId,
+        counter: "combatTargetId",
+        value: targetVal,
+      });
       return;
     }
+
     dispatch({
       actor: inst.controller,
       type: "SET_COUNTER",
       payload: { instanceId, counter: "combatState", value: combatState },
+    });
+    dispatch({
+      actor: inst.controller,
+      type: "SET_COUNTER",
+      payload: { instanceId, counter: "combatTargetId", value: targetVal },
     });
   }
 
@@ -3333,6 +3372,259 @@ export const useGameStore = defineStore("game", () => {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
     dispatch(setCounterVerb(inst.controller, instanceId, counter, 0));
+  }
+
+  async function submitIntentWithRetry(intent: GameIntent): Promise<void> {
+    if (!onlineTransport?.submitIntent) return;
+    const gid = gameId.value;
+    try {
+      await onlineTransport.submitIntent(gid, intent);
+    } catch (e) {
+      const msg = (e as Error)?.message ?? String(e);
+      if (msg.includes("OUT_OF_ORDER")) {
+        pulling = false;
+        await resyncFrom(lastSeq());
+        await onlineTransport.submitIntent(gid, intent);
+        return;
+      }
+      throw e;
+    }
+  }
+
+  function getHeroBaseHp(card: unknown): number {
+    if (!card) return 20;
+    const h = card as {
+      recto?: { stats?: Record<string, unknown> };
+      stats?: Record<string, unknown>;
+    };
+    const s = h?.recto?.stats ?? h?.stats;
+    const pv = (s?.pv ?? s?.hp ?? s?.vie ?? s?.heroHp) as unknown;
+    return typeof pv === "number" && !Number.isNaN(pv) && pv > 0 ? pv : 20;
+  }
+
+  /** Réinitialiser la table d'un joueur : renvoie main, terrain, havre-sac, défausse et bannie au deck, réinitialise le Héros et le Havre-Sac, et mélange. */
+  async function resetTableAndDeck(seat?: Seat): Promise<void> {
+    const s = (typeof seat === "string" ? seat : (mySeat.value ?? perspective.value)) as Seat;
+    const heroId = state.value.seats[s]?.heroInstanceId;
+    const havreSacId = state.value.seats[s]?.havreSacInstanceId;
+
+    const heroInst = heroId ? state.value.instances[heroId] : null;
+    const heroCard =
+      (heroId ? instanceCardMap.get(heroId) : null) ??
+      (heroInst?.cardId ? cardStore.cards.find((c) => c.id === heroInst.cardId) : null) ??
+      activeDecks.value[s]?.hero;
+    const baseHp = getHeroBaseHp(heroCard);
+
+    const targetInstances = Object.values(state.value.instances).filter(
+      (inst) => inst.controller === s || inst.owner === s,
+    );
+
+    if (online.value && onlineTransport?.submitIntent) {
+      const gid = gameId.value;
+
+      try {
+        for (const inst of targetInstances) {
+          const id = inst.instanceId;
+
+          if (id === heroId) {
+            if (state.value.instances[id]?.location.zone === "monde") {
+              await submitIntentWithRetry({
+                kind: "MOVE_CARD",
+                instanceId: id,
+                to: { zone: "pioche", owner: s },
+              });
+            }
+            if (state.value.instances[id]?.location.zone !== "havreSac") {
+              await submitIntentWithRetry({
+                kind: "MOVE_CARD",
+                instanceId: id,
+                to: { zone: "havreSac", owner: s },
+              });
+            }
+            if (state.value.instances[id]?.orientation === "tapped") {
+              await submitIntentWithRetry({ kind: "UNTAP", instanceId: id });
+            }
+            if (state.value.instances[id]?.counters.hp !== baseHp) {
+              await submitIntentWithRetry({
+                kind: "SET_COUNTER",
+                instanceId: id,
+                counter: "hp",
+                value: baseHp,
+              });
+            }
+            if (state.value.instances[id]?.counters.xp) {
+              await submitIntentWithRetry({
+                kind: "SET_COUNTER",
+                instanceId: id,
+                counter: "xp",
+                value: 0,
+              });
+            }
+            if (state.value.instances[id]?.counters.combatState) {
+              await submitIntentWithRetry({
+                kind: "SET_COUNTER",
+                instanceId: id,
+                counter: "combatState",
+                value: null,
+              });
+            }
+          } else if (id === havreSacId) {
+            if (state.value.instances[id]?.location.zone === "monde") {
+              await submitIntentWithRetry({
+                kind: "MOVE_CARD",
+                instanceId: id,
+                to: { zone: "pioche", owner: s },
+              });
+            }
+            if (state.value.instances[id]?.location.zone !== "havreSac") {
+              await submitIntentWithRetry({
+                kind: "MOVE_CARD",
+                instanceId: id,
+                to: { zone: "havreSac", owner: s },
+              });
+            }
+            if (state.value.instances[id]?.orientation === "tapped") {
+              await submitIntentWithRetry({ kind: "UNTAP", instanceId: id });
+            }
+            if (state.value.instances[id]?.counters.resistance) {
+              await submitIntentWithRetry({
+                kind: "SET_COUNTER",
+                instanceId: id,
+                counter: "resistance",
+                value: 0,
+              });
+            }
+            if (state.value.instances[id]?.counters.combatState) {
+              await submitIntentWithRetry({
+                kind: "SET_COUNTER",
+                instanceId: id,
+                counter: "combatState",
+                value: null,
+              });
+            }
+          } else {
+            if (state.value.instances[id]?.location.zone !== "pioche") {
+              await submitIntentWithRetry({
+                kind: "MOVE_CARD",
+                instanceId: id,
+                to: { zone: "pioche", owner: s },
+                position: { at: "top" },
+              });
+            }
+            if (state.value.instances[id]?.orientation === "tapped") {
+              await submitIntentWithRetry({ kind: "UNTAP", instanceId: id });
+            }
+            if (state.value.instances[id]?.counters.damage) {
+              await submitIntentWithRetry({
+                kind: "SET_COUNTER",
+                instanceId: id,
+                counter: "damage",
+                value: 0,
+              });
+            }
+            if (state.value.instances[id]?.counters.combatState) {
+              await submitIntentWithRetry({
+                kind: "SET_COUNTER",
+                instanceId: id,
+                counter: "combatState",
+                value: null,
+              });
+            }
+          }
+        }
+
+        await onlineTransport.submit(gid, {
+          actor: s,
+          type: "SHUFFLE",
+          payload: { zone: { zone: "pioche", owner: s }, permutation: [] },
+        });
+
+        await onlineTransport.submit(gid, say(s, `🔄 ${players.value[s].name} a réinitialisé sa table et son deck.`));
+      } catch (e) {
+        ruleError.value = `Erreur réinitialisation : ${String(e)}`;
+      }
+      return;
+    }
+
+    const drafts: DraftEvent[] = [];
+    for (const inst of targetInstances) {
+      const id = inst.instanceId;
+      if (id === heroId) {
+        if (inst.location.zone !== "havreSac") {
+          drafts.push({
+            actor: s,
+            type: "MOVE",
+            payload: {
+              instanceId: id,
+              from: inst.location,
+              to: { zone: "havreSac", owner: s },
+              position: { at: "bottom" },
+              visibility: { faceDown: false, visibleTo: "all" },
+              preservesIdentity: true,
+            },
+          });
+        }
+        if (inst.orientation === "tapped") {
+          drafts.push({ actor: s, type: "SET_ORIENTATION", payload: { instanceId: id, orientation: "upright" } });
+        }
+        drafts.push(setCounterVerb(s, id, "hp", baseHp));
+        drafts.push(setCounterVerb(s, id, "xp", 0));
+        drafts.push(setCounterVerb(s, id, "combatState", null as never));
+        drafts.push(setCounterVerb(s, id, "combatTargetId", null as never));
+      } else if (id === havreSacId) {
+        if (inst.location.zone !== "havreSac") {
+          drafts.push({
+            actor: s,
+            type: "MOVE",
+            payload: {
+              instanceId: id,
+              from: inst.location,
+              to: { zone: "havreSac", owner: s },
+              position: { at: "bottom" },
+              visibility: { faceDown: false, visibleTo: "all" },
+              preservesIdentity: true,
+            },
+          });
+        }
+        if (inst.orientation === "tapped") {
+          drafts.push({ actor: s, type: "SET_ORIENTATION", payload: { instanceId: id, orientation: "upright" } });
+        }
+        drafts.push(setCounterVerb(s, id, "resistance", 0));
+        drafts.push(setCounterVerb(s, id, "combatState", null as never));
+        drafts.push(setCounterVerb(s, id, "combatTargetId", null as never));
+      } else {
+        if (inst.location.zone !== "pioche") {
+          drafts.push({
+            actor: s,
+            type: "MOVE",
+            payload: {
+              instanceId: id,
+              from: inst.location,
+              to: { zone: "pioche", owner: s },
+              position: { at: "top" },
+              visibility: { faceDown: true, visibleTo: "none" },
+              preservesIdentity: false,
+            },
+          });
+        }
+        if (inst.orientation === "tapped") {
+          drafts.push({ actor: s, type: "SET_ORIENTATION", payload: { instanceId: id, orientation: "upright" } });
+        }
+        drafts.push(setCounterVerb(s, id, "combatState", null as never));
+        drafts.push(setCounterVerb(s, id, "combatTargetId", null as never));
+        drafts.push(setCounterVerb(s, id, "damage", 0));
+      }
+    }
+
+    drafts.push({
+      actor: s,
+      type: "SHUFFLE",
+      payload: { zone: { zone: "pioche", owner: s }, permutation: [] },
+    });
+
+    drafts.push(say("system", `🔄 ${players.value[s].name} a réinitialisé sa table et son deck.`));
+
+    dispatch(...drafts);
   }
 
   function setTurnPhase(phase: TurnPhase): void {
@@ -3948,14 +4240,6 @@ export const useGameStore = defineStore("game", () => {
         (id) => state.value.instances[id]?.orientation !== "tapped",
       ),
     );
-    const taps: DraftEvent[] = [...newlyInclined].map(
-      (id): DraftEvent => ({
-        actor: seat,
-        type: "SET_ORIENTATION",
-        payload: { instanceId: id, orientation: "tapped" },
-      }),
-    );
-    if (taps.length) dispatch(...taps);
     // « … qui vient de s'incliner » (Flèche d'Immolation) : marque les attaquants
     // qui s'inclinent MAINTENANT avec `justInclined` (réinitialisé : on efface les
     // marques d'une déclaration précédente, puis on pose sur les nouveaux). Purgé
@@ -4475,6 +4759,8 @@ export const useGameStore = defineStore("game", () => {
     startMatch,
     startSandbox,
     mulligan,
+    mulliganCount,
+    mulliganCounts,
     keepHand,
     reveal,
     endTurn,
@@ -4591,6 +4877,7 @@ export const useGameStore = defineStore("game", () => {
     untapStack,
     toggleFlip,
     millTopDeck,
+    resetTableAndDeck,
     say: (actor: Seat | "system", text: string) => dispatch(say(actor, text)),
     detachCard,
     resetCounter,

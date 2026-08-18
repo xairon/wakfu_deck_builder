@@ -485,5 +485,22 @@ export function resolveCombat(
     });
   }
 
+  // Fin de Combat : les attaquants SURVIVANTS sont inclinés à la résolution du combat
+  for (const attacker of plan.attackers) {
+    if (destroyed.includes(attacker)) continue;
+    const inst = ctx.state.instances[attacker];
+    if (
+      !inst ||
+      inst.location.zone !== "monde" ||
+      inst.orientation === "tapped"
+    )
+      continue;
+    events.push({
+      actor: atk,
+      type: "SET_ORIENTATION",
+      payload: { instanceId: attacker, orientation: "tapped" },
+    });
+  }
+
   return { events, log, destroyed, winner, ruleEvents };
 }

@@ -210,6 +210,18 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
     expect(isErr(rErr)).toBe(true);
   });
 
+  it("SET_LEVEL sur son propre Héros hors de son tour → autorisé en ligne", () => {
+    const { state, getCard } = playingState(); // active = "A"
+    const bHero = state.seats.B.heroInstanceId!;
+    const rOutOfTurnOwn = resolveIntent(
+      state,
+      getCard,
+      { kind: "SET_LEVEL", instanceId: bHero, face: "verso", level: 2, xp: 6 },
+      "B",
+    );
+    expect(isErr(rOutOfTurnOwn)).toBe(false);
+  });
+
   it("SET_COUNTER pa=999 / INC pm sur soi → refusé (ressources protégées)", () => {
     const { state, getCard } = playingState();
     const aHero = state.seats.A.heroInstanceId!;

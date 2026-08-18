@@ -25,6 +25,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "select", instanceId: string): void;
   (e: "zoom", instanceId: string): void;
+  (e: "ctrlClick", instanceId: string): void;
 }>();
 
 const store = useGameStore();
@@ -75,6 +76,7 @@ const items = computed<{ inst: RedactedInstance; card: Card | null }[]>(() => {
         :selected="a.inst.instanceId === selectedId"
         @select="emit('select', a.inst.instanceId)"
         @zoom="emit('zoom', a.inst.instanceId)"
+        @ctrl-click="emit('ctrlClick', a.inst.instanceId)"
       />
     </div>
   </div>

@@ -64,8 +64,8 @@ describe("Flèche — justInclined posé à la déclaration + réinitialisé", (
     store.combat = inProgressCombat([atk], heroB);
 
     expect(store.combatConfirmAttackers()).toBe(true);
-    // l'attaquant s'incline et est marqué ; la marque périmée est effacée.
-    expect(store.state.instances[atk].orientation).toBe("tapped");
+    // l'attaquant reste dressé à la déclaration et est marqué ; la marque périmée est effacée.
+    expect(store.state.instances[atk].orientation).toBe("upright");
     expect(store.state.instances[atk].counters.tokens?.justInclined).toBe(1);
     expect(store.state.instances[stale].counters.tokens?.justInclined).toBe(0);
   });
