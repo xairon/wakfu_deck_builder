@@ -1740,7 +1740,6 @@ function emptyInteriorSlots(seat: Seat): number {
 function allies(seat: Seat): RedactedInstance[] {
   return mondeOwned(seat).filter((i) => i.instanceId !== havreId(seat));
 }
-const queue = computed(() => instancesOf(view.value.fileAttente));
 
 function handList(seat: Seat): HandItem[] {
   const z = view.value.seats[seat].main;
@@ -2670,12 +2669,6 @@ function bumpDamage(delta: number): void {
   if (selectedInst.value)
     store.adjustCounter(selectedInst.value.instanceId, "damage", delta);
   selectedId.value = null;
-}
-function havreResistance(inst?: RedactedInstance | null): number {
-  if (!inst) return 0;
-  if (typeof inst.counters.resistance === "number") return inst.counters.resistance;
-  const card = resolveCard(inst.cardId);
-  return (card?.stats as any)?.resistance ?? 0;
 }
 function bumpResistance(instanceId?: string | null, delta: number = 0): void {
   if (!instanceId) return;
