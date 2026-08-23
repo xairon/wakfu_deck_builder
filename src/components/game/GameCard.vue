@@ -193,7 +193,18 @@ const level = computed(() => {
   }
   return props.instance.counters.level;
 });
-const resistance = computed(() => props.instance.counters.resistance);
+const resistance = computed(() => {
+  if (typeof props.instance.counters.resistance === "number") {
+    return props.instance.counters.resistance;
+  }
+  if (
+    props.card?.mainType === "Havre-Sac" &&
+    typeof (props.card.stats as any)?.resistance === "number"
+  ) {
+    return (props.card.stats as any).resistance;
+  }
+  return undefined;
+});
 /** Force EFFECTIVE (auras, Vrombyx, jetons) — pas le jeton forceMod brut. */
 const force = computed(() => game.effectiveForceOf(props.instance.instanceId));
 

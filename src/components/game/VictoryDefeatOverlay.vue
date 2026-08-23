@@ -66,6 +66,7 @@ const showOverlay = computed(() => store.matchPhase === "finished" && !dismissed
 
 function dismissOverlay(): void {
   dismissed.value = true;
+  store.continueMatch();
 }
 
 const me = computed(() => store.mySeat ?? store.perspective);

@@ -4,24 +4,24 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import GameBoard from "../GameBoard.vue";
 import { useGameStore } from "@/stores/gameStore";
 import { useCardStore } from "@/stores/cardStore";
-import { createMockDeck } from "tests/factories/card";
+import { createMockDeck, createMockHavreSacCard } from "tests/factories/card";
 
 describe("GameBoard — rendu", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
-  it("se monte (plateau + Monde) et rend des cartes, sans erreur", () => {
+  it("se monte (plateau) et rend des cartes, sans erreur", () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck());
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
     });
     expect(wrapper.find(".gtable").exists()).toBe(true);
-    expect(wrapper.text()).toContain("Le Monde");
+    expect(wrapper.find(".gmid").exists()).toBe(false);
     // Héros (×2) + Havre-Sac (×2) au minimum
     expect(wrapper.findAll(".game-card").length).toBeGreaterThanOrEqual(2);
   });
 
-  it("sélectionner une carte ouvre la barre d'action", async () => {
+  it("sélectionner une carte ouvre la barre d'action sans bouton Activer", async () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck());
     const wrapper = mount(GameBoard, {
@@ -29,6 +29,34 @@ describe("GameBoard — rendu", () => {
     });
     await wrapper.find(".game-card").trigger("click");
     expect(wrapper.find(".gactionbar").exists()).toBe(true);
+    expect(wrapper.text()).not.toContain("Activer");
+  });
+
+  it("permet de modifier la résistance du Havre-Sac avec les boutons + et -", async () => {
+    const store = useGameStore();
+    const deck = createMockDeck({
+      havreSac: createMockHavreSacCard({
+        stats: { resistance: 15 } as any,
+      }),
+    });
+    store.startSandbox(deck, deck);
+    const me = store.perspective;
+    const sacId = store.state.seats[me].havreSacInstanceId!;
+    const initialRes = store.state.instances[sacId]?.counters.resistance ?? 15;
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    const plusBtn = wrapper.find('[data-testid="havre-res-plus-me"]');
+    expect(plusBtn.exists()).toBe(true);
+    await plusBtn.trigger("click");
+    expect(store.state.instances[sacId].counters.resistance).toBe(initialRes + 1);
+
+    const minusBtn = wrapper.find('[data-testid="havre-res-minus-me"]');
+    expect(minusBtn.exists()).toBe(true);
+    await minusBtn.trigger("click");
+    expect(store.state.instances[sacId].counters.resistance).toBe(initialRes);
   });
 });
 

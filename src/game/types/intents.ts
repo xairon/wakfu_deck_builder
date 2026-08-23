@@ -93,4 +93,5 @@ export type GameIntent =
        *  de l'attaquant ; invalide → politique auto côté moteur). */
       geantAssign?: Record<InstanceId, Record<InstanceId, number>>;
     }
-  | { kind: "CANCEL_COMBAT" };
+  | { kind: "CANCEL_COMBAT" }
+  | { kind: "CONTINUE_GAME" };

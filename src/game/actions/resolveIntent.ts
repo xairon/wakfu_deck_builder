@@ -193,6 +193,11 @@ export function resolveIntent(
   }
 
   switch (intent.kind) {
+    case "CONTINUE_GAME": {
+      return {
+        events: [say("system", "La partie continue en jeu libre.")],
+      };
+    }
     case "PLAY_CARD": {
       const reason = whyCannotPlay(
         ctx,

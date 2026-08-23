@@ -75,10 +75,11 @@ Deno.serve(async (req) => {
       .eq("id", gameId)
       .single();
     const isReset = (intent as { kind?: string })?.kind === "RESET_TABLE";
-    if (!game || (game.status !== "active" && !isReset))
+    const isContinue = (intent as { kind?: string })?.kind === "CONTINUE_GAME";
+    if (!game || (game.status !== "active" && !isReset && !isContinue))
       return json({ error: "PARTIE_INACTIVE" }, 409);
 
-    if (game.status === "finished" && isReset) {
+    if (game.status === "finished" && (isReset || isContinue)) {
       await db
         .from("games")
         .update({ status: "active", winner: null, end_reason: null })
@@ -106,9 +107,18 @@ Deno.serve(async (req) => {
     const rowEvents = (rows ?? []).map(rowToEvent);
     const state = deriveState(rowEvents);
 
-    // Partie déjà terminée : aucun event ne peut plus être appendé (sauf RESET_TABLE
+    // Partie déjà terminée : aucun event ne peut plus être appendé (sauf RESET_TABLE, CONTINUE_GAME
     // ou ajustements manuels en table libre si les joueurs restent dans la partie).
-    if (rowEvents.some((e) => e.type === "GAME_OVER") && !isReset && !manual)
+    const lastGameOverIndex = rowEvents.findLastIndex((e) => e.type === "GAME_OVER");
+    const lastContinueIndex = rowEvents.findLastIndex(
+      (e) =>
+        (e.type as string) === "CONTINUE_GAME" ||
+        (e.type === "SAID" &&
+          ((e.payload as { text?: string })?.text ?? "").includes("continue")),
+    );
+    const isOver =
+      lastGameOverIndex !== -1 && lastGameOverIndex >= lastContinueIndex;
+    if (isOver && !isReset && !isContinue && !manual)
       return json({ error: "PARTIE_TERMINEE" }, 409);
 
     // Termine la partie : append système GAME_OVER (résolu + diffusé redacté par

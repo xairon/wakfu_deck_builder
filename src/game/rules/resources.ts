@@ -17,7 +17,7 @@ import {
   resourceElement,
 } from "./cardAttrs.ts";
 import { staticAbilitiesOf } from "./modifiers.ts";
-import { isUniqueCard } from "@/utils/cardRules";
+import { isUniqueCard } from "../../utils/cardRules.ts";
 
 /**
  * 2342 — le bonus « Havre-Sac ×2 Ressources » du 2ᵉ joueur à son 1er tour est-il

@@ -282,6 +282,7 @@ export const useGameStore = defineStore("game", () => {
   const mulliganDone = ref<Record<Seat, boolean>>({ A: false, B: false });
   const mulliganCounts = ref<Record<Seat, number>>({ A: 0, B: 0 });
   const winner = ref<Seat | null>(null);
+  const continuedMatch = ref(false);
 
   // ── Dérivés moteur ───────────────────────────────────────────────────────
   const state = computed<GameState>(() => {
@@ -469,6 +470,7 @@ export const useGameStore = defineStore("game", () => {
       );
       return;
     }
+    if (continuedMatch.value) return;
     const w = victoryFromState(rulesCtx());
     if (w) {
       winner.value = w;
@@ -716,6 +718,10 @@ export const useGameStore = defineStore("game", () => {
       const fp = t?.firstPlayer ?? t?.active;
       if (fp) firstPlayer.value = fp;
     }
+    if (continuedMatch.value) {
+      matchPhase.value = "playing";
+      return;
+    }
     if (matchPhase.value === "finished") return;
     // Fin AUTORITATIVE serveur : un GAME_OVER (concession/déconnexion/défaite,
     // émis par submit_event) prime sur la dérivation d'état. Il porte le
@@ -940,6 +946,7 @@ export const useGameStore = defineStore("game", () => {
     revealed.value = {};
     gameId.value = "local";
     matchPhase.value = "lobby";
+    continuedMatch.value = false;
     activeDecks.value = { A: null, B: null };
     instanceCardMap.clear();
     // Présence/grâce : minuteur coupé (test-safe) + état réinitialisé.
@@ -1096,6 +1103,7 @@ export const useGameStore = defineStore("game", () => {
     mulliganSeat.value = first;
     perspective.value = first;
     matchPhase.value = "mulligan";
+    continuedMatch.value = false;
     passPending.value = true;
     combat.value = null;
     attackedOnTurn.value = null;
@@ -1125,6 +1133,7 @@ export const useGameStore = defineStore("game", () => {
     mulliganCounts.value = { A: 0, B: 0 };
     perspective.value = first;
     matchPhase.value = "playing";
+    continuedMatch.value = false;
     passPending.value = false;
     if (opts.openingHand) {
       // Main de départ = PA de chaque joueur (comme startMatch après le mulligan).
@@ -1427,6 +1436,17 @@ export const useGameStore = defineStore("game", () => {
     void onlineTransport?.claimVictory?.(gameId.value);
   }
 
+  function continueMatch(): void {
+    continuedMatch.value = true;
+    matchPhase.value = "playing";
+    winner.value = null;
+    if (online.value && onlineTransport?.submitIntent) {
+      void submitIntentWithRetry({ kind: "CONTINUE_GAME" });
+    } else if (!online.value) {
+      dispatch(say("system", "La partie continue en jeu libre."));
+    }
+  }
+
   function quitMatch(): void {
     // En ligne : quitter = abandonner (forfait) puis se déconnecter proprement.
     // La concession part au serveur ; on coupe la table ensuite.
@@ -1437,6 +1457,7 @@ export const useGameStore = defineStore("game", () => {
     }
     events.value = [];
     matchPhase.value = "lobby";
+    continuedMatch.value = false;
     passPending.value = false;
     mulliganSeat.value = null;
     winner.value = null;
@@ -4746,6 +4767,7 @@ export const useGameStore = defineStore("game", () => {
     log,
     started,
     matchPhase,
+    continuedMatch,
     players,
     firstPlayer,
     perspective,
@@ -4758,6 +4780,7 @@ export const useGameStore = defineStore("game", () => {
     // cycle
     startMatch,
     startSandbox,
+    continueMatch,
     mulligan,
     mulliganCount,
     mulliganCounts,

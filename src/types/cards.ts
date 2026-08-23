@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import {
+import type {
   actionCardSchema,
   allyCardSchema,
   baseCardSchema,
@@ -32,7 +32,7 @@ import {
   roomCardSchema,
   staticAbilitySchema,
   zoneCardSchema,
-} from "@/schema";
+} from "../schema";
 
 // ── Types primitifs (dérivés des schémas Zod) ──────────────────────────────
 export type CardRarity = z.infer<typeof cardRaritySchema>;

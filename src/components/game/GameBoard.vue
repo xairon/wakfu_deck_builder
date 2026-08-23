@@ -67,7 +67,29 @@
         />
         <div class="ghavre" aria-label="Havre-Sac adverse et son intérieur">
           <div class="gzone ghavre__bag">
-            <span class="gzone__label">Havre-Sac</span>
+            <div class="ghavre__head">
+              <span class="gzone__label">Havre-Sac</span>
+              <div v-if="havreCard(opp).length" class="ghavre__res-row">
+                <span class="ghavre__pm">
+                  <button
+                    class="ghavre__btn"
+                    :aria-label="`+ Résistance ${store.players[opp].name}`"
+                    title="+1 Résistance"
+                    @click.stop="bumpResistance(havreCard(opp)[0]?.instanceId, 1)"
+                  >
+                    +
+                  </button>
+                  <button
+                    class="ghavre__btn"
+                    :aria-label="`− Résistance ${store.players[opp].name}`"
+                    title="−1 Résistance"
+                    @click.stop="bumpResistance(havreCard(opp)[0]?.instanceId, -1)"
+                  >
+                    −
+                  </button>
+                </span>
+              </div>
+            </div>
             <div
               v-for="inst in havreCard(opp)"
               :key="inst.instanceId"
@@ -196,36 +218,6 @@
       </div>
     </section>
 
-    <!-- ════════ LIGNE MÉDIANE — LE MONDE / FILE D'ATTENTE ════════ -->
-    <div
-      class="gmid"
-      :class="zoneCls('queue')"
-      :ref="
-        (el) =>
-          registerZone('queue', el, { zone: 'fileAttente' }, 'File d\'attente')
-      "
-    >
-      <span class="gmid__label">⬩ Le Monde ⬩</span>
-      <div v-if="queue.length" class="gmid__queue">
-        <span class="gmid__queue-label">File d'attente</span>
-        <TransitionGroup tag="div" name="zone" class="gzone__cards">
-          <div
-            v-for="inst in queue"
-            :key="inst.instanceId"
-            class="gslot gslot--small"
-          >
-            <GameCard
-              :instance="inst"
-              :card="resolveCard(inst.cardId)"
-              draggable
-              :selected="inst.instanceId === selectedId"
-              @select="select(inst.instanceId)"
-              @zoom="zoomInst(inst.instanceId)"
-            />
-          </div>
-        </TransitionGroup>
-      </div>
-    </div>
 
     <!-- ════════ TOI : champ pleine largeur puis bande (HUD · socle · main · piles) ════════ -->
     <section class="gseat">
@@ -286,7 +278,31 @@
         />
         <div class="ghavre" aria-label="Havre-Sac et son intérieur">
           <div class="gzone ghavre__bag">
-            <span class="gzone__label">Havre-Sac</span>
+            <div class="ghavre__head">
+              <span class="gzone__label">Havre-Sac</span>
+              <div v-if="havreCard(me).length" class="ghavre__res-row">
+                <span class="ghavre__pm">
+                  <button
+                    class="ghavre__btn"
+                    data-testid="havre-res-plus-me"
+                    :aria-label="`+ Résistance ${store.players[me].name}`"
+                    title="+1 Résistance"
+                    @click.stop="bumpResistance(havreCard(me)[0]?.instanceId, 1)"
+                  >
+                    +
+                  </button>
+                  <button
+                    class="ghavre__btn"
+                    data-testid="havre-res-minus-me"
+                    :aria-label="`− Résistance ${store.players[me].name}`"
+                    title="−1 Résistance"
+                    @click.stop="bumpResistance(havreCard(me)[0]?.instanceId, -1)"
+                  >
+                    −
+                  </button>
+                </span>
+              </div>
+            </div>
             <div
               v-for="inst in havreCard(me)"
               :key="inst.instanceId"
@@ -1047,13 +1063,6 @@
             ⚔ Attaquer
           </button>
           <button
-            v-if="canActivateSelected"
-            class="gbtn gbtn--accent"
-            @click="activateSelected"
-          >
-            ⚡ Activer
-          </button>
-          <button
             v-if="selectedIsMyHero && heroMove"
             class="gbtn gbtn--accent"
             data-testid="action-move-hero"
@@ -1181,6 +1190,25 @@
           <button class="gbtn gbtn--counter" @click="bumpDamage(-1)">
             − Dmg
           </button>
+          <!-- Compteur Résistance pour le Havre-Sac ou cartes à résistance -->
+          <template v-if="selectedIsHavreSac">
+            <button
+              class="gbtn gbtn--counter"
+              data-testid="bump-res-up"
+              title="Modifier Résistance (+1)"
+              @click="bumpSelectedResistance(1)"
+            >
+              + Rés.
+            </button>
+            <button
+              class="gbtn gbtn--counter"
+              data-testid="bump-res-down"
+              title="Modifier Résistance (−1)"
+              @click="bumpSelectedResistance(-1)"
+            >
+              − Rés.
+            </button>
+          </template>
           <!-- CADRE — effets « ±N Force » joués à la main : compteur nommé
                « force », public et LU PAR LE COMBAT SERVEUR (effectiveForce). -->
           <template v-if="store.manualTable">
@@ -2428,33 +2456,7 @@ function attackWithSelected(): void {
 const chifumiBotActing = computed(
   () => !!store.botSeat && chifumiActingSeat(store) === store.botSeat,
 );
-const canActivateSelected = computed(() => {
-  const inst = selectedInst.value;
-  // CADRE : les pouvoirs (onTap) restent activables en ligne — activateTapPower
-  // gère déjà les relâchements table libre (hors-tour, coût manuel).
-  if ((!store.assist && !store.online) || store.effectTargeting || !inst)
-    return false;
-  if (inst.controller !== me.value) return false;
-  // POUVOIR DEPUIS LA MAIN (Polter Tofu) : carte en main portant un pouvoir
-  // activable depuis la main — orientation non pertinente ; la légalité de timing
-  // (tour / réaction) est jugée par activateTapPower (refus expliqué en toast).
-  if (inst.location.zone === "main") return store.hasHandPower(inst.instanceId);
-  return (
-    // EN COMBAT, seuls les pouvoirs CONDITIONNÉS au combat (Dora : « … que si le
-    // Porteur est attaquant ou bloqueur ») restent proposés — la légalité fine
-    // (tour / fenêtre de réaction / rôle du Porteur) est jugée par
-    // activateTapPower, refus expliqué en toast.
-    (!store.combat || store.tapPowerNeedsCombat(inst.instanceId)) &&
-    inst.orientation === "upright" &&
-    (inst.location.zone === "monde" || inst.location.zone === "havreSac") &&
-    store.hasTapPower(inst.instanceId)
-  );
-});
-function activateSelected(): void {
-  const id = selectedInst.value?.instanceId;
-  selectedId.value = null;
-  if (id) store.activateTapPower(id);
-}
+
 function moveSelected(
   zone: "monde" | "havreSac" | "main" | "defausse" | "pioche" | "exil",
   position: Position = { at: "any" },
@@ -2669,6 +2671,41 @@ function bumpDamage(delta: number): void {
     store.adjustCounter(selectedInst.value.instanceId, "damage", delta);
   selectedId.value = null;
 }
+function havreResistance(inst?: RedactedInstance | null): number {
+  if (!inst) return 0;
+  if (typeof inst.counters.resistance === "number") return inst.counters.resistance;
+  const card = resolveCard(inst.cardId);
+  return (card?.stats as any)?.resistance ?? 0;
+}
+function bumpResistance(instanceId?: string | null, delta: number = 0): void {
+  if (!instanceId) return;
+  const inst = store.state.instances[instanceId];
+  if (!inst) return;
+  if (typeof inst.counters.resistance !== "number") {
+    const card = resolveCard(inst.cardId);
+    const base = (card?.stats as any)?.resistance ?? 0;
+    store.adjustCounter(instanceId, "resistance", base + delta);
+  } else {
+    store.adjustCounter(instanceId, "resistance", delta);
+  }
+}
+const selectedIsHavreSac = computed(() => {
+  const inst = selectedInst.value;
+  if (!inst) return false;
+  const card = resolveCard(inst.cardId);
+  return (
+    card?.mainType === "Havre-Sac" ||
+    inst.counters?.resistance !== undefined ||
+    inst.instanceId === havreId(me.value) ||
+    inst.instanceId === havreId(opp.value)
+  );
+});
+function bumpSelectedResistance(delta: number): void {
+  if (selectedInst.value) {
+    bumpResistance(selectedInst.value.instanceId, delta);
+  }
+  selectedId.value = null;
+}
 // CADRE : delta de Force manuel (compteur nommé « force », lu par le combat).
 function bumpForce(delta: number): void {
   if (selectedInst.value)
@@ -2779,31 +2816,31 @@ function manaBonus(seat: Seat): boolean {
      (vh) du viewport. Sur grand écran le terme vw (ou le plafond du clamp)
      l'emporte ; sur écran de portable court, le terme vh fait rétrécir les
      cartes pour que la main ne soit plus rognée (cf. overflow:hidden). */
-  --card-field: clamp(78px, min(6.9vw, 9.4vh), 126px);
-  --card-wide: clamp(70px, min(6vw, 8vh), 110px);
-  --card-hand: clamp(92px, min(8.6vw, 11.5vh), 152px);
-  --card-opp: clamp(54px, min(4.6vw, 6vh), 84px);
-  --card-havre: clamp(80px, min(6.9vw, 9.4vh), 126px);
-  --pile: clamp(56px, min(5vw, 6.5vh), 90px);
+  --card-field: clamp(72px, min(6.2vw, 8.8vh), 116px);
+  --card-wide: clamp(64px, min(5.4vw, 7.6vh), 100px);
+  --card-hand: clamp(80px, min(7.2vw, 9.8vh), 126px);
+  --card-opp: clamp(48px, min(4.2vw, 5.8vh), 74px);
+  --card-havre: clamp(74px, min(6.4vw, 8.8vh), 116px);
+  --pile: clamp(50px, min(4.5vw, 6.2vh), 80px);
   position: relative;
   height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 6px clamp(12px, 2.5vw, 36px);
-  border-radius: 12px;
+  gap: 6px;
+  padding: 6px clamp(10px, 1.8vw, 24px);
+  border-radius: 14px;
   color: #f6f5f1;
   background:
     radial-gradient(
-      60% 38% at 50% 50%,
-      rgba(240, 78, 34, 0.07) 0%,
+      65% 42% at 50% 50%,
+      rgba(240, 78, 34, 0.08) 0%,
       transparent 100%
     ),
-    radial-gradient(120% 90% at 50% 50%, #2c2720 0%, #1a1611 58%, #0d0a07 100%);
+    radial-gradient(120% 90% at 50% 50%, #28231c 0%, #17130f 58%, #0c0a07 100%);
   box-shadow:
-    inset 0 0 140px rgba(0, 0, 0, 0.65),
-    inset 0 0 0 1px rgba(240, 78, 34, 0.16);
+    inset 0 0 160px rgba(0, 0, 0, 0.72),
+    inset 0 0 0 1px rgba(240, 78, 34, 0.2);
   overflow: hidden;
 }
 .gtable::before {
@@ -2811,7 +2848,7 @@ function manaBonus(seat: Seat): boolean {
   position: absolute;
   inset: 0;
   background-image: radial-gradient(
-    rgba(255, 255, 255, 0.022) 1px,
+    rgba(255, 255, 255, 0.025) 1px,
     transparent 1px
   );
   background-size: 5px 5px;
@@ -2825,22 +2862,15 @@ function manaBonus(seat: Seat): boolean {
   flex: 1;
   min-height: 0;
 }
-/* Réserve sous la main du joueur : l'éventail fait « plonger » les cartes
-   extérieures (rotation au bas-centre) sous la zone de main. Comme la zone de
-   terrain est flex:1 et remplit toujours le plateau, sans réserve cette
-   plongée serait rognée par l'overflow:hidden, quelle que soit la hauteur
-   d'écran. La réserve rend de la place au terrain (qui se contracte) et fait
-   remonter la main pour que l'éventail tienne entièrement. Proportionnelle à
-   la taille des cartes (donc à l'amplitude de la plongée). */
 .gseat:not(.gseat--opp) {
-  padding-bottom: calc(var(--card-hand) * 0.2 + 10px);
+  padding-bottom: 2px;
 }
 
 /* ── Bande de siège : HUD · socle · main · piles ── */
 .gseat__strip {
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto;
-  gap: clamp(10px, 1.2vw, 18px);
+  gap: clamp(8px, 1.1vw, 16px);
   align-items: stretch;
 }
 .gseat__handzone {
@@ -2848,29 +2878,36 @@ function manaBonus(seat: Seat): boolean {
   align-items: flex-end;
   justify-content: center;
   min-width: 0;
-  border-radius: 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.26);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.35);
+  position: relative;
+  padding: 14px 8px 4px;
 }
 .gseat__handzone--opp {
   align-items: center;
+  padding: 8px 8px;
 }
 
 /* ── Zones ── */
 .gzone {
   position: relative;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  padding: 18px 12px 10px;
+  padding: 16px 10px 8px;
 }
 /* ── Havre-Sac : la carte (le socle) + son intérieur (Héros, Salles, Équip.) ── */
 .ghavre {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: stretch;
 }
 .ghavre__bag,
 .ghavre__inside {
-  border: 1px solid rgba(240, 78, 34, 0.28);
+  border: 1px solid rgba(240, 78, 34, 0.3);
   display: flex;
   align-items: center;
 }
@@ -2884,24 +2921,26 @@ function manaBonus(seat: Seat): boolean {
 /* case vide de l'intérieur : matérialise l'espace disponible (dépôt) */
 .gslot--ghost {
   aspect-ratio: 63 / 88;
-  border: 1px dashed rgba(246, 245, 241, 0.16);
+  border: 1px dashed rgba(246, 245, 241, 0.2);
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.18);
 }
 .gzone--field {
   flex: 1;
-  min-height: calc(var(--card-field) * 88 / 63 + 10px);
+  min-height: calc(var(--card-field) * 88 / 63 + 12px);
   display: flex;
   align-items: center;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(240, 78, 34, 0.22);
 }
 .gzone--play {
-  border: 1px dashed rgba(240, 78, 34, 0.3);
+  border: 1px dashed rgba(240, 78, 34, 0.38);
 }
 .gzone__cards {
   position: relative;
   display: flex;
   align-items: center;
-  gap: clamp(8px, 1vw, 14px);
+  gap: clamp(6px, 0.9vw, 12px);
   flex-wrap: wrap;
 }
 .gzone--field .gzone__cards {
@@ -2910,14 +2949,15 @@ function manaBonus(seat: Seat): boolean {
 }
 .gzone__label {
   position: absolute;
-  top: 5px;
-  left: 10px;
+  top: 4px;
+  left: 8px;
   font-family: "Space Mono", ui-monospace, monospace;
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(246, 245, 241, 0.4);
+  color: rgba(246, 245, 241, 0.45);
+  pointer-events: none;
 }
 .gzone__hint {
   position: absolute;
@@ -2927,83 +2967,106 @@ function manaBonus(seat: Seat): boolean {
   font-family: "Space Mono", ui-monospace, monospace;
   font-size: 11px;
   font-style: italic;
-  color: rgba(240, 78, 34, 0.55);
+  color: rgba(240, 78, 34, 0.65);
   pointer-events: none;
 }
 
-/* ── Surbrillance des zones de drop ── */
+/* ── Surbrillance des zones de drop (Drag & Drop) ── */
 .gdrop {
   transition:
-    box-shadow 0.18s ease,
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease;
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 .gdrop--on {
+  border-color: rgba(240, 166, 43, 0.75) !important;
   box-shadow:
-    inset 0 0 0 2px rgba(240, 166, 43, 0.4),
-    0 0 14px rgba(240, 166, 43, 0.12);
-  animation: gdrop-breathe 1.6s ease-in-out infinite;
+    inset 0 0 0 2px rgba(240, 166, 43, 0.5),
+    0 0 18px rgba(240, 166, 43, 0.25);
+  animation: gdrop-breathe 1.5s ease-in-out infinite;
 }
 .gdrop--over {
-  background-color: rgba(240, 166, 43, 0.14);
+  border-color: #f0a62b !important;
+  background-color: rgba(240, 166, 43, 0.18) !important;
   box-shadow:
     inset 0 0 0 2px #f0a62b,
-    0 0 26px rgba(240, 166, 43, 0.4);
-  animation: none;
-  transform: scale(1.012);
+    0 0 28px rgba(240, 166, 43, 0.5) !important;
+  animation: none !important;
+  transform: scale(1.015);
 }
 @keyframes gdrop-breathe {
   0%,
   100% {
     box-shadow:
       inset 0 0 0 2px rgba(240, 166, 43, 0.4),
-      0 0 14px rgba(240, 166, 43, 0.12);
+      0 0 14px rgba(240, 166, 43, 0.15);
   }
   50% {
     box-shadow:
-      inset 0 0 0 2px rgba(240, 166, 43, 0.62),
-      0 0 22px rgba(240, 166, 43, 0.24);
+      inset 0 0 0 2px rgba(240, 166, 43, 0.75),
+      0 0 24px rgba(240, 166, 43, 0.35);
   }
 }
-
-/* ── Ligne médiane ── */
-.gmid {
+.ghavre__head {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  border-top: 2px solid rgba(240, 78, 34, 0.5);
-  border-bottom: 2px solid rgba(240, 78, 34, 0.5);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(240, 78, 34, 0.08) 18%,
-    rgba(240, 78, 34, 0.08) 82%,
-    transparent
-  );
+  justify-content: space-between;
+  position: absolute;
+  top: 3px;
+  left: 8px;
+  right: 8px;
+  pointer-events: none;
 }
-.gmid__label {
+.ghavre__head .gzone__label {
+  position: static;
+}
+.ghavre__res-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+}
+.ghavre__res-badge {
   font-family: "Space Mono", ui-monospace, monospace;
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #f04e22;
-  text-shadow: 0 0 16px rgba(240, 78, 34, 0.5);
-}
-.gmid__queue {
-  display: flex;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 4px;
+  padding: 1px 4px;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
 }
-.gmid__queue-label {
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(246, 245, 241, 0.55);
+.ghavre__pm {
+  display: flex;
+  gap: 2px;
+}
+.ghavre__btn {
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  background: rgba(246, 245, 241, 0.15);
+  border: 1px solid rgba(246, 245, 241, 0.2);
+  color: #f6f5f1;
+  font-size: 11px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    transform 0.12s ease;
+}
+.ghavre__btn:hover {
+  background: #38bdf8;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+.ghavre__btn:active {
+  transform: translateY(0) scale(0.94);
 }
 
 /* ── Slots ── */
@@ -3726,14 +3789,6 @@ function manaBonus(seat: Seat): boolean {
   }
   .gseat__strip {
     gap: 6px;
-  }
-  .gmid {
-    gap: 8px;
-    padding: 4px 8px;
-  }
-  .gmid__label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
   }
   .gbtn {
     font-size: 11px;

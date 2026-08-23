@@ -7,7 +7,7 @@
 import type { CompiledEffectOp } from "@/types/cards";
 import type { DraftEvent, InstanceId } from "../../types/events";
 import type { Seat } from "../../types/zones";
-import { otherSeat } from "../../types/zones";
+import { otherSeat } from "../../types/zones.ts";
 import type { CombatStance, DamageMod, RuleEvent, RulesCtx } from "../types";
 import {
   discard,
@@ -16,13 +16,13 @@ import {
   setCounter,
   tap,
   untap,
-} from "../../engine/verbs";
-import { heroStats, normElement, normWord, xpValue } from "../cardAttrs";
-import { resourceProducers } from "../resources";
-import { effectiveForce } from "../stats";
-import { allyPowerDamageBonus, reduceDamage } from "./damageMods";
-import { grantXpEvents } from "../progress";
-import { GRANT_KEYWORD_TOKEN, metierOf, resistanceLabel } from "./keywords";
+} from "../../engine/verbs.ts";
+import { heroStats, normElement, normWord, xpValue } from "../cardAttrs.ts";
+import { resourceProducers } from "../resources.ts";
+import { effectiveForce } from "../stats.ts";
+import { allyPowerDamageBonus, reduceDamage } from "./damageMods.ts";
+import { grantXpEvents } from "../progress.ts";
+import { GRANT_KEYWORD_TOKEN, metierOf, resistanceLabel } from "./keywords.ts";
 
 export type TargetingOp = Extract<
   CompiledEffectOp,

@@ -133,11 +133,12 @@ function cardStyle(i: number): CSSProperties {
 }
 .hand-fan:not(.hand-fan--opp) .hand-fan__card:hover,
 .hand-fan:not(.hand-fan--opp) .hand-fan__card:focus-within {
-  transform: rotate(0deg) translateY(-44px) scale(1.16);
+  transform: rotate(0deg) translateY(-22px) scale(1.08);
   z-index: 40 !important;
+  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.7));
 }
 .hand-fan--opp .hand-fan__card:hover {
-  transform: rotate(var(--rot, 0deg)) translateY(calc(var(--ty, 0px) + 6px));
+  transform: rotate(var(--rot, 0deg)) translateY(calc(var(--ty, 0px) + 4px));
 }
 .hand-fan__back {
   width: 100%;

@@ -1237,4 +1237,27 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     vi.advanceTimersByTime(DISCONNECT_GRACE_MS);
     expect(store.canClaimVictory).toBe(false);
   });
+
+  it("continueMatch repasse matchPhase en 'playing' et permet de continuer la partie", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, deck);
+    const me = store.perspective;
+    const heroId = store.state.seats[me].heroInstanceId!;
+
+    // Infliger des dégâts létaux au héros
+    store.adjustCounter(heroId, "hp", -20);
+    expect(store.matchPhase).toBe("finished");
+    expect(store.winner).toBeTruthy();
+
+    // Cliquer sur "Rester dans la partie"
+    store.continueMatch();
+    expect(store.matchPhase).toBe("playing");
+    expect(store.continuedMatch).toBe(true);
+
+    // Les actions normales (piocher, ajuster des compteurs, jouer) sont de nouveau autorisées
+    const initCards = store.state.seats[me].main.length;
+    store.draw(me);
+    expect(store.state.seats[me].main.length).toBe(initCards + 1);
+  });
 });
