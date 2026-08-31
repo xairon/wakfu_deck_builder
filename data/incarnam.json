@@ -327,7 +327,7 @@
       "stats": {
         "pa": 7,
         "pm": 3,
-        "pv": 18,
+        "pv": 20,
         "niveau": {
           "value": 2,
           "element": "eau"
@@ -10696,7 +10696,7 @@
     "stats": {
       "pa": 6,
       "pm": 3,
-      "pv": 14,
+      "pv": 16,
       "niveau": {
         "value": 1,
         "element": "feu"
@@ -10739,7 +10739,7 @@
       "stats": {
         "pa": 6,
         "pm": 3,
-        "pv": 14,
+        "pv": 16,
         "niveau": {
           "value": 1,
           "element": "feu"
@@ -10773,7 +10773,7 @@
       "stats": {
         "pa": 7,
         "pm": 3,
-        "pv": 18,
+        "pv": 20,
         "niveau": {
           "value": 2,
           "element": "feu"
