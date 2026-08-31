@@ -6,6 +6,7 @@ import { isUniqueCard, maxCopiesForCard } from "@/utils/cardRules";
 import { sameCanonicalCard } from "@/utils/cardIdentity";
 import { validateDeck, getCardCopies } from "@/validators/deck";
 import { useCardStore } from "./cardStore";
+import { cardCost } from "@/utils/cardDisplay";
 import { namespacedKey } from "@/services/storageNamespace";
 // Imports STATIQUES (pas de cycle : authStore n'importe deckStore que
 // dynamiquement) : le flush du push sur pagehide ne peut pas se permettre
@@ -124,12 +125,12 @@ export const useDeckStore = defineStore("deck", () => {
   });
 
   const costCurve = computed(() => {
-    if (!currentDeck.value) return {};
+    if (!currentDeck.value) return [];
 
     const curve: Record<number, number> = {};
 
     mainCards.value.forEach((deckCard) => {
-      const cost = deckCard.card.stats?.pa || 0;
+      const cost = cardCost(deckCard.card);
       curve[cost] = (curve[cost] || 0) + deckCard.quantity;
     });
 

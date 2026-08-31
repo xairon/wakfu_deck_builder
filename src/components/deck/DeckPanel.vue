@@ -346,6 +346,7 @@ import { useToast } from "@/composables/useToast";
 import { validateDeck } from "@/validators/deck";
 import DeckCardRow from "@/components/deck/DeckCardRow.vue";
 import ReserveRow from "@/components/deck/ReserveRow.vue";
+import { cardCost } from "@/utils/cardDisplay";
 import type { Card, Deck } from "@/types/cards";
 
 const deckStore = useDeckStore();
@@ -377,14 +378,20 @@ const mainDeckCards = computed(() =>
     .sort((a, b) => {
       if (a.card.mainType !== b.card.mainType)
         return a.card.mainType.localeCompare(b.card.mainType);
-      return (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0);
+      const costDiff = cardCost(a.card) - cardCost(b.card);
+      if (costDiff !== 0) return costDiff;
+      return a.card.name.localeCompare(b.card.name, "fr");
     }),
 );
 
 const reserveDeckCards = computed(() =>
   [...(currentDeck.value?.cards ?? [])]
     .filter((c) => c.isReserve)
-    .sort((a, b) => (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0)),
+    .sort((a, b) => {
+      const costDiff = cardCost(a.card) - cardCost(b.card);
+      if (costDiff !== 0) return costDiff;
+      return a.card.name.localeCompare(b.card.name, "fr");
+    }),
 );
 
 // ── Element distribution ──────────────────────────────────────────────────────

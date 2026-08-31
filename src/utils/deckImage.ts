@@ -5,7 +5,7 @@
  */
 import type { Deck } from "@/types/cards";
 import { getIllustrationPath } from "@/utils/imagePaths";
-import { cardElement } from "@/utils/cardDisplay";
+import { cardElement, cardCost } from "@/utils/cardDisplay";
 import { elementColors } from "@/config/elementColors";
 
 const PAPER = "#F6F5F1";
@@ -151,8 +151,8 @@ export async function exportDeckImage(deck: Deck): Promise<void> {
 
   // Decklist (2 colonnes, triée par PA puis nom)
   const sorted = [...main].sort((a, b) => {
-    const pa = (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0);
-    return pa !== 0 ? pa : a.card.name.localeCompare(b.card.name);
+    const pa = cardCost(a.card) - cardCost(b.card);
+    return pa !== 0 ? pa : a.card.name.localeCompare(b.card.name, "fr");
   });
   const listTop = barY + 90;
   const colW = (bw - 40) / 2;
