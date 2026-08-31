@@ -17,8 +17,7 @@
     <span
       class="shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-wider text-base-content/45"
     >
-      {{ dc.card.mainType
-      }}<span v-if="dc.card.stats?.pa"> · {{ dc.card.stats.pa }} PA</span>
+      {{ dc.card.mainType }} · {{ cardPa }} PA
     </span>
     <span
       v-if="hasMultipleEditions"
@@ -96,6 +95,7 @@ import type { Card, DeckCard } from "@/types/cards";
 import { computed } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
 import { useCardStore } from "@/stores/cardStore";
+import { cardCost } from "@/utils/cardDisplay";
 import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 const preview = useCardPreview();
@@ -115,4 +115,5 @@ defineEmits<{
 
 const editions = computed(() => cardStore.printingsOf(props.dc.card));
 const hasMultipleEditions = computed(() => editions.value.length > 1);
+const cardPa = computed(() => cardCost(props.dc.card));
 </script>

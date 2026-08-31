@@ -12,7 +12,7 @@ import type { Card } from "@/types/cards";
 import { isHeroCard } from "@/types/cards";
 import { matchesSearch } from "@/utils/text";
 import { isEffectAnnotation } from "@/utils/effectText";
-import { cardElement } from "@/utils/cardDisplay";
+import { cardElement, cardCost } from "@/utils/cardDisplay";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -195,16 +195,16 @@ export const filterCards = useMemoize(
     // Coût PA minimum
     if (minCost !== null) {
       filtered = filtered.filter((card) => {
-        const cost = card.stats?.pa;
-        return cost !== undefined ? cost >= minCost : false;
+        const cost = cardCost(card);
+        return cost >= minCost;
       });
     }
 
     // Coût PA maximum
     if (maxCost !== null) {
       filtered = filtered.filter((card) => {
-        const cost = card.stats?.pa;
-        return cost !== undefined ? cost <= maxCost : false;
+        const cost = cardCost(card);
+        return cost <= maxCost;
       });
     }
 

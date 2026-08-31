@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cardElement } from "../cardDisplay";
+import { cardElement, cardCost, cardPaLabel } from "../cardDisplay";
 import {
   createMockEquipmentCard,
   createMockActionCard,
@@ -42,5 +42,43 @@ describe("cardDisplay — cardElement (Élément dominant)", () => {
       stats: { niveau: { value: 0, element: "Neutre" } },
     });
     expect(cardElement(neutre)).toBe("neutre");
+  });
+});
+
+describe("cardDisplay — cardCost & cardPaLabel", () => {
+  it("cardCost résout le niveau (PA) d'une carte standard", () => {
+    const ally = createMockAllyCard({
+      stats: {
+        niveau: { value: 4, element: "Terre" },
+        force: { value: 3, element: "Terre" },
+      },
+    });
+    expect(cardCost(ally)).toBe(4);
+  });
+
+  it("cardCost résout stats.pa en priorité si présent", () => {
+    const card = createMockActionCard({
+      stats: {
+        pa: 6,
+        niveau: { value: 2, element: "Neutre" },
+      },
+    });
+    expect(cardCost(card)).toBe(6);
+  });
+
+  it("cardCost renvoie 0 si aucun coût n'est défini", () => {
+    const card = createMockActionCard({});
+    expect(cardCost(card)).toBe(0);
+    expect(cardCost(null)).toBe(0);
+    expect(cardCost(undefined)).toBe(0);
+  });
+
+  it("cardPaLabel formate le coût en PA et l'élément", () => {
+    const ally = createMockAllyCard({
+      stats: {
+        niveau: { value: 5, element: "Air" },
+      },
+    });
+    expect(cardPaLabel(ally)).toBe("5 PA · Air");
   });
 });

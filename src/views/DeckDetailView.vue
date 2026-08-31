@@ -295,34 +295,101 @@
           <!-- Courbe de PA -->
           <section>
             <p class="section-rule eyebrow">Courbe de PA</p>
-            <div class="mt-4 flex h-20 items-end gap-1">
+            <div
+              v-if="costCurve.length && totalCardCount > 0"
+              class="mt-4 flex h-28 items-end gap-1.5 pt-6"
+            >
               <div
                 v-for="bar in costCurve"
                 :key="bar.cost"
-                class="flex flex-1 flex-col items-center justify-end gap-1"
-                :title="`${bar.cost} PA: ${bar.count}`"
+                class="group relative flex h-full flex-1 flex-col items-center justify-end"
+                tabindex="0"
               >
-                <span
-                  class="font-mono text-[10px] tabular text-base-content/45"
-                  >{{ bar.count }}</span
-                >
+                <!-- Tooltip d'informations détaillées au survol / focus -->
                 <div
-                  class="w-full bg-base-content/70"
+                  class="pointer-events-none absolute bottom-full z-30 mb-2 hidden min-w-[7.5rem] flex-col items-center group-hover:flex group-focus:flex"
+                >
+                  <div
+                    class="rounded border border-base-content/20 bg-base-300 px-2.5 py-2 text-xs shadow-xl whitespace-nowrap"
+                  >
+                    <div
+                      class="mb-1.5 flex items-center justify-between gap-3 border-b border-base-content/15 pb-1 font-mono font-bold text-base-content"
+                    >
+                      <span>{{ bar.cost }} PA</span>
+                      <span class="text-[11px] font-normal text-base-content/60">
+                        {{ bar.count }} carte{{ bar.count > 1 ? "s" : "" }}
+                      </span>
+                    </div>
+                    <ul
+                      v-if="bar.typeBreakdown.length"
+                      class="space-y-1 text-left text-[11px]"
+                    >
+                      <li
+                        v-for="t in bar.typeBreakdown"
+                        :key="t.type"
+                        class="flex items-center justify-between gap-3 text-base-content/85"
+                      >
+                        <span>{{ pluralizeType(t.type, t.count) }}</span>
+                        <span class="font-mono font-bold tabular text-primary">{{
+                          t.count
+                        }}</span>
+                      </li>
+                    </ul>
+                    <p
+                      v-else
+                      class="py-0.5 text-[11px] italic text-base-content/40"
+                    >
+                      Aucune carte
+                    </p>
+                  </div>
+                  <!-- Flèche du tooltip -->
+                  <div
+                    class="-mt-1 h-1.5 w-1.5 rotate-45 border-r border-b border-base-content/20 bg-base-300"
+                  ></div>
+                </div>
+
+                <!-- Effectif numérique au-dessus du bâton -->
+                <span
+                  class="mb-1 font-mono text-[10px] font-semibold tabular transition-colors group-hover:text-primary"
+                  :class="
+                    bar.count > 0 ? 'text-base-content/70' : 'text-base-content/25'
+                  "
+                >
+                  {{ bar.count }}
+                </span>
+
+                <!-- Bâton de l'histogramme -->
+                <div
+                  class="w-full rounded-t-sm transition-all duration-200"
+                  :class="
+                    bar.count > 0
+                      ? 'bg-base-content/70 group-hover:bg-primary'
+                      : 'bg-base-content/10'
+                  "
                   :style="{
-                    height: (bar.count / Math.max(1, maxCostCount)) * 100 + '%',
+                    height:
+                      bar.count > 0
+                        ? Math.max(
+                            6,
+                            (bar.count / Math.max(1, maxCostCount)) * 100,
+                          ) + '%'
+                        : '2px',
                   }"
                 ></div>
+
+                <!-- Libellé du coût en PA -->
                 <span
-                  class="font-mono text-[10px] tabular text-base-content/55"
-                  >{{ bar.cost }}</span
+                  class="mt-1 font-mono text-[10px] font-medium tabular text-base-content/55 group-hover:text-base-content"
                 >
+                  {{ bar.cost }}
+                </span>
               </div>
-              <div
-                v-if="!costCurve.length"
-                class="self-center font-mono text-[11px] uppercase text-base-content/40"
-              >
-                Aucune donnée de PA
-              </div>
+            </div>
+            <div
+              v-else
+              class="mt-4 border border-dashed border-base-content/20 py-6 text-center font-mono text-[11px] uppercase text-base-content/40"
+            >
+              Aucune donnée de PA
             </div>
           </section>
         </div>
@@ -547,7 +614,7 @@ import {
   toEntry,
   type DeckGalleryGroup,
 } from "@/components/deck/deckGallery";
-import { cardElement, cardSpineColor } from "@/utils/cardDisplay";
+import { cardElement, cardSpineColor, cardCost } from "@/utils/cardDisplay";
 import { elementColor } from "@/config/elementColors";
 import { exportDeckImage } from "@/utils/deckImage";
 import type { Card, Deck } from "@/types/cards";
@@ -584,7 +651,7 @@ const mainCards = computed(
 );
 const reserveCards = computed(() =>
   [...(deck.value?.cards.filter((c) => c.isReserve) ?? [])].sort(
-    (a, b) => (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0),
+    (a, b) => cardCost(a.card) - cardCost(b.card),
   ),
 );
 const totalCardCount = computed(() =>
@@ -613,16 +680,72 @@ const elementDist = computed(() => {
     .sort((a, b) => b.count - a.count);
 });
 
-const costCurve = computed(() => {
-  const map: Record<number, number> = {};
+interface CostCurveBar {
+  cost: number;
+  count: number;
+  typeBreakdown: { type: string; count: number }[];
+}
+
+function cardTypeLabel(card: Card): string {
+  if (card.subTypes?.some((s) => s.toLowerCase() === "sort")) return "Sort";
+  return card.mainType;
+}
+
+function pluralizeType(type: string, count: number): string {
+  if (count <= 1) return type;
+  const plurals: Record<string, string> = {
+    Allié: "Alliés",
+    Action: "Actions",
+    Sort: "Sorts",
+    Équipement: "Équipements",
+    Zone: "Zones",
+    Salle: "Salles",
+    Dofus: "Dofus",
+    Protecteur: "Protecteurs",
+    "Allié Élémentaire": "Alliés Élémentaires",
+    "Havre-Sac": "Havres-Sacs",
+    Héros: "Héros",
+  };
+  return plurals[type] || `${type}s`;
+}
+
+const costCurve = computed<CostCurveBar[]>(() => {
+  if (!mainCards.value.length) return [];
+  const map: Record<number, { count: number; byType: Record<string, number> }> =
+    {};
+
   for (const dc of mainCards.value) {
-    const pa = dc.card.stats?.pa;
-    if (pa === undefined) continue;
-    map[pa] = (map[pa] || 0) + dc.quantity;
+    const pa = cardCost(dc.card);
+    if (!map[pa]) {
+      map[pa] = { count: 0, byType: {} };
+    }
+    map[pa].count += dc.quantity;
+    const type = cardTypeLabel(dc.card);
+    map[pa].byType[type] = (map[pa].byType[type] || 0) + dc.quantity;
   }
-  return Object.entries(map)
-    .map(([cost, count]) => ({ cost: Number(cost), count }))
-    .sort((a, b) => a.cost - b.cost);
+
+  const existingCosts = Object.keys(map).map(Number);
+  if (existingCosts.length === 0) return [];
+  const maxCost = Math.max(...existingCosts);
+
+  const result: CostCurveBar[] = [];
+  for (let cost = 0; cost <= maxCost; cost++) {
+    const bucket = map[cost];
+    const count = bucket ? bucket.count : 0;
+    const typeBreakdown = bucket
+      ? Object.entries(bucket.byType)
+          .map(([type, count]) => ({ type, count }))
+          .sort((a, b) => b.count - a.count)
+      : [];
+
+    result.push({
+      cost,
+      count,
+      typeBreakdown,
+    });
+  }
+
+  return result;
 });
 const maxCostCount = computed(() =>
   Math.max(1, ...costCurve.value.map((c) => c.count)),

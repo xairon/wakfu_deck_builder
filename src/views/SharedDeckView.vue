@@ -381,7 +381,7 @@ import { decodeDeck } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import type { DecodedDeckData } from "@/utils/deckSharing";
 import type { Card } from "@/types/cards";
-import { cardElement } from "@/utils/cardDisplay";
+import { cardElement, cardCost, cardPaLabel } from "@/utils/cardDisplay";
 import { elementColors } from "@/config/elementColors";
 
 const route = useRoute();
@@ -410,11 +410,7 @@ function cardColor(card: Card): string {
   return elementColors[cardElement(card)] || elementColors.neutre;
 }
 function paLabel(card: Card): string {
-  const pa = card.stats?.pa;
-  const el = cardElement(card);
-  const elName = el.charAt(0).toUpperCase() + el.slice(1);
-  if (pa === undefined) return elName;
-  return `${pa} PA · ${elName}`;
+  return cardPaLabel(card);
 }
 
 // Resolution des cartes par ID
@@ -503,10 +499,10 @@ const cardsByType = computed(() => {
       type,
       count: data.count,
       cards: data.cards.sort((a, b) => {
-        const costA = a.card.stats?.pa || 0;
-        const costB = b.card.stats?.pa || 0;
+        const costA = cardCost(a.card);
+        const costB = cardCost(b.card);
         if (costA !== costB) return costA - costB;
-        return a.card.name.localeCompare(b.card.name);
+        return a.card.name.localeCompare(b.card.name, "fr");
       }),
     }))
     .sort((a, b) => a.type.localeCompare(b.type));

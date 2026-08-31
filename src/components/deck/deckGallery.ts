@@ -4,6 +4,7 @@
  * decks personnels passent par buildGalleryGroups.
  */
 import type { Card, DeckCard } from "@/types/cards";
+import { cardCost } from "@/utils/cardDisplay";
 
 export interface DeckGalleryEntry {
   name: string;
@@ -52,7 +53,11 @@ export function buildGalleryGroups(
     return [...byType.entries()]
       .map(([section, group]) => {
         const entries = [...group]
-          .sort((a, b) => (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0))
+          .sort((a, b) => {
+            const costDiff = cardCost(a.card) - cardCost(b.card);
+            if (costDiff !== 0) return costDiff;
+            return a.card.name.localeCompare(b.card.name, "fr");
+          })
           .map(toEntry);
         return { section, total: sumQty(entries), entries };
       })
@@ -60,11 +65,14 @@ export function buildGalleryGroups(
   }
 
   const entries = [...cards]
-    .sort((a, b) =>
-      sortMode === "cost"
-        ? (a.card.stats?.pa || 0) - (b.card.stats?.pa || 0)
-        : a.card.name.localeCompare(b.card.name),
-    )
+    .sort((a, b) => {
+      if (sortMode === "cost") {
+        const costDiff = cardCost(a.card) - cardCost(b.card);
+        if (costDiff !== 0) return costDiff;
+        return a.card.name.localeCompare(b.card.name, "fr");
+      }
+      return a.card.name.localeCompare(b.card.name, "fr");
+    })
     .map(toEntry);
   return [{ section: FLAT_SECTION, total: sumQty(entries), entries }];
 }
