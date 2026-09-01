@@ -17,6 +17,8 @@ import {
   subscribeToGame,
   concede,
   claimVictory,
+  broadcast2v2LobbyState,
+  broadcast2v2GameStart,
 } from "@/services/gameClient";
 
 describe("gameClient — appels Supabase (functions.invoke + query builder)", () => {
@@ -237,5 +239,48 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
     expect(removeChannel).not.toHaveBeenCalled();
     unsubscribe();
     expect(removeChannel).toHaveBeenCalledWith("channel-handle");
+  });
+
+  // ── 2v2 Lobby & Matchmaking ───────────────────────────────────────────────
+  it("devrait diffuser l'état du salon 2v2 via 'lobby_update'", () => {
+    const send = vi.fn();
+    const channel = vi.fn(() => ({ send }));
+    supabaseStub = { channel };
+
+    const state = {
+      code: "2V2-TEST",
+      hostSeat: "A1" as const,
+      slots: { A1: null, A2: null, B1: null, B2: null },
+      status: "waiting" as const,
+    };
+    broadcast2v2LobbyState("2V2-TEST", state);
+
+    expect(channel).toHaveBeenCalledWith("lobby:2v2:2V2-TEST");
+    expect(send).toHaveBeenCalledWith({
+      type: "broadcast",
+      event: "lobby_update",
+      payload: state,
+    });
+  });
+
+  it("devrait diffuser le lancement de la partie 2v2 via 'game_start'", () => {
+    const send = vi.fn();
+    const channel = vi.fn(() => ({ send }));
+    supabaseStub = { channel };
+
+    const state = {
+      code: "2V2-TEST",
+      hostSeat: "A1" as const,
+      slots: { A1: null, A2: null, B1: null, B2: null },
+      status: "ready" as const,
+    };
+    broadcast2v2GameStart("2V2-TEST", "g-2v2-123", state);
+
+    expect(channel).toHaveBeenCalledWith("lobby:2v2:2V2-TEST");
+    expect(send).toHaveBeenCalledWith({
+      type: "broadcast",
+      event: "game_start",
+      payload: { gameId: "g-2v2-123", state },
+    });
   });
 });

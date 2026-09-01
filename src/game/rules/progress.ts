@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Moteur de règles R1 — Expérience, montée de niveau, victoire.
  * 415.1 (gain d'XP), 307.4/307.5 (verso à 6 XP, Niveau 3 à 18 XP),
  * 103.2 (défaite à 0 PV / victoire au Niveau 3).
@@ -8,12 +8,13 @@ import type { Seat } from "../types/zones";
 import type { RulesCtx } from "./types";
 import { flipLevel, incCounter, setCounter } from "../engine/verbs.ts";
 import { heroStats } from "./cardAttrs.ts";
-import { heroHp, victoryFromState, XP_LEVEL_3 } from "./victory.ts";
+import { getTeam } from "../types/zones.ts";
+import { heroHp, victoryFromState, XP_LEVEL_3, XP_TEAM_VICTORY_2V2 } from "./victory.ts";
 
 // La détermination du vainqueur vit dans `./victory` (module Deno-safe, sans
 // dépendance carte) pour être importable côté serveur ; on la ré-exporte ici
 // pour ne pas casser les imports existants (store, barrel @/game/rules).
-export { victoryFromState, XP_LEVEL_3 };
+export { victoryFromState, XP_LEVEL_3, XP_TEAM_VICTORY_2V2 };
 
 export const XP_LEVEL_2 = 6;
 
@@ -27,7 +28,7 @@ export interface XpGrant {
 
 /**
  * Événements pour faire gagner `amount` XP au Héros de `seat` : INC xp,
- * flip verso + ajustement PA/PM/PV au 6ᵉ XP, victoire au 18ᵉ.
+ * flip verso + ajustement PA/PM/PV au 6ᵉ XP, victoire au 18ᵉ (en 1v1) ou 36ᵉ d'équipe (en 2v2).
  */
 export function grantXpEvents(
   ctx: RulesCtx,
@@ -36,13 +37,17 @@ export function grantXpEvents(
 ): XpGrant {
   const none: XpGrant = { events: [], log: [], leveledTo: null, won: false };
   if (amount <= 0) return none;
-  const heroId = ctx.state.seats[seat].heroInstanceId;
+  const s = ctx.state.seats[seat];
+  const heroId = s?.heroInstanceId;
   const hero = heroId ? ctx.state.instances[heroId] : null;
   if (!heroId || !hero) return none;
 
+  const is2v2 = ctx.state.mode === "2v2";
   const before = hero.counters.xp ?? 0;
-  const after = before + amount;
-  const events: DraftEvent[] = [incCounter(seat, heroId, "xp", amount)];
+  // En 2v2, un Héros individuel plafonne à 18 XP (Niveau 2 max)
+  const after = is2v2 ? Math.min(18, before + amount) : before + amount;
+  const actualGrant = after - before;
+  const events: DraftEvent[] = actualGrant > 0 ? [incCounter(seat, heroId, "xp", actualGrant)] : [];
   const log: string[] = [`gagne ${amount} XP (${after} au total).`];
   let leveledTo: 2 | 3 | null = null;
 
@@ -60,11 +65,19 @@ export function grantXpEvents(
     if (pvDelta > 0) events.push(incCounter(seat, heroId, "hp", pvDelta));
     log.push("passe au Niveau 2 (verso) !");
   }
-  const won = after >= XP_LEVEL_3;
+
+  const team = getTeam(seat);
+  const currentTeamXp = (ctx.state.teamXp?.[team] ?? 0) + amount;
+  const won = is2v2 ? currentTeamXp >= XP_TEAM_VICTORY_2V2 : after >= XP_LEVEL_3;
+
   if (won) {
-    leveledTo = 3;
-    events.push(setCounter(seat, heroId, "level", 3));
-    log.push("atteint le Niveau 3 — victoire à l'Expérience !");
+    if (!is2v2) {
+      leveledTo = 3;
+      events.push(setCounter(seat, heroId, "level", 3));
+      log.push("atteint le Niveau 3 — victoire à l'Expérience !");
+    } else {
+      log.push(`L'équipe ${team === "team1" ? "1" : "2"} atteint ${currentTeamXp}/36 XP — victoire à l'Expérience d'Équipe !`);
+    }
   }
   return { events, log, leveledTo, won };
 }

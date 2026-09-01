@@ -7,8 +7,55 @@
  * Identifiants TS en camelCase anglais, libellés FR dans l'UI.
  */
 
-export type Seat = "A" | "B";
+export type Seat = "A" | "B" | "A1" | "B1" | "A2" | "B2";
 export type Viewer = Seat | "spectator";
+export type Team = "team1" | "team2";
+
+export const TURN_ORDER_2V2: Seat[] = ["A1", "B1", "A2", "B2"];
+
+export function getTeam(seat: Seat): Team {
+  return seat === "B" || seat === "B1" || seat === "B2" ? "team2" : "team1";
+}
+
+export function getTeammate(seat: Seat): Seat | null {
+  if (seat === "A1") return "A2";
+  if (seat === "A2") return "A1";
+  if (seat === "B1") return "B2";
+  if (seat === "B2") return "B1";
+  return null;
+}
+
+export function isTeammate(seatA: Seat, seatB: Seat): boolean {
+  if (seatA === seatB) return true;
+  return getTeam(seatA) === getTeam(seatB);
+}
+
+export function getOpponents(seat: Seat, mode: "1v1" | "2v2" = "1v1"): Seat[] {
+  if (mode === "2v2") {
+    return getTeam(seat) === "team1" ? ["B1", "B2"] : ["A1", "A2"];
+  }
+  return [seat === "A" ? "B" : "A"];
+}
+
+export function getNextSeat(
+  current: Seat,
+  mode: "1v1" | "2v2" = "1v1",
+  eliminatedSeats: Seat[] = [],
+): Seat {
+  if (mode === "2v2") {
+    const order = TURN_ORDER_2V2;
+    const currentIndex = order.indexOf(current);
+    const startIdx = currentIndex >= 0 ? currentIndex : 0;
+    for (let i = 1; i <= 4; i++) {
+      const next = order[(startIdx + i) % 4];
+      if (!eliminatedSeats.includes(next)) {
+        return next;
+      }
+    }
+    return current;
+  }
+  return current === "A" ? "B" : "A";
+}
 
 /** Les six zones de jeu officielles (501.1). */
 export const ZONE = {
@@ -126,5 +173,9 @@ export function sameZoneRef(a: ZoneRef, b: ZoneRef): boolean {
 }
 
 export function otherSeat(seat: Seat): Seat {
+  if (seat === "A1") return "B1";
+  if (seat === "A2") return "B2";
+  if (seat === "B1") return "A1";
+  if (seat === "B2") return "A2";
   return seat === "A" ? "B" : "A";
 }

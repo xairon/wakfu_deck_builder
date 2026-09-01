@@ -263,7 +263,19 @@ export function subscribeToGame(
       }
     });
 
-  const other: Seat = seat === "A" ? "B" : "A";
+  const other: Seat =
+    seat === "A"
+      ? "B"
+      : seat === "B"
+        ? "A"
+        : seat === "A1"
+          ? "B1"
+          : seat === "B1"
+            ? "A1"
+            : seat === "A2"
+              ? "B2"
+              : "A2";
+
   let presence: ReturnType<typeof c.channel> | null = null;
   if (onPresence || onOpponentTarget) {
     presence = c.channel(`game:${gameId}:presence`, {
@@ -300,3 +312,282 @@ export function subscribeToGame(
     if (presence) void c.removeChannel(presence);
   };
 }
+
+// ── 2v2 Multijoueur en Ligne (Lobby & Matchmaking) ──────────────────────────
+export interface Lobby2v2Slot {
+  userId?: string;
+  userName: string;
+  deck: unknown;
+  ready: boolean;
+}
+
+export interface Lobby2v2State {
+  code: string;
+  hostSeat: "A1";
+  slots: {
+    A1: Lobby2v2Slot | null;
+    A2: Lobby2v2Slot | null;
+    B1: Lobby2v2Slot | null;
+    B2: Lobby2v2Slot | null;
+  };
+  status: "waiting" | "ready" | "started";
+  gameId?: string;
+}
+
+export interface Lobby2v2Handle {
+  broadcastUpdate: (state: Lobby2v2State) => void;
+  broadcastClaimSlot: (seat: Seat2v2, slot: Lobby2v2Slot) => void;
+  broadcastStart: (
+    gameId: string,
+    state: Lobby2v2State,
+    initialEvents?: unknown[],
+  ) => void;
+  requestSync: () => void;
+  unsubscribe: () => void;
+}
+
+/**
+ * Diffuse l'état mis à jour du salon 2v2 à tous les participants connectés.
+ */
+export function broadcast2v2LobbyState(
+  code: string,
+  state: Lobby2v2State,
+): void {
+  const c = client();
+  const channel = c.channel(`lobby:2v2:${code}`);
+  void channel.send({
+    type: "broadcast",
+    event: "lobby_update",
+    payload: state,
+  });
+}
+
+/**
+ * Diffuse le lancement effectif de la partie 2v2 à tous les participants.
+ */
+export function broadcast2v2GameStart(
+  code: string,
+  gameId: string,
+  state: Lobby2v2State,
+  initialEvents?: unknown[],
+): void {
+  const c = client();
+  const channel = c.channel(`lobby:2v2:${code}`);
+  void channel.send({
+    type: "broadcast",
+    event: "game_start",
+    payload: { gameId, state, initialEvents },
+  });
+}
+
+/**
+ * S'abonne au canal Realtime d'un salon 2v2 avec gestion bidirectionnelle des slots.
+ */
+export function subscribeTo2v2Lobby(
+  code: string,
+  mySeat: Seat,
+  callbacks: {
+    onUpdate: (state: Lobby2v2State) => void;
+    onClaimSlot?: (seat: Seat2v2, slot: Lobby2v2Slot) => void;
+    onRequestSync?: () => void;
+    onStart: (
+      gameId: string,
+      state: Lobby2v2State,
+      initialEvents?: unknown[],
+    ) => void;
+  },
+): Lobby2v2Handle {
+  const c = client();
+  const channel = c.channel(`lobby:2v2:${code}`, {
+    config: {
+      broadcast: { self: true },
+      presence: { key: mySeat },
+    },
+  });
+
+  let isSubscribed = false;
+  const sendSafe = (msg: { type: "broadcast"; event: string; payload: unknown }) => {
+    if (isSubscribed || channel.state === "joined") {
+      void channel.send(msg);
+    } else {
+      setTimeout(() => {
+        void channel.send(msg);
+      }, 300);
+    }
+  };
+
+  channel
+    .on("broadcast", { event: "lobby_update" }, (msg) => {
+      callbacks.onUpdate(msg.payload as Lobby2v2State);
+    })
+    .on("broadcast", { event: "claim_slot" }, (msg) => {
+      const p = msg.payload as { seat: Seat2v2; slot: Lobby2v2Slot };
+      if (p && p.seat && p.slot) {
+        callbacks.onClaimSlot?.(p.seat, p.slot);
+      }
+    })
+    .on("broadcast", { event: "request_sync" }, () => {
+      callbacks.onRequestSync?.();
+    })
+    .on("broadcast", { event: "game_start" }, (msg) => {
+      const p = msg.payload as {
+        gameId: string;
+        state: Lobby2v2State;
+        initialEvents?: unknown[];
+      };
+      callbacks.onStart(p.gameId, p.state, p.initialEvents);
+    })
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") {
+        isSubscribed = true;
+        void channel.track({ seat: mySeat });
+        void channel.send({
+          type: "broadcast",
+          event: "request_sync",
+          payload: {},
+        });
+      }
+    });
+
+  return {
+    broadcastUpdate: (state: Lobby2v2State) => {
+      sendSafe({
+        type: "broadcast",
+        event: "lobby_update",
+        payload: state,
+      });
+    },
+    broadcastClaimSlot: (seat: Seat2v2, slot: Lobby2v2Slot) => {
+      sendSafe({
+        type: "broadcast",
+        event: "claim_slot",
+        payload: { seat, slot },
+      });
+    },
+    broadcastStart: (
+      gameId: string,
+      state: Lobby2v2State,
+      initialEvents?: unknown[],
+    ) => {
+      sendSafe({
+        type: "broadcast",
+        event: "game_start",
+        payload: { gameId, state, initialEvents },
+      });
+    },
+    requestSync: () => {
+      sendSafe({
+        type: "broadcast",
+        event: "request_sync",
+        payload: {},
+      });
+    },
+    unsubscribe: () => {
+      isSubscribed = false;
+      void c.removeChannel(channel);
+    },
+  };
+}
+
+/**
+ * Crée un transport Realtime pair-à-pair pour la table de jeu 2v2.
+ * Permet aux 4 joueurs de diffuser et recevoir directement tous les événements
+ * de la partie via Supabase Realtime avec auto-écho et gestion de séquence.
+ */
+export function create2v2OnlineTransport(
+  code: string,
+  mySeat: Seat,
+  getSeq: () => number = () => 0,
+): {
+  submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
+  subscribe(
+    gameId: string,
+    seat: Seat,
+    onEvent: (e: RedactedEvent) => void,
+    onPresence?: (present: boolean) => void,
+    onOpponentTarget?: (instanceId: string | null) => void,
+  ): () => void;
+} {
+  const c = client();
+  const channel = c.channel(`game:2v2:${code}`, {
+    config: {
+      broadcast: { self: true },
+      presence: { key: mySeat },
+    },
+  });
+
+  let currentSeq = getSeq();
+  let isReady = false;
+
+  return {
+    async submit(_gameId: string, draft: DraftEvent): Promise<{ seq: number }> {
+      currentSeq = Math.max(currentSeq + 1, getSeq() + 1);
+      const seq = currentSeq;
+      const payload = {
+        ...draft,
+        seq,
+        timestamp: new Date().toISOString(),
+      };
+      if (!isReady && channel.state !== "joined") {
+        await new Promise<void>((resolve) => {
+          const timer = setTimeout(resolve, 500);
+          const check = () => {
+            if (isReady || channel.state === "joined") {
+              clearTimeout(timer);
+              resolve();
+            } else {
+              setTimeout(check, 50);
+            }
+          };
+          check();
+        });
+      }
+      void channel.send({
+        type: "broadcast",
+        event: "game_event",
+        payload,
+      });
+      return { seq };
+    },
+    subscribe(
+      _gameId: string,
+      seat: Seat,
+      onEvent: (e: RedactedEvent) => void,
+      onPresence?: (present: boolean) => void,
+      onOpponentTarget?: (instanceId: string | null) => void,
+    ) {
+      channel
+        .on("broadcast", { event: "game_event" }, (msg) => {
+          const ev = msg.payload as RedactedEvent;
+          if (ev && typeof ev.seq === "number") {
+            currentSeq = Math.max(currentSeq, ev.seq);
+          }
+          onEvent(ev);
+        })
+        .on("broadcast", { event: "card_targeted" }, (msg) => {
+          const payload = msg.payload as {
+            seat?: Seat;
+            instanceId?: string | null;
+          };
+          if (payload && payload.seat !== seat && onOpponentTarget) {
+            onOpponentTarget(payload.instanceId ?? null);
+          }
+        })
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            isReady = true;
+            if (onPresence) {
+              void channel.track({ seat });
+              onPresence(true);
+            }
+          }
+        });
+
+      return () => {
+        isReady = false;
+        void c.removeChannel(channel);
+      };
+    },
+  };
+}
+
