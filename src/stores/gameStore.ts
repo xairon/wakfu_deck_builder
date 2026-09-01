@@ -184,6 +184,7 @@ export interface OnlineTransport {
     onEvent: (e: RedactedEvent) => void,
     onPresence?: (present: boolean) => void,
     onOpponentTarget?: (targetId: string | null) => void,
+    onPlayerName?: (seat: Seat, name: string) => void,
   ): () => void;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
   /**
@@ -691,7 +692,7 @@ export const useGameStore = defineStore("game", () => {
       ),
   );
   function labelOf(actor: Seat | "system"): string {
-    return actor === "system" ? "Table" : players.value[actor].name;
+    return actor === "system" ? "Table" : (players.value[actor]?.name ?? String(actor));
   }
 
   // ── Dispatch bas niveau (local : on est l'autorité) ──────────────────────
@@ -978,12 +979,14 @@ export const useGameStore = defineStore("game", () => {
     seat: Seat,
     transport: OnlineTransport,
     myDeck?: Deck | null,
+    myName?: string,
   ): void {
     disconnectOnline();
     online.value = true;
     assist.value = false; // CADRE : jamais de règles assistées en ligne
     gameId.value = id;
     mySeat.value = seat;
+    perspective.value = seat;
     if (seat === "A1" || seat === "A2" || seat === "B1" || seat === "B2") {
       mode.value = "2v2";
       if (!players.value.A1) {
@@ -997,6 +1000,9 @@ export const useGameStore = defineStore("game", () => {
       }
     } else {
       mode.value = "1v1";
+    }
+    if (myName) {
+      players.value = { ...players.value, [seat]: { name: myName } };
     }
     if (myDeck) {
       activeDecks.value[seat] = myDeck;
@@ -1027,6 +1033,14 @@ export const useGameStore = defineStore("game", () => {
       onOpponentPresence,
       (targetId) => {
         opponentTargetedCardId.value = targetId;
+      },
+      (remoteSeat, remoteName) => {
+        if (remoteName) {
+          players.value = {
+            ...players.value,
+            [remoteSeat]: { name: remoteName },
+          };
+        }
       },
     );
     void resyncFrom(0); // rattrape tout event émis avant que l'abonnement soit vivant
@@ -1711,6 +1725,12 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function draw(seat: Seat = perspective.value, n = 1): void {
+    if (
+      !state.value.seats[seat].pioche.length &&
+      state.value.seats[seat].defausse.length
+    ) {
+      reshuffleDiscardIntoDeck(seat);
+    }
     const pioche = [...state.value.seats[seat].pioche];
     for (let i = 0; i < n && i < pioche.length; i++) {
       const topId = pioche[i];
@@ -2585,7 +2605,8 @@ export const useGameStore = defineStore("game", () => {
   /** Chat de table (SAID) — journalisé, visible des deux joueurs. */
   function sendChat(text: string): void {
     const t = text.trim().slice(0, 300);
-    if (t) dispatch(say(perspective.value, t));
+    const seat = online.value ? mySeat.value : perspective.value;
+    if (t) dispatch(say(seat, t));
   }
 
   /** CADRE — DÉ PARTAGÉ journalisé : en ligne le tirage est fait PAR LE

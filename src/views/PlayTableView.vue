@@ -595,6 +595,33 @@
 
       <div class="mt-4 space-y-4">
         <div class="flex flex-wrap items-start gap-4">
+          <!-- Nom Joueur 1 -->
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-medium text-base-content/70">Nom Joueur 1</span>
+            <input
+              v-model="sandboxPlayer1Name"
+              type="text"
+              class="input input-bordered input-sm w-64 bg-base-200"
+              placeholder="Ex: Mon pseudo"
+              maxlength="30"
+              data-testid="sandbox-name-1"
+            />
+          </label>
+          <!-- Nom Joueur 2 -->
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-medium text-base-content/70">Nom Joueur 2 (Adversaire)</span>
+            <input
+              v-model="sandboxPlayer2Name"
+              type="text"
+              class="input input-bordered input-sm w-64 bg-base-200"
+              placeholder="Ex: Adversaire"
+              maxlength="30"
+              data-testid="sandbox-name-2"
+            />
+          </label>
+        </div>
+
+        <div class="flex flex-wrap items-start gap-4">
           <!-- Deck Joueur 1 -->
           <label class="flex flex-col gap-1 text-sm">
             <span class="font-medium text-base-content/70">Deck Joueur 1</span>
@@ -1394,14 +1421,26 @@ watch(
   { immediate: true },
 );
 
+const sandboxPlayer1Name = ref("");
+const sandboxPlayer2Name = ref("");
+
 function startSandboxGame(): void {
   const d1 = sandboxDeck1.value;
   const d2 = sandboxDeck2.value;
   if (!d1 || !d2 || !canStartSandbox.value) return;
+  const user = authStore.user;
+  const defaultP1 =
+    user?.user_metadata?.display_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split("@")[0] ||
+    d1.name ||
+    "Joueur 1";
+  const p1 = sandboxPlayer1Name.value.trim() || defaultP1;
+  const p2 = sandboxPlayer2Name.value.trim() || d2.name || "Joueur 2";
   store.startMatch(d1, d2, {
     isSandbox: true,
-    nameA: d1.name || "Joueur 1",
-    nameB: d2.name || "Joueur 2",
+    nameA: p1,
+    nameB: p2,
   });
   store.assist = true;
   store.assistEffects = true;
@@ -1817,7 +1856,30 @@ const authStore = useAuthStore();
 const onlineTransport = {
   submit: submitEvent,
   submitIntent,
-  subscribe: subscribeToGame,
+  subscribe: (
+    id: string,
+    seat: Seat,
+    onEvent: (e: any) => void,
+    onPresence?: (p: boolean) => void,
+    onOpponentTarget?: (t: string | null) => void,
+    onPlayerName?: (seat: Seat, name: string) => void,
+  ) => {
+    const user = authStore.user;
+    const myName =
+      user?.user_metadata?.display_name ||
+      user?.user_metadata?.name ||
+      user?.email?.split("@")[0] ||
+      (seat === "A" ? "Joueur A" : "Joueur B");
+    return subscribeToGame(
+      id,
+      seat,
+      onEvent,
+      onPresence,
+      onOpponentTarget,
+      myName,
+      onPlayerName,
+    );
+  },
   pull: pullEvents,
   concede: concedeOnline,
   claimVictory: claimVictoryOnline,
@@ -1850,7 +1912,19 @@ function resumeGame(): void {
   const g = resumable.value;
   if (!g) return;
   resumable.value = null;
-  store.connectOnline(g.gameId, g.seat, onlineTransport, onlineDeck.value);
+  const user = authStore.user;
+  const myName =
+    user?.user_metadata?.display_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split("@")[0] ||
+    `Joueur ${g.seat}`;
+  store.connectOnline(
+    g.gameId,
+    g.seat,
+    onlineTransport,
+    onlineDeck.value,
+    myName,
+  );
 }
 
 /** Abandonne la partie en cours détectée (forfait serveur) sans s'y reconnecter. */
@@ -1944,7 +2018,13 @@ async function onlineCreate(): Promise<void> {
     // CADRE : une seule expérience en ligne — plus de mode assisté à la création.
     const { gameId, code } = await createOnlineGame(deck, false);
     createdCode.value = code;
-    store.connectOnline(gameId, "A", onlineTransport, deck);
+    const user = authStore.user;
+    const myName =
+      user?.user_metadata?.display_name ||
+      user?.user_metadata?.name ||
+      user?.email?.split("@")[0] ||
+      "Joueur A";
+    store.connectOnline(gameId, "A", onlineTransport, deck, myName);
   } catch (e) {
     onlineError.value = await fnErrorMessage(e);
   } finally {
@@ -1968,8 +2048,14 @@ async function onlineJoin(): Promise<void> {
       onlineError.value = "Partie introuvable (vérifie le code).";
       return;
     }
+    const user = authStore.user;
+    const myName =
+      user?.user_metadata?.display_name ||
+      user?.user_metadata?.name ||
+      user?.email?.split("@")[0] ||
+      "Joueur B";
     // s'abonner AVANT join (CADRE : un seul mode en ligne)
-    store.connectOnline(g.id, "B", onlineTransport, deck);
+    store.connectOnline(g.id, "B", onlineTransport, deck, myName);
     await joinGame(code, deck);
     // joinGame vient de créer GAME_STARTED + mélanges + mains de départ. Le pull
     // de connexion a tourné sur un journal ENCORE VIDE (events créés seulement
@@ -2030,11 +2116,11 @@ const mulliganItems = computed<HandItem[]>(() =>
 
 // ── Mulligan en ligne : décision indépendante par siège (pas de passation) ─────
 const myMulliganDone = computed(
-  () => store.online && (store.mulliganDone?.[store.perspective] ?? false),
+  () => store.online && (store.mulliganDone?.[store.mySeat] ?? false),
 );
 const oppMulliganDone = computed(() => {
   if (!store.online) return false;
-  const p = store.perspective;
+  const p = store.mySeat;
   if (p === "A" || p === "B") {
     return store.mulliganDone?.[p === "A" ? "B" : "A"] ?? false;
   }
@@ -2059,10 +2145,11 @@ const mulliganWaiting = computed(
 );
 async function onMulliganKeep(): Promise<void> {
   if (store.online && store.mode !== "2v2") {
+    const seat = store.mySeat;
     await submitEvent(store.gameId(), {
-      actor: store.perspective,
+      actor: seat,
       type: "MULLIGAN_DONE",
-      payload: { seat: store.perspective },
+      payload: { seat },
     } as unknown as DraftEvent);
   } else {
     store.keepHand();
@@ -2072,7 +2159,7 @@ async function onMulliganReplace(): Promise<void> {
   if (store.online && store.mode !== "2v2") {
     await requestMulligan(store.gameId());
   } else {
-    store.mulligan(store.perspective);
+    store.mulligan(store.mySeat);
   }
 }
 

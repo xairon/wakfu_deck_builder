@@ -50,7 +50,7 @@
           <h3
             class="font-display font-bold text-sm tracking-wide text-base-content"
           >
-            Chat de partie 1v1
+            Chat de partie {{ gameStore.mode === "2v2" ? "2v2" : "1v1" }}
           </h3>
         </div>
         <button
@@ -163,7 +163,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useGameStore } from "@/stores/gameStore";
 import { useInGameChat } from "@/composables/useInGameChat";
+
+const gameStore = useGameStore();
 
 const props = defineProps<{
   localPlayerName?: string;

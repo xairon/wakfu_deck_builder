@@ -248,6 +248,8 @@ export function subscribeToGame(
   onEvent: (event: RedactedEvent) => void,
   onPresence?: (present: boolean) => void,
   onOpponentTarget?: (instanceId: string | null) => void,
+  userName?: string,
+  onPlayerName?: (seat: Seat, name: string) => void,
 ): () => void {
   const c = client();
   const channel = c
@@ -277,14 +279,25 @@ export function subscribeToGame(
               : "A2";
 
   let presence: ReturnType<typeof c.channel> | null = null;
-  if (onPresence || onOpponentTarget) {
+  if (onPresence || onOpponentTarget || onPlayerName) {
     presence = c.channel(`game:${gameId}:presence`, {
       config: { presence: { key: seat } },
     });
     const computeOtherPresent = (): void => {
-      if (onPresence && presence) {
-        const stateMap = presence.presenceState() as Record<string, unknown[]>;
-        onPresence(!!stateMap[other]?.length);
+      if (presence) {
+        const stateMap = presence.presenceState() as Record<
+          string,
+          { userName?: string }[]
+        >;
+        if (onPresence) {
+          onPresence(!!stateMap[other]?.length);
+        }
+        if (onPlayerName) {
+          for (const [s, list] of Object.entries(stateMap)) {
+            const name = list?.[0]?.userName;
+            if (name) onPlayerName(s as Seat, name);
+          }
+        }
       }
     };
     presence
@@ -302,7 +315,7 @@ export function subscribeToGame(
       })
       .subscribe((status) => {
         if (status === "SUBSCRIBED" && presence) {
-          void presence.track({ seat });
+          void presence.track({ seat, userName });
         }
       });
   }

@@ -145,18 +145,29 @@ export function useInGameChat(options: UseInGameChatOptions = {}) {
       const text = String((ev.payload as { text?: string })?.text ?? "");
       if (!text) continue;
 
-      const isSelf = ev.actor === currentPerspective;
+      const isSelf =
+        ev.actor === currentPerspective ||
+        (gameStore.online && ev.actor === gameStore.mySeat);
       let senderName = "Système";
 
-      if (ev.actor === "A" || ev.actor === "B") {
-        const pName = gameStore.players?.[ev.actor]?.name;
+      if (ev.actor !== "system") {
+        const pName = gameStore.players?.[ev.actor as Seat]?.name;
         if (pName) {
           senderName = pName;
+        } else if (ev.actor === "A") {
+          senderName = options.localPlayerName ?? "Joueur 1";
+        } else if (ev.actor === "B") {
+          senderName = options.opponentPlayerName ?? "Joueur 2";
+        } else if (ev.actor === "A1") {
+          senderName = "Joueur 1 (Équipe 1)";
+        } else if (ev.actor === "B1") {
+          senderName = "Joueur 2 (Équipe 2)";
+        } else if (ev.actor === "A2") {
+          senderName = "Joueur 3 (Équipe 1)";
+        } else if (ev.actor === "B2") {
+          senderName = "Joueur 4 (Équipe 2)";
         } else {
-          senderName =
-            ev.actor === "A"
-              ? (options.localPlayerName ?? "Joueur 1")
-              : (options.opponentPlayerName ?? "Joueur 2");
+          senderName = String(ev.actor);
         }
       }
 
