@@ -502,6 +502,7 @@ import {
 import { elementColors } from "@/config/elementColors";
 import type { Deck } from "@/types/cards";
 import { validateDeck } from "@/validators/deck";
+import { generateShareUrl } from "@/utils/deckSharing";
 
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
