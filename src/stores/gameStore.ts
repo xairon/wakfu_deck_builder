@@ -47,7 +47,7 @@ import {
   shuffle as shuffleVerb,
   undo as undoVerb,
 } from "@/game";
-import { makeRng } from "@/game/engine/rng";
+import { makeRng, permutationFromSeed } from "@/game/engine/rng";
 import type { CombatTarget, RuleEvent, RulesCtx } from "@/game/rules";
 
 import type { ForceStance } from "@/game/rules";
@@ -136,10 +136,23 @@ function deriveMatchPhase(evs: PersistedEvent[]): MatchPhase {
   }
 
   const seats = Object.keys((started.payload as any)?.state?.seats ?? {});
-  const is2v2 = seats.includes("A1") || seats.includes("B1");
+  const is2v2 =
+    seats.includes("A1") ||
+    seats.includes("B1") ||
+    evs.some(
+      (e) =>
+        e.actor === "A1" ||
+        e.actor === "B1" ||
+        e.actor === "A2" ||
+        e.actor === "B2" ||
+        (e.payload as any)?.seat === "A1" ||
+        (e.payload as any)?.seat === "B1",
+    );
 
   if (is2v2) {
-    return Boolean(done.A1 && done.B1 && done.A2 && done.B2) ? "playing" : "mulligan";
+    return Boolean(done.A1 && done.B1 && done.A2 && done.B2)
+      ? "playing"
+      : "mulligan";
   }
   return Boolean(done.A && done.B) ? "playing" : "mulligan";
 }
@@ -1323,27 +1336,44 @@ export const useGameStore = defineStore("game", () => {
 
   /** Nombre de mulligans déjà effectués par un siège. */
   function mulliganCount(seat: Seat): number {
-    if (online.value) {
-      return events.value.filter(
-        (e) =>
-          e.actor === seat &&
-          e.type === "SHUFFLE" &&
-          (e.payload as { zone?: { zone?: string } })?.zone?.zone === "pioche",
-      ).length;
-    }
     return mulliganCounts.value[seat] ?? 0;
   }
 
   /** Recycle toute la main du joueur, re-mélange, re-pioche (1er mulligan gratuit → même nombre, puis -1). */
   function mulligan(seat: Seat): void {
-    const count = mulliganCount(seat);
+    const count = mulliganCounts.value[seat] ?? 0;
     const hand = [...state.value.seats[seat].main];
-    const target = count === 0 ? Math.max(6, hand.length) : Math.max(0, hand.length - 1);
+    const target =
+      count === 0 ? Math.max(6, hand.length) : Math.max(0, hand.length - 1);
     mulliganCounts.value[seat] = count + 1;
-    for (const id of hand)
+
+    // 1. Remettre toutes les cartes de la main dans la pioche
+    for (const id of hand) {
       moveTo(id, { zone: "pioche", owner: seat }, { at: "top" });
-    shufflePioche(seat);
-    if (target) draw(seat, target);
+    }
+
+    // 2. Calculer le pool complet et mélanger avec une graine aléatoire
+    const piocheRest = state.value.seats[seat].pioche.filter(
+      (id) => !hand.includes(id),
+    );
+    const pool = [...hand, ...piocheRest];
+    const totalSize = pool.length;
+    const seed = rndSeed();
+    const perm = permutationFromSeed(totalSize, seed);
+
+    dispatch(
+      shuffleVerb(seat, { zone: "pioche", owner: seat }, totalSize, seed),
+    );
+
+    // 3. Piocher les nouvelles cartes selon la permutation aléatoire
+    if (target > 0) {
+      for (let i = 0; i < target && i < perm.length; i++) {
+        const drawId = pool[perm[i]];
+        if (drawId) {
+          moveTo(drawId, { zone: "main", owner: seat });
+        }
+      }
+    }
   }
 
   /** Le joueur garde sa main → joueur suivant, ou début de partie. */
@@ -1681,17 +1711,10 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function draw(seat: Seat = perspective.value, n = 1): void {
-    for (let i = 0; i < n; i++) {
-      // 507.5 : si la Pioche est vide, remélanger la Défausse avant de piocher.
-      if (!state.value.seats[seat].pioche.length) {
-        if (!state.value.seats[seat].defausse.length) break;
-        reshuffleDiscardIntoDeck(seat);
-      }
-      const pioche = state.value.seats[seat].pioche;
-      if (!pioche.length) break;
-      const topId = pioche[0];
-      if (!topId) break;
-      moveTo(topId, { zone: "main", owner: seat });
+    const pioche = [...state.value.seats[seat].pioche];
+    for (let i = 0; i < n && i < pioche.length; i++) {
+      const topId = pioche[i];
+      if (topId) moveTo(topId, { zone: "main", owner: seat });
     }
     engine.enforceHandLimit(seat);
   }
@@ -2399,38 +2422,67 @@ export const useGameStore = defineStore("game", () => {
     const equipmentId = pend.equipmentId;
     const manual = pend.manual ?? false;
     pendingBearer.value = null;
-    // TL3 — geste manuel (table libre) : intent ATTACH autoritatif (le serveur
-    // revalide Équipement/Porteur/508.x) ; l'équipement peut venir du Monde
-    // (déjà posé) ou de la main. Pas de PLAY_CARD (ni coût ni destination).
-    if (manual) return tryIntent({ kind: "ATTACH", equipmentId, bearerId });
+    // TL3 — geste manuel (table libre) : intent ATTACH autoritatif si disponible,
+    // sinon dispatch local / peer broadcast direct de l'événement ATTACH.
+    if (manual) {
+      if (tryIntent({ kind: "ATTACH", equipmentId, bearerId })) return true;
+      const seat = perspective.value;
+      const eqInst = state.value.instances[equipmentId];
+      const bearerInst = state.value.instances[bearerId];
+      const eqCard = getCard(eqInst?.cardId ?? null);
+      const bearerCard = getCard(bearerInst?.cardId ?? null);
+      dispatch(
+        attach(seat, equipmentId, bearerId),
+        say(
+          seat,
+          `${eqCard?.name ?? "L'équipement"} est équipé sur ${bearerCard?.name ?? "la créature"}.`,
+        ),
+      );
+      return true;
+    }
     return playFromHand(equipmentId, bearerId, undefined, pend.free ?? false);
   }
 
   /**
    * TL3 — TABLE LIBRE : ouvre le ciblage de Porteur pour un Équipement (de MA
    * main ou déjà posé) que je veux attacher À LA MAIN. La résolution
-   * (attachToBearer) émet l'intent `ATTACH`. Réservé au geste manuel (le jeu
-   * assisté attache déjà à la pose, via playFromHand → pendingBearer).
+   * (attachToBearer) émet l'intent `ATTACH` ou dispatch direct.
    */
   function attachSelected(equipmentId: string): boolean {
     const seat = perspective.value;
     const inst = state.value.instances[equipmentId];
     if (!inst) return rejectMove("Carte introuvable.");
     let eligible = eligibleBearers(rulesCtx(), seat, equipmentId);
-    if (!eligible.length) {
+    if (!eligible.length || isSandbox.value || mode.value === "2v2") {
       eligible = Object.values(state.value.instances)
-        .filter(
-          (i) =>
-            i.controller === seat &&
-            i.instanceId !== equipmentId &&
-            (i.location.zone === "monde" || i.location.zone === "havreSac"),
-        )
+        .filter((i) => {
+          if (i.instanceId === equipmentId) return false;
+          if (i.location.zone !== "monde" && i.location.zone !== "havreSac") return false;
+          if (isSandbox.value) return true;
+          if (mode.value === "2v2") {
+            const isTeamA = seat.startsWith("A");
+            const isTargetTeamA = i.controller.startsWith("A");
+            return isTeamA === isTargetTeamA;
+          }
+          return i.controller === seat;
+        })
         .map((i) => i.instanceId);
     }
     if (!eligible.length)
       return rejectMove("Aucune créature en jeu à qui attacher cette carte.");
     pendingBearer.value = { equipmentId, eligible, manual: true };
     return true;
+  }
+
+  /** Détache un équipement et le remet sur le plateau (zone Monde). */
+  function detachCard(equipmentId: string): void {
+    const seat = perspective.value;
+    const eqInst = state.value.instances[equipmentId];
+    if (!eqInst) return;
+    dispatch(
+      detach(seat, equipmentId, { zone: "monde" }),
+      say(seat, `${getCard(eqInst.cardId)?.name ?? "L'équipement"} est détaché.`),
+    );
   }
 
   /**
@@ -2666,7 +2718,29 @@ export const useGameStore = defineStore("game", () => {
     // couvre TOUS les Équipements (y compris ceux dont le bonus n'est pas encore
     // modélisé, ex. armure +PV) — ils ne se posent plus en standalone.
     if (requiresBearer(card)) {
-      const eligible = eligibleBearers(ctx, seat, instanceId);
+      let eligible = eligibleBearers(ctx, seat, instanceId);
+      if (mode.value === "2v2") {
+        const isTeamA = seat.startsWith("A");
+        eligible = Object.values(ctx.state.instances)
+          .filter((i) => {
+            if (i.instanceId === instanceId) return false;
+            const z = i.location.zone;
+            if (z !== "monde" && z !== "havreSac") return false;
+            const targetTeamA = i.controller.startsWith("A");
+            if (isTeamA !== targetTeamA) return false;
+            return canBearEquipment(ctx.getCard(i.cardId));
+          })
+          .map((i) => i.instanceId);
+      } else if (isSandbox.value) {
+        eligible = Object.values(ctx.state.instances)
+          .filter((i) => {
+            if (i.instanceId === instanceId) return false;
+            const z = i.location.zone;
+            if (z !== "monde" && z !== "havreSac") return false;
+            return canBearEquipment(ctx.getCard(i.cardId));
+          })
+          .map((i) => i.instanceId);
+      }
       if (bearerId === undefined) {
         if (!eligible.length)
           return rejectMove(
@@ -4970,6 +5044,7 @@ export const useGameStore = defineStore("game", () => {
     mulligan,
     mulliganCount,
     mulliganCounts,
+    mulliganDone,
     keepHand,
     reveal,
     endTurn,
@@ -5027,6 +5102,7 @@ export const useGameStore = defineStore("game", () => {
     pendingBearer,
     attachToBearer,
     attachSelected,
+    detachCard,
     revealMyHand,
     revealCardToOpponent,
     searchMyDeck,
@@ -5089,7 +5165,6 @@ export const useGameStore = defineStore("game", () => {
     millTopDeck,
     resetTableAndDeck,
     say: (actor: Seat | "system", text: string) => dispatch(say(actor, text)),
-    detachCard,
     resetCounter,
     setTurnPhase,
     hideMyHand,

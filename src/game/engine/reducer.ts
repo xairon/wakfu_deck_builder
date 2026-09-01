@@ -257,7 +257,7 @@ function applyShuffle(s: GameState, p: ShufflePayload): void {
     const seed =
       p.seed ||
       `${s.gameId}|${s.seq}|${p.zone.zone}|${"owner" in p.zone ? p.zone.owner : "-"}`;
-    const perm = permutationFromSeed(seed, arr.length);
+    const perm = permutationFromSeed(arr.length, seed);
     const reordered = perm.map((i) => arr[i]);
     arr.splice(0, arr.length, ...reordered);
     for (const id of arr) s.instances[id].revealedTo = [];

@@ -1251,6 +1251,14 @@
           >
             🔗 Équiper
           </button>
+          <button
+            v-if="isAttachedSelected"
+            class="gbtn gbtn--accent"
+            title="Détacher cet Équipement et le replacer sur le terrain."
+            @click="detachSelected"
+          >
+            🔓 Détacher
+          </button>
           <!-- F5 — « révélez une carte » : montrer CETTE carte de ma main. -->
           <button
             v-if="canShowSelected"
@@ -2740,14 +2748,35 @@ function scheduleLinkUpdate() {
 const canEquipSelected = computed(() => {
   const inst = selectedInst.value;
   if (store.combat || !inst) return false;
+  if (isAttachedSelected.value) return false;
+  if (store.isSandbox) return true;
+  if (store.mode === "2v2") {
+    const isTeamA = me.value.startsWith("A");
+    const isTargetTeamA = inst.controller.startsWith("A");
+    return isTeamA === isTargetTeamA;
+  }
   if (inst.controller !== me.value) return false;
   const card = resolveCard(inst.cardId);
   return !!card;
+});
+const isAttachedSelected = computed(() => {
+  const id = selectedId.value;
+  if (!id) return false;
+  for (const inst of Object.values(store.state.instances)) {
+    if (inst.attachments?.includes(id)) return true;
+  }
+  return false;
 });
 function equipSelected(): void {
   const id = selectedInst.value?.instanceId;
   if (!id) return;
   if (store.attachSelected(id)) selectedId.value = null; // le plateau prend le relais (clic Porteur)
+}
+function detachSelected(): void {
+  const id = selectedInst.value?.instanceId;
+  if (!id) return;
+  store.detachCard(id);
+  selectedId.value = null;
 }
 // F5 — montrer UNE carte de ma main (« révélez une carte ») : en ligne
 // uniquement (en local hot-seat tout est déjà visible).
