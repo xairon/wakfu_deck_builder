@@ -18,8 +18,8 @@ export const ELEMENTS: CardElement[] = ["Feu", "Eau", "Terre", "Air", "Neutre"];
 export const ELEMENT_COLORS: Record<CardElement, string> = {
   Feu: "bg-red-500",
   Eau: "bg-blue-500",
-  Terre: "bg-yellow-500",
-  Air: "bg-green-500",
+  Terre: "bg-green-500",
+  Air: "bg-purple-500",
   Neutre: "bg-gray-500",
 };
 

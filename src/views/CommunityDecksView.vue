@@ -190,6 +190,7 @@ import {
   type PublishedDeck,
 } from "@/services/publicDeckService";
 import { getUsernames } from "@/services/profileService";
+import { elementColors } from "@/config/elementColors";
 
 const router = useRouter();
 const deckStore = useDeckStore();
@@ -201,14 +202,6 @@ const decks = ref<SourcedDeck[]>([]);
 const importing = ref(new Set<string>());
 
 const groups = computed(() => groupBySource(decks.value));
-
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
 
 function findHero(deck: SourcedDeck) {
   if (!deck.hero) return null;

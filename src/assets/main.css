@@ -12,15 +12,15 @@
 :root {
   --el-feu: #c8401b;
   --el-eau: #1a7dbe;
-  --el-terre: #9a6b14;
-  --el-air: #4a8c1e;
+  --el-terre: #2e7d32;
+  --el-air: #7e3af2;
   --el-neutre: #6b7280;
 }
 [data-theme="dark"] {
   --el-feu: #f0573a;
   --el-eau: #34a6f2;
-  --el-terre: #f0b33c;
-  --el-air: #6fcf3f;
+  --el-terre: #5fb22a;
+  --el-air: #c084fc;
   --el-neutre: #98a1af;
 }
 .el-feu {

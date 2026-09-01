@@ -176,6 +176,8 @@ import { DECK_RULES } from "@/validators/deck";
 import { RULES_SECTIONS, RULES_INTRO } from "@/data/rules";
 import { GLOSSARY } from "@/data/glossary";
 
+import { elementColors } from "@/config/elementColors";
+
 const rulesIntro = RULES_INTRO;
 const rulesSections = RULES_SECTIONS;
 
@@ -214,27 +216,27 @@ const deckRules = [
 const elements = [
   {
     name: "Air",
-    color: "#5FB22A",
+    color: elementColors.air,
     desc: "Vitesse et esquive — frappes rapides et déplacements.",
   },
   {
     name: "Eau",
-    color: "#1F9CEC",
+    color: elementColors.eau,
     desc: "Soin et contrôle — récupération et entrave de l'adversaire.",
   },
   {
     name: "Feu",
-    color: "#F04E22",
+    color: elementColors.feu,
     desc: "Dégâts directs — pression offensive et brûlure.",
   },
   {
     name: "Terre",
-    color: "#F0A62B",
+    color: elementColors.terre,
     desc: "Puissance et défense — coups lourds et résistance.",
   },
   {
     name: "Neutre",
-    color: "#98A1AF",
+    color: elementColors.neutre,
     desc: "Sans affinité élémentaire — utilisable par tous les decks.",
   },
 ];

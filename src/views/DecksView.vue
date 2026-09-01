@@ -499,7 +499,7 @@ import {
   importDeckCardsToCollection,
   isDeckCardsImported as checkDeckCardsImported,
 } from "@/services/starterService";
-import { generateShareUrl } from "@/utils/deckSharing";
+import { elementColors } from "@/config/elementColors";
 import type { Deck } from "@/types/cards";
 import { validateDeck } from "@/validators/deck";
 
@@ -548,13 +548,6 @@ function goToBuilder(id: string) {
 }
 
 // ── Visuels ──
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
 function deckElementName(deck: Deck): string {
   return (
     deck.hero?.stats?.niveau?.element ||

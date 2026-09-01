@@ -226,7 +226,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2 bg-ink px-3 py-2 text-paper">
-              <span class="h-2 w-2 rounded-full bg-element-air"></span>
+              <span class="h-2 w-2 rounded-full bg-success"></span>
               <span class="font-mono text-xs font-bold">Deck valide</span>
             </div>
           </div>
@@ -312,7 +312,7 @@
               <span class="text-[15px]">{{ rule.label }}</span>
               <span
                 class="font-mono text-xs"
-                :class="rule.ok ? 'text-element-air' : 'text-ink-muted'"
+                :class="rule.ok ? 'text-success' : 'text-ink-muted'"
                 >{{ rule.tag }}</span
               >
             </li>

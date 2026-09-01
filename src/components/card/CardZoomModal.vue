@@ -66,6 +66,7 @@ import { computed, ref, watch } from "vue";
 import type { Card } from "@/types/cards";
 import { isHeroCard } from "@/types/cards";
 import { fetchErrata, type ErrataEntry } from "@/services/errataService";
+import { elementColors } from "@/config/elementColors";
 import CardZoomInner from "./CardZoomInner.vue";
 
 const props = defineProps<{
@@ -97,14 +98,6 @@ const displayEffects = computed(() => {
   }
   return c.effects ?? [];
 });
-
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
 
 const elementColor = computed(() => {
   const el = (

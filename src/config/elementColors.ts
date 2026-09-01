@@ -3,10 +3,10 @@
  * remplace les duplications dans CardZoomModal / CardDetailsModal / etc.
  */
 export const elementColors: Record<string, string> = {
-  air: "#5FB22A",
+  air: "#A855F7",
   eau: "#1F9CEC",
   feu: "#F04E22",
-  terre: "#F0A62B",
+  terre: "#5FB22A",
   neutre: "#98A1AF",
 };
 

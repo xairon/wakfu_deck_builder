@@ -120,6 +120,7 @@ import { matchesSearch } from "@/utils/text";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import type { Card } from "@/types/cards";
+import { elementColors } from "@/config/elementColors";
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ (e: "close"): void }>();
@@ -141,13 +142,6 @@ watch(
   },
 );
 
-const elementColors: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
 function elementColor(card: Card): string {
   const el = (
     card.stats?.niveau?.element ||

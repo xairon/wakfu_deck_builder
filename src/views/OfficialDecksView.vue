@@ -313,6 +313,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import type { Card } from "@/types/cards";
+import { elementColors as ELEMENT_COLORS } from "@/config/elementColors";
 
 // Stores et services
 const deckStore = useDeckStore();
@@ -327,15 +328,6 @@ const bulkImporting = ref(false);
 
 // Donnees — decks officiels (starters + Dofus Mag), source unique partagée.
 const officialDecks = computed(() => ALL_OFFICIAL_DECKS);
-
-// Couleurs des éléments (encres du jeu)
-const ELEMENT_COLORS: Record<string, string> = {
-  air: "#5FB22A",
-  eau: "#1F9CEC",
-  feu: "#F04E22",
-  terre: "#F0A62B",
-  neutre: "#98A1AF",
-};
 
 // Catégories de decks officiels. Les decks ne sont PAS rangés par « extension » :
 // seuls les starters appartiennent à une extension (Incarnam, Bonta & Brâkmar) ;
