@@ -283,6 +283,7 @@ export const useGameStore = defineStore("game", () => {
   const mulliganCounts = ref<Record<Seat, number>>({ A: 0, B: 0 });
   const winner = ref<Seat | null>(null);
   const continuedMatch = ref(false);
+  const isSandbox = ref(false);
 
   // ── Dérivés moteur ───────────────────────────────────────────────────────
   const state = computed<GameState>(() => {
@@ -1086,10 +1087,11 @@ export const useGameStore = defineStore("game", () => {
   function startMatch(
     deckA: Deck,
     deckB: Deck,
-    opts: { nameA?: string; nameB?: string; first?: Seat } = {},
+    opts: { nameA?: string; nameB?: string; first?: Seat; isSandbox?: boolean } = {},
   ): void {
     const first = opts.first ?? (Math.random() < 0.5 ? "A" : "B");
     firstPlayer.value = first;
+    isSandbox.value = !!opts.isSandbox;
     players.value = {
       A: { name: opts.nameA?.trim() || "Joueur 1" },
       B: { name: opts.nameB?.trim() || "Joueur 2" },
@@ -1104,7 +1106,7 @@ export const useGameStore = defineStore("game", () => {
     perspective.value = first;
     matchPhase.value = "mulligan";
     continuedMatch.value = false;
-    passPending.value = true;
+    passPending.value = !isSandbox.value;
     combat.value = null;
     attackedOnTurn.value = null;
     ruleError.value = null;
@@ -1202,6 +1204,20 @@ export const useGameStore = defineStore("game", () => {
       passPending.value = false;
       return;
     }
+    if (isSandbox.value) {
+      if (!mulliganDone.value[other]) {
+        mulliganSeat.value = other;
+        perspective.value = other;
+        passPending.value = false;
+      } else {
+        mulliganSeat.value = null;
+        matchPhase.value = "playing";
+        perspective.value = firstPlayer.value;
+        passPending.value = false;
+        fireTurnStartEffects();
+      }
+      return;
+    }
     if (!mulliganDone.value[other]) {
       mulliganSeat.value = other;
       perspective.value = other;
@@ -1212,6 +1228,11 @@ export const useGameStore = defineStore("game", () => {
       perspective.value = firstPlayer.value;
       passPending.value = true;
     }
+  }
+
+  /** Bascule manuellement la vue / perspective entre Joueur 1 (A) et Joueur 2 (B). */
+  function togglePerspective(): void {
+    perspective.value = otherSeat(perspective.value);
   }
 
   /** Révèle le plateau après l'écran de passation. */
@@ -1372,6 +1393,11 @@ export const useGameStore = defineStore("game", () => {
         // driver bascule perspective sur le bot le temps d'agir, puis la rend).
         perspective.value = otherSeat(botSeat.value);
         passPending.value = false;
+      } else if (isSandbox.value) {
+        // Mode Entraînement / Sandbox : fluidité maximale, bascule automatique sur le joueur actif sans rideau.
+        perspective.value = next;
+        passPending.value = false;
+        fireTurnStartEffects();
       } else {
         // Hot-seat 2 joueurs : passation d'écran classique à chaque tour.
         perspective.value = next;
@@ -1687,8 +1713,8 @@ export const useGameStore = defineStore("game", () => {
     // Règles assistées : pendant la phase de jeu, seul le joueur ACTIF manipule
     // le plateau (sauf fenêtre de réaction en combat). Sans ça, n'importe quel
     // MOVE hors « main → Monde » (ex. Havre-Sac ↔ Monde) contournait le contrôle
-    // de tour que `playFromHand` applique déjà. (Le mode manuel = table libre.)
-    if (assist.value && matchPhase.value === "playing") {
+    // de tour que `playFromHand` applique déjà. (Le mode manuel = table libre ; en sandbox = manipulation libre).
+    if (assist.value && !isSandbox.value && matchPhase.value === "playing") {
       const actor = perspective.value;
       const reacting = combat.value?.reactingSeat === actor;
       if (!reacting && state.value.turn.active !== actor) {
@@ -4773,6 +4799,8 @@ export const useGameStore = defineStore("game", () => {
     perspective,
     opponent,
     passPending,
+    isSandbox,
+    togglePerspective,
     mulliganSeat,
     winner,
     activeName,

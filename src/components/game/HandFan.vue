@@ -22,7 +22,7 @@
         v-if="item.inst"
         :instance="item.inst"
         :card="resolveCard(item.inst.cardId)"
-        :draggable="mine && draggable"
+        :draggable="draggable"
         :selected="item.inst.instanceId === selectedId"
         @select="emit('select', item.inst!.instanceId)"
         @zoom="emit('zoom', item.inst!.instanceId)"

@@ -100,6 +100,7 @@
               <GameCard
                 :instance="inst"
                 :card="resolveCard(inst.cardId)"
+                :draggable="store.isSandbox"
                 :selected="inst.instanceId === selectedId"
                 @select="select(inst.instanceId)"
                 @zoom="zoomInst(inst.instanceId)"
@@ -109,7 +110,17 @@
           </div>
           <div
             class="gzone ghavre__inside"
+            :class="zoneCls('socle-opp')"
             aria-label="Intérieur du Havre-Sac adverse"
+            :ref="
+              (el) =>
+                registerZone(
+                  'socle-opp',
+                  el,
+                  { zone: 'havreSac', owner: opp },
+                  'Intérieur du Havre-Sac adverse',
+                )
+            "
           >
             <span class="gzone__label"
               >Intérieur · {{ interiorCards(opp).length }}/{{
@@ -127,6 +138,7 @@
                 <GameCard
                   :instance="inst"
                   :card="resolveCard(inst.cardId)"
+                  :draggable="store.isSandbox"
                   :selected="inst.instanceId === selectedId"
                   @select="select(inst.instanceId)"
                   @zoom="zoomInst(inst.instanceId)"
@@ -149,38 +161,125 @@
             </TransitionGroup>
           </div>
         </div>
-        <HandFan
+        <div
           class="gseat__handzone gseat__handzone--opp"
-          :items="handList(opp)"
-          :resolve-card="resolveCard"
-          :selected-id="selectedId"
-          @select="select"
-          @zoom="zoomInst"
-        />
+          :class="zoneCls('main-opp')"
+          :ref="
+            (el) =>
+              registerZone(
+                'main-opp',
+                el,
+                { zone: 'main', owner: opp },
+                'Main adverse',
+              )
+          "
+        >
+          <HandFan
+            :draggable="store.isSandbox"
+            :items="handList(opp)"
+            :resolve-card="resolveCard"
+            :selected-id="selectedId"
+            @select="select"
+            @zoom="zoomInst"
+          />
+        </div>
         <div class="gpiles">
-          <PileStack label="Pioche" :count="piocheCount(opp)" deck />
-          <PileStack
-            label="Défausse"
-            :count="discardCount(opp)"
-            :top="topDiscard(opp)"
-            :top-card="resolveCard(topDiscard(opp)?.cardId ?? null)"
-            browse
-            @browse="openPileBrowser(opp, 'defausse')"
-            @zoom="zoomInst"
-          />
-          <PileStack
-            label="Bannie"
-            :count="exileCount(opp)"
-            :top="topExile(opp)"
-            :top-card="resolveCard(topExile(opp)?.cardId ?? null)"
-            browse
-            @browse="openPileBrowser(opp, 'exil')"
-            @zoom="zoomInst"
-          />
-          <PileStack label="Réserve" :count="reserveCount(opp)" deck reserve />
+          <span
+            :class="zoneCls('pioche-opp')"
+            class="gpiles__slot"
+            :ref="
+              (el) =>
+                registerZone(
+                  'pioche-opp',
+                  el,
+                  { zone: 'pioche', owner: opp },
+                  'Pioche adverse',
+                  { at: 'top' },
+                )
+            "
+          >
+            <PileStack label="Pioche" :count="piocheCount(opp)" deck />
+          </span>
+          <span
+            :class="zoneCls('defausse-opp')"
+            class="gpiles__slot"
+            :ref="
+              (el) =>
+                registerZone(
+                  'defausse-opp',
+                  el,
+                  { zone: 'defausse', owner: opp },
+                  'Défausse adverse',
+                  { at: 'top' },
+                )
+            "
+          >
+            <PileStack
+              label="Défausse"
+              :count="discardCount(opp)"
+              :top="topDiscard(opp)"
+              :top-card="resolveCard(topDiscard(opp)?.cardId ?? null)"
+              browse
+              @browse="openPileBrowser(opp, 'defausse')"
+              @zoom="zoomInst"
+            />
+          </span>
+          <span
+            :class="zoneCls('exil-opp')"
+            class="gpiles__slot"
+            :ref="
+              (el) =>
+                registerZone(
+                  'exil-opp',
+                  el,
+                  { zone: 'exil', owner: opp },
+                  'Zone Bannie adverse',
+                  { at: 'top' },
+                )
+            "
+          >
+            <PileStack
+              label="Bannie"
+              :count="exileCount(opp)"
+              :top="topExile(opp)"
+              :top-card="resolveCard(topExile(opp)?.cardId ?? null)"
+              browse
+              @browse="openPileBrowser(opp, 'exil')"
+              @zoom="zoomInst"
+            />
+          </span>
+          <span
+            :class="zoneCls('reserve-opp')"
+            class="gpiles__slot"
+            :ref="
+              (el) =>
+                registerZone(
+                  'reserve-opp',
+                  el,
+                  { zone: 'reserve', owner: opp },
+                  'Réserve adverse',
+                )
+            "
+          >
+            <PileStack label="Réserve" :count="reserveCount(opp)" deck reserve />
+          </span>
         </div>
       </div>
-      <div class="gzone gzone--field" role="group" aria-label="Alliés adverses">
+      <div
+        class="gzone gzone--field"
+        :class="zoneCls('monde-opp')"
+        role="group"
+        aria-label="Alliés adverses"
+        :ref="
+          (el) =>
+            registerZone(
+              'monde-opp',
+              el,
+              { zone: 'monde' },
+              'Terrain adverse (Monde)',
+            )
+        "
+      >
         <span v-if="!allies(opp).length" class="gzone__hint"
           >Alliés adverses</span
         >
@@ -201,6 +300,7 @@
             <GameCard
               :instance="inst"
               :card="resolveCard(inst.cardId)"
+              :draggable="store.isSandbox"
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
@@ -1754,6 +1854,20 @@ function handList(seat: Seat): HandItem[] {
           ? store.cannotPlayReason(i.instanceId) === null
           : undefined,
     }));
+  // En mode Entraînement Solo (Sandbox), la main adverse est visible et manipulable
+  if (store.isSandbox) {
+    const fullList = Object.values(store.state.instances).filter(
+      (i) => i.location.zone === "main" && i.location.owner === seat,
+    );
+    return fullList.map((i) => ({
+      key: i.instanceId,
+      inst: i,
+      playable:
+        seat === store.turn.active
+          ? store.cannotPlayReason(i.instanceId) === null
+          : undefined,
+    }));
+  }
   return Array.from({ length: z.count }, (_, i) => ({
     key: `back-${seat}-${i}`,
     inst: null,
@@ -1952,6 +2066,7 @@ onMounted(() => {
     const toPlay = spec.zone.zone === "monde" || spec.zone.zone === "havreSac";
     if (
       store.assist &&
+      !store.isSandbox &&
       toPlay &&
       inst?.location.zone === "main" &&
       inst.owner === me.value
@@ -1965,7 +2080,19 @@ onMounted(() => {
       store.playFromHand(instanceId, undefined, dest);
       return;
     }
-    store.moveTo(instanceId, spec.zone, spec.position ?? { at: "any" });
+
+    const zoneName = spec.zone.zone;
+    const targetZone: ZoneRef =
+      zoneName === "monde" || zoneName === "fileAttente"
+        ? { zone: zoneName }
+        : {
+            zone: zoneName,
+            owner:
+              ("owner" in spec.zone ? spec.zone.owner : undefined) ??
+              inst?.owner ??
+              me.value,
+          };
+    store.moveTo(instanceId, targetZone, spec.position ?? { at: "any" });
   });
 });
 onUnmounted(() => {

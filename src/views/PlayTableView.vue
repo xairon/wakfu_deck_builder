@@ -198,6 +198,99 @@
         }}</span>
       </div>
     </section>
+
+    <!-- ═══════════ Mode Entraînement Solo (Sandbox / Hot-seat) ═══════════ -->
+    <div class="h-px w-full bg-base-content/20"></div>
+
+    <section
+      class="border border-accent/40 bg-accent/[0.04] p-5"
+      data-testid="sandbox-section"
+    >
+      <div>
+        <p class="eyebrow text-accent">Mode Entraînement Solo</p>
+        <h2 class="mt-1 font-display text-xl sm:text-2xl font-semibold">Bac à sable & Hot-seat</h2>
+        <p class="mt-1 text-sm text-base-content/70">
+          Prends le contrôle total des deux joueurs sur cette machine pour tester des decks, combos et stratégies.
+          Les règles sont appliquées automatiquement et tu peux basculer la vue entre les deux joueurs à tout moment.
+        </p>
+      </div>
+
+      <div class="mt-4 space-y-4">
+        <div class="flex flex-wrap items-start gap-4">
+          <!-- Deck Joueur 1 -->
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-medium text-base-content/70">Deck Joueur 1</span>
+            <select
+              v-model="sandboxDeck1Id"
+              class="select select-bordered select-sm w-64 bg-base-200"
+              data-testid="sandbox-deck-1"
+            >
+              <option :value="null" disabled>Choisis un deck…</option>
+              <optgroup v-if="decks.length" label="Mes decks">
+                <option v-for="d in decks" :key="'my1-' + d.id" :value="d.id">
+                  {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+                </option>
+              </optgroup>
+              <optgroup label="Decks officiels & Starters">
+                <option
+                  v-for="d in ALL_OFFICIAL_DECKS"
+                  :key="'off1-' + d.id"
+                  :value="'official-' + d.id"
+                >
+                  {{ d.name }}
+                </option>
+              </optgroup>
+            </select>
+            <span v-if="sandboxDeck1Id && !sandboxDeck1Valid" class="text-xs text-warning">
+              {{ sandboxDeck1Errors[0] ?? "Deck indisponible ou incomplet" }}
+            </span>
+          </label>
+
+          <!-- Deck Joueur 2 -->
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-medium text-base-content/70">Deck Adversaire (Joueur 2)</span>
+            <select
+              v-model="sandboxDeck2Id"
+              class="select select-bordered select-sm w-64 bg-base-200"
+              data-testid="sandbox-deck-2"
+            >
+              <option :value="null" disabled>Choisis un deck…</option>
+              <optgroup v-if="decks.length" label="Mes decks">
+                <option v-for="d in decks" :key="'my2-' + d.id" :value="d.id">
+                  {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+                </option>
+              </optgroup>
+              <optgroup label="Decks officiels & Starters">
+                <option
+                  v-for="d in ALL_OFFICIAL_DECKS"
+                  :key="'off2-' + d.id"
+                  :value="'official-' + d.id"
+                >
+                  {{ d.name }}
+                </option>
+              </optgroup>
+            </select>
+            <span v-if="sandboxDeck2Id && !sandboxDeck2Valid" class="text-xs text-warning">
+              {{ sandboxDeck2Errors[0] ?? "Deck indisponible ou incomplet" }}
+            </span>
+          </label>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <button
+            class="btn btn-accent btn-sm"
+            :disabled="!canStartSandbox || !cardStore.cards.length"
+            data-testid="sandbox-start-btn"
+            @click="startSandboxGame"
+          >
+            ⚔️ Lancer l'entraînement
+          </button>
+          <span class="text-xs text-base-content/50">
+            Contrôle total des deux joueurs · Règles complètes et alternance des tours
+          </span>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- ═══════════ EN MATCH (mulligan / playing) ═══════════ -->
@@ -232,6 +325,16 @@
           Mélanger
         </button>
         <button class="gtop-btn" @click="store.undoLast()">Annuler</button>
+        <!-- Bascule manuelle de vue (mode local / sandbox) -->
+        <button
+          v-if="!store.online"
+          class="gtop-btn"
+          data-testid="topbar-toggle-perspective"
+          :title="'Vue actuelle : ' + store.players[store.perspective].name + ' (cliquer pour basculer)'"
+          @click="store.togglePerspective()"
+        >
+          👁️ Vue : {{ store.players[store.perspective].name }}
+        </button>
         <!-- Module SOLO starter (vs bot) : TOUJOURS full-assisté — la bascule
              n'a pas de sens là (le bot et les effets exigent les règles) et
              son seul usage serait de se mettre dans un état cassé. Elle reste
@@ -703,6 +806,7 @@ import ManualEffectReminders from "@/components/game/ManualEffectReminders.vue";
 import InGameChat from "@/components/game/InGameChat.vue";
 import { useTutorialStore } from "@/stores/tutorialStore";
 import { OFFICIAL_DECKS } from "@/data/officialDecks";
+import { ALL_OFFICIAL_DECKS } from "@/data/allOfficialDecks";
 import { buildOfficialDeck } from "@/composables/useOfficialDeckImport";
 import { useBotOpponent } from "@/composables/useBotOpponent";
 import { validateDeck } from "@/validators/deck";
@@ -837,6 +941,83 @@ function startVsBot(): void {
   tutorial.startGuidedGame(mine, opp);
   // Module SOLO starter : TOUJOURS full-assisté (la bascule est masquée là —
   // on force les deux drapeaux au cas où une table libre les aurait éteints).
+  store.assist = true;
+  store.assistEffects = true;
+}
+
+// ── Mode Entraînement Solo (Sandbox / Hot-seat) ──────────────────────────────
+const sandboxDeck1Id = ref<string | null>(null);
+const sandboxDeck2Id = ref<string | null>(null);
+
+function resolveAnyDeckById(id: string | null): Deck | null {
+  if (!id) return null;
+  if (id.startsWith("official-")) {
+    const officialId = id.replace("official-", "");
+    const od = ALL_OFFICIAL_DECKS.find((d) => d.id === officialId);
+    if (!od) return null;
+    const b = buildOfficialDeck(od, resolveCardByName);
+    if (b.heroMissing || b.havreMissing || b.missing.length) return null;
+    return {
+      id: "sandbox-" + od.id,
+      name: od.name,
+      hero: b.heroCard,
+      havreSac: b.havreSacCard,
+      cards: b.deckCards.map((dc) => ({ card: dc.card, quantity: dc.quantity })),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  return decks.value.find((d) => d.id === id) ?? null;
+}
+
+const sandboxDeck1 = computed(() => resolveAnyDeckById(sandboxDeck1Id.value));
+const sandboxDeck2 = computed(() => resolveAnyDeckById(sandboxDeck2Id.value));
+
+const sandboxDeck1Errors = computed(() =>
+  sandboxDeck1.value ? validateDeck(sandboxDeck1.value).errors : [],
+);
+const sandboxDeck2Errors = computed(() =>
+  sandboxDeck2.value ? validateDeck(sandboxDeck2.value).errors : [],
+);
+
+const sandboxDeck1Valid = computed(
+  () => !!sandboxDeck1.value && sandboxDeck1Errors.value.length === 0,
+);
+const sandboxDeck2Valid = computed(
+  () => !!sandboxDeck2.value && sandboxDeck2Errors.value.length === 0,
+);
+
+const canStartSandbox = computed(
+  () => sandboxDeck1Valid.value && sandboxDeck2Valid.value,
+);
+
+watch(
+  [decks, () => cardStore.cards.length],
+  () => {
+    if (!sandboxDeck1Id.value) {
+      sandboxDeck1Id.value =
+        decks.value.find((d) => deckIsValid(d))?.id ??
+        (INCARNAM_STARTERS[0] ? `official-${INCARNAM_STARTERS[0].id}` : null);
+    }
+    if (!sandboxDeck2Id.value) {
+      sandboxDeck2Id.value =
+        (decks.value.length > 1 ? decks.value[1]?.id : null) ??
+        (INCARNAM_STARTERS[1] ? `official-${INCARNAM_STARTERS[1].id}` : null) ??
+        (INCARNAM_STARTERS[0] ? `official-${INCARNAM_STARTERS[0].id}` : null);
+    }
+  },
+  { immediate: true },
+);
+
+function startSandboxGame(): void {
+  const d1 = sandboxDeck1.value;
+  const d2 = sandboxDeck2.value;
+  if (!d1 || !d2 || !canStartSandbox.value) return;
+  store.startMatch(d1, d2, {
+    isSandbox: true,
+    nameA: d1.name || "Joueur 1",
+    nameB: d2.name || "Joueur 2",
+  });
   store.assist = true;
   store.assistEffects = true;
 }
