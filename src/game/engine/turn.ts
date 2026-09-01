@@ -17,7 +17,7 @@
  */
 import type { GameState } from "../types/state";
 import type { DraftEvent } from "../types/events";
-import { otherSeat } from "../types/zones.ts";
+import { getNextSeat, otherSeat } from "../types/zones.ts";
 import { setPhase, untap, setCounter } from "./verbs.ts";
 import { isTurnToken } from "../rules/effects/limits.ts";
 import type { RuleEvent, RulesCtx } from "../rules/types";
@@ -56,7 +56,11 @@ export function turnEndDestroyEvents(ctx: RulesCtx): {
 }
 
 export function nextTurnEvents(state: GameState): DraftEvent[] {
-  const next = otherSeat(state.turn.active);
+  const next = getNextSeat(
+    state.turn.active,
+    state.mode ?? "1v1",
+    state.eliminatedSeats ?? [],
+  );
   const nextNumber = state.turn.number + 1;
   const events: DraftEvent[] = [
     setPhase(next, { active: next, number: nextNumber, phase: "principale" }),

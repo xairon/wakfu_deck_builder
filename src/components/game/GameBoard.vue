@@ -55,7 +55,7 @@
     <section class="gseat gseat--opp">
       <div class="gseat__strip">
         <SeatHud
-          :name="store.players[opp].name"
+          :name="store.players[opp]?.name ?? String(opp)"
           :active="store.turn.active === opp"
           :portrait="heroPortrait(opp)"
           :hero-name="heroName(opp)"
@@ -73,7 +73,7 @@
                 <span class="ghavre__pm">
                   <button
                     class="ghavre__btn"
-                    :aria-label="`+ Résistance ${store.players[opp].name}`"
+                    :aria-label="`+ Résistance ${store.players[opp]?.name ?? ''}`"
                     title="+1 Résistance"
                     @click.stop="bumpResistance(havreCard(opp)[0]?.instanceId, 1)"
                   >
@@ -81,7 +81,7 @@
                   </button>
                   <button
                     class="ghavre__btn"
-                    :aria-label="`− Résistance ${store.players[opp].name}`"
+                    :aria-label="`− Résistance ${store.players[opp]?.name ?? ''}`"
                     title="−1 Résistance"
                     @click.stop="bumpResistance(havreCard(opp)[0]?.instanceId, -1)"
                   >
@@ -366,7 +366,7 @@
       </div>
       <div class="gseat__strip">
         <SeatHud
-          :name="store.players[me].name"
+          :name="store.players[me]?.name ?? String(me)"
           :active="store.turn.active === me"
           :portrait="heroPortrait(me)"
           :hero-name="heroName(me)"
@@ -385,7 +385,7 @@
                   <button
                     class="ghavre__btn"
                     data-testid="havre-res-plus-me"
-                    :aria-label="`+ Résistance ${store.players[me].name}`"
+                    :aria-label="`+ Résistance ${store.players[me]?.name ?? ''}`"
                     title="+1 Résistance"
                     @click.stop="bumpResistance(havreCard(me)[0]?.instanceId, 1)"
                   >
@@ -394,7 +394,7 @@
                   <button
                     class="ghavre__btn"
                     data-testid="havre-res-minus-me"
-                    :aria-label="`− Résistance ${store.players[me].name}`"
+                    :aria-label="`− Résistance ${store.players[me]?.name ?? ''}`"
                     title="−1 Résistance"
                     @click.stop="bumpResistance(havreCard(me)[0]?.instanceId, -1)"
                   >
@@ -1812,7 +1812,7 @@ function mondeOwned(seat: Seat): RedactedInstance[] {
   return instancesOf(view.value.monde).filter((i) => i.owner === seat);
 }
 function havreId(seat: Seat): string | undefined {
-  return view.value.seats[seat].havreSacInstanceId;
+  return view.value.seats[seat]?.havreSacInstanceId;
 }
 /** La carte Havre-Sac elle-même (vit dans le Monde, c'est le « socle » du joueur). */
 function havreCard(seat: Seat): RedactedInstance[] {
@@ -1820,7 +1820,7 @@ function havreCard(seat: Seat): RedactedInstance[] {
 }
 /** L'intérieur du Havre-Sac : Héros, Salles, Équipements… (zone `havreSac`). */
 function interiorCards(seat: Seat): RedactedInstance[] {
-  return instancesOf(view.value.seats[seat].havreSac);
+  return instancesOf(view.value.seats[seat]?.havreSac);
 }
 /** Taille (capacité) du Havre-Sac = nombre d'emplacements intérieurs (2315). */
 function havreTaille(seat: Seat): number {
@@ -1842,7 +1842,9 @@ function allies(seat: Seat): RedactedInstance[] {
 }
 
 function handList(seat: Seat): HandItem[] {
-  const z = view.value.seats[seat].main;
+  const s = view.value.seats[seat];
+  if (!s) return [];
+  const z = s.main;
   if (z.kind === "full")
     return z.instances.map((i) => ({
       key: i.instanceId,
@@ -1874,7 +1876,8 @@ function handList(seat: Seat): HandItem[] {
   }));
 }
 function piocheCount(seat: Seat): number {
-  const z = view.value.seats[seat].pioche;
+  const z = view.value.seats[seat]?.pioche;
+  if (!z) return 0;
   return z.kind === "count" ? z.count : z.instances.length;
 }
 /**
@@ -1895,17 +1898,17 @@ function onPiocheClick(): void {
     "Pour piocher une carte en mode manuel, utilisez le bouton « Piocher ».";
 }
 function discardCount(seat: Seat): number {
-  return instancesOf(view.value.seats[seat].defausse).length;
+  return instancesOf(view.value.seats[seat]?.defausse).length;
 }
 function topDiscard(seat: Seat): RedactedInstance | null {
-  const arr = instancesOf(view.value.seats[seat].defausse);
+  const arr = instancesOf(view.value.seats[seat]?.defausse);
   return arr.length ? arr[arr.length - 1] : null;
 }
 function exileCount(seat: Seat): number {
-  return instancesOf(view.value.seats[seat].exil).length;
+  return instancesOf(view.value.seats[seat]?.exil).length;
 }
 function topExile(seat: Seat): RedactedInstance | null {
-  const arr = instancesOf(view.value.seats[seat].exil);
+  const arr = instancesOf(view.value.seats[seat]?.exil);
   return arr.length ? arr[arr.length - 1] : null;
 }
 // ── Consultation d'une pile publique (Défausse / Exil) ─────────────────────
@@ -2847,7 +2850,8 @@ function zoomInst(instanceId: string): void {
 
 // ── HUD de siège ─────────────────────────────────────────────────────────────
 function heroInst(seat: Seat) {
-  const id = view.value.seats[seat].heroInstanceId;
+  const s = view.value.seats[seat];
+  const id = s?.heroInstanceId;
   return id ? (store.state.instances[id] ?? null) : null;
 }
 function heroPortrait(seat: Seat): string | null {

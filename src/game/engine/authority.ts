@@ -40,7 +40,8 @@ export interface AuthorityContext {
 function assertActor(draft: DraftEvent): asserts draft is DraftEvent & {
   actor: Seat | "system";
 } {
-  if (draft.actor !== "A" && draft.actor !== "B" && draft.actor !== "system") {
+  const valid = ["A", "B", "A1", "B1", "A2", "B2", "system"];
+  if (!valid.includes(draft.actor)) {
     throw new EngineError("BAD_ACTOR", { actor: draft.actor });
   }
 }

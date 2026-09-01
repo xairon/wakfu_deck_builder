@@ -199,6 +199,384 @@
       </div>
     </section>
 
+    <!-- ═══════════ Mode 2v2 Multijoueur en équipe (En Ligne & Local) ═══════════ -->
+    <div class="h-px w-full bg-base-content/20"></div>
+
+    <section
+      class="border border-info/40 bg-info/[0.04] p-5"
+      data-testid="two-vs-two-section"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="eyebrow text-info">Multijoueur en équipe</p>
+          <h2 class="mt-1 font-display text-xl sm:text-2xl font-semibold">Mode 2v2 (2 équipes de 2 joueurs)</h2>
+          <p class="mt-1 text-sm text-base-content/70">
+            Affrontez-vous en équipe de deux joueurs (Équipe 1 : Joueurs 1 & 3 / Équipe 2 : Joueurs 2 & 4).
+            Tour par tour croisé, mains visibles entre coéquipiers, renforts en combat, et victoire à 36 XP d'équipe ou par élimination des Héros adverses.
+          </p>
+        </div>
+
+        <!-- Onglets En Ligne vs Local -->
+        <div class="join">
+          <button
+            class="btn btn-sm join-item"
+            :class="online2v2Tab === 'online' ? 'btn-info' : 'btn-ghost'"
+            @click="online2v2Tab = 'online'"
+          >
+            🌐 En Ligne
+          </button>
+          <button
+            class="btn btn-sm join-item"
+            :class="online2v2Tab === 'sandbox' ? 'btn-info' : 'btn-ghost'"
+            @click="online2v2Tab = 'sandbox'"
+          >
+            🖥️ Entraînement Local
+          </button>
+        </div>
+      </div>
+
+      <!-- ── VUE EN LIGNE ── -->
+      <div v-if="online2v2Tab === 'online'" class="mt-4 space-y-4">
+        <!-- Sans salon actif : Créer ou Rejoindre -->
+        <div v-if="!active2v2Lobby" class="space-y-4">
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="text-base-content/70 font-medium">Ton deck pour le 2v2</span>
+            <select
+              v-model="online2v2DeckId"
+              class="select select-bordered select-sm w-64 bg-base-200"
+            >
+              <option :value="null" disabled>Choisis un deck…</option>
+              <option v-for="d in decks" :key="'2v2-my-' + d.id" :value="d.id">
+                {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+              </option>
+            </select>
+          </label>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              class="btn btn-info btn-sm"
+              :disabled="!online2v2DeckId || !online2v2DeckValid"
+              @click="create2v2OnlineLobby"
+            >
+              Créer un salon 2v2
+            </button>
+
+            <div class="flex items-center gap-2 border-l border-base-content/20 pl-3">
+              <input
+                v-model="online2v2JoinCode"
+                maxlength="10"
+                placeholder="2V2-XXXX"
+                class="input input-bordered input-sm w-36 uppercase font-mono"
+              />
+              <button
+                class="btn btn-outline btn-sm"
+                :disabled="!online2v2DeckId || !online2v2DeckValid || !online2v2JoinCode.trim()"
+                @click="join2v2OnlineLobby"
+              >
+                Rejoindre
+              </button>
+            </div>
+          </div>
+          <p v-if="online2v2Error" class="text-xs text-error">{{ online2v2Error }}</p>
+        </div>
+
+        <!-- Dans un salon 2v2 actif (4 slots en temps réel) -->
+        <div v-else class="space-y-4 rounded-lg border border-info/30 bg-base-200/50 p-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-content/10 pb-3">
+            <div>
+              <span class="text-xs font-semibold text-info uppercase">Salon 2v2 en attente</span>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="font-mono text-xl font-bold tracking-widest text-primary">{{ active2v2Lobby.code }}</span>
+                <span class="badge badge-sm badge-info">4 Joueurs</span>
+              </div>
+            </div>
+            <button class="btn btn-ghost btn-xs text-error" @click="leave2v2Lobby">
+              Quitter le salon
+            </button>
+          </div>
+
+          <!-- Grille des 4 slots -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Équipe 1 -->
+            <div class="rounded border border-info/30 bg-base-100 p-3 space-y-2">
+              <h4 class="font-bold text-sm text-info flex items-center justify-between">
+                <span>🛡️ Équipe 1</span>
+                <span v-if="team1OnlineErrors.length === 0 && active2v2Lobby.slots.A1 && active2v2Lobby.slots.A2" class="badge badge-success badge-xs">Decks valides</span>
+              </h4>
+
+              <!-- Slot A1 (Hôte - J1) -->
+              <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
+                <div>
+                  <p class="font-semibold">{{ active2v2Lobby.slots.A1?.userName || "Joueur 1 (Hôte)" }} <span class="badge badge-xs">J1</span></p>
+                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.A1?.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                </div>
+                <button
+                  v-if="my2v2Seat === 'A1'"
+                  class="btn btn-xs"
+                  :class="active2v2Lobby.slots.A1?.ready ? 'btn-success' : 'btn-warning'"
+                  @click="toggle2v2Ready"
+                >
+                  {{ active2v2Lobby.slots.A1?.ready ? "Prêt" : "En attente" }}
+                </button>
+                <span v-else class="badge badge-sm" :class="active2v2Lobby.slots.A1?.ready ? 'badge-success' : 'badge-warning'">
+                  {{ active2v2Lobby.slots.A1?.ready ? "Prêt" : "En attente" }}
+                </span>
+              </div>
+
+              <!-- Slot A2 (Coéquipier - J3) -->
+              <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
+                <div v-if="active2v2Lobby.slots.A2">
+                  <p class="font-semibold">{{ active2v2Lobby.slots.A2.userName }} <span class="badge badge-xs">J3</span></p>
+                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.A2.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                </div>
+                <div v-else class="text-xs text-base-content/50 italic">
+                  En attente du Joueur 3…
+                </div>
+                <div class="flex items-center gap-1">
+                  <button
+                    v-if="my2v2Seat !== 'A2' && !active2v2Lobby.slots.A2"
+                    class="btn btn-xs btn-outline btn-info"
+                    @click="select2v2Slot('A2')"
+                  >
+                    Prendre ce slot
+                  </button>
+                  <button
+                    v-if="my2v2Seat === 'A2'"
+                    class="btn btn-xs"
+                    :class="active2v2Lobby.slots.A2?.ready ? 'btn-success' : 'btn-warning'"
+                    @click="toggle2v2Ready"
+                  >
+                    {{ active2v2Lobby.slots.A2?.ready ? "Prêt" : "En attente" }}
+                  </button>
+                  <span
+                    v-else-if="active2v2Lobby.slots.A2"
+                    class="badge badge-sm"
+                    :class="active2v2Lobby.slots.A2?.ready ? 'badge-success' : 'badge-warning'"
+                  >
+                    {{ active2v2Lobby.slots.A2?.ready ? "Prêt" : "En attente" }}
+                  </span>
+                </div>
+              </div>
+
+              <div v-if="team1OnlineErrors.length > 0" class="text-xs text-warning">
+                <p v-for="(err, idx) in team1OnlineErrors" :key="idx">⚠️ {{ err }}</p>
+              </div>
+            </div>
+
+            <!-- Équipe 2 -->
+            <div class="rounded border border-warning/30 bg-base-100 p-3 space-y-2">
+              <h4 class="font-bold text-sm text-warning flex items-center justify-between">
+                <span>⚔️ Équipe 2</span>
+                <span v-if="team2OnlineErrors.length === 0 && active2v2Lobby.slots.B1 && active2v2Lobby.slots.B2" class="badge badge-success badge-xs">Decks valides</span>
+              </h4>
+
+              <!-- Slot B1 (Adversaire 1 - J2) -->
+              <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
+                <div v-if="active2v2Lobby.slots.B1">
+                  <p class="font-semibold">{{ active2v2Lobby.slots.B1.userName }} <span class="badge badge-xs">J2</span></p>
+                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.B1.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                </div>
+                <div v-else class="text-xs text-base-content/50 italic">
+                  En attente du Joueur 2…
+                </div>
+                <div class="flex items-center gap-1">
+                  <button
+                    v-if="my2v2Seat !== 'B1' && !active2v2Lobby.slots.B1"
+                    class="btn btn-xs btn-outline btn-warning"
+                    @click="select2v2Slot('B1')"
+                  >
+                    Prendre ce slot
+                  </button>
+                  <button
+                    v-if="my2v2Seat === 'B1'"
+                    class="btn btn-xs"
+                    :class="active2v2Lobby.slots.B1?.ready ? 'btn-success' : 'btn-warning'"
+                    @click="toggle2v2Ready"
+                  >
+                    {{ active2v2Lobby.slots.B1?.ready ? "Prêt" : "En attente" }}
+                  </button>
+                  <span
+                    v-else-if="active2v2Lobby.slots.B1"
+                    class="badge badge-sm"
+                    :class="active2v2Lobby.slots.B1?.ready ? 'badge-success' : 'badge-warning'"
+                  >
+                    {{ active2v2Lobby.slots.B1?.ready ? "Prêt" : "En attente" }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Slot B2 (Adversaire 2 - J4) -->
+              <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
+                <div v-if="active2v2Lobby.slots.B2">
+                  <p class="font-semibold">{{ active2v2Lobby.slots.B2.userName }} <span class="badge badge-xs">J4</span></p>
+                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.B2.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                </div>
+                <div v-else class="text-xs text-base-content/50 italic">
+                  En attente du Joueur 4…
+                </div>
+                <div class="flex items-center gap-1">
+                  <button
+                    v-if="my2v2Seat !== 'B2' && !active2v2Lobby.slots.B2"
+                    class="btn btn-xs btn-outline btn-warning"
+                    @click="select2v2Slot('B2')"
+                  >
+                    Prendre ce slot
+                  </button>
+                  <button
+                    v-if="my2v2Seat === 'B2'"
+                    class="btn btn-xs"
+                    :class="active2v2Lobby.slots.B2?.ready ? 'btn-success' : 'btn-warning'"
+                    @click="toggle2v2Ready"
+                  >
+                    {{ active2v2Lobby.slots.B2?.ready ? "Prêt" : "En attente" }}
+                  </button>
+                  <span
+                    v-else-if="active2v2Lobby.slots.B2"
+                    class="badge badge-sm"
+                    :class="active2v2Lobby.slots.B2?.ready ? 'badge-success' : 'badge-warning'"
+                  >
+                    {{ active2v2Lobby.slots.B2?.ready ? "Prêt" : "En attente" }}
+                  </span>
+                </div>
+              </div>
+
+              <div v-if="team2OnlineErrors.length > 0" class="text-xs text-warning">
+                <p v-for="(err, idx) in team2OnlineErrors" :key="idx">⚠️ {{ err }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton de lancement pour l'Hôte -->
+          <div class="pt-2 flex items-center justify-between">
+            <div v-if="my2v2Seat === 'A1'">
+              <button
+                class="btn btn-info btn-sm"
+                :disabled="!canHostStart2v2Online"
+                @click="launch2v2OnlineGame"
+              >
+                🚀 Lancer la partie 2v2 en ligne
+              </button>
+              <span v-if="!canHostStart2v2Online" class="ml-3 text-xs text-base-content/60">
+                En attente que les 4 joueurs soient connectés et conformes…
+              </span>
+            </div>
+            <div v-else class="text-xs text-base-content/60 italic">
+              En attente du lancement par l'Hôte (Joueur 1)…
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VUE ENTRAÎNEMENT LOCAL (4 DECKS) ── -->
+      <div v-else class="mt-4 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Équipe 1 -->
+          <div class="rounded border border-info/30 bg-base-200/40 p-4 space-y-3">
+            <h3 class="font-bold text-info flex items-center gap-2">
+              <span>🛡️</span> Équipe 1 (Joueurs 1 & 3)
+            </h3>
+            <div class="flex flex-col gap-3">
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-base-content/70 font-medium">Joueur 1 (Hôte - J1)</span>
+                <select v-model="team1Deck1Id" class="select select-bordered select-sm w-full bg-base-200" data-testid="2v2-deck-a1">
+                  <option :value="null" disabled>Choisis un deck…</option>
+                  <optgroup v-if="decks.length" label="Mes decks">
+                    <option v-for="d in decks" :key="'2v2-a1-' + d.id" :value="d.id">
+                      {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+                    </option>
+                  </optgroup>
+                  <optgroup label="Decks officiels & Starters">
+                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-a1-' + d.id" :value="'official-' + d.id">
+                      {{ d.name }}
+                    </option>
+                  </optgroup>
+                </select>
+              </label>
+
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-base-content/70 font-medium">Joueur 3 (Coéquipier - J3)</span>
+                <select v-model="team1Deck2Id" class="select select-bordered select-sm w-full bg-base-200" data-testid="2v2-deck-a2">
+                  <option :value="null" disabled>Choisis un deck…</option>
+                  <optgroup v-if="decks.length" label="Mes decks">
+                    <option v-for="d in decks" :key="'2v2-a2-' + d.id" :value="d.id">
+                      {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+                    </option>
+                  </optgroup>
+                  <optgroup label="Decks officiels & Starters">
+                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-a2-' + d.id" :value="'official-' + d.id">
+                      {{ d.name }}
+                    </option>
+                  </optgroup>
+                </select>
+              </label>
+            </div>
+            <div v-if="team1DeckErrors.length > 0" class="text-xs text-warning space-y-1">
+              <p v-for="(err, idx) in team1DeckErrors" :key="idx">⚠️ {{ err }}</p>
+            </div>
+          </div>
+
+          <!-- Équipe 2 -->
+          <div class="rounded border border-warning/30 bg-base-200/40 p-4 space-y-3">
+            <h3 class="font-bold text-warning flex items-center gap-2">
+              <span>⚔️</span> Équipe 2 (Joueurs 2 & 4)
+            </h3>
+            <div class="flex flex-col gap-3">
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-base-content/70 font-medium">Joueur 2 (Adversaire 1 - J2)</span>
+                <select v-model="team2Deck1Id" class="select select-bordered select-sm w-full bg-base-200" data-testid="2v2-deck-b1">
+                  <option :value="null" disabled>Choisis un deck…</option>
+                  <optgroup v-if="decks.length" label="Mes decks">
+                    <option v-for="d in decks" :key="'2v2-b1-' + d.id" :value="d.id">
+                      {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+                    </option>
+                  </optgroup>
+                  <optgroup label="Decks officiels & Starters">
+                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-b1-' + d.id" :value="'official-' + d.id">
+                      {{ d.name }}
+                    </option>
+                  </optgroup>
+                </select>
+              </label>
+
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-base-content/70 font-medium">Joueur 4 (Adversaire 2 - J4)</span>
+                <select v-model="team2Deck2Id" class="select select-bordered select-sm w-full bg-base-200" data-testid="2v2-deck-b2">
+                  <option :value="null" disabled>Choisis un deck…</option>
+                  <optgroup v-if="decks.length" label="Mes decks">
+                    <option v-for="d in decks" :key="'2v2-b2-' + d.id" :value="d.id">
+                      {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+                    </option>
+                  </optgroup>
+                  <optgroup label="Decks officiels & Starters">
+                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-b2-' + d.id" :value="'official-' + d.id">
+                      {{ d.name }}
+                    </option>
+                  </optgroup>
+                </select>
+              </label>
+            </div>
+            <div v-if="team2DeckErrors.length > 0" class="text-xs text-warning space-y-1">
+              <p v-for="(err, idx) in team2DeckErrors" :key="idx">⚠️ {{ err }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <button
+            class="btn btn-info btn-sm"
+            :disabled="!canStart2v2 || !cardStore.cards.length"
+            data-testid="two-vs-two-start-btn"
+            @click="start2v2Game"
+          >
+            👥 Lancer l'entraînement 2v2
+          </button>
+          <span class="text-xs text-base-content/50">
+            Contrôle total des 4 joueurs en local · 36 XP d'équipe pour la victoire
+          </span>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══════════ Mode Entraînement Solo (Sandbox / Hot-seat) ═══════════ -->
     <div class="h-px w-full bg-base-content/20"></div>
 
@@ -720,7 +1098,7 @@
       <div v-if="mulliganDecisionVisible" class="overlay overlay--mulligan">
         <div class="overlay__card overlay__card--wide">
           <p class="eyebrow text-primary">
-            Main de départ — {{ store.players[store.perspective].name }}
+            Main de départ — {{ store.players[store.perspective]?.name ?? String(store.perspective) }}
           </p>
           <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
           <p v-if="store.online" class="mt-1 text-sm text-base-content/60">
@@ -786,7 +1164,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
 import type { Card, Deck } from "@/types/cards";
-import type { RedactedInstance, DraftEvent } from "@/game";
+import type { RedactedInstance, DraftEvent, Seat, Seat2v2 } from "@/game";
 import { getThumbPath } from "@/utils/imagePaths";
 import GameBoard from "@/components/game/GameBoard.vue";
 import GameCard from "@/components/game/GameCard.vue";
@@ -810,6 +1188,7 @@ import { ALL_OFFICIAL_DECKS } from "@/data/allOfficialDecks";
 import { buildOfficialDeck } from "@/composables/useOfficialDeckImport";
 import { useBotOpponent } from "@/composables/useBotOpponent";
 import { validateDeck } from "@/validators/deck";
+import { validateTeamDecks } from "@/validators/teamDeck";
 import { useToast } from "@/composables/useToast";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -824,6 +1203,12 @@ import {
   findMyActiveGame,
   concede as concedeOnline,
   claimVictory as claimVictoryOnline,
+  broadcast2v2LobbyState,
+  broadcast2v2GameStart,
+  subscribeTo2v2Lobby,
+  create2v2OnlineTransport,
+  type Lobby2v2State,
+  type Lobby2v2Slot,
 } from "@/services/gameClient";
 
 const deckStore = useDeckStore();
@@ -1021,6 +1406,385 @@ function startSandboxGame(): void {
   store.assist = true;
   store.assistEffects = true;
 }
+
+// ── Mode 2v2 Multijoueur en équipe (En Ligne & Local) ────────────────────────
+const online2v2Tab = ref<"online" | "sandbox">("online");
+const online2v2DeckId = ref<string | null>(null);
+const online2v2JoinCode = ref("");
+const online2v2Busy = ref(false);
+const online2v2Error = ref("");
+const active2v2Lobby = ref<Lobby2v2State | null>(null);
+const my2v2Seat = ref<Seat2v2>("A1");
+
+const online2v2Deck = computed(
+  () => decks.value.find((d) => d.id === online2v2DeckId.value) ?? null,
+);
+const online2v2DeckValid = computed(
+  () => !!online2v2Deck.value && deckIsValid(online2v2Deck.value),
+);
+
+let lobby2v2Handle: ReturnType<typeof subscribeTo2v2Lobby> | null = null;
+
+function generate2v2Code(): string {
+  return "2V2-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+}
+
+function create2v2OnlineLobby(): void {
+  const d = online2v2Deck.value;
+  if (!d || !online2v2DeckValid.value) {
+    online2v2Error.value = "Choisis un deck valide pour créer le salon.";
+    return;
+  }
+  online2v2Error.value = "";
+  const code = generate2v2Code();
+  my2v2Seat.value = "A1";
+  const user = authStore.user;
+  const userName = user?.email?.split("@")[0] || "Joueur 1 (Hôte)";
+
+  const initialLobby: Lobby2v2State = {
+    code,
+    hostSeat: "A1",
+    slots: {
+      A1: { userId: user?.id, userName, deck: d, ready: true },
+      A2: null,
+      B1: null,
+      B2: null,
+    },
+    status: "waiting",
+  };
+  active2v2Lobby.value = initialLobby;
+
+  lobby2v2Handle?.unsubscribe();
+  lobby2v2Handle = subscribeTo2v2Lobby(code, "A1", {
+    onUpdate: (updatedState) => {
+      // Préserver A1 si perdu
+      if (
+        updatedState.slots &&
+        !updatedState.slots.A1 &&
+        active2v2Lobby.value?.slots.A1
+      ) {
+        updatedState.slots.A1 = active2v2Lobby.value.slots.A1;
+      }
+      active2v2Lobby.value = updatedState;
+    },
+    onClaimSlot: (seat, slot) => {
+      if (!active2v2Lobby.value) return;
+      const nextSlots = { ...active2v2Lobby.value.slots };
+      // Retirer l'ancien slot du joueur s'il change de place
+      for (const s of ["A1", "A2", "B1", "B2"] as Seat2v2[]) {
+        if (nextSlots[s]?.userId && nextSlots[s]?.userId === slot.userId) {
+          nextSlots[s] = null;
+        }
+      }
+      nextSlots[seat] = slot;
+      const nextState: Lobby2v2State = {
+        ...active2v2Lobby.value,
+        slots: nextSlots,
+      };
+      active2v2Lobby.value = nextState;
+      lobby2v2Handle?.broadcastUpdate(nextState);
+    },
+    onRequestSync: () => {
+      if (active2v2Lobby.value) {
+        lobby2v2Handle?.broadcastUpdate(active2v2Lobby.value);
+      }
+    },
+    onStart: (gameId, finalState, initialEvents) => {
+      start2v2OnlineMatch(gameId, "A1", finalState, initialEvents);
+    },
+  });
+
+  setTimeout(() => {
+    if (active2v2Lobby.value) {
+      lobby2v2Handle?.broadcastUpdate(active2v2Lobby.value);
+    }
+  }, 100);
+}
+
+function join2v2OnlineLobby(): void {
+  const code = online2v2JoinCode.value.trim().toUpperCase();
+  const d = online2v2Deck.value;
+  if (!code) {
+    online2v2Error.value = "Saisis un code de salon 2v2 valide.";
+    return;
+  }
+  if (!d || !online2v2DeckValid.value) {
+    online2v2Error.value = "Choisis un deck valide pour rejoindre le salon.";
+    return;
+  }
+  online2v2Error.value = "";
+  const user = authStore.user;
+  const userName = user?.email?.split("@")[0] || "Joueur";
+
+  let assignedSeat: Seat2v2 = "A2";
+
+  lobby2v2Handle?.unsubscribe();
+  lobby2v2Handle = subscribeTo2v2Lobby(code, assignedSeat, {
+    onUpdate: (updatedState) => {
+      active2v2Lobby.value = updatedState;
+    },
+    onClaimSlot: (seat, slot) => {
+      if (!active2v2Lobby.value) return;
+      active2v2Lobby.value = {
+        ...active2v2Lobby.value,
+        slots: {
+          ...active2v2Lobby.value.slots,
+          [seat]: slot,
+        },
+      };
+    },
+    onStart: (gameId, finalState, initialEvents) => {
+      start2v2OnlineMatch(gameId, my2v2Seat.value, finalState, initialEvents);
+    },
+  });
+
+  setTimeout(() => {
+    const current = active2v2Lobby.value;
+    if (current) {
+      if (!current.slots.A2) assignedSeat = "A2";
+      else if (!current.slots.B1) assignedSeat = "B1";
+      else if (!current.slots.B2) assignedSeat = "B2";
+    }
+    my2v2Seat.value = assignedSeat;
+    const slotData: Lobby2v2Slot = {
+      userId: user?.id,
+      userName,
+      deck: d,
+      ready: true,
+    };
+    lobby2v2Handle?.broadcastClaimSlot(assignedSeat, slotData);
+  }, 250);
+}
+
+function select2v2Slot(seat: Seat2v2): void {
+  if (!active2v2Lobby.value || !lobby2v2Handle) return;
+  const d = online2v2Deck.value;
+  const user = authStore.user;
+  const userName = user?.email?.split("@")[0] || "Joueur";
+  my2v2Seat.value = seat;
+
+  const slotData: Lobby2v2Slot = {
+    userId: user?.id,
+    userName,
+    deck: d,
+    ready: true,
+  };
+  lobby2v2Handle.broadcastClaimSlot(seat, slotData);
+}
+
+function toggle2v2Ready(): void {
+  if (!active2v2Lobby.value || !lobby2v2Handle) return;
+  const seat = my2v2Seat.value;
+  const slot = active2v2Lobby.value.slots[seat];
+  if (!slot) return;
+  const updatedSlot: Lobby2v2Slot = {
+    ...slot,
+    ready: !slot.ready,
+  };
+  lobby2v2Handle.broadcastClaimSlot(seat, updatedSlot);
+}
+
+function leave2v2Lobby(): void {
+  lobby2v2Handle?.unsubscribe();
+  lobby2v2Handle = null;
+  active2v2Lobby.value = null;
+}
+
+const team1OnlineErrors = computed(() => {
+  const s = active2v2Lobby.value?.slots;
+  if (!s?.A1?.deck || !s?.A2?.deck) return [];
+  try {
+    const val = validateTeamDecks(s.A1.deck as Deck, s.A2.deck as Deck);
+    return val.isValid ? [] : val.errors;
+  } catch {
+    return [];
+  }
+});
+
+const team2OnlineErrors = computed(() => {
+  const s = active2v2Lobby.value?.slots;
+  if (!s?.B1?.deck || !s?.B2?.deck) return [];
+  try {
+    const val = validateTeamDecks(s.B1.deck as Deck, s.B2.deck as Deck);
+    return val.isValid ? [] : val.errors;
+  } catch {
+    return [];
+  }
+});
+
+const canHostStart2v2Online = computed(() => {
+  const l = active2v2Lobby.value;
+  if (!l) return false;
+  const s = l.slots;
+  const allFourPresent = !!s.A1 && !!s.A2 && !!s.B1 && !!s.B2;
+  const allReady =
+    (s.A1?.ready ?? false) &&
+    (s.A2?.ready ?? false) &&
+    (s.B1?.ready ?? false) &&
+    (s.B2?.ready ?? false);
+  return (
+    allFourPresent &&
+    allReady &&
+    team1OnlineErrors.value.length === 0 &&
+    team2OnlineErrors.value.length === 0
+  );
+});
+
+let starting2v2Match = false;
+
+function launch2v2OnlineGame(): void {
+  if (!canHostStart2v2Online.value || !active2v2Lobby.value || !lobby2v2Handle) return;
+  const gameId = "game-2v2-" + Math.random().toString(36).substring(2, 9);
+  lobby2v2Handle.broadcastStart(gameId, active2v2Lobby.value);
+}
+
+function start2v2OnlineMatch(
+  gameId: string,
+  seat: Seat2v2,
+  lobbyState: Lobby2v2State,
+): void {
+  if (starting2v2Match) return;
+  starting2v2Match = true;
+  const l = lobbyState;
+  const dA1 = (l.slots.A1?.deck as Deck) ?? online2v2Deck.value!;
+  const dA2 = (l.slots.A2?.deck as Deck) ?? dA1;
+  const dB1 = (l.slots.B1?.deck as Deck) ?? dA1;
+  const dB2 = (l.slots.B2?.deck as Deck) ?? dB1;
+  const myDeck = (l.slots[seat]?.deck as Deck) ?? online2v2Deck.value;
+
+  store.startMatch(dA1, dB1, {
+    mode: "2v2",
+    first: "A1",
+    deckA2: dA2,
+    deckB2: dB2,
+    decks: { A1: dA1, B1: dB1, A2: dA2, B2: dB2 },
+    names: {
+      A1: l.slots.A1?.userName || "Joueur 1 (Équipe 1)",
+      B1: l.slots.B1?.userName || "Joueur 2 (Équipe 2)",
+      A2: l.slots.A2?.userName || "Joueur 3 (Équipe 1)",
+      B2: l.slots.B2?.userName || "Joueur 4 (Équipe 2)",
+    },
+  });
+
+  const initialEvents = [...store.events];
+
+  const transport = create2v2OnlineTransport(
+    l.code,
+    seat,
+    () => store.lastSeq(),
+  );
+
+  store.connectOnline(gameId, seat, transport, myDeck);
+  store.perspective = seat;
+  store.events = initialEvents;
+  store.mulliganDone = { A1: false, B1: false, A2: false, B2: false };
+  store.matchPhase = "mulligan";
+  starting2v2Match = false;
+}
+
+// ── Decks pour le Mode 2v2 Local ────────────────────────────────────────────
+const team1Deck1Id = ref<string | null>(null);
+const team1Deck2Id = ref<string | null>(null);
+const team2Deck1Id = ref<string | null>(null);
+const team2Deck2Id = ref<string | null>(null);
+
+const team1Deck1 = computed(() => resolveAnyDeckById(team1Deck1Id.value));
+const team1Deck2 = computed(() => resolveAnyDeckById(team1Deck2Id.value));
+const team2Deck1 = computed(() => resolveAnyDeckById(team2Deck1Id.value));
+const team2Deck2 = computed(() => resolveAnyDeckById(team2Deck2Id.value));
+
+const team1DeckErrors = computed(() => {
+  const d1 = team1Deck1.value;
+  const d2 = team1Deck2.value;
+  if (!d1 || !d2) return [];
+  const errors: string[] = [];
+  const valTeam = validateTeamDecks(d1, d2);
+  if (!valTeam.isValid) {
+    errors.push(...valTeam.errors);
+  }
+  return errors;
+});
+
+const team2DeckErrors = computed(() => {
+  const d1 = team2Deck1.value;
+  const d2 = team2Deck2.value;
+  if (!d1 || !d2) return [];
+  const errors: string[] = [];
+  const valTeam = validateTeamDecks(d1, d2);
+  if (!valTeam.isValid) {
+    errors.push(...valTeam.errors);
+  }
+  return errors;
+});
+
+const canStart2v2 = computed(() => {
+  return (
+    !!team1Deck1.value &&
+    !!team1Deck2.value &&
+    !!team2Deck1.value &&
+    !!team2Deck2.value &&
+    team1DeckErrors.value.length === 0 &&
+    team2DeckErrors.value.length === 0
+  );
+});
+
+watch(
+  [decks, () => cardStore.cards.length],
+  () => {
+    if (!online2v2DeckId.value) {
+      online2v2DeckId.value =
+        decks.value.find((d) => deckIsValid(d))?.id ?? decks.value[0]?.id ?? null;
+    }
+    if (!team1Deck1Id.value) {
+      team1Deck1Id.value =
+        decks.value.find((d) => deckIsValid(d))?.id ??
+        (INCARNAM_STARTERS[0] ? `official-${INCARNAM_STARTERS[0].id}` : null);
+    }
+    if (!team1Deck2Id.value) {
+      team1Deck2Id.value =
+        (decks.value.length > 1 ? decks.value[1]?.id : null) ??
+        (INCARNAM_STARTERS[1] ? `official-${INCARNAM_STARTERS[1].id}` : null) ??
+        (INCARNAM_STARTERS[0] ? `official-${INCARNAM_STARTERS[0].id}` : null);
+    }
+    if (!team2Deck1Id.value) {
+      team2Deck1Id.value =
+        decks.value.find((d) => deckIsValid(d))?.id ??
+        (INCARNAM_STARTERS[0] ? `official-${INCARNAM_STARTERS[0].id}` : null);
+    }
+    if (!team2Deck2Id.value) {
+      team2Deck2Id.value =
+        (decks.value.length > 1 ? decks.value[1]?.id : null) ??
+        (INCARNAM_STARTERS[1] ? `official-${INCARNAM_STARTERS[1].id}` : null) ??
+        (INCARNAM_STARTERS[0] ? `official-${INCARNAM_STARTERS[0].id}` : null);
+    }
+  },
+  { immediate: true },
+);
+
+function start2v2Game(): void {
+  if (!canStart2v2.value) return;
+  const dA1 = team1Deck1.value!;
+  const dA2 = team1Deck2.value!;
+  const dB1 = team2Deck1.value!;
+  const dB2 = team2Deck2.value!;
+
+  store.startMatch(dA1, dB1, {
+    mode: "2v2",
+    first: "A1",
+    isSandbox: true,
+    deckA2: dA2,
+    deckB2: dB2,
+    decks: { A1: dA1, B1: dB1, A2: dA2, B2: dB2 },
+    names: {
+      A1: `${dA1.name || "Joueur 1"} (Équipe 1)`,
+      B1: `${dB1.name || "Joueur 2"} (Équipe 2)`,
+      A2: `${dA2.name || "Joueur 3"} (Équipe 1)`,
+      B2: `${dB2.name || "Joueur 4"} (Équipe 2)`,
+    },
+  });
+  store.assist = true;
+  store.assistEffects = true;
+}
 // Driver IA : actif dès que store.botSeat est renseigné (gate interne).
 // `hold` : le bot NE JOUE PAS pendant le jet de dé d'entame (l'overlay est
 // cosmétique par-dessus un état déjà « playing » — sans la garde, un bot
@@ -1077,7 +1841,7 @@ const onlineError = ref("");
 // reprendre ou de l'abandonner, plutôt que de s'y reconnecter d'office.
 const resumable = ref<{
   gameId: string;
-  seat: "A" | "B";
+  seat: Seat;
   assisted: boolean;
 } | null>(null);
 
@@ -1255,8 +2019,10 @@ function resolveCard(cardId: string | null): Card | null {
   return cardId ? (cardIndex.value.get(cardId) ?? null) : null;
 }
 const mulliganHand = computed<RedactedInstance[]>(() => {
-  const z = store.view.seats[store.perspective].main;
-  return z.kind === "full" ? z.instances : [];
+  const s = store.view?.seats?.[store.perspective];
+  if (!s) return [];
+  const z = s.main;
+  return z?.kind === "full" ? z.instances : [];
 });
 const mulliganItems = computed<HandItem[]>(() =>
   mulliganHand.value.map((inst) => ({ key: inst.instanceId, inst })),
@@ -1264,13 +2030,18 @@ const mulliganItems = computed<HandItem[]>(() =>
 
 // ── Mulligan en ligne : décision indépendante par siège (pas de passation) ─────
 const myMulliganDone = computed(
-  () => store.online && store.mulliganDoneOnline()[store.perspective],
+  () => store.online && (store.mulliganDone?.[store.perspective] ?? false),
 );
-const oppMulliganDone = computed(
-  () =>
-    store.online &&
-    store.mulliganDoneOnline()[store.perspective === "A" ? "B" : "A"],
-);
+const oppMulliganDone = computed(() => {
+  if (!store.online) return false;
+  const p = store.perspective;
+  if (p === "A" || p === "B") {
+    return store.mulliganDone?.[p === "A" ? "B" : "A"] ?? false;
+  }
+  const seats: Seat[] = ["A1", "B1", "A2", "B2"];
+  const otherSeats = seats.filter((s) => s !== p);
+  return otherSeats.every((s) => store.mulliganDone?.[s]);
+});
 /** Overlay de décision : en ligne tant que MON siège n'a pas tranché ; en local
  *  hors écran de passation. */
 const mulliganDecisionVisible = computed(
@@ -1287,7 +2058,7 @@ const mulliganWaiting = computed(
     !oppMulliganDone.value,
 );
 async function onMulliganKeep(): Promise<void> {
-  if (store.online) {
+  if (store.online && store.mode !== "2v2") {
     await submitEvent(store.gameId(), {
       actor: store.perspective,
       type: "MULLIGAN_DONE",
@@ -1298,7 +2069,7 @@ async function onMulliganKeep(): Promise<void> {
   }
 }
 async function onMulliganReplace(): Promise<void> {
-  if (store.online) {
+  if (store.online && store.mode !== "2v2") {
     await requestMulligan(store.gameId());
   } else {
     store.mulligan(store.perspective);

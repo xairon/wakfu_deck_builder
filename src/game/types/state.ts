@@ -3,7 +3,7 @@
  * Réf. : docs/GAME-MODULE-V1.md §5. On ne transporte JAMAIS l'objet `Card`,
  * seulement le `cardId` (string) ; la résolution cardId→Card reste client.
  */
-import type { Seat, ZoneRef } from "./zones";
+import type { Seat, Team, ZoneRef } from "./zones";
 import type { InstanceId } from "./events";
 
 export interface CardCounters {
@@ -82,8 +82,9 @@ export interface PlayerBoard {
 export interface GameState {
   gameId: string;
   status: "lobby" | "active" | "finished";
-  seats: Record<Seat, PlayerBoard>;
-  monde: InstanceId[]; // commune — contient les 2 Havre-Sac
+  mode?: "1v1" | "2v2";
+  seats: Partial<Record<Seat, PlayerBoard>>;
+  monde: InstanceId[]; // commune — contient les Havre-Sac
   fileAttente: InstanceId[]; // commune, ordonnée (503)
   instances: Record<InstanceId, CardInstance>; // registre central omniscient
   turn: { active: Seat; number: number; phase: TurnPhase; firstPlayer: Seat };
@@ -91,6 +92,10 @@ export interface GameState {
   combat?: CombatState | null;
   /** Dernier tour où chaque siège a attaqué (règle 1 attaque/tour, 603). */
   lastAttackTurn?: Partial<Record<Seat, number>>;
+  /** Jauge d'XP d'équipe pour le mode 2v2 (objectif 36 XP). */
+  teamXp?: Partial<Record<Team, number>>;
+  /** Sièges éliminés (Héros à 0 PV) en mode 2v2. */
+  eliminatedSeats?: Seat[];
   options?: { bypassSummoningSickness?: boolean; [key: string]: any };
   rng: { masterSeedHash: string };
   seq: number; // dernier event appliqué
@@ -128,13 +133,16 @@ export interface RedactedBoard {
 export interface RedactedGameState {
   gameId: string;
   status: GameState["status"];
+  mode?: "1v1" | "2v2";
   viewer: Seat | "spectator";
-  seats: Record<Seat, RedactedBoard>;
+  seats: Partial<Record<Seat, RedactedBoard>>;
   monde: RedactedZone;
   fileAttente: RedactedZone;
   turn: GameState["turn"];
   /** Combat en cours (public : attaquants/bloqueurs/cible sont sur le plateau). */
   combat?: CombatState | null;
   lastAttackTurn?: Partial<Record<Seat, number>>;
+  teamXp?: Partial<Record<Team, number>>;
+  eliminatedSeats?: Seat[];
   seq: number;
 }

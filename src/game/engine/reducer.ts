@@ -28,7 +28,7 @@ import type {
 import type { CardInstance, GameState } from "../types/state";
 import type { ZoneRef } from "../types/zones";
 import { isTokenCardId } from "../rules/effects/tokens.ts";
-import { makeRng } from "./rng.ts";
+import { makeRng, permutationFromSeed } from "./rng.ts";
 
 export class EngineError extends Error {
   constructor(
@@ -254,10 +254,14 @@ function applyShuffle(s: GameState, p: ShufflePayload): void {
   }
 
   if (p.permutation.length !== arr.length) {
-    throw new EngineError("BAD_PERMUTATION", {
-      expected: arr.length,
-      got: p.permutation.length,
-    });
+    const seed =
+      p.seed ||
+      `${s.gameId}|${s.seq}|${p.zone.zone}|${"owner" in p.zone ? p.zone.owner : "-"}`;
+    const perm = permutationFromSeed(seed, arr.length);
+    const reordered = perm.map((i) => arr[i]);
+    arr.splice(0, arr.length, ...reordered);
+    for (const id of arr) s.instances[id].revealedTo = [];
+    return;
   }
   const reordered = p.permutation.map((i) => arr[i]);
   arr.splice(0, arr.length, ...reordered);

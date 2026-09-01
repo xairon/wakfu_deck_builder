@@ -45,13 +45,19 @@ export interface SetupOptions {
 /** Layout déterministe AVANT mélange (Pioche initiale mélangée d'emblée). */
 export function buildInitialLayout(
   gameId: string,
-  decks: Record<Seat, Deck>,
+  decks: Partial<Record<Seat, Deck>>,
   firstPlayer: Seat = "A",
   opts: SetupOptions = {},
 ): GameState {
   const state = emptyState();
   state.gameId = gameId;
   state.status = "active";
+  const seatList = Object.keys(decks) as Seat[];
+  if (seatList.length > 2) {
+    state.mode = "2v2";
+    state.teamXp = { team1: 0, team2: 0 };
+    state.eliminatedSeats = [];
+  }
   state.turn = {
     active: firstPlayer,
     number: 1,
@@ -59,9 +65,22 @@ export function buildInitialLayout(
     firstPlayer,
   };
 
-  for (const seat of ["A", "B"] as Seat[]) {
+  for (const seat of seatList) {
     const deck = decks[seat];
-    const board = state.seats[seat];
+    if (!deck) continue;
+    if (!state.seats[seat]) {
+      state.seats[seat] = {
+        seat,
+        pioche: [],
+        main: [],
+        havreSac: [],
+        defausse: [],
+        reserve: [],
+        exil: [],
+        limbo: [],
+      };
+    }
+    const board = state.seats[seat]!;
     let n = 0;
     const mkId = () => `ci_${seat}_${String(++n).padStart(3, "0")}`;
     const add = (inst: CardInstance) => {
@@ -88,7 +107,7 @@ export function buildInitialLayout(
           ...(pv !== undefined ? { hp: pv } : {}),
         },
         attachments: [],
-        revealedTo: ["A", "B"],
+        revealedTo: seatList,
       });
       board.havreSac.push(id);
       board.heroInstanceId = id;
@@ -109,7 +128,7 @@ export function buildInitialLayout(
         orientation: "upright",
         counters: typeof resistance === "number" ? { resistance } : {},
         attachments: [],
-        revealedTo: ["A", "B"],
+        revealedTo: seatList,
       });
       state.monde.push(id);
       board.havreSacInstanceId = id;
@@ -138,11 +157,11 @@ export function buildInitialLayout(
     const piocheSize = board.pioche.length;
     if (piocheSize > 1) {
       const seed =
-        seat === "A"
-          ? (opts.seedA ??
-            `${gameId}:A:init:${Math.random().toString(36).slice(2)}`)
-          : (opts.seedB ??
-            `${gameId}:B:init:${Math.random().toString(36).slice(2)}`);
+        seat === "A" || seat === "A1"
+          ? (opts.seedA ?? `${gameId}:A:init:${Math.random().toString(36).slice(2)}`)
+          : seat === "B" || seat === "B1"
+            ? (opts.seedB ?? `${gameId}:B:init:${Math.random().toString(36).slice(2)}`)
+            : `${gameId}:${seat}:init:${Math.random().toString(36).slice(2)}`;
       const perm = permutationFromSeed(piocheSize, seed);
       board.pioche = perm.map((i) => board.pioche[i]);
     }
@@ -153,7 +172,7 @@ export function buildInitialLayout(
 /** Events de mise en place : GAME_STARTED (layout) + un SHUFFLE par Pioche. */
 export function setupEvents(
   gameId: string,
-  decks: Record<Seat, Deck>,
+  decks: Partial<Record<Seat, Deck>>,
   opts: SetupOptions = {},
 ): DraftEvent[] {
   const layout = buildInitialLayout(
@@ -166,16 +185,16 @@ export function setupEvents(
   const events: DraftEvent[] = [
     { actor: "system", type: "GAME_STARTED", payload: { state: layout } },
   ];
-  const seeds: Record<Seat, string> = {
-    A: opts.seedA ?? `${gameId}:A:${Math.random().toString(36).slice(2)}`,
-    B: opts.seedB ?? `${gameId}:B:${Math.random().toString(36).slice(2)}`,
-  };
+  const seats = Object.keys(decks) as Seat[];
 
-  for (const seat of ["A", "B"] as Seat[]) {
-    const size = layout.seats[seat].pioche.length;
+  for (const seat of seats) {
+    const size = layout.seats[seat]?.pioche.length ?? 0;
     if (size > 1) {
+      const seed =
+        (opts as Record<string, string | undefined>)[`seed${seat}`] ??
+        `${gameId}:${seat}:${Math.random().toString(36).slice(2)}`;
       events.push(
-        shuffle("system", { zone: "pioche", owner: seat }, size, seeds[seat]),
+        shuffle("system", { zone: "pioche", owner: seat }, size, seed),
       );
     }
   }
@@ -185,7 +204,7 @@ export function setupEvents(
 /** Crée une partie prête : journal initial + état dérivé (mélangé). */
 export function createGame(
   gameId: string,
-  decks: Record<Seat, Deck>,
+  decks: Partial<Record<Seat, Deck>>,
   opts: SetupOptions = {},
 ): { events: PersistedEvent[]; state: GameState } {
   const events = sequence(setupEvents(gameId, decks, opts), gameId);

@@ -7,7 +7,7 @@ import type { Card } from "@/types/cards";
 import type { InstanceId } from "../types/events";
 import type { CardInstance } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
-import { otherSeat } from "../types/zones.ts";
+import { isTeammate, otherSeat } from "../types/zones.ts";
 import type { CombatTarget, RulesCtx } from "./types";
 import {
   canAttackCard,
@@ -566,9 +566,14 @@ export function eligibleBlockers(
   attacker: InstanceId | null = null,
 ): InstanceId[] {
   const out: InstanceId[] = [];
+  const is2v2 = ctx.state.mode === "2v2";
   for (const id of ctx.state.monde) {
     const inst = ctx.state.instances[id];
-    if (!inst || inst.controller !== defender) continue;
+    if (!inst) continue;
+    const isDefenderOrTeammate =
+      inst.controller === defender ||
+      (is2v2 && isTeammate(inst.controller, defender));
+    if (!isDefenderOrTeammate) continue;
     if (inst.orientation !== "upright") continue;
     if (id === target.instanceId) continue;
     const card = ctx.getCard(inst.cardId);

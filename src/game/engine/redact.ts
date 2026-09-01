@@ -19,7 +19,7 @@ import type {
 } from "../types/state";
 import type { InstanceId } from "../types/events";
 import type { Seat, Viewer } from "../types/zones";
-import { ZONE_SPECS } from "../types/zones.ts";
+import { isTeammate, ZONE_SPECS } from "../types/zones.ts";
 
 /** Le viewer connaît-il l'identité (cardId) de cette occurrence ? */
 export function canSeeCardId(inst: CardInstance, viewer: Viewer): boolean {
@@ -27,8 +27,16 @@ export function canSeeCardId(inst: CardInstance, viewer: Viewer): boolean {
   const zone = inst.location.zone;
   // Pioche & Limbo : opaques pour tout le monde (y compris le propriétaire).
   if (zone === "pioche" || zone === "limbo") return false;
-  // Main & Réserve : seul le propriétaire.
-  if (zone === "main" || zone === "reserve") {
+  // Main : le propriétaire ET son coéquipier (spécification 5 : main visible entre coéquipiers)
+  if (zone === "main") {
+    if (viewer !== "spectator") {
+      const owner = "owner" in inst.location ? inst.location.owner : inst.owner;
+      if (owner === viewer || isTeammate(owner, viewer)) return true;
+    }
+    return false;
+  }
+  // Réserve : seul le propriétaire.
+  if (zone === "reserve") {
     return "owner" in inst.location && inst.location.owner === viewer;
   }
   // Zones publiques : visible sauf face cachée non révélée.
@@ -69,18 +77,26 @@ function redactBoard(
   seat: Seat,
   viewer: Viewer,
 ): RedactedBoard {
-  const b = state.seats[seat];
+  const b = state.seats[seat] ?? {
+    seat,
+    pioche: [],
+    main: [],
+    havreSac: [],
+    defausse: [],
+    reserve: [],
+    exil: [],
+    limbo: [],
+  };
   const isSelf = seat === viewer;
+  const isTeam = viewer !== "spectator" && isTeammate(seat, viewer);
   return {
     seat,
     // L'ordre de la Pioche est secret pour TOUS → jamais de contenu.
     pioche: countZone(b.pioche),
-    // Main : cachée à l'adversaire (compteur), SAUF si au moins une carte y a été
-    // RÉVÉLÉE à ce viewer (Filouterie, « montrer sa main ») → on passe en zone
-    // complète, où redactInstance/canSeeCardId ne dévoile QUE les cartes révélées
-    // (les autres gardent cardId null). Révélation partielle gérée correctement.
+    // Main : visible pour soi et son coéquipier, cachée aux adversaires sauf révélation
     main:
       isSelf ||
+      isTeam ||
       (viewer !== "spectator" &&
         b.main.some((id) => state.instances[id]?.revealedTo.includes(viewer)))
         ? fullZone(state, b.main, viewer)
@@ -98,20 +114,24 @@ export function redactStateFor(
   state: GameState,
   viewer: Viewer,
 ): RedactedGameState {
+  const seats: Partial<Record<Seat, RedactedBoard>> = {};
+  for (const seat of Object.keys(state.seats) as Seat[]) {
+    seats[seat] = redactBoard(state, seat, viewer);
+  }
   return {
     gameId: state.gameId,
     status: state.status,
+    mode: state.mode,
     viewer,
-    seats: {
-      A: redactBoard(state, "A", viewer),
-      B: redactBoard(state, "B", viewer),
-    },
+    seats,
     monde: fullZone(state, state.monde, viewer),
     fileAttente: fullZone(state, state.fileAttente, viewer),
     turn: state.turn,
     // Combat public (attaquants/bloqueurs/cible sont sur le plateau commun).
     combat: state.combat ?? null,
     lastAttackTurn: state.lastAttackTurn,
+    teamXp: state.teamXp,
+    eliminatedSeats: state.eliminatedSeats,
     seq: state.seq,
   };
 }
