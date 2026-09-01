@@ -327,6 +327,8 @@ export function subscribeToGame(
 }
 
 // ── 2v2 Multijoueur en Ligne (Lobby & Matchmaking) ──────────────────────────
+export type Seat2v2 = "A1" | "B1" | "A2" | "B2";
+
 export interface Lobby2v2Slot {
   userId?: string;
   userName: string;
@@ -513,6 +515,7 @@ export function create2v2OnlineTransport(
   getSeq: () => number = () => 0,
 ): {
   submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
+  pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
   subscribe(
     gameId: string,
     seat: Seat,
@@ -561,6 +564,9 @@ export function create2v2OnlineTransport(
         payload,
       });
       return { seq };
+    },
+    async pull(): Promise<RedactedEvent[]> {
+      return [];
     },
     subscribe(
       _gameId: string,

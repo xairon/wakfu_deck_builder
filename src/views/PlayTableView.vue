@@ -1191,7 +1191,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useGameStore } from "@/stores/gameStore";
 import type { Card, Deck } from "@/types/cards";
-import type { RedactedInstance, DraftEvent, Seat, Seat2v2 } from "@/game";
+import type { RedactedInstance, DraftEvent, Seat } from "@/game";
 import { getThumbPath } from "@/utils/imagePaths";
 import GameBoard from "@/components/game/GameBoard.vue";
 import GameCard from "@/components/game/GameCard.vue";
@@ -1230,12 +1230,11 @@ import {
   findMyActiveGame,
   concede as concedeOnline,
   claimVictory as claimVictoryOnline,
-  broadcast2v2LobbyState,
-  broadcast2v2GameStart,
   subscribeTo2v2Lobby,
   create2v2OnlineTransport,
   type Lobby2v2State,
   type Lobby2v2Slot,
+  type Seat2v2,
 } from "@/services/gameClient";
 
 const deckStore = useDeckStore();
@@ -1430,8 +1429,7 @@ function startSandboxGame(): void {
   if (!d1 || !d2 || !canStartSandbox.value) return;
   const user = authStore.user;
   const defaultP1 =
-    user?.user_metadata?.display_name ||
-    user?.user_metadata?.name ||
+    user?.displayName ||
     user?.email?.split("@")[0] ||
     d1.name ||
     "Joueur 1";
@@ -1450,7 +1448,6 @@ function startSandboxGame(): void {
 const online2v2Tab = ref<"online" | "sandbox">("online");
 const online2v2DeckId = ref<string | null>(null);
 const online2v2JoinCode = ref("");
-const online2v2Busy = ref(false);
 const online2v2Error = ref("");
 const active2v2Lobby = ref<Lobby2v2State | null>(null);
 const my2v2Seat = ref<Seat2v2>("A1");
@@ -1681,6 +1678,7 @@ function start2v2OnlineMatch(
   gameId: string,
   seat: Seat2v2,
   lobbyState: Lobby2v2State,
+  _initialEvents?: DraftEvent[],
 ): void {
   if (starting2v2Match) return;
   starting2v2Match = true;
@@ -1866,8 +1864,7 @@ const onlineTransport = {
   ) => {
     const user = authStore.user;
     const myName =
-      user?.user_metadata?.display_name ||
-      user?.user_metadata?.name ||
+      user?.displayName ||
       user?.email?.split("@")[0] ||
       (seat === "A" ? "Joueur A" : "Joueur B");
     return subscribeToGame(
@@ -1914,8 +1911,7 @@ function resumeGame(): void {
   resumable.value = null;
   const user = authStore.user;
   const myName =
-    user?.user_metadata?.display_name ||
-    user?.user_metadata?.name ||
+    user?.displayName ||
     user?.email?.split("@")[0] ||
     `Joueur ${g.seat}`;
   store.connectOnline(
@@ -2020,8 +2016,7 @@ async function onlineCreate(): Promise<void> {
     createdCode.value = code;
     const user = authStore.user;
     const myName =
-      user?.user_metadata?.display_name ||
-      user?.user_metadata?.name ||
+      user?.displayName ||
       user?.email?.split("@")[0] ||
       "Joueur A";
     store.connectOnline(gameId, "A", onlineTransport, deck, myName);
@@ -2050,8 +2045,7 @@ async function onlineJoin(): Promise<void> {
     }
     const user = authStore.user;
     const myName =
-      user?.user_metadata?.display_name ||
-      user?.user_metadata?.name ||
+      user?.displayName ||
       user?.email?.split("@")[0] ||
       "Joueur B";
     // s'abonner AVANT join (CADRE : un seul mode en ligne)

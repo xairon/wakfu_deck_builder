@@ -1,10 +1,9 @@
 import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, describe, it, expect } from "vitest";
 import { useGameStore } from "../gameStore";
-import { createMockDeck, createMockHeroCard, createMockAllyCard } from "tests/factories/card";
+import { createMockDeck } from "tests/factories/card";
 import { grantXpEvents } from "@/game/rules/progress";
 import { eligibleBlockers } from "@/game/rules/legality";
-import { victoryFromState } from "@/game/rules/victory";
 
 describe("gameStore — Mode 2v2 (Multijoueur en équipe)", () => {
   beforeEach(() => {
@@ -126,8 +125,8 @@ describe("gameStore — Mode 2v2 (Multijoueur en équipe)", () => {
     store.keepHand();
     store.keepHand();
 
-    const heroA1Id = store.state.seats.A1?.heroInstanceId!;
-    const heroA2Id = store.state.seats.A2?.heroInstanceId!;
+    const heroA1Id = store.state.seats.A1!.heroInstanceId as string;
+    const heroA2Id = store.state.seats.A2!.heroInstanceId as string;
 
     // 1. Donner 20 XP à A1 : doit plafonner à 18 XP (niveau 2 max) sans déclencher la victoire solo
     const grantA1 = grantXpEvents(store.rulesCtx(), "A1", 20);
@@ -165,19 +164,19 @@ describe("gameStore — Mode 2v2 (Multijoueur en équipe)", () => {
       store.state.seats.B1?.main.find((id) => {
         const c = store.resolveInstanceCard(id);
         return c?.mainType === "Allié";
-      }) ?? store.state.seats.B1?.main[0]!;
+      }) ?? store.state.seats.B1!.main[0];
     const allyB2 =
       store.state.seats.B2?.main.find((id) => {
         const c = store.resolveInstanceCard(id);
         return c?.mainType === "Allié";
-      }) ?? store.state.seats.B2?.main[0]!;
+      }) ?? store.state.seats.B2!.main[0];
 
     store.moveTo(allyB1, { zone: "monde" });
     store.moveTo(allyB2, { zone: "monde" });
 
     const target = {
       kind: "hero" as const,
-      instanceId: store.state.seats.B1?.heroInstanceId!,
+      instanceId: store.state.seats.B1!.heroInstanceId as string,
     };
 
     // B1 est attaqué : les bloqueurs éligibles comprennent les alliés de B1 ET les renforts de B2 !
@@ -200,7 +199,7 @@ describe("gameStore — Mode 2v2 (Multijoueur en équipe)", () => {
     store.keepHand();
     store.keepHand();
 
-    const heroB1Id = store.state.seats.B1?.heroInstanceId!;
+    const heroB1Id = store.state.seats.B1!.heroInstanceId as string;
 
     // Réduire les PV du Héros B1 à 0
     store.adjustCounter(heroB1Id, "hp", -50);
@@ -216,7 +215,7 @@ describe("gameStore — Mode 2v2 (Multijoueur en équipe)", () => {
     expect(store.turn.active).toBe("A2");
 
     // Réduire les PV du Héros B2 à 0 -> Équipe 2 entièrement éliminée -> Équipe 1 gagne !
-    const heroB2Id = store.state.seats.B2?.heroInstanceId!;
+    const heroB2Id = store.state.seats.B2!.heroInstanceId as string;
     store.adjustCounter(heroB2Id, "hp", -50);
 
     expect(store.eliminatedSeats).toContain("B2");

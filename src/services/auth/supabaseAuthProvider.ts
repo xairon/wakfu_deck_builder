@@ -20,7 +20,15 @@ import {
 
 function mapUser(user: SupabaseUser | null | undefined): AuthUser | null {
   if (!user) return null;
-  return { id: user.id, email: user.email ?? null };
+  return {
+    id: user.id,
+    email: user.email ?? null,
+    displayName:
+      (user.user_metadata?.display_name as string) ||
+      (user.user_metadata?.name as string) ||
+      user.email?.split("@")[0] ||
+      null,
+  };
 }
 
 function mapSession(

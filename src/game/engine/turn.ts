@@ -17,7 +17,7 @@
  */
 import type { GameState } from "../types/state";
 import type { DraftEvent } from "../types/events";
-import { getNextSeat, otherSeat } from "../types/zones.ts";
+import { getNextSeat } from "../types/zones.ts";
 import { setPhase, untap, setCounter } from "./verbs.ts";
 import { isTurnToken } from "../rules/effects/limits.ts";
 import type { RuleEvent, RulesCtx } from "../rules/types";

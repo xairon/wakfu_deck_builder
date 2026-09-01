@@ -63,6 +63,7 @@ import {
   effectiveForce,
   eligibleAttackers,
   eligibleBearers,
+  canBearEquipment,
   eligibleBlockers,
   eligibleTargets,
   equalityRescueEvents,
@@ -417,7 +418,7 @@ export const useGameStore = defineStore("game", () => {
   });
   function getCard(cardId: string | null): Card | null {
     if (!cardId) return null;
-    let found = cardIndex.value.get(cardId);
+    const found = cardIndex.value.get(cardId);
     if (found) return found;
     for (const card of instanceCardMap.values()) {
       if (String(card.id) === String(cardId)) return card;
@@ -1703,7 +1704,10 @@ export const useGameStore = defineStore("game", () => {
     clearEffectSpotlight();
   }
 
-  const tutorOpenSeats = ref<Record<Seat, boolean>>({ A: false, B: false });
+  const tutorOpenSeats = ref<Partial<Record<Seat, boolean>>>({
+    A: false,
+    B: false,
+  });
   function setTutorOpen(seat: Seat, open: boolean): void {
     tutorOpenSeats.value[seat] = open;
   }
@@ -2492,17 +2496,6 @@ export const useGameStore = defineStore("game", () => {
       return rejectMove("Aucune créature en jeu à qui attacher cette carte.");
     pendingBearer.value = { equipmentId, eligible, manual: true };
     return true;
-  }
-
-  /** Détache un équipement et le remet sur le plateau (zone Monde). */
-  function detachCard(equipmentId: string): void {
-    const seat = perspective.value;
-    const eqInst = state.value.instances[equipmentId];
-    if (!eqInst) return;
-    dispatch(
-      detach(seat, equipmentId, { zone: "monde" }),
-      say(seat, `${getCard(eqInst.cardId)?.name ?? "L'équipement"} est détaché.`),
-    );
   }
 
   /**

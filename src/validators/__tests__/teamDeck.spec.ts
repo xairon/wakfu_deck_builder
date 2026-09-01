@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateTeamDecks, getTeamUniqueCardCopies } from "../teamDeck";
+import { validateTeamDecks } from "../teamDeck";
 import { createMockDeck, createMockAllyCard } from "tests/factories/card";
 import type { Card } from "@/types/cards";
 
@@ -9,16 +9,12 @@ describe("validateTeamDecks — Règle d'unicité d'équipe (2v2)", () => {
     name: "Goultard le Barbare",
     element: "Feu",
     subTypes: ["Unique"],
-    level: 5,
-    force: 6,
   });
 
   const normalCard: Card = createMockAllyCard({
     id: "card-normal-1",
     name: "Bouftou",
     element: "Terre",
-    level: 1,
-    force: 2,
   });
 
   it("valide deux decks conformes qui n'ont aucune carte Unique en commun", () => {
