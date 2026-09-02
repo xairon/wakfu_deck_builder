@@ -40,6 +40,7 @@ export {
   flipLevel,
   setCounter,
   incCounter,
+  setController,
   shuffle,
   undo,
   say,

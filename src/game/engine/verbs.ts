@@ -195,6 +195,18 @@ export function incCounter(
   };
 }
 
+export function setController(
+  actor: Seat | "system",
+  instanceId: InstanceId,
+  controller: Seat,
+): DraftEvent<{ instanceId: InstanceId; controller: Seat }> {
+  return {
+    actor,
+    type: "SET_CONTROLLER",
+    payload: { instanceId, controller },
+  };
+}
+
 /**
  * Mise en jeu d'un JETON de créature (« Mettez en jeu un jeton "Monstre - X" de
  * Force N [Élément] »). Minte une instance dans le Monde du contrôleur,

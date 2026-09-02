@@ -16,6 +16,7 @@ import type {
   LevelPayload,
   SetCounterPayload,
   IncCounterPayload,
+  SetControllerPayload,
   AttachPayload,
   DetachPayload,
   LookRevealPayload,
@@ -207,6 +208,28 @@ function applyMove(s: GameState, p: MovePayload): void {
         : [...p.visibility.visibleTo];
 
   inst.location = p.to;
+
+  // ── Restrictions strictes pour cartes sous contrôle adverse (controller !== owner) ──
+  // Une carte contrôlée par un joueur autre que son propriétaire d'origine ne peut
+  // résider que dans le Monde (terrain) ou le Havre-Sac du contrôleur actuel.
+  // Si elle quitte le terrain/Havre-Sac ou change de zone (main, défausse, exil,
+  // pioche, réserve), elle retourne impérativement chez son propriétaire d'origine
+  // et son contrôle est restauré à son propriétaire.
+  if (inst.controller !== inst.owner) {
+    const staysInControllerPlay =
+      p.to.zone === "monde" ||
+      (p.to.zone === "havreSac" &&
+        "owner" in p.to &&
+        p.to.owner === inst.controller);
+    if (!staysInControllerPlay) {
+      if ("owner" in p.to) {
+        p.to = { ...p.to, owner: inst.owner };
+      }
+      inst.location = p.to;
+      inst.controller = inst.owner;
+    }
+  }
+
   insertIntoZone(s, inst, p.to, p.position);
   // 305.x : les portés suivent (co-localisés en jeu, défaussés à la sortie).
   settleAttachments(s, inst, arrivesInPlay);
@@ -372,6 +395,12 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
         ? (inst.counters.tokens?.[p.counter] ?? 0)
         : ((inst.counters as Record<string, number>)[p.counter] ?? 0);
       setCounterValue(inst, p.counter, cur + p.delta, p.token);
+      break;
+    }
+    case "SET_CONTROLLER": {
+      const p = ev.payload as SetControllerPayload;
+      const inst = getInstance(next, p.instanceId);
+      inst.controller = p.controller;
       break;
     }
     case "ATTACH": {

@@ -125,6 +125,11 @@ export interface CreateTokenPayload {
   orientation?: "upright" | "tapped";
 }
 
+export interface SetControllerPayload {
+  instanceId: InstanceId;
+  controller: Seat;
+}
+
 export type EventType =
   | "GAME_STARTED"
   | "MOVE"
@@ -134,6 +139,7 @@ export type EventType =
   | "SET_LEVEL"
   | "SET_COUNTER"
   | "INC_COUNTER"
+  | "SET_CONTROLLER"
   | "ATTACH"
   | "DETACH"
   | "LOOK"

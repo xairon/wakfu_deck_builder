@@ -7,6 +7,7 @@
       'game-card--selected': selected,
       'game-card--draggable': draggable,
       'game-card--ghost': isDragSource,
+      'game-card--foreign': isForeignControlled,
     }"
     :style="{ '--spine': spine }"
     :aria-label="ariaLabel"
@@ -30,6 +31,14 @@
       @error="onImgError"
     />
     <span class="game-card__sheen" aria-hidden="true"></span>
+    <span
+      v-if="isForeignControlled"
+      :key="`foreign-${instance.controller}`"
+      class="game-card__badge game-card__badge--foreign"
+      :title="`Contrôlée par Joueur ${instance.controller} (Propriétaire d'origine : Joueur ${instance.owner})`"
+    >
+      ⇄ J{{ instance.controller }}
+    </span>
     <span
       v-if="damage"
       :key="`dmg-${damage}`"
@@ -135,6 +144,13 @@ const hidden = computed(
 const isDragSource = computed(
   () => dnd.drag.value?.instanceId === props.instance.instanceId,
 );
+const isForeignControlled = computed(() => {
+  return !!(
+    props.instance.controller &&
+    props.instance.owner &&
+    props.instance.controller !== props.instance.owner
+  );
+});
 
 function onEnter(): void {
   // TACTILE (« hover: none ») : un tap émule mouseenter+click — la fenêtre de
@@ -346,6 +362,9 @@ const ariaLabel = computed(() => {
     0 0 0 4px rgba(240, 166, 43, 0.22),
     0 6px 18px rgba(240, 166, 43, 0.3);
 }
+.game-card--foreign {
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.8), 0 4px 12px rgba(147, 51, 234, 0.4);
+}
 .game-card--ghost {
   opacity: 0.3;
   filter: grayscale(0.4);
@@ -423,6 +442,15 @@ const ariaLabel = computed(() => {
   bottom: 3px;
   right: 3px;
   background: linear-gradient(180deg, #4a90c2, #2c5f8f);
+}
+.game-card__badge--foreign {
+  top: 3px;
+  right: 28px;
+  background: linear-gradient(180deg, #9333ea, #6b21a8);
+  border: 1px solid #c084fc;
+  color: #fff;
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
 }
 
 /* ── Overlays de combat (Attaquant / Bloquant) ── */

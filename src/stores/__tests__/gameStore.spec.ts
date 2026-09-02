@@ -599,16 +599,17 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     // le serveur diffuse la mise en place (events COMPLETS) → l'état se construit
     for (const ev of events) emit!(ev);
     expect(store.state.monde.length).toBe(2); // les 2 Havre-Sac
-    // une action manuelle soumet l'intention, SANS l'appliquer localement
+    // une action manuelle applique l'effet de manière optimiste immédiatement
     const havre = store.state.seats.A.havreSacInstanceId!;
     store.toggleTap(havre);
+    // Immédiatement orienté de façon optimiste (0 ms)
+    expect(store.state.instances[havre].orientation).toBe("tapped");
     await new Promise((r) => setTimeout(r, 0));
     expect(submitted).toHaveLength(1);
     expect(submitted[0].type).toBe("SET_ORIENTATION");
-    expect(store.state.instances[havre].orientation).toBe("upright");
   });
 
-  it("EN LIGNE (P2) : les actions de jeu soumettent des INTENTIONS, pas des drafts", async () => {
+  it("EN LIGNE (P2) : les actions de jeu soumettent des INTENTIONS avec optimistic UI", async () => {
     const intents: GameIntent[] = [];
     let emit: ((e: PersistedEvent) => void) | null = null;
     const transport = {
@@ -640,15 +641,16 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
 
     const havre = store.state.seats.A.havreSacInstanceId!;
     store.toggleTap(havre); // upright → intention TAP
+    // Application optimiste locale immédiate (0 ms de latence)
+    expect(store.state.instances[havre].orientation).toBe("tapped");
+
     store.endTurn(); // intention END_TURN
     await new Promise((r) => setTimeout(r, 0));
 
     expect(intents.map((i) => i.kind)).toEqual(["TAP", "END_TURN"]);
-    // Aucune application locale : l'état suit les echos (non émis ici).
-    expect(store.state.instances[havre].orientation).toBe("upright");
   });
 
-  it("EN LIGNE (P2) : un refus serveur d'intention alimente ruleError (raison FR)", async () => {
+  it("EN LIGNE (P2) : un refus serveur d'intention alimente ruleError et effectue un rollback", async () => {
     let emit: ((e: PersistedEvent) => void) | null = null;
     const transport = {
       submit: async () => ({ seq: 0 }),
@@ -677,9 +679,15 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     store.connectOnline("g-online", "A", transport);
     for (const ev of events) emit!(ev);
 
-    store.toggleTap(store.state.seats.A.havreSacInstanceId!);
+    const havre = store.state.seats.A.havreSacInstanceId!;
+    store.toggleTap(havre);
+    // Avant la réponse du serveur, l'action est optimiste
+    expect(store.state.instances[havre].orientation).toBe("tapped");
+
     await new Promise((r) => setTimeout(r, 0));
+    // Après le refus serveur, l'état a été restauré (rollback) et l'erreur affichée
     expect(store.ruleError).toBe("Ce n'est pas votre tour.");
+    expect(store.state.instances[havre].orientation).toBe("upright");
   });
 
   it("EN LIGNE (P3) : un SET_COMBAT diffusé ouvre le combat côté défenseur + confirme les blocages", async () => {
@@ -1259,5 +1267,113 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     const initCards = store.state.seats[me].main.length;
     store.draw(me);
     expect(store.state.seats[me].main.length).toBe(initCards + 1);
+  });
+
+  it("resetTableAndDeck : Havre-Sac dans le Socle (monde) avec résistance max et exclusion de la Réserve", async () => {
+    const store = useGameStore();
+    const hero = createMockHeroCard({ id: "hero-1", name: "Héros", stats: { pv: 25 } });
+    const sac = createMockHavreSacCard({ id: "sac-1", name: "Sac", stats: { resistance: 5 } });
+    const reserveCard = createMockAllyCard({ id: "res-1", name: "Réserve" });
+    const deckCards = Array.from({ length: 10 }, (_, i) =>
+      createMockAllyCard({ id: `c-${i}`, name: `Carte ${i}` }),
+    );
+
+    const deckA = createMockDeck({
+      hero,
+      havreSac: sac,
+      cards: [
+        ...deckCards.map((c) => ({ card: c, quantity: 1 })),
+        { card: reserveCard, quantity: 1, isReserve: true },
+      ],
+    });
+
+    store.startMatch(deckA, deckA);
+    const me = store.mySeat;
+    const sacId = store.state.seats[me].havreSacInstanceId!;
+    const sacInst = store.state.instances[sacId];
+
+    // Simuler des dégâts sur le Havre-Sac et orientation inclinée
+    sacInst.counters.resistance = 2;
+    sacInst.orientation = "tapped";
+    expect(sacInst.counters.resistance).toBe(2);
+    expect(sacInst.location.zone).toBe("monde");
+
+    // Trouver la carte en réserve
+    const resId = store.state.seats[me].reserve[0];
+    expect(resId).toBeTruthy();
+    expect(store.state.instances[resId].location.zone).toBe("reserve");
+
+    // Réinitialiser la table et le deck
+    await store.resetTableAndDeck(me);
+
+    // 1. Havre-Sac était déjà dans le socle (monde) -> il y reste et sa résistance est réinitialisée à sa valeur max (5)
+    expect(store.state.instances[sacId].location.zone).toBe("monde");
+    expect(store.state.instances[sacId].counters.resistance).toBe(5);
+    expect(store.state.instances[sacId].orientation).toBe("upright");
+
+    // 2. La carte en réserve ne doit en aucun cas avoir bougé dans la pioche
+    expect(store.state.instances[resId].location.zone).toBe("reserve");
+    expect(store.state.seats[me].reserve).toContain(resId);
+    expect(store.state.seats[me].pioche).not.toContain(resId);
+
+    // 3. Déplacer l'Havre-Sac hors du Socle (ex: dans la défausse) puis réinitialiser
+    store.moveTo(sacId, { zone: "defausse", owner: me });
+    expect(store.state.instances[sacId].location.zone).toBe("defausse");
+
+    await store.resetTableAndDeck(me);
+
+    // L'Havre-Sac doit être déplacé vers l'emplacement Socle (monde) et restaurer sa résistance
+    expect(store.state.instances[sacId].location.zone).toBe("monde");
+    expect(store.state.instances[sacId].counters.resistance).toBe(5);
+  });
+
+  it("transferControl : transfert de contrôle et retour impératif chez le propriétaire si la carte quitte le terrain", () => {
+    const store = useGameStore();
+    const hero = createMockHeroCard({ id: "hero-1", name: "Héros" });
+    const sac = createMockHavreSacCard({ id: "sac-1", name: "Sac" });
+    const ally = createMockAllyCard({ id: "ally-1", name: "Goultard" });
+    const deck = createMockDeck({
+      hero,
+      havreSac: sac,
+      cards: [{ card: ally, quantity: 1 }],
+    });
+
+    store.startSandbox(deck, deck);
+    const seatA: Seat = "A";
+    const seatB: Seat = "B";
+
+    // Poser une carte dans le Monde pour le joueur A
+    const cardId = store.state.seats[seatA].pioche[0];
+    expect(cardId).toBeTruthy();
+    store.moveTo(cardId, { zone: "monde" });
+    const inst = store.state.instances[cardId];
+
+    expect(inst).toBeDefined();
+    expect(inst.owner).toBe(seatA);
+    expect(inst.controller).toBe(seatA);
+    expect(inst.location.zone).toBe("monde");
+
+    // 1. Transférer le contrôle à B
+    store.transferControl(cardId, seatB);
+    expect(store.state.instances[cardId].controller).toBe(seatB);
+    expect(store.state.instances[cardId].owner).toBe(seatA);
+
+    // 2. Déplacer vers le Havre-Sac de B (autorisé car zone en jeu du contrôleur)
+    store.moveTo(cardId, { zone: "havreSac", owner: seatB });
+    expect(store.state.instances[cardId].location.zone).toBe("havreSac");
+    expect((store.state.instances[cardId].location as { owner?: Seat }).owner).toBe(seatB);
+    expect(store.state.instances[cardId].controller).toBe(seatB);
+
+    // 3. Déplacer vers la défausse (en visant par mégarde la défausse du contrôleur B)
+    store.moveTo(cardId, { zone: "defausse", owner: seatB });
+
+    // La carte DOIT impérativement atterrir dans la défausse de son PROPRIÉTAIRE d'origine (A)
+    // et son contrôleur doit être restauré à son propriétaire (A)
+    const finalInst = store.state.instances[cardId];
+    expect(finalInst.location.zone).toBe("defausse");
+    expect((finalInst.location as { owner?: Seat }).owner).toBe(seatA);
+    expect(finalInst.controller).toBe(seatA);
+    expect(store.state.seats[seatA].defausse).toContain(cardId);
+    expect(store.state.seats[seatB].defausse).not.toContain(cardId);
   });
 });

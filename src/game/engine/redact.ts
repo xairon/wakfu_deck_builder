@@ -91,8 +91,13 @@ function redactBoard(
   const isTeam = viewer !== "spectator" && isTeammate(seat, viewer);
   return {
     seat,
-    // L'ordre de la Pioche est secret pour TOUS → jamais de contenu.
-    pioche: countZone(b.pioche),
+    // L'ordre de la Pioche est secret par défaut, sauf si le joueur l'a révélé à l'observateur.
+    pioche:
+      viewer !== "spectator" &&
+      b.pioche.length > 0 &&
+      b.pioche.some((id) => state.instances[id]?.revealedTo.includes(viewer))
+        ? fullZone(state, b.pioche, viewer)
+        : countZone(b.pioche),
     // Main : visible pour soi et son coéquipier, cachée aux adversaires sauf révélation
     main:
       isSelf ||

@@ -235,10 +235,10 @@ describe("GameBoard — Level Up du Héros", () => {
   });
 });
 
-describe("GameBoard — menu regroupé ... & action Mill", () => {
+describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
-  it("ouvre le menu ... et permet d'exécuter l'action Mill", async () => {
+  it("ouvre le menu au survol du deck et permet d'exécuter l'action Mill", async () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck());
     const me = store.perspective;
@@ -252,8 +252,10 @@ describe("GameBoard — menu regroupé ... & action Mill", () => {
     const moreBtn = wrapper.find('[data-testid="action-more-menu"]');
     expect(moreBtn.exists()).toBe(true);
 
-    // Ouvre le menu ...
-    await moreBtn.trigger("click");
+    // Ouvre le menu au survol du deck
+    const deckSlot = wrapper.find(".gpiles__slot--deck");
+    expect(deckSlot.exists()).toBe(true);
+    await deckSlot.trigger("mouseenter");
     const millBtn = wrapper.find('[data-testid="action-mill"]');
     expect(millBtn.exists()).toBe(true);
 

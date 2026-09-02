@@ -38,9 +38,9 @@ describe("gameStore — resetTableAndDeck & Victory Notifications", () => {
     expect(resetHero.counters.xp).toBe(0);
     expect(resetHero.counters.hp).toBeGreaterThan(0);
 
-    // Le Havre-Sac est réinitialisé dans la zone Havre-Sac
+    // Le Havre-Sac est réinitialisé dans l'emplacement Socle (monde)
     const resetHS = store.state.instances[havreSacId];
-    expect(resetHS.location.zone).toBe("havreSac");
+    expect(resetHS.location.zone).toBe("monde");
 
     // Les cartes sont revenues dans la pioche
     expect(store.state.instances[card1].location.zone).toBe("pioche");

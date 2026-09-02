@@ -59,6 +59,7 @@ export type GameIntent =
     }
   | { kind: "ATTACH"; equipmentId: InstanceId; bearerId: InstanceId }
   | { kind: "DETACH"; equipmentId: InstanceId; to: ZoneRef; position: Position }
+  | { kind: "SET_CONTROLLER"; instanceId: InstanceId; controller: import("./zones").Seat }
   | { kind: "DRAW" }
   | {
       /** TABLE MANUELLE (Cadre) — geste « Mettez en jeu un jeton "Monstre - X"

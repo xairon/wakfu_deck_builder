@@ -92,3 +92,32 @@ export async function commitBatch(
     }
   }
 }
+
+/**
+ * Récupère TOUS les événements d'une partie dans l'ordre, en paginant par lots
+ * de 1000 pour dépasser le plafond PostgREST par défaut (max-rows = 1000).
+ * Indispensable pour les longues parties avec de nombreux tours et coups.
+ */
+export async function fetchAllGameEvents(
+  db: SupabaseClient,
+  gameId: string,
+): Promise<Record<string, unknown>[]> {
+  const PAGE_SIZE = 1000;
+  let from = 0;
+  const allRows: Record<string, unknown>[] = [];
+  while (true) {
+    const { data, error } = await db
+      .from("game_events")
+      .select("*")
+      .eq("game_id", gameId)
+      .order("seq", { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) throw new Error(error.message);
+    if (!data || data.length === 0) break;
+    allRows.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+  return allRows;
+}
+

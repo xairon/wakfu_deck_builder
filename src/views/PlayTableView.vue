@@ -704,14 +704,13 @@
       <div class="gtopbar__group">
         <span class="gtopbar__title">La Table des Douze</span>
         <span v-if="store.matchPhase === 'playing'" class="gtopbar__turn">
-          Tour {{ store.turn.number }} ·
+          Tour {{ store.turn.number }} · ⏱️ {{ formattedDuration }} ·
           <template v-if="store.online">
             <span :class="myTurn ? 'gturn--you' : 'gturn--wait'">{{
               myTurn ? "🟢 À toi de jouer" : "⏳ Au tour de l'adversaire"
             }}</span>
           </template>
           <template v-else>{{ store.activeName }}</template>
-          · {{ store.phaseLabel }}
         </span>
         <span v-else class="gtopbar__turn">Mise en place</span>
         <span
@@ -723,13 +722,6 @@
         </span>
       </div>
       <div v-if="store.matchPhase === 'playing'" class="gtopbar__group">
-        <button
-          class="gtop-btn"
-          @click="store.shufflePioche(store.perspective)"
-        >
-          Mélanger
-        </button>
-        <button class="gtop-btn" @click="store.undoLast()">Annuler</button>
         <!-- Bascule manuelle de vue (mode local / sandbox) -->
         <button
           v-if="!store.online"
@@ -740,23 +732,6 @@
         >
           👁️ Vue : {{ store.players[store.perspective].name }}
         </button>
-        <!-- Module SOLO starter (vs bot) : TOUJOURS full-assisté — la bascule
-             n'a pas de sens là (le bot et les effets exigent les règles) et
-             son seul usage serait de se mettre dans un état cassé. Elle reste
-             disponible en table libre / hot-seat (sans botSeat). -->
-        <label
-          v-if="!store.botSeat"
-          class="gtop-toggle"
-          title="Coûts en Ressources, légalité des coups, combat et victoire automatiques"
-        >
-          <input
-            v-model="store.assist"
-            type="checkbox"
-            class="gtop-toggle__box"
-            data-testid="topbar-assist-toggle"
-          />
-          Règles assistées
-        </label>
         <span
           v-if="
             store.matchPhase === 'playing' &&
@@ -1258,6 +1233,15 @@ onMounted(() => {
   };
   window.addEventListener("pointerdown", once);
 });
+// ── Minuteur de partie ────────────────────────────────────────────────────────
+const matchDuration = ref(0);
+let matchTimerInterval: ReturnType<typeof setInterval> | null = null;
+const formattedDuration = computed(() => {
+  const m = Math.floor(matchDuration.value / 60);
+  const s = matchDuration.value % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+});
+
 // La musique est BORNÉE À LA PARTIE (bug rapporté : « quand on quitte la
 // partie, la musique reste ») : retour au lobby → pause contextuelle (sans
 // toucher la préférence) ; entrée en match → reprise (l'événement vient d'un
@@ -1267,9 +1251,29 @@ watch(
   (now, prev) => {
     if (now === "lobby") music.pause();
     else if (prev === "lobby") void music.resumeIfWanted();
+
+    if (now === "playing") {
+      if (!matchTimerInterval) {
+        matchDuration.value = 0;
+        matchTimerInterval = setInterval(() => {
+          matchDuration.value++;
+        }, 1000);
+      }
+    } else {
+      if (matchTimerInterval) {
+        clearInterval(matchTimerInterval);
+        matchTimerInterval = null;
+      }
+      matchDuration.value = 0;
+    }
   },
+  { immediate: true },
 );
-onUnmounted(() => music.pause());
+
+onUnmounted(() => {
+  music.pause();
+  if (matchTimerInterval) clearInterval(matchTimerInterval);
+});
 const route = useRoute();
 
 const toast = useToast();
@@ -2188,6 +2192,8 @@ async function onMulliganKeep(): Promise<void> {
 }
 async function onMulliganReplace(): Promise<void> {
   if (store.online && store.mode !== "2v2") {
+    const seat = currentMulliganSeat.value;
+    store.mulliganCounts[seat] = (store.mulliganCounts[seat] ?? 0) + 1;
     await requestMulligan(store.gameId());
   } else {
     store.mulligan(currentMulliganSeat.value);
@@ -2595,23 +2601,6 @@ onUnmounted(() => {
 }
 .gtop-btn--danger:hover {
   background: #a72f1f;
-}
-.gtop-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(240, 166, 43, 0.12);
-  border: 1px solid rgba(240, 166, 43, 0.35);
-  color: #f0a62b;
-  cursor: pointer;
-  user-select: none;
-}
-.gtop-toggle__box {
-  accent-color: #f0a62b;
 }
 .gdisconnect {
   display: flex;

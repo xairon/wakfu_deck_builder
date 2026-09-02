@@ -19,7 +19,7 @@ import { victoryFromState } from "../../../src/game/rules/victory.ts";
 import { equalityRescueEvents } from "../../../src/game/rules/progress.ts";
 import { resolveIntent } from "../../../src/game/actions/resolveIntent.ts";
 import { loadCards } from "../_shared/cards.ts";
-import { makeBatch, commitBatch } from "../_shared/journal.ts";
+import { makeBatch, commitBatch, fetchAllGameEvents } from "../_shared/journal.ts";
 import { otherSeat } from "../../../src/game/types/zones.ts";
 import type { Card, Deck } from "../../../src/types/cards.ts";
 import type {
@@ -96,11 +96,7 @@ Deno.serve(async (req) => {
       .select("master_seed")
       .eq("game_id", gameId)
       .single();
-    const { data: rows } = await db
-      .from("game_events")
-      .select("*")
-      .eq("game_id", gameId)
-      .order("seq", { ascending: true });
+    const rows = await fetchAllGameEvents(db, gameId);
 
     // On garde le tableau d'events mappé pour que la mémoïsation de deriveState
     // reconnaisse `post` comme une extension de `state` (sinon re-dérivation O(N)).

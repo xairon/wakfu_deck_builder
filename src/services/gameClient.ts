@@ -198,7 +198,7 @@ export async function submitEvent(
   const { data, error } = await client().functions.invoke("submit_event", {
     body: { gameId, draft },
   });
-  if (error) throw error;
+  if (error) throw new Error(await fnErrorMessage(error));
   return data as { seq: number };
 }
 

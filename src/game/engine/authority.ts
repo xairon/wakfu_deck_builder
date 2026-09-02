@@ -152,6 +152,7 @@ const ALLOWED_TYPES = new Set<EventType>([
   "UNREVEAL",
   "SAID",
   "MULLIGAN_DONE",
+  "SET_CONTROLLER",
 
   // NB : "UNDONE" est VOLONTAIREMENT absent. L'annulation est une commodité
   // LOCALE (désactivée en ligne, cf. gameStore.undoLast) ; l'accepter côté
@@ -174,6 +175,7 @@ function targetedIds(draft: DraftEvent): InstanceId[] {
     case "SET_LEVEL":
     case "SET_COUNTER":
     case "INC_COUNTER":
+    case "SET_CONTROLLER":
       return p.instanceId ? [p.instanceId as InstanceId] : [];
     case "ATTACH": {
       const a = p as unknown as AttachPayload;

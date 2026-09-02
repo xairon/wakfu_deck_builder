@@ -34,6 +34,7 @@ import {
   untap,
   setCounter,
   incCounter,
+  setController,
   flipLevel,
   setCombat,
   say,
@@ -495,13 +496,15 @@ export function resolveIntent(
         (fromZone === "monde" && toZone === "havreSac") ||
         (fromZone === "havreSac" && toZone === "monde")
       ) {
-        const why = whyCannotMoveCreature(
-          ctx,
-          seat,
-          intent.instanceId,
-          toZone as "monde" | "havreSac",
-        );
-        if (why) return { error: why };
+        if (!manual) {
+          const why = whyCannotMoveCreature(
+            ctx,
+            seat,
+            intent.instanceId,
+            toZone as "monde" | "havreSac",
+          );
+          if (why) return { error: why };
+        }
         return {
           events: [
             worldHavenSwap(
@@ -518,6 +521,17 @@ export function resolveIntent(
       // cartes exclusivement Monde (Zone/Protecteur/Dofus…) sont refusées.
       // L'échange Monde↔Havre-Sac est déjà gardé plus haut (whyCannotMoveCreature).
       let dest: ZoneRef = intent.to;
+      // Restrictions strictes pour cartes sous contrôle adverse :
+      if (inst.controller !== inst.owner) {
+        const staysInControllerPlay =
+          dest.zone === "monde" ||
+          (dest.zone === "havreSac" &&
+            "owner" in dest &&
+            dest.owner === inst.controller);
+        if (!staysInControllerPlay && "owner" in dest) {
+          dest = { ...dest, owner: inst.owner };
+        }
+      }
       if (toZone === "monde" && state.turn.number === 1) {
         const played = getCard(inst.cardId);
         const routed = played
@@ -685,6 +699,21 @@ export function resolveIntent(
             intent.xp ?? inst.counters.xp ?? 0,
           ),
         ],
+      };
+    }
+
+    case "SET_CONTROLLER": {
+      const inst = state.instances[intent.instanceId];
+      if (!inst) return { error: "Carte introuvable." };
+      const inPlay =
+        inst.location.zone === "monde" || inst.location.zone === "havreSac";
+      if (!inPlay) {
+        return {
+          error: "Seule une carte en jeu (Monde ou Havre-Sac) peut changer de contrôleur.",
+        };
+      }
+      return {
+        events: [setController(seat, intent.instanceId, intent.controller)],
       };
     }
 

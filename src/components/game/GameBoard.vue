@@ -199,6 +199,15 @@
             "
           >
             <PileStack label="Pioche" :count="piocheCount(opp)" deck />
+            <button
+              v-if="store.isOpponentDeckRevealed"
+              type="button"
+              class="gpiles__reveal-toggle-btn gpiles__reveal-toggle-btn--active"
+              title="Consulter le deck révélé de l'adversaire en lecture seule"
+              @click="openOpponentDeckBrowser"
+            >
+              👁 Voir Deck (Révélé)
+            </button>
           </span>
           <span
             :class="zoneCls('defausse-opp')"
@@ -300,7 +309,7 @@
             <GameCard
               :instance="inst"
               :card="resolveCard(inst.cardId)"
-              :draggable="store.isSandbox"
+              :draggable="store.isSandbox || inst.controller === me"
               :selected="inst.instanceId === selectedId"
               @select="select(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
@@ -498,7 +507,7 @@
         </div>
         <div class="gpiles">
           <span
-            :class="zoneCls('pioche')"
+            :class="[zoneCls('pioche'), 'gpiles__slot--deck']"
             class="gpiles__slot"
             :ref="
               (el) =>
@@ -510,6 +519,8 @@
                   { at: 'top' },
                 )
             "
+            @mouseenter="onDeckMouseEnter"
+            @mouseleave="onDeckMouseLeave"
           >
             <PileStack
               label="Pioche"
@@ -517,6 +528,69 @@
               deck
               @act="onPiocheClick"
             />
+            <button
+              v-if="store.isMyDeckRevealed"
+              type="button"
+              class="gpiles__reveal-toggle-btn gpiles__reveal-toggle-btn--active"
+              title="Deck actuellement révélé à l'adversaire (cliquer pour masquer)"
+              @click.stop="store.toggleRevealMyDeck"
+            >
+              👁 Deck révélé
+            </button>
+
+            <!-- Menu d'actions au survol du deck -->
+            <Transition name="fade-fast">
+              <div v-if="showDeckMenu" class="gdeck-hover-menu" @click.stop>
+                <button
+                  class="gmore-item"
+                  data-testid="action-draw"
+                  title="Piocher une carte de ta Pioche."
+                  @click="runDeckAction(drawOne)"
+                >
+                  🎴 Piocher
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-mill"
+                  title="Envoyer la carte du dessus de la Pioche à la Défausse (Mill)."
+                  @click="runDeckAction(millOne)"
+                >
+                  💀 Mill
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-search-deck"
+                  title="Chercher dans ta Pioche (elle sera mélangée en refermant)."
+                  @click="runDeckAction(openDeckSearch)"
+                >
+                  🔍 Chercher dans la pioche
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-shuffle-deck"
+                  title="Mélanger ta Pioche."
+                  @click="runDeckAction(() => store.shufflePioche(store.perspective))"
+                >
+                  🔀 Mélanger
+                </button>
+                <button
+                  class="gmore-item"
+                  data-testid="action-toggle-reveal-deck"
+                  :title="
+                    store.isMyDeckRevealed
+                      ? 'Masquer ton Deck à l\'adversaire'
+                      : 'Révéler le contenu et l\'ordre de ton Deck à l\'adversaire'
+                  "
+                  @click="runDeckAction(store.toggleRevealMyDeck)"
+                >
+                  {{
+                    store.isMyDeckRevealed
+                      ? "🙈 Masquer mon Deck"
+                      : "👁 Révéler mon Deck"
+                  }}
+                </button>
+              </div>
+            </Transition>
           </span>
           <span
             :class="zoneCls('defausse')"
@@ -587,7 +661,11 @@
                (double le clic sur la pile) + Montrer sa main à l'adversaire
                (Filouterie). Masqués en mode assisté / hors ligne. -->
           <span class="gpiles__slot gpiles__manual">
-            <div class="gmore-wrapper">
+            <div
+              class="gmore-wrapper"
+              @mouseenter="onMoreMouseEnter"
+              @mouseleave="onMoreMouseLeave"
+            >
               <button
                 type="button"
                 class="gbtn gbtn--sm gbtn--more"
@@ -595,26 +673,10 @@
                 title="Actions de table et utilitaires…"
                 @click.stop="showMoreMenu = !showMoreMenu"
               >
-                💬 ...
+                ⚙️
               </button>
 
               <div v-if="showMoreMenu" class="gmore-dropdown" @click.stop>
-                <button
-                  class="gmore-item"
-                  data-testid="action-draw"
-                  title="Piocher une carte de ta Pioche."
-                  @click="runMoreAction(drawOne)"
-                >
-                  🎴 Piocher
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-mill"
-                  title="Envoyer la carte du dessus de la Pioche à la Défausse (Mill)."
-                  @click="runMoreAction(millOne)"
-                >
-                  💀 Mill (Défausser du dessus)
-                </button>
                 <button
                   v-if="canRevealHand"
                   class="gmore-item"
@@ -623,6 +685,15 @@
                   @click="runMoreAction(revealHandToOpponent)"
                 >
                   👁 Montrer ma main
+                </button>
+                <button
+                  v-if="store.isOpponentDeckRevealed"
+                  class="gmore-item"
+                  data-testid="action-view-opp-deck"
+                  title="Consulter le Deck révélé de l'adversaire en lecture seule"
+                  @click="runMoreAction(openOpponentDeckBrowser)"
+                >
+                  👁 Voir le Deck adverse (Révélé)
                 </button>
                 <button
                   class="gmore-item"
@@ -637,14 +708,6 @@
                   @click="runMoreAction(untapAllOnBoard)"
                 >
                   ⬆️ Redresser tout
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-search-deck"
-                  title="Chercher dans ta Pioche (elle sera mélangée en refermant)."
-                  @click="runMoreAction(openDeckSearch)"
-                >
-                  🔍 Chercher dans la pioche
                 </button>
                 <button
                   class="gmore-item"
@@ -1269,6 +1332,16 @@
           >
             👁 Montrer
           </button>
+          <!-- Transfert de contrôle / possession de carte -->
+          <button
+            v-if="canTransferControlSelected"
+            class="gbtn gbtn--accent"
+            data-testid="action-transfer-control"
+            title="Transférer le contrôle de cette carte à l'adversaire (ou la restituer)"
+            @click="transferControlSelected"
+          >
+            ⇄ Transférer contrôle
+          </button>
           <span class="gactionbar__sep"></span>
           <button class="gbtn" @click="moveSelected('monde')">→ Monde</button>
           <button class="gbtn" @click="moveSelected('havreSac')">
@@ -1530,6 +1603,66 @@
                 → Réserve
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ Consultation en lecture seule du Deck adverse (Révélé) ════ -->
+    <div
+      v-if="oppDeckBrowse"
+      class="gpilebrowser"
+      data-testid="opp-deck-browser"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="`Deck révélé de ${store.players[opp].name}`"
+      tabindex="-1"
+      @click.self="oppDeckBrowse = false"
+      @keydown.esc.prevent="oppDeckBrowse = false"
+    >
+      <div class="gpilebrowser__panel">
+        <header class="gpilebrowser__head">
+          <h2 class="gpilebrowser__title">
+            Deck révélé de {{ store.players[opp].name }}
+            <span class="gpilebrowser__count">
+              {{ oppDeckCards.length }} carte(s)
+            </span>
+          </h2>
+          <button
+            class="gbtn gbtn--ghost"
+            aria-label="Fermer"
+            @click="oppDeckBrowse = false"
+          >
+            ✕
+          </button>
+        </header>
+        <p class="gpilebrowser__hint">
+          Consultation en lecture seule : les cartes sont présentées dans
+          <strong>l'ordre exact du deck</strong> (du sommet #1 au fond du deck).
+          Aucun mélange n'est effectué.
+        </p>
+        <div class="gpilebrowser__grid">
+          <div
+            v-for="(inst, idx) in oppDeckCards"
+            :key="inst.instanceId"
+            class="gpilebrowser__slot"
+          >
+            <div class="gpilebrowser__pos">
+              #{{ idx + 1 }}
+              {{
+                idx === 0
+                  ? "· (Sommet)"
+                  : idx === oppDeckCards.length - 1
+                    ? "· (Fond)"
+                    : ""
+              }}
+            </div>
+            <GameCard
+              :instance="inst"
+              :card="resolveCard(inst.instanceId) || resolveCard(inst.cardId)"
+              @select="zoomInst(inst.instanceId)"
+              @zoom="zoomInst(inst.instanceId)"
+            />
           </div>
         </div>
       </div>
@@ -1817,14 +1950,18 @@ function instancesOf(z: RedactedZone | null): RedactedInstance[] {
   return z && z.kind === "full" ? z.instances : [];
 }
 function mondeOwned(seat: Seat): RedactedInstance[] {
-  return instancesOf(view.value.monde).filter((i) => i.owner === seat);
+  return instancesOf(view.value.monde).filter(
+    (i) => (i.controller ?? i.owner) === seat,
+  );
 }
 function havreId(seat: Seat): string | undefined {
   return view.value.seats[seat]?.havreSacInstanceId;
 }
 /** La carte Havre-Sac elle-même (vit dans le Monde, c'est le « socle » du joueur). */
 function havreCard(seat: Seat): RedactedInstance[] {
-  return mondeOwned(seat).filter((i) => i.instanceId === havreId(seat));
+  return instancesOf(view.value.monde).filter(
+    (i) => i.instanceId === havreId(seat),
+  );
 }
 /** L'intérieur du Havre-Sac : Héros, Salles, Équipements… (zone `havreSac`). */
 function interiorCards(seat: Seat): RedactedInstance[] {
@@ -1974,6 +2111,31 @@ function openDeckSearch(): void {
 function closeDeckSearch(): void {
   deckBrowse.value = false;
   store.shuffleMyDeck(); // 507.4 — l'ordre a été vu → mélange obligatoire
+}
+
+// ── Consultation en lecture seule du Deck adverse (Révélé) ───────────────────
+const oppDeckBrowse = ref(false);
+const oppDeckCards = computed<RedactedInstance[]>(() => {
+  if (!oppDeckBrowse.value) return [];
+  const oppSeat = opp.value;
+  return (
+    store.state.seats[oppSeat]?.pioche.map((id) => {
+      const inst = store.state.instances[id];
+      return {
+        instanceId: id,
+        cardId: inst?.cardId ?? null,
+        owner: oppSeat,
+        controller: oppSeat,
+        face: "recto",
+        orientation: null,
+        counters: inst?.counters ?? {},
+        attachments: [],
+      } as RedactedInstance;
+    }) ?? []
+  );
+});
+function openOpponentDeckBrowser(): void {
+  oppDeckBrowse.value = true;
 }
 function takeFromDeck(
   instanceId: string,
@@ -2178,6 +2340,18 @@ function moveCreatureSelected(): void {
   if (!inst || !opt) return;
   store.moveCreature(inst.instanceId, opt.to); // rejette avec le motif si illégal
   selectedId.value = null; // la zone a changé → referme la barre
+}
+
+const canTransferControlSelected = computed(() => {
+  const inst = selectedInst.value;
+  if (!inst) return false;
+  return inst.location.zone === "monde" || inst.location.zone === "havreSac";
+});
+function transferControlSelected(): void {
+  const inst = selectedInst.value;
+  if (!inst) return;
+  store.transferControl(inst.instanceId);
+  selectedId.value = null;
 }
 /**
  * Libellé du bandeau de CIBLAGE D'EFFET — un libellé DÉDIÉ par op (le vieux
@@ -2617,8 +2791,12 @@ function moveSelected(
     selectedId.value = null;
     return;
   }
+  const targetOwner =
+    zone === "havreSac"
+      ? (inst.controller === me.value ? me.value : inst.owner)
+      : inst.owner;
   const ref =
-    zone === "monde" ? { zone } : ({ zone, owner: inst.owner } as const);
+    zone === "monde" ? { zone } : ({ zone, owner: targetOwner } as const);
   store.moveTo(inst.instanceId, ref, position);
   selectedId.value = null;
 }
@@ -2636,7 +2814,35 @@ function untapAllOnBoard(): void {
     store.untapAllOnBoard();
   }
 }
+const showDeckMenu = ref(false);
+let deckMenuTimer: ReturnType<typeof setTimeout> | null = null;
+function onDeckMouseEnter(): void {
+  if (deckMenuTimer) clearTimeout(deckMenuTimer);
+  showDeckMenu.value = true;
+}
+function onDeckMouseLeave(): void {
+  deckMenuTimer = setTimeout(() => {
+    showDeckMenu.value = false;
+    deckMenuTimer = null;
+  }, 150);
+}
+function runDeckAction(fn: () => void): void {
+  showDeckMenu.value = false;
+  fn();
+}
+
 const showMoreMenu = ref(false);
+let moreMenuTimer: ReturnType<typeof setTimeout> | null = null;
+function onMoreMouseEnter(): void {
+  if (moreMenuTimer) clearTimeout(moreMenuTimer);
+  showMoreMenu.value = true;
+}
+function onMoreMouseLeave(): void {
+  moreMenuTimer = setTimeout(() => {
+    showMoreMenu.value = false;
+    moreMenuTimer = null;
+  }, 150);
+}
 function runMoreAction(fn: () => void): void {
   showMoreMenu.value = false;
   fn();
@@ -2646,6 +2852,7 @@ function millOne(): void {
 }
 function onDocClick(): void {
   showMoreMenu.value = false;
+  showDeckMenu.value = false;
 }
 onMounted(() => {
   window.addEventListener("click", onDocClick);
@@ -2653,6 +2860,8 @@ onMounted(() => {
 });
 onUnmounted(() => {
   window.removeEventListener("click", onDocClick);
+  if (deckMenuTimer) clearTimeout(deckMenuTimer);
+  if (moreMenuTimer) clearTimeout(moreMenuTimer);
   if (linkAnimationFrame !== null) cancelAnimationFrame(linkAnimationFrame);
 });
 function tapStackSelected(): void {
@@ -2921,6 +3130,37 @@ function manaBonus(seat: Seat): boolean {
 .gtable {
   /* Menu déroulant utilitaire "..." */
 }
+.gpiles__slot--deck {
+  position: relative;
+}
+.gdeck-hover-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 190px;
+  background: rgba(18, 14, 10, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(240, 166, 43, 0.45);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.9), 0 0 15px rgba(240, 166, 43, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 120;
+}
+.fade-fast-enter-active,
+.fade-fast-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.fade-fast-enter-from,
+.fade-fast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, 6px);
+}
+
 .gmore-wrapper {
   position: relative;
   display: inline-block;
@@ -2962,6 +3202,41 @@ function manaBonus(seat: Seat): boolean {
 .gmore-item:hover {
   background: rgba(240, 166, 43, 0.2);
   color: #f0a62b;
+}
+
+.gpiles__reveal-toggle-btn {
+  display: block;
+  margin-top: 4px;
+  width: 100%;
+  padding: 3px 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid rgba(240, 166, 43, 0.4);
+  background: rgba(20, 16, 12, 0.9);
+  color: #f6f5f1;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(4px);
+}
+.gpiles__reveal-toggle-btn:hover {
+  background: rgba(240, 166, 43, 0.25);
+  border-color: #f0a62b;
+  color: #f0a62b;
+}
+.gpiles__reveal-toggle-btn--active {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.35), rgba(126, 34, 206, 0.55));
+  border-color: #c084fc;
+  color: #f3e8ff;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+}
+.gpiles__reveal-toggle-btn--active:hover {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.55), rgba(126, 34, 206, 0.75));
+  color: #fff;
 }
 
 .gtable {

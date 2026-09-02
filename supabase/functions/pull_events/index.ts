@@ -2,6 +2,7 @@
 // Filet de sécurité (rattrapage / reconnexion) : le client reconstruit sa vue.
 import { adminClient, getUserId } from "../_shared/auth.ts";
 import { json, preflight } from "../_shared/cors.ts";
+import { fetchAllGameEvents } from "../_shared/journal.ts";
 import { deriveState } from "../../../src/game/engine/reducer.ts";
 import { redactEventForSeat } from "../../../src/game/engine/authority.ts";
 import type { PersistedEvent } from "../../../src/game/types/events.ts";
@@ -37,11 +38,7 @@ Deno.serve(async (req) => {
       .single();
     if (!me) return json({ error: "PAS_JOUEUR_DE_CETTE_PARTIE" }, 403);
 
-    const { data: rows } = await db
-      .from("game_events")
-      .select("*")
-      .eq("game_id", gameId)
-      .order("seq", { ascending: true });
+    const rows = await fetchAllGameEvents(db, gameId);
 
     const all = (rows ?? []).map(rowToEvent);
     const out = [];

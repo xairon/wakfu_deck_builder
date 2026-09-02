@@ -8,7 +8,7 @@
  * Table ASSISTÉE : pioche/mulligan/tours automatisés, effets joués à la main.
  */
 import { defineStore } from "pinia";
-import { computed, ref, shallowRef, watch } from "vue";
+import { computed, ref, shallowRef } from "vue";
 import type { Card, Deck } from "@/types/cards";
 import type {
   DraftEvent,
@@ -24,6 +24,8 @@ import type {
   ZoneRef,
 } from "@/game";
 import {
+  applyEvent,
+  resolveIntent,
   attach,
   detach,
   flipLevel,
@@ -44,6 +46,7 @@ import {
   sequence,
   setCounter as setCounterVerb,
   incCounter as incCounterVerb,
+  setController as setControllerVerb,
   shuffle as shuffleVerb,
   undo as undoVerb,
 } from "@/game";
@@ -211,6 +214,24 @@ export interface LogLine {
   text: string;
 }
 
+export interface OptimisticAction {
+  id: string;
+  drafts: DraftEvent[];
+  ts: number;
+}
+
+function matchesOptimisticDraft(draft: DraftEvent, ev: RedactedEvent): boolean {
+  if (draft.type !== ev.type) return false;
+  if (draft.actor !== ev.actor) return false;
+  const dp = draft.payload as Record<string, unknown> | undefined;
+  const ep = ev.payload as Record<string, unknown> | undefined;
+  if (!dp || !ep) return true;
+  if (dp.instanceId !== undefined && dp.instanceId !== ep.instanceId) return false;
+  if (dp.counter !== undefined && dp.counter !== ep.counter) return false;
+  if (dp.orientation !== undefined && dp.orientation !== ep.orientation) return false;
+  return true;
+}
+
 const PHASE_LABEL: Record<string, string> = {
   redressement: "Redressement",
   principale: "Principale",
@@ -238,6 +259,8 @@ export const useGameStore = defineStore("game", () => {
   let onlineTransport: OnlineTransport | null = null;
   let onlineUnsub: (() => void) | null = null;
   let submitChain: Promise<unknown> = Promise.resolve();
+  // Actions en vol appliquées localement en avance de phase (Optimistic UI)
+  const optimisticActions = shallowRef<OptimisticAction[]>([]);
   // Tampon des events reçus hors-ordre (en attente de seq contigus), + verrou
   // anti-pull-concurrent : le journal `events.value` reste STRICTEMENT contigu
   // depuis seq 1 pour que le fold pur `deriveState` reste correct.
@@ -349,19 +372,40 @@ export const useGameStore = defineStore("game", () => {
 
   // ── Dérivés moteur ───────────────────────────────────────────────────────
   const state = computed<GameState>(() => {
-    const base = deriveState(events.value);
+    let base = deriveState(events.value);
     const ids = Object.keys(revealed.value);
-    if (!ids.length) return base;
-    // `deriveState` est MÉMOÏSÉ : ne pas muter `base.instances[id]` (corromprait
-    // le cache). On copie la map d'instances et on remplace les seules modifiées.
-    const instances = { ...base.instances };
-    for (const id of ids) {
-      const inst = instances[id];
-      if (inst && inst.cardId !== revealed.value[id]) {
-        instances[id] = { ...inst, cardId: revealed.value[id] };
+    if (ids.length) {
+      // `deriveState` est MÉMOÏSÉ : ne pas muter `base.instances[id]` (corromprait
+      // le cache). On copie la map d'instances et on remplace les seules modifiées.
+      const instances = { ...base.instances };
+      for (const id of ids) {
+        const inst = instances[id];
+        if (inst && inst.cardId !== revealed.value[id]) {
+          instances[id] = { ...inst, cardId: revealed.value[id] };
+        }
+      }
+      base = { ...base, instances };
+    }
+
+    // Application optimiste des actions en vol (en mode en ligne uniquement)
+    if (online.value && optimisticActions.value.length > 0) {
+      for (const action of optimisticActions.value) {
+        for (const draft of action.drafts) {
+          try {
+            base = applyEvent(base, {
+              ...draft,
+              gameId: gameId.value,
+              seq: base.seq + 1,
+              timestamp: new Date().toISOString(),
+            } as PersistedEvent);
+          } catch {
+            // Ignorer si un draft optimiste ne peut être appliqué
+          }
+        }
       }
     }
-    return { ...base, instances };
+
+    return base;
   });
   const view = computed<RedactedGameState>(() =>
     redactStateFor(state.value, perspective.value),
@@ -699,17 +743,41 @@ export const useGameStore = defineStore("game", () => {
   // ── Dispatch bas niveau (local : on est l'autorité) ──────────────────────
   function dispatch(...drafts: DraftEvent[]): void {
     if (!drafts.length) return;
-    // En ligne : on SOUMET les intentions au serveur, dans l'ordre, sans
-    // appliquer localement — l'état avance à la réception des echos diffusés.
+    // En ligne : on applique optimiquement pour un ressenti immédiat (0 ms),
+    // puis on soumet au serveur sur submitChain.
     if (online.value && onlineTransport) {
+      const actionId = `opt_disp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+      optimisticActions.value = [
+        ...optimisticActions.value,
+        { id: actionId, drafts, ts: Date.now() },
+      ];
       const t = onlineTransport;
       const id = gameId.value;
       for (const d of drafts) {
         submitChain = submitChain
-          .then(() => t.submit(id, d))
+          .then(async () => {
+            try {
+              await t.submit(id, d);
+            } catch (e) {
+              const msg = (e as Error)?.message ?? String(e);
+              if (msg.includes("OUT_OF_ORDER")) {
+                pulling = false;
+                await resyncFrom(lastSeq());
+                await t.submit(id, d);
+                return;
+              }
+              throw e;
+            }
+          })
           .catch((e) => {
-            ruleError.value = `Réseau : ${String(e)}`;
+            ruleError.value = `Réseau : ${(e as Error)?.message ?? String(e)}`;
+            pulling = false;
             void resyncFrom(lastSeq());
+          })
+          .finally(() => {
+            optimisticActions.value = optimisticActions.value.filter(
+              (a) => a.id !== actionId,
+            );
           });
       }
       return;
@@ -729,6 +797,24 @@ export const useGameStore = defineStore("game", () => {
   function pushIntent(intent: GameIntent): boolean {
     if (!online.value || !onlineTransport?.submitIntent) return false;
     ruleError.value = null;
+
+    let actionId: string | null = null;
+    try {
+      const seat = (mySeat.value ?? perspective.value) as Seat;
+      const res = resolveIntent(state.value, getCard, intent, seat, {
+        manual: manualTable.value,
+      });
+      if (!("error" in res) && res.events && res.events.length > 0) {
+        actionId = `opt_intent_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        optimisticActions.value = [
+          ...optimisticActions.value,
+          { id: actionId, drafts: res.events, ts: Date.now() },
+        ];
+      }
+    } catch {
+      // Si la résolution locale échoue, la soumission serveur tranchera
+    }
+
     const t = onlineTransport;
     const id = gameId.value;
     submitChain = submitChain
@@ -760,6 +846,13 @@ export const useGameStore = defineStore("game", () => {
         // Le refus peut être un échec partiel : on resynchronise sur l'état
         // autoritaire plutôt que de rester divergent.
         void resyncFrom(lastSeq());
+      })
+      .finally(() => {
+        if (actionId) {
+          optimisticActions.value = optimisticActions.value.filter(
+            (a) => a.id !== actionId,
+          );
+        }
       });
     return true;
   }
@@ -853,6 +946,29 @@ export const useGameStore = defineStore("game", () => {
       next++;
     }
     if (toAppend.length) {
+      // Réconcilier les actions optimistes avec les événements officiels du serveur
+      if (online.value && optimisticActions.value.length > 0) {
+        let acts = [...optimisticActions.value];
+        for (const ev of toAppend) {
+          const actIdx = acts.findIndex((a) =>
+            a.drafts.some((d) => matchesOptimisticDraft(d, ev)),
+          );
+          if (actIdx !== -1) {
+            const act = acts[actIdx];
+            const dIdx = act.drafts.findIndex((d) =>
+              matchesOptimisticDraft(d, ev),
+            );
+            const newDrafts = [...act.drafts];
+            newDrafts.splice(dIdx, 1);
+            if (newDrafts.length === 0) {
+              acts = acts.filter((_, i) => i !== actIdx);
+            } else {
+              acts[actIdx] = { ...act, drafts: newDrafts };
+            }
+          }
+        }
+        optimisticActions.value = acts;
+      }
       events.value = [...events.value, ...toAppend];
       for (const e of toAppend) {
         if (e.type === "MULLIGAN_DONE") {
@@ -860,6 +976,19 @@ export const useGameStore = defineStore("game", () => {
           if (seat) {
             mulliganDone.value = { ...mulliganDone.value, [seat]: true };
           }
+        } else if (
+          e.type === "SHUFFLE" &&
+          (e.payload as { zone?: { zone?: string } })?.zone?.zone === "pioche" &&
+          (e.actor === "A" ||
+            e.actor === "B" ||
+            e.actor === "A1" ||
+            e.actor === "B1" ||
+            e.actor === "A2" ||
+            e.actor === "B2")
+        ) {
+          const s = e.actor as Seat;
+          const current = mulliganCounts.value[s] ?? 0;
+          mulliganCounts.value = { ...mulliganCounts.value, [s]: current + 1 };
         }
       }
     }
@@ -1010,6 +1139,9 @@ export const useGameStore = defineStore("game", () => {
     }
     events.value = [];
     revealed.value = {};
+    optimisticActions.value = [];
+    mulliganCounts.value = { A: 0, B: 0 };
+    mulliganDone.value = { A: false, B: false, A1: false, B1: false, A2: false, B2: false };
     // Dérivée du journal (vide ici → "lobby") ; le pull de connexion la fera
     // évoluer vers mulligan/playing via applyServerEvent.
     matchPhase.value = deriveMatchPhase(events.value);
@@ -1066,6 +1198,9 @@ export const useGameStore = defineStore("game", () => {
     online.value = false;
     assist.value = true;
     events.value = [];
+    optimisticActions.value = [];
+    mulliganCounts.value = { A: 0, B: 0 };
+    mulliganDone.value = { A: false, B: false, A1: false, B1: false, A2: false, B2: false };
     pending.clear();
     pulling = false;
     clearResyncTimer();
@@ -1215,6 +1350,7 @@ export const useGameStore = defineStore("game", () => {
       { firstPlayer: first, seedA: rndSeed(), seedB: rndSeed() },
     );
     events.value = evs;
+    optimisticActions.value = [];
     populateInstanceCardMap(deckA, deckB, initialState);
   }
 
@@ -1351,7 +1487,13 @@ export const useGameStore = defineStore("game", () => {
 
   /** Nombre de mulligans déjà effectués par un siège. */
   function mulliganCount(seat: Seat): number {
-    return mulliganCounts.value[seat] ?? 0;
+    const fromEvents = events.value.filter(
+      (e) =>
+        e.actor === seat &&
+        e.type === "SHUFFLE" &&
+        (e.payload as { zone?: { zone?: string } })?.zone?.zone === "pioche",
+    ).length;
+    return Math.max(mulliganCounts.value[seat] ?? 0, fromEvents);
   }
 
   /** Recycle toute la main du joueur, re-mélange, re-pioche (1er mulligan gratuit → même nombre, puis -1). */
@@ -1690,6 +1832,8 @@ export const useGameStore = defineStore("game", () => {
     continuedMatch.value = false;
     passPending.value = false;
     mulliganSeat.value = null;
+    mulliganDone.value = { A: false, B: false, A1: false, B1: false, A2: false, B2: false };
+    mulliganCounts.value = { A: 0, B: 0, A1: 0, B1: 0, A2: 0, B2: 0 };
     winner.value = null;
     combat.value = null;
     attackedOnTurn.value = null;
@@ -1754,12 +1898,25 @@ export const useGameStore = defineStore("game", () => {
    * Sortir = s'exposer (ciblable) ; Rentrer = se protéger.
    */
   function moveHero(seat: Seat, to: "monde" | "havreSac"): void {
+    const heroId = state.value.seats[seat]?.heroInstanceId;
+    if (heroId) {
+      if (
+        tryIntent({
+          kind: "MOVE_CARD",
+          instanceId: heroId,
+          to:
+            to === "monde"
+              ? { zone: "monde" }
+              : { zone: "havreSac", owner: seat },
+        })
+      )
+        return;
+    }
     const reason = whyCannotMoveHero(rulesCtx(), seat, to);
     if (reason) {
       rejectMove(reason);
       return;
     }
-    const heroId = state.value.seats[seat].heroInstanceId;
     const inst = heroId ? state.value.instances[heroId] : null;
     if (!heroId || !inst) return;
     dispatch(
@@ -1795,7 +1952,7 @@ export const useGameStore = defineStore("game", () => {
     const to: "monde" | "havreSac" = cur === "monde" ? "havreSac" : "monde";
     return {
       to,
-      reason: whyCannotMoveHero(rulesCtx(), seat, to),
+      reason: manualTable.value ? null : whyCannotMoveHero(rulesCtx(), seat, to),
       heroInstanceId: heroId!,
     };
   });
@@ -1807,7 +1964,18 @@ export const useGameStore = defineStore("game", () => {
    * 1er tour). On déplace l'instance en conservant ses compteurs (échange 501.5).
    */
   function moveCreature(instanceId: string, to: "monde" | "havreSac"): void {
-    const seat = perspective.value;
+    const seat = (mySeat.value ?? perspective.value) as Seat;
+    if (
+      tryIntent({
+        kind: "MOVE_CARD",
+        instanceId,
+        to:
+          to === "monde"
+            ? { zone: "monde" }
+            : { zone: "havreSac", owner: seat },
+      })
+    )
+      return;
     const reason = whyCannotMoveCreature(rulesCtx(), seat, instanceId, to);
     if (reason) {
       rejectMove(reason);
@@ -1857,7 +2025,9 @@ export const useGameStore = defineStore("game", () => {
     const to: "monde" | "havreSac" = cur === "monde" ? "havreSac" : "monde";
     return {
       to,
-      reason: whyCannotMoveCreature(rulesCtx(), seat, instanceId, to),
+      reason: manualTable.value
+        ? null
+        : whyCannotMoveCreature(rulesCtx(), seat, instanceId, to),
     };
   }
 
@@ -1912,9 +2082,23 @@ export const useGameStore = defineStore("game", () => {
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+
+    // Restrictions strictes pour cartes sous contrôle adverse :
+    let dest = to;
+    if (inst.controller !== inst.owner) {
+      const staysInControllerPlay =
+        dest.zone === "monde" ||
+        (dest.zone === "havreSac" &&
+          "owner" in dest &&
+          dest.owner === inst.controller);
+      if (!staysInControllerPlay && "owner" in dest) {
+        dest = { ...dest, owner: inst.owner };
+      }
+    }
+
     const effectivePosition: Position =
       position ??
-      (to.zone === "defausse" || to.zone === "exil" || to.zone === "pioche"
+      (dest.zone === "defausse" || dest.zone === "exil" || dest.zone === "pioche"
         ? { at: "top" }
         : { at: "any" });
     // EN LIGNE (P2) : intention MOVE_CARD — le serveur impose le contrôle de tour
@@ -1924,7 +2108,7 @@ export const useGameStore = defineStore("game", () => {
       tryIntent({
         kind: "MOVE_CARD",
         instanceId,
-        to,
+        to: dest,
         position: effectivePosition,
       })
     )
@@ -1944,7 +2128,7 @@ export const useGameStore = defineStore("game", () => {
     // 4806 : un déplacement vers un Havre-Sac plein « n'a pas lieu »
     if (
       assist.value &&
-      to.zone === "havreSac" &&
+      dest.zone === "havreSac" &&
       inst.location.zone !== "havreSac"
     ) {
       const card = getCard(inst.cardId);
@@ -1953,26 +2137,26 @@ export const useGameStore = defineStore("game", () => {
         (card.mainType === "Héros" ||
           card.mainType === "Allié" ||
           card.mainType === "Salle");
-      if (counted && !havreSacHasRoom(rulesCtx(), to.owner)) {
+      if (counted && !havreSacHasRoom(rulesCtx(), dest.owner)) {
         rejectMove("Le Havre-Sac est plein (Taille atteinte).");
         return;
       }
     }
-    const toHidden = to.zone === "pioche";
+    const toHidden = dest.zone === "pioche";
     const toPublic =
-      to.zone === "monde" ||
-      to.zone === "havreSac" ||
-      to.zone === "defausse" ||
-      to.zone === "fileAttente" ||
-      to.zone === "exil";
+      dest.zone === "monde" ||
+      dest.zone === "havreSac" ||
+      dest.zone === "defausse" ||
+      dest.zone === "fileAttente" ||
+      dest.zone === "exil";
     const swap =
-      (inst.location.zone === "monde" && to.zone === "havreSac") ||
-      (inst.location.zone === "havreSac" && to.zone === "monde");
+      (inst.location.zone === "monde" && dest.zone === "havreSac") ||
+      (inst.location.zone === "havreSac" && dest.zone === "monde");
     const drafts: DraftEvent[] = [
       move(inst.controller, {
         instanceId,
         from: inst.location,
-        to,
+        to: dest,
         position: effectivePosition,
         visibility: toHidden
           ? { faceDown: true, visibleTo: "none" }
@@ -1981,12 +2165,12 @@ export const useGameStore = defineStore("game", () => {
             : { faceDown: false, visibleTo: [inst.owner] },
         preservesIdentity: swap,
         orientationOnArrival:
-          to.zone === "monde" || to.zone === "havreSac" ? "upright" : null,
+          dest.zone === "monde" || dest.zone === "havreSac" ? "upright" : null,
       }),
     ];
     // entrée en jeu (hors échange Monde↔Havre-Sac) : tour d'arrivée, pour le
     // mal d'invocation (1821). Préservé par l'échange qui garde les compteurs.
-    const entersPlay = (to.zone === "monde" || to.zone === "havreSac") && !swap;
+    const entersPlay = (dest.zone === "monde" || dest.zone === "havreSac") && !swap;
     if (entersPlay) {
       drafts.push(
         setCounterVerb(
@@ -3544,6 +3728,37 @@ export const useGameStore = defineStore("game", () => {
     });
   }
 
+  /** Transfère le contrôle d'une carte d'un joueur vers un autre (ex: prise de contrôle adverse). */
+  function transferControl(instanceId: string, targetSeat?: Seat): void {
+    const inst = state.value.instances[instanceId];
+    if (!inst) return;
+    const inPlay =
+      inst.location.zone === "monde" || inst.location.zone === "havreSac";
+    if (!inPlay) return;
+
+    const target = (targetSeat ?? otherSeat(inst.controller)) as Seat;
+    const card = resolveInstanceCard(inst.cardId) ?? getCard(inst.cardId);
+    const name = card?.name ?? "Carte";
+    const targetName = players.value[target]?.name ?? target;
+
+    if (online.value && onlineTransport?.submitIntent) {
+      void pushIntent({
+        kind: "SET_CONTROLLER",
+        instanceId,
+        controller: target,
+      });
+      return;
+    }
+
+    dispatch(
+      setControllerVerb(perspective.value, instanceId, target),
+      say(
+        perspective.value,
+        `🔄 Transfère le contrôle de ${name} à ${targetName}.`,
+      ),
+    );
+  }
+
   /** Trouve la racine d'un porteur (si cardId est un équipement rattaché à une autre carte). */
   function findRootBearerId(id: string): string {
     for (const inst of Object.values(state.value.instances)) {
@@ -3709,7 +3924,18 @@ export const useGameStore = defineStore("game", () => {
     return typeof pv === "number" && !Number.isNaN(pv) && pv > 0 ? pv : 20;
   }
 
-  /** Réinitialiser la table d'un joueur : renvoie main, terrain, havre-sac, défausse et bannie au deck, réinitialise le Héros et le Havre-Sac, et mélange. */
+  function getHavreSacMaxResistance(card: unknown): number {
+    if (!card) return 0;
+    const h = card as {
+      recto?: { stats?: Record<string, unknown> };
+      stats?: Record<string, unknown>;
+    };
+    const s = h?.recto?.stats ?? h?.stats;
+    const res = (s?.resistance ?? s?.res) as unknown;
+    return typeof res === "number" && !Number.isNaN(res) && res > 0 ? res : 0;
+  }
+
+  /** Réinitialiser la table d'un joueur : renvoie main, terrain, havre-sac, défausse et bannie au deck (hors Réserve), réinitialise le Héros et le Havre-Sac, et mélange. */
   async function resetTableAndDeck(seat?: Seat): Promise<void> {
     const s = (typeof seat === "string" ? seat : (mySeat.value ?? perspective.value)) as Seat;
     const heroId = state.value.seats[s]?.heroInstanceId;
@@ -3722,8 +3948,18 @@ export const useGameStore = defineStore("game", () => {
       activeDecks.value[s]?.hero;
     const baseHp = getHeroBaseHp(heroCard);
 
+    const havreSacInst = havreSacId ? state.value.instances[havreSacId] : null;
+    const havreSacCard =
+      (havreSacId ? instanceCardMap.get(havreSacId) : null) ??
+      (havreSacInst?.cardId ? cardStore.cards.find((c) => c.id === havreSacInst.cardId) : null) ??
+      activeDecks.value[s]?.havreSac;
+    const baseResistance = getHavreSacMaxResistance(havreSacCard);
+
+    // Exclusion explicite de la zone Réserve : les cartes de Réserve restent immobiles.
     const targetInstances = Object.values(state.value.instances).filter(
-      (inst) => inst.controller === s || inst.owner === s,
+      (inst) =>
+        (inst.controller === s || inst.owner === s) &&
+        inst.location.zone !== "reserve",
     );
 
     if (online.value && onlineTransport?.submitIntent) {
@@ -3734,13 +3970,6 @@ export const useGameStore = defineStore("game", () => {
           const id = inst.instanceId;
 
           if (id === heroId) {
-            if (state.value.instances[id]?.location.zone === "monde") {
-              await submitIntentWithRetry({
-                kind: "MOVE_CARD",
-                instanceId: id,
-                to: { zone: "pioche", owner: s },
-              });
-            }
             if (state.value.instances[id]?.location.zone !== "havreSac") {
               await submitIntentWithRetry({
                 kind: "MOVE_CARD",
@@ -3776,29 +4005,24 @@ export const useGameStore = defineStore("game", () => {
               });
             }
           } else if (id === havreSacId) {
-            if (state.value.instances[id]?.location.zone === "monde") {
+            // Emplacement Socle = zone "monde".
+            // Si pas dans le Socle : déplacer vers le Socle. Si déjà dans le Socle : ne pas déplacer.
+            if (state.value.instances[id]?.location.zone !== "monde") {
               await submitIntentWithRetry({
                 kind: "MOVE_CARD",
                 instanceId: id,
-                to: { zone: "pioche", owner: s },
-              });
-            }
-            if (state.value.instances[id]?.location.zone !== "havreSac") {
-              await submitIntentWithRetry({
-                kind: "MOVE_CARD",
-                instanceId: id,
-                to: { zone: "havreSac", owner: s },
+                to: { zone: "monde" },
               });
             }
             if (state.value.instances[id]?.orientation === "tapped") {
               await submitIntentWithRetry({ kind: "UNTAP", instanceId: id });
             }
-            if (state.value.instances[id]?.counters.resistance) {
+            if (state.value.instances[id]?.counters.resistance !== baseResistance) {
               await submitIntentWithRetry({
                 kind: "SET_COUNTER",
                 instanceId: id,
                 counter: "resistance",
-                value: 0,
+                value: baseResistance,
               });
             }
             if (state.value.instances[id]?.counters.combatState) {
@@ -3879,14 +4103,16 @@ export const useGameStore = defineStore("game", () => {
         drafts.push(setCounterVerb(s, id, "combatState", null as never));
         drafts.push(setCounterVerb(s, id, "combatTargetId", null as never));
       } else if (id === havreSacId) {
-        if (inst.location.zone !== "havreSac") {
+        // Emplacement Socle = zone "monde".
+        // Si pas dans le Socle : déplacer vers le Socle. Si déjà dans le Socle : ne pas déplacer.
+        if (inst.location.zone !== "monde") {
           drafts.push({
             actor: s,
             type: "MOVE",
             payload: {
               instanceId: id,
               from: inst.location,
-              to: { zone: "havreSac", owner: s },
+              to: { zone: "monde" },
               position: { at: "bottom" },
               visibility: { faceDown: false, visibleTo: "all" },
               preservesIdentity: true,
@@ -3896,7 +4122,7 @@ export const useGameStore = defineStore("game", () => {
         if (inst.orientation === "tapped") {
           drafts.push({ actor: s, type: "SET_ORIENTATION", payload: { instanceId: id, orientation: "upright" } });
         }
-        drafts.push(setCounterVerb(s, id, "resistance", 0));
+        drafts.push(setCounterVerb(s, id, "resistance", baseResistance));
         drafts.push(setCounterVerb(s, id, "combatState", null as never));
         drafts.push(setCounterVerb(s, id, "combatTargetId", null as never));
       } else {
@@ -3959,6 +4185,57 @@ export const useGameStore = defineStore("game", () => {
     if (!ids.length) return false;
     return ids.every((id) =>
       state.value.instances[id]?.revealedTo?.includes(oppSeat),
+    );
+  });
+
+  function revealMyDeck(): boolean {
+    const seat = (online.value ? mySeat.value : perspective.value) as Seat;
+    const ids = state.value.seats[seat]?.pioche ?? [];
+    if (!ids.length) return rejectMove("Ta Pioche est vide.");
+    const oppSeat = otherSeat(seat);
+    dispatch(
+      revealHand(seat, [...ids], [oppSeat]),
+      say(seat, "👁 révèle son Deck à l'adversaire."),
+    );
+    return true;
+  }
+
+  function hideMyDeck(): void {
+    const seat = (online.value ? mySeat.value : perspective.value) as Seat;
+    const ids = state.value.seats[seat]?.pioche ?? [];
+    if (!ids.length) return;
+    const oppSeat = otherSeat(seat);
+    dispatch(
+      unrevealHand(seat, [...ids], [oppSeat]),
+      say(seat, "🙈 masque son Deck à l'adversaire."),
+    );
+  }
+
+  function toggleRevealMyDeck(): void {
+    if (isMyDeckRevealed.value) {
+      hideMyDeck();
+    } else {
+      revealMyDeck();
+    }
+  }
+
+  const isMyDeckRevealed = computed(() => {
+    const seat = (online.value ? mySeat.value : perspective.value) as Seat;
+    const oppSeat = otherSeat(seat);
+    const ids = state.value.seats[seat]?.pioche ?? [];
+    if (!ids.length) return false;
+    return ids.some((id) =>
+      state.value.instances[id]?.revealedTo?.includes(oppSeat),
+    );
+  });
+
+  const isOpponentDeckRevealed = computed(() => {
+    const seat = (online.value ? mySeat.value : perspective.value) as Seat;
+    const oppSeat = otherSeat(seat);
+    const ids = state.value.seats[oppSeat]?.pioche ?? [];
+    if (!ids.length) return false;
+    return ids.some((id) =>
+      state.value.instances[id]?.revealedTo?.includes(seat),
     );
   });
 
@@ -4874,13 +5151,6 @@ export const useGameStore = defineStore("game", () => {
     combat.value = null;
   }
 
-  // P2.6 — désactiver « Règles assistées » en plein combat laisserait un combat
-  // ouvert que plus rien ne résout (les destructions d'état sont gated sur
-  // assist). On annule proprement le combat à la bascule pour éviter l'impasse.
-  watch(assist, (on) => {
-    if (!on && combat.value) combatCancel();
-  });
-
   /**
    * Force EFFECTIVE d'une instance en jeu pour l'UI (812.2/805) :
    * base|taille de main + auras + « tant qu'il bloque » + jetons. `delta` =
@@ -5188,6 +5458,7 @@ export const useGameStore = defineStore("game", () => {
     combatCancel,
     effectiveForceOf,
     setCardCombatState,
+    transferControl,
     tapAllOnBoard,
     untapAllOnBoard,
     tapStack,
@@ -5200,6 +5471,11 @@ export const useGameStore = defineStore("game", () => {
     setTurnPhase,
     hideMyHand,
     isMyHandRevealed,
+    revealMyDeck,
+    hideMyDeck,
+    toggleRevealMyDeck,
+    isMyDeckRevealed,
+    isOpponentDeckRevealed,
     cannotPlayReason,
     // A19 — légalité de FABRICATION (Recette) du point de vue du siège affiché.
     whyCannotCraft: whyCannotCraftFromHand,
@@ -5228,6 +5504,7 @@ export const useGameStore = defineStore("game", () => {
     manualReminders: engine.manualReminders,
     dismissManualReminder: engine.dismissManualReminder,
     dispatch,
+    optimisticActions,
     // 2v2
     mode,
     teamXp,
