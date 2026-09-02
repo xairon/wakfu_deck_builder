@@ -1125,7 +1125,7 @@
       <div v-if="mulliganDecisionVisible" class="overlay overlay--mulligan">
         <div class="overlay__card overlay__card--wide">
           <p class="eyebrow text-primary">
-            Main de départ — {{ store.players[store.perspective]?.name ?? String(store.perspective) }}
+            Main de départ — {{ store.players[currentMulliganSeat]?.name ?? String(currentMulliganSeat) }}
           </p>
           <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
           <p v-if="store.online" class="mt-1 text-sm text-base-content/60">
@@ -1148,7 +1148,7 @@
               :disabled="mulliganHand.length === 0"
               @click="onMulliganReplace"
             >
-              <template v-if="store.mulliganCount(store.perspective) === 0">
+              <template v-if="store.mulliganCount(currentMulliganSeat) === 0">
                 Mulligan gratuit (re-piocher {{ mulliganHand.length }})
               </template>
               <template v-else>
@@ -1437,6 +1437,7 @@ function startSandboxGame(): void {
   const p2 = sandboxPlayer2Name.value.trim() || d2.name || "Joueur 2";
   store.startMatch(d1, d2, {
     isSandbox: true,
+    first: "A",
     nameA: p1,
     nameB: p2,
   });
@@ -2108,8 +2109,34 @@ const cardIndex = computed(() => {
 function resolveCard(cardId: string | null): Card | null {
   return cardId ? (cardIndex.value.get(cardId) ?? null) : null;
 }
+
+const currentMulliganSeat = computed<Seat>(() => {
+  if (store.online) return store.mySeat;
+  return (store.mulliganSeat ?? store.perspective) as Seat;
+});
+
 const mulliganHand = computed<RedactedInstance[]>(() => {
-  const s = store.view?.seats?.[store.perspective];
+  const seat = currentMulliganSeat.value;
+  if (!store.online) {
+    const instanceIds = store.state.seats[seat]?.main ?? [];
+    return instanceIds
+      .map((id) => {
+        const inst = store.state.instances[id];
+        if (!inst) return null;
+        return {
+          instanceId: inst.instanceId,
+          cardId: inst.cardId,
+          owner: inst.owner,
+          controller: inst.controller,
+          face: inst.face,
+          orientation: inst.orientation,
+          counters: inst.counters,
+          attachments: inst.attachments,
+        } as RedactedInstance;
+      })
+      .filter((i): i is RedactedInstance => i !== null);
+  }
+  const s = store.view?.seats?.[seat];
   if (!s) return [];
   const z = s.main;
   return z?.kind === "full" ? z.instances : [];
@@ -2163,7 +2190,7 @@ async function onMulliganReplace(): Promise<void> {
   if (store.online && store.mode !== "2v2") {
     await requestMulligan(store.gameId());
   } else {
-    store.mulligan(store.mySeat);
+    store.mulligan(currentMulliganSeat.value);
   }
 }
 

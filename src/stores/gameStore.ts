@@ -1356,6 +1356,10 @@ export const useGameStore = defineStore("game", () => {
 
   /** Recycle toute la main du joueur, re-mélange, re-pioche (1er mulligan gratuit → même nombre, puis -1). */
   function mulligan(seat: Seat): void {
+    if (!online.value) {
+      perspective.value = seat;
+      mulliganSeat.value = seat;
+    }
     const count = mulliganCounts.value[seat] ?? 0;
     const hand = [...state.value.seats[seat].main];
     const target =

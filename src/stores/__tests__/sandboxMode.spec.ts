@@ -54,6 +54,57 @@ describe("gameStore — Mode Entraînement Solo (Sandbox / Hot-seat)", () => {
     expect(store.passPending).toBe(false);
   });
 
+  it("met à jour la main du joueur ciblé lors d'un mulligan sans toucher à l'adversaire", () => {
+    const store = useGameStore();
+    const deckA = createMockDeck({ id: "deck-a", name: "Deck Test A" });
+    const deckB = createMockDeck({ id: "deck-b", name: "Deck Test B" });
+
+    store.startMatch(deckA, deckB, {
+      first: "A",
+      isSandbox: true,
+    });
+
+    const initialHandA = [...store.state.seats.A.main];
+    const initialHandB = [...store.state.seats.B.main];
+    expect(initialHandA.length).toBe(6);
+    expect(initialHandB.length).toBe(6);
+
+    // 1. Mulligan gratuit de Joueur A (6 cartes)
+    store.mulligan("A");
+    expect(store.mulliganCount("A")).toBe(1);
+    expect(store.perspective).toBe("A");
+    expect(store.mulliganSeat).toBe("A");
+    expect(store.state.seats.A.main.length).toBe(6);
+    // La main de B est restée intacte
+    expect(store.state.seats.B.main).toEqual(initialHandB);
+
+    // 2. Deuxième mulligan de Joueur A (5 cartes)
+    store.mulligan("A");
+    expect(store.mulliganCount("A")).toBe(2);
+    expect(store.state.seats.A.main.length).toBe(5);
+    expect(store.state.seats.B.main).toEqual(initialHandB);
+
+    // Joueur A garde sa main
+    store.keepHand();
+    expect(store.mulliganSeat).toBe("B");
+    expect(store.perspective).toBe("B");
+
+    const handABeforeMulliganB = [...store.state.seats.A.main];
+
+    // 3. Mulligan gratuit de Joueur B (6 cartes)
+    store.mulligan("B");
+    expect(store.mulliganCount("B")).toBe(1);
+    expect(store.perspective).toBe("B");
+    expect(store.mulliganSeat).toBe("B");
+    expect(store.state.seats.B.main.length).toBe(6);
+    // La main de A est restée intacte
+    expect(store.state.seats.A.main).toEqual(handABeforeMulliganB);
+
+    // Joueur B garde sa main → début de la partie
+    store.keepHand();
+    expect(store.matchPhase).toBe("playing");
+  });
+
   it("bascule la perspective automatiquement sur le joueur actif lors de endTurn() sans rideau", () => {
     const store = useGameStore();
     const deckA = createMockDeck({ id: "deck-a", name: "Deck Test A" });
