@@ -1904,14 +1904,27 @@ export const useGameStore = defineStore("game", () => {
   function moveTo(
     instanceId: string,
     to: ZoneRef,
-    position: Position = { at: "any" },
+    position?: Position,
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    const effectivePosition: Position =
+      position ??
+      (to.zone === "defausse" || to.zone === "exil" || to.zone === "pioche"
+        ? { at: "top" }
+        : { at: "any" });
     // EN LIGNE (P2) : intention MOVE_CARD — le serveur impose le contrôle de tour
     // et applique le déplacement (échange Monde↔Havre-Sac préservé, jeton
     // d'arrivée à l'entrée en jeu). Hors combat uniquement (tryIntent l'exclut).
-    if (tryIntent({ kind: "MOVE_CARD", instanceId, to, position })) return;
+    if (
+      tryIntent({
+        kind: "MOVE_CARD",
+        instanceId,
+        to,
+        position: effectivePosition,
+      })
+    )
+      return;
     // Règles assistées : pendant la phase de jeu, seul le joueur ACTIF manipule
     // le plateau (sauf fenêtre de réaction en combat). Sans ça, n'importe quel
     // MOVE hors « main → Monde » (ex. Havre-Sac ↔ Monde) contournait le contrôle
@@ -1956,7 +1969,7 @@ export const useGameStore = defineStore("game", () => {
         instanceId,
         from: inst.location,
         to,
-        position,
+        position: effectivePosition,
         visibility: toHidden
           ? { faceDown: true, visibleTo: "none" }
           : toPublic

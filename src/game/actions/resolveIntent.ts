@@ -543,7 +543,13 @@ export function resolveIntent(
         instanceId: intent.instanceId,
         from: inst.location,
         to: dest,
-        position: intent.position ?? { at: "any" },
+        position:
+          intent.position ??
+          (destZone === "defausse" ||
+          destZone === "exil" ||
+          destZone === "pioche"
+            ? { at: "top" }
+            : { at: "any" }),
         visibility: toHidden
           ? { faceDown: true, visibleTo: "none" }
           : toPublic

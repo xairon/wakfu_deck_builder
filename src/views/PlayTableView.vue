@@ -1526,7 +1526,12 @@ function create2v2OnlineLobby(): void {
       }
     },
     onStart: (gameId, finalState, initialEvents) => {
-      start2v2OnlineMatch(gameId, "A1", finalState, initialEvents);
+      start2v2OnlineMatch(
+        gameId,
+        "A1",
+        finalState,
+        initialEvents as DraftEvent[] | undefined,
+      );
     },
   });
 
@@ -1570,7 +1575,12 @@ function join2v2OnlineLobby(): void {
       };
     },
     onStart: (gameId, finalState, initialEvents) => {
-      start2v2OnlineMatch(gameId, my2v2Seat.value, finalState, initialEvents);
+      start2v2OnlineMatch(
+        gameId,
+        my2v2Seat.value,
+        finalState,
+        initialEvents as DraftEvent[] | undefined,
+      );
     },
   });
 

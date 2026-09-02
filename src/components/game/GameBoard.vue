@@ -1910,21 +1910,21 @@ function discardCount(seat: Seat): number {
 }
 function topDiscard(seat: Seat): RedactedInstance | null {
   const arr = instancesOf(view.value.seats[seat]?.defausse);
-  return arr.length ? arr[arr.length - 1] : null;
+  return arr.length ? arr[0] : null;
 }
 function exileCount(seat: Seat): number {
   return instancesOf(view.value.seats[seat]?.exil).length;
 }
 function topExile(seat: Seat): RedactedInstance | null {
   const arr = instancesOf(view.value.seats[seat]?.exil);
-  return arr.length ? arr[arr.length - 1] : null;
+  return arr.length ? arr[0] : null;
 }
 // ── Consultation d'une pile publique (Défausse / Exil) ─────────────────────
 const pileBrowse = ref<{ seat: Seat; zone?: "defausse" | "exil" } | null>(null);
 const browsedPile = computed<RedactedInstance[]>(() => {
   if (!pileBrowse.value) return [];
   const z = pileBrowse.value.zone ?? "defausse";
-  return [...instancesOf(view.value.seats[pileBrowse.value.seat][z])].reverse();
+  return [...instancesOf(view.value.seats[pileBrowse.value.seat][z])];
 });
 /**
  * RÉCUPÉRATION depuis MA Défausse (effets « Récupérez… ») : déplace la carte

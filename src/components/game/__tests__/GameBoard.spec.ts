@@ -262,4 +262,26 @@ describe("GameBoard — menu regroupé ... & action Mill", () => {
     expect(store.state.seats[me].pioche.length).toBe(initialPioche - 1);
     expect(store.state.seats[me].defausse).toContain(topCardId);
   });
+
+  it("affiche bien la dernière carte défaussée au-dessus de la pile de défausse", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const me = store.perspective;
+
+    const card1 = store.state.seats[me].main[0];
+    const card2 = store.state.seats[me].main[1];
+
+    store.moveTo(card1, { zone: "defausse", owner: me });
+    expect(store.state.seats[me].defausse[0]).toBe(card1);
+
+    store.moveTo(card2, { zone: "defausse", owner: me });
+    expect(store.state.seats[me].defausse[0]).toBe(card2);
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    const discardSlots = wrapper.findAll(".gpile--discard");
+    expect(discardSlots.length).toBeGreaterThan(0);
+  });
 });

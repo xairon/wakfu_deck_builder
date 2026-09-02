@@ -85,9 +85,15 @@ function insertIntoZone(
       arr.unshift(id);
       break;
     case "bottom":
+      arr.push(id);
+      break;
     case "any":
     case "free":
-      arr.push(id);
+      if (to.zone === "defausse" || to.zone === "exil") {
+        arr.unshift(id);
+      } else {
+        arr.push(id);
+      }
       break;
     case "index":
       arr.splice(Math.max(0, Math.min(arr.length, position.index)), 0, id);
