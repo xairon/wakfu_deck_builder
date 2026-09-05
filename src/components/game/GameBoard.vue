@@ -290,7 +290,7 @@
         "
       >
         <span v-if="!allies(opp).length" class="gzone__hint"
-          >Alliés adverses</span
+          >🛡 Alliés adverses</span
         >
         <TransitionGroup tag="div" name="zone" class="gzone__cards">
           <div
@@ -327,6 +327,12 @@
       </div>
     </section>
 
+    <!-- ════════ ARÈNE : Ligne médiane de démarcation ════════ -->
+    <div class="garena-divider" aria-hidden="true">
+      <span class="garena-divider__line"></span>
+      <span class="garena-divider__symbol">⚔ ARÈNE ⚔</span>
+      <span class="garena-divider__line"></span>
+    </div>
 
     <!-- ════════ TOI : champ pleine largeur puis bande (HUD · socle · main · piles) ════════ -->
     <section class="gseat">
@@ -338,7 +344,7 @@
         :ref="(el) => registerZone('monde', el, { zone: 'monde' }, 'Monde')"
       >
         <span v-if="!allies(me).length" class="gzone__hint"
-          >⬇ Glissez une carte ici pour la jouer</span
+          >⚔ Glissez vos Alliés ici pour les déployer</span
         >
         <TransitionGroup tag="div" name="zone" class="gzone__cards">
           <div
@@ -3369,16 +3375,63 @@ function manaBonus(seat: Seat): boolean {
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.18);
 }
+/* ── Ligne médiane d'arène ── */
+.garena-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: -6px 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.garena-divider__line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(240, 166, 43, 0.2) 20%,
+    rgba(240, 78, 34, 0.45) 50%,
+    rgba(240, 166, 43, 0.2) 80%,
+    transparent 100%
+  );
+}
+.garena-divider__symbol {
+  font-family: "Space Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #f0a62b;
+  text-shadow: 0 0 8px rgba(240, 166, 43, 0.5);
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(18, 14, 11, 0.9);
+  border: 1px solid rgba(240, 166, 43, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
 .gzone--field {
   flex: 1;
   min-height: calc(var(--card-field) * 88 / 63 + 12px);
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px solid rgba(240, 78, 34, 0.22);
+  background: linear-gradient(
+    180deg,
+    rgba(24, 18, 14, 0.45) 0%,
+    rgba(14, 11, 8, 0.6) 100%
+  );
+  border: 1px solid rgba(240, 166, 43, 0.16);
+  border-radius: 12px;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.45);
 }
 .gzone--play {
-  border: 1px dashed rgba(240, 78, 34, 0.38);
+  border: 1px dashed rgba(240, 166, 43, 0.35);
+  background: linear-gradient(
+    180deg,
+    rgba(14, 11, 8, 0.6) 0%,
+    rgba(26, 20, 14, 0.45) 100%
+  );
 }
 .gzone__cards {
   position: relative;
@@ -3396,22 +3449,27 @@ function manaBonus(seat: Seat): boolean {
   top: 4px;
   left: 8px;
   font-family: "Space Mono", ui-monospace, monospace;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(246, 245, 241, 0.45);
+  color: rgba(240, 166, 43, 0.6);
   pointer-events: none;
+  background: rgba(14, 11, 8, 0.7);
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(240, 166, 43, 0.18);
 }
 .gzone__hint {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: "Space Mono", ui-monospace, monospace;
   font-size: 11px;
-  font-style: italic;
-  color: rgba(240, 78, 34, 0.65);
+  letter-spacing: 0.04em;
+  color: rgba(240, 166, 43, 0.5);
   pointer-events: none;
 }
 
@@ -3552,13 +3610,16 @@ function manaBonus(seat: Seat): boolean {
 /* ── Piles ── */
 .gpiles {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  align-items: center;
   align-self: center;
-  /* Les piles restent CLIQUABLES sous l'éventail : au-dessus des cartes de
-     main AU REPOS (z-index 1..taille de main, cf. HandFan) mais SOUS la carte
-     survolée (z-index 40) — comportement MTGA : la main ne passe devant qu'au
-     survol. Sans ça, une main de 8+ cartes recouvrait entièrement Pioche/
-     Défausse/Réserve sur laptop (vérifié à 1280×720 : 0 point atteignable). */
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(18, 14, 11, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   position: relative;
   z-index: 30;
 }
@@ -3586,29 +3647,38 @@ function manaBonus(seat: Seat): boolean {
   top: 50%;
   transform: translateY(-50%);
   z-index: 18;
-  width: clamp(72px, 6.4vw, 90px);
-  height: clamp(72px, 6.4vw, 90px);
+  width: clamp(74px, 6.2vw, 92px);
+  height: clamp(74px, 6.2vw, 92px);
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: radial-gradient(
     120% 120% at 30% 25%,
-    #3a2e22 0%,
-    #241c13 55%,
-    #160f09 100%
+    #423223 0%,
+    #261c12 55%,
+    #140e08 100%
   );
-  border: 1px solid rgba(240, 166, 43, 0.5);
+  border: 2px solid rgba(240, 166, 43, 0.65);
   box-shadow:
-    0 6px 22px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 8px 26px rgba(0, 0, 0, 0.75),
+    0 0 20px rgba(240, 166, 43, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   cursor: pointer;
-  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  transition:
+    transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .gendturn:hover {
-  transform: translateY(-50%) scale(1.06);
+  transform: translateY(-50%) scale(1.08);
+  border-color: #f0a62b;
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.8),
+    0 0 28px rgba(240, 166, 43, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 .gendturn:active {
-  transform: translateY(-50%) scale(0.97);
+  transform: translateY(-50%) scale(0.96);
 }
 .gendturn:focus-visible {
   outline: 2px solid #f0a62b;

@@ -828,11 +828,17 @@
           · Onglet en arrière-plan — l'adversaire peut te voir absent
         </span>
       </div>
-      <div v-if="store.matchPhase === 'playing'" class="gtopbar__group">
+
+      <!-- Barre de phases synthétique au centre du bandeau -->
+      <div v-if="store.matchPhase === 'playing'" class="gtopbar__center">
+        <TurnPhaseBar compact hide-end-turn />
+      </div>
+
+      <div class="gtopbar__group">
         <!-- Bascule manuelle de vue (mode local / sandbox) -->
         <button
-          v-if="!store.online"
-          class="gtop-btn"
+          v-if="!store.online && store.matchPhase === 'playing'"
+          class="gtop-btn gtop-btn--view"
           data-testid="topbar-toggle-perspective"
           :title="'Vue actuelle : ' + store.players[store.perspective].name + ' (cliquer pour basculer)'"
           @click="store.togglePerspective()"
@@ -848,10 +854,8 @@
           class="gtopbar__turn"
           data-testid="topbar-effects-manual-hint"
         >
-          · Effets de carte : à jouer à la main
+          · Manuel
         </span>
-      </div>
-      <div class="gtopbar__group">
         <button
           class="gtop-btn"
           :aria-label="sounds.muted.value ? 'Activer le son' : 'Couper le son'"
@@ -1299,6 +1303,7 @@ import type { Card, Deck } from "@/types/cards";
 import type { RedactedInstance, DraftEvent, Seat } from "@/game";
 import { getThumbPath } from "@/utils/imagePaths";
 import GameBoard from "@/components/game/GameBoard.vue";
+import TurnPhaseBar from "@/components/game/TurnPhaseBar.vue";
 import GameCard from "@/components/game/GameCard.vue";
 import HandFan from "@/components/game/HandFan.vue";
 import type { HandItem } from "@/components/game/HandFan.vue";
@@ -2792,12 +2797,20 @@ onUnmounted(() => {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(246, 245, 241, 0.08);
-  border-radius: 10px;
-  backdrop-filter: blur(8px);
+  gap: 12px;
+  padding: 6px 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(28, 22, 17, 0.88) 0%,
+    rgba(14, 11, 8, 0.94) 100%
+  );
+  border: 1px solid rgba(240, 166, 43, 0.22);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .gtopbar__group {
   display: flex;
@@ -2805,18 +2818,25 @@ onUnmounted(() => {
   gap: 8px;
   flex-wrap: wrap;
 }
+.gtopbar__center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .gtopbar__title {
   font-family: Fraunces, Georgia, serif;
-  font-size: 18px;
-  margin-right: 6px;
-  color: #f6f5f1;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f0a62b;
+  text-shadow: 0 0 12px rgba(240, 166, 43, 0.25);
+  margin-right: 4px;
 }
 .gtopbar__turn {
   font-family: "Space Mono", ui-monospace, monospace;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(246, 245, 241, 0.55);
+  letter-spacing: 0.06em;
+  color: rgba(246, 245, 241, 0.65);
 }
 /* Bandeau de tour en ligne, relatif au joueur. */
 .gturn--you {
@@ -2828,37 +2848,48 @@ onUnmounted(() => {
   font-weight: 700;
 }
 .gtop-btn {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 7px 14px;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: rgba(246, 245, 241, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f6f5f1;
   transition:
     background 0.15s ease,
+    border-color 0.15s ease,
     transform 0.15s ease;
+  white-space: nowrap;
 }
 .gtop-btn:hover {
-  background: rgba(246, 245, 241, 0.18);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(240, 166, 43, 0.4);
   transform: translateY(-1px);
 }
 .gtop-btn:focus-visible {
-  outline: 2px solid #f04e22;
+  outline: 2px solid #f0a62b;
   outline-offset: 1px;
+}
+.gtop-btn--view {
+  background: rgba(240, 166, 43, 0.15);
+  border-color: rgba(240, 166, 43, 0.4);
+  color: #f0a62b;
 }
 .gtop-btn--quit {
   background: transparent;
-  outline: 1px solid rgba(246, 245, 241, 0.2);
+  border-color: rgba(246, 245, 241, 0.2);
 }
 .gtop-btn--quit:hover {
-  background: rgba(240, 78, 34, 0.25);
+  background: rgba(240, 78, 34, 0.2);
+  border-color: rgba(240, 78, 34, 0.5);
 }
 .gtop-btn--danger {
-  background: #c0392b;
-  outline-color: transparent;
+  background: rgba(220, 38, 38, 0.3) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  color: #fca5a5 !important;
 }
 .gtop-btn--danger:hover {
-  background: #a72f1f;
+  background: rgba(220, 38, 38, 0.5) !important;
 }
 .gdisconnect {
   display: flex;

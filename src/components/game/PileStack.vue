@@ -72,11 +72,15 @@ function onClick(): void {
   position: relative;
   width: var(--pile, 80px);
   aspect-ratio: 63 / 88;
-  border-radius: 6px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(246, 245, 241, 0.16);
-  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(240, 166, 43, 0.25);
+  background: linear-gradient(
+    145deg,
+    rgba(32, 26, 20, 0.7) 0%,
+    rgba(14, 11, 8, 0.85) 100%
+  );
   /* épaisseur de pile proportionnelle au nombre de cartes */
   box-shadow:
     calc(var(--depth, 0) * 1px) calc(var(--depth, 0) * 1px) 0
@@ -84,29 +88,44 @@ function onClick(): void {
     calc(var(--depth, 0) * 2px) calc(var(--depth, 0) * 2px) 0
       rgba(28, 24, 19, 0.85),
     calc(var(--depth, 0) * 2px + 4px) calc(var(--depth, 0) * 2px + 6px) 14px
-      rgba(0, 0, 0, 0.5);
+      rgba(0, 0, 0, 0.6);
   cursor: pointer;
   transition:
     transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+    border-color 0.2s ease,
     box-shadow 0.18s ease;
   overflow: visible;
 }
 .gpile:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(240, 166, 43, 0.6);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.7),
+    0 0 14px rgba(240, 166, 43, 0.25);
 }
 .gpile:active {
   transform: translateY(-1px) scale(0.98);
 }
 .gpile:focus-visible {
-  outline: 2px solid #f04e22;
+  outline: 2px solid #f0a62b;
   outline-offset: 2px;
 }
+.gpile--deck {
+  border-color: rgba(240, 166, 43, 0.4);
+}
 .gpile--reserve {
-  border-color: rgba(240, 166, 43, 0.5);
+  border-color: rgba(168, 85, 247, 0.35);
 }
 .gpile--empty {
-  opacity: 0.45;
+  opacity: 0.5;
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.15);
   box-shadow: none;
+  background: rgba(0, 0, 0, 0.2);
+}
+.gpile--empty:hover {
+  opacity: 0.85;
+  border-color: rgba(240, 166, 43, 0.45);
 }
 .gpile__img {
   position: absolute;
@@ -114,36 +133,52 @@ function onClick(): void {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 7px;
 }
 .gpile__count {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   top: 3px;
   right: 3px;
-  min-width: 17px;
+  min-width: 18px;
   padding: 1px 5px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(14, 11, 8, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   font-family: "Space Mono", ui-monospace, monospace;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.2;
   color: #f6f5f1;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+.gpile--deck .gpile__count {
+  background: linear-gradient(135deg, #f0a62b, #b45309);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #120e09;
 }
 .gpile__label {
   position: absolute;
-  z-index: 1;
-  bottom: 4px;
-  left: 0;
-  right: 0;
+  z-index: 2;
+  bottom: 3px;
+  left: 3px;
+  right: 3px;
   text-align: center;
-  font-size: 9px;
+  font-size: 8px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(246, 245, 241, 0.8);
+  color: rgba(246, 245, 241, 0.9);
+  background: rgba(10, 8, 6, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 1px 2px;
+  backdrop-filter: blur(4px);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 @media (prefers-reduced-motion: reduce) {
   .gpile,

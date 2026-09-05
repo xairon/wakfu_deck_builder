@@ -1,5 +1,8 @@
 <template>
-  <div class="phase-bar" :class="{ 'phase-bar--inactif': !isMyTurn }">
+  <div
+    class="phase-bar"
+    :class="{ 'phase-bar--inactif': !isMyTurn, 'phase-bar--compact': compact }"
+  >
     <!-- ── Phases principales du tour ── -->
     <div class="phase-bar__phases">
       <button
@@ -24,20 +27,22 @@
         ></span>
       </button>
 
-      <span class="phase-bar__divider"></span>
+      <template v-if="!hideEndTurn">
+        <span class="phase-bar__divider"></span>
 
-      <!-- ── Bouton Fin du tour intégré ── -->
-      <button
-        v-if="canEndTurn"
-        type="button"
-        class="phase-btn phase-btn--endturn"
-        title="Finir le tour actuel"
-        data-testid="end-turn"
-        @click="endTurn"
-      >
-        <span class="phase-btn__icon">⏳</span>
-        <span class="phase-btn__label">Fin de Tour</span>
-      </button>
+        <!-- ── Bouton Fin du tour intégré ── -->
+        <button
+          v-if="canEndTurn"
+          type="button"
+          class="phase-btn phase-btn--endturn"
+          title="Finir le tour actuel"
+          data-testid="phase-end-turn"
+          @click="endTurn"
+        >
+          <span class="phase-btn__icon">⏳</span>
+          <span class="phase-btn__label">Fin de Tour</span>
+        </button>
+      </template>
     </div>
 
     <!-- ── Sous-phases de la Phase Principale / Combat ── -->
@@ -71,6 +76,17 @@
 import { computed, ref } from "vue";
 import { useGameStore } from "@/stores/gameStore";
 import type { TurnPhase } from "@/game";
+
+const props = withDefaults(
+  defineProps<{
+    hideEndTurn?: boolean;
+    compact?: boolean;
+  }>(),
+  {
+    hideEndTurn: false,
+    compact: false,
+  },
+);
 
 const store = useGameStore();
 
@@ -473,6 +489,44 @@ function endTurn(): void {
 .combat-sub-leave-to {
   opacity: 0;
   transform: translateY(-6px) scale(0.95);
+}
+
+.phase-bar--compact {
+  gap: 2px;
+}
+
+.phase-bar--compact .phase-bar__phases {
+  padding: 2px 6px;
+  gap: 3px;
+  background: rgba(18, 14, 11, 0.75);
+  border: 1px solid rgba(240, 166, 43, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.phase-bar--compact .phase-btn {
+  flex-direction: row;
+  padding: 3px 8px;
+  gap: 5px;
+  font-size: 0.68rem;
+  border-radius: 999px;
+}
+
+.phase-bar--compact .phase-btn__icon {
+  font-size: 0.85rem;
+}
+
+.phase-bar--compact .phase-bar__combat {
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.phase-bar--compact .phase-bar__combat-label {
+  font-size: 0.58rem;
+}
+
+.phase-bar--compact .phase-sub {
+  padding: 2px 6px;
+  font-size: 0.58rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
