@@ -1485,11 +1485,15 @@
               @select="zoomInst(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
             />
-            <!-- Récupération depuis MA Défausse (effets « Récupérez… ») —
+            <!-- Actions depuis la Défausse (effets « Récupérez… », « Bannissez… ») —
                  demandée par les playtesters : la Défausse était consultable
                  mais inerte. moveTo/MOVE_CARD portent la légalité. -->
-            <div v-if="pileBrowse.seat === me" class="gpilebrowser__actions">
+            <div
+              v-if="(pileBrowse.zone ?? 'defausse') !== 'exil'"
+              class="gpilebrowser__actions"
+            >
               <button
+                v-if="pileBrowse.seat === me"
                 class="gbtn gbtn--sm"
                 :data-testid="`pile-recover-main-${inst.instanceId}`"
                 title="Reprendre cette carte en main"
@@ -1498,6 +1502,7 @@
                 → Main
               </button>
               <button
+                v-if="pileBrowse.seat === me"
                 class="gbtn gbtn--sm"
                 title="Mettre cette carte en jeu dans le Monde"
                 @click="recoverFromPile(inst.instanceId, 'monde')"
@@ -1505,11 +1510,20 @@
                 → Monde
               </button>
               <button
+                v-if="pileBrowse.seat === me"
                 class="gbtn gbtn--sm"
                 title="Poser cette carte en dessous de ta Pioche"
                 @click="recoverFromPile(inst.instanceId, 'pioche')"
               >
                 ↓ Pioche
+              </button>
+              <button
+                class="gbtn gbtn--sm gbtn--banish"
+                :data-testid="`pile-banish-${inst.instanceId}`"
+                title="Bannir cette carte (la placer dans la zone Bannie / Exil)"
+                @click="recoverFromPile(inst.instanceId, 'exil')"
+              >
+                🚫 Bannir
               </button>
             </div>
           </div>
@@ -2073,10 +2087,12 @@ function recoverFromPile(
   instanceId: string,
   zone: "main" | "monde" | "havreSac" | "pioche" | "exil",
 ): void {
+  const inst = store.state.instances[instanceId];
+  const cardOwner = inst?.owner ?? pileBrowse.value?.seat ?? me.value;
   const ref =
     zone === "monde"
       ? ({ zone } as const)
-      : ({ zone, owner: me.value } as const);
+      : ({ zone, owner: cardOwner } as const);
   store.moveTo(
     instanceId,
     ref,
@@ -4061,6 +4077,16 @@ function manaBonus(seat: Seat): boolean {
   flex-wrap: wrap;
   gap: 3px;
   justify-content: center;
+}
+.gbtn--banish {
+  background: rgba(147, 51, 234, 0.32);
+  color: #e9d5ff;
+  border-color: rgba(168, 85, 247, 0.45);
+}
+.gbtn--banish:hover {
+  background: #9333ea;
+  color: #ffffff;
+  border-color: #a855f7;
 }
 /* F4 — dialog de création de jeton. */
 .gtokendialog {

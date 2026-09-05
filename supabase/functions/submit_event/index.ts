@@ -240,46 +240,58 @@ Deno.serve(async (req) => {
     // resync (lot fiabilité).
     if ((draft as { type?: string })?.type === "MULLIGAN") {
       const seat = me.seat as "A" | "B";
-      const already = rowEvents.some(
-        (e) =>
-          e.type === "MULLIGAN_DONE" &&
-          (e.payload as { seat?: string }).seat === seat,
-      );
-      if (already) return json({ error: "MULLIGAN_DEJA_FAIT" }, 409);
-
-      const startSeq = deriveState(rowEvents).seq;
-      const hand = [...deriveState(rowEvents).seats[seat].main];
-      // Lot ATOMIQUE (M3) : recycle main → mélange → repioche. Résolu en mémoire
-      // puis appendé en UNE transaction (aucun journal partiel possible).
-      const batch = makeBatch(rowEvents, (pre, d, seq) =>
-        resolveDraft(pre, d, {
-          gameId,
-          seq,
-          ts: Date.now(),
-          masterSeed: secret!.master_seed,
-        }),
-      );
-      try {
-        for (const id of hand) batch.add(recycleToPiocheTop(seat, id));
-        batch.add({
-          actor: seat,
-          type: "SHUFFLE",
-          payload: { zone: { zone: "pioche", owner: seat }, permutation: [] },
-        });
-        const prevMulligans = rowEvents.filter(
+      let curEvents = rowEvents;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) {
+          const freshRows = await fetchAllGameEvents(db, gameId);
+          curEvents = (freshRows ?? []).map(rowToEvent);
+        }
+        const curState = deriveState(curEvents);
+        const already = curEvents.some(
           (e) =>
-            e.actor === seat &&
-            e.type === "SHUFFLE" &&
-            (e.payload as { zone?: { zone?: string } })?.zone?.zone === "pioche",
-        ).length;
-        const redraw = prevMulligans === 0 ? Math.max(6, hand.length) : Math.max(0, hand.length - 1);
-        for (let i = 0; i < redraw; i++)
-          batch.add(drawTop(batch.state(), seat));
-        await commitBatch(db, gameId, startSeq, batch.resolved);
-      } catch (e) {
-        return json({ error: String(e) }, 409); // rollback → journal cohérent
+            e.type === "MULLIGAN_DONE" &&
+            (e.payload as { seat?: string }).seat === seat,
+        );
+        if (already) return json({ error: "MULLIGAN_DEJA_FAIT" }, 409);
+
+        const startSeq = curState.seq;
+        const hand = [...curState.seats[seat].main];
+        // Lot ATOMIQUE (M3) : recycle main → mélange → repioche. Résolu en mémoire
+        // puis appendé en UNE transaction (aucun journal partiel possible).
+        const batch = makeBatch(curEvents, (pre, d, seq) =>
+          resolveDraft(pre, d, {
+            gameId,
+            seq,
+            ts: Date.now(),
+            masterSeed: secret!.master_seed,
+          }),
+        );
+        try {
+          for (const id of hand) batch.add(recycleToPiocheTop(seat, id));
+          batch.add({
+            actor: seat,
+            type: "SHUFFLE",
+            payload: { zone: { zone: "pioche", owner: seat }, permutation: [] },
+          });
+          const prevMulligans = curEvents.filter(
+            (e) =>
+              e.actor === seat &&
+              e.type === "SHUFFLE" &&
+              (e.payload as { zone?: { zone?: string } })?.zone?.zone === "pioche",
+          ).length;
+          const redraw = prevMulligans === 0 ? Math.max(6, hand.length) : Math.max(0, hand.length - 1);
+          for (let i = 0; i < redraw; i++)
+            batch.add(drawTop(batch.state(), seat));
+          await commitBatch(db, gameId, startSeq, batch.resolved);
+          return json({ ok: true });
+        } catch (e) {
+          const msg = String(e);
+          if (msg.includes("OUT_OF_ORDER") && attempt < 2) {
+            continue;
+          }
+          return json({ error: msg }, 409); // rollback → journal cohérent
+        }
       }
-      return json({ ok: true });
     }
 
     // ── Nouveau contrat : intention de HAUT NIVEAU (résolue + validée serveur).
@@ -385,26 +397,48 @@ Deno.serve(async (req) => {
     }
 
     // L'acteur est FORCÉ au siège authentifié (on ne fait pas confiance au client).
-    const ev = resolveDraft(
-      state,
-      { ...draft, actor: me.seat },
-      {
-        gameId,
-        seq: state.seq + 1,
-        ts: Date.now(),
-        masterSeed: secret!.master_seed,
-      },
-    );
+    let ev: PersistedEvent | null = null;
+    let post: GameState = state;
+    let appendErr: { message: string } | null = null;
 
-    const { error: appendErr } = await db.rpc("append_event", {
-      p_game_id: gameId,
-      p_parent_seq: state.seq,
-      p_actor: ev.actor,
-      p_type: ev.type,
-      p_payload: ev.payload,
-      p_payload_private: ev.payloadPrivate ?? null,
-    });
-    if (appendErr) return json({ error: appendErr.message }, 409); // OUT_OF_ORDER → resync client
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        const freshRows = await fetchAllGameEvents(db, gameId);
+        rowEvents = (freshRows ?? []).map(rowToEvent);
+        state = deriveState(rowEvents);
+      }
+
+      ev = resolveDraft(
+        state,
+        { ...draft, actor: me.seat },
+        {
+          gameId,
+          seq: state.seq + 1,
+          ts: Date.now(),
+          masterSeed: secret!.master_seed,
+        },
+      );
+
+      const res = await db.rpc("append_event", {
+        p_game_id: gameId,
+        p_parent_seq: state.seq,
+        p_actor: ev.actor,
+        p_type: ev.type,
+        p_payload: ev.payload,
+        p_payload_private: ev.payloadPrivate ?? null,
+      });
+
+      if (!res.error) {
+        appendErr = null;
+        post = deriveState([...rowEvents, ev]);
+        break;
+      }
+
+      appendErr = res.error;
+      if (!res.error.message.includes("OUT_OF_ORDER")) break;
+    }
+
+    if (appendErr || !ev) return json({ error: appendErr?.message || "APPEND_FAILED" }, 409); // OUT_OF_ORDER → resync client
 
     // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
     const post = deriveState([...rowEvents, ev]);

@@ -10,8 +10,68 @@
           un ami à distance avec un code.
         </p>
       </div>
+
+      <!-- Widgets En-tête : Statut Réseau & Pseudonyme Persistant -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Indicateur Statut Réseau -->
+        <div
+          class="badge badge-sm gap-1.5 py-3 px-3.5 shadow-sm border border-base-content/10 font-medium"
+          :class="network.badgeClass.value"
+          :title="network.label.value"
+        >
+          <span class="h-2 w-2 rounded-full" :class="network.dotClass.value"></span>
+          <span class="text-xs">{{ network.label.value }}</span>
+        </div>
+
+        <!-- Pseudonyme Persistant -->
+        <div class="dropdown dropdown-end">
+          <button tabindex="0" class="btn btn-sm btn-outline gap-2 font-normal" title="Modifier mon pseudo">
+            <span>👤</span>
+            <span class="font-bold max-w-[120px] truncate">{{ pseudonym }}</span>
+            <span class="text-xs opacity-60">✏️</span>
+          </button>
+          <div tabindex="0" class="dropdown-content z-[100] menu p-3 shadow-xl bg-base-200 rounded-box w-64 border border-base-content/20 mt-1 space-y-2">
+            <p class="text-xs font-semibold text-base-content/70">Mon pseudonyme de joueur</p>
+            <input
+              v-model="pseudoInput"
+              placeholder="Ton pseudo…"
+              maxlength="24"
+              class="input input-bordered input-sm w-full"
+              @keyup.enter="savePseudonym"
+            />
+            <div class="flex justify-end gap-2 pt-1">
+              <button class="btn btn-primary btn-xs" @click="savePseudonym">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
     <div class="h-px w-full bg-base-content/20"></div>
+
+    <!-- Bannière invitation détectée -->
+    <section
+      v-if="detectedInviteCode && !store.online"
+      class="rounded-xl border border-primary/40 bg-primary/10 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-lg"
+    >
+      <div class="flex items-center gap-3.5">
+        <span class="text-3xl">✉️</span>
+        <div>
+          <p class="font-bold text-sm text-primary">Invitation à une partie !</p>
+          <p class="text-xs text-base-content/80 mt-0.5">
+            Tu as reçu une invitation pour rejoindre la partie avec le code
+            <span class="font-mono font-bold text-primary px-1.5 py-0.5 bg-primary/20 rounded">{{ detectedInviteCode }}</span>.
+            Sélectionne ton deck ci-dessous pour entrer dans le salon.
+          </p>
+        </div>
+      </div>
+      <button
+        class="btn btn-primary btn-sm px-5"
+        :disabled="!onlineDeckId || !onlineDeckValid || onlineBusy"
+        @click="onlineJoin"
+      >
+        Rejoindre maintenant
+      </button>
+    </section>
 
     <!-- Partie en cours détectée : on PROPOSE de reprendre ou d'abandonner
          (plutôt que de s'y reconnecter d'office au montage). -->
@@ -105,20 +165,41 @@
 
     <section
       v-if="ONLINE_PLAY_ENABLED"
-      class="border border-primary/30 bg-primary/[0.04] p-5"
+      class="border border-primary/30 bg-primary/[0.04] p-5 rounded-xl space-y-4"
     >
-      <div>
-        <p class="eyebrow text-primary">Jouer en ligne</p>
-        <p class="mt-1 text-sm text-base-content/65">
-          Affronte un ami à distance, en temps réel, avec un code de salon —
-          avec le deck complet de ton choix. La table applique un cadre solide
-          (tours, pioche, combat et victoire calculés pour vous deux),
-          <span class="font-semibold text-base-content/80"
-            >et les effets des cartes se jouent à la main</span
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-content/10 pb-3">
+        <div>
+          <p class="eyebrow text-primary">Jouer en ligne</p>
+          <h2 class="mt-1 font-display text-xl sm:text-2xl font-semibold">Parties en ligne (1v1 Duel)</h2>
+          <p class="mt-1 text-sm text-base-content/65">
+            Affronte un adversaire à distance en temps réel, héberge un salon ou rejoins une partie disponible.
+          </p>
+        </div>
+
+        <!-- Onglets du mode en ligne -->
+        <div class="join">
+          <button
+            class="btn btn-sm join-item"
+            :class="onlineTab === 'browse' ? 'btn-primary' : 'btn-ghost'"
+            @click="onlineTab = 'browse'"
           >
-          : c'est à vous de les lire et de les appliquer, comme sur une vraie
-          table.
-        </p>
+            🌐 Parties disponibles
+          </button>
+          <button
+            class="btn btn-sm join-item"
+            :class="onlineTab === 'host' ? 'btn-primary' : 'btn-ghost'"
+            @click="onlineTab = 'host'"
+          >
+            ⚔️ Héberger une partie
+          </button>
+          <button
+            class="btn btn-sm join-item"
+            :class="onlineTab === 'join' ? 'btn-primary' : 'btn-ghost'"
+            @click="onlineTab = 'join'"
+          >
+            🔑 Rejoindre par code
+          </button>
+        </div>
       </div>
 
       <p v-if="!authStore.isAuthenticated" class="mt-3 text-sm">
@@ -134,66 +215,92 @@
         pour jouer en ligne.
       </p>
 
-      <div v-else class="mt-4 space-y-4">
-        <!-- Deck partagé (sert aussi bien à créer qu'à rejoindre). -->
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-base-content/60">Ton deck</span>
-          <select
-            v-model="onlineDeckId"
-            class="select select-bordered select-sm w-64 bg-base-200"
-          >
-            <option :value="null" disabled>Choisis…</option>
-            <option v-for="d in decks" :key="d.id" :value="d.id">
-              {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
-            </option>
-          </select>
-        </label>
-        <p v-if="onlineDeckId && !onlineDeckValid" class="text-sm text-warning">
-          Deck incomplet : {{ onlineDeckErrors[0] }}
-        </p>
-
-        <!-- Héberger une nouvelle partie (CADRE : un seul mode en ligne). -->
-        <div class="flex flex-wrap items-center gap-3">
-          <button
-            class="btn btn-primary btn-sm"
-            :disabled="!onlineDeckId || onlineBusy || !onlineDeckValid"
-            @click="onlineCreate"
-          >
-            {{ onlineBusy ? "…" : "Créer la partie" }}
-          </button>
-        </div>
-        <p class="text-xs text-base-content/50">
-          Les effets des cartes se jouent à la main dans tous les cas.
-        </p>
-
-        <!-- …ou rejoindre celle d'un ami avec son code. -->
-        <div
-          class="flex flex-wrap items-end gap-3 border-t border-base-content/10 pt-3"
-        >
+      <div v-else class="space-y-4 pt-1">
+        <!-- Sélection du deck -->
+        <div class="rounded-lg bg-base-200/50 p-3.5 border border-base-content/10 flex flex-wrap items-center justify-between gap-3">
           <label class="flex flex-col gap-1 text-sm">
-            <span class="text-base-content/60">Rejoindre avec un code</span>
-            <input
-              v-model="joinCode"
-              maxlength="8"
-              placeholder="ABCD12"
-              class="input input-bordered input-sm w-40 uppercase"
-            />
+            <span class="text-base-content/70 font-medium">Ton deck de jeu</span>
+            <select
+              v-model="onlineDeckId"
+              class="select select-bordered select-sm w-64 bg-base-100"
+            >
+              <option :value="null" disabled>Choisis un deck…</option>
+              <option v-for="d in decks" :key="d.id" :value="d.id">
+                {{ d.name }}{{ deckIsValid(d) ? "" : " — incomplet" }}
+              </option>
+            </select>
           </label>
-          <button
-            class="btn btn-outline btn-sm"
-            :disabled="
-              !onlineDeckId ||
-              !joinCode.trim() ||
-              onlineBusy ||
-              !onlineDeckValid
-            "
-            @click="onlineJoin"
-          >
-            {{ onlineBusy ? "…" : "Rejoindre" }}
-          </button>
+
+          <p v-if="onlineDeckId && !onlineDeckValid" class="text-xs text-warning max-w-sm">
+            ⚠️ Deck incomplet : {{ onlineDeckErrors[0] }}
+          </p>
+          <p v-else-if="onlineDeckId" class="text-xs text-success flex items-center gap-1">
+            <span>✓</span> Deck valide prêt pour le combat
+          </p>
         </div>
 
-        <span v-if="onlineError" class="text-sm text-error">{{
+        <!-- ── TAB 1 : BROWSER DES SALONS EN DIRECT ── -->
+        <div v-if="onlineTab === 'browse'">
+          <LobbyBrowser
+            @join="joinHostedLobby"
+            @host="onlineTab = 'host'"
+          />
+        </div>
+
+        <!-- ── TAB 2 : HÉBERGER UNE PARTIE ── -->
+        <div v-else-if="onlineTab === 'host'" class="space-y-4">
+          <div class="rounded-lg bg-base-200/40 p-4 border border-base-content/10 space-y-3">
+            <h3 class="font-semibold text-sm text-base-content">
+              Créer et héberger un nouveau salon
+            </h3>
+            <p class="text-xs text-base-content/70">
+              En hébergeant la partie, un code unique sera généré et le salon passera en statut "En attente". Tu pourras copier le lien d'invitation en 1 clic pour le partager à ton adversaire, ou attendre qu'un joueur rejoigne depuis la liste publique.
+            </p>
+            <div class="pt-2 flex items-center gap-3">
+              <button
+                class="btn btn-primary btn-sm px-6"
+                :disabled="!onlineDeckId || onlineBusy || !onlineDeckValid"
+                @click="onlineCreate"
+              >
+                {{ onlineBusy ? "Création du salon…" : "🚀 Héberger la partie" }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB 3 : REJOINDRE AVEC UN CODE ── -->
+        <div v-else-if="onlineTab === 'join'" class="space-y-4">
+          <div class="rounded-lg bg-base-200/40 p-4 border border-base-content/10 space-y-3">
+            <h3 class="font-semibold text-sm text-base-content">
+              Rejoindre une partie avec un code
+            </h3>
+            <div class="flex flex-wrap items-end gap-3 pt-1">
+              <label class="flex flex-col gap-1 text-sm">
+                <span class="text-base-content/60">Code de salon (ex: ABCD12)</span>
+                <input
+                  v-model="joinCode"
+                  maxlength="10"
+                  placeholder="ABCD12"
+                  class="input input-bordered input-sm w-44 uppercase font-mono tracking-wider"
+                />
+              </label>
+              <button
+                class="btn btn-primary btn-sm px-6"
+                :disabled="
+                  !onlineDeckId ||
+                  !joinCode.trim() ||
+                  onlineBusy ||
+                  !onlineDeckValid
+                "
+                @click="onlineJoin"
+              >
+                {{ onlineBusy ? "Connexion…" : "Rejoindre la partie" }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <span v-if="onlineError" class="text-sm text-error block">{{
           onlineError
         }}</span>
       </div>
@@ -793,29 +900,55 @@
          Sans rendu ; coupable via le bouton « Son » du bandeau. -->
     <GameSoundLayer />
 
-    <!-- Adversaire déconnecté : bandeau de grâce + réclamation de victoire -->
+    <!-- Adversaire déconnecté : bandeau de grâce avec minuteur de 30 secondes + réclamation de victoire -->
     <div
-      v-if="opponentGone"
+      v-if="opponentGone || !network.isOnline.value"
       class="gdisconnect"
       data-testid="opponent-disconnected"
       role="status"
     >
-      <span class="gdisconnect__text">
-        Adversaire déconnecté —
-        {{
-          store.canClaimVictory
-            ? "victoire réclamable."
-            : "victoire réclamable après un délai de grâce…"
-        }}
-      </span>
-      <button
-        v-if="store.canClaimVictory"
-        class="gtop-btn gdisconnect__claim"
-        data-testid="claim-victory"
-        @click="store.claimVictory()"
-      >
-        Réclamer la victoire
-      </button>
+      <div class="flex items-center gap-3">
+        <span class="text-xl animate-pulse">⚠️</span>
+        <div>
+          <p class="font-bold text-xs uppercase tracking-wide text-warning">
+            {{ !network.isOnline.value ? "Connexion Internet perdue" : "Adversaire déconnecté" }}
+          </p>
+          <p class="gdisconnect__text">
+            <template v-if="!network.isOnline.value">
+              Vérifie ta connexion réseau (tentative de reconnexion en cours)…
+            </template>
+            <template v-else-if="store.canClaimVictory">
+              Délai de reconnexion écoulé (30s) — victoire réclamable par forfait.
+            </template>
+            <template v-else>
+              En attente de reconnexion :
+              <span class="font-bold text-warning font-mono">
+                {{ store.disconnectCountdown !== null ? store.disconnectCountdown : 30 }}s
+              </span>
+              restantes…
+            </template>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Barre de compte à rebours animée -->
+        <progress
+          v-if="!store.canClaimVictory && network.isOnline.value"
+          class="progress progress-warning w-32 h-2"
+          :value="store.disconnectCountdown ?? 30"
+          max="30"
+        ></progress>
+
+        <button
+          v-if="store.canClaimVictory"
+          class="gtop-btn gdisconnect__claim"
+          data-testid="claim-victory"
+          @click="store.claimVictory()"
+        >
+          🏆 Réclamer la victoire
+        </button>
+      </div>
     </div>
 
     <div class="glayout">
@@ -890,29 +1023,26 @@
       </div>
     </Transition>
 
-    <!-- En ligne : attente de l'adversaire (hôte) -->
+    <!-- En ligne : attente de l'adversaire (hôte) via salle d'attente LobbyWaitingRoom -->
     <Transition name="ovl">
       <div v-if="onlineWaiting" class="overlay">
-        <div class="overlay__card">
-          <p class="eyebrow text-primary">Partie en ligne</p>
-          <h2 class="mt-2 font-display text-2xl">
-            En attente de l'adversaire…
-          </h2>
-          <p v-if="createdCode" class="mt-4 text-sm text-base-content/70">
-            Partage ce code de salon :
-          </p>
-          <p
-            v-if="createdCode"
-            class="mt-2 font-mono text-4xl tracking-[0.3em] text-primary"
-          >
-            {{ createdCode }}
-          </p>
-          <button
-            class="btn btn-ghost btn-sm mt-6"
-            @click="store.disconnectOnline()"
-          >
-            Annuler
-          </button>
+        <div class="overlay__card max-w-xl w-full p-0 border-0 bg-transparent shadow-none">
+          <LobbyWaitingRoom
+            :code="createdCode"
+            mode="1v1"
+            :is-host="true"
+            :current-players="1"
+            :max-players="2"
+            :players="[
+              {
+                name: pseudonym,
+                deckName: onlineDeck?.name,
+                isHost: true,
+                ready: true,
+              },
+            ]"
+            @leave="cancelWaitingLobby"
+          />
         </div>
       </div>
     </Transition>
@@ -1193,6 +1323,14 @@ import { validateDeck } from "@/validators/deck";
 import { validateTeamDecks } from "@/validators/teamDeck";
 import { useToast } from "@/composables/useToast";
 import { useAuthStore } from "@/stores/authStore";
+import { usePlayerPseudonym } from "@/composables/usePlayerPseudonym";
+import { useNetworkStatus } from "@/composables/useNetworkStatus";
+import LobbyWaitingRoom from "@/components/game/LobbyWaitingRoom.vue";
+import LobbyBrowser from "@/components/game/LobbyBrowser.vue";
+import {
+  publishHostedLobby,
+  type HostedLobbyInfo,
+} from "@/services/lobbyDiscoveryService";
 import {
   createGame as createOnlineGame,
   joinGame,
@@ -1216,6 +1354,21 @@ const deckStore = useDeckStore();
 const cardStore = useCardStore();
 const store = useGameStore();
 const tutorial = useTutorialStore();
+const { pseudonym, setPseudonym } = usePlayerPseudonym();
+const pseudoInput = ref(pseudonym.value);
+const toast = useToast();
+function savePseudonym() {
+  const res = setPseudonym(pseudoInput.value);
+  if (res.ok) {
+    toast.success("Pseudonyme mis à jour !");
+  } else if (res.error) {
+    toast.error(res.error);
+  }
+}
+const network = useNetworkStatus();
+const onlineTab = ref<"browse" | "host" | "join">("browse");
+const detectedInviteCode = ref<string>("");
+let unpublishLobby: (() => void) | null = null;
 // Sons de table : état muet (bouton du bandeau) — le calque GameSoundLayer
 // joue les repères, ici on n'expose que la bascule.
 const sounds = useGameSounds();
@@ -1275,8 +1428,6 @@ onUnmounted(() => {
   if (matchTimerInterval) clearInterval(matchTimerInterval);
 });
 const route = useRoute();
-
-const toast = useToast();
 // Deep-link `?tutorial=1` : lance « Apprendre en jouant » avec deux starters par
 // défaut (le joueur pourra rejouer avec le deck de son choix via le lobby).
 function startTutorial(): void {
@@ -2029,12 +2180,21 @@ async function onlineCreate(): Promise<void> {
     // CADRE : une seule expérience en ligne — plus de mode assisté à la création.
     const { gameId, code } = await createOnlineGame(deck, false);
     createdCode.value = code;
-    const user = authStore.user;
-    const myName =
-      user?.displayName ||
-      user?.email?.split("@")[0] ||
-      "Joueur A";
+    const myName = pseudonym.value || "Joueur A";
     store.connectOnline(gameId, "A", onlineTransport, deck, myName);
+    unpublishLobby?.();
+    unpublishLobby = publishHostedLobby({
+      code,
+      gameId,
+      hostName: myName,
+      hostUserId: authStore.userId || undefined,
+      mode: "1v1",
+      deckName: deck.name,
+      currentPlayers: 1,
+      maxPlayers: 2,
+      createdAt: Date.now(),
+      status: "waiting",
+    });
   } catch (e) {
     onlineError.value = await fnErrorMessage(e);
   } finally {
@@ -2060,16 +2220,19 @@ async function onlineJoin(): Promise<void> {
     }
     const user = authStore.user;
     const myName =
+      pseudonym.value ||
       user?.displayName ||
       user?.email?.split("@")[0] ||
       "Joueur B";
-    // s'abonner AVANT join (CADRE : un seul mode en ligne)
-    store.connectOnline(g.id, "B", onlineTransport, deck, myName);
-    await joinGame(code, deck);
-    // joinGame vient de créer GAME_STARTED + mélanges + mains de départ. Le pull
-    // de connexion a tourné sur un journal ENCORE VIDE (events créés seulement
-    // maintenant) ; on rattrape explicitement pour ne pas dépendre du seul
-    // broadcast (course connexion/diffusion qui laissait le joueur « en attente »).
+    // 1. Rejoindre la partie d'abord côté serveur afin que le joueur B soit inséré
+    // dans `game_players` (requis par la RLS Supabase Realtime Authorization et pull_events).
+    const joinRes = await joinGame(code, deck);
+    const targetGameId = joinRes?.gameId || g.id;
+
+    // 2. Maintenant que le joueur est inscrit en base, se connecter en ligne :
+    // l'abonnement au canal privé `game:<id>:B` sera autorisé sans TIMED_OUT,
+    // et le resyncFrom(0) initial pourra lire les événements de mise en place sans 403.
+    store.connectOnline(targetGameId, "B", onlineTransport, deck, myName);
     await store.resyncOnline();
   } catch (e) {
     // connectOnline a déjà basculé en « playing » (overlay d'attente) : on annule
@@ -2078,6 +2241,33 @@ async function onlineJoin(): Promise<void> {
     onlineError.value = await fnErrorMessage(e);
   } finally {
     onlineBusy.value = false;
+  }
+}
+
+function cancelWaitingLobby(): void {
+  unpublishLobby?.();
+  unpublishLobby = null;
+  createdCode.value = "";
+  store.disconnectOnline();
+}
+
+async function joinHostedLobby(lobby: HostedLobbyInfo): Promise<void> {
+  if (lobby.mode === "2v2") {
+    online2v2Tab.value = "online";
+    online2v2JoinCode.value = lobby.code;
+    if (online2v2DeckValid.value) {
+      await join2v2OnlineLobby();
+    } else {
+      toast.info("Code sélectionné ! Choisis ton deck 2v2 pour rejoindre.");
+    }
+  } else {
+    joinCode.value = lobby.code;
+    onlineTab.value = "join";
+    if (onlineDeckValid.value) {
+      await onlineJoin();
+    } else {
+      toast.info("Code sélectionné ! Choisis ton deck pour rejoindre.");
+    }
   }
 }
 
@@ -2181,11 +2371,30 @@ const mulliganWaiting = computed(
 async function onMulliganKeep(): Promise<void> {
   if (store.online && store.mode !== "2v2") {
     const seat = store.mySeat;
-    await submitEvent(store.gameId(), {
-      actor: seat,
-      type: "MULLIGAN_DONE",
-      payload: { seat },
-    } as unknown as DraftEvent);
+    try {
+      await submitEvent(store.gameId(), {
+        actor: seat,
+        type: "MULLIGAN_DONE",
+        payload: { seat },
+      } as unknown as DraftEvent);
+    } catch (e) {
+      const msg = await fnErrorMessage(e);
+      if (msg.includes("OUT_OF_ORDER")) {
+        await store.resyncOnline();
+        try {
+          await submitEvent(store.gameId(), {
+            actor: seat,
+            type: "MULLIGAN_DONE",
+            payload: { seat },
+          } as unknown as DraftEvent);
+          return;
+        } catch (e2) {
+          toast.error(`Erreur mulligan : ${await fnErrorMessage(e2)}`);
+          return;
+        }
+      }
+      toast.error(`Erreur mulligan : ${msg}`);
+    }
   } else {
     store.keepHand();
   }
@@ -2193,8 +2402,25 @@ async function onMulliganKeep(): Promise<void> {
 async function onMulliganReplace(): Promise<void> {
   if (store.online && store.mode !== "2v2") {
     const seat = currentMulliganSeat.value;
-    store.mulliganCounts[seat] = (store.mulliganCounts[seat] ?? 0) + 1;
-    await requestMulligan(store.gameId());
+    try {
+      store.mulliganCounts[seat] = (store.mulliganCounts[seat] ?? 0) + 1;
+      await requestMulligan(store.gameId());
+    } catch (e) {
+      const msg = await fnErrorMessage(e);
+      if (msg.includes("OUT_OF_ORDER")) {
+        await store.resyncOnline();
+        try {
+          await requestMulligan(store.gameId());
+          return;
+        } catch (e2) {
+          store.mulliganCounts[seat] = Math.max(0, (store.mulliganCounts[seat] ?? 1) - 1);
+          toast.error(`Erreur mulligan : ${await fnErrorMessage(e2)}`);
+          return;
+        }
+      }
+      store.mulliganCounts[seat] = Math.max(0, (store.mulliganCounts[seat] ?? 1) - 1);
+      toast.error(`Erreur mulligan : ${msg}`);
+    }
   } else {
     store.mulligan(currentMulliganSeat.value);
   }
@@ -2212,7 +2438,7 @@ const pickFilterLabel = computed(() => {
 
 // ── Portrait du héros (écran de passation) ───────────────────────────────────
 const perspectivePortrait = computed<string | null>(() => {
-  const id = store.view.seats[store.perspective].heroInstanceId;
+  const id = store.view?.seats?.[store.perspective]?.heroInstanceId;
   const inst = id ? store.state.instances[id] : null;
   if (!inst?.cardId) return null;
   const cleanId = inst.cardId.replace(/_(recto|verso)$/, "");
@@ -2351,7 +2577,37 @@ onMounted(async () => {
   }
   // Onboarding : /play/table?tutorial=1 démarre directement le tutoriel.
   if (route.query.tutorial && !store.started) startTutorial();
+
+  // Détection d'invitation par URL (/play/table/:code ou ?code=...)
+  const routeCode = ((route.params.code as string) || (route.query.code as string))?.trim()?.toUpperCase();
+  if (routeCode) {
+    detectedInviteCode.value = routeCode;
+    joinCode.value = routeCode;
+    onlineTab.value = "join";
+  }
 });
+
+watch(
+  () => [route.params.code, route.query.code],
+  ([pCode, qCode]) => {
+    const c = ((pCode as string) || (qCode as string))?.trim()?.toUpperCase();
+    if (c) {
+      detectedInviteCode.value = c;
+      joinCode.value = c;
+      onlineTab.value = "join";
+    }
+  },
+);
+
+watch(
+  () => store.matchPhase,
+  (phase) => {
+    if (phase !== "lobby") {
+      unpublishLobby?.();
+      unpublishLobby = null;
+    }
+  },
+);
 
 // ── Cycle de vie de l'onglet ────────────────────────────────────────────────
 // `visibilitychange` est PUREMENT cosmétique : on note discrètement que l'onglet
@@ -2371,6 +2627,8 @@ onUnmounted(() => {
   document.removeEventListener("visibilitychange", onVisibilityChange);
   clearDiceTimers();
   botDriver.stop(); // arrête la boucle de polling de l'IA (pas de fuite de timer)
+  unpublishLobby?.();
+  unpublishLobby = null;
   // Navigation hors de la table : on coupe proprement le transport en ligne.
   // Ce n'est PAS un forfait — la reprise au montage (findMyActiveGame) permet de
   // revenir dans une partie encore `active`.

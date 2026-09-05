@@ -205,8 +205,8 @@ export interface OnlineTransport {
   claimVictory?(gameId: string): Promise<void>;
 }
 
-/** Fenêtre de grâce avant qu'une déconnexion adverse rende la victoire réclamable. */
-export const DISCONNECT_GRACE_MS = 5 * 60 * 1000;
+/** Fenêtre de grâce avant qu'une déconnexion adverse rende la victoire réclamable (30 secondes). */
+export const DISCONNECT_GRACE_MS = 30 * 1000;
 
 export interface LogLine {
   seq: number;
@@ -278,7 +278,9 @@ export const useGameStore = defineStore("game", () => {
   // devient réclamable. Le retour de l'adversaire (présence true) annule tout.
   const opponentPresent = ref(true);
   const canClaimVictory = ref(false);
+  const disconnectCountdown = ref<number | null>(null);
   let graceTimer: ReturnType<typeof setTimeout> | null = null;
+  let countdownInterval: ReturnType<typeof setInterval> | null = null;
   // Sécurité : n'armer la grâce QUE si la présence adverse a été observée
   // « vraie » au moins une fois. Sinon un canal de présence qui ne se connecte
   // jamais (mauvaise conf Realtime) ferait croire l'adversaire absent et
@@ -293,6 +295,9 @@ export const useGameStore = defineStore("game", () => {
   function clearGraceTimer(): void {
     if (graceTimer) clearTimeout(graceTimer);
     graceTimer = null;
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = null;
+    disconnectCountdown.value = null;
   }
 
   /** Annule un resync différé en attente (trou comblé / déconnexion). */
@@ -1784,8 +1789,21 @@ export const useGameStore = defineStore("game", () => {
     if (matchPhase.value !== "playing") return;
     if (!presenceSeen) return; // jamais vu connecté → ne pas armer (fail-safe)
     if (graceTimer) return; // minuteur déjà armé
+    disconnectCountdown.value = Math.round(DISCONNECT_GRACE_MS / 1000);
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+      if (disconnectCountdown.value !== null && disconnectCountdown.value > 0) {
+        disconnectCountdown.value--;
+      } else {
+        if (countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+    }, 1000);
     graceTimer = setTimeout(() => {
       graceTimer = null;
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = null;
+      disconnectCountdown.value = 0;
       // Toujours valable : l'adversaire est resté absent et la partie n'est
       // pas finie entre-temps (concession/déco déjà résolue ailleurs).
       if (!opponentPresent.value && matchPhase.value === "playing") {
@@ -5354,6 +5372,8 @@ export const useGameStore = defineStore("game", () => {
     // présence adverse + fenêtre de grâce (déconnexion)
     opponentPresent,
     canClaimVictory,
+    disconnectCountdown,
+    onOpponentPresence,
     claimVictory,
     // verbes
     draw,

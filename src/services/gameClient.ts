@@ -124,18 +124,8 @@ export async function findGameByCode(
   code: string,
 ): Promise<{ id: string; assisted: boolean } | null> {
   const c = client();
-  const { data, error } = await c.rpc("find_game_by_code", {
-    p_code: code,
-  });
-  if (!error) {
-    const row = (Array.isArray(data) ? data[0] : data) as {
-      id: string;
-      assisted: boolean;
-    } | null;
-    return row ? { id: row.id, assisted: !!row.assisted } : null;
-  }
 
-  // Repli direct sur la table `games` si la RPC n'est pas trouvée (ex: 404 / migration non jouée)
+  // Requête directe sur `games` en premier pour éviter une erreur 404 dans la console si la RPC n'est pas déployée
   if (typeof c.from === "function") {
     const { data: tblData, error: tblErr } = await c
       .from("games")
@@ -150,6 +140,17 @@ export async function findGameByCode(
     }
   }
 
+  const { data, error } = await c.rpc("find_game_by_code", {
+    p_code: code,
+  });
+  if (!error) {
+    const row = (Array.isArray(data) ? data[0] : data) as {
+      id: string;
+      assisted: boolean;
+    } | null;
+    return row ? { id: row.id, assisted: !!row.assisted } : null;
+  }
+
   throw error;
 }
 
@@ -162,7 +163,7 @@ export async function requestMulligan(gameId: string): Promise<void> {
   const { error } = await client().functions.invoke("submit_event", {
     body: { gameId, draft: { type: "MULLIGAN" } },
   });
-  if (error) throw error;
+  if (error) throw new Error(await fnErrorMessage(error));
 }
 
 /**
@@ -174,7 +175,7 @@ export async function concede(gameId: string): Promise<void> {
   const { error } = await client().functions.invoke("submit_event", {
     body: { gameId, draft: { type: "CONCEDE" } },
   });
-  if (error) throw error;
+  if (error) throw new Error(await fnErrorMessage(error));
 }
 
 /**

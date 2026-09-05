@@ -286,4 +286,83 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     const discardSlots = wrapper.findAll(".gpile--discard");
     expect(discardSlots.length).toBeGreaterThan(0);
   });
+
+  it("permet d'ouvrir la défausse et de bannir une carte vers la zone d'exil", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const me = store.perspective;
+
+    // Déplacer une carte vers la défausse
+    const cardId = store.state.seats[me].pioche[0];
+    store.moveTo(cardId, { zone: "defausse", owner: me });
+    expect(store.state.seats[me].defausse).toContain(cardId);
+    expect(store.state.seats[me].exil).not.toContain(cardId);
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Clic sur la pile de défausse non-vide pour ouvrir le browser de défausse
+    const discardPile = wrapper
+      .findAllComponents({ name: "PileStack" })
+      .find((c) => c.props("label") === "Défausse" && c.props("count") > 0);
+    expect(discardPile).toBeDefined();
+    await discardPile!.trigger("click");
+    await flushPromises();
+
+    const browser = wrapper.find('[data-testid="pile-browser"]');
+    expect(browser.exists()).toBe(true);
+
+    // Bouton de bannissement pour la carte
+    const banishBtn = wrapper.find(`[data-testid="pile-banish-${cardId}"]`);
+    expect(banishBtn.exists()).toBe(true);
+    expect(banishBtn.text()).toContain("Bannir");
+
+    // Clic sur Bannir
+    await banishBtn.trigger("click");
+    await flushPromises();
+
+    // La carte doit être dans l'exil et plus dans la défausse
+    expect(store.state.seats[me].exil).toContain(cardId);
+    expect(store.state.seats[me].defausse).not.toContain(cardId);
+  });
+
+  it("permet de bannir une carte depuis la défausse adverse vers l'exil adverse", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const opp = store.perspective === "A" ? "B" : "A";
+
+    const oppCardId = store.state.seats[opp].pioche[0];
+    store.moveTo(oppCardId, { zone: "defausse", owner: opp });
+    expect(store.state.seats[opp].defausse).toContain(oppCardId);
+    expect(store.state.seats[opp].exil).not.toContain(oppCardId);
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Trouver et cliquer sur la défausse de l'adversaire (non vide)
+    const oppDiscardPile = wrapper
+      .findAllComponents({ name: "PileStack" })
+      .find((c) => c.props("label") === "Défausse" && c.props("count") > 0);
+    expect(oppDiscardPile).toBeDefined();
+    await oppDiscardPile!.trigger("click");
+    await flushPromises();
+
+    const banishBtn = wrapper.find(`[data-testid="pile-banish-${oppCardId}"]`);
+    expect(banishBtn.exists()).toBe(true);
+
+    // Les boutons de récupération vers la main du joueur courant ne doivent pas s'afficher pour l'adversaire
+    const recoverMainBtn = wrapper.find(
+      `[data-testid="pile-recover-main-${oppCardId}"]`,
+    );
+    expect(recoverMainBtn.exists()).toBe(false);
+
+    await banishBtn.trigger("click");
+    await flushPromises();
+
+    expect(store.state.seats[opp].exil).toContain(oppCardId);
+    expect(store.state.seats[opp].defausse).not.toContain(oppCardId);
+  });
 });
+
