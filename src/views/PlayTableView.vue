@@ -1223,8 +1223,15 @@
           <div class="flex items-center justify-center gap-6 my-4">
             <!-- Dé Joueur 1 (A) -->
             <div class="flex flex-col items-center gap-2">
-              <span class="font-mono text-xs text-base-content/75 truncate max-w-[110px]">
-                {{ store.players['A']?.name || 'Joueur 1' }}
+              <span class="font-mono text-xs text-base-content/75 truncate max-w-[130px] flex items-center justify-center gap-1">
+                <span>{{ store.players['A']?.name || 'Joueur 1' }}</span>
+                <span
+                  v-if="store.online"
+                  class="badge badge-xs"
+                  :class="store.mySeat?.startsWith('A') ? 'badge-primary text-primary-content' : 'badge-neutral'"
+                >
+                  {{ store.mySeat?.startsWith('A') ? 'Toi' : 'Adversaire' }}
+                </span>
               </span>
               <div
                 class="die"
@@ -1244,8 +1251,15 @@
 
             <!-- Dé Joueur 2 (B) -->
             <div class="flex flex-col items-center gap-2">
-              <span class="font-mono text-xs text-base-content/75 truncate max-w-[110px]">
-                {{ store.players['B']?.name || 'Joueur 2' }}
+              <span class="font-mono text-xs text-base-content/75 truncate max-w-[130px] flex items-center justify-center gap-1">
+                <span>{{ store.players['B']?.name || 'Joueur 2' }}</span>
+                <span
+                  v-if="store.online"
+                  class="badge badge-xs"
+                  :class="store.mySeat?.startsWith('B') ? 'badge-primary text-primary-content' : 'badge-neutral'"
+                >
+                  {{ store.mySeat?.startsWith('B') ? 'Toi' : 'Adversaire' }}
+                </span>
               </span>
               <div
                 class="die"
@@ -1271,7 +1285,13 @@
             <!-- Composant de choix de priorité (Jouer 1er ou Jouer 2e) -->
             <div v-if="rollPriorityChoicePending" class="mt-4 p-3 sm:p-4 bg-base-200/70 rounded-xl border border-base-content/15 space-y-3">
               <p class="text-sm font-medium text-base-content/90">
-                {{ isMyRollChoice ? (store.online ? "Tu as l'initiative et tu commences la partie !" : "Tu as l'initiative ! Choisis ton ordre de jeu :") : (store.online ? `${rollWinnerName} a l'initiative et commence la partie !` : `${rollWinnerName} a l'initiative et choisit...`) }}
+                {{
+                  isMyRollChoice
+                    ? "Tu as l'initiative ! Choisis ton ordre de jeu :"
+                    : (store.online
+                        ? `Votre adversaire (${rollWinnerName}) a l'initiative et choisit son ordre de jeu…`
+                        : `${rollWinnerName} a l'initiative et choisit...`)
+                }}
               </p>
               <div v-if="isMyRollChoice" class="flex flex-wrap justify-center gap-3">
                 <button
@@ -1280,10 +1300,9 @@
                   data-testid="choose-play-first"
                   @click="onChoosePriority('1er')"
                 >
-                  {{ store.online ? "🥇 Commencer la partie" : "🥇 Jouer 1er" }}
+                  🥇 Jouer 1er
                 </button>
                 <button
-                  v-if="!store.online"
                   type="button"
                   class="btn btn-secondary btn-sm sm:btn-md gap-2"
                   data-testid="choose-play-second"
@@ -1316,8 +1335,8 @@
             Main de départ — {{ store.players[currentMulliganSeat]?.name ?? String(currentMulliganSeat) }}
           </p>
           <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
-          <p class="mt-1 text-sm text-base-content/65">
-            🎲 {{ store.players[store.firstPlayer]?.name || 'Joueur 1' }} a l'initiative et commencera au Tour 1.
+          <p class="mt-1 text-sm font-medium" :class="isFirstPlayerMe ? 'text-primary' : 'text-base-content/70'">
+            {{ mulliganInitiativeText }}
           </p>
           <div class="mulligan-fan">
             <HandFan mine :items="mulliganItems" :resolve-card="resolveCard" />
@@ -2318,7 +2337,7 @@ async function onlineJoin(): Promise<void> {
     // 2. Maintenant que le joueur est inscrit en base, se connecter en ligne :
     // l'abonnement au canal privé `game:<id>:B` sera autorisé sans TIMED_OUT,
     // et le resyncFrom(0) initial pourra lire les événements de mise en place sans 403.
-    store.connectOnline(targetGameId, "B", onlineTransport, deck, myName);
+    store.connectOnline(targetGameId, "B", onlineTransport, deck, myName, joinRes?.firstPlayer);
     await store.resyncOnline();
   } catch (e) {
     // connectOnline a déjà basculé en « playing » (overlay d'attente) : on annule
@@ -2556,7 +2575,7 @@ const rollWinnerName = computed(() => {
   if (!winner) return "";
   return (
     store.players[winner]?.name ||
-    (winner === "A" || winner === "A1" ? "Joueur 1" : "Joueur 2")
+    (winner.startsWith("A") ? "Joueur 1" : "Joueur 2")
   );
 });
 const rollPriorityChoicePending = ref(false);
@@ -2592,9 +2611,49 @@ const isMyRollChoice = computed(() => {
     return rollWinnerSeat.value !== store.botSeat;
   }
   if (store.online) {
+    if (store.mode === "2v2") {
+      const myTeam = store.mySeat?.startsWith("A") ? "A" : "B";
+      const winnerTeam = rollWinnerSeat.value?.startsWith("A") ? "A" : "B";
+      return myTeam === winnerTeam;
+    }
     return rollWinnerSeat.value === store.mySeat;
   }
   return true;
+});
+
+const isFirstPlayerMe = computed(() => {
+  if (store.online) {
+    if (store.mode === "2v2") {
+      const myTeam = store.mySeat?.startsWith("A") ? "A" : "B";
+      const firstTeam = store.firstPlayer?.startsWith("A") ? "A" : "B";
+      return myTeam === firstTeam;
+    }
+    return store.firstPlayer === store.mySeat;
+  }
+  if (store.botSeat) {
+    return store.firstPlayer !== store.botSeat;
+  }
+  return store.firstPlayer === store.perspective;
+});
+
+const mulliganInitiativeText = computed(() => {
+  const firstName =
+    store.players[store.firstPlayer]?.name ||
+    (store.firstPlayer?.startsWith("A") ? "Joueur 1" : "Joueur 2");
+
+  if (store.online) {
+    if (isFirstPlayerMe.value) {
+      return "🎲 Tu as l'initiative et tu commenceras au Tour 1 !";
+    }
+    return `🎲 Votre adversaire (${firstName}) a l'initiative et commencera au Tour 1.`;
+  }
+  if (store.botSeat) {
+    if (isFirstPlayerMe.value) {
+      return "🎲 Tu as l'initiative et tu commenceras au Tour 1 !";
+    }
+    return "🎲 L'ordinateur a l'initiative et commencera au Tour 1.";
+  }
+  return `🎲 ${firstName} a l'initiative et commencera au Tour 1.`;
 });
 
 const rollResultText = computed(() => {
@@ -2605,9 +2664,9 @@ const rollResultText = computed(() => {
       : "⏳ L'ordinateur remporte le jet de dé !";
   }
   if (store.online) {
-    return rollWinnerSeat.value === store.mySeat
+    return isMyRollChoice.value
       ? "🟢 Tu remportes le jet de dé !"
-      : `⏳ ${rollWinnerName.value} remporte le jet de dé !`;
+      : `⏳ Votre adversaire (${rollWinnerName.value}) remporte le jet de dé !`;
   }
   return `🟢 ${rollWinnerName.value} remporte le jet de dé !`;
 });
@@ -2693,7 +2752,7 @@ function rollInitiativeDie(): void {
         ?.state?.turn?.active ??
       store.firstPlayer ??
       "A";
-    const serverNeedsA = serverFirst === "A" || serverFirst === "A1";
+    const serverNeedsA = serverFirst.startsWith("A");
     const aWins = finalA > finalB;
     if (serverNeedsA && !aWins) {
       const tmp = finalA;
@@ -2742,7 +2801,7 @@ function rollInitiativeDie(): void {
             applyPriorityChoice("1er");
           }
         }
-      }, isMyRollChoice.value ? 6000 : 8000);
+      }, isMyRollChoice.value ? 15000 : 18000);
     }
   }
 

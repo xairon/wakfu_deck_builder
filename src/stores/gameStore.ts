@@ -932,11 +932,17 @@ export const useGameStore = defineStore("game", () => {
           state?: { turn?: { active?: Seat; firstPlayer?: Seat } };
         }
       ).state?.turn;
-      const fp = t?.firstPlayer ?? t?.active;
+      const fp = priorityChosenFirst.value ?? t?.firstPlayer ?? t?.active;
       if (fp) {
         firstPlayer.value = fp;
-        if (online.value) {
+        if (online.value && !priorityChosenFirst.value) {
           priorityChosenFirst.value = fp;
+        }
+      }
+      if (priorityChosenFirst.value && state.value?.turn) {
+        state.value.turn.firstPlayer = priorityChosenFirst.value;
+        if (state.value.turn.number === 1 && state.value.turn.phase === "principale") {
+          state.value.turn.active = priorityChosenFirst.value;
         }
       }
     }
@@ -1153,6 +1159,7 @@ export const useGameStore = defineStore("game", () => {
     transport: OnlineTransport,
     myDeck?: Deck | null,
     myName?: string,
+    initialFirstPlayer?: Seat,
   ): void {
     disconnectOnline();
     online.value = true;
@@ -1160,6 +1167,10 @@ export const useGameStore = defineStore("game", () => {
     gameId.value = id;
     mySeat.value = seat;
     perspective.value = seat;
+    if (initialFirstPlayer) {
+      firstPlayer.value = initialFirstPlayer;
+      priorityChosenFirst.value = initialFirstPlayer;
+    }
     if (seat === "A1" || seat === "A2" || seat === "B1" || seat === "B2") {
       mode.value = "2v2";
       if (!players.value.A1) {
@@ -5446,6 +5457,7 @@ export const useGameStore = defineStore("game", () => {
     continuedMatch,
     players,
     firstPlayer,
+    priorityChosenFirst,
     remotePriorityChoice,
     perspective,
     opponent,
