@@ -66,8 +66,10 @@
       <span class="eyebrow text-base-content/50">Héros</span>
       <div v-if="currentDeck?.hero" class="mt-2 flex items-center gap-2.5">
         <div
-          class="plate-frame w-10 shrink-0"
+          class="plate-frame w-10 shrink-0 cursor-pointer transition-transform hover:scale-105"
           :style="{ '--spine': elementColor(currentDeck.hero) }"
+          :title="`Agrandir ${currentDeck.hero.name}`"
+          @click="$emit('open-zoom', currentDeck.hero)"
         >
           <img
             :src="cardImg(currentDeck.hero)"
@@ -77,7 +79,10 @@
           />
         </div>
         <div class="min-w-0">
-          <p class="truncate font-display text-sm leading-tight">
+          <p
+            class="truncate font-display text-sm leading-tight cursor-pointer hover:text-primary transition-colors"
+            @click="$emit('open-zoom', currentDeck.hero)"
+          >
             {{ currentDeck.hero.name }}
           </p>
           <button
@@ -95,8 +100,10 @@
       <span class="eyebrow text-base-content/50">Havre-Sac</span>
       <div v-if="currentDeck?.havreSac" class="mt-2 flex items-center gap-2.5">
         <div
-          class="plate-frame w-10 shrink-0"
+          class="plate-frame w-10 shrink-0 cursor-pointer transition-transform hover:scale-105"
           :style="{ '--spine': elementColor(currentDeck.havreSac) }"
+          :title="`Agrandir ${currentDeck.havreSac.name}`"
+          @click="$emit('open-zoom', currentDeck.havreSac)"
         >
           <img
             :src="cardImg(currentDeck.havreSac)"
@@ -106,7 +113,10 @@
           />
         </div>
         <div class="min-w-0">
-          <p class="truncate font-display text-sm leading-tight">
+          <p
+            class="truncate font-display text-sm leading-tight cursor-pointer hover:text-primary transition-colors"
+            @click="$emit('open-zoom', currentDeck.havreSac)"
+          >
             {{ currentDeck.havreSac.name }}
           </p>
           <button
@@ -190,6 +200,7 @@
         :key="dc.card.id"
         :dc="dc"
         :spine-color="elementColor(dc.card)"
+        @open-zoom="(card) => $emit('open-zoom', card)"
         @move-to-reserve="moveToReserve"
         @remove="(id) => deckStore.removeCard(id, 1)"
         @add="(card) => $emit('add-to-deck', card)"
@@ -232,8 +243,10 @@
         :key="'r-' + dc.card.id"
         :dc="dc"
         :spine-color="elementColor(dc.card)"
+        @open-zoom="(card) => $emit('open-zoom', card)"
         @move-to-main="moveToMain"
         @remove="(id) => deckStore.removeCard(id, 1, true)"
+        @add="(card) => addToReserve(card)"
         @set-edition="
           (id, printing) => deckStore.setEntryEdition(id, true, printing)
         "
@@ -358,6 +371,8 @@ defineEmits<{
   "confirm-clear": [];
   "confirm-delete": [];
   "add-to-deck": [card: Card];
+  "add-to-reserve": [card: Card];
+  "open-zoom": [card: Card];
   share: [];
 }>();
 
@@ -508,5 +523,13 @@ function moveToMain(id: string) {
     return;
   }
   deckStore.moveCardZone(id, false, 1);
+}
+
+function addToReserve(card: Card) {
+  if (reserveCount.value >= 12) {
+    toast.warning("La réserve est pleine (12 cartes max)", { duration: 2000 });
+    return;
+  }
+  deckStore.addCard(card, 1, true);
 }
 </script>

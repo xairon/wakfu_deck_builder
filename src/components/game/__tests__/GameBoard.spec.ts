@@ -1,10 +1,16 @@
+import { nextTick } from "vue";
 import { mount, flushPromises } from "@vue/test-utils";
 import { setActivePinia, createPinia } from "pinia";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import GameBoard from "../GameBoard.vue";
 import { useGameStore } from "@/stores/gameStore";
 import { useCardStore } from "@/stores/cardStore";
-import { createMockDeck, createMockHavreSacCard } from "tests/factories/card";
+import { useBoardDnd } from "@/composables/useBoardDnd";
+import {
+  createMockDeck,
+  createMockHavreSacCard,
+  createMockEquipmentCard,
+} from "tests/factories/card";
 
 describe("GameBoard — rendu", () => {
   beforeEach(() => setActivePinia(createPinia()));
@@ -118,6 +124,120 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
 
     // Le bouton « → Socle » porte le choix de zone du contrôleur (Havre-Sac).
     expect(playSpy).toHaveBeenCalledWith(handId, undefined, "havreSac");
+  });
+
+  it("sélectionner une carte en main priorise le menu de la carte (gactionbar) et masque les actions inapplicables en main", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    store.assist = true;
+    const me = store.perspective;
+    if (store.state.seats[me].main.length === 0) store.draw(me);
+    const handId = store.state.seats[me].main[0];
+    expect(handId).toBeTruthy();
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+      attachTo: document.body,
+    });
+
+    const handCard = wrapper.get(`[data-testid="card-${handId}"]`);
+    await handCard.trigger("click");
+    await flushPromises();
+
+    const actionbar = wrapper.find(".gactionbar");
+    expect(actionbar.exists()).toBe(true);
+
+    // Les actions de cartes en jeu (incliner, pile, dégâts, retour en main) ne doivent PAS apparaître pour une carte en main
+    expect(actionbar.text()).not.toContain("Incliner");
+    expect(actionbar.text()).not.toContain("Redresser");
+    expect(actionbar.text()).not.toContain("Incliner pile");
+    expect(actionbar.text()).not.toContain("+ Dmg");
+    expect(actionbar.text()).not.toContain("→ Main");
+
+    // Les actions valides pour la main doivent être présentes
+    expect(actionbar.text()).toContain("→ Monde");
+    expect(actionbar.text()).toContain("→ Socle");
+    expect(actionbar.text()).toContain("Défausser");
+
+    wrapper.unmount();
+  });
+
+  it("glisser-déposer un équipement sur une créature l'équipe directement sans passer par le menu", async () => {
+    const store = useGameStore();
+    const dnd = useBoardDnd();
+    const equipCard = createMockEquipmentCard({
+      id: "equip-dnd-1",
+      name: "Épée Test",
+      stats: { niveau: { value: 0, element: "Neutre" } },
+    });
+    const deck = createMockDeck({
+      cards: [{ card: equipCard, quantity: 3 }],
+    });
+    store.startSandbox(deck, deck);
+    store.assist = true;
+    const me = store.perspective;
+    store.draw(me);
+    const handId = store.state.seats[me].main[0];
+    const heroId = store.state.seats[me].heroInstanceId!;
+    expect(handId).toBeTruthy();
+    expect(heroId).toBeTruthy();
+
+    const playSpy = vi.spyOn(store, "playFromHand");
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Simuler le drop sur la carte du Héros
+    dnd.executeDrop(handId, {
+      zone: { zone: "havreSac", owner: me },
+      label: "Intérieur du Havre-Sac",
+      targetCardId: heroId,
+    });
+
+    // L'équipement est directement joué et équipé sur le Héros
+    expect(playSpy).toHaveBeenCalledWith(handId, heroId, "havreSac");
+
+    wrapper.unmount();
+  });
+
+  it("en fin de tour, toutes les déclarations d'attaquants, de bloqueurs et leurs animations sont supprimées", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck(), "A");
+    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroB = store.state.seats.B.heroInstanceId!;
+
+    // Déclarer heroA comme attaquant ciblant heroB
+    store.setCardCombatState(heroA, "attacking", heroB);
+    store.setCardCombatState(heroB, "blocking", heroA);
+
+    expect(store.state.instances[heroA].counters?.combatState).toBe("attacking");
+    expect(store.state.instances[heroB].counters?.combatState).toBe("blocking");
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Passer en phase "fin"
+    store.setTurnPhase("fin");
+    await nextTick();
+
+    expect(store.state.instances[heroA].counters?.combatState).toBeNull();
+    expect(store.state.instances[heroB].counters?.combatState).toBeNull();
+    expect(wrapper.find("[data-testid='combat-targeting-banner']").exists()).toBe(false);
+
+    // Redéclarer un attaquant manuellement
+    store.setCardCombatState(heroA, "attacking", heroB);
+    expect(store.state.instances[heroA].counters?.combatState).toBe("attacking");
+
+    // Fin de tour complète via endTurn()
+    store.endTurn();
+    await nextTick();
+
+    expect(store.state.instances[heroA].counters?.combatState).toBeNull();
+    expect(store.state.instances[heroB].counters?.combatState).toBeNull();
+
+    wrapper.unmount();
   });
 });
 

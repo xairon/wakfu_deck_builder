@@ -15,6 +15,7 @@
       :class="{
         'hand-fan__card--playable': mine && item.playable === true,
         'hand-fan__card--unplayable': mine && item.playable === false,
+        'hand-fan__card--selected': item.inst && item.inst.instanceId === selectedId,
       }"
       :style="cardStyle(i)"
     >
@@ -146,6 +147,10 @@ function cardStyle(i: number): CSSProperties {
   transform: rotate(0deg) translateY(-22px) scale(1.08);
   z-index: 40 !important;
   filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.7));
+}
+.hand-fan:not(.hand-fan--opp) .hand-fan__card--selected {
+  transform: rotate(0deg) translateY(-14px) scale(1.04);
+  z-index: 38 !important;
 }
 .hand-fan--opp .hand-fan__card:hover {
   transform: rotate(var(--rot, 0deg)) translateY(calc(var(--ty, 0px) + 4px));

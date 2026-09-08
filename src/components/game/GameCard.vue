@@ -243,16 +243,19 @@ const explicitCombatState = computed(
 );
 
 const isAttacking = computed(() => {
+  if (game.turn.phase === "fin") return false;
   if (explicitCombatState.value === "attacking") return true;
   return combatRole.value === "attaquant";
 });
 
 const isBlocking = computed(() => {
+  if (game.turn.phase === "fin") return false;
   if (explicitCombatState.value === "blocking") return true;
   return combatRole.value === "bloqueur";
 });
 
 const isTargeted = computed(() => {
+  if (game.turn.phase === "fin") return false;
   if ((explicitCombatState.value as string | null) === "targeted") return true;
   const myId = props.instance.instanceId;
   for (const inst of Object.values(game.state.instances)) {

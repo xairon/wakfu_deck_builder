@@ -18,6 +18,7 @@ export interface DropSpec {
   zone: ZoneRef;
   position?: Position;
   label: string;
+  targetCardId?: string | null;
 }
 
 export interface DragPayload {
@@ -56,6 +57,39 @@ const THRESHOLD_PX = 6;
 
 const drag = ref<ActiveDrag | null>(null);
 const hoveredZoneId = ref<string | null>(null);
+const hoveredCardId = ref<string | null>(null);
+
+function findCardTargetAt(
+  x: number,
+  y: number,
+  excludeInstanceId?: string,
+): string | null {
+  if (typeof document === "undefined" || !document.elementsFromPoint)
+    return null;
+  const elements = document.elementsFromPoint(x, y);
+  for (const el of elements) {
+    if (el.closest(".hand-fan")) continue;
+    if (el.closest(".gdrag")) continue;
+    if (el.closest(".gcombat")) continue;
+    if (el.closest(".gactionbar")) continue;
+
+    const slot = el.closest<HTMLElement>("[data-iid]");
+    if (slot && slot.dataset.iid) {
+      if (slot.dataset.iid !== excludeInstanceId) {
+        return slot.dataset.iid;
+      }
+      const parentSlot = slot.parentElement?.closest<HTMLElement>("[data-iid]");
+      if (
+        parentSlot &&
+        parentSlot.dataset.iid &&
+        parentSlot.dataset.iid !== excludeInstanceId
+      ) {
+        return parentSlot.dataset.iid;
+      }
+    }
+  }
+  return null;
+}
 
 const zones = new Map<string, { el: HTMLElement; spec: DropSpec }>();
 const zoneRects = new Map<string, DOMRect>();
@@ -154,6 +188,11 @@ export function useBoardDnd() {
       d.y = ev.clientY;
       d.tilt = d.tilt + (targetTilt - d.tilt) * 0.35;
       hoveredZoneId.value = hitTest(ev.clientX, ev.clientY);
+      hoveredCardId.value = findCardTargetAt(
+        ev.clientX,
+        ev.clientY,
+        drag.value?.instanceId,
+      );
     }
 
     function cleanup(): void {
@@ -175,11 +214,24 @@ export function useBoardDnd() {
       document.body.classList.remove("gdnd-dragging");
       const zoneId = hitTest(ev.clientX, ev.clientY);
       const target = zoneId ? zones.get(zoneId) : null;
+      const targetCardId = findCardTargetAt(
+        ev.clientX,
+        ev.clientY,
+        drag.value?.instanceId,
+      );
       hoveredZoneId.value = null;
-      if (target && drag.value) {
+      hoveredCardId.value = null;
+      if ((target || targetCardId) && drag.value) {
         const id = drag.value.instanceId;
         drag.value = null;
-        dropHandler.value?.(id, target.spec);
+        const spec: DropSpec = target
+          ? { ...target.spec, targetCardId }
+          : {
+              zone: { zone: "monde" },
+              label: "Carte",
+              targetCardId,
+            };
+        dropHandler.value?.(id, spec);
       } else if (drag.value) {
         drag.value.returning = true;
         endReturn();
@@ -190,6 +242,7 @@ export function useBoardDnd() {
       cleanup();
       document.body.classList.remove("gdnd-dragging");
       hoveredZoneId.value = null;
+      hoveredCardId.value = null;
       if (drag.value) {
         drag.value.returning = true;
         endReturn();
@@ -230,14 +283,20 @@ export function useBoardDnd() {
     dropHandler.value = fn;
   }
 
+  function executeDrop(instanceId: string, spec: DropSpec): void {
+    dropHandler.value?.(instanceId, spec);
+  }
+
   return {
     drag,
     isDragging,
     hoveredZoneId,
+    hoveredCardId,
     armDrag,
     consumeClick,
     registerZone,
     resetZones,
     setDropHandler,
+    executeDrop,
   };
 }

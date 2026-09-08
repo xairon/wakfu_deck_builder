@@ -2,7 +2,7 @@
   <div class="gtable" :class="{ 'gtable--dragging': dnd.isDragging.value }">
     <!-- Bandeau de ciblage combat (Attaquants sélectionnés - Joueur du tour) -->
     <div
-      v-if="pendingAttackerIds.length"
+      v-if="store.turn.phase !== 'fin' && pendingAttackerIds.length"
       class="gcombat-banner gcombat-banner--targeting"
       data-testid="combat-targeting-banner"
     >
@@ -24,7 +24,7 @@
 
     <!-- Bandeau de ciblage combat (Bloqueur sélectionné - Défenseur) -->
     <div
-      v-if="pendingBlockerId"
+      v-if="store.turn.phase !== 'fin' && pendingBlockerId"
       class="gcombat-banner gcombat-banner--targeting"
       data-testid="combat-targeting-banner"
     >
@@ -1238,6 +1238,7 @@
         ref="actionbarRef"
         class="gactionbar"
         role="toolbar"
+        tabindex="-1"
         aria-label="Actions de la carte sélectionnée"
         @keydown.esc.prevent="selectedId = null"
       >
@@ -1291,27 +1292,29 @@
                 : "🛡 Rentrer au Havre-Sac"
             }}
           </button>
-          <button class="gbtn gbtn--accent" @click="tapSelected">
-            {{
-              selectedInst.orientation === "tapped"
-                ? "↺ Redresser"
-                : "↻ Incliner"
-            }}
-          </button>
-          <button
-            class="gbtn gbtn--accent"
-            title="Incliner toute la pile (le Porteur + tous ses Équipements attachés)"
-            @click="tapStackSelected"
-          >
-            🥞 Incliner pile
-          </button>
-          <button
-            class="gbtn gbtn--accent"
-            title="Redresser toute la pile (le Porteur + tous ses Équipements attachés)"
-            @click="untapStackSelected"
-          >
-            ⬆️ Redresser pile
-          </button>
+          <template v-if="selectedInst.location.zone !== 'main'">
+            <button class="gbtn gbtn--accent" @click="tapSelected">
+              {{
+                selectedInst.orientation === "tapped"
+                  ? "↺ Redresser"
+                  : "↻ Incliner"
+              }}
+            </button>
+            <button
+              class="gbtn gbtn--accent"
+              title="Incliner toute la pile (le Porteur + tous ses Équipements attachés)"
+              @click="tapStackSelected"
+            >
+              🥞 Incliner pile
+            </button>
+            <button
+              class="gbtn gbtn--accent"
+              title="Redresser toute la pile (le Porteur + tous ses Équipements attachés)"
+              @click="untapStackSelected"
+            >
+              ⬆️ Redresser pile
+            </button>
+          </template>
           <!-- A19 — FABRICATION (305.4/418.6) : carte de MA main portant une
                Recette. Actif quand la fabrication est légale ; sinon désactivé
                avec la raison lisible (affordance MTGA : l'option existe, la
@@ -1373,7 +1376,13 @@
           <button class="gbtn" @click="moveSelected('havreSac')">
             → Socle
           </button>
-          <button class="gbtn" @click="moveSelected('main')">→ Main</button>
+          <button
+            v-if="selectedInst.location.zone !== 'main'"
+            class="gbtn"
+            @click="moveSelected('main')"
+          >
+            → Main
+          </button>
 
           <button class="gbtn" @click="moveSelected('defausse', { at: 'top' })">
             Défausser
@@ -1391,12 +1400,14 @@
             ↓ Pioche
           </button>
           <span class="gactionbar__sep"></span>
-          <button class="gbtn gbtn--counter" @click="bumpDamage(1)">
-            + Dmg
-          </button>
-          <button class="gbtn gbtn--counter" @click="bumpDamage(-1)">
-            − Dmg
-          </button>
+          <template v-if="selectedInst.location.zone !== 'main'">
+            <button class="gbtn gbtn--counter" @click="bumpDamage(1)">
+              + Dmg
+            </button>
+            <button class="gbtn gbtn--counter" @click="bumpDamage(-1)">
+              − Dmg
+            </button>
+          </template>
           <!-- Compteur Résistance pour le Havre-Sac ou cartes à résistance -->
           <template v-if="selectedIsHavreSac">
             <button
@@ -1953,7 +1964,8 @@ import type {
   Seat,
   ZoneRef,
 } from "@/game";
-import { otherSeat } from "@/game";
+import { attach, otherSeat, say } from "@/game";
+import { requiresBearer } from "@/game/rules/bearer";
 import GameCard from "./GameCard.vue";
 import AttachedEquip from "./AttachedEquip.vue";
 import HandFan from "./HandFan.vue";
@@ -1998,14 +2010,22 @@ function resolveCard(cardId: string | null): Card | null {
   const fromInstance = store.resolveInstanceCard(cardId);
   if (fromInstance) return fromInstance;
   const s = String(cardId);
-  return (
+  const byStore =
     cardIndex.value.get(s) ??
     cardIndex.value.get(cardId) ??
     cardStore.cards.find(
       (c) => String(c.id) === s || String((c as any).code) === s,
-    ) ??
-    null
-  );
+    );
+  if (byStore) return byStore;
+  if (store.state?.instances) {
+    for (const [instId, inst] of Object.entries(store.state.instances)) {
+      if (inst.cardId === cardId || inst.instanceId === cardId) {
+        const found = store.resolveInstanceCard(instId);
+        if (found) return found;
+      }
+    }
+  }
+  return null;
 }
 
 onMounted(() => {
@@ -2305,9 +2325,77 @@ onMounted(() => {
       store.ruleError = "Termine le combat avant de déplacer une carte.";
       return;
     }
+
+    const inst = store.state.instances[instanceId];
+    if (!inst) return;
+    const card =
+      store.resolveInstanceCard(instanceId) ?? resolveCard(inst.cardId);
+
+    // ── DRAG & DROP SUR UNE CARTE (ÉQUIPER DIRECTEMENT) ──
+    let targetCardId = spec.targetCardId;
+    if (targetCardId && targetCardId !== instanceId) {
+      // Si la cible est elle-même un équipement attaché, cibler son porteur
+      for (const candidate of Object.values(store.state.instances)) {
+        if (candidate.attachments?.includes(targetCardId)) {
+          targetCardId = candidate.instanceId;
+          break;
+        }
+      }
+
+      const bearerInst = store.state.instances[targetCardId];
+      const bearerCard =
+        store.resolveInstanceCard(targetCardId) ??
+        resolveCard(bearerInst?.cardId ?? null);
+      const bearerInPlay =
+        bearerInst &&
+        (bearerInst.location.zone === "monde" ||
+          bearerInst.location.zone === "havreSac");
+
+      const isEquip =
+        card?.mainType === "Équipement" ||
+        requiresBearer(card) ||
+        store.isSandbox;
+
+      if (bearerInPlay && isEquip) {
+        // CAS 1 : Carte en main en mode assisté
+        if (
+          store.assist &&
+          !store.isSandbox &&
+          inst.location.zone === "main" &&
+          inst.owner === me.value
+        ) {
+          const dest =
+            bearerInst.location.zone === "havreSac" ? "havreSac" : "monde";
+          const ok = store.playFromHand(instanceId, targetCardId, dest);
+          if (ok) return;
+          return;
+        }
+
+        // CAS 2 : Carte déjà en jeu, ou mode manuel / sandbox
+        if (
+          store.tryIntent?.({
+            kind: "ATTACH",
+            equipmentId: instanceId,
+            bearerId: targetCardId,
+          })
+        ) {
+          return;
+        }
+
+        const seat = me.value;
+        store.dispatch(
+          attach(seat, instanceId, targetCardId),
+          say(
+            seat,
+            `${card?.name ?? "L'équipement"} est équipé sur ${bearerCard?.name ?? "la créature"}.`,
+          ),
+        );
+        return;
+      }
+    }
+
     // règles assistées : un drop main → table passe par le moteur de règles
     // (légalité + inclinaison automatique des Ressources)
-    const inst = store.state.instances[instanceId];
     const toPlay = spec.zone.zone === "monde" || spec.zone.zone === "havreSac";
     if (
       store.assist &&
@@ -2578,6 +2666,13 @@ function select(instanceId: string): void {
       }
     }
   }
+  if (
+    document.activeElement instanceof HTMLElement &&
+    (document.activeElement.closest(".hand-fan") ||
+      document.activeElement.classList.contains("game-card"))
+  ) {
+    document.activeElement.blur();
+  }
   selectedId.value = selectedId.value === instanceId ? null : instanceId;
 }
 
@@ -2656,8 +2751,53 @@ watch(selectedId, async (id) => {
         ? document.activeElement
         : null;
     announce(`${selectedName.value} sélectionnée. Barre d'actions disponible.`);
+
+    // Priorité au menu d'action : retirer le focus de la main si présent
+    if (
+      lastSelectedTrigger &&
+      (lastSelectedTrigger.closest(".hand-fan") ||
+        lastSelectedTrigger.classList.contains("game-card"))
+    ) {
+      lastSelectedTrigger.blur();
+    }
+
     await nextTick();
-    actionbarRef.value?.querySelector<HTMLElement>(".gbtn")?.focus();
+
+    const focusMenu = () => {
+      const bar = actionbarRef.value;
+      if (!bar) return false;
+      const primaryBtn =
+        bar.querySelector<HTMLElement>(
+          "[data-testid='action-craft']:not([disabled])",
+        ) ||
+        bar.querySelector<HTMLElement>(
+          "[data-testid='action-equip']:not([disabled])",
+        ) ||
+        bar.querySelector<HTMLElement>(
+          "[data-testid='action-attack']:not([disabled])",
+        ) ||
+        bar.querySelector<HTMLElement>(
+          ".gactionbar__btns .gbtn:not([disabled]):not(.gbtn--ghost):not(.gbtn--counter)",
+        ) ||
+        bar.querySelector<HTMLElement>(
+          ".gactionbar__btns .gbtn:not([disabled])",
+        );
+
+      if (primaryBtn) {
+        primaryBtn.focus();
+        return true;
+      }
+      bar.focus();
+      return true;
+    };
+
+    if (!focusMenu()) {
+      requestAnimationFrame(() => {
+        if (!focusMenu()) {
+          setTimeout(focusMenu, 30);
+        }
+      });
+    }
   } else if (lastSelectedTrigger?.isConnected) {
     lastSelectedTrigger.focus();
     lastSelectedTrigger = null;
@@ -2691,6 +2831,28 @@ function slotCls(instanceId: string): Record<string, boolean> {
   const isAdverse = inst?.controller !== me.value;
   const isTargetedByOpponent = store.opponentTargetedCardId === instanceId;
   const isTargeted = (isSelected && isAdverse) || isTargetedByOpponent;
+  const draggedCard =
+    (dnd.drag.value?.instanceId
+      ? store.resolveInstanceCard(dnd.drag.value.instanceId)
+      : null) ??
+    dnd.drag.value?.card ??
+    null;
+  const isEquipTarget =
+    dnd.isDragging.value &&
+    dnd.hoveredCardId.value === instanceId &&
+    (!isAdverse || store.isSandbox) &&
+    (draggedCard?.mainType === "Équipement" ||
+      requiresBearer(draggedCard) ||
+      store.isSandbox);
+
+  let out: Record<string, boolean>;
+  if (store.turn.phase === "fin") {
+    out = {
+      "gslot--targeted-strong": isTargeted,
+    };
+    out["gslot--equip-target"] = isEquipTarget;
+    return out;
+  }
 
   if (pendingAttackerIds.value.length > 0) {
     const isSource = pendingAttackerIds.value.includes(instanceId);
@@ -2698,75 +2860,76 @@ function slotCls(instanceId: string): Record<string, boolean> {
       !isSource &&
       inst?.controller !== me.value &&
       (inst?.location.zone === "monde" || inst?.location.zone === "havreSac");
-    return {
+    out = {
       "gslot--atk": isSource,
       "gslot--target-can": isEligibleTarget,
       "gslot--targeted-strong": isTargeted,
     };
-  }
-  if (pendingBlockerId.value) {
+  } else if (pendingBlockerId.value) {
     const isSource = pendingBlockerId.value === instanceId;
     const isEligibleTarget =
       !isSource &&
       inst?.controller !== me.value &&
       (inst?.location.zone === "monde" || inst?.location.zone === "havreSac");
-    return {
+    out = {
       "gslot--atk": isSource,
       "gslot--target-can": isEligibleTarget,
       "gslot--targeted-strong": isTargeted,
     };
-  }
-  if (store.pendingPayment) {
-    return {
+  } else if (store.pendingPayment) {
+    out = {
       "gslot--target-can":
         store.pendingPayment.eligible.includes(instanceId) &&
         !store.pendingPayment.chosen.includes(instanceId),
       "gslot--atk": store.pendingPayment.chosen.includes(instanceId),
       "gslot--targeted-strong": isTargeted,
     };
-  }
-  if (store.effectTargeting) {
-    return {
+  } else if (store.effectTargeting) {
+    out = {
       "gslot--target-can": store.effectTargetIdsList.includes(instanceId),
       "gslot--targeted-strong": isTargeted,
     };
-  }
-  if (store.pendingBearer) {
-    return {
+  } else if (store.pendingBearer) {
+    out = {
       "gslot--target-can": store.pendingBearer.eligible.includes(instanceId),
       "gslot--targeted-strong": isTargeted,
     };
+  } else {
+    const c = store.combat;
+    if (!c) {
+      out = {
+        "gslot--targeted-strong": isTargeted,
+      };
+    } else {
+      out = {
+        "gslot--atk-can":
+          c.step === "attackers" && store.combatAttackerIds.includes(instanceId),
+        "gslot--atk":
+          c.attackers.includes(instanceId) ||
+          (c.step === "strikes" && c.strikeFor === instanceId) ||
+          (c.step === "riposte" && c.riposteFrom === instanceId),
+        "gslot--target-can":
+          (c.step === "attackers" && store.combatTargetIds.includes(instanceId)) ||
+          (c.step === "strikes" && store.combatStrikeIds.includes(instanceId)) ||
+          (c.step === "geant" && store.combatGeantIds.includes(instanceId)) ||
+          (c.step === "riposte" && store.combatRiposteIds.includes(instanceId)) ||
+          (c.step === "blockers" &&
+            !!c.pendingBlocker &&
+            c.attackers.includes(instanceId)),
+        "gslot--target": c.target?.instanceId === instanceId,
+        "gslot--blk-can":
+          c.step === "blockers" && store.combatBlockerIds.includes(instanceId),
+        "gslot--blk":
+          (c.step === "blockers" && !!c.blocks[instanceId]) ||
+          c.pendingBlocker === instanceId,
+        "gslot--lethal": store.combatPreview?.lethal.includes(instanceId) ?? false,
+        "gslot--targeted-strong": isTargeted,
+      };
+    }
   }
-  const c = store.combat;
-  if (!c) {
-    return {
-      "gslot--targeted-strong": isTargeted,
-    };
-  }
-  return {
-    "gslot--atk-can":
-      c.step === "attackers" && store.combatAttackerIds.includes(instanceId),
-    "gslot--atk":
-      c.attackers.includes(instanceId) ||
-      (c.step === "strikes" && c.strikeFor === instanceId) ||
-      (c.step === "riposte" && c.riposteFrom === instanceId),
-    "gslot--target-can":
-      (c.step === "attackers" && store.combatTargetIds.includes(instanceId)) ||
-      (c.step === "strikes" && store.combatStrikeIds.includes(instanceId)) ||
-      (c.step === "geant" && store.combatGeantIds.includes(instanceId)) ||
-      (c.step === "riposte" && store.combatRiposteIds.includes(instanceId)) ||
-      (c.step === "blockers" &&
-        !!c.pendingBlocker &&
-        c.attackers.includes(instanceId)),
-    "gslot--target": c.target?.instanceId === instanceId,
-    "gslot--blk-can":
-      c.step === "blockers" && store.combatBlockerIds.includes(instanceId),
-    "gslot--blk":
-      (c.step === "blockers" && !!c.blocks[instanceId]) ||
-      c.pendingBlocker === instanceId,
-    "gslot--lethal": store.combatPreview?.lethal.includes(instanceId) ?? false,
-    "gslot--targeted-strong": isTargeted,
-  };
+
+  out["gslot--equip-target"] = isEquipTarget;
+  return out;
 }
 /** PV/Résistance projetés d'une cible (Héros/Havre-Sac) après résolution, ou null. */
 function previewHpAfter(instanceId: string): number | null {
@@ -2963,7 +3126,36 @@ interface CombatLink {
 }
 const activeCombatLinks = ref<CombatLink[]>([]);
 
+// En fin de tour ou lors du changement de tour : suppression de toutes les déclarations et animations
+watch(
+  () => [store.turn.number, store.turn.active, store.turn.phase] as const,
+  ([num, active, phase], [oldNum, oldActive, oldPhase] = []) => {
+    if (phase === "fin" || num !== oldNum || active !== oldActive) {
+      if (pendingAttackerIds.value.length > 0) {
+        pendingAttackerIds.value.forEach((id) =>
+          store.setCardCombatState(id, null, null),
+        );
+        pendingAttackerIds.value = [];
+      }
+      if (pendingBlockerId.value) {
+        store.setCardCombatState(pendingBlockerId.value, null, null);
+        pendingBlockerId.value = null;
+      }
+      activeCombatLinks.value = [];
+      for (const [id, inst] of Object.entries(store.state.instances)) {
+        if (inst.counters?.combatState || inst.counters?.combatTargetId) {
+          store.setCardCombatState(id, null, null);
+        }
+      }
+    }
+  },
+);
+
 function updateCombatLinks(): void {
+  if (store.turn.phase === "fin") {
+    activeCombatLinks.value = [];
+    return;
+  }
   const links: CombatLink[] = [];
   const instances = store.state?.instances;
   if (!instances) {
@@ -3570,6 +3762,15 @@ function manaBonus(seat: Seat): boolean {
       0 0 24px rgba(240, 166, 43, 0.35);
   }
 }
+/* Surbrillance lors du drag d'un équipement au-dessus d'une créature */
+.gslot--equip-target :deep(.game-card) {
+  outline: 3px solid #f0a62b !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 24px rgba(240, 166, 43, 0.9) !important;
+  transform: scale(1.06) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  z-index: 50 !important;
+}
 .ghavre__head {
   display: flex;
   align-items: center;
@@ -3914,7 +4115,7 @@ function manaBonus(seat: Seat): boolean {
   .gactionbar {
     position: fixed;
     bottom: 8px;
-    z-index: 40;
+    z-index: 10001;
   }
 }
 .gslot--atk-can :deep(.game-card),
@@ -4000,9 +4201,9 @@ function manaBonus(seat: Seat): boolean {
   box-shadow:
     0 10px 34px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  /* Au-dessus des rappels manuels (z-30) : quand une carte est sélectionnée, ses
-     contrôles priment et ne sont pas couverts par le panneau de rappels. */
-  z-index: 40;
+  /* Au-dessus de la main (z-9999) et des rappels manuels (z-30) : quand une carte
+     est sélectionnée, le menu de la carte prime et s'affiche au-dessus des cartes. */
+  z-index: 10001;
 }
 .gactionbar__name {
   font-family: Fraunces, Georgia, serif;

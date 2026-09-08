@@ -33,3 +33,20 @@ export function getThumbPath(src: string): string {
 export function getIllustrationPath(id: string): string {
   return `/images/illustrations/${id}.webp`;
 }
+
+/**
+ * Retourne le chemin de vignette pour une carte donnée (gère héros recto et imageUrl).
+ */
+export function getCardThumbPath(card: {
+  id: string;
+  imageUrl?: string;
+  mainType?: string;
+}): string {
+  if (card.imageUrl) return getThumbPath(card.imageUrl);
+  const full =
+    card.mainType === "Héros"
+      ? `/images/cards/${card.id}_recto.webp`
+      : `/images/cards/${card.id}.webp`;
+  return getThumbPath(full);
+}
+

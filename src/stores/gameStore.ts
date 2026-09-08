@@ -1783,6 +1783,13 @@ export const useGameStore = defineStore("game", () => {
       rejectMove("Main pleine : défausse l'excédent avant de finir le tour.");
       return;
     }
+    // Purge des déclarations et états de combat résiduels (attaquant, bloqueur, cible)
+    for (const [id, inst] of Object.entries(state.value.instances)) {
+      if (inst.counters?.combatState || inst.counters?.combatTargetId) {
+        setCardCombatState(id, null, null);
+      }
+    }
+
     // EN LIGNE (P2) : une seule intention END_TURN — le serveur pioche jusqu'aux
     // PA, passe la main, redresse/efface les dégâts du joueur entrant et purge
     // les jetons de tour (resolveIntent → nextTurnEvents). On n'avance RIEN
@@ -4239,6 +4246,13 @@ export const useGameStore = defineStore("game", () => {
 
   function setTurnPhase(phase: TurnPhase): void {
     if (matchPhase.value !== "playing") return;
+    if (phase === "fin") {
+      for (const [id, inst] of Object.entries(state.value.instances)) {
+        if (inst.counters?.combatState || inst.counters?.combatTargetId) {
+          setCardCombatState(id, null, null);
+        }
+      }
+    }
     dispatch(
       setPhase(perspective.value, {
         active: state.value.turn.active,

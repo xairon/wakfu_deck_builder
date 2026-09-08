@@ -73,6 +73,7 @@ const items = computed<{ inst: RedactedInstance; card: Card | null }[]>(() => {
       <GameCard
         :instance="a.inst"
         :card="a.card"
+        draggable
         :selected="a.inst.instanceId === selectedId"
         @select="emit('select', a.inst.instanceId)"
         @zoom="emit('zoom', a.inst.instanceId)"

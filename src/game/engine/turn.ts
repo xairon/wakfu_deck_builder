@@ -72,6 +72,13 @@ export function nextTurnEvents(state: GameState): DraftEvent[] {
         events.push(setCounter(next, inst.instanceId, name, 0, true));
       }
     }
+    // Purge des déclarations et états de combat résiduels (attaquant, bloqueur, cible)
+    if (inst.counters.combatState) {
+      events.push(setCounter(next, inst.instanceId, "combatState", null));
+    }
+    if (inst.counters.combatTargetId) {
+      events.push(setCounter(next, inst.instanceId, "combatTargetId", null));
+    }
     const inPlay =
       inst.location.zone === "monde" || inst.location.zone === "havreSac";
     if (inst.controller !== next || !inPlay) continue;

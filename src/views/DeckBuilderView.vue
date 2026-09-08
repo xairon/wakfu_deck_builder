@@ -103,6 +103,8 @@
           @confirm-clear="confirmClear"
           @confirm-delete="confirmDelete"
           @add-to-deck="addToDeck"
+          @add-to-reserve="addToReserve"
+          @open-zoom="openZoom"
           @share="shareDeck"
         />
       </aside>

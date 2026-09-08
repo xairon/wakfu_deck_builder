@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useGameStore } from "@/stores/gameStore";
 import type { TurnPhase } from "@/game";
 
@@ -117,6 +117,16 @@ const showCombatSubs = computed(
 );
 
 const localSubPhase = ref<string | null>(null);
+
+// Réinitialisation des sous-phases en fin de tour ou lors du changement de tour
+watch(
+  () => [store.turn.number, store.turn.active, store.turn.phase] as const,
+  ([num, active, phase], [oldNum, oldActive] = []) => {
+    if (phase === "fin" || num !== oldNum || active !== oldActive) {
+      localSubPhase.value = null;
+    }
+  },
+);
 
 // ── 4 phases de tour (règle structure d'un tour §602-605) ───────────────────
 const TURN_PHASE_ORDER: TurnPhase[] = [
