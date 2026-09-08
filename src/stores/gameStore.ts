@@ -337,6 +337,7 @@ export const useGameStore = defineStore("game", () => {
   });
   const firstPlayer = ref<Seat>("A");
   const priorityChosenFirst = ref<Seat | null>(null);
+  const endTurnPending = ref(false);
   const remotePriorityChoice = ref<{ seat: Seat; choice: "1er" | "2e" } | null>(null);
   /** Siège dont on affiche la vue (joueur actif / joueur en mulligan). */
   const perspective = ref<Seat>("A");
@@ -864,12 +865,22 @@ export const useGameStore = defineStore("game", () => {
             return;
           }
         }
+        if (intent.kind === "END_TURN" && msg.includes("Ce n'est pas votre tour.")) {
+          // Le tour a déjà avancé sur le serveur (ex: double-clic ou requête concurrente résolue).
+          // Ne pas afficher d'erreur déroutante au joueur, resynchroniser immédiatement l'état.
+          endTurnPending.value = false;
+          void resyncFrom(lastSeq());
+          return;
+        }
         ruleError.value = msg;
         // Le refus peut être un échec partiel : on resynchronise sur l'état
         // autoritaire plutôt que de rester divergent.
         void resyncFrom(lastSeq());
       })
       .finally(() => {
+        if (intent.kind === "END_TURN") {
+          endTurnPending.value = false;
+        }
         if (actionId) {
           optimisticActions.value = optimisticActions.value.filter(
             (a) => a.id !== actionId,
@@ -915,14 +926,19 @@ export const useGameStore = defineStore("game", () => {
     // l'état initial GAME_STARTED. On le synchronise sur le ref, sinon il reste
     // à "A" en ligne et fausse la règle « 1re activation au tour 2 ».
     const started = events.value.find((e) => e.type === "GAME_STARTED");
-    if (started && !priorityChosenFirst.value) {
+    if (started) {
       const t = (
         started.payload as {
           state?: { turn?: { active?: Seat; firstPlayer?: Seat } };
         }
       ).state?.turn;
       const fp = t?.firstPlayer ?? t?.active;
-      if (fp) firstPlayer.value = fp;
+      if (fp) {
+        firstPlayer.value = fp;
+        if (online.value) {
+          priorityChosenFirst.value = fp;
+        }
+      }
     }
     if (continuedMatch.value) {
       matchPhase.value = "playing";
@@ -1011,12 +1027,17 @@ export const useGameStore = defineStore("game", () => {
           const s = e.actor as Seat;
           const current = mulliganCounts.value[s] ?? 0;
           mulliganCounts.value = { ...mulliganCounts.value, [s]: current + 1 };
+        } else if (e.type === "SET_PHASE") {
+          endTurnPending.value = false;
         }
       }
     }
     // En ligne, phase ET fin de partie suivent le journal (main de départ →
     // mulligan → jeu → fin) : les deux clients les dérivent du même flux.
     if (online.value) {
+      if (state.value.turn && state.value.turn.active !== mySeat.value) {
+        endTurnPending.value = false;
+      }
       deriveOnlineOutcome();
       reconcileCombat();
     }
@@ -1735,6 +1756,7 @@ export const useGameStore = defineStore("game", () => {
 
   /** Finit le tour : pioche jusqu'aux PA (règle Wakfu) puis passe la main. */
   function endTurn(): void {
+    if (endTurnPending.value) return;
     const active = state.value.turn.active;
     // Une fenêtre d'interaction locale OUVERTE (Kanigrou Chi-Fu-Mi / Échec Critique)
     // doit être résolue AVANT de finir le tour — sinon on abandonnerait le combat en
@@ -1794,7 +1816,11 @@ export const useGameStore = defineStore("game", () => {
     // PA, passe la main, redresse/efface les dégâts du joueur entrant et purge
     // les jetons de tour (resolveIntent → nextTurnEvents). On n'avance RIEN
     // localement : l'état suit les echos diffusés.
+    if (online.value) {
+      endTurnPending.value = true;
+    }
     if (tryIntent({ kind: "END_TURN" })) return;
+    endTurnPending.value = false;
     const need = paOf(active) - state.value.seats[active].main.length;
     if (need > 0) draw(active, need);
     nextTurn();
@@ -5442,6 +5468,7 @@ export const useGameStore = defineStore("game", () => {
     keepHand,
     reveal,
     endTurn,
+    endTurnPending,
     concede,
     quitMatch,
     // présence adverse + fenêtre de grâce (déconnexion)

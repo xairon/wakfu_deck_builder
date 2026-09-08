@@ -316,4 +316,69 @@ describe("Optimistic UI en ligne", () => {
     expect(store.matchPhase).toBe("mulligan");
     expect(store.mulliganDone.A).toBe(false);
   });
+
+  it("gère endTurn en ligne : bloque le double-clic (endTurnPending) et ignore l'erreur 'Ce n'est pas votre tour.'", async () => {
+    let emit: ((e: PersistedEvent) => void) | null = null;
+    let submittedIntents: any[] = [];
+    let shouldFailWithTurnError = false;
+
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      submitIntent: async (_id: string, intent: any) => {
+        submittedIntents.push(intent);
+        if (shouldFailWithTurnError) {
+          throw new Error("Ce n'est pas votre tour.");
+        }
+      },
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        cb: (e: PersistedEvent) => void,
+      ) => {
+        emit = cb;
+        return () => {};
+      },
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g-endturn",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a1", seedB: "b1" },
+    );
+
+    const store = useGameStore();
+    store.connectOnline("g-endturn", "A", transport);
+    for (const ev of events) emit!(ev);
+
+    expect(store.turn.active).toBe("A");
+    expect(store.mySeat).toBe("A");
+    expect(store.endTurnPending).toBe(false);
+
+    // 1. Premier clic sur fin de tour : passe endTurnPending à true immédiatement
+    store.endTurn();
+    expect(store.endTurnPending).toBe(true);
+
+    // 2. Deuxième clic immédiat alors que endTurnPending est actif : ignoré
+    store.endTurn();
+
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(submittedIntents.length).toBe(1);
+    expect(submittedIntents[0].kind).toBe("END_TURN");
+    expect(store.endTurnPending).toBe(false);
+
+    // 3. Cas où le serveur répond "Ce n'est pas votre tour." (ex: le tour avait déjà changé)
+    shouldFailWithTurnError = true;
+    store.endTurn();
+    await new Promise((r) => setTimeout(r, 10));
+
+    // L'erreur doit être interceptée sans lever de ruleError pour le joueur
+    expect(store.ruleError).toBeNull();
+    expect(store.endTurnPending).toBe(false);
+  });
 });

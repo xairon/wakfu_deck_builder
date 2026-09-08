@@ -33,6 +33,8 @@
         <!-- ── Bouton Fin du tour intégré ── -->
         <button
           v-if="canEndTurn"
+          :disabled="store.endTurnPending"
+          :class="{ 'opacity-50 pointer-events-none': store.endTurnPending }"
           type="button"
           class="phase-btn phase-btn--endturn"
           title="Finir le tour actuel"
@@ -97,6 +99,7 @@ const isMyTurn = computed(() =>
 );
 
 const canEndTurn = computed(() => {
+  if (store.endTurnPending) return false;
   return (
     (store.online
       ? store.turn.active === store.mySeat
@@ -265,6 +268,7 @@ function goToPhase(phase: TurnPhase): void {
 }
 
 function endTurn(): void {
+  if (store.endTurnPending) return;
   store.endTurn();
 }
 </script>

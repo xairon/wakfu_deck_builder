@@ -1271,7 +1271,7 @@
             <!-- Composant de choix de priorité (Jouer 1er ou Jouer 2e) -->
             <div v-if="rollPriorityChoicePending" class="mt-4 p-3 sm:p-4 bg-base-200/70 rounded-xl border border-base-content/15 space-y-3">
               <p class="text-sm font-medium text-base-content/90">
-                {{ isMyRollChoice ? "Tu as l'initiative ! Choisis ton ordre de jeu :" : `${rollWinnerName} a l'initiative et choisit...` }}
+                {{ isMyRollChoice ? (store.online ? "Tu as l'initiative et tu commences la partie !" : "Tu as l'initiative ! Choisis ton ordre de jeu :") : (store.online ? `${rollWinnerName} a l'initiative et commence la partie !` : `${rollWinnerName} a l'initiative et choisit...`) }}
               </p>
               <div v-if="isMyRollChoice" class="flex flex-wrap justify-center gap-3">
                 <button
@@ -1280,9 +1280,10 @@
                   data-testid="choose-play-first"
                   @click="onChoosePriority('1er')"
                 >
-                  🥇 Jouer 1er
+                  {{ store.online ? "🥇 Commencer la partie" : "🥇 Jouer 1er" }}
                 </button>
                 <button
+                  v-if="!store.online"
                   type="button"
                   class="btn btn-secondary btn-sm sm:btn-md gap-2"
                   data-testid="choose-play-second"
@@ -2682,6 +2683,27 @@ function rollInitiativeDie(): void {
     const det = getDeterministicDice(store.gameId());
     finalA = det.finalA;
     finalB = det.finalB;
+    // En ligne, le serveur a DÉJÀ tiré au sort le premier joueur de façon autoritaire (GAME_STARTED).
+    // On garantit que le gagnant du jet déterministe correspond exactement au premier joueur du serveur.
+    const started = store.events.find((e) => e.type === "GAME_STARTED");
+    const serverFirst =
+      (started?.payload as { state?: { turn?: { firstPlayer?: Seat; active?: Seat } } })
+        ?.state?.turn?.firstPlayer ??
+      (started?.payload as { state?: { turn?: { firstPlayer?: Seat; active?: Seat } } })
+        ?.state?.turn?.active ??
+      store.firstPlayer ??
+      "A";
+    const serverNeedsA = serverFirst === "A" || serverFirst === "A1";
+    const aWins = finalA > finalB;
+    if (serverNeedsA && !aWins) {
+      const tmp = finalA;
+      finalA = finalB;
+      finalB = tmp;
+    } else if (!serverNeedsA && aWins) {
+      const tmp = finalA;
+      finalA = finalB;
+      finalB = tmp;
+    }
   } else {
     // Hors-ligne ou vs bot : tirage aléatoire local
     finalA = 1 + Math.floor(Math.random() * 6);
@@ -2710,14 +2732,17 @@ function rollInitiativeDie(): void {
       diceT1 = setTimeout(() => {
         applyPriorityChoice("1er");
       }, 750);
-    } else if (store.online && !isMyRollChoice.value) {
-      // Sécurité en ligne : si après 25s aucun choix n'est reçu de l'adversaire (déconnexion/freeze),
-      // débloque automatiquement avec "1er"
+    } else if (store.online) {
+      // Sécurité / fluidité en ligne : auto-confirme avec "1er" si pas de clic après quelques secondes
       diceT1 = setTimeout(() => {
         if (rollPriorityChoicePending.value) {
-          applyPriorityChoice("1er");
+          if (isMyRollChoice.value) {
+            onChoosePriority("1er");
+          } else {
+            applyPriorityChoice("1er");
+          }
         }
-      }, 25000);
+      }, isMyRollChoice.value ? 6000 : 8000);
     }
   }
 

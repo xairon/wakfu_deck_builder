@@ -783,6 +783,7 @@
     <button
       v-show="
         (store.online ? store.turn.active === store.mySeat : store.turn.active === store.perspective) &&
+        !store.endTurnPending &&
         !store.pendingChifumi &&
         !store.pendingResolution &&
         !store.combat &&
@@ -791,6 +792,8 @@
         !store.pendingBearer &&
         !store.effectChoice
       "
+      :disabled="store.endTurnPending"
+      :class="{ 'opacity-50 pointer-events-none': store.endTurnPending }"
       type="button"
       class="gendturn"
       aria-label="Finir le tour"
