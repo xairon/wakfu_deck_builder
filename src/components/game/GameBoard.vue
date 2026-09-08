@@ -1474,9 +1474,14 @@
         <p class="gpilebrowser__hint">
           Du dessus (la plus récente) au dessous — clique une carte pour
           l'agrandir.
-          <template v-if="pileBrowse.seat === me">
-            Les effets « Récupérez… » se jouent d'ici : reprends la carte en
-            main, en jeu ou sur la Pioche.
+          <template v-if="pileBrowse.seat === me || store.isSandbox">
+            <template v-if="(pileBrowse.zone ?? 'defausse') === 'exil'">
+              Cartes bannies : replace la carte en jeu dans le Monde ou reprends-la en main.
+            </template>
+            <template v-else>
+              Les effets « Récupérez… » se jouent d'ici : reprends la carte en
+              main, en jeu ou sur la Pioche.
+            </template>
           </template>
         </p>
         <div class="gpilebrowser__grid">
@@ -1491,15 +1496,37 @@
               @select="zoomInst(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
             />
-            <!-- Actions depuis la Défausse (effets « Récupérez… », « Bannissez… ») —
-                 demandée par les playtesters : la Défausse était consultable
-                 mais inerte. moveTo/MOVE_CARD portent la légalité. -->
+            <!-- Actions depuis la zone Bannie (Exil) : → Monde, → Main -->
             <div
-              v-if="(pileBrowse.zone ?? 'defausse') !== 'exil'"
+              v-if="(pileBrowse.zone ?? 'defausse') === 'exil'"
               class="gpilebrowser__actions"
             >
               <button
-                v-if="pileBrowse.seat === me"
+                v-if="pileBrowse.seat === me || store.isSandbox"
+                class="gbtn gbtn--sm"
+                :data-testid="`pile-recover-monde-${inst.instanceId}`"
+                title="Mettre cette carte en jeu dans le Monde"
+                @click="recoverFromPile(inst.instanceId, 'monde')"
+              >
+                → Monde
+              </button>
+              <button
+                v-if="pileBrowse.seat === me || store.isSandbox"
+                class="gbtn gbtn--sm"
+                :data-testid="`pile-recover-main-${inst.instanceId}`"
+                title="Reprendre cette carte en main"
+                @click="recoverFromPile(inst.instanceId, 'main')"
+              >
+                → Main
+              </button>
+            </div>
+            <!-- Actions depuis la Défausse (effets « Récupérez… », « Bannissez… ») -->
+            <div
+              v-else
+              class="gpilebrowser__actions"
+            >
+              <button
+                v-if="pileBrowse.seat === me || store.isSandbox"
                 class="gbtn gbtn--sm"
                 :data-testid="`pile-recover-main-${inst.instanceId}`"
                 title="Reprendre cette carte en main"
@@ -1508,7 +1535,7 @@
                 → Main
               </button>
               <button
-                v-if="pileBrowse.seat === me"
+                v-if="pileBrowse.seat === me || store.isSandbox"
                 class="gbtn gbtn--sm"
                 title="Mettre cette carte en jeu dans le Monde"
                 @click="recoverFromPile(inst.instanceId, 'monde')"
@@ -1516,7 +1543,7 @@
                 → Monde
               </button>
               <button
-                v-if="pileBrowse.seat === me"
+                v-if="pileBrowse.seat === me || store.isSandbox"
                 class="gbtn gbtn--sm"
                 title="Poser cette carte en dessous de ta Pioche"
                 @click="recoverFromPile(inst.instanceId, 'pioche')"
@@ -4285,6 +4312,22 @@ function manaBonus(seat: Seat): boolean {
 }
 
 /* ── Adaptation responsive mobile & petites réso ── */
+@media (max-width: 1024px) {
+  .gtable {
+    --card-field: clamp(48px, min(7vw, 6.8vh), 84px);
+    --card-wide: clamp(42px, min(6.2vw, 6vh), 76px);
+    --card-hand: clamp(54px, min(8.2vw, 7.8vh), 96px);
+    --card-opp: clamp(34px, min(5vw, 4.8vh), 60px);
+    --card-havre: clamp(50px, min(7.2vw, 7vh), 86px);
+    --pile: clamp(36px, min(5.2vw, 5.2vh), 64px);
+    padding: 6px 10px;
+    gap: 4px;
+  }
+  .gseat__strip {
+    gap: 8px;
+  }
+}
+
 @media (max-width: 900px) {
   .gactionbar {
     width: 95vw;
@@ -4303,28 +4346,71 @@ function manaBonus(seat: Seat): boolean {
 
 @media (max-width: 768px) {
   .gtable {
-    --card-field: clamp(58px, 13vw, 92px);
-    --card-wide: clamp(52px, 11vw, 84px);
-    --card-hand: clamp(68px, 15vw, 112px);
-    --card-opp: clamp(42px, 9vw, 68px);
-    --card-havre: clamp(60px, 13vw, 92px);
-    --pile: clamp(42px, 9vw, 68px);
+    --card-field: clamp(36px, min(9.5vw, 5.5vh), 66px);
+    --card-wide: clamp(32px, min(8.5vw, 5vh), 58px);
+    --card-hand: clamp(42px, min(11vw, 6.5vh), 72px);
+    --card-opp: clamp(26px, min(7vw, 4vh), 46px);
+    --card-havre: clamp(38px, min(9.8vw, 5.5vh), 66px);
+    --pile: clamp(28px, min(7.5vw, 4.5vh), 50px);
     padding: 4px;
+    gap: 3px;
   }
   .gseat__strip {
-    gap: 6px;
+    gap: 4px;
+  }
+  .gseat__handzone {
+    padding: 6px 4px 2px;
+  }
+  .gseat__handzone--opp {
+    padding: 4px 4px;
+  }
+  .gzone {
+    padding: 8px 4px 4px;
+  }
+  .ghavre {
+    gap: 3px;
   }
   .gbtn {
-    font-size: 11px;
-    padding: 5px 10px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  .gpilebrowser {
+    padding: 8px;
+  }
+  .gpilebrowser__dialog {
+    max-width: 96vw;
+    max-height: 90vh;
+    padding: 12px;
   }
 }
 
 @media (max-width: 480px) {
+  .gtable {
+    --card-field: clamp(28px, 7.5vw, 46px);
+    --card-wide: clamp(26px, 6.8vw, 42px);
+    --card-hand: clamp(32px, 8.8vw, 54px);
+    --card-opp: clamp(20px, 5.2vw, 32px);
+    --card-havre: clamp(30px, 7.6vw, 46px);
+    --pile: clamp(22px, 5.8vw, 36px);
+    padding: 2px;
+    gap: 2px;
+  }
   .gseat__strip {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    grid-template-columns: minmax(0, auto) minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+    gap: 3px;
+  }
+  .gseat__handzone {
+    padding: 4px 2px 2px;
+  }
+  .gzone {
+    padding: 6px 2px 2px;
+  }
+  .ghavre {
+    gap: 2px;
+  }
+  .gbtn {
+    font-size: 9px;
+    padding: 3px 6px;
   }
 }
 </style>

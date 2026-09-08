@@ -173,9 +173,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { getIllustrationPath } from "@/utils/imagePaths";
 import {
@@ -192,9 +193,11 @@ import {
 import { getUsernames } from "@/services/profileService";
 import { elementColors } from "@/config/elementColors";
 
+const route = useRoute();
 const router = useRouter();
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
+const authStore = useAuthStore();
 const toast = useToast();
 
 const loading = ref(true);
@@ -235,6 +238,12 @@ function onImgError(e: Event, deck?: SourcedDeck) {
 }
 
 function onImport(deck: SourcedDeck) {
+  if (!authStore.isAuthenticated) {
+    toast.info("Connectez-vous pour importer ce deck dans vos decks.");
+    router.push({ name: "auth", query: { redirect: route.fullPath } });
+    return;
+  }
+
   importing.value.add(deck.id);
   try {
     // Decks publiés (galerie dynamique) : import fidèle par IDs (impressions +
@@ -242,12 +251,41 @@ function onImport(deck: SourcedDeck) {
     const result = deck.published
       ? deckStore.importPublishedDeck({
           name: deck.name,
+          description: deck.description,
+          author: deck.author,
+          source: deck.source,
+          event: deck.event,
+          guide: deck.guide,
           heroId: deck.published.heroId,
           havreSacId: deck.published.havreSacId,
+          heroName: deck.hero,
+          havreSacName: deck.havreSac,
           cards: deck.published.cards,
         })
       : deckStore.importDeck(communityDeckToText(deck));
+
     if (result.success && result.deckId) {
+      if (!deck.published) {
+        const created = deckStore.decks.find((d) => d.id === result.deckId);
+        if (created) {
+          if (!created.description && (deck.description || deck.author)) {
+            created.description =
+              deck.description ||
+              (deck.author ? `Auteur : ${deck.author}` : undefined);
+          }
+          if (
+            !created.publication &&
+            (deck.guide || deck.event || deck.sourceUrl)
+          ) {
+            created.publication = {
+              source: deck.event || deck.sourceUrl || deck.source,
+              tagline: deck.description,
+              guide: deck.guide,
+            };
+          }
+          deckStore.saveDecks();
+        }
+      }
       if (result.warnings?.length)
         toast.warning(result.warnings.slice(0, 3).join("\n"), {
           duration: 5000,
@@ -271,8 +309,22 @@ function publicToSourced(
   pub: PublishedDeck,
   names: Record<string, string>,
 ): SourcedDeck {
-  const nameOf = (id: string | null) =>
-    id ? (cardStore.cards.find((c) => c.id === id)?.name ?? "") : "";
+  const resolveCard = (id: string | null | undefined) => {
+    if (!id) return undefined;
+    const direct =
+      cardStore.getCardByIdSync(id) ?? cardStore.cards.find((c) => c.id === id);
+    if (direct) return direct;
+    const cleanId = id.replace(/_(recto|verso)$/, "");
+    return (
+      cardStore.getCardByIdSync(cleanId) ??
+      cardStore.cards.find((c) => c.id === cleanId)
+    );
+  };
+  const nameOf = (id: string | null | undefined) => resolveCard(id)?.name ?? "";
+
+  const heroId = pub.hero_id ?? (pub as any).heroId ?? null;
+  const havreSacId = pub.havre_sac_id ?? (pub as any).havreSacId ?? null;
+
   return {
     id: `pub-${pub.deck_id}-${pub.user_id.slice(0, 8)}`,
     name: pub.name,
@@ -281,20 +333,25 @@ function publicToSourced(
     event: pub.source || undefined,
     description: pub.tagline || undefined,
     guide: pub.guide || undefined,
-    hero: nameOf(pub.hero_id) || undefined,
-    havreSac: nameOf(pub.havre_sac_id) || undefined,
+    hero: nameOf(heroId) || undefined,
+    havreSac: nameOf(havreSacId) || undefined,
     // Affichage : nom + réserve conservée (décomptée à part par deckCardCount).
     cards: (pub.cards ?? [])
-      .map((c) => ({
-        name: nameOf(c.cardId),
-        quantity: c.quantity,
-        ...(c.isReserve ? { isReserve: true } : {}),
-      }))
+      .map((c: any) => {
+        const rawId = c.cardId ?? c.card_id ?? c.id ?? c.card?.id;
+        const resolved = resolveCard(rawId);
+        const name = resolved?.name ?? c.name ?? c.card?.name ?? "";
+        return {
+          name,
+          quantity: Number(c.quantity ?? c.count ?? 1) || 1,
+          ...(c.isReserve || c.is_reserve ? { isReserve: true } : {}),
+        };
+      })
       .filter((c) => c.name),
     // Snapshot brut pour un import fidèle par IDs (impressions + réserve).
     published: {
-      heroId: pub.hero_id,
-      havreSacId: pub.havre_sac_id,
+      heroId,
+      havreSacId,
       cards: pub.cards ?? [],
     },
   };

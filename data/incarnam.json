@@ -260,7 +260,7 @@
 		"stats": {
 			"pa": 6,
 			"pm": 3,
-			"pv": 16,
+			"pv": 14,
 			"niveau": {
 				"value": 1,
 				"element": "eau"
@@ -298,7 +298,7 @@
 			"stats": {
 				"pa": 6,
 				"pm": 3,
-				"pv": 16,
+				"pv": 14,
 				"niveau": {
 					"value": 1,
 					"element": "eau"
@@ -327,7 +327,7 @@
 			"stats": {
 				"pa": 7,
 				"pm": 3,
-				"pv": 18,
+				"pv": 16,
 				"niveau": {
 					"value": 2,
 					"element": "eau"

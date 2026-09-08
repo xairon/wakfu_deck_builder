@@ -99,8 +99,16 @@ export function communityDeckToText(deck: SourcedDeck): string {
   const lines: string[] = [`# ${deck.name}`];
   if (deck.hero) lines.push(`1 ${deck.hero} (Héros)`);
   if (deck.havreSac) lines.push(`1 ${deck.havreSac} (Havre-Sac)`);
-  for (const c of deck.cards) {
+  const mainCards = (deck.cards ?? []).filter((c) => !c.isReserve);
+  const reserveCards = (deck.cards ?? []).filter((c) => c.isReserve);
+  for (const c of mainCards) {
     lines.push(`${c.quantity} ${c.name}${c.type ? ` (${c.type})` : ""}`);
+  }
+  if (reserveCards.length > 0) {
+    lines.push("# Réserve");
+    for (const c of reserveCards) {
+      lines.push(`${c.quantity} ${c.name}${c.type ? ` (${c.type})` : ""}`);
+    }
   }
   return lines.join("\n");
 }

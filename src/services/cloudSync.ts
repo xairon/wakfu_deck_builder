@@ -19,6 +19,7 @@ export interface CloudDeck {
   cards: Array<{ cardId: string; quantity: number; isReserve?: boolean }>;
   created_at: string;
   updated_at: string;
+  description?: string | null;
   /** Publié dans la galerie communautaire (migration 0003). */
   is_public?: boolean;
   /** Fiche éditoriale (migration 0005). */
@@ -189,6 +190,7 @@ export function deckToCloud(deck: Deck, userId: string): CloudDeck {
     id: deck.id,
     user_id: userId,
     name: deck.name,
+    description: deck.description ?? null,
     hero_id: deck.hero?.id ?? null,
     havre_sac_id: deck.havreSac?.id ?? null,
     cards,
@@ -209,29 +211,44 @@ export function cloudToDeck(
   resolveCard: (id: string) => Card | undefined,
   missingIds?: string[],
 ): Deck {
+  const robustResolve = (id: string | null | undefined): Card | undefined => {
+    if (!id) return undefined;
+    const direct = resolveCard(id);
+    if (direct) return direct;
+    const cleanId = id.replace(/_(recto|verso)$/, "");
+    return resolveCard(cleanId);
+  };
+
   // Le store/UI lisent TOUT depuis deck.cards (réserve filtrée par isReserve).
   // On reconstruit donc un unique tableau `cards` en conservant le drapeau,
   // plutôt qu'un tableau `reserve` séparé que rien n'exploite.
   const cards: DeckCard[] = [];
   for (const c of cloud.cards ?? []) {
-    const card = resolveCard(c.cardId);
+    const rawId = c.cardId ?? (c as any).card_id ?? (c as any).id;
+    const card = robustResolve(rawId);
     if (!card) {
-      missingIds?.push(c.cardId);
+      if (rawId) missingIds?.push(rawId);
       continue;
     }
-    const entry: DeckCard = { card, quantity: c.quantity };
-    if (c.isReserve) entry.isReserve = true;
+    const entry: DeckCard = {
+      card,
+      quantity: Number(c.quantity ?? (c as any).count ?? 1) || 1,
+    };
+    if (c.isReserve || (c as any).is_reserve) entry.isReserve = true;
     cards.push(entry);
   }
-  const hero = cloud.hero_id ? (resolveCard(cloud.hero_id) ?? null) : null;
-  if (cloud.hero_id && !hero) missingIds?.push(cloud.hero_id);
-  const havreSac = cloud.havre_sac_id
-    ? (resolveCard(cloud.havre_sac_id) ?? null)
-    : null;
-  if (cloud.havre_sac_id && !havreSac) missingIds?.push(cloud.havre_sac_id);
+  const heroId = cloud.hero_id ?? (cloud as any).heroId;
+  const hero = robustResolve(heroId) ?? null;
+  if (heroId && !hero) missingIds?.push(heroId);
+
+  const havreSacId = cloud.havre_sac_id ?? (cloud as any).havreSacId;
+  const havreSac = robustResolve(havreSacId) ?? null;
+  if (havreSacId && !havreSac) missingIds?.push(havreSacId);
+
   return {
     id: cloud.id,
     name: cloud.name,
+    description: cloud.description ?? undefined,
     hero,
     havreSac,
     cards,

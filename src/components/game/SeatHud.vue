@@ -488,20 +488,72 @@ const resourceTotal = computed(() =>
   cursor: help;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
+  .ghud {
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 8px;
+  }
+  .ghud__portrait {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+  }
+  .ghud__name {
+    font-size: 11px;
+  }
+  .ghud__hero-sub {
+    display: none;
+  }
   .ghud__row {
-    flex-wrap: wrap;
-    gap: 4px 6px;
+    flex-wrap: nowrap;
+    gap: 3px;
+  }
+  .ghud__stat {
+    padding: 1px 4px;
+    font-size: 10px;
+    gap: 2px;
+  }
+  .ghud__k {
+    font-size: 8px;
+  }
+  .ghud__v {
+    font-size: 10px;
+  }
+  .ghud__btn {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+  .ghud__pm {
+    opacity: 0.8;
   }
 }
 
-@media (max-width: 640px) {
-  .ghud__btn {
-    width: 22px;
-    height: 22px;
+@media (max-width: 480px) {
+  .ghud {
+    gap: 4px;
+    padding: 2px 4px;
+    border-radius: 6px;
   }
-  .ghud__pm {
-    opacity: 1;
+  .ghud__portrait {
+    width: 30px;
+    height: 30px;
+  }
+  .ghud__name {
+    font-size: 10px;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ghud__stat {
+    padding: 1px 2px;
+  }
+  .ghud__btn {
+    width: 12px;
+    height: 12px;
+    font-size: 8px;
   }
 }
 

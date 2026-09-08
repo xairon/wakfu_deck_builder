@@ -364,5 +364,64 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     expect(store.state.seats[opp].exil).toContain(oppCardId);
     expect(store.state.seats[opp].defausse).not.toContain(oppCardId);
   });
+
+  it("permet de déplacer une carte bannie vers le Monde et vers la Main", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const me = store.perspective;
+
+    // Déplacer une carte vers l'exil
+    const cardId = store.state.seats[me].pioche[0];
+    store.moveTo(cardId, { zone: "exil", owner: me });
+    expect(store.state.seats[me].exil).toContain(cardId);
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Clic sur la pile Bannie (Exil)
+    const exilePile = wrapper
+      .findAllComponents({ name: "PileStack" })
+      .find((c) => c.props("label") === "Bannie" && c.props("count") > 0);
+    expect(exilePile).toBeDefined();
+    await exilePile!.trigger("click");
+    await flushPromises();
+
+    const browser = wrapper.find('[data-testid="pile-browser"]');
+    expect(browser.exists()).toBe(true);
+
+    // Boutons de récupération vers Monde et Main
+    const recoverMondeBtn = wrapper.find(
+      `[data-testid="pile-recover-monde-${cardId}"]`,
+    );
+    const recoverMainBtn = wrapper.find(
+      `[data-testid="pile-recover-main-${cardId}"]`,
+    );
+    expect(recoverMondeBtn.exists()).toBe(true);
+    expect(recoverMainBtn.exists()).toBe(true);
+
+    // Clic sur → Monde
+    await recoverMondeBtn.trigger("click");
+    await flushPromises();
+
+    expect(store.state.seats[me].exil).not.toContain(cardId);
+    expect(store.state.monde).toContain(cardId);
+    expect(store.state.instances[cardId].location.zone).toBe("monde");
+
+    // Remettre dans l'exil pour tester → Main
+    store.moveTo(cardId, { zone: "exil", owner: me });
+    expect(store.state.seats[me].exil).toContain(cardId);
+    await flushPromises();
+
+    const recoverMainBtn2 = wrapper.find(
+      `[data-testid="pile-recover-main-${cardId}"]`,
+    );
+    expect(recoverMainBtn2.exists()).toBe(true);
+    await recoverMainBtn2.trigger("click");
+    await flushPromises();
+
+    expect(store.state.seats[me].exil).not.toContain(cardId);
+    expect(store.state.seats[me].main).toContain(cardId);
+  });
 });
 

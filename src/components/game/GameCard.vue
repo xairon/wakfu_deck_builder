@@ -508,6 +508,53 @@ const ariaLabel = computed(() => {
   }
 }
 
+@media (max-width: 768px) {
+  .game-card__badge {
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    font-size: 10px;
+    border-radius: 8px;
+  }
+  .game-card__badge--dmg,
+  .game-card__badge--hp,
+  .game-card__badge--res {
+    right: 2px;
+  }
+  .game-card__badge--dmg,
+  .game-card__badge--lvl {
+    top: 2px;
+  }
+  .game-card__badge--hp,
+  .game-card__badge--force,
+  .game-card__badge--res {
+    bottom: 2px;
+  }
+  .game-card__badge--lvl,
+  .game-card__badge--force {
+    left: 2px;
+  }
+  .game-card__badge--foreign {
+    top: 2px;
+    right: 18px;
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-card__badge {
+    min-width: 13px;
+    height: 13px;
+    padding: 0 2px;
+    font-size: 8.5px;
+    border-radius: 6.5px;
+  }
+  .game-card__badge--foreign {
+    font-size: 7.5px;
+    right: 15px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .game-card,
   .game-card:hover {

@@ -4,7 +4,7 @@
     name="fan"
     class="hand-fan"
     :class="{ 'hand-fan--opp': !mine }"
-    :style="{ '--overlap': `${overlap}px` }"
+    :style="{ '--overlap': overlapCss }"
     role="group"
     :aria-label="mine ? 'Votre main' : 'Main de l\'adversaire'"
   >
@@ -62,11 +62,21 @@ const emit = defineEmits<{
   (e: "zoom", instanceId: string): void;
 }>();
 
-const overlap = computed(() => {
+const overlapRatio = computed(() => {
   const n = props.items.length;
   if (n <= 1) return 0;
-  if (!props.mine) return n <= 6 ? 26 : 38;
-  return n <= 5 ? 22 : n <= 8 ? 40 : 56;
+  if (!props.mine) return n <= 6 ? 0.35 : Math.min(0.65, 0.35 + (n - 6) * 0.05);
+  if (n <= 4) return 0.22;
+  if (n <= 7) return 0.38;
+  if (n <= 10) return 0.52;
+  return Math.min(0.72, 0.52 + (n - 10) * 0.04);
+});
+
+const overlapCss = computed(() => {
+  const baseVar = props.mine
+    ? "var(--card-hand, 100px)"
+    : "var(--card-opp, 60px)";
+  return `calc(${baseVar} * ${overlapRatio.value})`;
 });
 
 /** Éventail : rotation linéaire + arc parabolique autour de la carte centrale. */

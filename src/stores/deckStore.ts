@@ -800,11 +800,24 @@ export const useDeckStore = defineStore("deck", () => {
     const normalizedCardType = cardType ? normalizeText(cardType) : null;
     const normalizedExt = extensionName ? normalizeText(extensionName) : null;
 
+    let targetMainType = normalizedCardType;
+    if (
+      normalizedCardType === "sort" ||
+      normalizedCardType === "sort elementaire" ||
+      normalizedCardType === "sorts"
+    ) {
+      targetMainType = "action";
+    }
+
     // Recherche exacte d'abord
     let matchedCards = cardStore.cards.filter((c) => {
       const nameMatch = normalizeText(c.name) === normalizedCardName;
       const typeMatch =
-        !normalizedCardType || normalizeText(c.mainType) === normalizedCardType;
+        !targetMainType ||
+        normalizeText(c.mainType) === targetMainType ||
+        (targetMainType === "action" &&
+          (normalizeText((c as any).spellSchool ?? "") === "sort" ||
+            c.subTypes?.some((s) => normalizeText(s) === "sort")));
       return nameMatch && typeMatch;
     });
 
@@ -922,10 +935,22 @@ export const useDeckStore = defineStore("deck", () => {
 
       result.deckId = deckId;
 
+      let isReserveSection = false;
+
       // Parcourir les lignes pour ajouter les cartes
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
+
+        // Gestion des en-têtes de section (ex: # Réserve, ## Sideboard)
+        if (line.startsWith("#")) {
+          if (/r[ée]serve|sideboard/i.test(line)) {
+            isReserveSection = true;
+          } else if (/deck|principal|main/i.test(line)) {
+            isReserveSection = false;
+          }
+          continue;
+        }
 
         result.stats.processedLines++;
 
@@ -939,7 +964,7 @@ export const useDeckStore = defineStore("deck", () => {
         const [, quantityStr, cardName, cardType] = quantityMatch;
         const quantity = parseInt(quantityStr);
 
-        // Chercher la carte correspondante avec la nouvelle fonction robuste
+        // Chercher la carte correspondante avec la fonction robuste
         const card = findCardByName(cardName, cardType);
 
         if (card) {
@@ -960,37 +985,60 @@ export const useDeckStore = defineStore("deck", () => {
             deck.havreSac = prepareCardForDeck(card);
             result.stats.havreSacSet = true;
           } else {
-            // Plafond par carte (1 si Unique, sinon 3) ET plafond de deck (48).
-            const cap = maxCopiesForCard(card, MAX_COPIES_PER_CARD);
-            const mainTotal = deck.cards.reduce((a, c) => a + c.quantity, 0);
-            const roomDeck = MAX_DECK_SIZE - mainTotal;
-            const existingCard = deck.cards.find((c) => c.card.id === card.id);
-            const already = existingCard ? existingCard.quantity : 0;
-            const allowed = Math.min(quantity, cap - already, roomDeck);
+            const isReserve =
+              isReserveSection || /r[ée]serve|sideboard/i.test(cardType ?? "");
 
-            if (allowed <= 0) {
-              if (roomDeck <= 0) {
-                result.warnings.push(
-                  `Ligne ${i + 1}: deck principal plein (${MAX_DECK_SIZE}), "${card.name}" ignorée`,
-                );
+            if (isReserve) {
+              const existingCard = deck.cards.find(
+                (c) => c.card.id === card.id && c.isReserve,
+              );
+              if (existingCard) {
+                existingCard.quantity += quantity;
               } else {
-                result.warnings.push(
-                  `Ligne ${i + 1}: "${card.name}" limitée à ${cap} exemplaire(s)`,
-                );
-              }
-            } else {
-              if (existingCard) existingCard.quantity += allowed;
-              else
                 deck.cards.push({
                   card: prepareCardForDeck(card),
-                  quantity: allowed,
+                  quantity,
+                  isReserve: true,
                 });
-              if (allowed < quantity) {
-                result.warnings.push(
-                  `Ligne ${i + 1}: quantité réduite pour "${card.name}" (max ${cap} / 48 au total)`,
-                );
               }
-              result.stats.cardsAdded += allowed;
+              result.stats.cardsAdded += quantity;
+            } else {
+              // Plafond par carte (1 si Unique, sinon 3) ET plafond de deck (48).
+              const cap = maxCopiesForCard(card, MAX_COPIES_PER_CARD);
+              const mainTotal = deck.cards
+                .filter((c) => !c.isReserve)
+                .reduce((a, c) => a + c.quantity, 0);
+              const roomDeck = MAX_DECK_SIZE - mainTotal;
+              const existingCard = deck.cards.find(
+                (c) => c.card.id === card.id && !c.isReserve,
+              );
+              const already = existingCard ? existingCard.quantity : 0;
+              const allowed = Math.min(quantity, cap - already, roomDeck);
+
+              if (allowed <= 0) {
+                if (roomDeck <= 0) {
+                  result.warnings.push(
+                    `Ligne ${i + 1}: deck principal plein (${MAX_DECK_SIZE}), "${card.name}" ignorée`,
+                  );
+                } else {
+                  result.warnings.push(
+                    `Ligne ${i + 1}: "${card.name}" limitée à ${cap} exemplaire(s)`,
+                  );
+                }
+              } else {
+                if (existingCard) existingCard.quantity += allowed;
+                else
+                  deck.cards.push({
+                    card: prepareCardForDeck(card),
+                    quantity: allowed,
+                  });
+                if (allowed < quantity) {
+                  result.warnings.push(
+                    `Ligne ${i + 1}: quantité réduite pour "${card.name}" (max ${cap} / 48 au total)`,
+                  );
+                }
+                result.stats.cardsAdded += allowed;
+              }
             }
           }
         } else {
@@ -1041,20 +1089,37 @@ export const useDeckStore = defineStore("deck", () => {
    * Importe un deck publié (galerie communautaire) par IDs de cartes : restaure
    * les impressions exactes ET la réserve (contrairement à l'import texte, qui
    * résout par nom et ignore la réserve). Best-effort : les cartes introuvables
-   * sont signalées en warning.
+   * sont résolues avec repli par nom ou signalées en warning.
    */
   function importPublishedDeck(input: {
     name: string;
+    description?: string | null;
+    author?: string | null;
+    source?: string | null;
+    event?: string | null;
+    guide?: string | null;
     heroId?: string | null;
     havreSacId?: string | null;
-    cards: Array<{ cardId: string; quantity: number; isReserve?: boolean }>;
+    heroName?: string | null;
+    havreSacName?: string | null;
+    cards: Array<{
+      cardId?: string;
+      card_id?: string;
+      id?: string;
+      name?: string;
+      quantity?: number;
+      count?: number;
+      isReserve?: boolean;
+      is_reserve?: boolean;
+      [key: string]: any;
+    }>;
   }): ImportResult {
     const result: ImportResult = {
       success: false,
       errors: [],
       warnings: [],
       stats: {
-        totalLines: input.cards.length,
+        totalLines: input.cards?.length ?? 0,
         processedLines: 0,
         cardsAdded: 0,
         heroSet: false,
@@ -1070,35 +1135,105 @@ export const useDeckStore = defineStore("deck", () => {
       }
       result.deckId = deckId;
 
-      if (input.heroId) {
-        const hero = cardStore.getCardByIdSync(input.heroId);
+      // Résolution robuste (ID direct, sans suffixe _recto/_verso, ou par nom)
+      function resolveCardRobust(
+        rawId?: string | null,
+        fallbackName?: string | null,
+        typeFilter?: string | null,
+      ): Card | undefined {
+        if (rawId) {
+          const direct = cardStore.getCardByIdSync(rawId);
+          if (direct) return direct;
+          const cleanId = rawId.replace(/_(recto|verso)$/, "");
+          const cleaned = cardStore.getCardByIdSync(cleanId);
+          if (cleaned) return cleaned;
+          const byId = cardStore.cards.find(
+            (c) => c.id === rawId || c.id === cleanId,
+          );
+          if (byId) return byId;
+        }
+        if (fallbackName) {
+          return (
+            findCardByName(fallbackName, typeFilter ?? undefined) ??
+            cardStore.cards.find(
+              (c) =>
+                normalizeText(c.name) === normalizeText(fallbackName) &&
+                (!typeFilter || c.mainType === typeFilter),
+            ) ??
+            cardStore.cards.find(
+              (c) => normalizeText(c.name) === normalizeText(fallbackName),
+            )
+          );
+        }
+        return undefined;
+      }
+
+      // Résolution du héros
+      const heroId = input.heroId ?? (input as any).hero_id;
+      const heroName = input.heroName ?? (input as any).hero;
+      if (heroId || heroName) {
+        const hero = resolveCardRobust(heroId, heroName, "Héros");
         if (hero) {
           deck.hero = prepareCardForDeck(hero);
           result.stats.heroSet = true;
-        } else result.warnings.push(`Héros introuvable (${input.heroId})`);
+        } else {
+          result.warnings.push(`Héros introuvable (${heroId || heroName})`);
+        }
       }
-      if (input.havreSacId) {
-        const hs = cardStore.getCardByIdSync(input.havreSacId);
+
+      // Résolution du Havre-Sac
+      const havreSacId = input.havreSacId ?? (input as any).havre_sac_id;
+      const havreSacName = input.havreSacName ?? (input as any).havreSac;
+      if (havreSacId || havreSacName) {
+        const hs = resolveCardRobust(havreSacId, havreSacName, "Havre-Sac");
         if (hs) {
           deck.havreSac = prepareCardForDeck(hs);
           result.stats.havreSacSet = true;
-        } else
-          result.warnings.push(`Havre-Sac introuvable (${input.havreSacId})`);
+        } else {
+          result.warnings.push(
+            `Havre-Sac introuvable (${havreSacId || havreSacName})`,
+          );
+        }
       }
 
-      for (const c of input.cards) {
+      // Préservation des métadonnées
+      if (input.description) {
+        deck.description = input.description;
+      } else if (input.author) {
+        deck.description = `Deck communautaire par ${input.author}`;
+      }
+
+      if (input.guide || input.source || input.event || input.author) {
+        deck.publication = {
+          source: input.source || input.event || "Communauté",
+          tagline:
+            input.description ||
+            (input.author ? `Par ${input.author}` : undefined),
+          guide: input.guide || undefined,
+        };
+      }
+
+      for (const c of input.cards ?? []) {
         result.stats.processedLines++;
-        const card = cardStore.getCardByIdSync(c.cardId);
+        const cardId = c.cardId ?? c.card_id ?? c.id ?? c.card?.id;
+        const cardName = c.name ?? c.card?.name;
+        const cardType = c.type ?? c.card?.mainType;
+        const card = resolveCardRobust(cardId, cardName, cardType);
         if (!card) {
-          result.warnings.push(`Carte introuvable (${c.cardId})`);
+          result.warnings.push(
+            `Carte introuvable (${cardId || cardName || "inconnue"})`,
+          );
           continue;
         }
+        const qty = Number(c.quantity ?? c.count ?? 1) || 1;
+        const isReserve = Boolean(c.isReserve ?? c.is_reserve);
+
         deck.cards.push({
           card: prepareCardForDeck(card),
-          quantity: c.quantity,
-          ...(c.isReserve ? { isReserve: true } : {}),
+          quantity: qty,
+          ...(isReserve ? { isReserve: true } : {}),
         });
-        result.stats.cardsAdded += c.quantity;
+        result.stats.cardsAdded += qty;
       }
 
       deck.updatedAt = new Date().toISOString();

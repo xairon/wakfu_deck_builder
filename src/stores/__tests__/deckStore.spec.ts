@@ -1032,5 +1032,36 @@ describe("deckStore", () => {
       expect(deck.cards[0].card.id).toBe("ally-1");
       expect(res.warnings.some((w) => w.includes("inconnue"))).toBe(true);
     });
+
+    it("nettoie les suffixes _recto/_verso et résout par nom en repli", () => {
+      const res = deckStore.importPublishedDeck({
+        name: "Deck Robuste",
+        heroId: "hero-1_recto",
+        havreSacId: "hs-1_verso",
+        description: "Un super deck",
+        author: "WakfuMaster",
+        source: "Tournoi d'Amakna",
+        guide: "Jouer agressif",
+        cards: [
+          { card_id: "ally-1_verso", count: 2 },
+          { id: "non-existent-id", name: "Action Test", quantity: 1, is_reserve: true },
+        ],
+      });
+
+      expect(res.success).toBe(true);
+      const deck = deckStore.decks.find((d) => d.id === res.deckId)!;
+      expect(deck.name).toBe("Deck Robuste");
+      expect(deck.hero?.id).toBe("hero-1");
+      expect(deck.havreSac?.id).toBe("hs-1");
+      expect(deck.description).toBe("Un super deck");
+      expect(deck.publication?.source).toBe("Tournoi d'Amakna");
+      expect(deck.publication?.guide).toBe("Jouer agressif");
+
+      expect(deck.cards).toHaveLength(2);
+      expect(deck.cards[0].card.id).toBe("ally-1");
+      expect(deck.cards[0].quantity).toBe(2);
+      expect(deck.cards[1].card.name).toBe("Action Test");
+      expect(deck.cards[1].isReserve).toBe(true);
+    });
   });
 });
