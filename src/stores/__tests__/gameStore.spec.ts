@@ -8,7 +8,7 @@ import type {
   RedactedEvent,
   Seat,
 } from "@/game";
-import { createGame, setCounter } from "@/game";
+import { createGame, emptyState, setCounter } from "@/game";
 import { useGameStore, DISCONNECT_GRACE_MS } from "../gameStore";
 import { useCardStore } from "../cardStore";
 import {
@@ -1377,3 +1377,102 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     expect(store.state.seats[seatB].defausse).not.toContain(cardId);
   });
 });
+
+describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  function startedWithHands(seq: number): RedactedEvent {
+    const base = emptyState();
+    base.turn = { number: 1, active: "A", phase: "principale", firstPlayer: "A" };
+    base.instances = {
+      cA1: {
+        instanceId: "cA1",
+        cardId: "card_1",
+        owner: "A",
+        controller: "A",
+        location: { zone: "main", owner: "A" },
+        face: "up",
+        orientation: "upright",
+        counters: {},
+        attachments: [],
+        revealedTo: ["A"],
+      },
+      cB1: {
+        instanceId: "cB1",
+        cardId: "card_2",
+        owner: "B",
+        controller: "B",
+        location: { zone: "main", owner: "B" },
+        face: "up",
+        orientation: "upright",
+        counters: {},
+        attachments: [],
+        revealedTo: ["B"],
+      },
+    };
+    base.seats.A.main = ["cA1"];
+    base.seats.B.main = ["cB1"];
+
+    return {
+      gameId: "g",
+      seq,
+      parentSeq: seq - 1,
+      actor: "system",
+      type: "GAME_STARTED",
+      payload: { state: base },
+      ts: 0,
+    } as unknown as RedactedEvent;
+  }
+
+  it("gagnant du dé (A) choisissant de jouer 2e (B premier) : perspective A conservée, hand visible, Tour 1 actif pour B", () => {
+    const store = useGameStore();
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+    store.connectOnline("g", "A", transport);
+    store.applyServerEvent(startedWithHands(1));
+
+    expect(store.perspective).toBe("A");
+    expect(store.view.seats.A.main.kind).toBe("full");
+
+    // Le joueur A gagne l'initiative et choisit de jouer 2e (donc le 1er joueur est B)
+    store.setFirstPlayer("B");
+
+    // En ligne, la perspective de A NE DOIT PAS basculer vers B
+    expect(store.perspective).toBe("A");
+    expect(store.mySeat).toBe("A");
+
+    // La main de A reste visible (kind: full)
+    expect(store.view.seats.A.main.kind).toBe("full");
+    if (store.view.seats.A.main.kind === "full") {
+      expect(store.view.seats.A.main.instances.length).toBe(1);
+    }
+
+    // Le premier joueur et le joueur actif au Tour 1 sont B
+    expect(store.turn.firstPlayer).toBe("B");
+    expect(store.turn.active).toBe("B");
+
+    // A n'est pas le joueur actif
+    expect(store.turn.active === store.mySeat).toBe(false);
+
+    // togglePerspective est inopérant en ligne
+    store.togglePerspective();
+    expect(store.perspective).toBe("A");
+  });
+
+  it("en local, setFirstPlayer bascule la perspective pour le passage de main", () => {
+    const store = useGameStore();
+    store.online = false;
+    store.mode = "1v1";
+    store.perspective = "A";
+    store.setFirstPlayer("B");
+    expect(store.perspective).toBe("B");
+    expect(store.firstPlayer).toBe("B");
+    store.togglePerspective();
+    expect(store.perspective).toBe("A");
+  });
+});
+

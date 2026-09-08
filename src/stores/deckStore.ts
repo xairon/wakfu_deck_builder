@@ -1102,24 +1102,36 @@ export const useDeckStore = defineStore("deck", () => {
     havreSacId?: string | null;
     heroName?: string | null;
     havreSacName?: string | null;
-    cards: Array<{
-      cardId?: string;
-      card_id?: string;
-      id?: string;
-      name?: string;
-      quantity?: number;
-      count?: number;
-      isReserve?: boolean;
-      is_reserve?: boolean;
-      [key: string]: any;
-    }>;
+    cards?: Array<
+      | string
+      | {
+          cardId?: string;
+          card_id?: string;
+          id?: string;
+          name?: string;
+          quantity?: number;
+          count?: number;
+          isReserve?: boolean;
+          is_reserve?: boolean;
+          [key: string]: any;
+        }
+    >;
+    card_ids?: string[];
+    cardIds?: string[];
+    [key: string]: any;
   }): ImportResult {
+    const rawCards: Array<any> =
+      input.cards ??
+      input.card_ids ??
+      input.cardIds ??
+      (input as any).deck_cards ??
+      [];
     const result: ImportResult = {
       success: false,
       errors: [],
       warnings: [],
       stats: {
-        totalLines: input.cards?.length ?? 0,
+        totalLines: rawCards.length,
         processedLines: 0,
         cardsAdded: 0,
         heroSet: false,
@@ -1213,8 +1225,9 @@ export const useDeckStore = defineStore("deck", () => {
         };
       }
 
-      for (const c of input.cards ?? []) {
+      for (const entry of rawCards) {
         result.stats.processedLines++;
+        const c = typeof entry === "string" ? { cardId: entry, quantity: 1 } : entry;
         const cardId = c.cardId ?? c.card_id ?? c.id ?? c.card?.id;
         const cardName = c.name ?? c.card?.name;
         const cardType = c.type ?? c.card?.mainType;
@@ -1234,6 +1247,14 @@ export const useDeckStore = defineStore("deck", () => {
           ...(isReserve ? { isReserve: true } : {}),
         });
         result.stats.cardsAdded += qty;
+      }
+
+      // Si aucune carte n'a pu être résolue et aucun héros n'a été trouvé, annuler la création pour ne pas polluer avec un deck vide
+      if (result.stats.cardsAdded === 0 && !deck.hero && !deck.havreSac) {
+        deleteDeck(deckId);
+        result.errors.push("Aucune carte n'a pu être importée (cartes introuvables ou collection non chargée).");
+        result.success = false;
+        return result;
       }
 
       deck.updatedAt = new Date().toISOString();

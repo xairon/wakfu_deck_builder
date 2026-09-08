@@ -90,11 +90,17 @@ const props = withDefaults(
 
 const store = useGameStore();
 
-const isMyTurn = computed(() => store.turn.active === store.perspective);
+const isMyTurn = computed(() =>
+  store.online
+    ? store.turn.active === store.mySeat
+    : store.turn.active === store.perspective,
+);
 
 const canEndTurn = computed(() => {
   return (
-    store.turn.active === store.perspective &&
+    (store.online
+      ? store.turn.active === store.mySeat
+      : store.turn.active === store.perspective) &&
     !store.pendingChifumi &&
     !store.pendingResolution &&
     !store.combat &&

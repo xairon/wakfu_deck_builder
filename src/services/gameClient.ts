@@ -243,6 +243,23 @@ export function broadcastTargetCard(
   });
 }
 
+/**
+ * Diffuse le choix d'ordre de jeu (Jouer 1er ou Jouer 2e) à l'adversaire en temps réel.
+ */
+export function broadcastPriorityChoice(
+  gameId: string,
+  seat: Seat,
+  choice: "1er" | "2e",
+): void {
+  const c = client();
+  const presenceChannel = c.channel(`game:${gameId}:presence`);
+  void presenceChannel.send({
+    type: "broadcast",
+    event: "priority_chosen",
+    payload: { seat, choice },
+  });
+}
+
 export function subscribeToGame(
   gameId: string,
   seat: Seat,
@@ -251,6 +268,7 @@ export function subscribeToGame(
   onOpponentTarget?: (instanceId: string | null) => void,
   userName?: string,
   onPlayerName?: (seat: Seat, name: string) => void,
+  onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
 ): () => void {
   const c = client();
   const channel = c
@@ -312,6 +330,15 @@ export function subscribeToGame(
         };
         if (payload && payload.seat !== seat && onOpponentTarget) {
           onOpponentTarget(payload.instanceId ?? null);
+        }
+      })
+      .on("broadcast", { event: "priority_chosen" }, (msg) => {
+        const payload = msg.payload as {
+          seat?: Seat;
+          choice?: "1er" | "2e";
+        };
+        if (payload && payload.choice && onPriorityChoice) {
+          onPriorityChoice(payload.seat as Seat, payload.choice);
         }
       })
       .subscribe((status) => {
@@ -575,6 +602,7 @@ export function create2v2OnlineTransport(
       onEvent: (e: RedactedEvent) => void,
       onPresence?: (present: boolean) => void,
       onOpponentTarget?: (instanceId: string | null) => void,
+      onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
     ) {
       channel
         .on("broadcast", { event: "game_event" }, (msg) => {
@@ -591,6 +619,15 @@ export function create2v2OnlineTransport(
           };
           if (payload && payload.seat !== seat && onOpponentTarget) {
             onOpponentTarget(payload.instanceId ?? null);
+          }
+        })
+        .on("broadcast", { event: "priority_chosen" }, (msg) => {
+          const payload = msg.payload as {
+            seat?: Seat;
+            choice?: "1er" | "2e";
+          };
+          if (payload && payload.choice && onPriorityChoice) {
+            onPriorityChoice(payload.seat as Seat, payload.choice);
           }
         })
         .subscribe((status) => {

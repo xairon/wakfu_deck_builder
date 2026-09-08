@@ -60,16 +60,20 @@
         <article
           v-for="deck in group.decks"
           :key="deck.id"
-          class="bg-base-100 p-5"
+          class="bg-base-100 p-5 group/card transition hover:border-primary/40"
         >
           <div class="flex gap-4">
             <!-- Illustration du héros -->
-            <div class="w-24 shrink-0 sm:w-28">
+            <div
+              class="w-24 shrink-0 sm:w-28 cursor-pointer"
+              title="Cliquer pour prévisualiser le deck"
+              @click="openPreview(deck)"
+            >
               <div class="plate-frame" :style="{ '--spine': heroColor(deck) }">
                 <img
                   :src="heroImage(deck)"
                   :alt="deck.hero || deck.name"
-                  class="aspect-[7/10] object-cover object-[50%_30%]"
+                  class="aspect-[7/10] object-cover object-[50%_30%] group-hover/card:scale-105 transition duration-200"
                   loading="lazy"
                   @error="onImgError($event, deck)"
                 />
@@ -78,7 +82,11 @@
 
             <!-- Texte -->
             <div class="min-w-0 flex-1">
-              <h3 class="font-display text-xl leading-tight">
+              <h3
+                class="font-display text-xl leading-tight cursor-pointer hover:text-primary transition"
+                title="Cliquer pour prévisualiser le deck"
+                @click="openPreview(deck)"
+              >
                 {{ deck.name }}
               </h3>
               <p
@@ -129,8 +137,34 @@
             class="mt-4 flex flex-wrap items-center gap-3 border-t border-base-content/15 pt-4"
           >
             <button
+              class="btn btn-outline btn-sm gap-1.5"
+              data-testid="preview-deck-btn"
+              @click="openPreview(deck)"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+              Aperçu
+            </button>
+            <button
               class="btn btn-primary btn-sm gap-2"
               :disabled="importing.has(deck.id)"
+              data-testid="import-deck-btn"
               @click="onImport(deck)"
             >
               <svg
@@ -147,7 +181,7 @@
                 />
               </svg>
               {{
-                importing.has(deck.id) ? "Import…" : "Importer dans mes decks"
+                importing.has(deck.id) ? "Import…" : "Importer"
               }}
             </button>
             <a
@@ -168,6 +202,16 @@
         </article>
       </div>
     </section>
+
+    <!-- Modal d'inspection / prévisualisation complète avant import -->
+    <DeckPreviewModal
+      :is-open="!!previewDeck"
+      :deck="previewDeck"
+      :is-imported="previewDeck ? isDeckImported(previewDeck.name) : false"
+      :importing="previewDeck ? importing.has(previewDeck.id) : false"
+      @close="previewDeck = null"
+      @import="onImport"
+    />
   </div>
 </template>
 
@@ -179,11 +223,11 @@ import { useCardStore } from "@/stores/cardStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { getIllustrationPath } from "@/utils/imagePaths";
+import DeckPreviewModal from "@/components/deck/DeckPreviewModal.vue";
 import {
   loadCommunityDecks,
   groupBySource,
   deckCardCount,
-  communityDeckToText,
   type SourcedDeck,
 } from "@/services/communityDeckService";
 import {
@@ -203,6 +247,16 @@ const toast = useToast();
 const loading = ref(true);
 const decks = ref<SourcedDeck[]>([]);
 const importing = ref(new Set<string>());
+const previewDeck = ref<SourcedDeck | null>(null);
+
+function openPreview(deck: SourcedDeck) {
+  previewDeck.value = deck;
+}
+
+function isDeckImported(name?: string): boolean {
+  if (!name) return false;
+  return deckStore.decks.some((d) => d.name === name);
+}
 
 const groups = computed(() => groupBySource(decks.value));
 
@@ -237,17 +291,24 @@ function onImgError(e: Event, deck?: SourcedDeck) {
   }
 }
 
-function onImport(deck: SourcedDeck) {
+async function onImport(deck: SourcedDeck) {
   if (!authStore.isAuthenticated) {
     toast.info("Connectez-vous pour importer ce deck dans vos decks.");
     router.push({ name: "auth", query: { redirect: route.fullPath } });
     return;
   }
 
+  if (!cardStore.cards.length) {
+    try {
+      await cardStore.initialize();
+    } catch (e) {
+      console.warn("Échec d'initialisation du catalogue:", e);
+    }
+  }
+
   importing.value.add(deck.id);
   try {
-    // Decks publiés (galerie dynamique) : import fidèle par IDs (impressions +
-    // réserve). Decks curatés : import texte par nom.
+    // Decks publiés ou curatés : import fidèle et unifié via importPublishedDeck
     const result = deck.published
       ? deckStore.importPublishedDeck({
           name: deck.name,
@@ -262,7 +323,17 @@ function onImport(deck: SourcedDeck) {
           havreSacName: deck.havreSac,
           cards: deck.published.cards,
         })
-      : deckStore.importDeck(communityDeckToText(deck));
+      : deckStore.importPublishedDeck({
+          name: deck.name,
+          description: deck.description,
+          author: deck.author,
+          source: deck.source,
+          event: deck.event,
+          guide: deck.guide,
+          heroName: deck.hero,
+          havreSacName: deck.havreSac,
+          cards: deck.cards,
+        });
 
     if (result.success && result.deckId) {
       if (!deck.published) {
@@ -286,6 +357,7 @@ function onImport(deck: SourcedDeck) {
           deckStore.saveDecks();
         }
       }
+      previewDeck.value = null;
       if (result.warnings?.length)
         toast.warning(result.warnings.slice(0, 3).join("\n"), {
           duration: 5000,

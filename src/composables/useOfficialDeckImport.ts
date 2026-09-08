@@ -3,6 +3,7 @@ import type { Card } from "@/types/cards";
 import type { OfficialDeck } from "@/data/officialDecks";
 import { EXTENSION_NAME_BY_SLUG } from "@/data/allOfficialDecks";
 import { useDeckStore } from "@/stores/deckStore";
+import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 
 export interface BuiltOfficialDeck {
@@ -44,6 +45,7 @@ export function buildOfficialDeck(
 /** Import d'un deck officiel dans les decks utilisateur (stores + toasts). */
 export function useOfficialDeckImport() {
   const deckStore = useDeckStore();
+  const cardStore = useCardStore();
   const toast = useToast();
   const importingId = ref<string | null>(null);
 
@@ -66,6 +68,23 @@ export function useOfficialDeckImport() {
     if (importingId.value) return;
     importingId.value = officialDeck.id;
     try {
+      if (!cardStore.cards.length) {
+        try {
+          await cardStore.initialize();
+        } catch (e) {
+          console.warn("Échec d'initialisation du catalogue de cartes:", e);
+        }
+      }
+
+      const built = buildOfficialDeck(officialDeck, resolverFor(officialDeck));
+      if (built.deckCards.length === 0 && !built.heroCard) {
+        toast.error("Impossible de résoudre les cartes du deck officiel. Vérifiez que la collection est chargée.", {
+          title: "Échec d'import",
+          duration: 5000,
+        });
+        return;
+      }
+
       // Remplace toute version officielle existante du même nom (réimport).
       const existing = deckStore.decks.filter(
         (d) =>
@@ -73,8 +92,6 @@ export function useOfficialDeckImport() {
           d.name === officialDeck.name,
       );
       for (const d of existing) if (d.id) deckStore.deleteDeck(d.id);
-
-      const built = buildOfficialDeck(officialDeck, resolverFor(officialDeck));
       const newDeck = {
         id: `official-${officialDeck.id}-${Date.now()}`,
         name: officialDeck.name,

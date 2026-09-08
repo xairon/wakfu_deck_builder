@@ -183,95 +183,105 @@
             @zoom="zoomInst"
           />
         </div>
-        <div class="gpiles">
-          <span
-            :class="zoneCls('pioche-opp')"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'pioche-opp',
-                  el,
-                  { zone: 'pioche', owner: opp },
-                  'Pioche adverse',
-                  { at: 'top' },
-                )
-            "
-          >
-            <PileStack label="Pioche" :count="piocheCount(opp)" deck />
-            <button
-              v-if="store.isOpponentDeckRevealed"
-              type="button"
-              class="gpiles__reveal-toggle-btn gpiles__reveal-toggle-btn--active"
-              title="Consulter le deck révélé de l'adversaire en lecture seule"
-              @click="openOpponentDeckBrowser"
+        <div
+          class="gpiles"
+          tabindex="0"
+          :title="`Piles : ${piocheCount(opp)} Pioche / ${discardCount(opp)} Défausse / ${exileCount(opp)} Bannie / ${reserveCount(opp)} Réserve`"
+        >
+          <div class="gpiles__mini-badge" aria-hidden="true">
+            <span class="gpiles__mini-icon">🗃️</span>
+            <span class="gpiles__mini-count">{{ piocheCount(opp) }}</span>
+          </div>
+          <div class="gpiles__content">
+            <span
+              :class="zoneCls('pioche-opp')"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'pioche-opp',
+                    el,
+                    { zone: 'pioche', owner: opp },
+                    'Pioche adverse',
+                    { at: 'top' },
+                  )
+              "
             >
-              👁 Voir Deck (Révélé)
-            </button>
-          </span>
-          <span
-            :class="zoneCls('defausse-opp')"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'defausse-opp',
-                  el,
-                  { zone: 'defausse', owner: opp },
-                  'Défausse adverse',
-                  { at: 'top' },
-                )
-            "
-          >
-            <PileStack
-              label="Défausse"
-              :count="discardCount(opp)"
-              :top="topDiscard(opp)"
-              :top-card="resolveCard(topDiscard(opp)?.cardId ?? null)"
-              browse
-              @browse="openPileBrowser(opp, 'defausse')"
-              @zoom="zoomInst"
-            />
-          </span>
-          <span
-            :class="zoneCls('exil-opp')"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'exil-opp',
-                  el,
-                  { zone: 'exil', owner: opp },
-                  'Zone Bannie adverse',
-                  { at: 'top' },
-                )
-            "
-          >
-            <PileStack
-              label="Bannie"
-              :count="exileCount(opp)"
-              :top="topExile(opp)"
-              :top-card="resolveCard(topExile(opp)?.cardId ?? null)"
-              browse
-              @browse="openPileBrowser(opp, 'exil')"
-              @zoom="zoomInst"
-            />
-          </span>
-          <span
-            :class="zoneCls('reserve-opp')"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'reserve-opp',
-                  el,
-                  { zone: 'reserve', owner: opp },
-                  'Réserve adverse',
-                )
-            "
-          >
-            <PileStack label="Réserve" :count="reserveCount(opp)" deck reserve />
-          </span>
+              <PileStack label="Pioche" :count="piocheCount(opp)" deck />
+              <button
+                v-if="store.isOpponentDeckRevealed"
+                type="button"
+                class="gpiles__reveal-toggle-btn gpiles__reveal-toggle-btn--active"
+                title="Consulter le deck révélé de l'adversaire en lecture seule"
+                @click="openOpponentDeckBrowser"
+              >
+                👁 Voir Deck (Révélé)
+              </button>
+            </span>
+            <span
+              :class="zoneCls('defausse-opp')"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'defausse-opp',
+                    el,
+                    { zone: 'defausse', owner: opp },
+                    'Défausse adverse',
+                    { at: 'top' },
+                  )
+              "
+            >
+              <PileStack
+                label="Défausse"
+                :count="discardCount(opp)"
+                :top="topDiscard(opp)"
+                :top-card="resolveCard(topDiscard(opp)?.cardId ?? null)"
+                browse
+                @browse="openPileBrowser(opp, 'defausse')"
+                @zoom="zoomInst"
+              />
+            </span>
+            <span
+              :class="zoneCls('exil-opp')"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'exil-opp',
+                    el,
+                    { zone: 'exil', owner: opp },
+                    'Zone Bannie adverse',
+                    { at: 'top' },
+                  )
+              "
+            >
+              <PileStack
+                label="Bannie"
+                :count="exileCount(opp)"
+                :top="topExile(opp)"
+                :top-card="resolveCard(topExile(opp)?.cardId ?? null)"
+                browse
+                @browse="openPileBrowser(opp, 'exil')"
+                @zoom="zoomInst"
+              />
+            </span>
+            <span
+              :class="zoneCls('reserve-opp')"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'reserve-opp',
+                    el,
+                    { zone: 'reserve', owner: opp },
+                    'Réserve adverse',
+                  )
+              "
+            >
+              <PileStack label="Réserve" :count="reserveCount(opp)" deck reserve />
+            </span>
+          </div>
         </div>
       </div>
       <div
@@ -511,247 +521,257 @@
             @zoom="zoomInst"
           />
         </div>
-        <div class="gpiles">
-          <span
-            :class="[zoneCls('pioche'), 'gpiles__slot--deck']"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'pioche',
-                  el,
-                  { zone: 'pioche', owner: me },
-                  'Pioche',
-                  { at: 'top' },
-                )
-            "
-            @mouseenter="onDeckMouseEnter"
-            @mouseleave="onDeckMouseLeave"
-          >
-            <PileStack
-              label="Pioche"
-              :count="piocheCount(me)"
-              deck
-              @act="onPiocheClick"
-            />
-            <button
-              v-if="store.isMyDeckRevealed"
-              type="button"
-              class="gpiles__reveal-toggle-btn gpiles__reveal-toggle-btn--active"
-              title="Deck actuellement révélé à l'adversaire (cliquer pour masquer)"
-              @click.stop="store.toggleRevealMyDeck"
+        <div
+          class="gpiles"
+          tabindex="0"
+          :title="`Piles : ${piocheCount(me)} Pioche / ${discardCount(me)} Défausse / ${exileCount(me)} Bannie / ${reserveCount(me)} Réserve`"
+        >
+          <div class="gpiles__mini-badge" aria-hidden="true">
+            <span class="gpiles__mini-icon">🗃️</span>
+            <span class="gpiles__mini-count">{{ piocheCount(me) }}</span>
+          </div>
+          <div class="gpiles__content">
+            <span
+              :class="[zoneCls('pioche'), 'gpiles__slot--deck']"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'pioche',
+                    el,
+                    { zone: 'pioche', owner: me },
+                    'Pioche',
+                    { at: 'top' },
+                  )
+              "
+              @mouseenter="onDeckMouseEnter"
+              @mouseleave="onDeckMouseLeave"
             >
-              👁 Deck révélé
-            </button>
-
-            <!-- Menu d'actions au survol du deck -->
-            <Transition name="fade-fast">
-              <div v-if="showDeckMenu" class="gdeck-hover-menu" @click.stop>
-                <button
-                  class="gmore-item"
-                  data-testid="action-draw"
-                  title="Piocher une carte de ta Pioche."
-                  @click="runDeckAction(drawOne)"
-                >
-                  🎴 Piocher
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-mill"
-                  title="Envoyer la carte du dessus de la Pioche à la Défausse (Mill)."
-                  @click="runDeckAction(millOne)"
-                >
-                  💀 Mill
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-search-deck"
-                  title="Chercher dans ta Pioche (elle sera mélangée en refermant)."
-                  @click="runDeckAction(openDeckSearch)"
-                >
-                  🔍 Chercher dans la pioche
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-shuffle-deck"
-                  title="Mélanger ta Pioche."
-                  @click="runDeckAction(() => store.shufflePioche(store.perspective))"
-                >
-                  🔀 Mélanger
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-toggle-reveal-deck"
-                  :title="
-                    store.isMyDeckRevealed
-                      ? 'Masquer ton Deck à l\'adversaire'
-                      : 'Révéler le contenu et l\'ordre de ton Deck à l\'adversaire'
-                  "
-                  @click="runDeckAction(store.toggleRevealMyDeck)"
-                >
-                  {{
-                    store.isMyDeckRevealed
-                      ? "🙈 Masquer mon Deck"
-                      : "👁 Révéler mon Deck"
-                  }}
-                </button>
-              </div>
-            </Transition>
-          </span>
-          <span
-            :class="zoneCls('defausse')"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'defausse',
-                  el,
-                  { zone: 'defausse', owner: me },
-                  'Défausse (Cimetière)',
-                  { at: 'top' },
-                )
-            "
-          >
-            <PileStack
-              label="Défausse"
-              :count="discardCount(me)"
-              :top="topDiscard(me)"
-              :top-card="resolveCard(topDiscard(me)?.cardId ?? null)"
-              browse
-              @browse="openPileBrowser(me, 'defausse')"
-              @zoom="zoomInst"
-            />
-          </span>
-          <span
-            :class="zoneCls('exil')"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'exil',
-                  el,
-                  { zone: 'exil', owner: me },
-                  'Zone Bannie (Exil)',
-                  { at: 'top' },
-                )
-            "
-          >
-            <PileStack
-              label="Bannie"
-              :count="exileCount(me)"
-              :top="topExile(me)"
-              :top-card="resolveCard(topExile(me)?.cardId ?? null)"
-              browse
-              @browse="openPileBrowser(me, 'exil')"
-              @zoom="zoomInst"
-            />
-          </span>
-          <span
-            :class="zoneCls('reserve')"
-            class="gpiles__slot"
-            :ref="
-              (el) =>
-                registerZone(
-                  'reserve',
-                  el,
-                  { zone: 'reserve', owner: me },
-                  'Réserve',
-                )
-            "
-          >
-            <!-- 101.4 : la Réserve est un sideboard (entre les parties) — affichée
-                 pour info mais NON piochable en jeu. -->
-            <PileStack label="Réserve" :count="reserveCount(me)" reserve browse @browse="openReserveSearch" @act="openReserveSearch" />
-          </span>
-          <!-- TL4 / TL5 — gestes manuels (table libre non assistée) : Piocher
-               (double le clic sur la pile) + Montrer sa main à l'adversaire
-               (Filouterie). Masqués en mode assisté / hors ligne. -->
-          <span class="gpiles__slot gpiles__manual">
-            <div
-              class="gmore-wrapper"
-              @mouseenter="onMoreMouseEnter"
-              @mouseleave="onMoreMouseLeave"
-            >
+              <PileStack
+                label="Pioche"
+                :count="piocheCount(me)"
+                deck
+                @act="onPiocheClick"
+              />
               <button
+                v-if="store.isMyDeckRevealed"
                 type="button"
-                class="gbtn gbtn--sm gbtn--more"
-                data-testid="action-more-menu"
-                title="Actions de table et utilitaires…"
-                @click.stop="showMoreMenu = !showMoreMenu"
+                class="gpiles__reveal-toggle-btn gpiles__reveal-toggle-btn--active"
+                title="Deck actuellement révélé à l'adversaire (cliquer pour masquer)"
+                @click.stop="store.toggleRevealMyDeck"
               >
-                ⚙️
+                👁 Deck révélé
               </button>
 
-              <div v-if="showMoreMenu" class="gmore-dropdown" @click.stop>
+              <!-- Menu d'actions au survol du deck -->
+              <Transition name="fade-fast">
+                <div v-if="showDeckMenu" class="gdeck-hover-menu" @click.stop>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-draw"
+                    title="Piocher une carte de ta Pioche."
+                    @click="runDeckAction(drawOne)"
+                  >
+                    🎴 Piocher
+                  </button>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-mill"
+                    title="Envoyer la carte du dessus de la Pioche à la Défausse (Mill)."
+                    @click="runDeckAction(millOne)"
+                  >
+                    💀 Mill
+                  </button>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-search-deck"
+                    title="Chercher dans ta Pioche (elle sera mélangée en refermant)."
+                    @click="runDeckAction(openDeckSearch)"
+                  >
+                    🔍 Chercher dans la pioche
+                  </button>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-shuffle-deck"
+                    title="Mélanger ta Pioche."
+                    @click="runDeckAction(() => store.shufflePioche(store.perspective))"
+                  >
+                    🔀 Mélanger
+                  </button>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-toggle-reveal-deck"
+                    :title="
+                      store.isMyDeckRevealed
+                        ? 'Masquer ton Deck à l\'adversaire'
+                        : 'Révéler le contenu et l\'ordre de ton Deck à l\'adversaire'
+                    "
+                    @click="runDeckAction(store.toggleRevealMyDeck)"
+                  >
+                    {{
+                      store.isMyDeckRevealed
+                        ? "🙈 Masquer mon Deck"
+                        : "👁 Révéler mon Deck"
+                    }}
+                  </button>
+                </div>
+              </Transition>
+            </span>
+            <span
+              :class="zoneCls('defausse')"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'defausse',
+                    el,
+                    { zone: 'defausse', owner: me },
+                    'Défausse (Cimetière)',
+                    { at: 'top' },
+                  )
+              "
+            >
+              <PileStack
+                label="Défausse"
+                :count="discardCount(me)"
+                :top="topDiscard(me)"
+                :top-card="resolveCard(topDiscard(me)?.cardId ?? null)"
+                browse
+                @browse="openPileBrowser(me, 'defausse')"
+                @zoom="zoomInst"
+              />
+            </span>
+            <span
+              :class="zoneCls('exil')"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'exil',
+                    el,
+                    { zone: 'exil', owner: me },
+                    'Zone Bannie (Exil)',
+                    { at: 'top' },
+                  )
+              "
+            >
+              <PileStack
+                label="Bannie"
+                :count="exileCount(me)"
+                :top="topExile(me)"
+                :top-card="resolveCard(topExile(me)?.cardId ?? null)"
+                browse
+                @browse="openPileBrowser(me, 'exil')"
+                @zoom="zoomInst"
+              />
+            </span>
+            <span
+              :class="zoneCls('reserve')"
+              class="gpiles__slot"
+              :ref="
+                (el) =>
+                  registerZone(
+                    'reserve',
+                    el,
+                    { zone: 'reserve', owner: me },
+                    'Réserve',
+                  )
+              "
+            >
+              <!-- 101.4 : la Réserve est un sideboard (entre les parties) — affichée
+                   pour info mais NON piochable en jeu. -->
+              <PileStack label="Réserve" :count="reserveCount(me)" reserve browse @browse="openReserveSearch" @act="openReserveSearch" />
+            </span>
+            <!-- TL4 / TL5 — gestes manuels (table libre non assistée) : Piocher
+                 (double le clic sur la pile) + Montrer sa main à l'adversaire
+                 (Filouterie). Masqués en mode assisté / hors ligne. -->
+            <span class="gpiles__slot gpiles__manual">
+              <div
+                class="gmore-wrapper"
+                @mouseenter="onMoreMouseEnter"
+                @mouseleave="onMoreMouseLeave"
+              >
                 <button
-                  v-if="canRevealHand"
-                  class="gmore-item"
-                  data-testid="action-reveal-hand"
-                  title="Montrer ta main à l'adversaire (Filouterie)."
-                  @click="runMoreAction(revealHandToOpponent)"
+                  type="button"
+                  class="gbtn gbtn--sm gbtn--more"
+                  data-testid="action-more-menu"
+                  title="Actions de table et utilitaires…"
+                  @click.stop="showMoreMenu = !showMoreMenu"
                 >
-                  👁 Montrer ma main
+                  ⚙️
                 </button>
-                <button
-                  v-if="store.isOpponentDeckRevealed"
-                  class="gmore-item"
-                  data-testid="action-view-opp-deck"
-                  title="Consulter le Deck révélé de l'adversaire en lecture seule"
-                  @click="runMoreAction(openOpponentDeckBrowser)"
-                >
-                  👁 Voir le Deck adverse (Révélé)
-                </button>
-                <button
-                  class="gmore-item"
-                  title="Incliner toutes les cartes sur le plateau"
-                  @click="runMoreAction(tapAllOnBoard)"
-                >
-                  🔄 Incliner tout
-                </button>
-                <button
-                  class="gmore-item"
-                  title="Redresser toutes les cartes sur le plateau"
-                  @click="runMoreAction(untapAllOnBoard)"
-                >
-                  ⬆️ Redresser tout
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-reset-table"
-                  title="Renvoyer toutes les cartes au deck et réinitialiser le Héros et Havre-Sac"
-                  @click="runMoreAction(() => store.resetTableAndDeck(me))"
-                >
-                  🔄 Réinitialiser ma table & deck
-                </button>
-                <button
-                  class="gmore-item"
-                  data-testid="action-create-token"
-                  title="Mettre en jeu un jeton de créature (effet joué à la main)."
-                  @click="
-                    runMoreAction(() => {
-                      tokenDialog = true;
-                    })
-                  "
-                >
-                  ⬚ Créer un Jeton
-                </button>
-                <button
-                  class="gmore-item"
-                  title="Lancer un d6 (résultat au journal, tiré par le serveur)."
-                  @click="runMoreAction(() => store.rollDie(6))"
-                >
-                  🎲 Lancer un Dé (d6)
-                </button>
-                <button
-                  class="gmore-item"
-                  title="Chi-Fu-Mi aléatoire (résultat au journal, tiré par le serveur)."
-                  @click="runMoreAction(() => store.rollDie(3))"
-                >
-                  ✊✋✌ Pierre - Feuille - Ciseaux
-                </button>
+
+                <div v-if="showMoreMenu" class="gmore-dropdown" @click.stop>
+                  <button
+                    v-if="canRevealHand"
+                    class="gmore-item"
+                    data-testid="action-reveal-hand"
+                    title="Montrer ta main à l'adversaire (Filouterie)."
+                    @click="runMoreAction(revealHandToOpponent)"
+                  >
+                    👁 Montrer ma main
+                  </button>
+                  <button
+                    v-if="store.isOpponentDeckRevealed"
+                    class="gmore-item"
+                    data-testid="action-view-opp-deck"
+                    title="Consulter le Deck révélé de l'adversaire en lecture seule"
+                    @click="runMoreAction(openOpponentDeckBrowser)"
+                  >
+                    👁 Voir le Deck adverse (Révélé)
+                  </button>
+                  <button
+                    class="gmore-item"
+                    title="Incliner toutes les cartes sur le plateau"
+                    @click="runMoreAction(tapAllOnBoard)"
+                  >
+                    🔄 Incliner tout
+                  </button>
+                  <button
+                    class="gmore-item"
+                    title="Redresser toutes les cartes sur le plateau"
+                    @click="runMoreAction(untapAllOnBoard)"
+                  >
+                    ⬆️ Redresser tout
+                  </button>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-reset-table"
+                    title="Renvoyer toutes les cartes au deck et réinitialiser le Héros et Havre-Sac"
+                    @click="runMoreAction(() => store.resetTableAndDeck(me))"
+                  >
+                    🔄 Réinitialiser ma table & deck
+                  </button>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-create-token"
+                    title="Mettre en jeu un jeton de créature (effet joué à la main)."
+                    @click="
+                      runMoreAction(() => {
+                        tokenDialog = true;
+                      })
+                    "
+                  >
+                    ⬚ Créer un Jeton
+                  </button>
+                  <button
+                    class="gmore-item"
+                    title="Lancer un d6 (résultat au journal, tiré par le serveur)."
+                    @click="runMoreAction(() => store.rollDie(6))"
+                  >
+                    🎲 Lancer un Dé (d6)
+                  </button>
+                  <button
+                    class="gmore-item"
+                    title="Chi-Fu-Mi aléatoire (résultat au journal, tiré par le serveur)."
+                    @click="runMoreAction(() => store.rollDie(3))"
+                  >
+                    ✊✋✌ Pierre - Feuille - Ciseaux
+                  </button>
+                </div>
               </div>
-            </div>
-          </span>
+            </span>
+          </div>
         </div>
       </div>
     </section>
@@ -762,7 +782,7 @@
          joueur actif le voit. -->
     <button
       v-show="
-        store.turn.active === store.perspective &&
+        (store.online ? store.turn.active === store.mySeat : store.turn.active === store.perspective) &&
         !store.pendingChifumi &&
         !store.pendingResolution &&
         !store.combat &&
@@ -1933,6 +1953,7 @@ import type {
   Seat,
   ZoneRef,
 } from "@/game";
+import { otherSeat } from "@/game";
 import GameCard from "./GameCard.vue";
 import AttachedEquip from "./AttachedEquip.vue";
 import HandFan from "./HandFan.vue";
@@ -1957,8 +1978,10 @@ const { announce } = useAccessibility();
 const actionbarRef = ref<HTMLElement | null>(null);
 let lastSelectedTrigger: HTMLElement | null = null;
 
-const me = computed(() => store.perspective);
-const opp = computed(() => store.opponent);
+const me = computed(() =>
+  store.online && store.mySeat ? store.mySeat : store.perspective,
+);
+const opp = computed(() => otherSeat(me.value));
 
 const cardIndex = computed(() => {
   const m = new Map<string, Card>();
@@ -3361,6 +3384,16 @@ function manaBonus(seat: Seat): boolean {
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.35);
   position: relative;
   padding: 14px 8px 4px;
+  transition: z-index 0.2s ease;
+}
+/* Feature 3.2 : Profondeur d'affichage de la Main (Hand Z-Index) */
+.gseat:has(.gseat__handzone:hover),
+.gseat__strip:has(.gseat__handzone:hover) {
+  z-index: 9999 !important;
+}
+.gseat__handzone:hover,
+.gseat__handzone:focus-within {
+  z-index: 9999 !important;
 }
 .gseat__handzone--opp {
   align-items: center;
@@ -3636,10 +3669,19 @@ function manaBonus(seat: Seat): boolean {
 
 /* ── Piles ── */
 .gpiles {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  align-self: center;
+}
+.gpiles__mini-badge {
+  display: none;
+}
+.gpiles__content {
   display: flex;
   gap: 8px;
   align-items: center;
-  align-self: center;
   padding: 4px 8px;
   border-radius: 12px;
   background: rgba(18, 14, 11, 0.45);
@@ -3647,8 +3689,6 @@ function manaBonus(seat: Seat): boolean {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  position: relative;
-  z-index: 30;
 }
 .gpiles__slot {
   display: block;
@@ -4071,6 +4111,115 @@ function manaBonus(seat: Seat): boolean {
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 1366px) {
+  .gtable {
+    --card-field: clamp(54px, min(5.4vw, 7.5vh), 96px);
+    --card-wide: clamp(48px, min(4.6vw, 6.5vh), 84px);
+    --card-hand: clamp(62px, min(6.2vw, 8.2vh), 104px);
+    --card-opp: clamp(36px, min(3.8vw, 5vh), 60px);
+    --card-havre: clamp(56px, min(5.6vw, 7.5vh), 96px);
+    --pile: clamp(40px, min(4vw, 5.5vh), 66px);
+    padding: 4px clamp(6px, 1.2vw, 16px);
+    gap: 4px;
+  }
+  .gseat__strip {
+    gap: clamp(6px, 0.8vw, 12px);
+  }
+  /* Feature 3.1 : Piles repliables sur petits écrans (≤1366px / ≤15") */
+  .gpiles {
+    width: 38px;
+    height: 46px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(18, 14, 11, 0.8);
+    border: 1px solid rgba(240, 166, 43, 0.35);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    outline: none;
+    transition: all 0.25s ease-in-out;
+  }
+  .gpiles:hover,
+  .gpiles:focus-within {
+    border-color: #f0a62b;
+    box-shadow: 0 0 14px rgba(240, 166, 43, 0.45);
+    z-index: 200;
+  }
+  .gpiles__mini-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 1px;
+    user-select: none;
+  }
+  .gpiles__mini-icon {
+    font-size: 15px;
+    line-height: 1;
+  }
+  .gpiles__mini-count {
+    font-family: "Space Mono", ui-monospace, monospace;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    color: #f0a62b;
+  }
+  .gpiles__content {
+    position: absolute;
+    right: 0;
+    z-index: 250;
+    gap: 6px;
+    padding: 6px 10px;
+    background: rgba(18, 14, 11, 0.96);
+    border: 1px solid rgba(240, 166, 43, 0.45);
+    border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 16px rgba(240, 166, 43, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.9) translateY(4px);
+    transform-origin: right center;
+    transition: all 0.25s ease-in-out;
+    white-space: nowrap;
+  }
+  .gseat--opp .gpiles__content {
+    top: 0;
+    transform-origin: top right;
+  }
+  .gseat:not(.gseat--opp) .gpiles__content {
+    bottom: 0;
+    transform-origin: bottom right;
+  }
+  .gpiles:hover .gpiles__content,
+  .gpiles:focus-within .gpiles__content {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-height: 800px) {
+  .gtable {
+    --card-field: clamp(50px, 7.2vh, 80px);
+    --card-wide: clamp(44px, 6.4vh, 72px);
+    --card-hand: clamp(56px, 8vh, 90px);
+    --card-opp: clamp(34px, 4.8vh, 54px);
+    --card-havre: clamp(50px, 7.2vh, 80px);
+    --pile: clamp(38px, 5.4vh, 60px);
+    padding: 3px 8px;
+    gap: 3px;
+  }
+  .gzone {
+    padding: 10px 6px 4px;
+  }
+  .gzone--field {
+    min-height: calc(var(--card-field) * 88 / 63);
+  }
+}
+
 /* Écrans larges mais pas assez HAUTS (portables 1366×768, mais aussi le
    1080p de bureau) : le plateau garde sa disposition paysage (la bascule
    mobile n'arrive qu'à ≤1024px) mais la hauteur manque → on resserre les

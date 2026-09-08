@@ -110,16 +110,26 @@ export async function saveDecksToCloud(decks: CloudDeck[]) {
   if (!authStore.isAuthenticated || !authStore.userId) return false;
 
   try {
-    // On conserve l'updated_at propre à chaque deck (le trigger SQL
-    // set_updated_at met à jour les lignes réellement modifiées).
+    // On ne projette que les colonnes réelles de public.decks (pas description ni
+    // is_public / publication qui vivent en tables dédiées ou en local).
     const entries = decks.map((deck) => ({
-      ...deck,
+      id: deck.id,
       user_id: authStore.userId,
+      name: deck.name,
+      hero_id: deck.hero_id ?? null,
+      havre_sac_id: deck.havre_sac_id ?? null,
+      cards: deck.cards,
+      created_at: deck.created_at,
+      updated_at: deck.updated_at,
     }));
 
     const { error } = await supabase
       .from("decks")
       .upsert(entries, { onConflict: "id,user_id" });
+
+    if (error) {
+      console.warn("Erreur lors de la sauvegarde des decks sur le cloud:", error);
+    }
 
     return !error;
   } catch {

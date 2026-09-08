@@ -107,24 +107,11 @@ export function subscribeToHostedLobbies(
 }
 
 /**
- * Récupère les salons hébergés en combinant une éventuelle RPC Supabase et le canal Realtime.
+ * Récupère les salons hébergés depuis la base de données.
+ * La découverte en temps réel des salons ouverts repose sur le canal Realtime Presence
+ * `lobbies:discovery` (via `subscribeToHostedLobbies`). La RPC `list_open_games` n'étant
+ * pas déployée sur la base distante, on évite tout appel réseau 404.
  */
 export async function fetchHostedLobbiesFromDb(): Promise<HostedLobbyInfo[]> {
-  if (!supabase) return [];
-  try {
-    const { data, error } = await supabase.rpc("list_open_games");
-    if (error || !data) return [];
-    return (data as any[]).map((row) => ({
-      code: row.code,
-      gameId: row.id,
-      hostName: "Hôte",
-      mode: "1v1",
-      currentPlayers: 1,
-      maxPlayers: 2,
-      createdAt: new Date(row.created_at).getTime(),
-      status: "waiting",
-    }));
-  } catch {
-    return [];
-  }
+  return [];
 }

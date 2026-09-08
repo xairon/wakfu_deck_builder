@@ -807,91 +807,99 @@
 
   <!-- ═══════════ EN MATCH (mulligan / playing) ═══════════ -->
   <div v-else class="gfull">
-    <div class="gtopbar">
-      <div class="gtopbar__group">
-        <span class="gtopbar__title">La Table des Douze</span>
-        <span v-if="store.matchPhase === 'playing'" class="gtopbar__turn">
-          Tour {{ store.turn.number }} · ⏱️ {{ formattedDuration }} ·
-          <template v-if="store.online">
-            <span :class="myTurn ? 'gturn--you' : 'gturn--wait'">{{
-              myTurn ? "🟢 À toi de jouer" : "⏳ Au tour de l'adversaire"
-            }}</span>
-          </template>
-          <template v-else>{{ store.activeName }}</template>
-        </span>
-        <span v-else class="gtopbar__turn">Mise en place</span>
-        <span
-          v-if="store.online && tabHidden"
-          class="gtopbar__turn"
-          data-testid="tab-hidden-hint"
-        >
-          · Onglet en arrière-plan — l'adversaire peut te voir absent
-        </span>
+    <div class="gtopbar" tabindex="0" title="Cliquer ou survoler pour afficher la barre complète">
+      <!-- Vignette minimale repliée sur écran <= 1366px -->
+      <div class="gtopbar__mini-badge" aria-hidden="true">
+        <span class="text-sm">⚔️</span>
+        <span v-if="store.matchPhase === 'playing'" class="gtopbar__mini-turn">T{{ store.turn.number }}</span>
       </div>
 
-      <!-- Barre de phases synthétique au centre du bandeau -->
-      <div v-if="store.matchPhase === 'playing'" class="gtopbar__center">
-        <TurnPhaseBar compact hide-end-turn />
-      </div>
+      <div class="gtopbar__content">
+        <div class="gtopbar__group">
+          <span class="gtopbar__title">La Table des Douze</span>
+          <span v-if="store.matchPhase === 'playing'" class="gtopbar__turn">
+            Tour {{ store.turn.number }} · ⏱️ {{ formattedDuration }} ·
+            <template v-if="store.online">
+              <span :class="myTurn ? 'gturn--you' : 'gturn--wait'">{{
+                myTurn ? "🟢 À toi de jouer" : "⏳ Au tour de l'adversaire"
+              }}</span>
+            </template>
+            <template v-else>{{ store.activeName }}</template>
+          </span>
+          <span v-else class="gtopbar__turn">Mise en place</span>
+          <span
+            v-if="store.online && tabHidden"
+            class="gtopbar__turn"
+            data-testid="tab-hidden-hint"
+          >
+            · Onglet en arrière-plan — l'adversaire peut te voir absent
+          </span>
+        </div>
 
-      <div class="gtopbar__group">
-        <!-- Bascule manuelle de vue (mode local / sandbox) -->
-        <button
-          v-if="!store.online && store.matchPhase === 'playing'"
-          class="gtop-btn gtop-btn--view"
-          data-testid="topbar-toggle-perspective"
-          :title="'Vue actuelle : ' + store.players[store.perspective].name + ' (cliquer pour basculer)'"
-          @click="store.togglePerspective()"
-        >
-          👁️ Vue : {{ store.players[store.perspective].name }}
-        </button>
-        <span
-          v-if="
-            store.matchPhase === 'playing' &&
-            !store.assistEffects &&
-            !tutorial.active
-          "
-          class="gtopbar__turn"
-          data-testid="topbar-effects-manual-hint"
-        >
-          · Manuel
-        </span>
-        <button
-          class="gtop-btn"
-          :aria-label="sounds.muted.value ? 'Activer le son' : 'Couper le son'"
-          :aria-pressed="!sounds.muted.value"
-          data-testid="topbar-sound-toggle"
-          @click="sounds.toggleMute()"
-        >
-          {{ sounds.muted.value ? "🔇 Son" : "🔊 Son" }}
-        </button>
-        <!-- Musique de fond : pistes LOCALES de l'exploitant (public/audio/
-             music + manifest.json — cf. README ; rien d'embarqué : les OST
-             commerciales ne se redistribuent pas). Bouton visible seulement
-             si une playlist est déclarée. -->
-        <button
-          v-if="music.available.value"
-          class="gtop-btn"
-          :aria-pressed="music.playing.value"
-          data-testid="topbar-music-toggle"
-          @click="music.toggle()"
-        >
-          {{ music.playing.value ? "♫ Musique" : "♪ Musique" }}
-        </button>
-        <button class="gtop-btn" @click="showJournal = !showJournal">
-          {{ showJournal ? "Masquer le journal" : "Journal" }}
-        </button>
-        <button
-          v-if="store.matchPhase === 'playing'"
-          class="gtop-btn gtop-btn--quit"
-          :class="{ 'gtop-btn--danger': concedeArmed }"
-          @click="concedeClick"
-        >
-          {{ concedeArmed ? "Confirmer l'abandon ?" : "Abandonner" }}
-        </button>
-        <button class="gtop-btn gtop-btn--quit" @click="store.quitMatch()">
-          Quitter
-        </button>
+        <!-- Barre de phases synthétique au centre du bandeau -->
+        <div v-if="store.matchPhase === 'playing'" class="gtopbar__center">
+          <TurnPhaseBar compact hide-end-turn />
+        </div>
+
+        <div class="gtopbar__group">
+          <!-- Bascule manuelle de vue (mode local / sandbox) -->
+          <button
+            v-if="!store.online && store.matchPhase === 'playing'"
+            class="gtop-btn gtop-btn--view"
+            data-testid="topbar-toggle-perspective"
+            :title="'Vue actuelle : ' + store.players[store.perspective].name + ' (cliquer pour basculer)'"
+            @click="store.togglePerspective()"
+          >
+            👁️ Vue : {{ store.players[store.perspective].name }}
+          </button>
+          <span
+            v-if="
+              store.matchPhase === 'playing' &&
+              !store.assistEffects &&
+              !tutorial.active
+            "
+            class="gtopbar__turn"
+            data-testid="topbar-effects-manual-hint"
+          >
+            · Manuel
+          </span>
+          <button
+            class="gtop-btn"
+            :aria-label="sounds.muted.value ? 'Activer le son' : 'Couper le son'"
+            :aria-pressed="!sounds.muted.value"
+            data-testid="topbar-sound-toggle"
+            @click="sounds.toggleMute()"
+          >
+            {{ sounds.muted.value ? "🔇 Son" : "🔊 Son" }}
+          </button>
+          <!-- Musique de fond : pistes LOCALES de l'exploitant (public/audio/
+               music + manifest.json — cf. README ; rien d'embarqué : les OST
+               commerciales ne se redistribuent pas). Bouton visible seulement
+               si une playlist est déclarée. -->
+          <button
+            v-if="music.available.value"
+            class="gtop-btn"
+            :aria-pressed="music.playing.value"
+            data-testid="topbar-music-toggle"
+            @click="music.toggle()"
+          >
+            {{ music.playing.value ? "♫ Musique" : "♪ Musique" }}
+          </button>
+          <button class="gtop-btn" @click="showJournal = !showJournal">
+            {{ showJournal ? "Masquer le journal" : "Journal" }}
+          </button>
+          <button
+            v-if="store.matchPhase === 'playing'"
+            class="gtop-btn gtop-btn--quit"
+            :class="{ 'gtop-btn--danger': concedeArmed }"
+            @click="concedeClick"
+          >
+            {{ concedeArmed ? "Confirmer l'abandon ?" : "Abandonner" }}
+          </button>
+          <button class="gtop-btn gtop-btn--quit" @click="store.quitMatch()">
+            Quitter
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1202,8 +1210,7 @@
       </div>
     </Transition>
 
-    <!-- Tirage au sort ANIMÉ : qui commence ? (cosmétique, ~3 s, au-dessus du
-         mulligan qu'il révèle en disparaissant). -->
+    <!-- Tirage au sort ANIMÉ : qui commence ? (Feature 2.1 & 2.2 — Strictement avant le Mulligan) -->
     <Transition name="ovl">
       <div
         v-if="diceVisible"
@@ -1211,20 +1218,91 @@
         data-testid="dice-roll"
       >
         <div class="overlay__card dice-box">
-          <p class="eyebrow text-primary">Tirage au sort — qui commence ?</p>
-          <div
-            class="die"
-            :class="diceSettled ? 'die--settled' : 'die--rolling'"
-            aria-hidden="true"
-          >
-            <span v-for="i in 9" :key="i" class="die__cell">
-              <span v-if="dicePips.includes(i - 1)" class="die__pip"></span>
-            </span>
+          <p class="eyebrow text-primary">Tirage au sort — Initiative</p>
+
+          <div class="flex items-center justify-center gap-6 my-4">
+            <!-- Dé Joueur 1 (A) -->
+            <div class="flex flex-col items-center gap-2">
+              <span class="font-mono text-xs text-base-content/75 truncate max-w-[110px]">
+                {{ store.players['A']?.name || 'Joueur 1' }}
+              </span>
+              <div
+                class="die"
+                :class="diceSettled ? 'die--settled' : 'die--rolling'"
+                aria-hidden="true"
+              >
+                <span v-for="i in 9" :key="i" class="die__cell">
+                  <span v-if="pipsFor(diceFaceA).includes(i - 1)" class="die__pip"></span>
+                </span>
+              </div>
+              <span v-if="diceSettled" class="font-mono text-lg font-bold text-primary">
+                {{ diceFaceA }}
+              </span>
+            </div>
+
+            <span class="font-display text-xl text-base-content/40">VS</span>
+
+            <!-- Dé Joueur 2 (B) -->
+            <div class="flex flex-col items-center gap-2">
+              <span class="font-mono text-xs text-base-content/75 truncate max-w-[110px]">
+                {{ store.players['B']?.name || 'Joueur 2' }}
+              </span>
+              <div
+                class="die"
+                :class="diceSettled ? 'die--settled' : 'die--rolling'"
+                aria-hidden="true"
+              >
+                <span v-for="i in 9" :key="i" class="die__cell">
+                  <span v-if="pipsFor(diceFaceB).includes(i - 1)" class="die__pip"></span>
+                </span>
+              </div>
+              <span v-if="diceSettled" class="font-mono text-lg font-bold text-primary">
+                {{ diceFaceB }}
+              </span>
+            </div>
           </div>
-          <p v-if="diceSettled" class="dice-result" data-testid="dice-result">
-            {{ diceIStart ? "🟢 Tu commences !" : "⏳ L'adversaire commence" }}
-          </p>
-          <p v-else class="dice-hint">Lancer du dé…</p>
+
+          <!-- Résultat & Choix de priorité -->
+          <template v-if="diceSettled">
+            <p class="dice-result" data-testid="dice-result">
+              {{ rollResultText }}
+            </p>
+
+            <!-- Composant de choix de priorité (Jouer 1er ou Jouer 2e) -->
+            <div v-if="rollPriorityChoicePending" class="mt-4 p-3 sm:p-4 bg-base-200/70 rounded-xl border border-base-content/15 space-y-3">
+              <p class="text-sm font-medium text-base-content/90">
+                {{ isMyRollChoice ? "Tu as l'initiative ! Choisis ton ordre de jeu :" : `${rollWinnerName} a l'initiative et choisit...` }}
+              </p>
+              <div v-if="isMyRollChoice" class="flex flex-wrap justify-center gap-3">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm sm:btn-md gap-2"
+                  data-testid="choose-play-first"
+                  @click="onChoosePriority('1er')"
+                >
+                  🥇 Jouer 1er
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm sm:btn-md gap-2"
+                  data-testid="choose-play-second"
+                  @click="onChoosePriority('2e')"
+                >
+                  🥈 Jouer 2e
+                </button>
+              </div>
+              <div v-else class="flex items-center justify-center gap-2 text-sm text-base-content/60 py-1">
+                <span class="loading loading-dots loading-xs"></span>
+                <span>Choix de l'adversaire en cours…</span>
+              </div>
+            </div>
+
+            <p v-else-if="rollChoiceMade" class="mt-3 text-sm font-medium text-success">
+              ✓ {{ rollWinnerName }} a choisi de jouer {{ rollChoiceMade }}.
+            </p>
+          </template>
+
+          <p v-else class="dice-hint">Lancer des dés d'initiative…</p>
         </div>
       </div>
     </Transition>
@@ -1237,9 +1315,8 @@
             Main de départ — {{ store.players[currentMulliganSeat]?.name ?? String(currentMulliganSeat) }}
           </p>
           <h2 class="mt-1 font-display text-3xl">Gardes-tu cette main ?</h2>
-          <p v-if="store.online" class="mt-1 text-sm text-base-content/60">
-            🎲 Le tirage au sort du premier joueur a lieu après le choix des
-            mains.
+          <p class="mt-1 text-sm text-base-content/65">
+            🎲 {{ store.players[store.firstPlayer]?.name || 'Joueur 1' }} a l'initiative et commencera au Tour 1.
           </p>
           <div class="mulligan-fan">
             <HandFan mine :items="mulliganItems" :resolve-card="resolveCard" />
@@ -1348,6 +1425,7 @@ import {
   findMyActiveGame,
   concede as concedeOnline,
   claimVictory as claimVictoryOnline,
+  broadcastPriorityChoice,
   subscribeTo2v2Lobby,
   create2v2OnlineTransport,
   type Lobby2v2State,
@@ -2032,6 +2110,7 @@ const onlineTransport = {
     onPresence?: (p: boolean) => void,
     onOpponentTarget?: (t: string | null) => void,
     onPlayerName?: (seat: Seat, name: string) => void,
+    onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
   ) => {
     const user = authStore.user;
     const myName =
@@ -2046,6 +2125,7 @@ const onlineTransport = {
       onOpponentTarget,
       myName,
       onPlayerName,
+      onPriorityChoice,
     );
   },
   pull: pullEvents,
@@ -2294,10 +2374,11 @@ const opponentGone = computed(
 
 // À qui de jouer (en ligne, vue figée sur SON siège) : sert au bandeau de tour
 // et à griser la main quand ce n'est pas à toi.
-const myTurn = computed(
-  () =>
-    store.matchPhase === "playing" && store.turn.active === store.perspective,
-);
+const myTurn = computed(() => {
+  if (store.matchPhase !== "playing") return false;
+  const active = store.turn.active;
+  return store.online ? active === store.mySeat : active === store.perspective;
+});
 
 // ── Main de mulligan ─────────────────────────────────────────────────────────
 const cardIndex = computed(() => {
@@ -2316,29 +2397,29 @@ const currentMulliganSeat = computed<Seat>(() => {
 
 const mulliganHand = computed<RedactedInstance[]>(() => {
   const seat = currentMulliganSeat.value;
-  if (!store.online) {
-    const instanceIds = store.state.seats[seat]?.main ?? [];
-    return instanceIds
-      .map((id) => {
-        const inst = store.state.instances[id];
-        if (!inst) return null;
-        return {
-          instanceId: inst.instanceId,
-          cardId: inst.cardId,
-          owner: inst.owner,
-          controller: inst.controller,
-          face: inst.face,
-          orientation: inst.orientation,
-          counters: inst.counters,
-          attachments: inst.attachments,
-        } as RedactedInstance;
-      })
-      .filter((i): i is RedactedInstance => i !== null);
+  if (store.online) {
+    const s = store.view?.seats?.[seat];
+    if (s?.main?.kind === "full" && s.main.instances.length > 0) {
+      return s.main.instances;
+    }
   }
-  const s = store.view?.seats?.[seat];
-  if (!s) return [];
-  const z = s.main;
-  return z?.kind === "full" ? z.instances : [];
+  const instanceIds = store.state.seats[seat]?.main ?? [];
+  return instanceIds
+    .map((id) => {
+      const inst = store.state.instances[id];
+      if (!inst) return null;
+      return {
+        instanceId: inst.instanceId,
+        cardId: inst.cardId,
+        owner: inst.owner,
+        controller: inst.controller,
+        face: inst.face,
+        orientation: inst.orientation,
+        counters: inst.counters,
+        attachments: inst.attachments,
+      } as RedactedInstance;
+    })
+    .filter((i): i is RedactedInstance => i !== null);
 });
 const mulliganItems = computed<HandItem[]>(() =>
   mulliganHand.value.map((inst) => ({ key: inst.instanceId, inst })),
@@ -2363,6 +2444,8 @@ const oppMulliganDone = computed(() => {
 const mulliganDecisionVisible = computed(
   () =>
     store.matchPhase === "mulligan" &&
+    !diceVisible.value &&
+    !rollPriorityChoicePending.value &&
     (store.online ? !myMulliganDone.value : !store.passPending),
 );
 /** En ligne : j'ai tranché, j'attends l'adversaire. */
@@ -2458,18 +2541,25 @@ const botTurn = computed(
   () => (tutorial.active || !!store.botSeat) && store.perspective === "B",
 );
 
-// ── Tirage au sort ANIMÉ : qui commence ? ────────────────────────────────────
-// Le premier joueur est décidé CÔTÉ SERVEUR (coin flip de join_game, ou pile/face
-// local). Le dé est joué APRÈS le mulligan (transition mulligan → jeu) : les deux
-// clients atteignent "playing" au même instant (2e MULLIGAN_DONE diffusé), donc le
-// tirage est SYNCHRONE et visible des deux côtés. La face FINALE est DÉTERMINISTE
-// (dérivée de gameId + siège qui commence) → le MÊME dé s'affiche chez les deux
-// joueurs ; seul le texte est relatif à la perspective. (Le roulement utilise
-// Math.random localement : purement visuel, sans incidence sur l'état.)
+// ── Tirage au sort ANIMÉ : qui commence ? (Feature 2.1 & 2.2) ─────────────────
+// Exécuté STRICTEMENT AVANT le Mulligan. Les dés roulent pour chaque camp,
+// le vainqueur choisit entre "Jouer 1er" et "Jouer 2e". Le Mulligan s'initialise
+// ensuite selon ce choix.
 const diceVisible = ref(false);
-const diceFace = ref(1);
+const diceFaceA = ref(1);
+const diceFaceB = ref(1);
 const diceSettled = ref(false);
-const diceIStart = ref(false);
+const rollWinnerSeat = ref<Seat | null>(null);
+const rollWinnerName = computed(() => {
+  const winner = rollWinnerSeat.value;
+  if (!winner) return "";
+  return (
+    store.players[winner]?.name ||
+    (winner === "A" || winner === "A1" ? "Joueur 1" : "Joueur 2")
+  );
+});
+const rollPriorityChoicePending = ref(false);
+const rollChoiceMade = ref<"1er" | "2e" | null>(null);
 let diceShownFor = "";
 let diceCycle: ReturnType<typeof setInterval> | null = null;
 let diceT1: ReturnType<typeof setTimeout> | null = null;
@@ -2482,43 +2572,6 @@ function clearDiceTimers(): void {
   diceCycle = diceT1 = diceT2 = null;
 }
 
-function rollFirstPlayerDie(): void {
-  clearDiceTimers();
-  const fp = store.firstPlayer; // siège qui commence (partagé via le journal)
-  diceIStart.value = fp === store.perspective;
-  // Face FINALE déterministe + PARTAGÉE : parité = siège (pair → A, impair → B),
-  // valeur dérivée du gameId → identique sur les deux clients.
-  const pool = fp === "A" ? [2, 4, 6] : [1, 3, 5];
-  const seed = [...store.gameId()].reduce((a, c) => a + c.charCodeAt(0), 0);
-  const finalFace = pool[seed % pool.length];
-  diceSettled.value = false;
-  diceVisible.value = true;
-  // prefers-reduced-motion : pas de clignotement de pips (mouvement de contenu
-  // non couvert par la garde CSS) — on pose directement la face finale.
-  const reduceMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-  if (reduceMotion) {
-    diceFace.value = finalFace;
-    diceSettled.value = true;
-    diceT2 = setTimeout(() => (diceVisible.value = false), 1900);
-    return;
-  }
-  diceFace.value = 1 + Math.floor(Math.random() * 6);
-  // Roulement : faces aléatoires rapides (~1,1 s) puis pose sur la valeur finale.
-  diceCycle = setInterval(() => {
-    diceFace.value = 1 + Math.floor(Math.random() * 6);
-  }, 90);
-  diceT1 = setTimeout(() => {
-    if (diceCycle) clearInterval(diceCycle);
-    diceCycle = null;
-    diceFace.value = finalFace;
-    diceSettled.value = true;
-    // Lecture du résultat puis disparition (révèle le plateau en dessous).
-    diceT2 = setTimeout(() => (diceVisible.value = false), 1900);
-  }, 1100);
-}
-
 // Pips de la face (grille 3×3, indices 0..8).
 const DICE_PIPS: Record<number, number[]> = {
   1: [4],
@@ -2528,31 +2581,183 @@ const DICE_PIPS: Record<number, number[]> = {
   5: [0, 2, 4, 6, 8],
   6: [0, 2, 3, 5, 6, 8],
 };
-const dicePips = computed(() => DICE_PIPS[diceFace.value] ?? [4]);
+function pipsFor(face: number): number[] {
+  return DICE_PIPS[face] ?? [4];
+}
 
-// Déclenche le dé une fois par partie, APRÈS le mulligan (transition mulligan →
-// jeu). Les deux clients franchissent ce cap au même moment (2e MULLIGAN_DONE
-// diffusé) → tirage synchrone des deux côtés. Garde `prev === "mulligan"` : on ne
-// le joue PAS sur un saut direct lobby → jeu (sandbox/repriseéventuelle).
+const isMyRollChoice = computed(() => {
+  if (!rollWinnerSeat.value) return false;
+  if (store.botSeat) {
+    return rollWinnerSeat.value !== store.botSeat;
+  }
+  if (store.online) {
+    return rollWinnerSeat.value === store.mySeat;
+  }
+  return true;
+});
+
+const rollResultText = computed(() => {
+  if (!rollWinnerSeat.value) return "";
+  if (store.botSeat) {
+    return rollWinnerSeat.value !== store.botSeat
+      ? "🟢 Tu remportes le jet de dé !"
+      : "⏳ L'ordinateur remporte le jet de dé !";
+  }
+  if (store.online) {
+    return rollWinnerSeat.value === store.mySeat
+      ? "🟢 Tu remportes le jet de dé !"
+      : `⏳ ${rollWinnerName.value} remporte le jet de dé !`;
+  }
+  return `🟢 ${rollWinnerName.value} remporte le jet de dé !`;
+});
+
+function applyPriorityChoice(choice: "1er" | "2e"): void {
+  const winner =
+    rollWinnerSeat.value ||
+    (store.remotePriorityChoice ? store.remotePriorityChoice.seat : "A");
+  rollWinnerSeat.value = winner;
+  rollChoiceMade.value = choice;
+  rollPriorityChoicePending.value = false;
+
+  const is2v2 = store.mode === "2v2";
+  const other = is2v2
+    ? (winner === "A1" ? "B1" : "A1")
+    : (winner === "A" ? "B" : "A");
+
+  const chosenFirst: Seat = choice === "1er" ? winner : other;
+  store.setFirstPlayer(chosenFirst);
+
+  diceT2 = setTimeout(() => {
+    diceVisible.value = false;
+    diceSettled.value = false;
+  }, 1000);
+}
+
+function onChoosePriority(choice: "1er" | "2e"): void {
+  if (!rollWinnerSeat.value || !isMyRollChoice.value) return;
+  if (store.online && store.gameId() && store.mySeat) {
+    broadcastPriorityChoice(store.gameId(), store.mySeat, choice);
+  }
+  applyPriorityChoice(choice);
+}
+
+watch(
+  () => store.remotePriorityChoice,
+  (val) => {
+    if (val) {
+      clearDiceTimers();
+      diceSettled.value = true;
+      rollWinnerSeat.value = val.seat;
+      applyPriorityChoice(val.choice);
+    }
+  },
+);
+
+/** Calcule des faces de dés déterministes et identiques sur les 2 clients en ligne */
+function getDeterministicDice(seed: string): { finalA: number; finalB: number } {
+  let hash = 0;
+  const str = seed || "wakfu-initiative-seed";
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+  }
+  let fA = 1 + (hash % 6);
+  let fB = 1 + (Math.floor(hash / 6) % 6);
+  if (fA === fB) {
+    fB = fA === 6 ? 1 : fA + 1;
+  }
+  return { finalA: fA, finalB: fB };
+}
+
+function rollInitiativeDie(): void {
+  clearDiceTimers();
+  diceSettled.value = false;
+  rollPriorityChoicePending.value = false;
+  rollChoiceMade.value = null;
+  diceVisible.value = true;
+
+  let finalA = 1;
+  let finalB = 1;
+
+  if (store.online) {
+    const det = getDeterministicDice(store.gameId());
+    finalA = det.finalA;
+    finalB = det.finalB;
+  } else {
+    // Hors-ligne ou vs bot : tirage aléatoire local
+    finalA = 1 + Math.floor(Math.random() * 6);
+    finalB = 1 + Math.floor(Math.random() * 6);
+    if (finalA === finalB) {
+      finalB = finalA === 6 ? 1 : finalA + 1;
+    }
+  }
+
+  const reduceMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  function settle(fA: number, fB: number): void {
+    diceFaceA.value = fA;
+    diceFaceB.value = fB;
+    diceSettled.value = true;
+    const winner: Seat = fA > fB
+      ? (store.mode === "2v2" ? "A1" : "A")
+      : (store.mode === "2v2" ? "B1" : "B");
+    rollWinnerSeat.value = winner;
+    rollPriorityChoicePending.value = true;
+
+    // Si le bot a gagné, il choisit automatiquement après un court délai
+    if (store.botSeat && winner === store.botSeat) {
+      diceT1 = setTimeout(() => {
+        applyPriorityChoice("1er");
+      }, 750);
+    } else if (store.online && !isMyRollChoice.value) {
+      // Sécurité en ligne : si après 25s aucun choix n'est reçu de l'adversaire (déconnexion/freeze),
+      // débloque automatiquement avec "1er"
+      diceT1 = setTimeout(() => {
+        if (rollPriorityChoicePending.value) {
+          applyPriorityChoice("1er");
+        }
+      }, 25000);
+    }
+  }
+
+  if (reduceMotion) {
+    settle(finalA, finalB);
+    return;
+  }
+
+  diceFaceA.value = 1 + Math.floor(Math.random() * 6);
+  diceFaceB.value = 1 + Math.floor(Math.random() * 6);
+
+  diceCycle = setInterval(() => {
+    diceFaceA.value = 1 + Math.floor(Math.random() * 6);
+    diceFaceB.value = 1 + Math.floor(Math.random() * 6);
+  }, 90);
+
+  diceT1 = setTimeout(() => {
+    if (diceCycle) clearInterval(diceCycle);
+    diceCycle = null;
+    settle(finalA, finalB);
+  }, 1100);
+}
+
+// Déclenche le dé STRICTEMENT AVANT le Mulligan
 watch(
   () => store.matchPhase,
-  (now, prev) => {
+  (now) => {
     if (now === "lobby") {
       diceShownFor = "";
       return;
     }
     if (
-      now === "playing" &&
-      prev === "mulligan" &&
+      now === "mulligan" &&
       diceShownFor !== store.gameId()
     ) {
       diceShownFor = store.gameId();
-      // Tirage au sort ANIMÉ dans tous les modes (solo vs IA comme en ligne) : le
-      // 1er joueur est désormais tiré au sort (tutorialStore n'impose plus
-      // l'ordinateur), donc le dé est honnête et non plus trompeur.
-      rollFirstPlayerDie();
+      rollInitiativeDie();
     }
   },
+  { immediate: true },
 );
 
 onMounted(async () => {
@@ -2811,6 +3016,72 @@ onUnmounted(() => {
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.gtopbar__content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.gtopbar__mini-badge {
+  display: none;
+}
+@media (max-width: 1366px) {
+  .gtopbar {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 80;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    padding: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+  }
+  .gtopbar__mini-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 38px;
+    height: 38px;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #f0a62b;
+  }
+  .gtopbar__content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
+  }
+  .gtopbar:hover,
+  .gtopbar:focus-within {
+    width: auto;
+    max-width: calc(100vw - 20px);
+    height: auto;
+    padding: 6px 14px;
+    overflow: visible;
+    z-index: 1000;
+    border-color: rgba(240, 166, 43, 0.45);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.92);
+  }
+  .gtopbar:hover .gtopbar__mini-badge,
+  .gtopbar:focus-within .gtopbar__mini-badge {
+    display: none;
+  }
+  .gtopbar:hover .gtopbar__content,
+  .gtopbar:focus-within .gtopbar__content {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 .gtopbar__group {
   display: flex;

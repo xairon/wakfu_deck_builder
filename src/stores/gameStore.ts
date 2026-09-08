@@ -33,6 +33,7 @@ import {
   unrevealHand,
   createGame,
   deriveState,
+  resetDeriveMemo,
   move,
   nextTurnEvents,
   turnEndDestroyEvents,
@@ -335,6 +336,8 @@ export const useGameStore = defineStore("game", () => {
     B2: { name: "Joueur 4 (Équipe 2)" },
   });
   const firstPlayer = ref<Seat>("A");
+  const priorityChosenFirst = ref<Seat | null>(null);
+  const remotePriorityChoice = ref<{ seat: Seat; choice: "1er" | "2e" } | null>(null);
   /** Siège dont on affiche la vue (joueur actif / joueur en mulligan). */
   const perspective = ref<Seat>("A");
   /** Écran de passation actif (cache le plateau pendant la bascule). */
@@ -408,6 +411,20 @@ export const useGameStore = defineStore("game", () => {
           }
         }
       }
+    }
+
+    if (priorityChosenFirst.value && base.turn) {
+      base = {
+        ...base,
+        turn: {
+          ...base.turn,
+          firstPlayer: priorityChosenFirst.value,
+          active:
+            base.turn.number === 1
+              ? priorityChosenFirst.value
+              : base.turn.active,
+        },
+      };
     }
 
     return base;
@@ -898,7 +915,7 @@ export const useGameStore = defineStore("game", () => {
     // l'état initial GAME_STARTED. On le synchronise sur le ref, sinon il reste
     // à "A" en ligne et fausse la règle « 1re activation au tour 2 ».
     const started = events.value.find((e) => e.type === "GAME_STARTED");
-    if (started) {
+    if (started && !priorityChosenFirst.value) {
       const t = (
         started.payload as {
           state?: { turn?: { active?: Seat; firstPlayer?: Seat } };
@@ -1164,6 +1181,8 @@ export const useGameStore = defineStore("game", () => {
     presenceSeen = false;
     hadJournaledCombat = false;
     combat.value = null;
+    remotePriorityChoice.value = null;
+    priorityChosenFirst.value = null;
     onlineUnsub = transport.subscribe(
       id,
       seat,
@@ -1179,6 +1198,9 @@ export const useGameStore = defineStore("game", () => {
             [remoteSeat]: { name: remoteName },
           };
         }
+      },
+      (remoteSeat, choice) => {
+        remotePriorityChoice.value = { seat: remoteSeat, choice };
       },
     );
     void resyncFrom(0); // rattrape tout event émis avant que l'abonnement soit vivant
@@ -1444,6 +1466,42 @@ export const useGameStore = defineStore("game", () => {
   }
 
   /**
+   * Modifie le premier joueur après le tirage au sort d'initiative et le choix
+   * de priorité ("Jouer 1er" ou "Jouer 2e"), avant le mulligan.
+   */
+  function setFirstPlayer(seat: Seat): void {
+    firstPlayer.value = seat;
+    priorityChosenFirst.value = seat;
+    mulliganSeat.value = seat;
+    if (online.value && mySeat.value) {
+      perspective.value = mySeat.value;
+    } else if (mode.value === "2v2") {
+      perspective.value = seat;
+    } else if (!botSeat.value || seat !== botSeat.value) {
+      perspective.value = seat;
+    } else {
+      perspective.value = "A";
+    }
+    resetDeriveMemo();
+    if (state.value?.turn) {
+      state.value.turn.firstPlayer = seat;
+      state.value.turn.active = seat;
+    }
+    const gc = events.value.find(
+      (e) => e.type === "GAME_CREATED" || e.type === "GAME_STARTED",
+    );
+    if (gc && gc.payload) {
+      if ((gc.payload as any).firstPlayer) {
+        (gc.payload as any).firstPlayer = seat;
+      }
+      if ((gc.payload as any).state?.turn) {
+        (gc.payload as any).state.turn.firstPlayer = seat;
+        (gc.payload as any).state.turn.active = seat;
+      }
+    }
+  }
+
+  /**
    * Démarrage direct en partie (tests / bac à sable rapide / vs-bot). Saute le
    * mulligan. `opts.openingHand` : distribue la main de départ (= PA) aux deux
    * joueurs — INDISPENSABLE pour une vraie partie (sinon on démarre main vide).
@@ -1582,6 +1640,7 @@ export const useGameStore = defineStore("game", () => {
 
   /** Bascule manuellement la vue / perspective entre Joueur 1 (A) et Joueur 2 (B). */
   function togglePerspective(): void {
+    if (online.value) return;
     perspective.value = otherSeat(perspective.value);
   }
 
@@ -5347,6 +5406,7 @@ export const useGameStore = defineStore("game", () => {
     continuedMatch,
     players,
     firstPlayer,
+    remotePriorityChoice,
     perspective,
     opponent,
     passPending,
@@ -5358,6 +5418,7 @@ export const useGameStore = defineStore("game", () => {
     paOf,
     // cycle
     startMatch,
+    setFirstPlayer,
     startSandbox,
     continueMatch,
     mulligan,

@@ -1063,5 +1063,34 @@ describe("deckStore", () => {
       expect(deck.cards[1].card.name).toBe("Action Test");
       expect(deck.cards[1].isReserve).toBe(true);
     });
+
+    it("accepte un format card_ids avec des identifiants simples en chaîne", () => {
+      const res = deckStore.importPublishedDeck({
+        name: "Deck IDs Simples",
+        heroId: "hero-1",
+        havreSacId: "hs-1",
+        card_ids: ["ally-1", "action-1"],
+      });
+
+      expect(res.success).toBe(true);
+      const deck = deckStore.decks.find((d) => d.id === res.deckId)!;
+      expect(deck.cards).toHaveLength(2);
+      expect(deck.cards[0].card.id).toBe("ally-1");
+      expect(deck.cards[0].quantity).toBe(1);
+    });
+
+    it("rejette et nettoie un deck dont aucune carte n'a pu être résolue", () => {
+      const initialCount = deckStore.decks.length;
+      const res = deckStore.importPublishedDeck({
+        name: "Deck Invalide Vide",
+        cards: [
+          { cardId: "carte-introuvable-999" },
+        ],
+      });
+
+      expect(res.success).toBe(false);
+      expect(res.errors.length).toBeGreaterThan(0);
+      expect(deckStore.decks.length).toBe(initialCount);
+    });
   });
 });

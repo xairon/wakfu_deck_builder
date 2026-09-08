@@ -113,7 +113,11 @@
           >
             <div class="flex gap-4">
               <!-- Planche illustration du héros -->
-              <div class="w-24 shrink-0 sm:w-28">
+              <div
+                class="w-24 shrink-0 sm:w-28 cursor-pointer"
+                title="Cliquer pour prévisualiser le deck"
+                @click="openPreview(deck)"
+              >
                 <div
                   class="plate-frame"
                   :style="{ '--spine': getHeroColor(deck.hero) }"
@@ -121,7 +125,7 @@
                   <img
                     :src="getHeroImage(deck.hero)"
                     :alt="deck.hero"
-                    class="aspect-[7/10] object-cover object-[50%_18%]"
+                    class="aspect-[7/10] object-cover object-[50%_18%] hover:scale-105 transition duration-200"
                     loading="lazy"
                     @error="onImgError"
                   />
@@ -133,11 +137,14 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-3">
                   <h3 class="font-display text-xl leading-tight">
-                    <router-link
-                      :to="`/decks/official/${deck.id}`"
-                      class="hover:text-primary"
-                      >{{ deck.name }}</router-link
+                    <button
+                      type="button"
+                      class="text-left font-display text-xl leading-tight hover:text-primary transition"
+                      title="Cliquer pour prévisualiser le deck"
+                      @click="openPreview(deck)"
                     >
+                      {{ deck.name }}
+                    </button>
                   </h3>
                   <span
                     v-if="isDeckImported(deck.id)"
@@ -207,6 +214,32 @@
             <div
               class="mt-4 flex flex-wrap gap-2 border-t border-base-content/15 pt-4"
             >
+              <button
+                type="button"
+                class="btn btn-outline btn-sm gap-1.5"
+                data-testid="preview-official-btn"
+                @click="openPreview(deck)"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+                Aperçu
+              </button>
               <button
                 v-if="!isDeckImported(deck.id)"
                 class="btn btn-primary btn-sm gap-2"
@@ -298,6 +331,17 @@
         </p>
       </div>
     </div>
+
+    <!-- Modal d'inspection / prévisualisation complète d'un deck officiel -->
+    <DeckPreviewModal
+      :is-open="!!previewDeck"
+      :deck="previewDeck"
+      is-official
+      :is-imported="previewDeck ? isDeckImported(previewDeck.id) : false"
+      :importing="previewDeck ? importingDeckIds.has(previewDeck.id) : false"
+      @close="previewDeck = null"
+      @import="importOfficialDeck"
+    />
   </div>
 </template>
 
@@ -314,6 +358,7 @@ import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import type { Card } from "@/types/cards";
 import { elementColors as ELEMENT_COLORS } from "@/config/elementColors";
+import DeckPreviewModal from "@/components/deck/DeckPreviewModal.vue";
 
 // Stores et services
 const deckStore = useDeckStore();
@@ -325,6 +370,11 @@ const isLoading = ref(true);
 const importingDeckIds = ref(new Set<string>());
 const importedDeckOfficialIds = ref(new Set<string>());
 const bulkImporting = ref(false);
+const previewDeck = ref<OfficialDeck | null>(null);
+
+function openPreview(deck: OfficialDeck) {
+  previewDeck.value = deck;
+}
 
 // Donnees — decks officiels (starters + Dofus Mag), source unique partagée.
 const officialDecks = computed(() => ALL_OFFICIAL_DECKS);

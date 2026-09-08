@@ -3,6 +3,8 @@
     class="ghud"
     :class="{ 'ghud--active': active }"
     :style="{ '--accent': accent }"
+    tabindex="0"
+    title="Survoler pour afficher les détails du joueur"
   >
     <div class="ghud__avatar">
       <img
@@ -527,6 +529,63 @@ const resourceTotal = computed(() =>
   }
   .ghud__pm {
     opacity: 0.8;
+  }
+}
+
+@media (max-width: 1366px) {
+  .ghud {
+    position: relative;
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    height: 44px;
+    padding: 2px;
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: visible;
+    transition: all 0.25s ease-in-out;
+  }
+  .ghud__avatar {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+  }
+  .ghud__portrait {
+    width: 38px;
+    height: 38px;
+  }
+  .ghud__body {
+    display: none;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 48px;
+    width: 290px;
+    background: linear-gradient(
+      135deg,
+      rgba(28, 22, 17, 0.98) 0%,
+      rgba(14, 11, 8, 0.98) 100%
+    );
+    border: 1px solid rgba(240, 166, 43, 0.35);
+    border-radius: 12px;
+    padding: 10px 12px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 1000;
+    pointer-events: none;
+    transition: opacity 0.25s ease-in-out;
+  }
+  .ghud:hover,
+  .ghud:focus-within {
+    z-index: 1000;
+    border-color: rgba(240, 166, 43, 0.6);
+  }
+  .ghud:hover .ghud__body,
+  .ghud:focus-within .ghud__body {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
