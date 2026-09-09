@@ -483,7 +483,8 @@ watch(
   },
 );
 
-onBeforeRouteLeave(async () => {
+onBeforeRouteLeave(async (to) => {
+  if (to.path.startsWith("/deck-builder")) return;
   await deckStore.flushCloudPush();
 });
 

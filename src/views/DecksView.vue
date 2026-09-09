@@ -66,7 +66,7 @@
           </svg>
           Importer
         </button>
-        <router-link to="/deck-builder" class="btn btn-primary gap-2">
+        <button @click="createNewDeck" class="btn btn-primary gap-2">
           <svg
             viewBox="0 0 24 24"
             class="h-5 w-5"
@@ -81,7 +81,7 @@
             />
           </svg>
           Nouveau deck
-        </router-link>
+        </button>
       </div>
     </header>
 
@@ -98,9 +98,9 @@
         Construisez un deck de toutes pièces ou partez d'un deck officiel.
       </p>
       <div class="mt-6 flex justify-center gap-3">
-        <router-link to="/deck-builder" class="btn btn-primary"
-          >Créer un deck</router-link
-        >
+        <button @click="createNewDeck" class="btn btn-primary">
+          Créer un deck
+        </button>
         <router-link to="/decks/official" class="btn btn-outline"
           >Voir les officiels</router-link
         >
@@ -546,6 +546,10 @@ watch(decks, filterDecks, { deep: true });
 watch(importDeckText, analyzeImportText);
 
 // ── Navigation ──
+function createNewDeck() {
+  const newId = deckStore.createDeck("Nouveau deck");
+  router.push(`/deck-builder/${newId}`);
+}
 function goToDeck(id: string) {
   router.push(`/deck/${id}`);
 }
