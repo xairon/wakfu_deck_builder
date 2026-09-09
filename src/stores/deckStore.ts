@@ -147,6 +147,7 @@ export const useDeckStore = defineStore("deck", () => {
    * Charge les decks depuis le stockage local
    */
   function loadDecks() {
+    dirtyDeckIds = loadDirtyDeckIds();
     try {
       loadingError.value = null;
       const stored = localStorage.getItem(decksStorageKey());
@@ -214,12 +215,55 @@ export const useDeckStore = defineStore("deck", () => {
     }
   }
 
+  // --- Suivi des modifications locales non poussées (anti-perte) ------------
+  function dirtyDecksStorageKey(): string {
+    return namespacedKey("wakfu-decks-dirty");
+  }
+
+  function loadDirtyDeckIds(): Set<string> {
+    try {
+      const raw = localStorage.getItem(dirtyDecksStorageKey());
+      const parsed = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(parsed) ? parsed : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  let dirtyDeckIds = loadDirtyDeckIds();
+
+  function saveDirtyDeckIds() {
+    try {
+      localStorage.setItem(
+        dirtyDecksStorageKey(),
+        JSON.stringify([...dirtyDeckIds]),
+      );
+    } catch {
+      /* quota : le suivi reste en mémoire */
+    }
+  }
+
+  function markDeckDirty(deckId: string) {
+    dirtyDeckIds.add(deckId);
+    saveDirtyDeckIds();
+  }
+
+  function clearDirtyDeck(deckId: string) {
+    dirtyDeckIds.delete(deckId);
+    saveDirtyDeckIds();
+  }
+
   /**
    * Sauvegarde les decks dans le cache local, puis (mode connecté) pousse vers
    * le cloud de façon différée. `skipCloud` évite de re-pousser juste après un
    * pull.
    */
-  function saveDecks(opts?: { skipCloud?: boolean }) {
+  function saveDecks(opts?: { skipCloud?: boolean; deckId?: string }) {
+    if (opts?.deckId) {
+      markDeckDirty(opts.deckId);
+    } else if (!opts?.skipCloud && currentDeck.value) {
+      markDeckDirty(currentDeck.value.id);
+    }
     try {
       localStorage.setItem(decksStorageKey(), JSON.stringify(decks.value));
     } catch (error) {
@@ -301,6 +345,8 @@ export const useDeckStore = defineStore("deck", () => {
       if (ok) {
         syncState.value = "synced";
         cloudPushRetries = 0;
+        dirtyDeckIds.clear();
+        saveDirtyDeckIds();
       } else {
         schedulePushRetry();
       }
@@ -335,13 +381,11 @@ export const useDeckStore = defineStore("deck", () => {
    * Récupère les decks depuis Supabase et FUSIONNE avec l'état local, deck par
    * deck. Le cloud ne fait autorité que s'il est plus récent ET entièrement
    * résolu par le catalogue :
-   *  - cartes cloud non résolues (catalogue incomplet) → version locale
-   *    conservée (sinon on écraserait un deck complet par une version tronquée,
-   *    perte de cartes constatée en prod) ;
+   *  - deck local marqué « dirty » (modifié localement, push non confirmé) → conservé ;
+   *  - deck local avec cartes face à une version cloud vide (0 cartes) → conservé ;
+   *  - cartes cloud non résolues (catalogue incomplet) → version locale conservée ;
    *  - version locale plus récente (push perdu / jamais parti) → conservée ;
-   *  - deck local absent du cloud → conservé (contrepartie assumée : un deck
-   *    supprimé depuis un autre appareil peut réapparaître si un cache local
-   *    périmé traîne — préférable à la perte silencieuse de travail).
+   *  - deck local absent du cloud → conservé.
    * Si des versions locales ont prévalu, un push différé répare le cloud.
    * Nécessite que le catalogue de cartes soit chargé. Best-effort.
    */
@@ -380,13 +424,31 @@ export const useDeckStore = defineStore("deck", () => {
         localById.delete(cd.id);
         const missing: string[] = [];
         const rebuilt = cloudToDeck(cd, resolve, missing);
+
+        const localIsDirty = local ? dirtyDeckIds.has(local.id) : false;
+        const localHasCardsCloudEmpty = Boolean(
+          local && local.cards.length > 0 && rebuilt.cards.length === 0,
+        );
+
+        const cloudTime = Date.parse(cd.updated_at ?? "");
+        const localTime = Date.parse(local?.updatedAt ?? "");
+        const clockSkewMs = 60_000;
+        const isCloudSignificantlyNewer =
+          !Number.isNaN(cloudTime) &&
+          !Number.isNaN(localTime) &&
+          cloudTime - localTime > clockSkewMs;
+
         if (
           local &&
-          (missing.length > 0 || isLocalNewer(local, cd.updated_at))
+          (missing.length > 0 ||
+            (!isCloudSignificantlyNewer &&
+              (localIsDirty || localHasCardsCloudEmpty)) ||
+            isLocalNewer(local, cd.updated_at))
         ) {
           merged.push(local);
           keptLocal = true;
         } else {
+          if (local) clearDirtyDeck(local.id);
           merged.push(rebuilt);
         }
       }
@@ -412,6 +474,8 @@ export const useDeckStore = defineStore("deck", () => {
     cancelCloudPush();
     decks.value = [];
     currentDeckId.value = null;
+    dirtyDeckIds = new Set();
+    saveDirtyDeckIds();
   }
 
   /**
@@ -433,7 +497,7 @@ export const useDeckStore = defineStore("deck", () => {
 
     decks.value.push(newDeck);
     currentDeckId.value = newDeck.id;
-    saveDecks();
+    saveDecks({ deckId: newDeck.id });
 
     return newDeck.id;
   }
@@ -459,7 +523,7 @@ export const useDeckStore = defineStore("deck", () => {
 
     decks.value.push(clone);
     currentDeckId.value = clone.id;
-    saveDecks();
+    saveDecks({ deckId: clone.id });
     return clone.id;
   }
 
@@ -471,6 +535,7 @@ export const useDeckStore = defineStore("deck", () => {
     const index = decks.value.findIndex((d) => d.id === id);
     if (index !== -1) {
       decks.value.splice(index, 1);
+      clearDirtyDeck(id);
 
       if (currentDeckId.value === id) {
         currentDeckId.value = decks.value.length > 0 ? decks.value[0].id : null;
@@ -511,7 +576,7 @@ export const useDeckStore = defineStore("deck", () => {
     if (deck) {
       deck.name = newName.trim() || deck.name;
       deck.updatedAt = new Date().toISOString();
-      saveDecks();
+      saveDecks({ deckId: id });
     }
   }
 
@@ -523,7 +588,7 @@ export const useDeckStore = defineStore("deck", () => {
     if (deck) {
       deck.description = description;
       deck.updatedAt = new Date().toISOString();
-      saveDecks();
+      saveDecks({ deckId: id });
     }
   }
 
@@ -1072,7 +1137,7 @@ export const useDeckStore = defineStore("deck", () => {
       }
 
       deck.updatedAt = new Date().toISOString();
-      saveDecks();
+      saveDecks({ deckId });
 
       result.success = true;
       return result;
@@ -1249,16 +1314,28 @@ export const useDeckStore = defineStore("deck", () => {
         result.stats.cardsAdded += qty;
       }
 
+      // Si des cartes étaient attendues mais qu'aucune n'a pu être importée, annuler la création pour ne pas polluer avec un deck vide
+      if (rawCards.length > 0 && result.stats.cardsAdded === 0) {
+        deleteDeck(deckId);
+        result.errors.push(
+          "Aucune carte n'a pu être importée (cartes introuvables ou collection non chargée).",
+        );
+        result.success = false;
+        return result;
+      }
+
       // Si aucune carte n'a pu être résolue et aucun héros n'a été trouvé, annuler la création pour ne pas polluer avec un deck vide
       if (result.stats.cardsAdded === 0 && !deck.hero && !deck.havreSac) {
         deleteDeck(deckId);
-        result.errors.push("Aucune carte n'a pu être importée (cartes introuvables ou collection non chargée).");
+        result.errors.push(
+          "Aucune carte n'a pu être importée (cartes introuvables ou collection non chargée).",
+        );
         result.success = false;
         return result;
       }
 
       deck.updatedAt = new Date().toISOString();
-      saveDecks();
+      saveDecks({ deckId });
       result.success = true;
       return result;
     } catch (error) {

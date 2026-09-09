@@ -1079,10 +1079,11 @@ describe("deckStore", () => {
       expect(deck.cards[0].quantity).toBe(1);
     });
 
-    it("rejette et nettoie un deck dont aucune carte n'a pu être résolue", () => {
+    it("rejette et nettoie un deck avec héros dont aucune carte n'a pu être résolue (évite les decks fantômes vides)", () => {
       const initialCount = deckStore.decks.length;
       const res = deckStore.importPublishedDeck({
-        name: "Deck Invalide Vide",
+        name: "Deck Fantôme",
+        heroId: "hero-1",
         cards: [
           { cardId: "carte-introuvable-999" },
         ],

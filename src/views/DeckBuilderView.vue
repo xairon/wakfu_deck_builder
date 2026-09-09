@@ -176,8 +176,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { useRoute, useRouter, onBeforeRouteLeave } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
@@ -339,7 +339,8 @@ function addToReserve(card: Card) {
   deckStore.addCard(card, 1, true);
 }
 
-function switchDeck(id: string) {
+async function switchDeck(id: string) {
+  await deckStore.flushCloudPush();
   deckStore.setCurrentDeck(id);
   router.replace(`/deck-builder/${id}`);
 }
@@ -472,6 +473,23 @@ async function setupDeck() {
     router.replace(`/deck-builder/${newId}`);
   }
 }
+
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId && typeof newId === "string" && deckStore.currentDeck?.id !== newId) {
+      deckStore.setCurrentDeck(newId);
+    }
+  },
+);
+
+onBeforeRouteLeave(async () => {
+  await deckStore.flushCloudPush();
+});
+
+onUnmounted(async () => {
+  await deckStore.flushCloudPush();
+});
 
 function retryLoad() {
   cardStore.reset();

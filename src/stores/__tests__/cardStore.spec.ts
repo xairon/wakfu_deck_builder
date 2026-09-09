@@ -112,6 +112,24 @@ describe("cardStore", () => {
       expect(mockLoadAllCards).toHaveBeenCalledOnce();
     });
 
+    it("devrait dédupliquer les appels concurrents à initialize()", async () => {
+      let resolveLoad: (cards: any[]) => void = () => {};
+      const pendingPromise = new Promise<any[]>((res) => {
+        resolveLoad = res;
+      });
+      mockLoadAllCards.mockReturnValueOnce(pendingPromise);
+      mockLocalStorage.loadCollection.mockReturnValue({});
+
+      const init1 = store.initialize();
+      const init2 = store.initialize();
+
+      expect(mockLoadAllCards).toHaveBeenCalledOnce();
+      resolveLoad(createMockCardSet(4));
+      await Promise.all([init1, init2]);
+
+      expect(store.cards).toHaveLength(4);
+    });
+
     it("devrait tenter le fallback API si le cardLoader échoue", async () => {
       mockLoadAllCards.mockRejectedValueOnce(new Error("Load failed"));
 

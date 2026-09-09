@@ -199,65 +199,74 @@ export const useCardStore = defineStore("cards", () => {
     });
   });
 
+  let initPromise: Promise<void> | null = null;
+
   // Actions
   async function initialize() {
-    try {
-      isInitializing.value = true;
-
-      // Vérifier si les données sont déjà chargées
-      if (isInitialized.value && cards.value.length > 0) {
-        return;
-      }
-
-      try {
-        // Charger les cartes en utilisant le service cardLoader
-        const loadedCards = await loadAllCards();
-
-        if (!Array.isArray(loadedCards) || loadedCards.length === 0) {
-          throw new Error("Aucune carte n'a pu être chargée");
-        }
-
-        setCards(loadedCards);
-      } catch {
-        // Fallback: essayer de charger depuis l'API
-        if (typeof fetch === "undefined") {
-          throw new Error("fetch non disponible");
-        }
-        const response = await fetch("/api/collection/initial");
-
-        if (!response?.ok) {
-          throw new Error(
-            `Erreur lors du chargement des cartes: ${response?.status}`,
-          );
-        }
-
-        const data = await response.json();
-
-        if (data && data.cards && Array.isArray(data.cards)) {
-          setCards(data.cards);
-        } else {
-          setCards([]);
-        }
-      }
-
-      // S'assurer que la collection est initialisée comme un objet vide si elle ne l'est pas déjà
-      if (!collection.value) {
-        collection.value = {};
-      }
-
-      // Charger depuis le stockage local (espace du compte actif)
-      collection.value = localStorageService.loadCollection();
-
-      // Marquer comme initialisé
-      isInitialized.value = true;
-
-      // La synchronisation cloud (collection + decks) est orchestrée par le
-      // authStore (hydrateForUser), une fois le catalogue chargé.
-    } catch (error) {
-      throw error;
-    } finally {
-      isInitializing.value = false;
+    // Vérifier si les données sont déjà chargées
+    if (isInitialized.value && cards.value.length > 0) {
+      return;
     }
+
+    if (initPromise) {
+      return initPromise;
+    }
+
+    initPromise = (async () => {
+      try {
+        isInitializing.value = true;
+
+        try {
+          // Charger les cartes en utilisant le service cardLoader
+          const loadedCards = await loadAllCards();
+
+          if (!Array.isArray(loadedCards) || loadedCards.length === 0) {
+            throw new Error("Aucune carte n'a pu être chargée");
+          }
+
+          setCards(loadedCards);
+        } catch {
+          // Fallback: essayer de charger depuis l'API
+          if (typeof fetch === "undefined") {
+            throw new Error("fetch non disponible");
+          }
+          const response = await fetch("/api/collection/initial");
+
+          if (!response?.ok) {
+            throw new Error(
+              `Erreur lors du chargement des cartes: ${response?.status}`,
+            );
+          }
+
+          const data = await response.json();
+
+          if (data && data.cards && Array.isArray(data.cards)) {
+            setCards(data.cards);
+          } else {
+            setCards([]);
+          }
+        }
+
+        // S'assurer que la collection est initialisée comme un objet vide si elle ne l'est pas déjà
+        if (!collection.value) {
+          collection.value = {};
+        }
+
+        // Charger depuis le stockage local (espace du compte actif)
+        collection.value = localStorageService.loadCollection();
+
+        // Marquer comme initialisé
+        isInitialized.value = true;
+
+        // La synchronisation cloud (collection + decks) est orchestrée par le
+        // authStore (hydrateForUser), une fois le catalogue chargé.
+      } finally {
+        isInitializing.value = false;
+        initPromise = null;
+      }
+    })();
+
+    return initPromise;
   }
 
   // --- Suivi des modifications locales non poussées (anti-perte) ------------
@@ -554,6 +563,7 @@ export const useCardStore = defineStore("cards", () => {
     initializationAttempts.value = 0;
     error.value = null;
     loading.value = false;
+    initPromise = null;
   }
 
   async function importCollection(data: CollectionCard[]) {

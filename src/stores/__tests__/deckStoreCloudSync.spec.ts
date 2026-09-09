@@ -381,4 +381,66 @@ describe("deckStore — synchronisation cloud des decks", () => {
     });
     expect(cloudDeck!.cards).toContainEqual({ cardId: "a1", quantity: 2 });
   });
+
+  it("pullCloudDecks: conserve le deck local avec cartes quand le cloud a 0 cartes (anti-écrasement)", async () => {
+    const ally = createMockAllyCard({ id: "c1", name: "C1" });
+    useCardStore().setCards([ally]);
+    const store = useDeckStore();
+    const id = store.createDeck("Deck Local Plein");
+    store.addCard(ally, 3);
+    // Supposons que le deck a été synchronisé il y a 5 secondes
+    store.decks[0].updatedAt = new Date(Date.now() - 5000).toISOString();
+
+    loadDecksFromCloud.mockResolvedValue([
+      {
+        id,
+        user_id: "user-1",
+        name: "Deck Local Plein",
+        hero_id: null,
+        havre_sac_id: null,
+        cards: [], // Cloud renvoie 0 cartes suite à création rapide
+        created_at: new Date(Date.now() - 10000).toISOString(),
+        updated_at: new Date(Date.now() - 2000).toISOString(),
+      },
+    ]);
+
+    await store.pullCloudDecks();
+
+    const deck = store.decks.find((d) => d.id === id);
+    expect(deck).toBeDefined();
+    // Les cartes locales ne doivent PAS être écrasées par les 0 cartes du cloud
+    expect(deck!.cards.reduce((a, c) => a + c.quantity, 0)).toBe(3);
+  });
+
+  it("pullCloudDecks: conserve le deck local marqué dirty contre une dérive d'horloge serveur mineure (<60s)", async () => {
+    const ally = createMockAllyCard({ id: "c1", name: "C1" });
+    useCardStore().setCards([ally]);
+    const store = useDeckStore();
+    const id = store.createDeck("Deck En Cours D'Édition");
+    store.addCard(ally, 2);
+    // Simule une horloge client à T, et une horloge serveur à T + 2s
+    const now = Date.now();
+    store.decks[0].updatedAt = new Date(now).toISOString();
+
+    loadDecksFromCloud.mockResolvedValue([
+      {
+        id,
+        user_id: "user-1",
+        name: "Deck En Cours D'Édition",
+        hero_id: null,
+        havre_sac_id: null,
+        cards: [{ cardId: "c1", quantity: 1 }],
+        created_at: new Date(now - 10000).toISOString(),
+        updated_at: new Date(now + 2000).toISOString(), // Serveur 2s en avance
+      },
+    ]);
+
+    await store.pullCloudDecks();
+
+    const deck = store.decks.find((d) => d.id === id);
+    expect(deck).toBeDefined();
+    // Le travail local non encore poussé (2 cartes) ne doit pas être écrasé par la version serveur (1 carte)
+    expect(deck!.cards.reduce((a, c) => a + c.quantity, 0)).toBe(2);
+  });
 });
+

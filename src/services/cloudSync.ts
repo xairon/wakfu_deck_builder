@@ -125,7 +125,7 @@ export async function saveDecksToCloud(decks: CloudDeck[]) {
 
     const { error } = await supabase
       .from("decks")
-      .upsert(entries, { onConflict: "id,user_id" });
+      .upsert(entries, { onConflict: "user_id,id" });
 
     if (error) {
       console.warn("Erreur lors de la sauvegarde des decks sur le cloud:", error);

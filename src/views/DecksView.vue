@@ -532,7 +532,12 @@ const decks = computed(() => deckStore.decks);
 const validCount = computed(() => decks.value.filter(isDeckValid).length);
 const filteredDecks = ref<Deck[]>([]);
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    await cardStore.initialize();
+  } catch (e) {
+    console.error("Erreur d'initialisation du cardStore (DecksView):", e);
+  }
   deckStore.initialize();
   filterDecks();
 });
@@ -690,8 +695,13 @@ async function copyExportToClipboard() {
   }
 }
 
-function confirmImportDeck() {
+async function confirmImportDeck() {
   if (!importDeckText.value.trim()) return;
+  try {
+    await cardStore.initialize();
+  } catch (e) {
+    console.error("Erreur de chargement du catalogue:", e);
+  }
   const result = deckStore.importDeck(importDeckText.value);
   if (result.success && result.deckId) {
     if (result.warnings.length)

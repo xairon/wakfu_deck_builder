@@ -306,6 +306,13 @@ async function onImport(deck: SourcedDeck) {
     }
   }
 
+  if (!cardStore.cards.length) {
+    toast.error("Catalogue de cartes indisponible. Vérifiez votre connexion.", {
+      duration: 5000,
+    });
+    return;
+  }
+
   importing.value.add(deck.id);
   try {
     // Decks publiés ou curatés : import fidèle et unifié via importPublishedDeck
@@ -420,11 +427,21 @@ function publicToSourced(
         };
       })
       .filter((c) => c.name),
-    // Snapshot brut pour un import fidèle par IDs (impressions + réserve).
+    // Snapshot enrichi pour un import fidèle par IDs (avec fallback nom + réserve).
     published: {
       heroId,
       havreSacId,
-      cards: pub.cards ?? [],
+      cards: (pub.cards ?? []).map((c: any) => {
+        const rawId = c.cardId ?? c.card_id ?? c.id ?? c.card?.id;
+        const resolved = resolveCard(rawId);
+        const name = resolved?.name ?? c.name ?? c.card?.name ?? "";
+        return {
+          cardId: rawId,
+          name,
+          quantity: Number(c.quantity ?? c.count ?? 1) || 1,
+          ...(c.isReserve || c.is_reserve ? { isReserve: true } : {}),
+        };
+      }),
     },
   };
 }
