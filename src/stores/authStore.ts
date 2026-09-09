@@ -78,10 +78,12 @@ export const useAuthStore = defineStore("auth", () => {
       } catch {
         /* le catalogue se chargera via App.vue */
       }
-      // 2) Affichage immédiat depuis le cache du compte (offline-friendly)
+      // 2) Migrer les decks créés ou dupliqués en session invité vers le compte connecté
+      deckStore.migrateGuestDecksToUser();
+      // 3) Affichage immédiat depuis le cache du compte (offline-friendly)
       cardStore.reloadCollection();
       deckStore.loadDecks();
-      // 3) Rafraîchissement depuis le cloud (source de vérité)
+      // 4) Rafraîchissement depuis le cloud (source de vérité)
       try {
         await cardStore.pullCloudCollection();
       } catch {

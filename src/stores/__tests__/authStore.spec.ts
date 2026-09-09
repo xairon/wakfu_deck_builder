@@ -33,6 +33,7 @@ const cardStub = {
   pullCloudCollection: vi.fn().mockResolvedValue(undefined),
 };
 const deckStub = {
+  migrateGuestDecksToUser: vi.fn(),
   loadDecks: vi.fn(),
   clearAll: vi.fn(),
   pullCloudDecks: vi.fn().mockResolvedValue(undefined),

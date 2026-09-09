@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
+import { setActiveUser } from "@/services/storageNamespace";
 import {
   createMockAllyCard,
   createMockActionCard,
@@ -891,6 +892,63 @@ describe("deckStore", () => {
 
       expect(deckStore.decks).toEqual([]);
       expect(deckStore.loadingError).toBeTruthy();
+    });
+
+    it("devrait conserver les decks en mémoire non encore présents dans localStorage", () => {
+      const storedDeck = { id: "stored-1", name: "Stocké", cards: [] };
+      (window.localStorage.getItem as ReturnType<typeof vi.fn>).mockReturnValue(
+        JSON.stringify([storedDeck]),
+      );
+
+      // Deck créé en mémoire
+      deckStore.decks = [
+        {
+          id: "memory-new",
+          name: "En mémoire",
+          hero: null,
+          havreSac: null,
+          cards: [],
+          reserve: [],
+        },
+      ];
+
+      deckStore.loadDecks();
+
+      // Les deux decks doivent être présents
+      expect(deckStore.decks).toHaveLength(2);
+      expect(deckStore.decks.map((d) => d.id)).toContain("stored-1");
+      expect(deckStore.decks.map((d) => d.id)).toContain("memory-new");
+    });
+  });
+
+  // ---- migrateGuestDecksToUser ----
+
+  describe("migrateGuestDecksToUser()", () => {
+    it("migre les decks de l'espace invité vers le compte connecté", () => {
+      setActiveUser("user-123");
+      try {
+        const guestDecks = [
+          { id: "guest-1", name: "Guest Deck 1", cards: [] },
+          { id: "guest-2", name: "Guest Deck 2", cards: [] },
+        ];
+        const userDecks = [
+          { id: "user-1", name: "User Deck", cards: [] },
+        ];
+
+        (window.localStorage.getItem as ReturnType<typeof vi.fn>).mockImplementation(
+          (key: string) => {
+            if (key === "wakfu-decks") return JSON.stringify(guestDecks);
+            return JSON.stringify(userDecks);
+          },
+        );
+
+        deckStore.migrateGuestDecksToUser();
+
+        // Vérifie que localStorage.removeItem a été appelé pour l'espace invité
+        expect(window.localStorage.removeItem).toHaveBeenCalledWith("wakfu-decks");
+      } finally {
+        setActiveUser(null);
+      }
     });
   });
 

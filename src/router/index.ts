@@ -217,6 +217,16 @@ router.beforeEach(async (to, from, next) => {
     return;
   }
 
+  // Forcer immédiatement le push cloud des modifications en attente lors d'un changement de vue
+  if (from.path && from.path !== to.path) {
+    try {
+      const { useDeckStore } = await import("@/stores/deckStore");
+      void useDeckStore().flushCloudPush();
+    } catch {
+      /* best-effort */
+    }
+  }
+
   // Initialiser l'auth une seule fois (restauration de session). Idempotent.
   if (!isSessionInitialized) {
     try {

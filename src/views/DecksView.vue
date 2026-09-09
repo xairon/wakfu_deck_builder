@@ -493,7 +493,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { matchesSearch } from "@/utils/text";
 import { useDeckStore } from "@/stores/deckStore";
 import { useToast } from "@/composables/useToast";
-import { useRouter } from "vue-router";
+import { useRouter, onBeforeRouteLeave } from "vue-router";
 import { useCardStore } from "@/stores/cardStore";
 import {
   importDeckCardsToCollection,
@@ -544,6 +544,10 @@ onMounted(async () => {
 
 watch(decks, filterDecks, { deep: true });
 watch(importDeckText, analyzeImportText);
+
+onBeforeRouteLeave(async () => {
+  await deckStore.flushCloudPush();
+});
 
 // ── Navigation ──
 function createNewDeck() {

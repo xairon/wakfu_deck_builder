@@ -195,13 +195,21 @@ export const useDeckStore = defineStore("deck", () => {
             };
           });
 
-          decks.value = migratedDecks;
+          // Conserver les decks déjà présents en mémoire (créations/duplications
+          // récentes non encore synchronisées ou en cours de transition).
+          const storedIds = new Set(migratedDecks.map((d: Deck) => d.id));
+          const inMemoryUnsaved = decks.value.filter((d) => !storedIds.has(d.id));
+
+          decks.value = [...migratedDecks, ...inMemoryUnsaved];
 
           // Sauvegarder le format migré en cache LOCAL uniquement : un push
           // cloud ici (dépendant du catalogue, parfois pas encore chargé)
           // risquerait d'écraser le cloud. pullCloudDecks gère l'autorité.
-          if (migratedDecks.some((deck: any) => deck.cards.length > 0)) {
-            saveDecks({ skipCloud: true });
+          if (
+            inMemoryUnsaved.length > 0 ||
+            migratedDecks.some((deck: any) => deck.cards.length > 0)
+          ) {
+            saveDecks({ skipCloud: inMemoryUnsaved.length === 0 });
           }
         } else {
           throw new Error("Format de données invalide");
@@ -464,6 +472,53 @@ export const useDeckStore = defineStore("deck", () => {
       saveDecks({ skipCloud: !keptLocal });
     } catch {
       // offline : on garde le cache local
+    }
+  }
+
+  /**
+   * Migre les decks créés en session invité (clé sans namespace) vers l'espace de
+   * l'utilisateur connecté pour ne jamais perdre de decks créés avant la connexion.
+   */
+  function migrateGuestDecksToUser() {
+    try {
+      const guestKey = "wakfu-decks";
+      const currentKey = decksStorageKey();
+      if (currentKey === guestKey) return;
+
+      const guestRaw = localStorage.getItem(guestKey);
+      if (!guestRaw) return;
+
+      const parsedGuest = JSON.parse(guestRaw);
+      if (!Array.isArray(parsedGuest) || parsedGuest.length === 0) return;
+
+      const userRaw = localStorage.getItem(currentKey);
+      const userDecks: Deck[] = userRaw ? JSON.parse(userRaw) : [];
+      const userDeckIds = new Set(userDecks.map((d) => d.id));
+
+      let migratedCount = 0;
+      for (const gd of parsedGuest) {
+        if (gd && gd.id && !userDeckIds.has(gd.id)) {
+          userDecks.push(gd);
+          markDeckDirty(gd.id);
+          migratedCount++;
+        }
+      }
+
+      if (migratedCount > 0) {
+        localStorage.setItem(currentKey, JSON.stringify(userDecks));
+        const currentIds = new Set(decks.value.map((d) => d.id));
+        for (const ud of userDecks) {
+          if (!currentIds.has(ud.id)) {
+            decks.value.push(ud);
+          }
+        }
+        pushDecksToCloudDebounced();
+      }
+
+      localStorage.removeItem(guestKey);
+      localStorage.removeItem("wakfu-decks-dirty");
+    } catch (e) {
+      console.warn("Erreur lors de la migration des decks invités:", e);
     }
   }
 
@@ -1421,6 +1476,7 @@ export const useDeckStore = defineStore("deck", () => {
     loadDecks,
     saveDecks,
     pullCloudDecks,
+    migrateGuestDecksToUser,
     flushCloudPush,
     clearAll,
     createDeck,
