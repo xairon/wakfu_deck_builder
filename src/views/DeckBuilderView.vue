@@ -181,6 +181,7 @@ import { useRoute, useRouter, onBeforeRouteLeave } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
+import { isSupabaseConfigured } from "@/services/supabase";
 import { generateShareUrl } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
@@ -459,16 +460,27 @@ async function setupDeck() {
     return;
   }
 
-  deckStore.initialize();
-
   const id = route.params.id as string | undefined;
   if (id) {
+    // Si le deck n'est pas déjà présent en mémoire (ex: rechargement de page direct),
+    // on charge depuis le stockage local sans écraser un deck nouvellement créé en mémoire.
+    if (!deckStore.decks.some((d) => d.id === id)) {
+      deckStore.initialize();
+    }
     deckStore.setCurrentDeck(id);
+    // Si toujours absent localement mais connecté au cloud, tentative de synchronisation
+    if (!deckStore.currentDeck && isSupabaseConfigured()) {
+      await deckStore.pullCloudDecks();
+      deckStore.setCurrentDeck(id);
+    }
     if (!deckStore.currentDeck) {
       toast.error("Deck introuvable");
       router.replace("/decks");
     }
   } else {
+    if (deckStore.decks.length === 0) {
+      deckStore.initialize();
+    }
     const newId = deckStore.createDeck("Nouveau deck");
     router.replace(`/deck-builder/${newId}`);
   }

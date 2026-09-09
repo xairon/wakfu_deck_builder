@@ -95,6 +95,7 @@ vi.mock("vue-router", () => ({
     push: vi.fn(),
     replace: vi.fn(),
   })),
+  onBeforeRouteLeave: vi.fn(),
 }));
 
 // useDebounceFn : synchrone pour simplifier les tests
