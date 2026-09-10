@@ -1,6 +1,7 @@
 import { ref, watch, nextTick, onMounted, getCurrentInstance } from "vue";
 import type { ChatMessage, UseInGameChatOptions } from "@/types/chat";
 import { useGameStore } from "@/stores/gameStore";
+import type { PersistedEvent, SaidPayload } from "@/game";
 
 /**
  * Hook de gestion de l'état et de la logique du chat en jeu 1v1.
@@ -128,6 +129,54 @@ export function useInGameChat(options: UseInGameChatOptions = {}) {
   }
 
   /**
+   * Détermine si un événement SAID est un message technique/de jeu (qui doit aller
+   * uniquement dans le journal) ou un vrai message de chat entre joueurs.
+   */
+  function isGameEvent(ev: PersistedEvent): boolean {
+    if (ev.type !== "SAID") return true;
+    if (ev.actor === "system") return true;
+
+    const payload = ev.payload as SaidPayload | undefined;
+    if (payload?.kind === "game" || payload?.kind === "activate_effect") {
+      return true;
+    }
+    if (payload?.kind === "chat") {
+      return false;
+    }
+
+    const text = String(payload?.text ?? "").trim();
+    if (!text) return true;
+
+    // Signatures d'événements de jeu qui ne doivent pas polluer le chat
+    if (
+      text.startsWith("🔍") ||
+      text.startsWith("🔀") ||
+      text.startsWith("🎲") ||
+      text.startsWith("⚡") ||
+      text.startsWith("🔄") ||
+      text.startsWith("👁") ||
+      text.startsWith("🙈") ||
+      text.includes("cherche dans sa Pioche") ||
+      text.includes("cherche dans sa pioche") ||
+      text.includes("mélange sa Pioche") ||
+      text.includes("mélange sa pioche") ||
+      text.includes("est équipé") ||
+      text.includes("Action résolue") ||
+      text.includes("Effet de début de tour") ||
+      text.includes("abandonne la partie") ||
+      text.includes("a perdu tous ses PV") ||
+      text.includes("réinitialisé sa table") ||
+      text.includes("révèle son Deck") ||
+      text.includes("masque son Deck") ||
+      text.includes("active l'effet de")
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Synchronise les événements SAID de gameStore vers messagesList
    */
   function syncEventsFromStore() {
@@ -141,6 +190,8 @@ export function useInGameChat(options: UseInGameChatOptions = {}) {
       if (processedSeqs.has(eventKey)) continue;
 
       processedSeqs.add(eventKey);
+
+      if (isGameEvent(ev)) continue;
 
       const text = String((ev.payload as { text?: string })?.text ?? "");
       if (!text) continue;

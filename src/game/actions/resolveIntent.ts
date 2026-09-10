@@ -25,7 +25,7 @@ import type {
   CreateTokenPayload,
 } from "../types/events";
 import type { Seat, ZoneRef } from "../types/zones";
-import { otherSeat, ZONE_SPECS, zoneOwner } from "../types/zones.ts";
+import { isTeammate, otherSeat, ZONE_SPECS, zoneOwner } from "../types/zones.ts";
 import {
   attach,
   move,
@@ -720,15 +720,14 @@ export function resolveIntent(
     case "ATTACH": {
       const e1 = controlError(state, seat, intent.equipmentId);
       if (e1) return { error: e1 };
-      const e2 = controlError(state, seat, intent.bearerId);
-      if (e2) return { error: e2 };
-      // N'importe quelle carte contrôlée peut être attachée à un Porteur en jeu.
       const bearerInst = state.instances[intent.bearerId];
+      if (!bearerInst) return { error: "Carte inconnue." };
+      const isOwnerOrTeammate =
+        bearerInst.controller === seat || isTeammate(bearerInst.controller, seat);
+      if (!isOwnerOrTeammate) return { error: "Tu ne contrôles pas cette carte." };
       if (
-        !bearerInst ||
-        bearerInst.controller !== seat ||
-        (bearerInst.location.zone !== "monde" &&
-          bearerInst.location.zone !== "havreSac")
+        bearerInst.location.zone !== "monde" &&
+        bearerInst.location.zone !== "havreSac"
       ) {
         return { error: "Porteur invalide (non contrôlé ou hors jeu)." };
       }

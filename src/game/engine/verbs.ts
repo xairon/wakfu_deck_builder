@@ -11,6 +11,7 @@ import type {
   ShufflePayload,
   CreateTokenPayload,
   LookRevealPayload,
+  SaidPayload,
 } from "../types/events";
 import type { CombatState, GameState, TurnPhase } from "../types/state";
 import type { Seat, ZoneRef } from "../types/zones";
@@ -238,8 +239,16 @@ export function undo(actor: Seat, targetSeq: number): DraftEvent {
   return { actor, type: "UNDONE", payload: { targetSeq } };
 }
 
-export function say(actor: Seat | "system", text: string): DraftEvent {
-  return { actor, type: "SAID", payload: { text } };
+export function say(
+  actor: Seat | "system",
+  text: string,
+  extra?: Partial<SaidPayload> | "chat" | "game" | "activate_effect",
+): DraftEvent<SaidPayload> {
+  const payload: SaidPayload =
+    typeof extra === "string"
+      ? { text, kind: extra }
+      : { text, ...extra };
+  return { actor, type: "SAID", payload };
 }
 
 /** Texte JOURNAL d'un jet de dé partagé (même rendu client/serveur).

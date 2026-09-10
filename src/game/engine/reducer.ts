@@ -408,6 +408,11 @@ export function applyEvent(state: GameState, ev: PersistedEvent): GameState {
       const equip = getInstance(next, p.equipmentId);
       const bearer = getInstance(next, p.bearerId);
       removeFromZone(next, equip);
+      for (const inst of Object.values(next.instances)) {
+        if (inst.instanceId === p.bearerId) continue;
+        const i = inst.attachments.indexOf(p.equipmentId);
+        if (i >= 0) inst.attachments.splice(i, 1);
+      }
       equip.location = bearer.location; // co-localisé avec son porteur
       if (!bearer.attachments.includes(p.equipmentId)) {
         bearer.attachments.push(p.equipmentId);

@@ -91,4 +91,70 @@ describe("useInGameChat", () => {
     expect(messagesList.value[0].text).toBe("Attaque !");
     expect(messagesList.value[0].isSelf).toBe(false);
   });
+
+  it("ne devrait PAS ajouter les événements de jeu (pioche, mélange, activation, système) au chat", () => {
+    const store = useGameStore();
+    store.perspective = "A";
+    store.players.A = { name: "Pinpin" };
+    store.players.B = { name: "Evangelyne" };
+
+    const { messagesList } = useInGameChat();
+
+    store.events = [
+      {
+        gameId: "g1",
+        seq: 1,
+        parentSeq: 0,
+        actor: "system",
+        type: "SAID",
+        payload: { text: "La partie commence." },
+        ts: Date.now(),
+      },
+      {
+        gameId: "g1",
+        seq: 2,
+        parentSeq: 1,
+        actor: "A",
+        type: "SAID",
+        payload: { text: "🔍 cherche dans sa Pioche…", kind: "game" },
+        ts: Date.now(),
+      },
+      {
+        gameId: "g1",
+        seq: 3,
+        parentSeq: 2,
+        actor: "A",
+        type: "SAID",
+        payload: { text: "🔀 mélange sa Pioche." },
+        ts: Date.now(),
+      },
+      {
+        gameId: "g1",
+        seq: 4,
+        parentSeq: 3,
+        actor: "B",
+        type: "SAID",
+        payload: {
+          text: "⚡ active l'effet de Carte",
+          kind: "activate_effect",
+        },
+        ts: Date.now(),
+      },
+      {
+        gameId: "g1",
+        seq: 5,
+        parentSeq: 4,
+        actor: "B",
+        type: "SAID",
+        payload: { text: "Bien joué !", kind: "chat" },
+        ts: Date.now(),
+      },
+    ];
+
+    // Seul "Bien joué !" doit figurer dans le chat
+    expect(messagesList.value).toHaveLength(1);
+    expect(messagesList.value[0].text).toBe("Bien joué !");
+    expect(messagesList.value[0].senderName).toBe("Evangelyne");
+  });
 });
+

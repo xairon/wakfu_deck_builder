@@ -1248,6 +1248,15 @@
         <span class="gactionbar__name">{{ selectedName }}</span>
         <div class="gactionbar__btns">
           <button
+            v-if="canActivateSelected"
+            class="gbtn gbtn--accent gbtn--activate"
+            data-testid="action-activate-card"
+            title="Activer un effet de cette carte et notifier l'adversaire qu'il doit le résoudre"
+            @click="activateSelectedCard"
+          >
+            ⚡ Activer
+          </button>
+          <button
             v-if="canAttackSelected"
             class="gbtn gbtn--accent"
             data-testid="action-attack"
@@ -2374,25 +2383,8 @@ onMounted(() => {
           return;
         }
 
-        // CAS 2 : Carte déjà en jeu, ou mode manuel / sandbox
-        if (
-          store.tryIntent?.({
-            kind: "ATTACH",
-            equipmentId: instanceId,
-            bearerId: targetCardId,
-          })
-        ) {
-          return;
-        }
-
-        const seat = me.value;
-        store.dispatch(
-          attach(seat, instanceId, targetCardId),
-          say(
-            seat,
-            `${card?.name ?? "L'équipement"} est équipé sur ${bearerCard?.name ?? "la créature"}.`,
-          ),
-        );
+        // CAS 2 : Carte déjà en jeu, ou mode manuel / sandbox / en ligne
+        store.attachCard(instanceId, targetCardId);
         return;
       }
     }
@@ -2932,6 +2924,12 @@ function slotCls(instanceId: string): Record<string, boolean> {
   }
 
   out["gslot--equip-target"] = isEquipTarget;
+  if (
+    store.activatedCardInstanceId &&
+    store.activatedCardInstanceId === instanceId
+  ) {
+    out["gslot--activated-pulse"] = true;
+  }
   return out;
 }
 /** PV/Résistance projetés d'une cible (Héros/Havre-Sac) après résolution, ou null. */
@@ -2971,6 +2969,13 @@ function lethalCardNames(): string[] {
     const inst = store.state.instances[id];
     return resolveCard(inst?.cardId ?? null)?.name ?? "carte";
   });
+}
+const canActivateSelected = computed(() => {
+  return !!selectedInst.value;
+});
+function activateSelectedCard(): void {
+  if (!selectedId.value) return;
+  store.activateCardEffect(selectedId.value);
 }
 const canAttackSelected = computed(() => {
   const inst = selectedInst.value;
@@ -4145,6 +4150,28 @@ function manaBonus(seat: Seat): boolean {
   box-shadow: 0 0 20px rgba(240, 78, 34, 0.6);
   animation: gtarget-pulse 1.2s ease-in-out infinite;
 }
+.gslot--activated-pulse :deep(.game-card) {
+  outline: 3px solid #f0a62b;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 24px rgba(240, 166, 43, 0.8),
+    0 0 45px rgba(240, 78, 34, 0.5);
+  animation: gactivated-shockwave 1.1s ease-in-out infinite;
+}
+@keyframes gactivated-shockwave {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(240, 166, 43, 0.7),
+      0 0 35px rgba(240, 78, 34, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 32px rgba(240, 166, 43, 1),
+      0 0 55px rgba(240, 78, 34, 0.75);
+    transform: scale(1.03);
+  }
+}
 @keyframes gtarget-pulse {
   0%,
   100% {
@@ -4256,6 +4283,26 @@ function manaBonus(seat: Seat): boolean {
 }
 .gbtn--accent:hover {
   background: #f04e22;
+}
+.gbtn--activate {
+  background: linear-gradient(135deg, #f0a62b 0%, #f04e22 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(240, 78, 34, 0.4);
+  animation: activate-btn-glow 2.5s ease-in-out infinite alternate;
+}
+.gbtn--activate:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+@keyframes activate-btn-glow {
+  from {
+    box-shadow: 0 2px 8px rgba(240, 78, 34, 0.4);
+  }
+  to {
+    box-shadow: 0 3px 14px rgba(240, 166, 43, 0.85);
+  }
 }
 .gbtn--counter {
   font-family: "Space Mono", ui-monospace, monospace;

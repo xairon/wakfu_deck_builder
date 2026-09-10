@@ -152,6 +152,15 @@ export type EventType =
   | "GAME_OVER"
   | "UNDONE";
 
+export interface SaidPayload {
+  text: string;
+  kind?: "chat" | "game" | "activate_effect";
+  instanceId?: InstanceId;
+  cardId?: string;
+  cardName?: string;
+  effectText?: string;
+}
+
 /**
  * Event persisté. `seq`/`parentSeq` sont AUTORITATIFS (séquence Postgres, L2) ;
  * en moteur pur on les assigne via `sequence()`. `payloadPrivate[seat]` porte

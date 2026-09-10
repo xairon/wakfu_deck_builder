@@ -20,6 +20,15 @@
 
         <div class="card-ctx-menu__group">
           <button
+            type="button"
+            class="card-ctx-menu__item card-ctx-menu__item--activate"
+            @click="action('activate_effect')"
+          >
+            <span class="card-ctx-menu__icon">⚡</span>
+            <span>Activer l'effet</span>
+          </button>
+
+          <button
             v-if="isAttached"
             type="button"
             class="card-ctx-menu__item card-ctx-menu__item--detach"
@@ -380,6 +389,16 @@ function action(act: string): void {
 .card-ctx-menu__item:hover {
   background: rgba(255, 215, 0, 0.15);
   color: #ffffff;
+}
+
+.card-ctx-menu__item--activate {
+  color: #f0a62b;
+  font-weight: 700;
+}
+
+.card-ctx-menu__item--activate:hover {
+  background: rgba(240, 166, 43, 0.2);
+  color: #ffc86b;
 }
 
 .card-ctx-menu__item--detach {

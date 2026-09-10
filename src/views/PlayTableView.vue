@@ -992,6 +992,7 @@
     <DragLayer />
     <EffectSpotlight />
     <TurnBanner />
+    <EffectActivationBanner />
     <ManualEffectReminders />
     <InGameChat v-if="store.matchPhase !== 'lobby'" />
 
@@ -1409,6 +1410,7 @@ import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
 import DragLayer from "@/components/game/DragLayer.vue";
 import EffectSpotlight from "@/components/game/EffectSpotlight.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
+import EffectActivationBanner from "@/components/game/EffectActivationBanner.vue";
 import VictoryDefeatOverlay from "@/components/game/VictoryDefeatOverlay.vue";
 import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import GameSoundLayer from "@/components/game/GameSoundLayer.vue";

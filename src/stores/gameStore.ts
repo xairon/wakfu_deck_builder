@@ -50,6 +50,7 @@ import {
   setController as setControllerVerb,
   shuffle as shuffleVerb,
   undo as undoVerb,
+  type SaidPayload,
 } from "@/game";
 import { makeRng, permutationFromSeed } from "@/game/engine/rng";
 import type { CombatTarget, RuleEvent, RulesCtx } from "@/game/rules";
@@ -160,6 +161,17 @@ function deriveMatchPhase(evs: PersistedEvent[]): MatchPhase {
       : "mulligan";
   }
   return Boolean(done.A && done.B) ? "playing" : "mulligan";
+}
+
+export interface ActivationBannerInfo {
+  id: number;
+  actor: Seat;
+  actorName: string;
+  cardId: string;
+  cardName: string;
+  effectText: string;
+  instanceId: string;
+  isSelf: boolean;
 }
 
 /**
@@ -674,6 +686,10 @@ export const useGameStore = defineStore("game", () => {
         return "La partie commence.";
       case "SHUFFLE":
         return "mélange sa Pioche.";
+      case "LOOK":
+        return "cherche dans sa Pioche.";
+      case "REVEAL":
+        return "révèle des cartes.";
       case "MOVE": {
         const from = (p.from as ZoneRef)?.zone;
         const to = (p.to as ZoneRef)?.zone;
@@ -1035,6 +1051,20 @@ export const useGameStore = defineStore("game", () => {
           mulliganCounts.value = { ...mulliganCounts.value, [s]: current + 1 };
         } else if (e.type === "SET_PHASE") {
           endTurnPending.value = false;
+        } else if (e.type === "SAID") {
+          const p = e.payload as SaidPayload;
+          if (p?.kind === "activate_effect") {
+            const currentSeat = (online.value ? mySeat.value : perspective.value) as Seat;
+            if (e.actor !== currentSeat || !activeActivationBanner.value) {
+              triggerActivationBanner({
+                actor: e.actor as Seat,
+                cardId: p.cardId ?? "",
+                cardName: p.cardName ?? "",
+                effectText: p.effectText,
+                instanceId: p.instanceId,
+              });
+            }
+          }
         }
       }
     }
@@ -1273,6 +1303,8 @@ export const useGameStore = defineStore("game", () => {
     continuedMatch.value = false;
     activeDecks.value = { A: null, B: null };
     instanceCardMap.clear();
+    dismissActivationBanner();
+    activatedCardInstanceId.value = null;
     // Présence/grâce : minuteur coupé (test-safe) + état réinitialisé.
     clearGraceTimer();
     opponentPresent.value = true;
@@ -1968,6 +2000,8 @@ export const useGameStore = defineStore("game", () => {
     chifumiDeclined.value = new Set();
     chifumiDoomed.value = new Set();
     pendingBearer.value = null;
+    dismissActivationBanner();
+    activatedCardInstanceId.value = null;
     botSeat.value = null;
     tutorOpenSeats.value = { A: false, B: false };
     clearEffectSpotlight();
@@ -2468,6 +2502,95 @@ export const useGameStore = defineStore("game", () => {
     effectSpotlight.value = [];
   }
 
+  // ── Activation d'effet de carte (animation & notification adversaire) ─────
+  const activeActivationBanner = ref<ActivationBannerInfo | null>(null);
+  const activatedCardInstanceId = ref<string | null>(null);
+  let activationTimer: ReturnType<typeof setTimeout> | null = null;
+  let activationCardTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function triggerActivationBanner(info: {
+    actor: Seat;
+    cardId: string;
+    cardName: string;
+    effectText?: string;
+    instanceId?: string;
+  }): void {
+    const currentSeat = (online.value ? mySeat.value : perspective.value) as Seat;
+    const isSelf = info.actor === currentSeat;
+    const actorName = players.value[info.actor]?.name ?? `Joueur ${info.actor}`;
+    const id = Date.now();
+
+    if (activationTimer) clearTimeout(activationTimer);
+    if (activationCardTimer) clearTimeout(activationCardTimer);
+
+    activeActivationBanner.value = {
+      id,
+      actor: info.actor,
+      actorName,
+      cardId: info.cardId,
+      cardName: info.cardName,
+      effectText: info.effectText ?? "",
+      instanceId: info.instanceId ?? "",
+      isSelf,
+    };
+
+    if (info.instanceId) {
+      activatedCardInstanceId.value = info.instanceId;
+      activationCardTimer = setTimeout(() => {
+        if (activatedCardInstanceId.value === info.instanceId) {
+          activatedCardInstanceId.value = null;
+        }
+      }, 7500);
+    }
+
+    activationTimer = setTimeout(() => {
+      if (activeActivationBanner.value?.id === id) {
+        activeActivationBanner.value = null;
+      }
+    }, 8000);
+  }
+
+  function dismissActivationBanner(): void {
+    if (activationTimer) clearTimeout(activationTimer);
+    activeActivationBanner.value = null;
+  }
+
+  function activateCardEffect(instanceId: string): boolean {
+    const inst = state.value.instances[instanceId];
+    if (!inst) return false;
+    const card = getCard(inst.cardId);
+    const cardName = card?.name ?? "Carte";
+    const effs = card ? printedEffects(card) : [];
+    const effectText = effs
+      .map((e) => e.description.trim())
+      .filter(Boolean)
+      .join(" ");
+
+    const seat = (online.value ? mySeat.value : perspective.value) as Seat;
+    const logText = `⚡ active l'effet de ${cardName}${effectText ? ` : « ${effectText} »` : "."}`;
+
+    triggerActivationBanner({
+      actor: seat,
+      cardId: card?.id ?? "",
+      cardName,
+      effectText,
+      instanceId,
+    });
+
+    dispatch(
+      say(seat, logText, {
+        kind: "activate_effect",
+        instanceId,
+        cardId: card?.id ?? "",
+        cardName,
+        effectText,
+      }),
+    );
+
+    return true;
+  }
+
+
   /** La carte porte-t-elle un effet d'annulation (Échec Critique) ? */
   function isCancelCard(
     card: { effects?: { compiled?: { ops?: { op: string }[] } }[] } | null,
@@ -2760,6 +2883,28 @@ export const useGameStore = defineStore("game", () => {
    * `bearerId`. Rejette (sans consommer le prompt) si la cible n'est pas
    * éligible. À la réussite, le prompt est fermé.
    */
+  /**
+   * Attache un équipement (de la main ou déjà en jeu) à un porteur.
+   * En ligne : émet l'intention autoritative `ATTACH` (reconnue par resolveIntent).
+   * En local / sandbox : dispatche l'événement `attach` directement.
+   */
+  function attachCard(equipmentId: string, bearerId: string): boolean {
+    if (tryIntent({ kind: "ATTACH", equipmentId, bearerId })) return true;
+    const seat = (mySeat.value ?? perspective.value) as Seat;
+    const eqInst = state.value.instances[equipmentId];
+    const bearerInst = state.value.instances[bearerId];
+    const eqCard = getCard(eqInst?.cardId ?? null);
+    const bearerCard = getCard(bearerInst?.cardId ?? null);
+    dispatch(
+      attach(seat, equipmentId, bearerId),
+      say(
+        seat,
+        `${eqCard?.name ?? "L'équipement"} est équipé sur ${bearerCard?.name ?? "la créature"}.`,
+      ),
+    );
+    return true;
+  }
+
   function attachToBearer(bearerId: string): boolean {
     const pend = pendingBearer.value;
     if (!pend) return false;
@@ -2771,20 +2916,7 @@ export const useGameStore = defineStore("game", () => {
     // TL3 — geste manuel (table libre) : intent ATTACH autoritatif si disponible,
     // sinon dispatch local / peer broadcast direct de l'événement ATTACH.
     if (manual) {
-      if (tryIntent({ kind: "ATTACH", equipmentId, bearerId })) return true;
-      const seat = perspective.value;
-      const eqInst = state.value.instances[equipmentId];
-      const bearerInst = state.value.instances[bearerId];
-      const eqCard = getCard(eqInst?.cardId ?? null);
-      const bearerCard = getCard(bearerInst?.cardId ?? null);
-      dispatch(
-        attach(seat, equipmentId, bearerId),
-        say(
-          seat,
-          `${eqCard?.name ?? "L'équipement"} est équipé sur ${bearerCard?.name ?? "la créature"}.`,
-        ),
-      );
-      return true;
+      return attachCard(equipmentId, bearerId);
     }
     return playFromHand(equipmentId, bearerId, undefined, pend.free ?? false);
   }
@@ -2854,10 +2986,7 @@ export const useGameStore = defineStore("game", () => {
     const seat = perspective.value;
     const ids = state.value.seats[seat]?.pioche ?? [];
     if (!ids.length) return rejectMove("Ta Pioche est vide.");
-    dispatch(
-      lookCards(seat, [...ids], [seat]),
-      say(seat, "🔍 cherche dans sa Pioche…"),
-    );
+    dispatch(lookCards(seat, [...ids], [seat]));
     return true;
   }
 
@@ -2884,7 +3013,6 @@ export const useGameStore = defineStore("game", () => {
         pioche.length,
         rndSeed(),
       ),
-      say(seat, "🔀 mélange sa Pioche."),
     );
   }
 
@@ -2921,7 +3049,7 @@ export const useGameStore = defineStore("game", () => {
   function sendChat(text: string): void {
     const t = text.trim().slice(0, 300);
     const seat = online.value ? mySeat.value : perspective.value;
-    if (t) dispatch(say(seat, t));
+    if (t) dispatch(say(seat, t, "chat"));
   }
 
   /** CADRE — DÉ PARTAGÉ journalisé : en ligne le tirage est fait PAR LE
@@ -4000,13 +4128,24 @@ export const useGameStore = defineStore("game", () => {
   ): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    const dest: ZoneRef =
+      toZone === "monde"
+        ? { zone: "monde" }
+        : { zone: "havreSac", owner: inst.owner };
+    if (
+      tryIntent({
+        kind: "DETACH",
+        equipmentId: instanceId,
+        to: dest,
+        position: { at: "any" },
+      })
+    )
+      return;
     dispatch(
       detach(
         inst.controller,
         instanceId,
-        toZone === "monde"
-          ? { zone: "monde" }
-          : { zone: "havreSac", owner: inst.owner },
+        dest,
       ),
     );
   }
@@ -4014,6 +4153,7 @@ export const useGameStore = defineStore("game", () => {
   function resetCounter(instanceId: string, counter: string): void {
     const inst = state.value.instances[instanceId];
     if (!inst) return;
+    if (tryIntent({ kind: "SET_COUNTER", instanceId, counter, value: 0 })) return;
     dispatch(setCounterVerb(inst.controller, instanceId, counter, 0));
   }
 
@@ -5535,9 +5675,11 @@ export const useGameStore = defineStore("game", () => {
     playFromHand,
     rulesCtx,
     pendingBearer,
+    attachCard,
     attachToBearer,
     attachSelected,
     detachCard,
+    tryIntent,
     revealMyHand,
     revealCardToOpponent,
     searchMyDeck,
@@ -5553,6 +5695,10 @@ export const useGameStore = defineStore("game", () => {
     payCancel,
     pendingResolution,
     effectSpotlight,
+    activeActivationBanner,
+    activatedCardInstanceId,
+    activateCardEffect,
+    dismissActivationBanner,
     passPendingResolution,
     pendingChifumi,
     chifumiAccept,
