@@ -31,9 +31,12 @@
             :foil-quantity="cardItem.foilQuantity"
             :enable-add-to-deck="enableAddToDeck"
             :dim-unowned="dimUnowned"
+            :selection-mode="selectionMode"
+            :selected="selectedIds?.has(cardItem.card.id) ?? false"
             @update-quantity="handleQuantityUpdate"
             @select-card="handleCardSelect"
             @add-to-deck="handleAddToDeck"
+            @toggle-select="handleToggleSelect"
           />
         </div>
       </div>
@@ -108,12 +111,18 @@ interface Props {
   pageSize?: number;
   enableAddToDeck?: boolean;
   dimUnowned?: boolean;
+  /** Mode sélection multiple actif (cases à cocher sur les cartes). */
+  selectionMode?: boolean;
+  /** Ids des cartes actuellement sélectionnées (mode sélection). */
+  selectedIds?: Set<string>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   pageSize: 60,
   enableAddToDeck: false,
   dimUnowned: false,
+  selectionMode: false,
+  selectedIds: undefined,
 });
 
 const emit = defineEmits<{
@@ -125,6 +134,7 @@ const emit = defineEmits<{
   ): void;
   (e: "select-card", card: Card): void;
   (e: "add-to-deck", card: Card): void;
+  (e: "toggle-select", cardId: string): void;
 }>();
 
 const cardStore = useCardStore();
@@ -237,6 +247,18 @@ function handleAddToDeck(card: Card) {
   if (!card || !card.id) return;
   emit("add-to-deck", card);
 }
+function handleToggleSelect(cardId: string) {
+  if (!cardId) return;
+  emit("toggle-select", cardId);
+}
+
+// Ids de la page courante — exposé pour permettre au parent une action
+// « tout sélectionner sur cette page » (le parent ne connaît pas la page
+// courante, seule la grille la maintient).
+const currentPageCardIds = computed(() =>
+  pagedCards.value.map((item) => item.card.id),
+);
+defineExpose({ currentPageCardIds });
 </script>
 
 <style scoped>

@@ -260,6 +260,62 @@ describe("cardStore", () => {
     });
   });
 
+  describe("bulkSetQuantities()", () => {
+    let cardA: Card;
+    let cardB: Card;
+
+    beforeEach(async () => {
+      cardA = createMockAllyCard({ id: "bulk-a" });
+      cardB = createMockAllyCard({ id: "bulk-b" });
+      mockLoadAllCards.mockResolvedValueOnce([cardA, cardB]);
+      mockLocalStorage.loadCollection.mockReturnValueOnce({
+        "bulk-a": { normal: 1, foil: 0 },
+      });
+      await store.initialize();
+    });
+
+    it("devrait appliquer des quantités absolues à plusieurs cartes", async () => {
+      await store.bulkSetQuantities([
+        { cardId: "bulk-a", normal: 3, foil: 1 },
+        { cardId: "bulk-b", normal: 2, foil: 0 },
+      ]);
+
+      expect(store.collection["bulk-a"]).toEqual({ normal: 3, foil: 1 });
+      expect(store.collection["bulk-b"]).toEqual({ normal: 2, foil: 0 });
+    });
+
+    it("devrait supprimer l'entrée d'une carte ramenée à 0/0", async () => {
+      await store.bulkSetQuantities([{ cardId: "bulk-a", normal: 0, foil: 0 }]);
+
+      expect(store.collection["bulk-a"]).toBeUndefined();
+    });
+
+    it("ne devrait jamais descendre en dessous de 0", async () => {
+      await store.bulkSetQuantities([
+        { cardId: "bulk-b", normal: -5, foil: -2 },
+      ]);
+
+      expect(store.collection["bulk-b"]).toBeUndefined();
+    });
+
+    it("ne devrait écrire la collection qu'une seule fois pour tout le lot", async () => {
+      vi.clearAllMocks();
+      await store.bulkSetQuantities([
+        { cardId: "bulk-a", normal: 3, foil: 0 },
+        { cardId: "bulk-b", normal: 2, foil: 1 },
+      ]);
+
+      expect(mockLocalStorage.saveCollection).toHaveBeenCalledTimes(1);
+    });
+
+    it("ne devrait rien faire pour un lot vide", async () => {
+      vi.clearAllMocks();
+      await store.bulkSetQuantities([]);
+
+      expect(mockLocalStorage.saveCollection).not.toHaveBeenCalled();
+    });
+  });
+
   describe("getCardQuantity() / getFoilCardQuantity()", () => {
     beforeEach(async () => {
       const card = createMockAllyCard({ id: "qty-test" });

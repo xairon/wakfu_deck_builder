@@ -519,6 +519,41 @@ export const useCardStore = defineStore("cards", () => {
     saveToLocalStorage().catch(() => {});
   }
 
+  /**
+   * Applique un lot de quantités en une seule écriture (cache local + push
+   * cloud débouncé unique), au lieu d'un saveToLocalStorage() par carte comme
+   * le ferait une boucle d'addToCollection/removeFromCollection — utilisé par
+   * les actions groupées de la collection (sélection multiple, extension
+   * entière). `normal`/`foil` sont des valeurs ABSOLUES (pas des deltas) ;
+   * une carte ramenée à 0/0 est retirée de la collection (comme
+   * removeFromCollection).
+   */
+  async function bulkSetQuantities(
+    updates: Array<{ cardId: string; normal: number; foil: number }>,
+  ) {
+    if (!isInitialized.value) {
+      await initialize();
+    }
+    if (updates.length === 0) return;
+
+    for (const { cardId, normal, foil } of updates) {
+      const n = Math.max(0, normal);
+      const f = Math.max(0, foil);
+      if (n === 0 && f === 0) {
+        if (collection.value[cardId]) {
+          delete collection.value[cardId];
+          deleteCollectionEntryFromCloudIfNeeded(cardId);
+        }
+      } else {
+        collection.value[cardId] = { normal: n, foil: f };
+      }
+      dirtyIds.add(cardId);
+    }
+    saveDirtyIds();
+
+    await saveToLocalStorage();
+  }
+
   async function getCardById(id: string): Promise<Card | undefined> {
     if (!isInitialized.value) {
       await initialize();
@@ -678,6 +713,7 @@ export const useCardStore = defineStore("cards", () => {
     flushCollectionPush,
     addToCollection,
     removeFromCollection,
+    bulkSetQuantities,
     getCardById,
     getCardByIdSync,
     getCardQuantity,
