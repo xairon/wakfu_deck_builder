@@ -21,7 +21,7 @@
       }"
     >
       <!-- Illustration -->
-      <div class="relative" :class="{ sheen: foilQuantity > 0 }">
+      <div class="relative rounded-l" :class="{ sheen: foilQuantity > 0 }">
         <img
           :src="displaySrc"
           :alt="`Carte ${card?.name || 'Wakfu'} - ${card?.mainType || 'Type inconnu'}`"
@@ -140,64 +140,6 @@
           {{ showVerso ? "Verso" : "Recto" }}
         </span>
 
-        <!-- Contrôles de possession (visibles uniquement si authentifié) -->
-        <div
-          v-if="authStore.isAuthenticated && isHovered && !selectionMode"
-          class="ownership-controls absolute inset-x-0 bottom-0 z-20 border-t border-base-content bg-base-100/95 p-2"
-          @click.stop
-        >
-          <!-- Normal -->
-          <div class="flex items-center justify-between gap-2">
-            <span class="eyebrow text-base-content/60">Normal</span>
-            <div class="flex items-center gap-1.5">
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
-                @click.stop="updateQuantity(-1, false)"
-                :disabled="quantity <= 0"
-                :aria-label="`Retirer un exemplaire de ${card.name}`"
-              >
-                −
-              </button>
-              <span
-                class="w-5 text-center font-mono text-sm tabular text-base-content"
-                >{{ quantity }}</span
-              >
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
-                @click.stop="updateQuantity(1, false)"
-                :aria-label="`Ajouter un exemplaire de ${card.name}`"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <!-- Foil -->
-          <div class="mt-1.5 flex items-center justify-between gap-2">
-            <span class="eyebrow text-primary">Foil</span>
-            <div class="flex items-center gap-1.5">
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
-                @click.stop="updateQuantity(-1, true)"
-                :disabled="foilQuantity <= 0"
-                :aria-label="`Retirer un exemplaire brillant de ${card.name}`"
-              >
-                −
-              </button>
-              <span
-                class="w-5 text-center font-mono text-sm tabular text-base-content"
-                >{{ foilQuantity }}</span
-              >
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
-                @click.stop="updateQuantity(1, true)"
-                :aria-label="`Ajouter un exemplaire brillant de ${card.name}`"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Cartouche mono sous la planche -->
@@ -205,6 +147,72 @@
         {{ card?.name || "Carte sans nom"
         }}<template v-if="isOwned"> ×{{ quantity + foilQuantity }}</template>
       </figcaption>
+
+      <!-- Contrôles de possession (visibles uniquement si authentifié).
+           Placés SOUS l'illustration (`top-full`, hors du cadre sheen qui la
+           recadre), pas PAR-DESSUS : au survol, le panneau prolonge le bloc
+           vers le bas au lieu de recouvrir le bas de l'image (qui semblait
+           alors « rétrécie »). `position: absolute` + le `z-index` de survol
+           sur `.card-wrapper` (CollectionGrid.vue) font que ce prolongement
+           passe par-dessus la rangée suivante sans jamais déplacer les
+           cartes voisines (le transform/absolute ne participe pas au flux). -->
+      <div
+        v-if="authStore.isAuthenticated && isHovered && !selectionMode"
+        class="ownership-controls absolute inset-x-0 top-full z-20 border-t border-base-content bg-base-100 p-2 shadow-lg"
+        @click.stop
+      >
+        <!-- Normal -->
+        <div class="flex items-center justify-between gap-2">
+          <span class="eyebrow text-base-content/60">Normal</span>
+          <div class="flex items-center gap-1.5">
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
+              @click.stop="updateQuantity(-1, false)"
+              :disabled="quantity <= 0"
+              :aria-label="`Retirer un exemplaire de ${card.name}`"
+            >
+              −
+            </button>
+            <span
+              class="w-5 text-center font-mono text-sm tabular text-base-content"
+              >{{ quantity }}</span
+            >
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
+              @click.stop="updateQuantity(1, false)"
+              :aria-label="`Ajouter un exemplaire de ${card.name}`"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <!-- Foil -->
+        <div class="mt-1.5 flex items-center justify-between gap-2">
+          <span class="eyebrow text-primary">Foil</span>
+          <div class="flex items-center gap-1.5">
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
+              @click.stop="updateQuantity(-1, true)"
+              :disabled="foilQuantity <= 0"
+              :aria-label="`Retirer un exemplaire brillant de ${card.name}`"
+            >
+              −
+            </button>
+            <span
+              class="w-5 text-center font-mono text-sm tabular text-base-content"
+              >{{ foilQuantity }}</span
+            >
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
+              @click.stop="updateQuantity(1, true)"
+              :aria-label="`Ajouter un exemplaire brillant de ${card.name}`"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
     </figure>
   </div>
 </template>

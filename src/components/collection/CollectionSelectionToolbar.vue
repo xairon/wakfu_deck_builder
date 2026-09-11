@@ -32,6 +32,28 @@
         </button>
       </div>
 
+      <div class="flex items-center gap-1.5">
+        <select
+          v-model="chosenExtension"
+          class="select select-bordered select-xs font-mono"
+          aria-label="Choisir une extension à sélectionner"
+          data-testid="bulk-extension-select"
+        >
+          <option value="">Extension…</option>
+          <option v-for="ext in extensions" :key="ext" :value="ext">
+            {{ ext }}
+          </option>
+        </select>
+        <button
+          class="btn btn-ghost btn-xs font-mono uppercase tracking-wider"
+          data-testid="bulk-select-extension"
+          :disabled="!chosenExtension"
+          @click="$emit('select-extension', chosenExtension)"
+        >
+          Sélectionner
+        </button>
+      </div>
+
       <button
         class="btn btn-outline btn-xs ml-auto font-mono uppercase tracking-wider"
         data-testid="bulk-exit"
@@ -117,25 +139,32 @@
 <script setup lang="ts">
 /**
  * Barre d'actions groupées affichée en mode sélection multiple de la
- * collection : sélection rapide (page / résultats filtrés / aucune) et
- * actions en masse (playset complet, vider, ajuster ±1).
+ * collection : sélection rapide (page / résultats filtrés / une extension
+ * entière / aucune) et actions en masse (playset complet, vider, ajuster ±1).
  */
+import { ref } from "vue";
+
 withDefaults(
   defineProps<{
     selectedCount: number;
     filteredCount: number;
+    /** Liste des extensions pour le sélecteur « sélectionner cette extension ». */
+    extensions?: string[];
     busy?: boolean;
   }>(),
-  { busy: false },
+  { extensions: () => [], busy: false },
 );
 
 defineEmits<{
   "select-all-page": [];
   "select-all-filtered": [];
+  "select-extension": [name: string];
   "deselect-all": [];
   "mark-owned": [];
   "mark-missing": [];
   adjust: [delta: number, isFoil: boolean];
   exit: [];
 }>();
+
+const chosenExtension = ref("");
 </script>

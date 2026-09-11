@@ -1,5 +1,23 @@
 <template>
   <div class="space-y-10">
+    <!-- ── SÉLECTION MULTIPLE ── (vit ici : voir sa cible naturelle, les
+         extensions ci-dessous, sans changer de panneau) -->
+    <CollectionSelectionToolbar
+      v-if="selectionMode"
+      :selected-count="selectedCount"
+      :filtered-count="filteredCount"
+      :extensions="extensions"
+      :busy="busy"
+      @select-all-page="$emit('select-all-page')"
+      @select-all-filtered="$emit('select-all-filtered')"
+      @select-extension="$emit('select-extension', $event)"
+      @deselect-all="$emit('deselect-all')"
+      @mark-owned="$emit('mark-owned')"
+      @mark-missing="$emit('mark-missing')"
+      @adjust="(delta, isFoil) => $emit('adjust', delta, isFoil)"
+      @exit="$emit('exit')"
+    />
+
     <!-- ── REGISTRE GLOBAL ── -->
     <section class="border-y border-base-content/80 py-5">
       <div class="grid grid-cols-2 gap-6 sm:grid-cols-4">
@@ -38,7 +56,7 @@
         <article
           v-for="row in byExtension"
           :key="row.name"
-          class="grid grid-cols-[1fr_auto] items-baseline gap-x-5 gap-y-2 border-b border-base-content/15 py-4"
+          class="grid grid-cols-[1fr_auto_auto] items-baseline gap-x-4 gap-y-2 border-b border-base-content/15 py-4"
         >
           <h3 class="font-display text-lg leading-tight">{{ row.name }}</h3>
           <p
@@ -52,8 +70,14 @@
               >{{ row.missing }} manquante{{ row.missing > 1 ? "s" : "" }}</span
             >
           </p>
+          <button
+            class="btn btn-ghost btn-xs shrink-0 font-mono uppercase tracking-wider"
+            @click="$emit('select-extension', row.name)"
+          >
+            Sélectionner
+          </button>
           <!-- Filet de progression 1px qui se remplit en cinabre -->
-          <div class="col-span-2 h-px w-full bg-base-content/15">
+          <div class="col-span-3 h-px w-full bg-base-content/15">
             <div
               class="h-px bg-primary"
               :style="{ width: row.pct + '%' }"
@@ -109,8 +133,40 @@ import { computed } from "vue";
 import { useCardStore } from "@/stores/cardStore";
 import { EXTENSION_LEVELS, RARITIES } from "@/config/cards";
 import type { CardRarity } from "@/types/cards";
+import CollectionSelectionToolbar from "./CollectionSelectionToolbar.vue";
 
 const cardStore = useCardStore();
+
+withDefaults(
+  defineProps<{
+    /** Mode sélection multiple actif : affiche la barre d'actions groupées. */
+    selectionMode?: boolean;
+    selectedCount?: number;
+    filteredCount?: number;
+    extensions?: string[];
+    busy?: boolean;
+  }>(),
+  {
+    selectionMode: false,
+    selectedCount: 0,
+    filteredCount: 0,
+    extensions: () => [],
+    busy: false,
+  },
+);
+
+defineEmits<{
+  /** Demande de sélectionner (mode sélection multiple) toutes les cartes de cette extension. */
+  "select-extension": [name: string];
+  // Relayés depuis la barre d'actions groupées imbriquée (CollectionView porte l'état/la logique).
+  "select-all-page": [];
+  "select-all-filtered": [];
+  "deselect-all": [];
+  "mark-owned": [];
+  "mark-missing": [];
+  adjust: [delta: number, isFoil: boolean];
+  exit: [];
+}>();
 
 // Encres élémentaires détournées en échelle de rareté (du plus commun au plus rare)
 const rarityColors: Record<CardRarity, string> = {

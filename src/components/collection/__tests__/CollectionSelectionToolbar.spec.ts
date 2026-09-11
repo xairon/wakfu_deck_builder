@@ -76,4 +76,19 @@ describe("CollectionSelectionToolbar", () => {
       w.get('[data-testid="bulk-normal-plus"]').attributes("disabled"),
     ).toBeDefined();
   });
+
+  it("désactive « Sélectionner » tant qu'aucune extension n'est choisie, puis émet select-extension", async () => {
+    const w = mount(CollectionSelectionToolbar, {
+      props: { ...props, extensions: ["Incarnam", "Astrub"] },
+    });
+
+    expect(
+      w.get('[data-testid="bulk-select-extension"]').attributes("disabled"),
+    ).toBeDefined();
+
+    await w.get('[data-testid="bulk-extension-select"]').setValue("Astrub");
+    await w.get('[data-testid="bulk-select-extension"]').trigger("click");
+
+    expect(w.emitted("select-extension")).toEqual([["Astrub"]]);
+  });
 });

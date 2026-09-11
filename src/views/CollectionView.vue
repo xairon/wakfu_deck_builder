@@ -88,7 +88,7 @@
       <button
         class="btn btn-outline btn-sm"
         :class="{ 'btn-active': showProgress }"
-        @click="showProgress = !showProgress"
+        @click="toggleProgress"
       >
         Progression
       </button>
@@ -118,20 +118,20 @@
       </label>
     </div>
 
-    <!-- Tableau de complétion -->
+    <!-- Tableau de complétion — héberge aussi la barre de sélection multiple
+         (voir toggleSelectionMode/toggleProgress : les deux sont couplés,
+         puisque son seul point d'accès vit maintenant ici). -->
     <CollectionCompletion
       v-if="isAuthenticated && showProgress"
       class="mt-6 max-w-screen-xl mx-auto"
-    />
-
-    <!-- Barre d'actions groupées (mode sélection multiple) -->
-    <CollectionSelectionToolbar
-      v-if="isAuthenticated && selectionMode"
+      :selection-mode="selectionMode"
       :selected-count="selectedIds.size"
       :filtered-count="filteredCollection.length"
+      :extensions="extensions"
       :busy="bulkBusy"
       @select-all-page="selectAllOnPage"
       @select-all-filtered="selectAllFiltered"
+      @select-extension="addExtensionToSelection"
       @deselect-all="deselectAll"
       @mark-owned="confirmSelectionMarkOwned"
       @mark-missing="confirmSelectionMarkMissing"
@@ -671,7 +671,6 @@ import CollectionHeader from "@/components/collection/CollectionHeader.vue";
 import CollectionFilters from "@/components/collection/CollectionFilters.vue";
 import CollectionGrid from "@/components/collection/CollectionGrid.vue";
 import CollectionCompletion from "@/components/collection/CollectionCompletion.vue";
-import CollectionSelectionToolbar from "@/components/collection/CollectionSelectionToolbar.vue";
 import QuickAddModal from "@/components/collection/QuickAddModal.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import { useBulkCollectionActions } from "@/composables/useBulkCollectionActions";
@@ -807,9 +806,25 @@ function onConfirmCancel() {
 }
 
 // ── Mode sélection multiple ────────────────────────────────────────────────
+// La barre d'actions groupées vit maintenant DANS le panneau « Progression »
+// (CollectionCompletion) : activer la sélection ouvre donc aussi ce panneau,
+// et le fermer quitte la sélection (sinon la sélection resterait active sans
+// aucun moyen d'agir dessus).
 function toggleSelectionMode() {
   selectionMode.value = !selectionMode.value;
-  if (!selectionMode.value) selectedIds.value = new Set();
+  if (selectionMode.value) {
+    showProgress.value = true;
+  } else {
+    selectedIds.value = new Set();
+  }
+}
+
+function toggleProgress() {
+  showProgress.value = !showProgress.value;
+  if (!showProgress.value && selectionMode.value) {
+    selectionMode.value = false;
+    selectedIds.value = new Set();
+  }
 }
 
 function handleToggleSelect(cardId: string) {
@@ -834,6 +849,27 @@ function selectAllFiltered() {
 
 function deselectAll() {
   selectedIds.value = new Set();
+}
+
+/**
+ * Ajoute toutes les cartes d'une extension à la sélection (activant le mode
+ * sélection si besoin) — utilisé depuis « Progression » (par extension) et
+ * depuis le sélecteur d'extension de la barre d'actions groupées.
+ */
+function addExtensionToSelection(extensionName: string) {
+  if (!extensionName) return;
+  const ids = cardStore.cards
+    .filter((c) => c.extension?.name === extensionName)
+    .map((c) => c.id);
+  if (!ids.length) return;
+  if (!selectionMode.value) selectionMode.value = true;
+  const next = new Set(selectedIds.value);
+  ids.forEach((id) => next.add(id));
+  selectedIds.value = next;
+  toast.info(
+    `${ids.length} carte(s) de « ${extensionName} » ajoutées à la sélection.`,
+    { duration: 2000 },
+  );
 }
 
 function confirmSelectionMarkOwned() {
