@@ -18,6 +18,8 @@ import {
   unpublishDeck,
   loadPublicDecks,
   snapshotCards,
+  toggleDeckUpvote,
+  getUserUpvotedDeckIds,
 } from "@/services/publicDeckService";
 import type { Deck } from "@/types/cards";
 
@@ -99,17 +101,44 @@ describe("publicDeckService", () => {
     expect(await loadPublicDecks()).toEqual([]);
   });
 
-  it("loadPublicDecks trie par updated_at desc", async () => {
+  it("loadPublicDecks trie par upvote_count desc puis updated_at desc", async () => {
     const limit = vi
       .fn()
       .mockResolvedValue({ data: [{ id: "p1" }], error: null });
-    const order = vi.fn(() => ({ limit }));
+    const order = vi.fn();
+    order.mockReturnValue({ limit, order });
     const select = vi.fn(() => ({ order }));
     supabaseStub = { from: vi.fn(() => ({ select })) };
 
     const rows = await loadPublicDecks();
 
     expect(rows).toEqual([{ id: "p1" }]);
+    expect(order).toHaveBeenCalledWith("upvote_count", { ascending: false });
     expect(order).toHaveBeenCalledWith("updated_at", { ascending: false });
+  });
+
+  it("toggleDeckUpvote appelle la RPC toggle_deck_upvote", async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValue({ data: { upvoted: true, upvoteCount: 1 }, error: null });
+    supabaseStub = { rpc };
+
+    const res = await toggleDeckUpvote("deck-1");
+    expect(res).toEqual({ upvoted: true, upvoteCount: 1 });
+    expect(rpc).toHaveBeenCalledWith("toggle_deck_upvote", { p_deck_id: "deck-1" });
+  });
+
+  it("getUserUpvotedDeckIds renvoie un Set des deck_id votés", async () => {
+    const eq = vi.fn().mockResolvedValue({
+      data: [{ deck_id: "deck-1" }, { deck_id: "deck-2" }],
+      error: null,
+    });
+    const select = vi.fn(() => ({ eq }));
+    supabaseStub = { from: vi.fn(() => ({ select })) };
+
+    const ids = await getUserUpvotedDeckIds();
+    expect(ids.has("deck-1")).toBe(true);
+    expect(ids.has("deck-2")).toBe(true);
+    expect(ids.size).toBe(2);
   });
 });

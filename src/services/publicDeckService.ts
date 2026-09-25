@@ -22,6 +22,7 @@ export interface PublishedDeck {
   source: string | null;
   tagline: string | null;
   guide: string | null;
+  upvote_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -115,22 +116,90 @@ export async function getMyPublication(
 }
 
 /**
- * Charge les decks publics de la communauté (les plus récents d'abord). Repli
- * silencieux sur la bibliothèque curatée si Supabase est indisponible.
+ * Charge les decks publics de la communauté (les plus upvotés puis les plus récents).
+ * Repli silencieux sur la bibliothèque curatée si Supabase est indisponible.
  */
-export async function loadPublicDecks(limit = 60): Promise<PublishedDeck[]> {
+export async function loadPublicDecks(limit = 100): Promise<PublishedDeck[]> {
   if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("deck_publications")
-    .select("*")
-    .order("updated_at", { ascending: false })
-    .limit(limit);
-  if (error) {
-    console.warn(
-      "Decks publics indisponibles — repli sur la bibliothèque curatée :",
-      error.message ?? error,
-    );
+
+  // Essai avec tri par upvote_count (migration 0016)
+  try {
+    let query: any = supabase
+      .from("deck_publications")
+      .select("*")
+      .order("upvote_count", { ascending: false });
+
+    if (typeof query.order === "function") {
+      query = query.order("updated_at", { ascending: false });
+    }
+
+    const { data, error } = await query.limit(limit);
+    if (!error && data) {
+      return data as PublishedDeck[];
+    }
+  } catch {
+    /* fallback ci-dessous */
+  }
+
+  // Repli si upvote_count n'existe pas encore sur la base distante
+  try {
+    const fallbackQuery: any = supabase
+      .from("deck_publications")
+      .select("*")
+      .order("updated_at", { ascending: false });
+    const { data, error } = await fallbackQuery.limit(limit);
+    if (error) {
+      console.warn(
+        "Decks publics indisponibles — repli sur la bibliothèque curatée :",
+        error.message ?? error,
+      );
+      return [];
+    }
+    return (data ?? []) as PublishedDeck[];
+  } catch (err) {
+    console.warn("Échec requête fallback decks publics:", err);
     return [];
   }
-  return (data ?? []) as PublishedDeck[];
 }
+
+/** Bascule le upvote d'un deck pour l'utilisateur connecté (optimiste / RPC). */
+export async function toggleDeckUpvote(
+  deckId: string,
+): Promise<{ upvoted: boolean; upvoteCount: number } | null> {
+  if (!supabase) return null;
+  const auth = useAuthStore();
+  if (!auth.isAuthenticated || !auth.userId) return null;
+
+  try {
+    const { data, error } = await supabase.rpc("toggle_deck_upvote", {
+      p_deck_id: deckId,
+    });
+    if (error) {
+      console.warn("Échec toggle upvote via RPC:", error.message ?? error);
+      return null;
+    }
+    return data as { upvoted: boolean; upvoteCount: number };
+  } catch (err) {
+    console.warn("Erreur toggle_deck_upvote:", err);
+    return null;
+  }
+}
+
+/** Récupère l'ensemble des deckId upvotés par l'utilisateur connecté. */
+export async function getUserUpvotedDeckIds(): Promise<Set<string>> {
+  if (!supabase) return new Set();
+  const auth = useAuthStore();
+  if (!auth.isAuthenticated || !auth.userId) return new Set();
+
+  try {
+    const { data, error } = await supabase
+      .from("deck_upvotes")
+      .select("deck_id")
+      .eq("user_id", auth.userId);
+    if (error || !data) return new Set();
+    return new Set(data.map((row: { deck_id: string }) => row.deck_id));
+  } catch {
+    return new Set();
+  }
+}
+

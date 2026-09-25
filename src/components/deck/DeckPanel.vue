@@ -194,12 +194,13 @@
     >
       Cliquez des cartes à gauche pour les ajouter.
     </div>
-    <ul v-else class="max-h-[34vh] overflow-y-auto">
+    <ul v-else :class="isExpanded ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2' : 'max-h-[34vh] overflow-y-auto'">
       <DeckCardRow
         v-for="dc in mainDeckCards"
         :key="dc.card.id"
         :dc="dc"
         :spine-color="elementColor(dc.card)"
+        :is-expanded="isExpanded"
         @open-zoom="(card) => $emit('open-zoom', card)"
         @move-to-reserve="moveToReserve"
         @remove="(id) => deckStore.removeCard(id, 1)"
@@ -237,7 +238,7 @@
         ></span
       >
     </div>
-    <ul v-if="reserveDeckCards.length" class="max-h-[22vh] overflow-y-auto">
+    <ul v-if="reserveDeckCards.length" :class="isExpanded ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2' : 'max-h-[22vh] overflow-y-auto'">
       <ReserveRow
         v-for="dc in reserveDeckCards"
         :key="'r-' + dc.card.id"
@@ -366,6 +367,15 @@ const deckStore = useDeckStore();
 const cardStore = useCardStore();
 const authStore = useAuthStore();
 const toast = useToast();
+
+const props = withDefaults(
+  defineProps<{
+    isExpanded?: boolean;
+  }>(),
+  {
+    isExpanded: false,
+  },
+);
 
 defineEmits<{
   "confirm-clear": [];

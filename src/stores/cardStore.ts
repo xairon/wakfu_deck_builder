@@ -240,9 +240,9 @@ export const useCardStore = defineStore("cards", () => {
 
           const data = await response.json();
 
-          if (data && data.cards && Array.isArray(data.cards)) {
+          if (data && data.cards && Array.isArray(data.cards) && data.cards.length > 0) {
             setCards(data.cards);
-          } else {
+          } else if (cards.value.length === 0) {
             setCards([]);
           }
         }

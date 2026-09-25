@@ -1096,10 +1096,35 @@ function stringToElement(elementStr: string): Element {
   return elementMap[elementStr.toLowerCase()] || ELEMENTS.NEUTRE;
 }
 
+// Purge les caches de mémoïsation quand les critères changent
+// (side-effect placé dans un watch pour éviter l'invalidation réactive dans un computed).
+watch(
+  [
+    searchQuery,
+    selectedExtension,
+    selectedMainType,
+    selectedSubType,
+    selectedRarity,
+    selectedElement,
+    minLevel,
+    maxLevel,
+    minCost,
+    maxCost,
+    minForce,
+    maxForce,
+    effectQuery,
+    hideNotOwned,
+    ownershipFilter,
+    selectedSortField,
+    isDescending,
+  ],
+  () => {
+    pruneFilterCaches();
+  },
+);
+
 // Filtrage des cartes avec optimisation
 const filteredCollection = computed(() => {
-  // Borne les caches de mémoïsation (purge quand > 50 entrées).
-  pruneFilterCaches();
 
   // Construire l'ensemble des IDs possédés (normal + foil) pour hideNotOwned
   const ownedIds = new Set<string>(

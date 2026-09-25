@@ -2971,7 +2971,12 @@ function lethalCardNames(): string[] {
   });
 }
 const canActivateSelected = computed(() => {
-  return !!selectedInst.value;
+  const inst = selectedInst.value;
+  if (!inst) return false;
+  const card = resolveCard(inst.cardId);
+  // Le Havre-Sac n'a pas d'effet «Activer» — sa résistance est passive/automatique
+  if (card?.mainType === "Havre-Sac") return false;
+  return true;
 });
 function activateSelectedCard(): void {
   if (!selectedId.value) return;
@@ -3093,9 +3098,16 @@ function runMoreAction(fn: () => void): void {
 function millOne(): void {
   store.millTopDeck(me.value);
 }
-function onDocClick(): void {
+function onDocClick(e: MouseEvent): void {
   showMoreMenu.value = false;
   showDeckMenu.value = false;
+  // Fermer la barre d'action si le clic est en dehors de la barre et des cartes
+  if (selectedId.value) {
+    const target = e.target as Element | null;
+    if (!target?.closest(".gactionbar") && !target?.closest(".game-card")) {
+      selectedId.value = null;
+    }
+  }
 }
 onMounted(() => {
   window.addEventListener("click", onDocClick);

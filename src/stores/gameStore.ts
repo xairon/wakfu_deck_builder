@@ -2320,7 +2320,11 @@ export const useGameStore = defineStore("game", () => {
             : { faceDown: false, visibleTo: [inst.owner] },
         preservesIdentity: swap,
         orientationOnArrival:
-          dest.zone === "monde" || dest.zone === "havreSac" ? "upright" : null,
+          dest.zone === "monde" || dest.zone === "havreSac"
+            ? swap
+              ? inst.orientation // 501.5 échange Monde↔Havre-Sac : conserve l'orientation
+              : "upright"
+            : null,
       }),
     ];
     // entrée en jeu (hors échange Monde↔Havre-Sac) : tour d'arrivée, pour le

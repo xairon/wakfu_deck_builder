@@ -1,16 +1,19 @@
 <template>
   <li
     class="spine group flex items-center gap-2 border-b border-base-content/10 py-1.5 transition-colors hover:bg-base-200/40"
+    :class="isExpanded ? 'p-2 bg-base-200/30 rounded border border-base-content/15 shadow-sm' : ''"
     :style="{ '--spine': spineColor }"
     @mouseenter="preview.show(dc.card)"
     @mouseleave="preview.hide()"
   >
     <span
-      class="w-4 shrink-0 text-right font-mono text-xs sm:text-sm font-bold tabular text-base-content/70"
+      class="shrink-0 text-right font-mono font-bold tabular text-base-content/70"
+      :class="isExpanded ? 'w-5 text-sm sm:text-base' : 'w-4 text-xs sm:text-sm'"
       >{{ dc.quantity }}</span
     >
     <div
-      class="plate-frame w-7 shrink-0 cursor-pointer overflow-hidden rounded-[2px] bg-base-300 ring-1 ring-base-content/15 shadow-sm transition-transform duration-150 group-hover:scale-105 group-hover:ring-primary/50"
+      class="plate-frame shrink-0 cursor-pointer overflow-hidden rounded-[2px] bg-base-300 ring-1 ring-base-content/15 shadow-sm transition-transform duration-150 group-hover:scale-105 group-hover:ring-primary/50"
+      :class="isExpanded ? 'w-11 sm:w-12' : 'w-7'"
       :style="{ '--spine': spineColor }"
       :title="`Agrandir ${dc.card.name}`"
       @click.stop="$emit('open-zoom', dc.card)"
@@ -24,7 +27,8 @@
       />
     </div>
     <span
-      class="truncate font-display text-sm leading-tight cursor-pointer hover:text-primary transition-colors"
+      class="truncate font-display leading-tight cursor-pointer hover:text-primary transition-colors"
+      :class="isExpanded ? 'text-base font-semibold' : 'text-sm'"
       :title="dc.card.name"
       @click.stop="$emit('open-zoom', dc.card)"
       >{{ dc.card.name }}</span
@@ -36,31 +40,7 @@
     >
       {{ dc.card.mainType }} · {{ cardPa }} PA
     </span>
-    <span
-      v-if="hasMultipleEditions"
-      class="shrink-0"
-      @mouseenter="preview.hide()"
-    >
-      <select
-        class="select select-ghost select-xs h-6 min-h-0 max-w-[7.5rem] truncate font-mono text-[10px] uppercase tracking-wider"
-        :value="dc.card.id"
-        :title="`Édition : ${dc.card.extension.name}`"
-        :aria-label="`Édition de ${dc.card.name}`"
-        @change="
-          $emit(
-            'set-edition',
-            dc.card.id,
-            editions.find(
-              (e) => e.id === ($event.target as HTMLSelectElement).value,
-            )!,
-          )
-        "
-      >
-        <option v-for="e in editions" :key="e.id" :value="e.id">
-          {{ e.extension.name }}
-        </option>
-      </select>
-    </span>
+
     <span class="ml-1 flex shrink-0 items-center gap-1.5">
       <button
         class="text-base-content/40 hover:text-primary"
@@ -119,10 +99,16 @@ import ErrataBadge from "@/components/card/ErrataBadge.vue";
 const preview = useCardPreview();
 const cardStore = useCardStore();
 
-const props = defineProps<{
-  dc: DeckCard;
-  spineColor: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    dc: DeckCard;
+    spineColor: string;
+    isExpanded?: boolean;
+  }>(),
+  {
+    isExpanded: false,
+  },
+);
 
 defineEmits<{
   "move-to-reserve": [id: string];

@@ -35,6 +35,41 @@
       </div>
     </div>
 
+    <!-- Barre de recherche & Filtres -->
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-base-content/15 pb-6">
+      <div class="relative flex-1 min-w-[260px] max-w-lg">
+        <svg
+          viewBox="0 0 24 24"
+          class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path stroke-linecap="round" d="m21 21-4.35-4.35" />
+        </svg>
+        <input
+          v-model="searchQuery"
+          type="search"
+          placeholder="Rechercher un deck par nom, auteur, mot-clé…"
+          class="input input-bordered input-sm w-full pl-10"
+          aria-label="Rechercher un deck communautaire"
+        />
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="font-mono text-xs uppercase text-base-content/60">Trier par :</span>
+        <select
+          v-model="sortBy"
+          class="select select-bordered select-sm font-mono text-xs uppercase"
+          aria-label="Trier les decks communautaires"
+        >
+          <option value="upvotes">Upvotes (décroissant)</option>
+          <option value="name">Nom alphabétique</option>
+        </select>
+      </div>
+    </div>
+
     <div v-if="loading" class="border-y border-base-content/15 py-16">
       <p class="eyebrow text-center">Chargement…</p>
     </div>
@@ -136,6 +171,41 @@
           <div
             class="mt-4 flex flex-wrap items-center gap-3 border-t border-base-content/15 pt-4"
           >
+            <!-- Bouton Upvote -->
+            <button
+              class="btn btn-sm gap-1.5 transition-colors"
+              :class="
+                hasUpvoted(deck)
+                  ? 'btn-primary text-primary-content'
+                  : 'btn-outline border-base-content/25 hover:border-primary hover:text-primary'
+              "
+              :aria-label="hasUpvoted(deck) ? 'Retirer mon vote' : 'Voter pour ce deck'"
+              :title="
+                hasUpvoted(deck)
+                  ? 'Vous avez voté pour ce deck (cliquer pour retirer)'
+                  : 'Voter pour ce deck'
+              "
+              data-testid="upvote-deck-btn"
+              @click.stop="toggleUpvote(deck)"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                class="h-4 w-4"
+                :fill="hasUpvoted(deck) ? 'currentColor' : 'none'"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                />
+              </svg>
+              <span class="font-mono text-xs tabular font-bold">
+                {{ deck.upvoteCount || 0 }}
+              </span>
+            </button>
+
             <button
               class="btn btn-outline btn-sm gap-1.5"
               data-testid="preview-deck-btn"
@@ -232,10 +302,13 @@ import {
 } from "@/services/communityDeckService";
 import {
   loadPublicDecks,
+  toggleDeckUpvote,
+  getUserUpvotedDeckIds,
   type PublishedDeck,
 } from "@/services/publicDeckService";
 import { getUsernames } from "@/services/profileService";
 import { elementColors } from "@/config/elementColors";
+import { matchesSearch } from "@/utils/text";
 
 const route = useRoute();
 const router = useRouter();
@@ -249,6 +322,70 @@ const decks = ref<SourcedDeck[]>([]);
 const importing = ref(new Set<string>());
 const previewDeck = ref<SourcedDeck | null>(null);
 
+const searchQuery = ref("");
+const sortBy = ref<"upvotes" | "name">("upvotes");
+const userUpvotedDecks = ref<Set<string>>(new Set());
+
+const LOCAL_UPVOTES_KEY = "wakfu_deck_upvotes_local";
+function loadLocalUpvotes(): Set<string> {
+  try {
+    const raw = localStorage.getItem(LOCAL_UPVOTES_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+function saveLocalUpvotes(set: Set<string>) {
+  try {
+    localStorage.setItem(LOCAL_UPVOTES_KEY, JSON.stringify([...set]));
+  } catch {
+    /* quota */
+  }
+}
+
+function hasUpvoted(deck: SourcedDeck): boolean {
+  const voteId = deck.rawDeckId || deck.id;
+  return userUpvotedDecks.value.has(voteId);
+}
+
+async function toggleUpvote(deck: SourcedDeck) {
+  if (!authStore.isAuthenticated) {
+    toast.info("Connectez-vous pour voter pour ce deck.");
+    router.push({ name: "auth", query: { redirect: route.fullPath } });
+    return;
+  }
+
+  const voteId = deck.rawDeckId || deck.id;
+  const wasUpvoted = userUpvotedDecks.value.has(voteId);
+
+  // Optimistic UI update
+  if (wasUpvoted) {
+    userUpvotedDecks.value.delete(voteId);
+    deck.upvoteCount = Math.max(0, (deck.upvoteCount || 1) - 1);
+  } else {
+    userUpvotedDecks.value.add(voteId);
+    deck.upvoteCount = (deck.upvoteCount || 0) + 1;
+  }
+  saveLocalUpvotes(userUpvotedDecks.value);
+
+  const res = await toggleDeckUpvote(voteId);
+  if (res) {
+    deck.upvoteCount = res.upvoteCount;
+    if (res.upvoted) {
+      userUpvotedDecks.value.add(voteId);
+      toast.success("Vote enregistré !");
+    } else {
+      userUpvotedDecks.value.delete(voteId);
+      toast.info("Vote retiré.");
+    }
+    saveLocalUpvotes(userUpvotedDecks.value);
+  } else {
+    if (userUpvotedDecks.value.has(voteId)) {
+      toast.success("Vote enregistré !");
+    }
+  }
+}
+
 function openPreview(deck: SourcedDeck) {
   previewDeck.value = deck;
 }
@@ -258,7 +395,39 @@ function isDeckImported(name?: string): boolean {
   return deckStore.decks.some((d) => d.name === name);
 }
 
-const groups = computed(() => groupBySource(decks.value));
+const filteredDecks = computed(() => {
+  let list = decks.value;
+  const q = searchQuery.value.trim();
+  if (q) {
+    list = list.filter((d) => {
+      if (matchesSearch(d.name, q)) return true;
+      if (d.author && matchesSearch(d.author, q)) return true;
+      if (d.description && matchesSearch(d.description, q)) return true;
+      if (d.event && matchesSearch(d.event, q)) return true;
+      if (d.hero && matchesSearch(d.hero, q)) return true;
+      if (d.cards.some((c) => matchesSearch(c.name, q))) return true;
+      return false;
+    });
+  }
+
+  const sorted = [...list];
+  if (sortBy.value === "upvotes") {
+    sorted.sort((a, b) => (b.upvoteCount || 0) - (a.upvoteCount || 0));
+  } else if (sortBy.value === "name") {
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  return sorted;
+});
+
+const groups = computed(() => {
+  const grouped = groupBySource(filteredDecks.value);
+  if (sortBy.value === "upvotes") {
+    for (const g of grouped) {
+      g.decks.sort((a, b) => (b.upvoteCount || 0) - (a.upvoteCount || 0));
+    }
+  }
+  return grouped;
+});
 
 function findHero(deck: SourcedDeck) {
   if (!deck.hero) return null;
@@ -406,6 +575,8 @@ function publicToSourced(
 
   return {
     id: `pub-${pub.deck_id}-${pub.user_id.slice(0, 8)}`,
+    rawDeckId: pub.deck_id,
+    upvoteCount: pub.upvote_count ?? 0,
     name: pub.name,
     source: "Communauté",
     author: names[pub.user_id] || undefined,
@@ -419,7 +590,7 @@ function publicToSourced(
       .map((c: any) => {
         const rawId = c.cardId ?? c.card_id ?? c.id ?? c.card?.id;
         const resolved = resolveCard(rawId);
-        const name = resolved?.name ?? c.name ?? c.card?.name ?? "";
+        const name = resolved?.name ?? c.name ?? c.card?.name ?? rawId ?? "Carte inconnue";
         return {
           name,
           quantity: Number(c.quantity ?? c.count ?? 1) || 1,
@@ -434,7 +605,7 @@ function publicToSourced(
       cards: (pub.cards ?? []).map((c: any) => {
         const rawId = c.cardId ?? c.card_id ?? c.id ?? c.card?.id;
         const resolved = resolveCard(rawId);
-        const name = resolved?.name ?? c.name ?? c.card?.name ?? "";
+        const name = resolved?.name ?? c.name ?? c.card?.name ?? rawId ?? "Carte inconnue";
         return {
           cardId: rawId,
           name,
@@ -447,8 +618,21 @@ function publicToSourced(
 }
 
 onMounted(async () => {
-  await cardStore.initialize();
+  try {
+    await cardStore.initialize();
+  } catch (e) {
+    console.warn("Échec d'initialisation du cardStore:", e);
+  }
   deckStore.initialize();
+
+  // Chargement des votes de l'utilisateur
+  try {
+    const upvoted = await getUserUpvotedDeckIds();
+    userUpvotedDecks.value = new Set([...upvoted, ...loadLocalUpvotes()]);
+  } catch {
+    userUpvotedDecks.value = loadLocalUpvotes();
+  }
+
   const curated = await loadCommunityDecks();
   // Decks publiés par les joueurs (galerie communautaire dynamique). Tolérant :
   // si Supabase n'est pas joignable/déployé, on garde la bibliothèque curatée.
@@ -458,9 +642,9 @@ onMounted(async () => {
     const names = await getUsernames(rows.map((r) => r.user_id));
     published = rows
       .map((r) => publicToSourced(r, names))
-      .filter((d) => d.cards.length > 0);
-  } catch {
-    /* galerie publique indisponible */
+      .filter((d) => d.cards.length > 0 || !!d.hero);
+  } catch (err) {
+    console.warn("Galerie publique indisponible ou erreur de parsing:", err);
   }
   decks.value = [...curated, ...published];
   loading.value = false;

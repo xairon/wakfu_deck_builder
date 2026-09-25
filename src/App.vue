@@ -137,7 +137,13 @@
     <main
       id="main-content"
       v-if="!isLoading && !error && !isBackendMissing"
-      :class="isFullBleed ? '' : 'container mx-auto px-4 py-8 sm:px-6 sm:py-10'"
+      :class="
+        isFullBleed
+          ? ''
+          : isWideView
+            ? 'w-full max-w-[2400px] mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8'
+            : 'container mx-auto px-4 py-8 sm:px-6 sm:py-10'
+      "
     >
       <router-view />
     </main>
@@ -179,6 +185,9 @@ const error = computed(() => cardStore.error);
 const isSyncing = computed(() => cardStore.isSyncing);
 const isBackendMissing = computed(() => !isSupabaseConfigured());
 const isFullBleed = computed(() => route.meta.fullBleed === true);
+const isWideView = computed(() =>
+  ["newDeck", "editDeck", "collection"].includes(route.name as string),
+);
 
 const syncState = computed(() =>
   cardStore.syncState === "error" || deckStore.syncState === "error"

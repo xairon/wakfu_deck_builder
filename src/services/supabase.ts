@@ -27,3 +27,38 @@ export const supabase =
 
 /** Vrai si le backend Supabase est configuré (doit l'être en production). */
 export const isSupabaseConfigured = () => !!supabase;
+
+if (typeof window !== "undefined" && supabase) {
+  let lastCheck = 0;
+  // Maintient la session active lors du retour sur l'onglet ou du focus fenêtre
+  // pour éviter l'expiration due au throttling des timers JS par les navigateurs.
+  const refreshIfNearExpiry = async () => {
+    const nowMs = Date.now();
+    if (nowMs - lastCheck < 60_000) return;
+    lastCheck = nowMs;
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (data?.session) {
+        const expiresAt = data.session.expires_at;
+        const now = Math.floor(nowMs / 1000);
+        // Si le token expire dans moins de 15 minutes, rafraîchir proactivement
+        if (expiresAt && expiresAt - now < 900) {
+          await supabase.auth.refreshSession();
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  };
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      void refreshIfNearExpiry();
+    }
+  });
+
+  window.addEventListener("focus", () => {
+    void refreshIfNearExpiry();
+  });
+}
+

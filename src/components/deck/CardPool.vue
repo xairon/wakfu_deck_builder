@@ -85,7 +85,7 @@
 
   <template v-else>
     <div
-      class="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6"
+      class="grid grid-cols-2 gap-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 min-[1800px]:grid-cols-8 min-[2200px]:grid-cols-9"
     >
       <!-- Tuile de vivier : clic → zoom ; bouton + → ajout express -->
       <div v-for="card in visiblePool" :key="card.id" class="group relative">
@@ -174,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor as elementColorByEl } from "@/config/elementColors";
 import { useDeckStore } from "@/stores/deckStore";
@@ -274,8 +274,36 @@ const ownedIds = computed(() => {
   return ids;
 });
 
+// Réinitialise la pagination et purge le cache de mémoïsation quand les critères
+// changent — pruneFilterCaches() est un side-effect ; l'appeler dans un watch
+// (pas dans un computed) évite une double-évaluation causée par la réactivité du
+// cache useMemoize lors du clear.
+watch(
+  [
+    filterQuery,
+    filterExtension,
+    filterMainType,
+    filterSubType,
+    filterRarity,
+    filterElement,
+    filterMinLevel,
+    filterMaxLevel,
+    filterMinCost,
+    filterMaxCost,
+    filterMinForce,
+    filterMaxForce,
+    filterEffectQuery,
+    filterHideNotOwned,
+    filterSortField,
+    filterSortDesc,
+  ],
+  () => {
+    poolLimit.value = 60; // repart du début quand le filtre change
+    pruneFilterCaches();
+  },
+);
+
 const pool = computed(() => {
-  pruneFilterCaches();
   const criteria: FilterCriteria = {
     query: filterQuery.value,
     extension: filterExtension.value,

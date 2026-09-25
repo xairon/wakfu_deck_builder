@@ -45,6 +45,8 @@ export interface SourcedDeck {
   cards: SourcedDeckCard[];
   /** Présent si le deck vient de la galerie dynamique (import fidèle par IDs). */
   published?: PublishedSnapshot;
+  upvoteCount?: number;
+  rawDeckId?: string;
 }
 
 let cache: SourcedDeck[] | null = null;

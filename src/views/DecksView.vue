@@ -233,6 +233,55 @@
             </div>
           </div>
 
+          <!-- Visibilité : Switch Public / Privé -->
+          <div
+            class="shrink-0 flex items-center"
+            @click.stop
+          >
+            <button
+              type="button"
+              class="btn btn-xs gap-1 font-mono uppercase text-[10px] tracking-wider transition-all"
+              :class="
+                deck.isPublic
+                  ? 'btn-success text-success-content'
+                  : 'btn-ghost border border-base-content/20 text-base-content/60 hover:text-base-content hover:border-base-content/40'
+              "
+              :title="
+                deck.isPublic
+                  ? 'Deck public (visible dans la communauté) — cliquer pour rendre privé'
+                  : 'Deck privé — cliquer pour publier dans la communauté'
+              "
+              :aria-label="deck.isPublic ? 'Retirer de la communauté' : 'Publier dans la communauté'"
+              :disabled="togglingPublicDecks.has(deck.id)"
+              data-testid="toggle-public-deck-btn"
+              @click="toggleDeckPublic(deck)"
+            >
+              <svg
+                v-if="deck.isPublic"
+                viewBox="0 0 24 24"
+                class="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+              <svg
+                v-else
+                viewBox="0 0 24 24"
+                class="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <span class="hidden sm:inline">{{ deck.isPublic ? "Public" : "Privé" }}</span>
+            </button>
+          </div>
+
           <!-- Actions (révélées au survol) -->
           <div
             class="flex shrink-0 items-center gap-0.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
@@ -503,6 +552,7 @@ import { elementColors } from "@/config/elementColors";
 import type { Deck } from "@/types/cards";
 import { validateDeck } from "@/validators/deck";
 import { generateShareUrl } from "@/utils/deckSharing";
+import { publishDeck, unpublishDeck } from "@/services/publicDeckService";
 
 const deckStore = useDeckStore();
 const cardStore = useCardStore();
@@ -527,6 +577,41 @@ const importSummary = ref<{
 const exportedDeckText = ref("");
 const currentExportDeckId = ref("");
 const importingDecks = ref(new Set<string>());
+const togglingPublicDecks = ref<Set<string>>(new Set());
+
+async function toggleDeckPublic(deck: Deck) {
+  if (togglingPublicDecks.value.has(deck.id)) return;
+  togglingPublicDecks.value.add(deck.id);
+
+  const newStatus = !deck.isPublic;
+  try {
+    if (newStatus) {
+      const ok = await publishDeck(deck, deck.publication || {
+        tagline: deck.description || "",
+      });
+      if (ok) {
+        deck.isPublic = true;
+        deckStore.saveDecks();
+        toast.success(`« ${deck.name} » est maintenant public (visible dans la communauté).`);
+      } else {
+        toast.error("Impossible de publier le deck. Vérifiez votre connexion.");
+      }
+    } else {
+      const ok = await unpublishDeck(deck.id);
+      if (ok) {
+        deck.isPublic = false;
+        deckStore.saveDecks();
+        toast.success(`« ${deck.name} » est maintenant privé (retiré de la communauté).`);
+      } else {
+        toast.error("Impossible de retirer le deck de la communauté.");
+      }
+    }
+  } catch {
+    toast.error("Erreur lors de la mise à jour du statut public/privé.");
+  } finally {
+    togglingPublicDecks.value.delete(deck.id);
+  }
+}
 
 const decks = computed(() => deckStore.decks);
 const validCount = computed(() => decks.value.filter(isDeckValid).length);

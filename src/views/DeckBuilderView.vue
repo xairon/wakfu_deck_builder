@@ -27,18 +27,58 @@
         </h1>
       </div>
 
-      <!-- Sélecteur de deck -->
-      <select
-        v-if="decks.length > 1"
-        class="select select-bordered select-sm max-w-[14rem]"
-        :value="currentDeck?.id"
-        @change="switchDeck(($event.target as HTMLSelectElement).value)"
-        aria-label="Changer de deck"
-      >
-        <option v-for="d in decks" :key="d.id" :value="d.id">
-          {{ d.name }}
-        </option>
-      </select>
+      <div class="flex items-center gap-3">
+        <!-- Basculeur de mode d'affichage (Grand deck vs Standard) sur grand écran -->
+        <div class="hidden xl:inline-flex rounded-lg border border-base-content/20 bg-base-200/50 p-0.5 text-xs">
+          <button
+            type="button"
+            class="flex items-center gap-1.5 rounded-md px-2.5 py-1 font-mono uppercase tracking-wider transition-all"
+            :class="
+              layoutMode === 'standard'
+                ? 'bg-base-100 font-bold text-base-content shadow-sm'
+                : 'text-base-content/60 hover:text-base-content'
+            "
+            @click="setLayoutMode('standard')"
+            title="Vue standard : Vivier large à gauche, Deck volet à droite"
+          >
+            <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="11" height="16" rx="1" />
+              <rect x="16" y="4" width="5" height="16" rx="1" />
+            </svg>
+            Standard
+          </button>
+          <button
+            type="button"
+            class="flex items-center gap-1.5 rounded-md px-2.5 py-1 font-mono uppercase tracking-wider transition-all"
+            :class="
+              layoutMode === 'deck-focus'
+                ? 'bg-base-100 font-bold text-base-content shadow-sm'
+                : 'text-base-content/60 hover:text-base-content'
+            "
+            @click="setLayoutMode('deck-focus')"
+            title="Vue focus deck : Deck agrandi au centre, recherche compacte latérale"
+          >
+            <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="6" height="16" rx="1" />
+              <rect x="11" y="4" width="10" height="16" rx="1" />
+            </svg>
+            Grand Deck
+          </button>
+        </div>
+
+        <!-- Sélecteur de deck -->
+        <select
+          v-if="decks.length > 1"
+          class="select select-bordered select-sm max-w-[14rem]"
+          :value="currentDeck?.id"
+          @change="switchDeck(($event.target as HTMLSelectElement).value)"
+          aria-label="Changer de deck"
+        >
+          <option v-for="d in decks" :key="d.id" :value="d.id">
+            {{ d.name }}
+          </option>
+        </select>
+      </div>
     </header>
 
     <!-- Onglets mobile — masqués sur xl (deux volets côte à côte) -->
@@ -78,11 +118,22 @@
       </button>
     </div>
 
-    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_370px]">
+    <!-- Grille dynamique selon layoutMode -->
+    <div
+      class="grid gap-6"
+      :class="
+        layoutMode === 'deck-focus'
+          ? 'xl:grid-cols-[380px_minmax(0,1fr)] 2xl:grid-cols-[440px_minmax(0,1fr)]'
+          : 'xl:grid-cols-[minmax(0,1fr)_370px] 2xl:grid-cols-[minmax(0,1fr)_420px] 3xl:grid-cols-[minmax(0,1fr)_460px]'
+      "
+    >
       <!-- ─────────── Vivier de cartes ─────────── -->
       <section
         class="min-w-0"
-        :class="mobileTab === 'pool' ? 'block' : 'hidden xl:block'"
+        :class="[
+          mobileTab === 'pool' ? 'block' : 'hidden xl:block',
+          layoutMode === 'deck-focus' ? 'xl:order-1' : '',
+        ]"
         data-testid="pool-section"
       >
         <CardPool
@@ -96,10 +147,14 @@
       <!-- ─────────── Panneau du deck ─────────── -->
       <aside
         class="border border-base-content/15 bg-base-100 xl:sticky xl:top-20 xl:self-start xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto"
-        :class="mobileTab === 'deck' ? 'block' : 'hidden xl:block'"
+        :class="[
+          mobileTab === 'deck' ? 'block' : 'hidden xl:block',
+          layoutMode === 'deck-focus' ? 'xl:order-2' : '',
+        ]"
         data-testid="deck-aside"
       >
         <DeckPanel
+          :is-expanded="layoutMode === 'deck-focus'"
           @confirm-clear="confirmClear"
           @confirm-delete="confirmDelete"
           @add-to-deck="addToDeck"
@@ -203,6 +258,20 @@ const preview = useCardPreview();
 // ── Onglets mobile (Bestiaire / Deck) ─────────────────────────────────────────
 /** Onglet actif sous xl. Sur xl les deux volets sont toujours visibles. */
 const mobileTab = ref<"pool" | "deck">("pool");
+
+// ── Mode d'affichage bureau (standard / deck-focus) ──────────────────────────
+const LAYOUT_MODE_KEY = "wakfu_builder_layout_mode";
+const layoutMode = ref<"standard" | "deck-focus">(
+  (localStorage.getItem(LAYOUT_MODE_KEY) as "standard" | "deck-focus") || "standard",
+);
+function setLayoutMode(mode: "standard" | "deck-focus") {
+  layoutMode.value = mode;
+  try {
+    localStorage.setItem(LAYOUT_MODE_KEY, mode);
+  } catch {
+    /* ignore quota */
+  }
+}
 
 // Vrai si l'initialisation du catalogue a échoué (réseau/hors-ligne).
 const loadError = ref(false);
