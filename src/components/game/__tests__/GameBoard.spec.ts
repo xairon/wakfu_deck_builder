@@ -545,3 +545,111 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
   });
 });
 
+describe("GameBoard — Regard & Recyclage du cimetière", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
+  it("devrait ouvrir la modale Regard, ajouter des cartes et permettre de les replacer", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const me = store.perspective;
+    const initialPioche = [...store.state.seats[me].pioche];
+    expect(initialPioche.length).toBeGreaterThanOrEqual(2);
+    const topCard1 = initialPioche[0];
+    const topCard2 = initialPioche[1];
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Ouvrir le menu du deck
+    const deckSlot = wrapper.find(".gpiles__slot--deck");
+    expect(deckSlot.exists()).toBe(true);
+    await deckSlot.trigger("mouseenter");
+    await flushPromises();
+
+    const regardBtn = wrapper.find('[data-testid="action-regard"]');
+    expect(regardBtn.exists()).toBe(true);
+
+    // Déclencher Regard
+    await regardBtn.trigger("click");
+    await flushPromises();
+
+    // La modale Regard doit être ouverte
+    const modal = wrapper.find('[data-testid="regard-modal"]');
+    expect(modal.exists()).toBe(true);
+    expect(modal.text()).toContain("1 carte(s) révélée(s)");
+
+    // Bouton "+ Regarder 1 de plus"
+    const addMoreBtn = wrapper.find('[data-testid="regard-add-more"]');
+    expect(addMoreBtn.exists()).toBe(true);
+    await addMoreBtn.trigger("click");
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="regard-modal"]').text()).toContain("2 carte(s) révélée(s)");
+
+    // Tester les boutons de déplacement sur la 1ère carte : la mettre en main
+    const toMainBtn = wrapper.find(`[data-testid="regard-main-${topCard1}"]`);
+    expect(toMainBtn.exists()).toBe(true);
+    await toMainBtn.trigger("click");
+    await flushPromises();
+
+    expect(store.state.seats[me].main).toContain(topCard1);
+    expect(store.state.seats[me].pioche).not.toContain(topCard1);
+
+    // Tester sur la 2e carte : la mettre au fond de la pioche
+    const toBottomBtn = wrapper.find(`[data-testid="regard-bottom-${topCard2}"]`);
+    expect(toBottomBtn.exists()).toBe(true);
+    await toBottomBtn.trigger("click");
+    await flushPromises();
+
+    const updatedPioche = store.state.seats[me].pioche;
+    expect(updatedPioche[updatedPioche.length - 1]).toBe(topCard2);
+
+    // Fermeture de la modale
+    const closeBtn = wrapper.find('[data-testid="regard-close"]');
+    await closeBtn.trigger("click");
+    await flushPromises();
+    expect(wrapper.find('[data-testid="regard-modal"]').exists()).toBe(false);
+  });
+
+  it("devrait recycler toutes les cartes du cimetière dans le deck et le mélanger", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const me = store.perspective;
+
+    // Déplacer 3 cartes de la pioche vers la défausse
+    const card1 = store.state.seats[me].pioche[0];
+    const card2 = store.state.seats[me].pioche[1];
+    store.moveTo(card1, { zone: "defausse", owner: me });
+    store.moveTo(card2, { zone: "defausse", owner: me });
+
+    expect(store.state.seats[me].defausse.length).toBe(2);
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    const deckSlot = wrapper.find(".gpiles__slot--deck");
+    expect(deckSlot.exists()).toBe(true);
+    await deckSlot.trigger("mouseenter");
+    await flushPromises();
+
+    const recycleBtn = wrapper.find('[data-testid="action-recycle-graveyard"]');
+    expect(recycleBtn.exists()).toBe(true);
+
+    const shuffleSpy = vi.spyOn(store, "shufflePioche");
+
+    await recycleBtn.trigger("click");
+    await flushPromises();
+
+    // La défausse doit être vide
+    expect(store.state.seats[me].defausse.length).toBe(0);
+    // Les cartes doivent être remises dans la pioche
+    expect(store.state.seats[me].pioche).toContain(card1);
+    expect(store.state.seats[me].pioche).toContain(card2);
+    // shufflePioche a été appelé
+    expect(shuffleSpy).toHaveBeenCalledWith(me);
+  });
+});
+
+

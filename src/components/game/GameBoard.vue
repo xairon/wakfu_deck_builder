@@ -592,6 +592,22 @@
                   </button>
                   <button
                     class="gmore-item"
+                    data-testid="action-regard"
+                    title="Effet Regard : consulter la carte du dessus de la pioche et choisir où la placer."
+                    @click="runDeckAction(triggerRegard)"
+                  >
+                    👁️ Regard
+                  </button>
+                  <button
+                    class="gmore-item"
+                    data-testid="action-recycle-graveyard"
+                    title="Prendre toutes les cartes du cimetière (défausse), les mettre dans le deck et mélanger."
+                    @click="runDeckAction(recycleGraveyardToDeck)"
+                  >
+                    ♻️ Recycler le cimetière
+                  </button>
+                  <button
+                    class="gmore-item"
                     data-testid="action-shuffle-deck"
                     title="Mélanger ta Pioche."
                     @click="runDeckAction(() => store.shufflePioche(store.perspective))"
@@ -1840,6 +1856,119 @@
       </div>
     </div>
 
+    <!-- ════ Fenêtre Effet Regard ════ -->
+    <div
+      v-if="regardModalOpen"
+      class="gpilebrowser"
+      data-testid="regard-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Effet Regard"
+      tabindex="-1"
+      @click.self="closeRegardModal"
+      @keydown.esc.prevent="closeRegardModal"
+    >
+      <div class="gpilebrowser__panel">
+        <header class="gpilebrowser__head">
+          <h2 class="gpilebrowser__title">
+            👁️ Effet Regard
+            <span class="gpilebrowser__count"
+              >{{ regardInstances.length }} carte(s) révélée(s)</span
+            >
+          </h2>
+          <div class="flex items-center gap-2">
+            <button
+              class="gbtn gbtn--sm gbtn--accent"
+              title="Ajouter la carte suivante du dessus de la pioche dans cette fenêtre"
+              data-testid="regard-add-more"
+              @click="triggerRegard"
+            >
+              + Regarder 1 de plus
+            </button>
+            <button
+              class="gbtn gbtn--ghost"
+              aria-label="Fermer"
+              data-testid="regard-close"
+              @click="closeRegardModal"
+            >
+              ✕
+            </button>
+          </div>
+        </header>
+        <p class="gpilebrowser__hint">
+          Cartes consultées du dessus de la pioche. Choisis où replacer chaque carte (dessous ou dessus de la pioche, défausse/cimetière, main, monde ou zone bannie).
+        </p>
+        <div class="gpilebrowser__grid">
+          <div
+            v-for="(inst, idx) in regardInstances"
+            :key="inst.instanceId"
+            class="gpilebrowser__slot"
+          >
+            <div class="gpilebrowser__pos">#{{ idx + 1 }}</div>
+            <GameCard
+              :instance="inst"
+              :card="resolveCard(inst.instanceId) || resolveCard(inst.cardId)"
+              @select="zoomInst(inst.instanceId)"
+              @zoom="zoomInst(inst.instanceId)"
+            />
+            <div class="gpilebrowser__actions">
+              <button
+                class="gbtn gbtn--sm"
+                title="Replacer sur le dessus de ta Pioche"
+                :data-testid="`regard-top-${inst.instanceId}`"
+                @click="moveRegardCard(inst.instanceId, 'pioche-top')"
+              >
+                ↑ Pioche
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Replacer en dessous de ta Pioche"
+                :data-testid="`regard-bottom-${inst.instanceId}`"
+                @click="moveRegardCard(inst.instanceId, 'pioche-bottom')"
+              >
+                ↓ Pioche
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Envoyer au cimetière (Défausse)"
+                :data-testid="`regard-defausse-${inst.instanceId}`"
+                @click="moveRegardCard(inst.instanceId, 'defausse')"
+              >
+                → Cimetière
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Prendre cette carte en main"
+                :data-testid="`regard-main-${inst.instanceId}`"
+                @click="moveRegardCard(inst.instanceId, 'main')"
+              >
+                → Main
+              </button>
+              <button
+                class="gbtn gbtn--sm"
+                title="Mettre cette carte en jeu dans le Monde"
+                :data-testid="`regard-monde-${inst.instanceId}`"
+                @click="moveRegardCard(inst.instanceId, 'monde')"
+              >
+                → Monde
+              </button>
+              <button
+                class="gbtn gbtn--sm gbtn--banish"
+                title="Bannir cette carte (la placer dans la zone Bannie / Exil)"
+                :data-testid="`regard-exil-${inst.instanceId}`"
+                @click="moveRegardCard(inst.instanceId, 'exil')"
+              >
+                🚫 Bannir
+              </button>
+            </div>
+          </div>
+          <div v-if="regardInstances.length === 0" class="gpilebrowser__empty">
+            Toutes les cartes consultées ont été replacées.
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ════ F4 — Créer un jeton de créature ════ -->
     <div
       v-if="tokenDialog"
@@ -1993,11 +2122,13 @@ import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
 import { useAccessibility } from "@/composables/useAccessibility";
+import { useToast } from "@/composables/useToast";
 
 const store = useGameStore();
 const cardStore = useCardStore();
 const dnd = useBoardDnd();
 const { announce } = useAccessibility();
+const toast = useToast();
 // Barre d'actions : réf. pour piloter le focus au clavier.
 const actionbarRef = ref<HTMLElement | null>(null);
 let lastSelectedTrigger: HTMLElement | null = null;
@@ -2250,6 +2381,95 @@ function takeFromDeck(
       ? ({ zone } as const)
       : ({ zone, owner: me.value } as const);
   store.moveTo(instanceId, ref, { at: "any" });
+}
+
+// ── Effet Regard (consultation progressive du dessus du deck) ───────────────
+const regardModalOpen = ref(false);
+const regardCardIds = ref<string[]>([]);
+
+const regardInstances = computed<RedactedInstance[]>(() => {
+  return regardCardIds.value
+    .map((id) => {
+      const inst = store.state.instances[id];
+      if (!inst) return null;
+      return {
+        instanceId: id,
+        cardId: inst.cardId ?? null,
+        owner: me.value,
+        controller: me.value,
+        face: "recto",
+        orientation: null,
+        counters: inst.counters ?? {},
+        attachments: [],
+      } as RedactedInstance;
+    })
+    .filter((x): x is RedactedInstance => Boolean(x));
+});
+
+function triggerRegard(): void {
+  const pioche = store.state.seats[me.value]?.pioche ?? [];
+  const nextTopId = pioche.find((id) => !regardCardIds.value.includes(id));
+  if (!nextTopId) {
+    store.ruleError = "Aucune carte restante dans la pioche à regarder.";
+    if (!regardModalOpen.value && regardCardIds.value.length > 0) {
+      regardModalOpen.value = true;
+    }
+    return;
+  }
+  regardCardIds.value = [...regardCardIds.value, nextTopId];
+  regardModalOpen.value = true;
+  nextTick(() => {
+    (
+      document.querySelector("[data-testid=regard-modal]") as HTMLElement | null
+    )?.focus?.();
+  });
+}
+
+function closeRegardModal(): void {
+  regardModalOpen.value = false;
+}
+
+function moveRegardCard(
+  instanceId: string,
+  destination: "pioche-top" | "pioche-bottom" | "defausse" | "main" | "monde" | "exil",
+): void {
+  const seat = me.value;
+  regardCardIds.value = regardCardIds.value.filter((id) => id !== instanceId);
+  switch (destination) {
+    case "pioche-top":
+      store.moveTo(instanceId, { zone: "pioche", owner: seat }, { at: "top" });
+      break;
+    case "pioche-bottom":
+      store.moveTo(instanceId, { zone: "pioche", owner: seat }, { at: "bottom" });
+      break;
+    case "defausse":
+      store.moveTo(instanceId, { zone: "defausse", owner: seat }, { at: "any" });
+      break;
+    case "main":
+      store.moveTo(instanceId, { zone: "main", owner: seat }, { at: "any" });
+      break;
+    case "monde":
+      store.moveTo(instanceId, { zone: "monde" }, { at: "any" });
+      break;
+    case "exil":
+      store.moveTo(instanceId, { zone: "exil", owner: seat }, { at: "any" });
+      break;
+  }
+}
+
+// ── Recycler la défausse / cimetière dans le deck et mélanger ───────────────
+function recycleGraveyardToDeck(): void {
+  const seat = me.value;
+  const discard = [...(store.state.seats[seat]?.defausse ?? [])];
+  if (!discard.length) {
+    store.ruleError = "Aucune carte dans le cimetière (défausse).";
+    return;
+  }
+  for (const id of discard) {
+    store.moveTo(id, { zone: "pioche", owner: seat }, { at: "top" });
+  }
+  store.shufflePioche(seat);
+  toast.success(`Cimetière (${discard.length} carte(s)) remis dans le deck et mélangé.`);
 }
 
 // ── F2.1 — Recherche / Consultation de la Réserve ──────────────────────────
