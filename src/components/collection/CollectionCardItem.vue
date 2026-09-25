@@ -3,7 +3,7 @@
     class="card-container group relative"
     role="button"
     tabindex="0"
-    :aria-label="`${card.name} - ${card.mainType}${quantity > 0 || foilQuantity > 0 ? ', possédée: ' + (quantity + foilQuantity) : ', non possédée'}`"
+    :aria-label="`${card.name} - ${card.mainType}${quantity > 0 || foilQuantity > 0 ? ', possédée: ' + (quantity + foilQuantity) : ', non possédée'}${selectionMode ? (selected ? ', sélectionnée' : ', non sélectionnée') : ''}`"
     @click="emitCardSelect"
     @keydown.enter="emitCardSelect"
     @keydown.space.prevent="emitCardSelect"
@@ -16,10 +16,12 @@
       :class="{
         'grayscale opacity-60 hover:grayscale-0 hover:opacity-100':
           !isOwned && dimUnowned,
+        'ring-2 ring-primary ring-offset-2 ring-offset-base-100':
+          selectionMode && selected,
       }"
     >
       <!-- Illustration -->
-      <div class="relative" :class="{ sheen: foilQuantity > 0 }">
+      <div class="relative rounded-l" :class="{ sheen: foilQuantity > 0 }">
         <img
           :src="displaySrc"
           :alt="`Carte ${card?.name || 'Wakfu'} - ${card?.mainType || 'Type inconnu'}`"
@@ -45,9 +47,36 @@
              boutons de survol (h-7 + top-1 ≈ 32 px) et le tag foil. -->
         <ErrataBadge :card-id="card.id" class="absolute right-1 top-9 z-10" />
 
+        <!-- Case à cocher de sélection multiple (mode sélection actif) :
+             remplace la pastille de possession pour laisser la place. -->
+        <button
+          v-if="selectionMode"
+          type="button"
+          class="absolute left-1 top-1 z-20 grid h-6 w-6 place-items-center border-2 bg-base-100/95 transition-colors"
+          :class="
+            selected
+              ? 'border-primary bg-primary text-primary-content'
+              : 'border-base-content/50 text-transparent hover:border-base-content'
+          "
+          :aria-pressed="selected"
+          :aria-label="`${selected ? 'Désélectionner' : 'Sélectionner'} ${card.name}`"
+          @click.stop="emitToggleSelect"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="h-3.5 w-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </button>
+
         <!-- Pastille de possession / playset (permanente, lisible au tactile) -->
         <span
-          v-if="authStore.isAuthenticated && isOwned"
+          v-if="!selectionMode && authStore.isAuthenticated && isOwned"
           class="absolute left-1 top-1 z-10 border px-1 py-0.5 font-mono text-[10px] font-bold tabular"
           :class="
             playsetComplete
@@ -61,7 +90,7 @@
 
         <!-- Bouton d'ajout au deck (mode constructeur) -->
         <button
-          v-if="enableAddToDeck && isHovered"
+          v-if="enableAddToDeck && isHovered && !selectionMode"
           @click.stop="emitAddToDeck"
           class="absolute left-1 top-1 z-20 grid h-7 w-7 place-items-center border border-base-content bg-base-100 text-base-content transition-colors hover:bg-primary hover:text-primary-content"
           :aria-label="`Ajouter ${card.name} au deck`"
@@ -80,7 +109,7 @@
 
         <!-- Bouton de retournement pour les cartes héros -->
         <button
-          v-if="isHeroCard && isHovered"
+          v-if="isHeroCard && isHovered && !selectionMode"
           @click.stop="toggleCardSide"
           class="absolute right-1 top-1 z-20 grid h-7 w-7 place-items-center border border-base-content bg-base-100 text-base-content transition-colors hover:bg-primary hover:text-primary-content"
           :aria-label="showVerso ? 'Afficher le recto' : 'Afficher le verso'"
@@ -104,71 +133,13 @@
 
         <!-- Indicateur recto/verso (héros) -->
         <span
-          v-if="isHeroCard && isHovered"
+          v-if="isHeroCard && isHovered && !selectionMode"
           class="absolute bottom-1 left-1 z-20 bg-base-100/90 px-1 py-0.5 font-mono text-[10px] uppercase text-base-content"
           style="letter-spacing: 0.06em"
         >
           {{ showVerso ? "Verso" : "Recto" }}
         </span>
 
-        <!-- Contrôles de possession (visibles uniquement si authentifié) -->
-        <div
-          v-if="authStore.isAuthenticated && isHovered"
-          class="ownership-controls absolute inset-x-0 bottom-0 z-20 border-t border-base-content bg-base-100/95 p-2"
-          @click.stop
-        >
-          <!-- Normal -->
-          <div class="flex items-center justify-between gap-2">
-            <span class="eyebrow text-base-content/60">Normal</span>
-            <div class="flex items-center gap-1.5">
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
-                @click.stop="updateQuantity(-1, false)"
-                :disabled="quantity <= 0"
-                :aria-label="`Retirer un exemplaire de ${card.name}`"
-              >
-                −
-              </button>
-              <span
-                class="w-5 text-center font-mono text-sm tabular text-base-content"
-                >{{ quantity }}</span
-              >
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
-                @click.stop="updateQuantity(1, false)"
-                :aria-label="`Ajouter un exemplaire de ${card.name}`"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <!-- Foil -->
-          <div class="mt-1.5 flex items-center justify-between gap-2">
-            <span class="eyebrow text-primary">Foil</span>
-            <div class="flex items-center gap-1.5">
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
-                @click.stop="updateQuantity(-1, true)"
-                :disabled="foilQuantity <= 0"
-                :aria-label="`Retirer un exemplaire brillant de ${card.name}`"
-              >
-                −
-              </button>
-              <span
-                class="w-5 text-center font-mono text-sm tabular text-base-content"
-                >{{ foilQuantity }}</span
-              >
-              <button
-                class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
-                @click.stop="updateQuantity(1, true)"
-                :aria-label="`Ajouter un exemplaire brillant de ${card.name}`"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Cartouche mono sous la planche -->
@@ -176,6 +147,72 @@
         {{ card?.name || "Carte sans nom"
         }}<template v-if="isOwned"> ×{{ quantity + foilQuantity }}</template>
       </figcaption>
+
+      <!-- Contrôles de possession (visibles uniquement si authentifié).
+           Placés SOUS l'illustration (`top-full`, hors du cadre sheen qui la
+           recadre), pas PAR-DESSUS : au survol, le panneau prolonge le bloc
+           vers le bas au lieu de recouvrir le bas de l'image (qui semblait
+           alors « rétrécie »). `position: absolute` + le `z-index` de survol
+           sur `.card-wrapper` (CollectionGrid.vue) font que ce prolongement
+           passe par-dessus la rangée suivante sans jamais déplacer les
+           cartes voisines (le transform/absolute ne participe pas au flux). -->
+      <div
+        v-if="authStore.isAuthenticated && isHovered && !selectionMode"
+        class="ownership-controls absolute inset-x-0 top-full z-20 border-t border-base-content bg-base-100 p-2 shadow-lg"
+        @click.stop
+      >
+        <!-- Normal -->
+        <div class="flex items-center justify-between gap-2">
+          <span class="eyebrow text-base-content/60">Normal</span>
+          <div class="flex items-center gap-1.5">
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
+              @click.stop="updateQuantity(-1, false)"
+              :disabled="quantity <= 0"
+              :aria-label="`Retirer un exemplaire de ${card.name}`"
+            >
+              −
+            </button>
+            <span
+              class="w-5 text-center font-mono text-sm tabular text-base-content"
+              >{{ quantity }}</span
+            >
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
+              @click.stop="updateQuantity(1, false)"
+              :aria-label="`Ajouter un exemplaire de ${card.name}`"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <!-- Foil -->
+        <div class="mt-1.5 flex items-center justify-between gap-2">
+          <span class="eyebrow text-primary">Foil</span>
+          <div class="flex items-center gap-1.5">
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content disabled:opacity-30"
+              @click.stop="updateQuantity(-1, true)"
+              :disabled="foilQuantity <= 0"
+              :aria-label="`Retirer un exemplaire brillant de ${card.name}`"
+            >
+              −
+            </button>
+            <span
+              class="w-5 text-center font-mono text-sm tabular text-base-content"
+              >{{ foilQuantity }}</span
+            >
+            <button
+              class="grid h-6 w-6 place-items-center border border-base-content/40 font-mono text-sm leading-none text-base-content transition-colors hover:border-base-content"
+              @click.stop="updateQuantity(1, true)"
+              :aria-label="`Ajouter un exemplaire brillant de ${card.name}`"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
     </figure>
   </div>
 </template>
@@ -189,6 +226,7 @@ import { computed, ref } from "vue";
 import type { Card } from "@/types/cards";
 import { useAuthStore } from "@/stores/authStore";
 import { getThumbPath } from "@/utils/imagePaths";
+import { maxCopiesForCard } from "@/utils/cardRules";
 import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 // Définition des props
@@ -199,6 +237,10 @@ interface Props {
   enableAddToDeck: boolean;
   /** Griser les cartes non possédées (option, désactivé par défaut). */
   dimUnowned?: boolean;
+  /** Mode sélection multiple actif (affiche une case à cocher). */
+  selectionMode?: boolean;
+  /** Carte sélectionnée (pertinent seulement si `selectionMode`). */
+  selected?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -207,10 +249,8 @@ const authStore = useAuthStore();
 
 const isOwned = computed(() => props.quantity > 0 || props.foilQuantity > 0);
 
-// Playset : objectif 3 exemplaires (1 si la carte est Unique).
-const playsetTarget = computed(() =>
-  props.card.keywords?.some((k) => k.name === "Unique") ? 1 : 3,
-);
+// Playset : objectif 3 exemplaires (1 si la carte est « Unique »).
+const playsetTarget = computed(() => maxCopiesForCard(props.card));
 const ownedTotal = computed(() => props.quantity + props.foilQuantity);
 const playsetComplete = computed(() => ownedTotal.value >= playsetTarget.value);
 
@@ -224,6 +264,7 @@ const emit = defineEmits<{
   ): void;
   (e: "select-card", card: Card): void;
   (e: "add-to-deck", card: Card): void;
+  (e: "toggle-select", cardId: string): void;
 }>();
 
 // État pour la gestion des erreurs d'image et l'interactivité
@@ -308,12 +349,22 @@ function updateQuantity(change: number, isFoil: boolean) {
   emit("update-quantity", props.card.id, change, isFoil);
 }
 
-// Sélectionner une carte (pour afficher le modal)
+// Sélectionner une carte (modal de détail), ou basculer sa sélection en mode
+// sélection multiple — la carte entière devient alors la zone cliquable.
 function emitCardSelect() {
   if (!props.card) {
     return;
   }
+  if (props.selectionMode) {
+    emitToggleSelect();
+    return;
+  }
   emit("select-card", props.card);
+}
+
+function emitToggleSelect() {
+  if (!props.card?.id) return;
+  emit("toggle-select", props.card.id);
 }
 
 // Basculer entre recto et verso pour les cartes héros

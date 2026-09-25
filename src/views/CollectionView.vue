@@ -34,6 +34,35 @@
         :rarities="rarities"
         :elements="elements"
       />
+
+      <!-- Raccourci « extension entière » : marquer/vider en un clic toutes
+           les cartes de l'extension filtrée (indépendamment des autres
+           filtres actifs, pour viser TOUTE l'extension). -->
+      <div
+        v-if="isAuthenticated && selectedExtension"
+        class="flex flex-wrap items-center gap-3 border border-base-content/15 bg-base-200 px-4 py-3"
+      >
+        <p class="eyebrow min-w-[220px] flex-1">
+          « {{ selectedExtension }} » : {{ extensionOwnedCount }}/{{
+            cardsInSelectedExtension.length
+          }}
+          possédées
+        </p>
+        <button
+          class="btn btn-primary btn-sm"
+          :disabled="bulkBusy"
+          @click="confirmMarkExtensionOwned"
+        >
+          Marquer toute l'extension comme possédée
+        </button>
+        <button
+          class="btn btn-outline btn-error btn-sm"
+          :disabled="bulkBusy"
+          @click="confirmClearExtension"
+        >
+          Vider cette extension
+        </button>
+      </div>
     </div>
 
     <!-- Option d'affichage -->
@@ -59,9 +88,16 @@
       <button
         class="btn btn-outline btn-sm"
         :class="{ 'btn-active': showProgress }"
-        @click="showProgress = !showProgress"
+        @click="toggleProgress"
       >
         Progression
+      </button>
+      <button
+        class="btn btn-outline btn-sm"
+        :class="{ 'btn-active': selectionMode }"
+        @click="toggleSelectionMode"
+      >
+        Sélection multiple
       </button>
       <select
         v-model="ownershipFilter"
@@ -82,10 +118,25 @@
       </label>
     </div>
 
-    <!-- Tableau de complétion -->
+    <!-- Tableau de complétion — héberge aussi la barre de sélection multiple
+         (voir toggleSelectionMode/toggleProgress : les deux sont couplés,
+         puisque son seul point d'accès vit maintenant ici). -->
     <CollectionCompletion
       v-if="isAuthenticated && showProgress"
       class="mt-6 max-w-screen-xl mx-auto"
+      :selection-mode="selectionMode"
+      :selected-count="selectedIds.size"
+      :filtered-count="filteredCollection.length"
+      :extensions="extensions"
+      :busy="bulkBusy"
+      @select-all-page="selectAllOnPage"
+      @select-all-filtered="selectAllFiltered"
+      @select-extension="addExtensionToSelection"
+      @deselect-all="deselectAll"
+      @mark-owned="confirmSelectionMarkOwned"
+      @mark-missing="confirmSelectionMarkMissing"
+      @adjust="handleSelectionAdjust"
+      @exit="toggleSelectionMode"
     />
 
     <!-- Saisie rapide -->
@@ -94,12 +145,26 @@
     <!-- Grille de cartes virtualisée - occupe toute la largeur disponible -->
     <div class="w-full">
       <CollectionGrid
+        ref="gridRef"
         :filtered-cards="filteredCollection"
         :dim-unowned="dimUnowned && isAuthenticated"
+        :selection-mode="isAuthenticated && selectionMode"
+        :selected-ids="selectedIds"
         @update-quantity="updateCardQuantity"
         @select-card="selectCard"
+        @toggle-select="handleToggleSelect"
       />
     </div>
+
+    <!-- Confirmation stylée (actions groupées difficiles à annuler) -->
+    <ConfirmDialog
+      :open="confirmState.open"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :danger="confirmState.danger"
+      @confirm="onConfirmOk"
+      @cancel="onConfirmCancel"
+    />
 
     <!-- Modal de détail de carte -->
     <dialog
@@ -607,6 +672,9 @@ import CollectionFilters from "@/components/collection/CollectionFilters.vue";
 import CollectionGrid from "@/components/collection/CollectionGrid.vue";
 import CollectionCompletion from "@/components/collection/CollectionCompletion.vue";
 import QuickAddModal from "@/components/collection/QuickAddModal.vue";
+import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
+import { useBulkCollectionActions } from "@/composables/useBulkCollectionActions";
+import { maxCopiesForCard } from "@/utils/cardRules";
 import { highlightEffectHtml, splitEffectsAndNotes } from "@/utils/effectText";
 import {
   fetchErrata,
@@ -661,6 +729,13 @@ const showProgress = ref(false);
 const showQuickAdd = ref(false);
 const isModalOpen = ref(false);
 
+// ── Sélection multiple + actions groupées ─────────────────────────────────
+const selectionMode = ref(false);
+const selectedIds = ref<Set<string>>(new Set());
+const bulkBusy = ref(false);
+const gridRef = ref<InstanceType<typeof CollectionGrid> | null>(null);
+const bulkActions = useBulkCollectionActions();
+
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 // Ajout d'une référence pour suivre les erreurs d'image
@@ -696,6 +771,229 @@ const elements = computed(() => {
 });
 
 const extensions = computed(() => cardStore.extensions);
+
+// Cartes correspondant à la sélection multiple (ids → objets Card).
+const selectedCards = computed(() =>
+  [...selectedIds.value]
+    .map((id) => cardStore.cardIndex.get(id))
+    .filter((c): c is Card => Boolean(c)),
+);
+
+// ── Confirmation générique (actions groupées difficiles à annuler) ────────
+interface ConfirmState {
+  open: boolean;
+  title: string;
+  message: string;
+  danger: boolean;
+  onConfirm: () => void;
+}
+const confirmState = ref<ConfirmState>({
+  open: false,
+  title: "",
+  message: "",
+  danger: false,
+  onConfirm: () => {},
+});
+function openConfirm(opts: Omit<ConfirmState, "open">) {
+  confirmState.value = { open: true, ...opts };
+}
+function onConfirmOk() {
+  confirmState.value.onConfirm();
+  confirmState.value = { ...confirmState.value, open: false };
+}
+function onConfirmCancel() {
+  confirmState.value = { ...confirmState.value, open: false };
+}
+
+// ── Mode sélection multiple ────────────────────────────────────────────────
+// La barre d'actions groupées vit maintenant DANS le panneau « Progression »
+// (CollectionCompletion) : activer la sélection ouvre donc aussi ce panneau,
+// et le fermer quitte la sélection (sinon la sélection resterait active sans
+// aucun moyen d'agir dessus).
+function toggleSelectionMode() {
+  selectionMode.value = !selectionMode.value;
+  if (selectionMode.value) {
+    showProgress.value = true;
+  } else {
+    selectedIds.value = new Set();
+  }
+}
+
+function toggleProgress() {
+  showProgress.value = !showProgress.value;
+  if (!showProgress.value && selectionMode.value) {
+    selectionMode.value = false;
+    selectedIds.value = new Set();
+  }
+}
+
+function handleToggleSelect(cardId: string) {
+  const next = new Set(selectedIds.value);
+  if (next.has(cardId)) next.delete(cardId);
+  else next.add(cardId);
+  selectedIds.value = next;
+}
+
+function selectAllOnPage() {
+  const ids = gridRef.value?.currentPageCardIds ?? [];
+  const next = new Set(selectedIds.value);
+  ids.forEach((id: string) => next.add(id));
+  selectedIds.value = next;
+}
+
+function selectAllFiltered() {
+  const next = new Set(selectedIds.value);
+  filteredCollection.value.forEach((item) => next.add(item.card.id));
+  selectedIds.value = next;
+}
+
+function deselectAll() {
+  selectedIds.value = new Set();
+}
+
+/**
+ * Ajoute toutes les cartes d'une extension à la sélection (activant le mode
+ * sélection si besoin) — utilisé depuis « Progression » (par extension) et
+ * depuis le sélecteur d'extension de la barre d'actions groupées.
+ */
+function addExtensionToSelection(extensionName: string) {
+  if (!extensionName) return;
+  const ids = cardStore.cards
+    .filter((c) => c.extension?.name === extensionName)
+    .map((c) => c.id);
+  if (!ids.length) return;
+  if (!selectionMode.value) selectionMode.value = true;
+  const next = new Set(selectedIds.value);
+  ids.forEach((id) => next.add(id));
+  selectedIds.value = next;
+  toast.info(
+    `${ids.length} carte(s) de « ${extensionName} » ajoutées à la sélection.`,
+    { duration: 2000 },
+  );
+}
+
+function confirmSelectionMarkOwned() {
+  const cardsToMark = selectedCards.value;
+  if (!cardsToMark.length) return;
+  openConfirm({
+    title: "Marquer la sélection comme possédée",
+    message: `${cardsToMark.length} carte(s) seront complétées au playset (3 exemplaires, 1 si Unique). Les exemplaires déjà possédés ne sont jamais retirés.`,
+    danger: false,
+    onConfirm: async () => {
+      bulkBusy.value = true;
+      try {
+        const changed = await bulkActions.markAsOwned(cardsToMark);
+        toast.success(
+          changed > 0
+            ? `${changed} carte(s) complétée(s).`
+            : "Sélection déjà complète.",
+        );
+      } finally {
+        bulkBusy.value = false;
+      }
+    },
+  });
+}
+
+function confirmSelectionMarkMissing() {
+  const cardsToMark = selectedCards.value;
+  if (!cardsToMark.length) return;
+  openConfirm({
+    title: "Marquer la sélection comme non possédée",
+    message: `${cardsToMark.length} carte(s) seront remises à 0 exemplaire (normal et foil). Action difficile à annuler.`,
+    danger: true,
+    onConfirm: async () => {
+      bulkBusy.value = true;
+      try {
+        const changed = await bulkActions.markAsMissing(cardsToMark);
+        toast.info(
+          changed > 0
+            ? `${changed} carte(s) retirée(s) de la collection.`
+            : "Sélection déjà vide.",
+        );
+      } finally {
+        bulkBusy.value = false;
+      }
+    },
+  });
+}
+
+async function handleSelectionAdjust(delta: number, isFoil: boolean) {
+  const cardsToAdjust = selectedCards.value;
+  if (!cardsToAdjust.length) return;
+  bulkBusy.value = true;
+  try {
+    await bulkActions.adjustQuantity(cardsToAdjust, delta, isFoil);
+  } finally {
+    bulkBusy.value = false;
+  }
+}
+
+// ── Raccourci « extension entière » ────────────────────────────────────────
+const cardsInSelectedExtension = computed(() =>
+  selectedExtension.value
+    ? cardStore.cards.filter(
+        (c) => c.extension?.name === selectedExtension.value,
+      )
+    : [],
+);
+
+const extensionOwnedCount = computed(
+  () =>
+    cardsInSelectedExtension.value.filter(
+      (c) =>
+        cardStore.getCardQuantity(c.id) + cardStore.getFoilCardQuantity(c.id) >
+        0,
+    ).length,
+);
+
+function confirmMarkExtensionOwned() {
+  const cardsToMark = cardsInSelectedExtension.value;
+  if (!cardsToMark.length) return;
+  const extensionName = selectedExtension.value;
+  openConfirm({
+    title: `Marquer « ${extensionName} » comme possédée`,
+    message: `${cardsToMark.length} carte(s) de cette extension seront complétées au playset (3 exemplaires, 1 si Unique). Les exemplaires déjà possédés ne sont jamais retirés.`,
+    danger: false,
+    onConfirm: async () => {
+      bulkBusy.value = true;
+      try {
+        const changed = await bulkActions.markAsOwned(cardsToMark);
+        toast.success(
+          changed > 0
+            ? `${changed} carte(s) complétée(s) pour « ${extensionName} ».`
+            : `« ${extensionName} » déjà complète.`,
+        );
+      } finally {
+        bulkBusy.value = false;
+      }
+    },
+  });
+}
+
+function confirmClearExtension() {
+  const cardsToMark = cardsInSelectedExtension.value;
+  if (!cardsToMark.length) return;
+  const extensionName = selectedExtension.value;
+  openConfirm({
+    title: `Vider « ${extensionName} »`,
+    message: `${cardsToMark.length} carte(s) de cette extension seront remises à 0 exemplaire. Action difficile à annuler.`,
+    danger: true,
+    onConfirm: async () => {
+      bulkBusy.value = true;
+      try {
+        const changed = await bulkActions.markAsMissing(cardsToMark);
+        toast.info(
+          changed > 0
+            ? `${changed} carte(s) retirée(s) pour « ${extensionName} ».`
+            : `« ${extensionName} » déjà vide.`,
+        );
+      } finally {
+        bulkBusy.value = false;
+      }
+    },
+  });
+}
 
 // Computed properties pour les cartes sélectionnées
 const isSelectedCardHero = computed(() => {
@@ -854,10 +1152,7 @@ const filteredCollection = computed(() => {
   if (ownershipFilter.value === "missing") {
     result = result.filter((r) => r.quantity + r.foilQuantity === 0);
   } else if (ownershipFilter.value === "dupes") {
-    result = result.filter((r) => {
-      const target = r.card.keywords?.some((k) => k.name === "Unique") ? 1 : 3;
-      return r.quantity > target;
-    });
+    result = result.filter((r) => r.quantity > maxCopiesForCard(r.card));
   }
 
   return result;
