@@ -4558,13 +4558,16 @@ export const useGameStore = defineStore("game", () => {
     if (counter === "xp") {
       const currentXp = inst.counters.xp || 0;
       const nextXp = Math.max(0, currentXp + delta);
-      const currentFace: "recto" | "verso" =
-        inst.face === "verso" ? "verso" : "recto";
+      const isLevel2 = nextXp >= 6;
+      const nextFace: "recto" | "verso" = isLevel2 ? "verso" : "recto";
+      const nextLvl =
+        (inst.counters.level ?? 1) >= 3 ? inst.counters.level : isLevel2 ? 2 : 1;
       if (
         tryIntent({
           kind: "SET_LEVEL",
           instanceId,
-          face: currentFace,
+          face: nextFace,
+          level: nextLvl,
           xp: nextXp,
         })
       )
@@ -4573,8 +4576,8 @@ export const useGameStore = defineStore("game", () => {
         flipLevel(
           inst.controller,
           instanceId,
-          currentFace,
-          inst.counters.level,
+          nextFace,
+          nextLvl,
           nextXp,
         ),
       );

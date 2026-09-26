@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Résolveur d'intentions PUR (jeu + combat) — autorité partagée serveur/nav.
  * Réf. docs/superpowers/specs/2026-06-23-server-authoritative-rules-design.md.
  *
@@ -686,17 +686,24 @@ export function resolveIntent(
       if (inst.controller !== seat && inst.owner !== seat) {
         return { error: "Vous ne contrôlez pas cette carte." };
       }
-      const targetFace = intent.face ?? inst.face ?? "recto";
+      const xp = intent.xp ?? inst.counters.xp ?? 0;
+      const autoFace: "recto" | "verso" = xp >= 6 ? "verso" : "recto";
+      const autoLevel = xp >= 6 ? 2 : 1;
+      const targetFace =
+        intent.face ?? (intent.xp !== undefined ? autoFace : inst.face ?? "recto");
+      const targetLevel =
+        intent.level ??
+        (intent.xp !== undefined
+          ? autoLevel
+          : (inst.counters.level ?? (targetFace === "verso" ? 2 : 1)));
       return {
         events: [
           flipLevel(
             seat,
             intent.instanceId,
             targetFace,
-            intent.level ??
-              inst.counters.level ??
-              (targetFace === "verso" ? 2 : 1),
-            intent.xp ?? inst.counters.xp ?? 0,
+            targetLevel,
+            xp,
           ),
         ],
       };

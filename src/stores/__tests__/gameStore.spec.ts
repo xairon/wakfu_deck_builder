@@ -1,4 +1,4 @@
-﻿import { setActivePinia, createPinia } from "pinia";
+import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import type { Card, Deck } from "@/types/cards";
 import type {
@@ -1473,6 +1473,41 @@ describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
     expect(store.firstPlayer).toBe("B");
     store.togglePerspective();
     expect(store.perspective).toBe("A");
+  });
+
+  it("passe le héros au niveau 2 (verso) automatiquement à 6 XP et revient au niveau 1 (recto) en dessous", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, deck);
+    const heroId = store.state.seats.A!.heroInstanceId!;
+
+    expect(store.state.instances[heroId].counters.xp ?? 0).toBe(0);
+    expect(store.state.instances[heroId].counters.level).toBe(1);
+    expect(store.state.instances[heroId].face).toBe("recto");
+
+    // Augmenter jusqu'à 5 XP : reste niveau 1 recto
+    store.adjustCounter(heroId, "xp", 5);
+    expect(store.state.instances[heroId].counters.xp).toBe(5);
+    expect(store.state.instances[heroId].counters.level).toBe(1);
+    expect(store.state.instances[heroId].face).toBe("recto");
+
+    // Atteindre 6 XP : bascule automatiquement niveau 2 verso
+    store.adjustCounter(heroId, "xp", 1);
+    expect(store.state.instances[heroId].counters.xp).toBe(6);
+    expect(store.state.instances[heroId].counters.level).toBe(2);
+    expect(store.state.instances[heroId].face).toBe("verso");
+
+    // Monter à 7 XP : reste niveau 2 verso
+    store.adjustCounter(heroId, "xp", 1);
+    expect(store.state.instances[heroId].counters.xp).toBe(7);
+    expect(store.state.instances[heroId].counters.level).toBe(2);
+    expect(store.state.instances[heroId].face).toBe("verso");
+
+    // Redescendre à 5 XP : revient automatiquement niveau 1 recto
+    store.adjustCounter(heroId, "xp", -2);
+    expect(store.state.instances[heroId].counters.xp).toBe(5);
+    expect(store.state.instances[heroId].counters.level).toBe(1);
+    expect(store.state.instances[heroId].face).toBe("recto");
   });
 });
 

@@ -39,16 +39,38 @@ describe("SeatHud — affichage du siège", () => {
     );
   });
 
-  it("devrait émettre bump (compteur, delta) au clic sur +/−", async () => {
+  it("devrait émettre bump (compteur, delta) au clic sur +/− sauf pour NIV", async () => {
     const w = factory();
-    // 5 cellules × 2 boutons (+ puis −) : [0] = + PV, [9] = − NIV.
+    // 4 cellules avec boutons (PV, PA, PM, XP) × 2 boutons (+ puis −). NIV n'a pas de boutons.
     const btns = w.findAll(".ghud__btn");
-    expect(btns).toHaveLength(10);
+    expect(btns).toHaveLength(8);
     await btns[0].trigger("click");
-    await btns[9].trigger("click");
+    await btns[7].trigger("click");
     const bump = w.emitted("bump");
     expect(bump).toBeTruthy();
     expect(bump![0]).toEqual(["hp", 1]);
-    expect(bump![1]).toEqual(["level", -1]);
+    expect(bump![1]).toEqual(["xp", -1]);
+
+    const stats = w.findAll(".ghud__stat");
+    expect(stats[4].find(".ghud__k").text()).toBe("NIV");
+    expect(stats[4].find(".ghud__btn").exists()).toBe(false);
+  });
+
+  it("devrait passer le héros niveau 2 à >= 6 XP et niveau 1 en dessous", () => {
+    const wLow = factory({ counters: { xp: 0 } });
+    expect(wLow.findAll(".ghud__stat")[4].find(".ghud__v").text()).toBe("1");
+    expect(wLow.find(".ghud__level-badge").text()).toBe("N1");
+
+    const wThreshold = factory({ counters: { xp: 6 } });
+    expect(wThreshold.findAll(".ghud__stat")[4].find(".ghud__v").text()).toBe("2");
+    expect(wThreshold.find(".ghud__level-badge").text()).toBe("N2");
+
+    const wBack = factory({ counters: { xp: 5 } });
+    expect(wBack.findAll(".ghud__stat")[4].find(".ghud__v").text()).toBe("1");
+    expect(wBack.find(".ghud__level-badge").text()).toBe("N1");
+
+    const wHigh = factory({ counters: { xp: 18, level: 3 } });
+    expect(wHigh.findAll(".ghud__stat")[4].find(".ghud__v").text()).toBe("3");
+    expect(wHigh.find(".ghud__level-badge").text()).toBe("N3");
   });
 });

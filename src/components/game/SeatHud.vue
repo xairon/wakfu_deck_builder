@@ -15,8 +15,8 @@
       />
       <div v-else class="ghud__portrait ghud__portrait--empty"></div>
       <span v-if="active" class="ghud__ring" aria-hidden="true"></span>
-      <span v-if="counters.level" class="ghud__level-badge" title="Niveau du héros">
-        N{{ counters.level }}
+      <span v-if="effectiveLevel" class="ghud__level-badge" title="Niveau du héros">
+        N{{ effectiveLevel }}
       </span>
     </div>
     <div class="ghud__body">
@@ -43,7 +43,7 @@
           >
             <span class="ghud__k">{{ s.label }}</span>
             <span class="ghud__v">{{ s.value ?? "—" }}</span>
-            <span class="ghud__pm">
+            <span v-if="s.key !== 'level'" class="ghud__pm">
               <button
                 class="ghud__btn"
                 :aria-label="`+ ${s.label}`"
@@ -120,12 +120,18 @@ const emit = defineEmits<{
   (e: "bump", counter: string, delta: number): void;
 }>();
 
+const effectiveLevel = computed(() => {
+  if (props.counters.level && props.counters.level >= 3) return props.counters.level;
+  const xp = props.counters.xp ?? 0;
+  return xp >= 6 ? 2 : 1;
+});
+
 const stats = computed(() => [
   { key: "hp", label: "PV", value: props.counters.hp, big: true },
   { key: "pa", label: "PA", value: props.counters.pa, big: false },
   { key: "pm", label: "PM", value: props.counters.pm, big: false },
   { key: "xp", label: "XP", value: props.counters.xp, big: false },
-  { key: "level", label: "NIV", value: props.counters.level, big: false },
+  { key: "level", label: "NIV", value: effectiveLevel.value, big: false },
 ]);
 
 const ELEMENT_ORDER = ["feu", "eau", "terre", "air", "neutre"];

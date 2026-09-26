@@ -3599,7 +3599,9 @@ function heroPortrait(seat: Seat): string | null {
   const inst = heroInst(seat);
   if (!inst?.cardId) return null;
   const cleanId = inst.cardId.replace(/_(recto|verso)$/, "");
-  const faceSuffix = inst.face === "verso" ? "verso" : "recto";
+  const xp = inst.counters.xp ?? 0;
+  const isVerso = xp >= 6 ? true : (xp < 6 ? false : inst.face === "verso");
+  const faceSuffix = isVerso ? "verso" : "recto";
   return getThumbPath(`/images/cards/${cleanId}_${faceSuffix}.webp`);
 }
 function heroName(seat: Seat): string | null {
@@ -3610,16 +3612,27 @@ function heroAccent(seat: Seat): string {
   return elementColor(card?.stats?.niveau?.element);
 }
 function heroCounters(seat: Seat): CardCounters {
-  return heroInst(seat)?.counters ?? {};
+  const inst = heroInst(seat);
+  if (!inst) return {};
+  const xp = inst.counters.xp ?? 0;
+  const level =
+    (inst.counters.level ?? 1) >= 3
+      ? inst.counters.level
+      : xp >= 6
+        ? 2
+        : 1;
+  return {
+    ...inst.counters,
+    level,
+  };
 }
 function bumpHero(seat: Seat, counter: string, delta: number): void {
   const id = view.value.seats[seat]?.heroInstanceId;
   if (!id) return;
   if (counter === "level") {
-    store.toggleFlip(id);
-  } else {
-    store.adjustCounter(id, counter, delta);
+    return;
   }
+  store.adjustCounter(id, counter, delta);
 }
 /** Bonus du 2e joueur à son 1er tour : Havre-Sac ×2 Ressources (règle 2342).
  *  Disparaît dès que le bonus est CONSOMMÉ (Havre-Sac incliné / jeton d'usage),
