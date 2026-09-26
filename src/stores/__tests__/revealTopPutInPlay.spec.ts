@@ -36,7 +36,7 @@ function setup() {
     extraCards: [LVL1, LVL3],
   });
   // Top 3 de la Pioche : [Niveau 1, Niveau 3, Niveau 3].
-  const pioche = store.state.seats.A.pioche;
+  const pioche = store.state.seats.A!.pioche;
   const [t0, t1, t2] = [pioche[0], pioche[1], pioche[2]];
   store.state.instances[t0].cardId = "blop-lvl1-test";
   store.state.instances[t1].cardId = "blop-lvl3-test";
@@ -57,7 +57,7 @@ describe("revealTopPutInPlay — révèle 3, met en jeu un Niveau 1 incliné", (
     expect(store.state.instances[t0].location.zone).toBe("monde");
     expect(store.state.instances[t0].orientation).toBe("tapped");
     // Les 2 autres révélées sont recyclées SOUS la Pioche.
-    const pioche = store.state.seats.A.pioche;
+    const pioche = store.state.seats.A!.pioche;
     expect(pioche.slice(-2)).toEqual([t1, t2]);
     expect(store.effectPicking).toBeNull();
   });
@@ -69,7 +69,7 @@ describe("revealTopPutInPlay — révèle 3, met en jeu un Niveau 1 incliné", (
     expect(store.effectPicking).not.toBeNull();
     store.effectPickSkip();
 
-    const pioche = store.state.seats.A.pioche;
+    const pioche = store.state.seats.A!.pioche;
     expect(pioche.slice(-3)).toEqual([t0, t1, t2]);
     expect(store.state.instances[t0].location.zone).toBe("pioche");
     expect(store.effectPicking).toBeNull();
@@ -86,7 +86,7 @@ describe("revealTopPutInPlay — révèle 3, met en jeu un Niveau 1 incliné", (
       expect([...store.effectPickIds]).toEqual([]);
       store.effectPickSkip();
     }
-    const pioche = store.state.seats.A.pioche;
+    const pioche = store.state.seats.A!.pioche;
     expect(pioche.slice(-3)).toEqual([t0, t1, t2]);
   });
 });

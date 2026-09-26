@@ -56,8 +56,8 @@ function setup(): string {
 describe("A4 — « Le joueur de votre choix perd 1 PA » (intégration store)", () => {
   it("compile, ouvre le ciblage (les 2 Héros, embagués compris) et pose paMod −1", () => {
     const id = setup();
-    const heroA = store.state.seats.A.heroInstanceId!;
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     // Les deux Héros sont dans leur Havre-Sac (mise en place) → choisissables
     // quand même : on choisit un JOUEUR, pas une carte protégée (508.x).
     expect(store.state.instances[heroB].location.zone).toBe("havreSac");

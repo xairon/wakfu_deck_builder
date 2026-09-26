@@ -53,7 +53,7 @@ describe("activateTapPower — verrou once-per-turn (Bwork Mage)", () => {
     const src = placeInZone(store, "A", { zone: "monde" });
     store.state.instances[src].cardId = "bwork-test";
     // main vide (placeInZone a déplacé la seule carte piochée hors main)
-    expect(store.state.seats.A.main.length).toBe(0);
+    expect(store.state.seats.A!.main.length).toBe(0);
     expect(store.activateTapPower(src)).toBe(false);
     expect(counters(store, src).tokens.powerUses0 ?? 0).toBe(0);
   });

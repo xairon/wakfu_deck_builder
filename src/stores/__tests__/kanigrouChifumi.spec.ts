@@ -61,7 +61,7 @@ function setupCombat(kaniCard = "kani-test") {
   store.state.instances[atk].cardId = "atk-test";
   const kani = placeInZone(store, "B", { zone: "monde" });
   store.state.instances[kani].cardId = kaniCard;
-  const heroB = store.state.seats.B.heroInstanceId!;
+  const heroB = store.state.seats.B!.heroInstanceId!;
   // combat déclaré : atk attaque le Héros B, le Kanigrou (B) bloque atk.
   store.combat = {
     step: "blockers",
@@ -108,11 +108,11 @@ describe("Kanigrou — Chi-Fu-Mi (prévention pré-dégâts en combat)", () => {
 
   it("PERDU : le Kanigrou est détruit (auto-infligé, sans XP adverse)", () => {
     const { store, kani } = setupCombat();
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const xpA = store.state.instances[heroA].counters.xp ?? 0;
     store.combatResolve();
     store.chifumiAccept();
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     const hpB = (
       store.state.instances[heroB].counters as Record<string, number>
     ).hp;

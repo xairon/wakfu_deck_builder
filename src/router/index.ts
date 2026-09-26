@@ -60,6 +60,12 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
+      path: "/custom-card-creator",
+      name: "customCardCreator",
+      component: () => import("@/views/CustomCardCreatorView.vue"),
+      meta: { guest: true },
+    },
+    {
       path: "/profil",
       name: "profile",
       component: () => import("@/views/ProfileView.vue"),

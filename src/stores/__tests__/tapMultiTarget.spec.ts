@@ -21,7 +21,7 @@ describe("tapMultiTarget — Inclinez le même nombre (compte lié)", () => {
     const t1 = placeInZone(store, "B", { zone: "monde" });
     const t2 = placeInZone(store, "B", { zone: "monde" });
     store.draw("A", 2);
-    const handBefore = [...store.state.seats.A.main];
+    const handBefore = [...store.state.seats.A!.main];
     expect(handBefore.length).toBeGreaterThanOrEqual(2);
 
     store.enqueueEffect({
@@ -52,7 +52,7 @@ describe("tapMultiTarget — Inclinez le même nombre (compte lié)", () => {
     const { store } = makeEffectSandbox({ allAllies: true, first: "A" });
     const t1 = placeInZone(store, "B", { zone: "monde" });
     // Vider la main de A.
-    store.state.seats.A.main.splice(0, store.state.seats.A.main.length);
+    store.state.seats.A!.main.splice(0, store.state.seats.A!.main.length);
 
     store.enqueueEffect({
       seat: "A",

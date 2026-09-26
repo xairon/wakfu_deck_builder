@@ -368,7 +368,7 @@ const cardStore = useCardStore();
 const authStore = useAuthStore();
 const toast = useToast();
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     isExpanded?: boolean;
   }>(),

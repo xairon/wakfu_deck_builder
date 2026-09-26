@@ -45,11 +45,11 @@ describe("Glyphe Incandescent — inclinaison MID-COMBAT (A7, bus « tapped »)"
   it("un BLOQUEUR incliné par un effet pendant le combat subit 2 Dommages", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     store.state.turn.number = 3;
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.state.instances[heroA].counters.tokens = { glypheDamage: 1 };
     const atk = placeInZone(store, "A", { zone: "monde" });
     const blk = placeInZone(store, "B", { zone: "monde" });
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.combat = declaredCombat(atk, blk, heroB);
     // « Inclinez l'Allié de votre choix » résolu pendant la fenêtre du combat.
     store.enqueueEffect({
@@ -66,7 +66,7 @@ describe("Glyphe Incandescent — inclinaison MID-COMBAT (A7, bus « tapped »)"
   it("la même inclinaison HORS combat ne déclenche rien", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     store.state.turn.number = 3;
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.state.instances[heroA].counters.tokens = { glypheDamage: 1 };
     const cible = placeInZone(store, "B", { zone: "monde" });
     store.enqueueEffect({
@@ -82,12 +82,12 @@ describe("Glyphe Incandescent — inclinaison MID-COMBAT (A7, bus « tapped »)"
   it("une créature HORS du combat inclinée pendant un combat n'est pas touchée", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     store.state.turn.number = 3;
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.state.instances[heroA].counters.tokens = { glypheDamage: 1 };
     const atk = placeInZone(store, "A", { zone: "monde" });
     const blk = placeInZone(store, "B", { zone: "monde" });
     const spectateur = placeInZone(store, "B", { zone: "monde" });
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.combat = declaredCombat(atk, blk, heroB);
     store.enqueueEffect({
       seat: "A",
@@ -109,7 +109,7 @@ describe("Glyphe Incandescent — marqueur flottant à la mise en jeu", () => {
       extraCards: [GLYPHE],
     });
     store.state.turn.number = 3;
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const g1 = placeInZone(store, "A", { zone: "main", owner: "A" });
     store.state.instances[g1].cardId = "glyphe-test";
     store.playFromHand(g1);

@@ -275,6 +275,7 @@ const willDie = computed(
 
 const imgSrc = computed(() => {
   if (hidden.value) return "/images/card-back.webp";
+  if (props.card?.imageUrl) return props.card.imageUrl;
   const id = props.instance.cardId as string;
   const isHero = props.card?.mainType === "Héros";
   const cleanId = id.replace(/_(recto|verso)$/, "");

@@ -103,8 +103,133 @@
       </div>
     </section>
 
+    <!-- ═══════════ SÉLECTION DU MODE DE JEU (4 MODES) ═══════════ -->
+    <section class="space-y-4">
+      <div>
+        <p class="eyebrow text-primary">Modes de Jeu</p>
+        <h2 class="font-display text-2xl font-bold mt-0.5">Choisissez votre expérience de jeu</h2>
+        <p class="text-sm text-base-content/70">
+          Sélectionnez un mode ci-dessous pour configurer votre affrontement et décider d'autoriser ou non les cartes personnalisées.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Carte 1: Seul contre soi-même (Sandbox) -->
+        <div
+          class="card bg-base-200 border-2 cursor-pointer transition-all hover:scale-[1.01] p-5 flex flex-col justify-between"
+          :class="selectedGameMode === 'solo' ? 'border-accent shadow-lg shadow-accent/10 bg-accent/[0.04]' : 'border-base-content/10 hover:border-base-content/30'"
+          @click="selectedGameMode = 'solo'"
+        >
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">⚔️</span>
+              <span v-if="selectedGameMode === 'solo'" class="badge badge-accent badge-sm font-semibold">Actif</span>
+            </div>
+            <h3 class="font-display font-bold text-lg mt-3">Seul contre soi-même</h3>
+            <p class="text-xs text-base-content/70 mt-1">
+              Prenez le contrôle des deux joueurs en local pour tester vos decks, vos combos et vos stratégies librement.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
+            <label class="label cursor-pointer justify-start gap-2 p-0">
+              <input
+                v-model="customCardsAllowed.solo"
+                type="checkbox"
+                class="checkbox checkbox-xs checkbox-accent"
+              />
+              <span class="label-text text-xs">Autoriser les Custom Cards</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Carte 2: 1v1 En Ligne -->
+        <div
+          class="card bg-base-200 border-2 cursor-pointer transition-all hover:scale-[1.01] p-5 flex flex-col justify-between"
+          :class="selectedGameMode === 'online1v1' ? 'border-primary shadow-lg shadow-primary/10 bg-primary/[0.04]' : 'border-base-content/10 hover:border-base-content/30'"
+          @click="selectedGameMode = 'online1v1'"
+        >
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🌐</span>
+              <span v-if="selectedGameMode === 'online1v1'" class="badge badge-primary badge-sm font-semibold">Actif</span>
+            </div>
+            <h3 class="font-display font-bold text-lg mt-3">1v1 En Ligne</h3>
+            <p class="text-xs text-base-content/70 mt-1">
+              Affrontez un ami ou un joueur à distance en temps réel via salon public ou code d'invitation privé.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
+            <label class="label cursor-pointer justify-start gap-2 p-0">
+              <input
+                v-model="customCardsAllowed.online1v1"
+                type="checkbox"
+                class="checkbox checkbox-xs checkbox-primary"
+              />
+              <span class="label-text text-xs">Autoriser les Custom Cards</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Carte 3: 2v2 Équipes -->
+        <div
+          class="card bg-base-200 border-2 cursor-pointer transition-all hover:scale-[1.01] p-5 flex flex-col justify-between"
+          :class="selectedGameMode === 'multi2v2' ? 'border-info shadow-lg shadow-info/10 bg-info/[0.04]' : 'border-base-content/10 hover:border-base-content/30'"
+          @click="selectedGameMode = 'multi2v2'"
+        >
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">👥</span>
+              <span v-if="selectedGameMode === 'multi2v2'" class="badge badge-info badge-sm font-semibold">Actif</span>
+            </div>
+            <h3 class="font-display font-bold text-lg mt-3">2v2 En Équipe</h3>
+            <p class="text-xs text-base-content/70 mt-1">
+              Deux équipes de deux joueurs s'affrontent avec un tour croisé, partage d'XP et renforts au combat.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
+            <label class="label cursor-pointer justify-start gap-2 p-0">
+              <input
+                v-model="customCardsAllowed.multi2v2"
+                type="checkbox"
+                class="checkbox checkbox-xs checkbox-info"
+              />
+              <span class="label-text text-xs">Autoriser les Custom Cards</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Carte 4: Tutoriel d'apprentissage -->
+        <div
+          class="card bg-base-200 border-2 cursor-pointer transition-all hover:scale-[1.01] p-5 flex flex-col justify-between"
+          :class="selectedGameMode === 'tutorial' ? 'border-secondary shadow-lg shadow-secondary/10 bg-secondary/[0.04]' : 'border-base-content/10 hover:border-base-content/30'"
+          @click="selectedGameMode = 'tutorial'"
+        >
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🎓</span>
+              <span v-if="selectedGameMode === 'tutorial'" class="badge badge-secondary badge-sm font-semibold">Actif</span>
+            </div>
+            <h3 class="font-display font-bold text-lg mt-3">Tutoriel d'Apprentissage</h3>
+            <p class="text-xs text-base-content/70 mt-1">
+              Partie guidée pas à pas contre l'ordinateur avec les decks officiels d'Incarnam entièrement automatisés.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
+            <label class="label cursor-pointer justify-start gap-2 p-0">
+              <input
+                v-model="customCardsAllowed.tutorial"
+                type="checkbox"
+                class="checkbox checkbox-xs checkbox-secondary"
+              />
+              <span class="label-text text-xs">Autoriser les Custom Cards</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Apprendre en jouant (partie guidée-puis-libre contre l'IA locale) -->
-    <section class="border border-secondary/30 bg-secondary/[0.04] p-5">
+    <section v-if="selectedGameMode === 'tutorial'" class="border border-secondary/30 bg-secondary/[0.04] p-5 rounded-xl">
       <div>
         <p class="eyebrow text-secondary">Apprendre en jouant</p>
         <p class="mt-1 text-sm text-base-content/65">
@@ -164,7 +289,7 @@
     <div class="h-px w-full bg-base-content/20"></div>
 
     <section
-      v-if="ONLINE_PLAY_ENABLED"
+      v-if="ONLINE_PLAY_ENABLED && selectedGameMode === 'online1v1'"
       class="border border-primary/30 bg-primary/[0.04] p-5 rounded-xl space-y-4"
     >
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-content/10 pb-3">
@@ -310,7 +435,8 @@
     <div class="h-px w-full bg-base-content/20"></div>
 
     <section
-      class="border border-info/40 bg-info/[0.04] p-5"
+      v-if="selectedGameMode === 'multi2v2'"
+      class="border border-info/40 bg-info/[0.04] p-5 rounded-xl"
       data-testid="two-vs-two-section"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -688,7 +814,8 @@
     <div class="h-px w-full bg-base-content/20"></div>
 
     <section
-      class="border border-accent/40 bg-accent/[0.04] p-5"
+      v-if="selectedGameMode === 'solo'"
+      class="border border-accent/40 bg-accent/[0.04] p-5 rounded-xl"
       data-testid="sandbox-section"
     >
       <div>
@@ -847,10 +974,10 @@
             v-if="!store.online && store.matchPhase === 'playing'"
             class="gtop-btn gtop-btn--view"
             data-testid="topbar-toggle-perspective"
-            :title="'Vue actuelle : ' + store.players[store.perspective].name + ' (cliquer pour basculer)'"
+            :title="'Vue actuelle : ' + (store.players[store.perspective]?.name ?? store.perspective) + ' (cliquer pour basculer)'"
             @click="store.togglePerspective()"
           >
-            👁️ Vue : {{ store.players[store.perspective].name }}
+            👁️ Vue : {{ store.players[store.perspective]?.name ?? store.perspective }}
           </button>
           <span
             v-if="
@@ -1075,7 +1202,7 @@
             class="overlay__portrait"
           />
           <h2 class="mt-3 font-display text-4xl">
-            {{ store.players[store.perspective].name }}
+            {{ store.players[store.perspective]?.name ?? store.perspective }}
           </h2>
           <p class="mt-3 text-base-content/70">
             {{
@@ -1472,6 +1599,33 @@ function savePseudonym() {
 }
 const network = useNetworkStatus();
 const onlineTab = ref<"browse" | "host" | "join">("browse");
+const selectedGameMode = ref<"solo" | "online1v1" | "multi2v2" | "tutorial">("solo");
+const customCardsAllowed = ref<{
+  solo: boolean;
+  online1v1: boolean;
+  multi2v2: boolean;
+  tutorial: boolean;
+}>({
+  solo: true,
+  online1v1: true,
+  multi2v2: true,
+  tutorial: false,
+});
+
+watch(
+  () => [
+    customCardsAllowed.value.solo,
+    customCardsAllowed.value.online1v1,
+    customCardsAllowed.value.multi2v2,
+  ],
+  ([soloAllowed, onlineAllowed, multiAllowed]) => {
+    if ((soloAllowed || onlineAllowed || multiAllowed) && cardStore.customCards.length === 0) {
+      void cardStore.loadCustomCards();
+    }
+  },
+  { immediate: true },
+);
+
 const detectedInviteCode = ref<string>("");
 let unpublishLobby: (() => void) | null = null;
 // Sons de table : état muet (bouton du bandeau) — le calque GameSoundLayer

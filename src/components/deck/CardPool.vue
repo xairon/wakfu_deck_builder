@@ -39,16 +39,31 @@
     @update:effect-query="filterEffectQuery = $event"
     class="mb-4"
   />
-  <div class="mb-2 flex items-center justify-between gap-3">
-    <label class="flex cursor-pointer items-center gap-2">
-      <input
-        v-model="dimUnowned"
-        type="checkbox"
-        class="checkbox checkbox-sm checkbox-primary"
-        data-testid="dim-unowned-toggle"
-      />
-      <span class="eyebrow">Estomper les non possédées</span>
-    </label>
+  <div class="mb-2 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-4">
+      <label class="flex cursor-pointer items-center gap-2">
+        <input
+          v-model="dimUnowned"
+          type="checkbox"
+          class="checkbox checkbox-sm checkbox-primary"
+          data-testid="dim-unowned-toggle"
+        />
+        <span class="eyebrow">Estomper les non possédées</span>
+      </label>
+
+      <label class="flex cursor-pointer items-center gap-2">
+        <input
+          v-model="cardStore.includeCustomCards"
+          type="checkbox"
+          class="checkbox checkbox-sm checkbox-accent"
+          data-testid="include-custom-cards-toggle"
+        />
+        <span class="eyebrow flex items-center gap-1.5">
+          <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+          Inclure les Custom Cards
+        </span>
+      </label>
+    </div>
     <span class="font-mono text-xs tabular text-base-content/55"
       >{{ pool.length }} carte{{ pool.length > 1 ? "s" : "" }}</span
     >
@@ -179,6 +194,7 @@ import { getThumbPath } from "@/utils/imagePaths";
 import { elementColor as elementColorByEl } from "@/config/elementColors";
 import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useCardPreview } from "@/composables/useCardPreview";
 import {
   filterCards,
@@ -194,7 +210,18 @@ import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
+const authStore = useAuthStore();
 const preview = useCardPreview();
+
+watch(
+  () => cardStore.includeCustomCards,
+  (active) => {
+    if (active && cardStore.customCards.length === 0) {
+      void cardStore.loadCustomCards(authStore.user?.id);
+    }
+  },
+  { immediate: true },
+);
 
 defineProps<{
   loadError: boolean;
@@ -229,26 +256,26 @@ const poolLimit = ref(60);
 
 // ── Filter option lists ───────────────────────────────────────────────────────
 const filterExtensions = computed(() => {
-  const set = new Set(cardStore.cards.map((c) => c.extension.name));
+  const set = new Set(cardStore.allCards.map((c) => c.extension.name));
   return Array.from(set).sort();
 });
 const filterMainTypes = computed(() => {
-  const set = new Set(cardStore.cards.map((c) => c.mainType));
+  const set = new Set(cardStore.allCards.map((c) => c.mainType));
   return Array.from(set).sort();
 });
 const filterSubTypes = computed(() => {
-  const set = new Set(cardStore.cards.flatMap((c) => c.subTypes ?? []));
+  const set = new Set(cardStore.allCards.flatMap((c) => c.subTypes ?? []));
   return Array.from(set).sort();
 });
 const filterRarities = computed(() => {
-  const set = new Set(cardStore.cards.map((c) => c.rarity));
+  const set = new Set(cardStore.allCards.map((c) => c.rarity));
   return Array.from(set).sort();
 });
 const filterElements = computed(() => {
   // Valeurs telles que stockées dans les données ("Feu", "Eau"…) ; le filtre
   // est insensible à la casse (cf. filterCards), l'affichage reste capitalisé.
   const set = new Set(
-    cardStore.cards
+    cardStore.allCards
       .map(
         (c) =>
           c.element ||
@@ -321,7 +348,7 @@ const pool = computed(() => {
     hideNotOwned: filterHideNotOwned.value,
     ownedIds: ownedIds.value,
   };
-  const filtered = filterCards(cardStore.cards, criteria);
+  const filtered = filterCards(cardStore.allCards, criteria);
   return sortCards(filtered, filterSortField.value, filterSortDesc.value);
 });
 

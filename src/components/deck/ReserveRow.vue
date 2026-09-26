@@ -36,6 +36,31 @@
     >
       {{ dc.card.mainType }} · {{ cardPa }} PA
     </span>
+    <span
+      v-if="hasMultipleEditions"
+      class="shrink-0"
+      @mouseenter="preview.hide()"
+    >
+      <select
+        class="select select-ghost select-xs h-6 min-h-0 max-w-[7.5rem] truncate font-mono text-[10px] uppercase tracking-wider"
+        :value="dc.card.id"
+        :title="`Édition : ${dc.card.extension.name}`"
+        :aria-label="`Édition de ${dc.card.name}`"
+        @change="
+          $emit(
+            'set-edition',
+            dc.card.id,
+            editions.find(
+              (e) => e.id === ($event.target as HTMLSelectElement).value,
+            )!,
+          )
+        "
+      >
+        <option v-for="e in editions" :key="e.id" :value="e.id">
+          {{ e.extension.name }}
+        </option>
+      </select>
+    </span>
 
 
     <span class="ml-1 flex shrink-0 items-center gap-1.5">

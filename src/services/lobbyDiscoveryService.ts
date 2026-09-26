@@ -72,7 +72,7 @@ export function subscribeToHostedLobbies(
     const stateMap = channel.presenceState() as Record<string, HostedLobbyInfo[]>;
     const lobbies: HostedLobbyInfo[] = [];
 
-    for (const [code, items] of Object.entries(stateMap)) {
+    for (const items of Object.values(stateMap)) {
       if (items && items.length > 0) {
         const item = items[0];
         // Ne garder que les salons en attente ou prêts qui ne sont pas expirés (> 1h)

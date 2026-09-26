@@ -79,7 +79,7 @@ import { computed, ref, watch } from "vue";
 import { useGameStore } from "@/stores/gameStore";
 import type { TurnPhase } from "@/game";
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     hideEndTurn?: boolean;
     compact?: boolean;

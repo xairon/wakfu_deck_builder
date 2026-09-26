@@ -2105,7 +2105,7 @@ import type {
   Seat,
   ZoneRef,
 } from "@/game";
-import { attach, otherSeat, say } from "@/game";
+import { otherSeat } from "@/game";
 import { requiresBearer } from "@/game/rules/bearer";
 import GameCard from "./GameCard.vue";
 import AttachedEquip from "./AttachedEquip.vue";
@@ -2575,9 +2575,6 @@ onMounted(() => {
       }
 
       const bearerInst = store.state.instances[targetCardId];
-      const bearerCard =
-        store.resolveInstanceCard(targetCardId) ??
-        resolveCard(bearerInst?.cardId ?? null);
       const bearerInPlay =
         bearerInst &&
         (bearerInst.location.zone === "monde" ||
@@ -3369,7 +3366,7 @@ const activeCombatLinks = ref<CombatLink[]>([]);
 // En fin de tour ou lors du changement de tour : suppression de toutes les déclarations et animations
 watch(
   () => [store.turn.number, store.turn.active, store.turn.phase] as const,
-  ([num, active, phase], [oldNum, oldActive, oldPhase] = []) => {
+  ([num, active, phase], [oldNum, oldActive, _oldPhase] = []) => {
     if (phase === "fin" || num !== oldNum || active !== oldActive) {
       if (pendingAttackerIds.value.length > 0) {
         pendingAttackerIds.value.forEach((id) =>

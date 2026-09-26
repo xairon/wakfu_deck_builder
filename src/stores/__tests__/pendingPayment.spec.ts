@@ -41,7 +41,7 @@ describe("pendingPayment — paiement au choix du joueur", () => {
     expect(store.pendingPayment).not.toBeNull();
     expect(store.pendingPayment?.cost).toBeGreaterThan(0);
     // rien n'est joué ni incliné tant que le paiement n'est pas fait
-    expect(store.state.seats.A.main).toContain(cardId);
+    expect(store.state.seats.A!.main).toContain(cardId);
   });
 
   it("payPick du producteur choisi → LUI est incliné, la carte est jouée", () => {
@@ -55,7 +55,7 @@ describe("pendingPayment — paiement au choix du joueur", () => {
     ].slice(0, cost);
     for (const id of picks) store.payPick(id);
     expect(store.pendingPayment).toBeNull();
-    expect(store.state.seats.A.main).not.toContain(cardId);
+    expect(store.state.seats.A!.main).not.toContain(cardId);
     expect(store.state.instances[producer].orientation).toBe("tapped");
   });
 
@@ -67,7 +67,7 @@ describe("pendingPayment — paiement au choix du joueur", () => {
     expect(store.pendingPayment?.chosen).toEqual([]);
     store.payCancel();
     expect(store.pendingPayment).toBeNull();
-    expect(store.state.seats.A.main).toContain(cardId);
+    expect(store.state.seats.A!.main).toContain(cardId);
     expect(store.state.instances[producer].orientation).toBe("upright");
   });
 
@@ -76,7 +76,7 @@ describe("pendingPayment — paiement au choix du joueur", () => {
     store.playFromHand(cardId);
     expect(store.payAuto()).toBe(true);
     expect(store.pendingPayment).toBeNull();
-    expect(store.state.seats.A.main).not.toContain(cardId);
+    expect(store.state.seats.A!.main).not.toContain(cardId);
   });
 
   it("clic sur une carte non productrice → refus, l'invite reste ouverte", () => {

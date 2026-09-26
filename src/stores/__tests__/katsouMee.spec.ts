@@ -72,7 +72,7 @@ function setup(nProducers: number) {
     const id = placeInZone(store, "A", { zone: "monde" });
     store.state.instances[id].cardId = p.id;
   }
-  const heroB = store.state.seats.B.heroInstanceId!;
+  const heroB = store.state.seats.B!.heroInstanceId!;
   return { store, katsouId, heroB };
 }
 
@@ -141,7 +141,7 @@ describe("Fin de tour — déclenchés de mort du balayage (A10)", () => {
     store.state.turn.number = 3;
     const id = placeInZone(store, "A", { zone: "monde" });
     store.state.instances[id].cardId = "martyr-test";
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     // Héros amputé pour rendre le regain observable.
     store.adjustCounter(heroA, "hp", -3);
     const hpBefore = store.state.instances[heroA].counters.hp!;

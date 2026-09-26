@@ -78,7 +78,7 @@ function setup() {
 describe("Guma Bobeule — bonus des pouvoirs d'Alliés", () => {
   it("activer Guma pose le jeton sur le Héros ; le pouvoir du Sniper inflige 1+1", () => {
     const { store, gumaId, sniperId, targetId } = setup();
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
 
     expect(store.activateTapPower(gumaId)).toBe(true);
     expect(store.state.instances[heroA].counters.tokens?.teamPowerDmgMod).toBe(
@@ -92,7 +92,7 @@ describe("Guma Bobeule — bonus des pouvoirs d'Alliés", () => {
 
   it("CUMULATIF : deux activations (jeton 2) → 1 Dommage devient 3", () => {
     const { store, gumaId, sniperId, targetId } = setup();
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.activateTapPower(gumaId);
     // seconde Guma simulée : re-pose du jeton via une seconde frame
     store.enqueueEffect({
@@ -131,7 +131,7 @@ describe("Guma Bobeule — bonus des pouvoirs d'Alliés", () => {
 
   it("PURGE : le jeton disparaît en fin de tour", () => {
     const { store, gumaId } = setup();
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.activateTapPower(gumaId);
     expect(store.state.instances[heroA].counters.tokens?.teamPowerDmgMod).toBe(
       1,

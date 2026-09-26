@@ -64,8 +64,8 @@ describe("gameStore — Mode Entraînement Solo (Sandbox / Hot-seat)", () => {
       isSandbox: true,
     });
 
-    const initialHandA = [...store.state.seats.A.main];
-    const initialHandB = [...store.state.seats.B.main];
+    const initialHandA = [...store.state.seats.A!.main];
+    const initialHandB = [...store.state.seats.B!.main];
     expect(initialHandA.length).toBe(6);
     expect(initialHandB.length).toBe(6);
 
@@ -74,31 +74,31 @@ describe("gameStore — Mode Entraînement Solo (Sandbox / Hot-seat)", () => {
     expect(store.mulliganCount("A")).toBe(1);
     expect(store.perspective).toBe("A");
     expect(store.mulliganSeat).toBe("A");
-    expect(store.state.seats.A.main.length).toBe(6);
+    expect(store.state.seats.A!.main.length).toBe(6);
     // La main de B est restée intacte
-    expect(store.state.seats.B.main).toEqual(initialHandB);
+    expect(store.state.seats.B!.main).toEqual(initialHandB);
 
     // 2. Deuxième mulligan de Joueur A (5 cartes)
     store.mulligan("A");
     expect(store.mulliganCount("A")).toBe(2);
-    expect(store.state.seats.A.main.length).toBe(5);
-    expect(store.state.seats.B.main).toEqual(initialHandB);
+    expect(store.state.seats.A!.main.length).toBe(5);
+    expect(store.state.seats.B!.main).toEqual(initialHandB);
 
     // Joueur A garde sa main
     store.keepHand();
     expect(store.mulliganSeat).toBe("B");
     expect(store.perspective).toBe("B");
 
-    const handABeforeMulliganB = [...store.state.seats.A.main];
+    const handABeforeMulliganB = [...store.state.seats.A!.main];
 
     // 3. Mulligan gratuit de Joueur B (6 cartes)
     store.mulligan("B");
     expect(store.mulliganCount("B")).toBe(1);
     expect(store.perspective).toBe("B");
     expect(store.mulliganSeat).toBe("B");
-    expect(store.state.seats.B.main.length).toBe(6);
+    expect(store.state.seats.B!.main.length).toBe(6);
     // La main de A est restée intacte
-    expect(store.state.seats.A.main).toEqual(handABeforeMulliganB);
+    expect(store.state.seats.A!.main).toEqual(handABeforeMulliganB);
 
     // Joueur B garde sa main → début de la partie
     store.keepHand();
@@ -174,7 +174,7 @@ describe("gameStore — Mode Entraînement Solo (Sandbox / Hot-seat)", () => {
     store.keepHand();
 
     // Récupérer une carte de l'adversaire (Joueur B) depuis sa main
-    const oppCardId = store.state.seats.B.main[0];
+    const oppCardId = store.state.seats.B!.main[0];
     expect(oppCardId).toBeDefined();
 
     // 1. Déplacer la carte adverse vers le Monde (terrain)
@@ -184,22 +184,22 @@ describe("gameStore — Mode Entraînement Solo (Sandbox / Hot-seat)", () => {
     // 2. Déplacer la carte adverse vers la Défausse (Cimetière) de B
     store.moveTo(oppCardId, { zone: "defausse", owner: "B" });
     expect(store.state.instances[oppCardId]?.location).toEqual({ zone: "defausse", owner: "B" });
-    expect(store.state.seats.B.defausse).toContain(oppCardId);
+    expect(store.state.seats.B!.defausse).toContain(oppCardId);
 
     // 3. Déplacer la carte adverse vers la Zone Bannie (Exil) de B
     store.moveTo(oppCardId, { zone: "exil", owner: "B" });
     expect(store.state.instances[oppCardId]?.location).toEqual({ zone: "exil", owner: "B" });
-    expect(store.state.seats.B.exil).toContain(oppCardId);
+    expect(store.state.seats.B!.exil).toContain(oppCardId);
 
     // 4. Déplacer la carte adverse vers la Pioche (Deck) de B
     store.moveTo(oppCardId, { zone: "pioche", owner: "B" }, { at: "top" });
     expect(store.state.instances[oppCardId]?.location).toEqual({ zone: "pioche", owner: "B" });
-    expect(store.state.seats.B.pioche).toContain(oppCardId);
+    expect(store.state.seats.B!.pioche).toContain(oppCardId);
 
     // 5. Déplacer la carte adverse vers la Main de B
     store.moveTo(oppCardId, { zone: "main", owner: "B" });
     expect(store.state.instances[oppCardId]?.location).toEqual({ zone: "main", owner: "B" });
-    expect(store.state.seats.B.main).toContain(oppCardId);
+    expect(store.state.seats.B!.main).toContain(oppCardId);
 
     // 6. Déplacer la carte adverse vers le Havre-Sac de B
     store.moveTo(oppCardId, { zone: "havreSac", owner: "B" });

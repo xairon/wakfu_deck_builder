@@ -98,7 +98,7 @@ describe("Guy Yomtella — coût composé Incliner + 1 Ressource Air", () => {
     const eligible = [...store.effectTargetIdsList];
     expect(eligible).toContain(piouId!);
     expect(eligible).not.toContain(guyId); // inclinée → ne produit plus
-    expect(eligible).not.toContain(store.state.seats.A.heroInstanceId!); // Feu
+    expect(eligible).not.toContain(store.state.seats.A!.heroInstanceId!); // Feu
     store.effectTargetChoose(piouId!);
     expect(store.state.instances[piouId!].orientation).toBe("tapped");
     // corps : damageTarget (Allié seul) — la cible adverse subit 1 Dommage Air

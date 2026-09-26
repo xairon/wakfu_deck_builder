@@ -121,7 +121,7 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
     // B déclare l'attaque sur le Havre-Sac de A.
     store.perspective = "B";
     expect(store.beginCombat(atkId)).toBe(true);
-    store.combatChooseTarget(store.state.seats.A.havreSacInstanceId!);
+    store.combatChooseTarget(store.state.seats.A!.havreSacInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true); // → step blockers
     // Vue rendue au défenseur (comme en solo pendant l'attaque du bot).
     store.perspective = "A";
@@ -146,7 +146,7 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
 
   it("le défenseur peut ACTIVER un pouvoir pendant l'attaque adverse", () => {
     const { store } = setupBAttacksA();
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     // Le Héros de A active « inflige 2 Dommages » en réaction (cible = attaquant B).
     expect(store.activateTapPower(heroA)).toBe(true);
     expect(store.ruleError).toBeNull();
@@ -182,7 +182,7 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
     store.nextTurn(); // 2 (B)
     store.nextTurn(); // 3 (A) — A attaque
     store.perspective = "A";
-    const sacB = store.state.seats.B.havreSacInstanceId!;
+    const sacB = store.state.seats.B!.havreSacInstanceId!;
     // Résistance RÉELLE (5) : sans elle, un coup fantôme bannissait le Havre-Sac
     // et le reset des compteurs masquait le bug (resBefore == 0 == 0 après). Avec
     // 5, tout Dommage encaissé la ferait chuter → le test mord vraiment.
@@ -195,7 +195,7 @@ describe("Fenêtre de réaction — le défenseur agit pendant l'attaque adverse
 
     // B réagit : son Héros inflige 2 Dommages à l'attaquant Force 1 → il meurt.
     store.perspective = "B";
-    expect(store.activateTapPower(store.state.seats.B.heroInstanceId!)).toBe(
+    expect(store.activateTapPower(store.state.seats.B!.heroInstanceId!)).toBe(
       true,
     );
     store.effectTargetChoose(atkId); // cible = l'attaquant de A

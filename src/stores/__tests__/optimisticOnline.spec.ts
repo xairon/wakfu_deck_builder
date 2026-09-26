@@ -41,7 +41,7 @@ describe("Optimistic UI en ligne", () => {
     store.connectOnline("g-opt", "A", transport);
     for (const ev of events) emit!(ev);
 
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     const initialDamage = store.state.instances[heroId].counters.damage ?? 0;
     expect(initialDamage).toBe(0);
 
@@ -57,10 +57,11 @@ describe("Optimistic UI en ligne", () => {
     emit!({
       gameId: "g-opt",
       seq: lastSeq + 1,
+      parentSeq: lastSeq,
       actor: "A",
       type: "INC_COUNTER",
       payload: { instanceId: heroId, counter: "damage", delta: 3 },
-      timestamp: new Date().toISOString(),
+      ts: Date.now(),
     });
 
     // Réconciliation : l'action optimiste est consommée et la valeur reste à 3 (aucun doublon à 6)
@@ -99,7 +100,7 @@ describe("Optimistic UI en ligne", () => {
     store.connectOnline("g-opt-err", "A", transport);
     for (const ev of events) emit!(ev);
 
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     expect(store.state.instances[heroId].counters.damage ?? 0).toBe(0);
 
     // Ajustement de compteur
@@ -145,7 +146,7 @@ describe("Optimistic UI en ligne", () => {
     store.connectOnline("g-opt-move", "A", transport);
     for (const ev of events) emit!(ev);
 
-    const cardInDeck = store.state.seats.A.pioche[0];
+    const cardInDeck = store.state.seats.A!.pioche[0];
     expect(store.state.instances[cardInDeck].location.zone).toBe("pioche");
 
     // Déplacement vers la Défausse
@@ -191,10 +192,11 @@ describe("Optimistic UI en ligne", () => {
     emit!({
       gameId: "g-opt-mull",
       seq: seq1,
+      parentSeq: seq1 - 1,
       actor: "A",
       type: "SHUFFLE",
       payload: { zone: { zone: "pioche", owner: "A" }, permutation: [] },
-      timestamp: new Date().toISOString(),
+      ts: Date.now(),
     });
     expect(store.mulliganCount("A")).toBe(1);
 
@@ -203,10 +205,11 @@ describe("Optimistic UI en ligne", () => {
     emit!({
       gameId: "g-opt-mull",
       seq: seq2,
+      parentSeq: seq2 - 1,
       actor: "A",
       type: "SHUFFLE",
       payload: { zone: { zone: "pioche", owner: "A" }, permutation: [] },
-      timestamp: new Date().toISOString(),
+      ts: Date.now(),
     });
     expect(store.mulliganCount("A")).toBe(2);
   });
@@ -242,7 +245,7 @@ describe("Optimistic UI en ligne", () => {
     store.connectOnline("g-opt-ctrl", "A", transport);
     for (const ev of events) emit!(ev);
 
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.transferControl(heroA, "B");
     await new Promise((r) => setTimeout(r, 0));
 
@@ -289,10 +292,11 @@ describe("Optimistic UI en ligne", () => {
     emit!({
       gameId: "g-partie-1",
       seq: seq1,
+      parentSeq: seq1 - 1,
       actor: "A",
       type: "MULLIGAN_DONE",
       payload: { seat: "A" },
-      timestamp: new Date().toISOString(),
+      ts: Date.now(),
     });
     expect(store.mulliganDone.A).toBe(true);
 
@@ -319,7 +323,7 @@ describe("Optimistic UI en ligne", () => {
 
   it("gère endTurn en ligne : bloque le double-clic (endTurnPending) et ignore l'erreur 'Ce n'est pas votre tour.'", async () => {
     let emit: ((e: PersistedEvent) => void) | null = null;
-    let submittedIntents: any[] = [];
+    const submittedIntents: any[] = [];
     let shouldFailWithTurnError = false;
 
     const transport = {

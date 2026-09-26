@@ -16,6 +16,7 @@ import type {
   GameOverPayload,
   GameState,
   PersistedEvent,
+  PlayerBoard,
   Position,
   RedactedEvent,
   RedactedGameState,
@@ -202,6 +203,7 @@ export interface OnlineTransport {
     onPresence?: (present: boolean) => void,
     onOpponentTarget?: (targetId: string | null) => void,
     onPlayerName?: (seat: Seat, name: string) => void,
+    onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
   ): () => void;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
   /**
@@ -339,7 +341,7 @@ export const useGameStore = defineStore("game", () => {
   const matchPhase = ref<MatchPhase>("lobby");
   const mode = ref<"1v1" | "2v2">("1v1");
   const eliminatedSeats = ref<Seat[]>([]);
-  const players = ref<Record<Seat, { name: string }>>({
+  const players = ref<Partial<Record<Seat, { name: string }>>>({
     A: { name: "Joueur 1" },
     B: { name: "Joueur 2" },
     A1: { name: "Joueur 1 (Équipe 1)" },
@@ -417,7 +419,8 @@ export const useGameStore = defineStore("game", () => {
               ...draft,
               gameId: gameId.value,
               seq: base.seq + 1,
-              timestamp: new Date().toISOString(),
+              parentSeq: base.seq,
+              ts: Date.now(),
             } as PersistedEvent);
           } catch {
             // Ignorer si un draft optimiste ne peut être appliqué
@@ -645,6 +648,25 @@ export const useGameStore = defineStore("game", () => {
       winner.value = w;
       matchPhase.value = "finished";
     }
+  }
+
+  const EMPTY_BOARD: PlayerBoard = {
+    seat: "A",
+    pioche: [],
+    main: [],
+    havreSac: [],
+    defausse: [],
+    reserve: [],
+    exil: [],
+    limbo: [],
+  };
+
+  function boardOf(seat: Seat): PlayerBoard {
+    return state.value.seats[seat] ?? EMPTY_BOARD;
+  }
+
+  function playerName(seat: Seat): string {
+    return players.value[seat]?.name ?? seat;
   }
 
   function heroOf(seat: Seat) {
@@ -1405,8 +1427,8 @@ export const useGameStore = defineStore("game", () => {
     }
     if ((activeDecks.value.A || activeDecks.value.B) && state.value) {
       populateInstanceCardMap(
-        activeDecks.value.A,
-        activeDecks.value.B,
+        activeDecks.value.A ?? null,
+        activeDecks.value.B ?? null,
         state.value,
       );
       if (instanceCardMap.has(instanceId)) {
@@ -1551,9 +1573,7 @@ export const useGameStore = defineStore("game", () => {
       state.value.turn.firstPlayer = seat;
       state.value.turn.active = seat;
     }
-    const gc = events.value.find(
-      (e) => e.type === "GAME_CREATED" || e.type === "GAME_STARTED",
-    );
+    const gc = events.value.find((e) => e.type === "GAME_STARTED");
     if (gc && gc.payload) {
       if ((gc.payload as any).firstPlayer) {
         (gc.payload as any).firstPlayer = seat;
@@ -1630,7 +1650,7 @@ export const useGameStore = defineStore("game", () => {
       mulliganSeat.value = seat;
     }
     const count = mulliganCounts.value[seat] ?? 0;
-    const hand = [...state.value.seats[seat].main];
+    const hand = [...boardOf(seat).main];
     const target =
       count === 0 ? Math.max(6, hand.length) : Math.max(0, hand.length - 1);
     mulliganCounts.value[seat] = count + 1;
@@ -1641,7 +1661,7 @@ export const useGameStore = defineStore("game", () => {
     }
 
     // 2. Calculer le pool complet et mélanger avec une graine aléatoire
-    const piocheRest = state.value.seats[seat].pioche.filter(
+    const piocheRest = boardOf(seat).pioche.filter(
       (id) => !hand.includes(id),
     );
     const pool = [...hand, ...piocheRest];
@@ -1741,7 +1761,7 @@ export const useGameStore = defineStore("game", () => {
           if (
             atom.orElse === "destroySelf" &&
             first?.op === "recycleFromDiscard" &&
-            !state.value.seats[seat].defausse.some((id) =>
+            !boardOf(seat).defausse.some((id) =>
               matchesPickFilter(
                 getCard(state.value.instances[id]?.cardId ?? null),
                 first.element ? { element: first.element } : undefined,
@@ -1843,7 +1863,7 @@ export const useGameStore = defineStore("game", () => {
       return;
     }
     // 4873 : on ne passe pas la main avec un excédent — défausse d'abord
-    if (assist.value && state.value.seats[active].main.length > paOf(active)) {
+    if (assist.value && boardOf(active).main.length > paOf(active)) {
       engine.enforceHandLimit(active);
       rejectMove("Main pleine : défausse l'excédent avant de finir le tour.");
       return;
@@ -1864,7 +1884,7 @@ export const useGameStore = defineStore("game", () => {
     }
     if (tryIntent({ kind: "END_TURN" })) return;
     endTurnPending.value = false;
-    const need = paOf(active) - state.value.seats[active].main.length;
+    const need = paOf(active) - boardOf(active).main.length;
     if (need > 0) draw(active, need);
     nextTurn();
     // En LOCAL (hot-seat) : on bascule la perspective vers le nouveau joueur
@@ -1899,7 +1919,7 @@ export const useGameStore = defineStore("game", () => {
       void onlineTransport?.concede?.(gameId.value);
       return;
     }
-    dispatch(say(seat, `${players.value[seat].name} abandonne la partie.`));
+    dispatch(say(seat, `${playerName(seat)} abandonne la partie.`));
     winner.value = otherSeat(seat);
     matchPhase.value = "finished";
   }
@@ -2018,7 +2038,7 @@ export const useGameStore = defineStore("game", () => {
   // ── Verbes exposés au plateau ─────────────────────────────────────────────
   /** 507.5 — Pioche vide : la Défausse est remélangée pour former une nouvelle Pioche. */
   function reshuffleDiscardIntoDeck(seat: Seat): void {
-    const discard = [...state.value.seats[seat].defausse];
+    const discard = [...boardOf(seat).defausse];
     if (!discard.length) return;
     for (const id of discard)
       moveTo(id, { zone: "pioche", owner: seat }, { at: "top" });
@@ -2033,12 +2053,12 @@ export const useGameStore = defineStore("game", () => {
 
   function draw(seat: Seat = perspective.value, n = 1): void {
     if (
-      !state.value.seats[seat].pioche.length &&
-      state.value.seats[seat].defausse.length
+      !boardOf(seat).pioche.length &&
+      boardOf(seat).defausse.length
     ) {
       reshuffleDiscardIntoDeck(seat);
     }
-    const pioche = [...state.value.seats[seat].pioche];
+    const pioche = [...boardOf(seat).pioche];
     for (let i = 0; i < n && i < pioche.length; i++) {
       const topId = pioche[i];
       if (topId) moveTo(topId, { zone: "main", owner: seat });
@@ -2609,7 +2629,7 @@ export const useGameStore = defineStore("game", () => {
     if (online.value || !assistEffects.value) return null;
     if (combat.value?.reactingSeat || pendingResolution.value) return null; // pas d'imbrication
     const opp = otherSeat(seat);
-    for (const id of state.value.seats[opp].main) {
+    for (const id of boardOf(opp).main) {
       if (isCancelCard(getCard(state.value.instances[id]?.cardId ?? null)))
         return id;
     }
@@ -2643,7 +2663,7 @@ export const useGameStore = defineStore("game", () => {
       dispatch(
         say(
           seat,
-          `${cardName} : ${players.value[otherSeat(seat)].name} peut jouer Échec Critique pour en annuler les effets (ou passer).`,
+          `${cardName} : ${playerName(otherSeat(seat))} peut jouer Échec Critique pour en annuler les effets (ou passer).`,
         ),
       );
       return;
@@ -3314,14 +3334,14 @@ export const useGameStore = defineStore("game", () => {
       drafts.push(
         say(
           seat,
-          `${players.value[seat].name} incline ${tappedCount} carte(s) pour payer ${card.name}.`,
+          `${playerName(seat)} incline ${tappedCount} carte(s) pour payer ${card.name}.`,
         ),
       );
     }
     // 2342 : le bonus de doublement du Havre-Sac est à USAGE UNIQUE par tour —
     // dès qu'il est incliné pour payer, on pose un jeton pour qu'il ne se
     // redouble pas s'il est redressé à la main ensuite (RES-1).
-    const sacId = state.value.seats[seat].havreSacInstanceId;
+    const sacId = boardOf(seat).havreSacInstanceId;
     if (
       sacId &&
       seat !== firstPlayer.value &&
@@ -3345,7 +3365,7 @@ export const useGameStore = defineStore("game", () => {
     // ÉCRASÉ à CHAQUE jeu (1 si la carte jouée est Quête/Parchemin, 0 sinon →
     // stricte récence), purgé en début de tour. Lu par le gate d'activation
     // (recentlyPlayedQuestParch).
-    const recentHeroId = state.value.seats[seat].heroInstanceId;
+    const recentHeroId = boardOf(seat).heroInstanceId;
     if (recentHeroId) {
       const isQuestParch = (card.subTypes ?? []).some((s) => {
         const n = normWord(s);
@@ -3433,7 +3453,7 @@ export const useGameStore = defineStore("game", () => {
     isAssist: () => assist.value,
     isAssistEffects: () => assistEffects.value,
     getMatchPhase: () => matchPhase.value,
-    playerName: (s) => players.value[s].name,
+    playerName: (s) => playerName(s),
     paOf,
     dispatch,
     moveTo,
@@ -3680,20 +3700,20 @@ export const useGameStore = defineStore("game", () => {
       if (
         firstOp?.op === "costDiscard" &&
         !firstOp.max &&
-        state.value.seats[seat].main.length < (firstOp.n ?? 1)
+        boardOf(seat).main.length < (firstOp.n ?? 1)
       )
         return rejectMove(
-          "Pas assez de cartes en main pour payer le coût de défausse.",
-        );
-      // COÛT DE MILL impayable (Pioche insuffisante) : refuser AVANT de consommer
-      // le verrou once-per-turn — même garde que le coût de défausse imposé.
-      if (
-        firstOp?.op === "costMillTop" &&
-        state.value.seats[seat].pioche.length < firstOp.n
-      )
+           "Pas assez de cartes en main pour payer le coût de défausse.",
+         );
+       // COÛT DE MILL impayable (Pioche insuffisante) : refuser AVANT de consommer
+       // le verrou once-per-turn — même garde que le coût de défausse imposé.
+       if (
+         firstOp?.op === "costMillTop" &&
+         boardOf(seat).pioche.length < firstOp.n
+       )
         return rejectMove(
-          "Pas assez de cartes dans la Pioche pour payer le coût.",
-        );
+           "Pas assez de cartes dans la Pioche pour payer le coût.",
+         );
       // COÛT DE RESSOURCE impayable (Guy Yomtella pwr0 « [Incliner], [Air] : … » ;
       // pwr1 « [Air][Air] : … » = DEUX coûts en tête) : refuser AVANT de consommer
       // l'inclinaison (tapsSource). On compte les costTapResource EN TÊTE (séquence)
@@ -4335,7 +4355,7 @@ export const useGameStore = defineStore("game", () => {
           payload: { zone: { zone: "pioche", owner: s }, permutation: [] },
         });
 
-        await onlineTransport.submit(gid, say(s, `🔄 ${players.value[s].name} a réinitialisé sa table et son deck.`));
+        await onlineTransport.submit(gid, say(s, `🔄 ${playerName(s)} a réinitialisé sa table et son deck.`));
       } catch (e) {
         ruleError.value = `Erreur réinitialisation : ${String(e)}`;
       }
@@ -4420,7 +4440,7 @@ export const useGameStore = defineStore("game", () => {
       payload: { zone: { zone: "pioche", owner: s }, permutation: [] },
     });
 
-    drafts.push(say("system", `🔄 ${players.value[s].name} a réinitialisé sa table et son deck.`));
+    drafts.push(say("system", `🔄 ${playerName(s)} a réinitialisé sa table et son deck.`));
 
     dispatch(...drafts);
   }
@@ -4806,7 +4826,7 @@ export const useGameStore = defineStore("game", () => {
     if (!canReactInCombat(seat)) return false;
     const ctx = rulesCtx();
     // une Action de la main jouable en réaction (légalité de tour relâchée) ?
-    for (const id of state.value.seats[seat].main)
+    for (const id of boardOf(seat).main)
       if (whyCannotPlay(ctx, seat, id, true) === null) return true;
     // …ou un pouvoir à inclinaison activable et NON gaspillé (cible utile) ?
     for (const inst of Object.values(state.value.instances)) {
@@ -5495,7 +5515,7 @@ export const useGameStore = defineStore("game", () => {
     dispatch(
       say(
         perspective.value,
-        `${players.value[perspective.value].name} fabrique ${card.name} — Recette : ${recette.metier}, ${recette.n} carte(s) ${recette.element} (418.6).`,
+        `${playerName(perspective.value)} fabrique ${card.name} — Recette : ${recette.metier}, ${recette.n} carte(s) ${recette.element} (418.6).`,
       ),
     );
     engine.enqueueEffect({
@@ -5521,7 +5541,7 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function shufflePioche(seat: Seat = perspective.value): void {
-    const size = state.value.seats[seat].pioche.length;
+    const size = boardOf(seat).pioche.length;
     if (size < 2) return;
     dispatch(
       shuffleVerb(seat, { zone: "pioche", owner: seat }, size, rndSeed()),

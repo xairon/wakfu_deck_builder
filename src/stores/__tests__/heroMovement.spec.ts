@@ -43,7 +43,7 @@ describe("gameStore — moveHero (mouvement du Héros, 414.1)", () => {
     const store = useGameStore();
     store.startSandbox(a.deck, b.deck, "B"); // B commence → tour 1 = B
     store.endTurn(); // → tour 2, actif A
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     expect(store.state.instances[heroId].location.zone).toBe("havreSac");
 
     store.moveHero("A", "monde");
@@ -61,7 +61,7 @@ describe("gameStore — moveHero (mouvement du Héros, 414.1)", () => {
     useCardStore().cards = [...a.cards, ...b.cards];
     const store = useGameStore();
     store.startSandbox(a.deck, b.deck, "A"); // A commence → tour 1 = A
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     store.ruleError = null;
     store.moveHero("A", "monde");
     expect(store.state.instances[heroId].location.zone).toBe("havreSac");
@@ -77,7 +77,7 @@ describe("gameStore — moveHero (mouvement du Héros, 414.1)", () => {
     store.endTurn(); // → tour 2, actif A
     store.perspective = "A";
     // Allié de A dans son Havre-Sac (dressé).
-    const allyId = store.state.seats.A.pioche.find(
+    const allyId = store.state.seats.A!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "A-ally",
     )!;
     store.moveTo(allyId, { zone: "havreSac", owner: "A" });
@@ -98,7 +98,7 @@ describe("gameStore — moveHero (mouvement du Héros, 414.1)", () => {
     store.startSandbox(a.deck, b.deck, "B");
     store.endTurn(); // tour 2, actif A
     store.perspective = "A";
-    const allyId = store.state.seats.A.pioche.find(
+    const allyId = store.state.seats.A!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "A-ally",
     )!;
     store.moveTo(allyId, { zone: "monde" });

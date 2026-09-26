@@ -79,7 +79,7 @@ describe("coût sacrificeSelf sur source INCLINÉE (E4)", () => {
     store.toggleTap(sacId);
     expect(store.state.instances[sacId].orientation).toBe("tapped");
 
-    const heroAId = store.state.seats.A.heroInstanceId!;
+    const heroAId = store.state.seats.A!.heroInstanceId!;
     store.adjustCounter(heroAId, "hp", -3);
     const hpBefore = store.state.instances[heroAId].counters.hp ?? 0;
     store.perspective = "A";

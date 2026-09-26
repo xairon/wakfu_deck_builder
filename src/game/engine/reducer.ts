@@ -49,6 +49,7 @@ export function getZoneArray(s: GameState, ref: ZoneRef): InstanceId[] {
     return ref.zone === "monde" ? s.monde : s.fileAttente;
   }
   const b = s.seats[ref.owner];
+  if (!b) return [];
   switch (ref.zone) {
     case "pioche":
       return b.pioche;

@@ -212,6 +212,7 @@ const navItems = computed(() => {
     { to: "/", label: "Accueil", match: ["/"] },
     { to: "/collection", label: "Collection", match: ["/collection"] },
     { to: "/decks", label: "Decks", match: ["/decks", "/deck"] },
+    { to: "/custom-card-creator", label: "Créateur", match: ["/custom-card-creator"] },
     { to: "/play/table", label: "Partie", match: ["/play"] },
     { to: "/regles", label: "Règles", match: ["/regles"] },
     { to: "/errata", label: "Errata", match: ["/errata"] },

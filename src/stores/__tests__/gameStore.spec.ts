@@ -1264,9 +1264,9 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     expect(store.continuedMatch).toBe(true);
 
     // Les actions normales (piocher, ajuster des compteurs, jouer) sont de nouveau autorisées
-    const initCards = store.state.seats[me].main.length;
+    const initCards = store.state.seats[me]!.main.length;
     store.draw(me);
-    expect(store.state.seats[me].main.length).toBe(initCards + 1);
+    expect(store.state.seats[me]!.main.length).toBe(initCards + 1);
   });
 
   it("resetTableAndDeck : Havre-Sac dans le Socle (monde) avec résistance max et exclusion de la Réserve", async () => {
@@ -1289,7 +1289,7 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
 
     store.startMatch(deckA, deckA);
     const me = store.mySeat;
-    const sacId = store.state.seats[me].havreSacInstanceId!;
+    const sacId = store.state.seats[me]!.havreSacInstanceId!;
     const sacInst = store.state.instances[sacId];
 
     // Simuler des dégâts sur le Havre-Sac et orientation inclinée
@@ -1299,7 +1299,7 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     expect(sacInst.location.zone).toBe("monde");
 
     // Trouver la carte en réserve
-    const resId = store.state.seats[me].reserve[0];
+    const resId = store.state.seats[me]!.reserve[0];
     expect(resId).toBeTruthy();
     expect(store.state.instances[resId].location.zone).toBe("reserve");
 
@@ -1313,8 +1313,8 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
 
     // 2. La carte en réserve ne doit en aucun cas avoir bougé dans la pioche
     expect(store.state.instances[resId].location.zone).toBe("reserve");
-    expect(store.state.seats[me].reserve).toContain(resId);
-    expect(store.state.seats[me].pioche).not.toContain(resId);
+    expect(store.state.seats[me]!.reserve).toContain(resId);
+    expect(store.state.seats[me]!.pioche).not.toContain(resId);
 
     // 3. Déplacer l'Havre-Sac hors du Socle (ex: dans la défausse) puis réinitialiser
     store.moveTo(sacId, { zone: "defausse", owner: me });
@@ -1343,7 +1343,7 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     const seatB: Seat = "B";
 
     // Poser une carte dans le Monde pour le joueur A
-    const cardId = store.state.seats[seatA].pioche[0];
+    const cardId = store.state.seats[seatA]!.pioche[0];
     expect(cardId).toBeTruthy();
     store.moveTo(cardId, { zone: "monde" });
     const inst = store.state.instances[cardId];
@@ -1373,8 +1373,8 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     expect(finalInst.location.zone).toBe("defausse");
     expect((finalInst.location as { owner?: Seat }).owner).toBe(seatA);
     expect(finalInst.controller).toBe(seatA);
-    expect(store.state.seats[seatA].defausse).toContain(cardId);
-    expect(store.state.seats[seatB].defausse).not.toContain(cardId);
+    expect(store.state.seats[seatA]!.defausse).toContain(cardId);
+    expect(store.state.seats[seatB]!.defausse).not.toContain(cardId);
   });
 });
 
@@ -1391,7 +1391,7 @@ describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
         owner: "A",
         controller: "A",
         location: { zone: "main", owner: "A" },
-        face: "up",
+        face: "recto",
         orientation: "upright",
         counters: {},
         attachments: [],
@@ -1403,15 +1403,15 @@ describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
         owner: "B",
         controller: "B",
         location: { zone: "main", owner: "B" },
-        face: "up",
+        face: "recto",
         orientation: "upright",
         counters: {},
         attachments: [],
         revealedTo: ["B"],
       },
     };
-    base.seats.A.main = ["cA1"];
-    base.seats.B.main = ["cB1"];
+    base.seats.A!.main = ["cA1"];
+    base.seats.B!.main = ["cB1"];
 
     return {
       gameId: "g",
@@ -1436,7 +1436,7 @@ describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
     store.applyServerEvent(startedWithHands(1));
 
     expect(store.perspective).toBe("A");
-    expect(store.view.seats.A.main.kind).toBe("full");
+    expect(store.view.seats.A!.main.kind).toBe("full");
 
     // Le joueur A gagne l'initiative et choisit de jouer 2e (donc le 1er joueur est B)
     store.setFirstPlayer("B");
@@ -1446,9 +1446,9 @@ describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
     expect(store.mySeat).toBe("A");
 
     // La main de A reste visible (kind: full)
-    expect(store.view.seats.A.main.kind).toBe("full");
-    if (store.view.seats.A.main.kind === "full") {
-      expect(store.view.seats.A.main.instances.length).toBe(1);
+    expect(store.view.seats.A!.main.kind).toBe("full");
+    if (store.view.seats.A!.main.kind === "full") {
+      expect(store.view.seats.A!.main.instances.length).toBe(1);
     }
 
     // Le premier joueur et le joueur actif au Tour 1 sont B

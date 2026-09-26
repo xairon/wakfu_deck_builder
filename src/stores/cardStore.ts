@@ -17,6 +17,10 @@ import {
   saveCollectionToCloud,
   deleteCollectionEntryFromCloud,
 } from "@/services/cloudSync";
+import {
+  getCustomCardsByUser,
+  searchPublicCustomCards,
+} from "@/services/customCardService";
 
 function isValidCollection(
   payload: unknown,
@@ -43,12 +47,24 @@ export interface CollectionCard {
 export const useCardStore = defineStore("cards", () => {
   // État
   const cards = shallowRef<Card[]>([]);
+  const customCards = ref<Card[]>([]);
+  const includeCustomCards = ref<boolean>(false);
+
+  // Toutes les cartes actives selon le filtre includeCustomCards
+  const allCards = computed(() => {
+    if (!includeCustomCards.value || customCards.value.length === 0) {
+      return cards.value;
+    }
+    return [...cards.value, ...customCards.value];
+  });
+
   // Index id→Card mémoïsé : évite des Array.find O(n) sur ~1585 cartes dans les
-  // chemins chauds (getCardById, exportCollection, résolution de decks). Recalculé
-  // seulement quand `cards` est réassigné (shallowRef).
+  // chemins chauds (getCardById, exportCollection, résolution de decks).
+  // Inclut aussi les cartes custom pour résolution transparente dans les decks et le moteur.
   const cardIndex = computed(() => {
     const map = new Map<string, Card>();
     for (const card of cards.value) map.set(card.id, card);
+    for (const card of customCards.value) map.set(card.id, card);
     return map;
   });
   // Index clé-canonique → impressions, mémoïsé (évite un filtre O(n) par ligne
@@ -594,11 +610,40 @@ export const useCardStore = defineStore("cards", () => {
   // Fonction de réinitialisation du store
   function reset() {
     cards.value = [];
+    customCards.value = [];
     isInitialized.value = false;
     initializationAttempts.value = 0;
     error.value = null;
     loading.value = false;
     initPromise = null;
+  }
+
+  async function loadCustomCards(userId?: string) {
+    try {
+      const publicCards = await searchPublicCustomCards();
+      const userCards = userId ? await getCustomCardsByUser(userId) : [];
+      
+      const map = new Map<string, Card>();
+      for (const r of publicCards) map.set(r.id, r.card_data);
+      for (const r of userCards) map.set(r.id, r.card_data);
+
+      customCards.value = Array.from(map.values());
+    } catch (err) {
+      console.warn("[cardStore] Erreur chargement cartes custom:", err);
+    }
+  }
+
+  function addCustomCard(card: Card) {
+    const existingIdx = customCards.value.findIndex((c) => c.id === card.id);
+    if (existingIdx !== -1) {
+      customCards.value[existingIdx] = card;
+    } else {
+      customCards.value.push(card);
+    }
+  }
+
+  function setIncludeCustomCards(val: boolean) {
+    includeCustomCards.value = val;
   }
 
   async function importCollection(data: CollectionCard[]) {
@@ -694,6 +739,9 @@ export const useCardStore = defineStore("cards", () => {
   return {
     // État
     cards,
+    customCards,
+    includeCustomCards,
+    allCards,
     cardIndex,
     printingsIndex,
     printingsOf,
@@ -734,6 +782,9 @@ export const useCardStore = defineStore("cards", () => {
     saveToLocalStorage,
     isCardOwned,
     getTotalCardQuantity,
+    loadCustomCards,
+    addCustomCard,
+    setIncludeCustomCards,
     // Exposés utilitaires
     setCards,
     updateCollection: (payload: unknown) => {

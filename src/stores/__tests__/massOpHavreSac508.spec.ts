@@ -105,7 +105,7 @@ describe("Ops de masse — portée 508 (P0-3)", () => {
 
     // A active le pouvoir de balayage.
     store.perspective = "A";
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     expect(store.activateTapPower(heroA)).toBe(true);
 
     // 508 : le Monde encaisse 2 ; le Havre-Sac adverse est hors de portée.
