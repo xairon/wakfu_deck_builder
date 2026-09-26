@@ -164,6 +164,18 @@ export function omniscientView(state: GameState): RedactedGameState {
   });
   const board = (seat: Seat): RedactedBoard => {
     const b = state.seats[seat];
+    if (!b) {
+      const emptyZone: RedactedZone = { kind: "full", instances: [] };
+      return {
+        seat,
+        pioche: emptyZone,
+        main: emptyZone,
+        havreSac: emptyZone,
+        defausse: emptyZone,
+        reserve: null,
+        exil: emptyZone,
+      };
+    }
     return {
       seat,
       pioche: reveal(b.pioche),

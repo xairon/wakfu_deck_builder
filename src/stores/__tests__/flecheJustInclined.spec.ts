@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vague W71 (store) — la confirmation d'attaque pose `justInclined` sur les
  * attaquants qui s'inclinent, ET réinitialise les marques précédentes (Flèche
  * d'Immolation « qui vient de s'incliner »).
@@ -60,7 +60,7 @@ describe("Flèche — justInclined posé à la déclaration + réinitialisé", (
     const stale = placeInZone(store, "A", { zone: "monde" });
     // marque périmée (d'une déclaration antérieure) à effacer.
     store.state.instances[stale].counters.tokens = { justInclined: 1 };
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.combat = inProgressCombat([atk], heroB);
 
     expect(store.combatConfirmAttackers()).toBe(true);

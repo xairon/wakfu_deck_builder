@@ -47,7 +47,7 @@ describe("GameBoard — rendu", () => {
     });
     store.startSandbox(deck, deck);
     const me = store.perspective;
-    const sacId = store.state.seats[me].havreSacInstanceId!;
+    const sacId = store.state.seats[me]!.havreSacInstanceId!;
     const initialRes = store.state.instances[sacId]?.counters.resistance ?? 15;
 
     const wrapper = mount(GameBoard, {
@@ -75,8 +75,8 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
     store.assist = true;
     const me = store.perspective;
     // startSandbox ne distribue pas de main d'ouverture : on pioche une carte.
-    if (store.state.seats[me].main.length === 0) store.draw(me);
-    const handId = store.state.seats[me].main[0];
+    if (store.state.seats[me]!.main.length === 0) store.draw(me);
+    const handId = store.state.seats[me]!.main[0];
     expect(handId).toBeTruthy();
 
     const playSpy = vi.spyOn(store, "playFromHand");
@@ -104,8 +104,8 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
     store.startSandbox(createMockDeck(), createMockDeck());
     store.assist = true;
     const me = store.perspective;
-    if (store.state.seats[me].main.length === 0) store.draw(me);
-    const handId = store.state.seats[me].main[0];
+    if (store.state.seats[me]!.main.length === 0) store.draw(me);
+    const handId = store.state.seats[me]!.main[0];
     expect(handId).toBeTruthy();
 
     const playSpy = vi.spyOn(store, "playFromHand");
@@ -131,8 +131,8 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
     store.startSandbox(createMockDeck(), createMockDeck());
     store.assist = true;
     const me = store.perspective;
-    if (store.state.seats[me].main.length === 0) store.draw(me);
-    const handId = store.state.seats[me].main[0];
+    if (store.state.seats[me]!.main.length === 0) store.draw(me);
+    const handId = store.state.seats[me]!.main[0];
     expect(handId).toBeTruthy();
 
     const wrapper = mount(GameBoard, {
@@ -177,8 +177,8 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
     store.assist = true;
     const me = store.perspective;
     store.draw(me);
-    const handId = store.state.seats[me].main[0];
-    const heroId = store.state.seats[me].heroInstanceId!;
+    const handId = store.state.seats[me]!.main[0];
+    const heroId = store.state.seats[me]!.heroInstanceId!;
     expect(handId).toBeTruthy();
     expect(heroId).toBeTruthy();
 
@@ -204,8 +204,8 @@ describe("GameBoard — jouer depuis la main (clavier/clic, P3.6)", () => {
   it("en fin de tour, toutes les déclarations d'attaquants, de bloqueurs et leurs animations sont supprimées", async () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck(), "A");
-    const heroA = store.state.seats.A.heroInstanceId!;
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
 
     // Déclarer heroA comme attaquant ciblant heroB
     store.setCardCombatState(heroA, "attacking", heroB);
@@ -249,7 +249,7 @@ describe("GameBoard — mouvement du Héros (414.1 / 508.x)", () => {
     store.startSandbox(createMockDeck(), createMockDeck(), "B"); // B commence
     store.endTurn(); // → tour 2, actif/perspective A (sortie autorisée)
     const me = store.perspective;
-    const heroId = store.state.seats[me].heroInstanceId!;
+    const heroId = store.state.seats[me]!.heroInstanceId!;
     expect(store.state.instances[heroId].location.zone).toBe("havreSac");
 
     const wrapper = mount(GameBoard, {
@@ -275,7 +275,7 @@ describe("GameBoard — mouvement du Héros (414.1 / 508.x)", () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck(), "A"); // A commence → tour 1
     const me = store.perspective;
-    const heroId = store.state.seats[me].heroInstanceId!;
+    const heroId = store.state.seats[me]!.heroInstanceId!;
 
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
@@ -335,7 +335,7 @@ describe("GameBoard — Level Up du Héros", () => {
     const deck = createMockDeck();
     store.startSandbox(deck, createMockDeck());
     const me = store.perspective;
-    const heroId = store.state.seats[me].heroInstanceId!;
+    const heroId = store.state.seats[me]!.heroInstanceId!;
 
     const cardStore = useCardStore();
     if (deck.hero) cardStore.cards = [deck.hero];
@@ -362,8 +362,8 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck());
     const me = store.perspective;
-    const initialPioche = store.state.seats[me].pioche.length;
-    const topCardId = store.state.seats[me].pioche[0];
+    const initialPioche = store.state.seats[me]!.pioche.length;
+    const topCardId = store.state.seats[me]!.pioche[0];
 
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
@@ -381,8 +381,8 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
 
     // Exécute l'action Mill
     await millBtn.trigger("click");
-    expect(store.state.seats[me].pioche.length).toBe(initialPioche - 1);
-    expect(store.state.seats[me].defausse).toContain(topCardId);
+    expect(store.state.seats[me]!.pioche.length).toBe(initialPioche - 1);
+    expect(store.state.seats[me]!.defausse).toContain(topCardId);
   });
 
   it("affiche bien la dernière carte défaussée au-dessus de la pile de défausse", async () => {
@@ -390,14 +390,14 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     store.startSandbox(createMockDeck(), createMockDeck());
     const me = store.perspective;
 
-    const card1 = store.state.seats[me].main[0];
-    const card2 = store.state.seats[me].main[1];
+    const card1 = store.state.seats[me]!.main[0];
+    const card2 = store.state.seats[me]!.main[1];
 
     store.moveTo(card1, { zone: "defausse", owner: me });
-    expect(store.state.seats[me].defausse[0]).toBe(card1);
+    expect(store.state.seats[me]!.defausse[0]).toBe(card1);
 
     store.moveTo(card2, { zone: "defausse", owner: me });
-    expect(store.state.seats[me].defausse[0]).toBe(card2);
+    expect(store.state.seats[me]!.defausse[0]).toBe(card2);
 
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
@@ -413,10 +413,10 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     const me = store.perspective;
 
     // Déplacer une carte vers la défausse
-    const cardId = store.state.seats[me].pioche[0];
+    const cardId = store.state.seats[me]!.pioche[0];
     store.moveTo(cardId, { zone: "defausse", owner: me });
-    expect(store.state.seats[me].defausse).toContain(cardId);
-    expect(store.state.seats[me].exil).not.toContain(cardId);
+    expect(store.state.seats[me]!.defausse).toContain(cardId);
+    expect(store.state.seats[me]!.exil).not.toContain(cardId);
 
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
@@ -443,8 +443,8 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     await flushPromises();
 
     // La carte doit être dans l'exil et plus dans la défausse
-    expect(store.state.seats[me].exil).toContain(cardId);
-    expect(store.state.seats[me].defausse).not.toContain(cardId);
+    expect(store.state.seats[me]!.exil).toContain(cardId);
+    expect(store.state.seats[me]!.defausse).not.toContain(cardId);
   });
 
   it("permet de bannir une carte depuis la défausse adverse vers l'exil adverse", async () => {
@@ -452,10 +452,10 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     store.startSandbox(createMockDeck(), createMockDeck());
     const opp = store.perspective === "A" ? "B" : "A";
 
-    const oppCardId = store.state.seats[opp].pioche[0];
+    const oppCardId = store.state.seats[opp]!.pioche[0];
     store.moveTo(oppCardId, { zone: "defausse", owner: opp });
-    expect(store.state.seats[opp].defausse).toContain(oppCardId);
-    expect(store.state.seats[opp].exil).not.toContain(oppCardId);
+    expect(store.state.seats[opp]!.defausse).toContain(oppCardId);
+    expect(store.state.seats[opp]!.exil).not.toContain(oppCardId);
 
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
@@ -481,8 +481,8 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     await banishBtn.trigger("click");
     await flushPromises();
 
-    expect(store.state.seats[opp].exil).toContain(oppCardId);
-    expect(store.state.seats[opp].defausse).not.toContain(oppCardId);
+    expect(store.state.seats[opp]!.exil).toContain(oppCardId);
+    expect(store.state.seats[opp]!.defausse).not.toContain(oppCardId);
   });
 
   it("permet de déplacer une carte bannie vers le Monde et vers la Main", async () => {
@@ -491,9 +491,9 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     const me = store.perspective;
 
     // Déplacer une carte vers l'exil
-    const cardId = store.state.seats[me].pioche[0];
+    const cardId = store.state.seats[me]!.pioche[0];
     store.moveTo(cardId, { zone: "exil", owner: me });
-    expect(store.state.seats[me].exil).toContain(cardId);
+    expect(store.state.seats[me]!.exil).toContain(cardId);
 
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
@@ -524,13 +524,13 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     await recoverMondeBtn.trigger("click");
     await flushPromises();
 
-    expect(store.state.seats[me].exil).not.toContain(cardId);
+    expect(store.state.seats[me]!.exil).not.toContain(cardId);
     expect(store.state.monde).toContain(cardId);
     expect(store.state.instances[cardId].location.zone).toBe("monde");
 
     // Remettre dans l'exil pour tester → Main
     store.moveTo(cardId, { zone: "exil", owner: me });
-    expect(store.state.seats[me].exil).toContain(cardId);
+    expect(store.state.seats[me]!.exil).toContain(cardId);
     await flushPromises();
 
     const recoverMainBtn2 = wrapper.find(
@@ -540,8 +540,8 @@ describe("GameBoard — menu rouage & menu de deck (Mill)", () => {
     await recoverMainBtn2.trigger("click");
     await flushPromises();
 
-    expect(store.state.seats[me].exil).not.toContain(cardId);
-    expect(store.state.seats[me].main).toContain(cardId);
+    expect(store.state.seats[me]!.exil).not.toContain(cardId);
+    expect(store.state.seats[me]!.main).toContain(cardId);
   });
 });
 
@@ -552,7 +552,7 @@ describe("GameBoard — Regard & Recyclage du cimetière", () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck());
     const me = store.perspective;
-    const initialPioche = [...store.state.seats[me].pioche];
+    const initialPioche = [...store.state.seats[me]!.pioche];
     expect(initialPioche.length).toBeGreaterThanOrEqual(2);
     const topCard1 = initialPioche[0];
     const topCard2 = initialPioche[1];
@@ -593,8 +593,8 @@ describe("GameBoard — Regard & Recyclage du cimetière", () => {
     await toMainBtn.trigger("click");
     await flushPromises();
 
-    expect(store.state.seats[me].main).toContain(topCard1);
-    expect(store.state.seats[me].pioche).not.toContain(topCard1);
+    expect(store.state.seats[me]!.main).toContain(topCard1);
+    expect(store.state.seats[me]!.pioche).not.toContain(topCard1);
 
     // Tester sur la 2e carte : la mettre au fond de la pioche
     const toBottomBtn = wrapper.find(`[data-testid="regard-bottom-${topCard2}"]`);
@@ -602,7 +602,7 @@ describe("GameBoard — Regard & Recyclage du cimetière", () => {
     await toBottomBtn.trigger("click");
     await flushPromises();
 
-    const updatedPioche = store.state.seats[me].pioche;
+    const updatedPioche = store.state.seats[me]!.pioche;
     expect(updatedPioche[updatedPioche.length - 1]).toBe(topCard2);
 
     // Fermeture de la modale
@@ -618,12 +618,12 @@ describe("GameBoard — Regard & Recyclage du cimetière", () => {
     const me = store.perspective;
 
     // Déplacer 3 cartes de la pioche vers la défausse
-    const card1 = store.state.seats[me].pioche[0];
-    const card2 = store.state.seats[me].pioche[1];
+    const card1 = store.state.seats[me]!.pioche[0];
+    const card2 = store.state.seats[me]!.pioche[1];
     store.moveTo(card1, { zone: "defausse", owner: me });
     store.moveTo(card2, { zone: "defausse", owner: me });
 
-    expect(store.state.seats[me].defausse.length).toBe(2);
+    expect(store.state.seats[me]!.defausse.length).toBe(2);
 
     const wrapper = mount(GameBoard, {
       global: { stubs: { CardZoomModal: true } },
@@ -643,10 +643,10 @@ describe("GameBoard — Regard & Recyclage du cimetière", () => {
     await flushPromises();
 
     // La défausse doit être vide
-    expect(store.state.seats[me].defausse.length).toBe(0);
+    expect(store.state.seats[me]!.defausse.length).toBe(0);
     // Les cartes doivent être remises dans la pioche
-    expect(store.state.seats[me].pioche).toContain(card1);
-    expect(store.state.seats[me].pioche).toContain(card2);
+    expect(store.state.seats[me]!.pioche).toContain(card1);
+    expect(store.state.seats[me]!.pioche).toContain(card2);
     // shufflePioche a été appelé
     expect(shuffleSpy).toHaveBeenCalledWith(me);
   });

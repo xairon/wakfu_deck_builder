@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Régressions issues de l'audit règles/combos (2026-07-06) :
  *  1. `endTurn` refuse de finir le tour tant qu'un EFFET est en cours de
  *     résolution (ciblage/pioche-choix/choix/Porteur) — sinon l'état du moteur
@@ -54,7 +54,7 @@ describe("audit — endTurn bloque tant qu'un effet est en cours", () => {
 describe("audit — damageOppHero{isDamage} passe par la prévention (Trêve)", () => {
   it("de vrais Dommages au Héros adverse sont absorbés par une Trêve active ; une perte de PV directe non", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     // Le Héros adverse doit être EXPOSÉ dans le Monde (protégé au Havre-Sac, 508.x).
     store.moveTo(heroB, { zone: "monde" });
     const hp0 = store.state.instances[heroB].counters.hp ?? 0;
@@ -88,7 +88,7 @@ describe("audit — Agilité (704) à l'assignation du bloqueur", () => {
     const atkAgi = placeInZone(store, "A", { zone: "monde" });
     const atkPlain = placeInZone(store, "A", { zone: "monde" });
     const blk = placeInZone(store, "B", { zone: "monde" });
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
 
     // Donne Agilité à l'attaquant atkAgi (jeton de tour agiliteTurnMod via l'op).
     store.enqueueEffect({

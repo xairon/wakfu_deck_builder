@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tests des ops à cible « inclinaison / redressement / renvoi en main »
  * (tapTarget / untapTarget / returnToHand). Mêmes outils que targeting.spec :
  * une partie réelle via le harnais, puis assertions sur les events EXACTS
@@ -79,7 +79,7 @@ describe("rules/effects — tapTarget / untapTarget / returnToHand", () => {
     // application réelle : l'instance quitte le Monde pour la main de B
     dispatch(f, ...res.events);
     const s = ctxOf(f).state;
-    expect(s.seats.B.main).toContain(instId("B", 0));
+    expect(s.seats.B!.main).toContain(instId("B", 0));
     expect(s.instances[instId("B", 0)].location.zone).toBe("main");
   });
 

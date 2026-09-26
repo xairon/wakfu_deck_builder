@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vague W58 (deck-driven, starter Incarnam Crapaud Mufle) — COÛT DE MILL.
  *
  * Crapaud Mufle : « Défaussez la première carte de votre Pioche : le Crapaud
@@ -92,7 +92,7 @@ function mockDepsFromFixture(
           const idx = s.pioche.indexOf(instanceId);
           if (idx >= 0) s.pioche.splice(idx, 1);
         }
-        st.seats[owner].defausse.push(instanceId);
+        st.seats[owner]!.defausse.push(instanceId);
         if (st.instances[instanceId])
           st.instances[instanceId].location = { zone: to.zone };
       },
@@ -126,7 +126,7 @@ function seedPioche(
       counters: {},
     };
   }
-  st.seats[seat].pioche = [...ids, ...st.seats[seat].pioche];
+  st.seats[seat]!.pioche = [...ids, ...st.seats[seat]!.pioche];
 }
 
 describe("moteur — costMillTop (Crapaud Mufle)", () => {
@@ -152,8 +152,8 @@ describe("moteur — costMillTop (Crapaud Mufle)", () => {
     const st = ctxOf(f).state as unknown as {
       seats: Record<string, { pioche: string[]; defausse: string[] }>;
     };
-    expect(st.seats.A.pioche[0]).toBe("top2"); // top1 millé
-    expect(st.seats.A.defausse).toContain("top1");
+    expect(st.seats.A!.pioche[0]).toBe("top2"); // top1 millé
+    expect(st.seats.A!.defausse).toContain("top1");
     expect(effectiveForce(ctxOf(f), instId("A", 0))).toBe(5); // 3 + 2
   });
 
@@ -165,7 +165,7 @@ describe("moteur — costMillTop (Crapaud Mufle)", () => {
     const st0 = ctxOf(f).state as unknown as {
       seats: Record<string, { pioche: string[] }>;
     };
-    st0.seats.A.pioche = [];
+    st0.seats.A!.pioche = [];
     const engine = createEffectEngine(
       mockDepsFromFixture(f, (drafts) => dispatch(f, ...(drafts as never[]))),
     );

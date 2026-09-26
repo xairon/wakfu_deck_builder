@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles R1+C — résolution de combat (702–708) avec mots-clés.
  *
  * Calcule duels et dommages en pur, puis émet la rafale de `DraftEvent`
@@ -50,7 +50,7 @@ function damageElementOf(ctx: RulesCtx, id: InstanceId): string {
 
 function isHero(ctx: RulesCtx, id: InstanceId): boolean {
   const inst = ctx.state.instances[id];
-  return !!inst && ctx.state.seats[inst.controller].heroInstanceId === id;
+  return !!inst && ctx.state.seats[inst.controller]!.heroInstanceId === id;
 }
 
 function nameOf(ctx: RulesCtx, id: InstanceId): string {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W42) — drawTargetXp : choisir un Allié en jeu, piocher sa
  * valeur d'XP (card.experience). API publique du store.
  */
@@ -20,7 +20,7 @@ describe("drawTargetXp — pioche = valeur d'XP de la cible choisie", () => {
     });
     const tid = placeInZone(store, "B", { zone: "monde" });
     store.state.instances[tid].cardId = "cible-xp3";
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
 
     store.enqueueEffect({
       seat: "A",
@@ -30,7 +30,7 @@ describe("drawTargetXp — pioche = valeur d'XP de la cible choisie", () => {
     expect(store.effectTargeting).not.toBeNull();
     store.effectTargetChoose(tid);
 
-    expect(store.state.seats.A.main.length).toBe(handBefore + 3);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 3);
     expect(store.effectTargeting).toBeNull();
   });
 
@@ -51,7 +51,7 @@ describe("drawTargetXp — pioche = valeur d'XP de la cible choisie", () => {
     const older = placeInZone(store, "A", { zone: "monde" });
     const tid = placeInZone(store, "A", { zone: "monde" });
     store.state.instances[tid].cardId = "unique-xp2";
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
 
     store.enqueueEffect({
       seat: "A",
@@ -70,7 +70,7 @@ describe("drawTargetXp — pioche = valeur d'XP de la cible choisie", () => {
     expect([...store.effectTargetIdsList]).not.toContain(older);
     store.effectTargetChoose(tid);
 
-    expect(store.state.seats.A.main.length).toBe(handBefore + 2);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 2);
     expect(store.effectTargeting).toBeNull();
   });
 
@@ -91,7 +91,7 @@ describe("drawTargetXp — pioche = valeur d'XP de la cible choisie", () => {
     const uid = placeInZone(store, "A", { zone: "monde" });
     store.state.instances[uid].cardId = "unique-xp2b";
     placeInZone(store, "A", { zone: "monde" });
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
 
     store.enqueueEffect({
       seat: "A",
@@ -106,6 +106,6 @@ describe("drawTargetXp — pioche = valeur d'XP de la cible choisie", () => {
       ],
     });
     expect(store.effectTargeting).toBeNull();
-    expect(store.state.seats.A.main.length).toBe(handBefore);
+    expect(store.state.seats.A!.main.length).toBe(handBefore);
   });
 });

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tranche W19 — vague de progrès fidèle :
  *
  *  1. searchDiscardToHand : `searchDeck` avec `from:"defausse"` + `dest:"main"`
@@ -319,10 +319,10 @@ describe("W19 — moteur : searchDeck from defausse, dest main", () => {
     // récupère.
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     store.draw("A", 1);
-    const drawn = store.state.seats.A.main[store.state.seats.A.main.length - 1];
+    const drawn = store.state.seats.A!.main[store.state.seats.A!.main.length - 1];
     store.moveTo(drawn, { zone: "defausse", owner: "A" });
-    const handBefore = store.state.seats.A.main.length;
-    const defausseBefore = store.state.seats.A.defausse.length;
+    const handBefore = store.state.seats.A!.main.length;
+    const defausseBefore = store.state.seats.A!.defausse.length;
 
     store.enqueueEffect({
       seat: "A",
@@ -333,17 +333,17 @@ describe("W19 — moteur : searchDeck from defausse, dest main", () => {
     });
     expect(store.effectPicking?.zone).toBe("defausse");
     const pick = store.effectPickIds[0];
-    expect(store.state.seats.A.defausse).toContain(pick);
+    expect(store.state.seats.A!.defausse).toContain(pick);
     store.effectPick(pick);
-    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
-    expect(store.state.seats.A.defausse.length).toBe(defausseBefore - 1);
-    expect(store.state.seats.A.main).toContain(pick);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 1);
+    expect(store.state.seats.A!.defausse.length).toBe(defausseBefore - 1);
+    expect(store.state.seats.A!.main).toContain(pick);
     expect(store.effectPicking).toBeNull();
   });
 
   it("Défausse vide (aucun match) : effet passé, pas de picker", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    expect(store.state.seats.A.defausse.length).toBe(0);
+    expect(store.state.seats.A!.defausse.length).toBe(0);
     store.enqueueEffect({
       seat: "A",
       cardName: "T",

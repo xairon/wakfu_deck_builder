@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W78) — Échappé des Glaces (bonta-brakmar, Action) :
  * « Gagnez un nombre d'XP égal à la valeur d'XP de l'Allié qui vient
  * d'apparaître depuis votre Défausse. » + « Ne jouez Échappé des Glaces que
@@ -96,7 +96,7 @@ describe("Échappé des Glaces — provenance Défausse + gain d'XP du référen
     store.endTurn();
     const cardId = placeInZone(store, "A", { zone: "main", owner: "A" });
     store.state.instances[cardId].cardId = "echappe-test";
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
 
     // AUCUN Allié apparu depuis la Défausse → la carte est refusée.
     expect(store.playFromHand(cardId)).toBe(false);
@@ -108,7 +108,7 @@ describe("Échappé des Glaces — provenance Défausse + gain d'XP du référen
     // Purger la « Limite de main » (picker OBLIGATOIRE ouvert par l'excès de
     // pioches du harnais — il bloquerait la pompe d'effets, pas notre gate).
     while (store.effectPicking) {
-      const discardable = store.state.seats.A.main.find((i) => i !== cardId);
+      const discardable = store.state.seats.A!.main.find((i) => i !== cardId);
       store.effectPick(discardable!);
     }
     const xpBefore = store.state.instances[heroA].counters.xp ?? 0;

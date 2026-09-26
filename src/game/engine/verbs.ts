@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Verbes — sucre au-dessus de la primitive MOVE + events d'état (L1). Réf. §4.1.
  * Chaque verbe construit un `DraftEvent` ; `sequence()` leur assigne seq/ts.
  */
@@ -30,7 +30,7 @@ export function move(
 
 /** Piocher : sommet de la Pioche → Main (révélée au seul propriétaire). 507.4 */
 export function drawTop(state: GameState, seat: Seat): DraftEvent<MovePayload> {
-  const id = state.seats[seat].pioche[0];
+  const id = state.seats[seat]!.pioche[0];
   if (!id) throw new Error("PIOCHE_VIDE");
   return move(seat, {
     instanceId: id,

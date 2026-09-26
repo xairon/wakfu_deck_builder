@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W73) — DÉFI : duel avec consentement adverse. Séquence :
  * incliner un duelliste (coût), désigner un défié adverse, l'adversaire accepte
  * (les deux cartes s'infligent SIMULTANÉMENT leur Force en Dommages) ou refuse
@@ -95,7 +95,7 @@ describe("Défi — duel avec consentement adverse", () => {
 
   it("REFUSÉ : le LANCEUR gagne 1 XP, aucun Dommage", () => {
     const { store, duelist, challenged } = setup();
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const xpBefore = store.state.instances[heroA].counters.xp ?? 0;
     store.effectTargetChoose(duelist);
     store.effectTargetChoose(challenged);
@@ -113,7 +113,7 @@ describe("Défi — duel avec consentement adverse", () => {
     });
     // le Héros de A est un duelliste valide (« Alliés OU Héros ») : on l'incline
     // pour qu'aucune créature dressée du lanceur ne subsiste.
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.state.instances[heroA].orientation = "tapped";
     const challenged = placeInZone(store, "B", { zone: "monde" });
     store.state.instances[challenged].cardId = "challenged-w73";

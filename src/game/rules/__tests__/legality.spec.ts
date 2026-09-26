@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import type { Card } from "@/types/cards";
 import {
   eligibleAttackers,
@@ -425,7 +425,7 @@ describe("rules/legality — Taille du Havre-Sac (2315)", () => {
   it("initialise le compteur Résistance du Havre-Sac au setup (2303)", () => {
     const { f } = bagFixture();
     const s = ctxOf(f).state;
-    const sacInst = s.instances[s.seats.A.havreSacInstanceId!];
+    const sacInst = s.instances[s.seats.A!.havreSacInstanceId!];
     expect(sacInst.counters.resistance).toBe(15);
   });
 

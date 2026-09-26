@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Déclenchés de mort EN COMBAT (P0-2, 804.7). Régression : `resolveCombat`
  * n'émettait aucun RuleEvent `destroyed`, donc « Quand détruit » ne partait
  * jamais quand la créature mourait en combat (le mode de mort principal) —
@@ -95,7 +95,7 @@ describe("Déclenché de mort en combat (P0-2)", () => {
     store.moveTo(grosId, { zone: "monde" }); // Gros de B
 
     // A blesse d'abord son Héros pour rendre le regain observable.
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     store.adjustCounter(heroA, "hp", -3);
     const hpBefore = store.state.instances[heroA].counters.hp ?? 0;
 
@@ -104,7 +104,7 @@ describe("Déclenché de mort en combat (P0-2)", () => {
     store.nextTurn(); // 3 (A)
     store.perspective = "A";
     expect(store.beginCombat(nerbeId)).toBe(true);
-    store.combatChooseTarget(store.state.seats.B.havreSacInstanceId!);
+    store.combatChooseTarget(store.state.seats.B!.havreSacInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true);
     // B bloque avec le Gros (Force 3 > 1) → le Nerbe meurt.
     store.perspective = "B";

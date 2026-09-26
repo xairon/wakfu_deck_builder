@@ -9,6 +9,7 @@ import {
 import { resolveIntent } from "@/game/actions/resolveIntent";
 import { createMockAllyCard } from "tests/factories/card";
 import type { GameIntent } from "@/game";
+import type { MovePayload } from "@/game/types/events";
 
 describe("Mouvement de carte sous contrôle adverse (Monde <-> Havre-Sac)", () => {
   it("autorise le contrôleur d'une carte adverse à la déplacer vers son Havre-Sac en table libre (manual: true)", () => {
@@ -55,7 +56,7 @@ describe("Mouvement de carte sous contrôle adverse (Monde <-> Havre-Sac)", () =
       expect(res.events!.length).toBeGreaterThan(0);
       const moveEv = res.events![0];
       expect(moveEv.type).toBe("MOVE");
-      expect(moveEv.payload.to).toEqual({ zone: "havreSac", owner: "A" });
+      expect((moveEv.payload as MovePayload).to).toEqual({ zone: "havreSac", owner: "A" });
     }
   });
 
@@ -97,7 +98,7 @@ describe("Mouvement de carte sous contrôle adverse (Monde <-> Havre-Sac)", () =
       expect(res.events).toBeDefined();
       const moveEv = res.events![0];
       expect(moveEv.type).toBe("MOVE");
-      expect(moveEv.payload.to).toEqual({ zone: "monde" });
+      expect((moveEv.payload as MovePayload).to).toEqual({ zone: "monde" });
     }
   });
 });

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * JETONS — intégration via le gameStore (reducer réel + lecteurs de combat).
  * Vérifie qu'un jeton créé par un effet est un PARTICIPANT DE COMBAT fidèle :
  * Force effective = sa Force, ciblable / endommageable, mort à Dommages ≥ Force
@@ -110,8 +110,8 @@ describe("jeton — création & combat (intégration)", () => {
     // Dommages 1 ≥ Force 1 → létal : le jeton quitte le jeu et CESSE D'EXISTER.
     expect(store.state.instances[id]).toBeUndefined();
     expect(store.state.monde).not.toContain(id);
-    expect(store.state.seats.B.defausse).not.toContain(id);
-    expect(store.state.seats.A.defausse).not.toContain(id);
+    expect(store.state.seats.B!.defausse).not.toContain(id);
+    expect(store.state.seats.A!.defausse).not.toContain(id);
   });
 
   it("un jeton renvoyé en main (returnToHand) cesse d'exister (pas de carte de deck)", () => {
@@ -136,7 +136,7 @@ describe("jeton — création & combat (intégration)", () => {
     });
     store.effectTargetChoose(id);
     expect(store.state.instances[id]).toBeUndefined();
-    expect(store.state.seats.B.main).not.toContain(id);
+    expect(store.state.seats.B!.main).not.toContain(id);
   });
 });
 
@@ -202,7 +202,7 @@ describe("Vampyro — costRecycleControlled + createToken (intégration)", () =>
     store.enqueueEffect({
       seat: "A",
       cardName: "Vampyro",
-      sourceId: store.state.seats.A.heroInstanceId,
+      sourceId: store.state.seats.A!.heroInstanceId,
       ops: [
         {
           op: "costRecycleControlled",
@@ -222,7 +222,7 @@ describe("Vampyro — costRecycleControlled + createToken (intégration)", () =>
     store.effectTargetChoose(monstre);
     // le Monstre recyclé a quitté le Monde (remis sous la Pioche de A).
     expect(store.state.monde).not.toContain(monstre);
-    expect(store.state.seats.A.pioche).toContain(monstre);
+    expect(store.state.seats.A!.pioche).toContain(monstre);
     // un jeton Vampyre est en jeu.
     const tok = tokenInMonde(store)!;
     expect(tok).toBeDefined();

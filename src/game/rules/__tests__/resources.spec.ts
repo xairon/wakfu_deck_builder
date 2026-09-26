@@ -37,7 +37,7 @@ describe("rules/resources — producteurs et coûts", () => {
   it("2342 : au 1er tour du 2ᵉ joueur, son Havre-Sac vaut DEUX Ressources", () => {
     const f = fixture([]); // firstPlayer = A
     setTurn(f, "B", 2); // premier tour de B
-    const sacB = ctxOf(f).state.seats.B.havreSacInstanceId!;
+    const sacB = ctxOf(f).state.seats.B!.havreSacInstanceId!;
     const ids = resourceProducers(ctxOf(f), "B").map((p) => p.instanceId);
     expect(ids.filter((id) => id === sacB)).toHaveLength(2);
     // au tour suivant de B, retour à la normale
@@ -46,7 +46,7 @@ describe("rules/resources — producteurs et coûts", () => {
     expect(later.filter((id) => id === sacB)).toHaveLength(1);
     // et jamais pour le premier joueur
     setTurn(f, "A", 1);
-    const sacA = ctxOf(f).state.seats.A.havreSacInstanceId!;
+    const sacA = ctxOf(f).state.seats.A!.havreSacInstanceId!;
     const aIds = resourceProducers(ctxOf(f), "A").map((p) => p.instanceId);
     expect(aIds.filter((id) => id === sacA)).toHaveLength(1);
   });
@@ -68,7 +68,7 @@ describe("rules/resources — producteurs et coûts", () => {
   it("havreSacBonusAvailable — CONSOMMÉ quand le Havre-Sac est incliné (le +1 « part »)", () => {
     const f = fixture([]);
     setTurn(f, "B", 2);
-    const sacB = ctxOf(f).state.seats.B.havreSacInstanceId!;
+    const sacB = ctxOf(f).state.seats.B!.havreSacInstanceId!;
     dispatch(f, tap("B", sacB));
     expect(havreSacBonusAvailable(ctxOf(f), "B")).toBe(false);
   });
@@ -76,7 +76,7 @@ describe("rules/resources — producteurs et coûts", () => {
   it("havreSacBonusAvailable — CONSOMMÉ quand le jeton sacBonusUsed est posé", () => {
     const f = fixture([]);
     setTurn(f, "B", 2);
-    const sacB = ctxOf(f).state.seats.B.havreSacInstanceId!;
+    const sacB = ctxOf(f).state.seats.B!.havreSacInstanceId!;
     dispatch(f, setCounter("B", sacB, "sacBonusUsed", 1, true));
     expect(havreSacBonusAvailable(ctxOf(f), "B")).toBe(false);
   });

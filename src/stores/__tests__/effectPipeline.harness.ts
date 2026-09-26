@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Harness de CARACTÉRISATION du pipeline d'effets : verrouille le comportement
  * courant du moteur de résolution (gameStore) AVANT son extraction. Tout passe
  * par l'API publique du store (startSandbox + enqueueEffect + effectPick/…),
@@ -57,7 +57,7 @@ export function makeEffectSandbox(opts?: {
  */
 export function placeInZone(store: Store, seat: Seat, to: ZoneRef): string {
   store.draw(seat, 1);
-  const main = store.state.seats[seat].main;
+  const main = store.state.seats[seat]!.main;
   const id = main[main.length - 1];
   if (to.zone !== "main") store.moveTo(id, to);
   return id;

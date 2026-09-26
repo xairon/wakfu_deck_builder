@@ -1,4 +1,4 @@
-/**
+﻿/**
  * A19 — FABRICATION vague 2 : flux complet `craftFromHand` (418.6).
  * Séquence : incliner l'Artisan du Métier (ciblage) → recycler N cartes de
  * l'Élément depuis la Défausse (picking, filtre élément) → la carte est JOUÉE
@@ -91,7 +91,7 @@ describe("craftFromHand — fabrication complète (A19)", () => {
 
     // Attaché au Porteur, plus en main ; recyclées SOUS la Pioche.
     expect(store.state.instances[bearerId].attachments).toContain(equipId);
-    expect(store.state.seats.A.main).not.toContain(equipId);
+    expect(store.state.seats.A!.main).not.toContain(equipId);
     expect(store.state.instances[feu[0]].location.zone).toBe("pioche");
     expect(store.state.instances[feu[1]].location.zone).toBe("pioche");
     // La 3e carte Feu est restée en Défausse (2 exactement recyclées).
@@ -104,7 +104,7 @@ describe("craftFromHand — fabrication complète (A19)", () => {
     expect(store.effectTargeting?.op.op).toBe("costTapControlled");
     store.effectTargetSkip(); // renoncer au coût
     expect(store.state.instances[artisanId].orientation).toBe("upright");
-    expect(store.state.seats.A.main).toContain(equipId);
+    expect(store.state.seats.A!.main).toContain(equipId);
     expect(store.effectPicking).toBeNull();
   });
 

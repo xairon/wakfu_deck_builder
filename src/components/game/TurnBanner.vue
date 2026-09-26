@@ -20,7 +20,7 @@ const store = useGameStore();
 const visible = ref(false);
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
-const activeName = computed(() => store.players[store.turn.active].name);
+const activeName = computed(() => store.players[store.turn.active]?.name ?? store.turn.active);
 
 /** Affiche la bannière à chaque révélation d'un tour (après passation). */
 watch(

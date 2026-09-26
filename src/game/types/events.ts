@@ -36,6 +36,7 @@ export interface MovePayload {
 export interface ShufflePayload {
   zone: ZoneRef;
   permutation: number[];
+  seed?: string;
 }
 
 export interface OrientationPayload {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Résolveur d'intentions PUR (jeu + combat) — autorité partagée serveur/nav.
  * Réf. docs/superpowers/specs/2026-06-23-server-authoritative-rules-design.md.
  *
@@ -114,7 +114,7 @@ const MANUAL_OUT_OF_TURN = new Set<GameIntent["kind"]>([
  * (miroir du `paOf` client + du `pmOf` de legality) ; repli 6 si absent.
  */
 function paOf(state: GameState, seat: Seat): number {
-  const heroId = state.seats[seat].heroInstanceId;
+  const heroId = state.seats[seat]!.heroInstanceId;
   const hero = heroId ? state.instances[heroId] : null;
   const mod = hero?.counters.tokens?.paMod ?? 0;
   return Math.max(0, (hero?.counters.pa ?? 6) + mod);
@@ -289,7 +289,7 @@ export function resolveIntent(
       }
       // 2342 — bonus de doublement du Havre-Sac à USAGE UNIQUE : si le Havre-Sac
       // doublé du 2e joueur sert à payer au tour 2, on pose le jeton anti-redouble.
-      const sacId = state.seats[seat].havreSacInstanceId;
+      const sacId = state.seats[seat]!.havreSacInstanceId;
       if (
         sacId &&
         seat !== state.turn.firstPlayer &&
@@ -302,7 +302,7 @@ export function resolveIntent(
       // carte jouée est Quête/Parchemin, 0 sinon), écrasé à chaque jeu — MIROIR du
       // chemin local (gameStore playFromHand). Sans ça, le pouvoir de Fécaline
       // serait injouable en ligne (le gate lit ce jeton).
-      const heroId = state.seats[seat].heroInstanceId;
+      const heroId = state.seats[seat]!.heroInstanceId;
       if (heroId) {
         const isQuestParch = (card.subTypes ?? []).some((s) => {
           const n = normWord(s);
@@ -381,7 +381,7 @@ export function resolveIntent(
       for (const rid of ids) {
         const rc = getCard(state.instances[rid]?.cardId ?? null);
         if (
-          !state.seats[seat].defausse.includes(rid) ||
+          !state.seats[seat]!.defausse.includes(rid) ||
           rc?.stats?.niveau?.element !== recette.element
         )
           return {
@@ -459,7 +459,7 @@ export function resolveIntent(
       events.push(
         setCounter(seat, intent.equipmentId, "justAppeared", 1, true),
       );
-      const craftHeroId = state.seats[seat].heroInstanceId;
+      const craftHeroId = state.seats[seat]!.heroInstanceId;
       if (craftHeroId) {
         const kinds = new Set<string>(recentPlayKindsOf(card));
         for (const [kind, token] of Object.entries(RECENT_PLAY_TOKENS)) {
@@ -798,7 +798,7 @@ export function resolveIntent(
         };
       // 4873 — on ne passe pas la main avec un excédent : il faut défausser
       // l'excédent d'abord (le client gate déjà ; le serveur fait autorité).
-      if (state.seats[seat].main.length > paOf(state, seat))
+      if (state.seats[seat]!.main.length > paOf(state, seat))
         return {
           error: "Main pleine : défausse l'excédent avant de finir le tour.",
         };
@@ -809,7 +809,7 @@ export function resolveIntent(
       // re-dérivant l'état entre chacune (comme la redite du MULLIGAN).
       const need = Math.max(
         0,
-        paOf(state, seat) - state.seats[seat].main.length,
+        paOf(state, seat) - state.seats[seat]!.main.length,
       );
       // Transition de tour COMPLÈTE (partagée avec gameStore.nextTurn) : SET_PHASE
       // + purge des jetons de tour + redressement/effacement des dégâts du joueur

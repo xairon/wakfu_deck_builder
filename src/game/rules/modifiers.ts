@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles — pouvoirs CONTINUS (805 / 812.2), couche dérivée :
  * recalculée à chaque lecture, jamais d'événement. Les formes compilées
  * (`StaticAbility`) viennent des données (`effects[].compiled.static`,
@@ -148,7 +148,7 @@ export function attackPmBonus(
  * par la montée de niveau, sinon la face (verso = Niveau 2), sinon 1.
  */
 export function heroLevel(ctx: RulesCtx, seat: Seat): 1 | 2 | 3 {
-  const id = ctx.state.seats[seat].heroInstanceId;
+  const id = ctx.state.seats[seat]!.heroInstanceId;
   const inst = id ? ctx.state.instances[id] : null;
   if (!inst) return 1;
   if ((inst.counters.level ?? 0) >= 3) return 3;

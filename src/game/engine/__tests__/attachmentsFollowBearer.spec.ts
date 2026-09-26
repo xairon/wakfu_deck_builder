@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 305.x — les cartes PORTÉES suivent leur Porteur (bug rapporté 2026-07-10 :
  * un Allié portant deux Équipements est tué au combat → les Équipements
  * restaient des ORPHELINS invisibles, hors de toute zone, au lieu d'aller à
@@ -63,7 +63,7 @@ function setupBearer(s: GameState): {
   ids: [string, string, string];
   drafts: DraftEvent[];
 } {
-  const [bearer, e1, e2] = s.seats.A.pioche;
+  const [bearer, e1, e2] = s.seats.A!.pioche;
   const toMonde = (id: string): DraftEvent =>
     move("A", {
       instanceId: id,
@@ -94,7 +94,7 @@ describe("reducer — les portés suivent leur Porteur (305.x)", () => {
       ],
     );
     const [bearer, e1, e2] = ids;
-    const defausse = state.seats.A.defausse;
+    const defausse = state.seats.A!.defausse;
     expect(defausse).toContain(bearer);
     expect(defausse).toContain(e1);
     expect(defausse).toContain(e2);
@@ -122,8 +122,8 @@ describe("reducer — les portés suivent leur Porteur (305.x)", () => {
     expect(state.instances[e1].location.zone).toBe("havreSac");
     expect(state.instances[e2].location.zone).toBe("havreSac");
     // toujours attachés : dans AUCUNE pile
-    expect(state.seats.A.defausse).not.toContain(e1);
-    expect(state.seats.A.defausse).not.toContain(e2);
+    expect(state.seats.A!.defausse).not.toContain(e1);
+    expect(state.seats.A!.defausse).not.toContain(e2);
   });
 
   it("DETACH explicite vers la Défausse APRÈS le départ du Porteur : idempotent (pas de doublon)", () => {
@@ -150,7 +150,7 @@ describe("reducer — les portés suivent leur Porteur (305.x)", () => {
         } as DraftEvent,
       ],
     );
-    const defausse = state.seats.A.defausse;
+    const defausse = state.seats.A!.defausse;
     expect(defausse.filter((id) => id === ids[1])).toHaveLength(1);
     expect(new Set(defausse).size).toBe(defausse.length);
   });
@@ -168,7 +168,7 @@ describe("reducer — les portés suivent leur Porteur (305.x)", () => {
       ],
     );
     const [bearer, e1, e2] = ids;
-    expect(state.seats.A.defausse).toContain(e1);
+    expect(state.seats.A!.defausse).toContain(e1);
     expect(state.instances[e1].location.zone).toBe("defausse");
     // e1 n'est plus dans les attachments du Porteur
     expect(state.instances[bearer].attachments).toEqual([e2]);

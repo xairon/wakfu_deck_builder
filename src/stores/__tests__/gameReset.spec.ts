@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+﻿import { describe, it, expect, beforeEach } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useGameStore } from "../gameStore";
 import { createMockDeck } from "tests/factories/card";
@@ -12,13 +12,13 @@ describe("gameStore — resetTableAndDeck & Victory Notifications", () => {
     const deckB = createMockDeck();
     store.startSandbox(deckA, deckB, "A");
 
-    const heroId = store.state.seats.A.heroInstanceId!;
-    const havreSacId = store.state.seats.A.havreSacInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
+    const havreSacId = store.state.seats.A!.havreSacInstanceId!;
 
     // Déplacer le héros et quelques cartes vers le Monde, la Main et la Défausse
     store.moveTo(heroId, { zone: "monde" });
-    const card1 = store.state.seats.A.pioche[0];
-    const card2 = store.state.seats.A.pioche[1];
+    const card1 = store.state.seats.A!.pioche[0];
+    const card2 = store.state.seats.A!.pioche[1];
     store.moveTo(card1, { zone: "monde" });
     store.moveTo(card2, { zone: "defausse", owner: "A" });
 

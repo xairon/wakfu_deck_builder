@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles R1 — Expérience, montée de niveau, victoire.
  * 415.1 (gain d'XP), 307.4/307.5 (verso à 6 XP, Niveau 3 à 18 XP),
  * 103.2 (défaite à 0 PV / victoire au Niveau 3).
@@ -92,7 +92,7 @@ export function equalityRescueEvents(ctx: RulesCtx): DraftEvent[] {
   if (hpA === null || hpB === null || hpA > 0 || hpB > 0) return [];
   const events: DraftEvent[] = [];
   for (const seat of ["A", "B"] as Seat[]) {
-    const id = ctx.state.seats[seat].heroInstanceId;
+    const id = ctx.state.seats[seat]!.heroInstanceId;
     if (id) events.push(setCounter(seat, id, "hp", 1));
   }
   return events;

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W47) — op `conditional` avec `optional` : quand la condition
  * est VRAIE, le corps est PROPOSÉ (effectChoice Oui/Non), pas exécuté d'office ;
  * accepter exécute le corps, décliner le saute. Quand la condition est FAUSSE,
@@ -28,9 +28,9 @@ describe("conditional optionnel — la condition garde l'offre", () => {
     });
     // proposition affichée (pas d'exécution d'office)
     expect(store.effectChoice).not.toBeNull();
-    const before = store.state.seats.A.main.length;
+    const before = store.state.seats.A!.main.length;
     store.effectChoiceResolve(true);
-    expect(store.state.seats.A.main.length).toBe(before + 1);
+    expect(store.state.seats.A!.main.length).toBe(before + 1);
     expect(store.effectChoice).toBeNull();
   });
 
@@ -44,15 +44,15 @@ describe("conditional optionnel — la condition garde l'offre", () => {
       ops: condOptDraw("monde"),
     });
     expect(store.effectChoice).not.toBeNull();
-    const before = store.state.seats.A.main.length;
+    const before = store.state.seats.A!.main.length;
     store.effectChoiceResolve(false);
-    expect(store.state.seats.A.main.length).toBe(before);
+    expect(store.state.seats.A!.main.length).toBe(before);
   });
 
   it("condition FAUSSE → AUCUNE proposition (pas de prompt inutile), rien ne se passe", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     const id = placeInZone(store, "A", { zone: "monde" });
-    const before = store.state.seats.A.main.length;
+    const before = store.state.seats.A!.main.length;
     store.enqueueEffect({
       seat: "A",
       cardName: "Dollarawan",
@@ -61,6 +61,6 @@ describe("conditional optionnel — la condition garde l'offre", () => {
     });
     // la condition est fausse → pas de proposition, pas de pioche
     expect(store.effectChoice).toBeNull();
-    expect(store.state.seats.A.main.length).toBe(before);
+    expect(store.state.seats.A!.main.length).toBe(before);
   });
 });

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * JETONS DE CRÉATURE — op `createToken` (« Mettez en jeu un jeton "Monstre - X"
  * de Force N [Élément] », Abraknyde / Vampyro).
  *
@@ -275,7 +275,7 @@ describe("reducer — CREATE_TOKEN & disparition du jeton", () => {
     );
     // Le jeton n'est NI dans la Défausse NI dans les instances : il a disparu.
     expect(s.instances["tok_A_1"]).toBeUndefined();
-    expect(s.seats.A.defausse).not.toContain("tok_A_1");
+    expect(s.seats.A!.defausse).not.toContain("tok_A_1");
     expect(s.monde).not.toContain("tok_A_1");
   });
 

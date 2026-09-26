@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Lot B — destructions d'état (1414 / 3019) : `stateBasedDestroyEvents`
  * (une passe pure) + point fixe (cascade d'auras), XP à l'adversaire du
  * contrôleur (415.1), et garde « Force inconnue » des données scrapées.
@@ -70,7 +70,7 @@ describe("rules/destruction — destructions d'état (1414 / 3019)", () => {
     expect(sbd.destroyed).toEqual([instId("A", 0)]);
     expect(sbd.log.join(" ")).toContain("1414");
     dispatch(f, ...sbd.events);
-    expect(ctxOf(f).state.seats.A.defausse).toContain(instId("A", 0));
+    expect(ctxOf(f).state.seats.A!.defausse).toContain(instId("A", 0));
     expect(ctxOf(f).state.instances[HERO_B].counters.xp).toBe(2);
     expect(ctxOf(f).state.instances[HERO_A].counters.xp ?? 0).toBe(0);
   });

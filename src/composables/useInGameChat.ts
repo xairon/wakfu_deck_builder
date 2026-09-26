@@ -2,6 +2,7 @@ import { ref, watch, nextTick, onMounted, getCurrentInstance } from "vue";
 import type { ChatMessage, UseInGameChatOptions } from "@/types/chat";
 import { useGameStore } from "@/stores/gameStore";
 import type { PersistedEvent, SaidPayload } from "@/game";
+import type { Seat } from "@/game/types/zones";
 
 /**
  * Hook de gestion de l'état et de la logique du chat en jeu 1v1.

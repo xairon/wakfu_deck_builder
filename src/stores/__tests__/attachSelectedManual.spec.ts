@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TL3 — TABLE LIBRE : geste manuel d'équipement. `attachSelected` ouvre le
  * ciblage de Porteur (manual:true) pour un Équipement de MA main/plateau ; la
  * résolution (attachToBearer) émet l'intent autoritatif ATTACH (couvert par M1
@@ -47,7 +47,7 @@ describe("TL3 — attachSelected (ciblage de Porteur manuel)", () => {
 
     const ok = store.attachSelected(equip);
     expect(ok).toBe(true);
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     expect(store.pendingBearer?.eligible).toContain(heroA);
   });
 
@@ -107,7 +107,7 @@ describe("TL3 — attachSelected (ciblage de Porteur manuel)", () => {
     store.connectOnline("g-online-attach", "A", transport, deck);
     for (const ev of events) emit!(ev);
 
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const equip = Object.keys(store.state.instances).find(
       (id) => store.state.instances[id].cardId === "equip-x",
     )!;
@@ -158,7 +158,7 @@ describe("TL3 — attachSelected (ciblage de Porteur manuel)", () => {
     store.connectOnline("g-online-detach", "A", transport, deck);
     for (const ev of events) emit!(ev);
 
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const equip = Object.keys(store.state.instances).find(
       (id) => store.state.instances[id].cardId === "equip-x",
     )!;

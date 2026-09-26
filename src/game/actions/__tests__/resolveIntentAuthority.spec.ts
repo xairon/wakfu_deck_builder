@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Autorité serveur — tests anti-triche des intentions de mutation bas niveau.
  *
  * `resolveIntent` est l'UNIQUE autorité du jeu EN LIGNE (submit_event l'exécute
@@ -107,7 +107,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
   // ── Victoire forgée / compteurs vitaux ─────────────────────────────────────
   it("SET_COUNTER xp=18 sur SON PROPRE Héros → refusé (compteur protégé)", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -122,7 +122,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
   // physique) ; les JETONS moteur et les cartes ADVERSES restent bloqués. ───────
   it("manuel : SET_COUNTER resistance sur SON Havre-Sac → autorisé (table libre)", () => {
     const { state, getCard } = playingState();
-    const sac = state.seats.A.havreSacInstanceId!;
+    const sac = state.seats.A!.havreSacInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -135,7 +135,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("manuel : INC_COUNTER damage/hp sur SA créature → autorisé", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -148,7 +148,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("manuel : un JETON reste refusé (forceMod) même en table libre", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -167,7 +167,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("manuel : compteur sur la carte ADVERSE reste refusé (ownership)", () => {
     const { state, getCard } = playingState();
-    const bHero = state.seats.B.heroInstanceId!;
+    const bHero = state.seats.B!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -180,7 +180,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("INC_COUNTER xp +18 sur son Héros → autorisé", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -192,7 +192,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("SET_LEVEL sur son Héros → accepté pour le contrôleur, refusé pour l'adversaire", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     const rOk = resolveIntent(
       state,
       getCard,
@@ -212,7 +212,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("SET_LEVEL sur son propre Héros hors de son tour → autorisé en ligne", () => {
     const { state, getCard } = playingState(); // active = "A"
-    const bHero = state.seats.B.heroInstanceId!;
+    const bHero = state.seats.B!.heroInstanceId!;
     const rOutOfTurnOwn = resolveIntent(
       state,
       getCard,
@@ -224,7 +224,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("SET_COUNTER pa=999 / INC pm sur soi → refusé (ressources protégées)", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     const pa = resolveIntent(
       state,
       getCard,
@@ -243,7 +243,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("paMod (jeton) protégé → refusé (alimente la PA effective)", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -261,7 +261,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("TOUT jeton via intent → refusé (forceMod/geantMod/… alimentent le combat)", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     // La couche de jetons n'est écrite QUE par le moteur d'effets ; aucun jeu
     // légitime ne l'écrit via une intention. Un client trafiqué s'octroierait
     // sinon Force/Géant/Agilité/boucliers à volonté (combat forgé côté serveur).
@@ -298,7 +298,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
   // ── Manipulation des cartes adverses ───────────────────────────────────────
   it("SET_COUNTER hp=0 sur le Héros ADVERSE → refusé (non contrôlé)", () => {
     const { state, getCard } = playingState();
-    const bHero = state.seats.B.heroInstanceId!;
+    const bHero = state.seats.B!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -311,7 +311,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("MOVE_CARD du Héros adverse → refusé (non contrôlé)", () => {
     const { state, getCard } = playingState();
-    const bHero = state.seats.B.heroInstanceId!;
+    const bHero = state.seats.B!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -328,8 +328,8 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("manuel : incliner SA carte / ajuster SON Havre-Sac HORS de son tour → autorisé (table libre, #10)", () => {
     const { state, getCard } = playingState(); // A actif → B agit hors-tour
-    const bHero = state.seats.B.heroInstanceId!;
-    const bSac = state.seats.B.havreSacInstanceId!;
+    const bHero = state.seats.B!.heroInstanceId!;
+    const bSac = state.seats.B!.havreSacInstanceId!;
     const tap = resolveIntent(
       state,
       getCard,
@@ -355,7 +355,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("ASSISTÉ : incliner SA carte hors de son tour → refusé (garde de tour stricte)", () => {
     const { state, getCard } = playingState();
-    const bHero = state.seats.B.heroInstanceId!;
+    const bHero = state.seats.B!.heroInstanceId!;
     const r = resolveIntent(
       state,
       getCard,
@@ -375,7 +375,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("MOVE_CARD de SA carte vers la zone privée ADVERSE → refusé", () => {
     const { state, getCard } = playingState();
-    const aCard = state.seats.A.main[0];
+    const aCard = state.seats.A!.main[0];
     const r = resolveIntent(
       state,
       getCard,
@@ -392,7 +392,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("TAP / UNTAP d'une carte adverse → refusé (non contrôlé)", () => {
     const { state, getCard } = playingState();
-    const bHero = state.seats.B.heroInstanceId!;
+    const bHero = state.seats.B!.heroInstanceId!;
     const tap = resolveIntent(
       state,
       getCard,
@@ -411,8 +411,8 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("ATTACH avec un équipement adverse → refusé (non contrôlé)", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
-    const bCard = state.seats.B.main[0];
+    const aHero = state.seats.A!.heroInstanceId!;
+    const bCard = state.seats.B!.main[0];
     const r = resolveIntent(
       state,
       getCard,
@@ -461,7 +461,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
   // ── Les coups LÉGITIMES passent toujours ───────────────────────────────────
   it("SET_COUNTER d'un compteur NON protégé, NON jeton, sur SA carte → autorisé", () => {
     const { state, getCard } = playingState();
-    const aHero = state.seats.A.heroInstanceId!;
+    const aHero = state.seats.A!.heroInstanceId!;
     // Compteur manuel « normal » (ce que `adjustCounter` du client envoie : sans
     // `token`). Reste autorisé — seuls les jetons du moteur sont bannis via intent.
     const r = resolveIntent(
@@ -476,7 +476,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("TAP de SA propre carte → autorisé (SET_ORIENTATION)", () => {
     const { state, getCard } = playingState();
-    const aHavre = state.seats.A.havreSac[0];
+    const aHavre = state.seats.A!.havreSac[0];
     const r = resolveIntent(
       state,
       getCard,
@@ -489,7 +489,7 @@ describe("resolveIntent — autorité anti-triche (intentions bas niveau)", () =
 
   it("MOVE_CARD de SA carte vers SA propre défausse → autorisé", () => {
     const { state, getCard } = playingState();
-    const aCard = state.seats.A.main[0];
+    const aCard = state.seats.A!.main[0];
     const r = resolveIntent(
       state,
       getCard,
@@ -518,8 +518,8 @@ describe("resolveIntent — PLAY_CARD d'un Équipement : Porteur validé serveur
     const { state, getCard } = playingState();
     state.turn.number = 2;
     const put = (seat: Seat) => {
-      const id = state.seats[seat].main[0];
-      state.seats[seat].main.splice(0, 1);
+      const id = state.seats[seat]!.main[0];
+      state.seats[seat]!.main.splice(0, 1);
       state.monde.push(id);
       const inst = state.instances[id];
       inst.location = { zone: "monde" };
@@ -528,7 +528,7 @@ describe("resolveIntent — PLAY_CARD d'un Équipement : Porteur validé serveur
     };
     const myAlly = put("A");
     const oppAlly = put("B");
-    const equipId = state.seats.A.main[0];
+    const equipId = state.seats.A!.main[0];
     state.instances[equipId].cardId = "equip-authority-test";
     const getCard2 = (id: string | null) =>
       id === "equip-authority-test" ? EQUIP : getCard(id);
@@ -612,7 +612,7 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
     const getCard2 = (id: string | null) =>
       (id && custom.get(id)) || getCard(id);
     const toMonde = (seat: Seat, cardId?: string) => {
-      const id = state.seats[seat].main.shift()!;
+      const id = state.seats[seat]!.main.shift()!;
       state.monde.push(id);
       const inst = state.instances[id];
       inst.location = { zone: "monde" };
@@ -621,8 +621,8 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
       return id;
     };
     const toDefausse = (seat: Seat, cardId: string) => {
-      const id = state.seats[seat].main.shift()!;
-      state.seats[seat].defausse.push(id);
+      const id = state.seats[seat]!.main.shift()!;
+      state.seats[seat]!.defausse.push(id);
       const inst = state.instances[id];
       inst.location = { zone: "defausse", owner: seat };
       inst.cardId = cardId;
@@ -630,8 +630,8 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
     };
     // Main de A regarnie (playingState n'en met que 3) : piocher 3 de plus.
     for (let i = 0; i < 3; i++) {
-      const top = state.seats.A.pioche.shift()!;
-      state.seats.A.main.push(top);
+      const top = state.seats.A!.pioche.shift()!;
+      state.seats.A!.main.push(top);
       state.instances[top].location = { zone: "main", owner: "A" };
     }
     const artisanId = toMonde("A", "artisan-authority");
@@ -639,7 +639,7 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
     const oppAlly = toMonde("B");
     const feu1 = toDefausse("A", "feu-authority");
     const feu2 = toDefausse("A", "feu-authority");
-    const equipId = state.seats.A.main[0];
+    const equipId = state.seats.A!.main[0];
     state.instances[equipId].cardId = "equip-recette-authority";
     return {
       state,
@@ -724,7 +724,7 @@ describe("resolveIntent — CRAFT : Recette entièrement revalidée serveur", ()
   it("recyclage FORGÉ (mauvais Élément / hors Défausse / compte faux) → refusé", () => {
     const s1 = craftState();
     // une carte de la MAIN au lieu de la Défausse
-    const handCard = s1.state.seats.A.main[1];
+    const handCard = s1.state.seats.A!.main[1];
     const r1 = resolveIntent(
       s1.state,
       s1.getCard,

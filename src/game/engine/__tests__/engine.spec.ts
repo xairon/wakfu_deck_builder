@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   createMockDeck,
   createMockHeroCard,
@@ -60,13 +60,13 @@ describe("setup — placement initial (102.1 / 306.1 / 307.1)", () => {
   const layout = buildInitialLayout(GID, DECKS, "A");
 
   it("met 48 cartes en Pioche par joueur", () => {
-    expect(layout.seats.A.pioche).toHaveLength(48);
-    expect(layout.seats.B.pioche).toHaveLength(48);
+    expect(layout.seats.A!.pioche).toHaveLength(48);
+    expect(layout.seats.B!.pioche).toHaveLength(48);
   });
 
   it("place le Héros dans le Havre-Sac, dressé", () => {
-    const heroA = layout.seats.A.heroInstanceId!;
-    expect(layout.seats.A.havreSac).toContain(heroA);
+    const heroA = layout.seats.A!.heroInstanceId!;
+    expect(layout.seats.A!.havreSac).toContain(heroA);
     expect(layout.instances[heroA].location.zone).toBe("havreSac");
     expect(layout.instances[heroA].orientation).toBe("upright");
     expect(layout.instances[heroA].counters.level).toBe(1);
@@ -74,8 +74,8 @@ describe("setup — placement initial (102.1 / 306.1 / 307.1)", () => {
 
   it("place les deux Havre-Sac dans le Monde, mains vides", () => {
     expect(layout.monde).toHaveLength(2);
-    expect(layout.seats.A.main).toHaveLength(0);
-    expect(layout.seats.B.main).toHaveLength(0);
+    expect(layout.seats.A!.main).toHaveLength(0);
+    expect(layout.seats.B!.main).toHaveLength(0);
   });
 });
 
@@ -89,8 +89,8 @@ describe("reducer — déterminisme", () => {
     const g1 = createGame(GID, DECKS, { seedA: "x", seedB: "y" }).state;
     const g2 = createGame(GID, DECKS, { seedA: "x", seedB: "y" }).state;
     const g3 = createGame(GID, DECKS, { seedA: "z", seedB: "y" }).state;
-    expect(g1.seats.A.pioche).toEqual(g2.seats.A.pioche);
-    expect(g1.seats.A.pioche).not.toEqual(g3.seats.A.pioche);
+    expect(g1.seats.A!.pioche).toEqual(g2.seats.A!.pioche);
+    expect(g1.seats.A!.pioche).not.toEqual(g3.seats.A!.pioche);
   });
 
   it("SHUFFLE est une permutation (mêmes cartes, ordre changé)", () => {
@@ -122,8 +122,8 @@ describe("reducer — déterminisme", () => {
       derived = deriveState(redacted);
     }).not.toThrow();
     // La Pioche garde les mêmes cartes (l'ordre est opaque au client).
-    expect(derived!.seats.A.pioche.length).toBe(full.seats.A.pioche.length);
-    expect(derived!.seats.B.pioche.length).toBe(full.seats.B.pioche.length);
+    expect(derived!.seats.A!.pioche.length).toBe(full.seats.A!.pioche.length);
+    expect(derived!.seats.B!.pioche.length).toBe(full.seats.B!.pioche.length);
   });
 
   it("MULLIGAN_DONE est un no-op d'état (fold sans throw)", () => {
@@ -172,8 +172,8 @@ describe("reducer — déterminisme", () => {
     const { events } = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" });
     const before = deriveState(events);
     expect(before.combat ?? null).toBeNull();
-    const heroB = before.seats.B.heroInstanceId!;
-    const allyA = before.seats.A.havreSacInstanceId!; // une instance en jeu quelconque
+    const heroB = before.seats.B!.heroInstanceId!;
+    const allyA = before.seats.A!.havreSacInstanceId!; // une instance en jeu quelconque
     const combat = {
       attackerSeat: "A" as const,
       step: "blockers" as const,
@@ -233,7 +233,7 @@ describe("reducer — mémoïsation incrémentale du fold", () => {
   });
 
   it("un UNDONE dans la queue est géré (recalcul complet)", () => {
-    const heroA = buildInitialLayout(GID, DECKS).seats.A.heroInstanceId!;
+    const heroA = buildInitialLayout(GID, DECKS).seats.A!.heroInstanceId!;
     const base = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" }).events;
     const s1 = deriveState(base);
     const withCounter = [
@@ -255,7 +255,7 @@ describe("reducer — mémoïsation incrémentale du fold", () => {
 
 describe("reducer — frontière de zone (501.5)", () => {
   it("Monde↔Havre-Sac conserve les compteurs ; tout autre move les purge", () => {
-    const heroA = buildInitialLayout(GID, DECKS).seats.A.heroInstanceId!;
+    const heroA = buildInitialLayout(GID, DECKS).seats.A!.heroInstanceId!;
     const swap = play(
       (_s) => [setCounter("A", heroA, "damage", 2)],
       () => [worldHavenSwap("A", heroA, "havreSac")], // Havre-Sac → Monde
@@ -273,7 +273,7 @@ describe("reducer — frontière de zone (501.5)", () => {
 
 describe("reducer — undo (§4.5)", () => {
   it("UNDONE { targetSeq } annule l'effet de l'event ciblé", () => {
-    const heroA = buildInitialLayout(GID, DECKS).seats.A.heroInstanceId!;
+    const heroA = buildInitialLayout(GID, DECKS).seats.A!.heroInstanceId!;
     // seq du SET_COUNTER, puis on l'annule.
     const base = createGame(GID, DECKS, { seedA: "sa", seedB: "sb" }).events;
     const s1 = deriveState(base);
@@ -301,15 +301,15 @@ describe("redaction — étanchéité de l'information cachée (OBJ-7)", () => {
 
   it("la vue de B ne révèle ni la main ni la Pioche de A (kind:count)", () => {
     const viewB = redactStateFor(state, "B");
-    expect(viewB.seats.A.main.kind).toBe("count");
-    expect(viewB.seats.A.pioche.kind).toBe("count");
-    expect(viewB.seats.A.reserve).toBeNull();
+    expect(viewB.seats.A!.main.kind).toBe("count");
+    expect(viewB.seats.A!.pioche.kind).toBe("count");
+    expect(viewB.seats.A!.reserve).toBeNull();
   });
 
   it("AUCUN cardId secret de A n'apparaît dans la vue de B", () => {
     const viewB = redactStateFor(state, "B");
     const json = JSON.stringify(viewB);
-    const secretCardIds = [...state.seats.A.pioche, ...state.seats.A.main].map(
+    const secretCardIds = [...state.seats.A!.pioche, ...state.seats.A!.main].map(
       (id) => state.instances[id].cardId!,
     );
     for (const cardId of secretCardIds) {
@@ -319,10 +319,10 @@ describe("redaction — étanchéité de l'information cachée (OBJ-7)", () => {
 
   it("A voit sa propre main (full), mais jamais l'ordre/contenu de sa Pioche", () => {
     const viewA = redactStateFor(state, "A");
-    expect(viewA.seats.A.main.kind).toBe("full");
-    expect(viewA.seats.A.pioche.kind).toBe("count"); // ordre secret même pour le proprio
-    if (viewA.seats.A.main.kind === "full") {
-      expect(viewA.seats.A.main.instances.every((i) => i.cardId !== null)).toBe(
+    expect(viewA.seats.A!.main.kind).toBe("full");
+    expect(viewA.seats.A!.pioche.kind).toBe("count"); // ordre secret même pour le proprio
+    if (viewA.seats.A!.main.kind === "full") {
+      expect(viewA.seats.A!.main.instances.every((i) => i.cardId !== null)).toBe(
         true,
       );
     }
@@ -332,8 +332,8 @@ describe("redaction — étanchéité de l'information cachée (OBJ-7)", () => {
     const viewB = redactStateFor(state, "B");
     expect(viewB.monde.kind).toBe("full");
     // le Héros de A (dans son Havre-Sac) est public
-    if (viewB.seats.A.havreSac.kind === "full") {
-      const hero = viewB.seats.A.havreSac.instances.find(
+    if (viewB.seats.A!.havreSac.kind === "full") {
+      const hero = viewB.seats.A!.havreSac.instances.find(
         (i) => i.cardId === "A-hero",
       );
       expect(hero).toBeTruthy();
@@ -341,9 +341,9 @@ describe("redaction — étanchéité de l'information cachée (OBJ-7)", () => {
   });
 
   it("canSeeCardId : main du proprio oui, main adverse non, pioche jamais", () => {
-    const heroA = state.seats.A.heroInstanceId!;
-    const inMainA = state.seats.A.main[0];
-    const inPiocheA = state.seats.A.pioche[0];
+    const heroA = state.seats.A!.heroInstanceId!;
+    const inMainA = state.seats.A!.main[0];
+    const inPiocheA = state.seats.A!.pioche[0];
     expect(canSeeCardId(state.instances[inMainA], "A")).toBe(true);
     expect(canSeeCardId(state.instances[inMainA], "B")).toBe(false);
     expect(canSeeCardId(state.instances[inPiocheA], "A")).toBe(false);

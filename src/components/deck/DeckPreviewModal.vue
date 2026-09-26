@@ -221,10 +221,10 @@
                         ×{{ entry.quantity }}
                       </span>
                       <span
-                        v-if="entry.card?.stats?.niveau?.valeur !== undefined"
+                        v-if="entry.card?.stats?.niveau?.value !== undefined"
                         class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-amber-300 font-mono text-[10px] font-bold"
                       >
-                        N{{ entry.card.stats.niveau.valeur }}
+                        N{{ entry.card.stats.niveau.value }}
                       </span>
                     </div>
                     <div class="p-1.5 bg-base-100">
@@ -263,8 +263,8 @@
                         </p>
                         <span class="text-[11px] font-mono text-base-content/60">
                           {{ entry.card?.mainType || entry.type || 'Carte' }}
-                          <template v-if="entry.card?.stats?.niveau?.valeur !== undefined">
-                            · N{{ entry.card.stats.niveau.valeur }}
+                          <template v-if="entry.card?.stats?.niveau?.value !== undefined">
+                            · N{{ entry.card.stats.niveau.value }}
                           </template>
                         </span>
                       </div>

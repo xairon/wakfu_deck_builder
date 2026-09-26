@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   createMockDeck,
   createMockHeroCard,
@@ -202,7 +202,7 @@ describe("authorizeDraft", () => {
 
   it("rejette une action visant une instance dans la zone privée adverse (main/pioche/réserve de B)", () => {
     const s = twoSeatState();
-    const bPioche = s.seats.B.pioche[0]; // carte privée de B
+    const bPioche = s.seats.B!.pioche[0]; // carte privée de B
     expect(() =>
       authorizeDraft(s, {
         actor: "A",
@@ -214,7 +214,7 @@ describe("authorizeDraft", () => {
 
   it("rejette un MOVE qui sort une carte de la main adverse", () => {
     const s = twoSeatState();
-    const bPioche = s.seats.B.pioche[0];
+    const bPioche = s.seats.B!.pioche[0];
     expect(() =>
       authorizeDraft(s, {
         actor: "A",
@@ -238,7 +238,7 @@ describe("authorizeDraft", () => {
         actor: "A",
         type: "SET_ORIENTATION",
         payload: {
-          instanceId: s.seats.A.heroInstanceId!,
+          instanceId: s.seats.A!.heroInstanceId!,
           orientation: "tapped",
         },
       },
@@ -246,7 +246,7 @@ describe("authorizeDraft", () => {
         actor: "A",
         type: "MOVE",
         payload: {
-          instanceId: s.seats.A.heroInstanceId!,
+          instanceId: s.seats.A!.heroInstanceId!,
           from: { zone: "havreSac", owner: "A" },
           to: { zone: "monde" },
           position: { at: "any" },
@@ -258,7 +258,7 @@ describe("authorizeDraft", () => {
         actor: "A",
         type: "INC_COUNTER",
         payload: {
-          instanceId: s.seats.A.heroInstanceId!,
+          instanceId: s.seats.A!.heroInstanceId!,
           counter: "hp",
           delta: -1,
         },

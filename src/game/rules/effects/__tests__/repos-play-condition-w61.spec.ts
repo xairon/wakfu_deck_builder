@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vague W61 (deck-driven, starter Incarnam Repos) — RESTRICTION DE JEU +
  * réutilisation du COÛT VARIABLE X (W60).
  *
@@ -72,7 +72,7 @@ describe("costPayX + heroGainPv{fromCount} — Repos soigne X PV", () => {
     const p1 = placeInZone(store, "A", { zone: "monde" });
     const p2 = placeInZone(store, "A", { zone: "monde" });
     const src = placeInZone(store, "A", { zone: "monde" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     // Le soin est PLAFONNÉ au PV max : on blesse d'abord le Héros, sinon (au max)
     // il ne regagne rien et le gain de X PV ne serait pas observable.
     store.enqueueEffect({
@@ -98,7 +98,7 @@ describe("costPayX + heroGainPv{fromCount} — Repos soigne X PV", () => {
   it("payer X=0 (s'arrêter d'emblée) → aucun soin (no-op fidèle)", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     const src = placeInZone(store, "A", { zone: "monde" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     const hp0 = store.state.instances[heroId].counters.hp ?? 0;
     store.enqueueEffect({
       seat: "A",

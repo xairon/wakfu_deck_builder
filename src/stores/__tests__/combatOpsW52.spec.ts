@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W52) — ops liés au combat local :
  *  - PROJECTION rulesCtx : le combat LOCAL (ref combat.value, jamais journalisé)
  *    est projeté dans ctx.state.combat → les filtres combatRole prennent vie en
@@ -42,7 +42,7 @@ describe("Exclusion — retrait du combat (projection + mutation du ref)", () =>
   it("cible l'attaquant : il quitte combat.attackers et revient incliné", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     const atk = placeInZone(store, "A", { zone: "monde" });
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.combat = declaredCombat([atk], heroB);
 
     store.enqueueEffect({
@@ -73,7 +73,7 @@ describe("Exclusion — retrait du combat (projection + mutation du ref)", () =>
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     const atk = placeInZone(store, "A", { zone: "monde" });
     const blk = placeInZone(store, "B", { zone: "monde" });
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.combat = {
       ...declaredCombat([atk], heroB),
       blocks: { [blk]: atk },
@@ -170,11 +170,11 @@ describe("Dora — gate d'activation Porteur-en-combat", () => {
   it("Porteur ATTAQUANT du combat déclaré : activation OK → inclinaison + pioche", () => {
     const { store, bearer, doraId } = setup();
     store.state.instances[bearer].attachments = [doraId];
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.combat = declaredCombat([bearer], heroB);
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     expect(store.activateTapPower(doraId)).toBe(true);
     expect(store.state.instances[doraId].orientation).toBe("tapped");
-    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 1);
   });
 });

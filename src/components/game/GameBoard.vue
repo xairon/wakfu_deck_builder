@@ -1007,7 +1007,7 @@
         <span v-else class="gcombat__step" role="status" aria-live="polite">
           {{
             store.combat.reactingSeat
-              ? `↩ Réaction de ${store.players[store.combat.reactingSeat].name} — joue puis « Fini de réagir »`
+              ? `↩ Réaction de ${store.players[store.combat.reactingSeat]?.name ?? store.combat.reactingSeat} — joue puis « Fini de réagir »`
               : store.combat.step === "attackers"
                 ? "⚔ Choisis tes attaquants puis une cible adverse"
                 : store.combat.step === "strikes"
@@ -1020,7 +1020,7 @@
                         ? "🛡 Choisis l'attaquant que ce bloqueur affronte"
                         : store.defenderCanReact
                           ? "⚡ Tu peux RÉAGIR : joue une Action ou un pouvoir, puis bloque et « Résoudre le combat »"
-                          : `🛡 Déclare les bloqueurs de ${store.players[opp].name} (ou « Résoudre le combat » pour laisser passer)`
+                          : `🛡 Déclare les bloqueurs de ${store.players[opp]?.name ?? opp} (ou « Résoudre le combat » pour laisser passer)`
           }}
         </span>
         <span class="gcombat__info">
@@ -1503,7 +1503,7 @@
       data-testid="pile-browser"
       role="dialog"
       aria-modal="true"
-      :aria-label="`Défausse de ${store.players[pileBrowse.seat].name}`"
+      :aria-label="`Défausse de ${store.players[pileBrowse.seat]?.name ?? pileBrowse.seat}`"
       tabindex="-1"
       @click.self="pileBrowse = null"
       @keydown.esc.prevent="pileBrowse = null"
@@ -1516,7 +1516,7 @@
                 ? "Zone Bannie (Exil)"
                 : "Défausse (Cimetière)"
             }}
-            — {{ store.players[pileBrowse.seat].name }}
+            — {{ store.players[pileBrowse.seat]?.name ?? pileBrowse.seat }}
             <span class="gpilebrowser__count"
               >{{ browsedPile.length }} carte(s)</span
             >
@@ -1721,7 +1721,7 @@
       data-testid="opp-deck-browser"
       role="dialog"
       aria-modal="true"
-      :aria-label="`Deck révélé de ${store.players[opp].name}`"
+      :aria-label="`Deck révélé de ${store.players[opp]?.name ?? opp}`"
       tabindex="-1"
       @click.self="oppDeckBrowse = false"
       @keydown.esc.prevent="oppDeckBrowse = false"
@@ -1729,7 +1729,7 @@
       <div class="gpilebrowser__panel">
         <header class="gpilebrowser__head">
           <h2 class="gpilebrowser__title">
-            Deck révélé de {{ store.players[opp].name }}
+            Deck révélé de {{ store.players[opp]?.name ?? opp }}
             <span class="gpilebrowser__count">
               {{ oppDeckCards.length }} carte(s)
             </span>
@@ -2179,7 +2179,7 @@ onMounted(() => {
 
 const view = computed(() => store.view);
 
-function instancesOf(z: RedactedZone | null): RedactedInstance[] {
+function instancesOf(z: RedactedZone | null | undefined): RedactedInstance[] {
   return z && z.kind === "full" ? z.instances : [];
 }
 function mondeOwned(seat: Seat): RedactedInstance[] {
@@ -2294,7 +2294,7 @@ const pileBrowse = ref<{ seat: Seat; zone?: "defausse" | "exil" } | null>(null);
 const browsedPile = computed<RedactedInstance[]>(() => {
   if (!pileBrowse.value) return [];
   const z = pileBrowse.value.zone ?? "defausse";
-  return [...instancesOf(view.value.seats[pileBrowse.value.seat][z])];
+  return [...instancesOf(view.value.seats[pileBrowse.value.seat]?.[z])];
 });
 /**
  * RÉCUPÉRATION depuis MA Défausse (effets « Récupérez… ») : déplace la carte
@@ -2325,7 +2325,7 @@ const deckBrowse = ref(false);
  *  la fermeture mélange). */
 const myDeckCards = computed<RedactedInstance[]>(() =>
   deckBrowse.value
-    ? store.state.seats[me.value].pioche.map((id) => {
+    ? store.state.seats[me.value]!.pioche.map((id) => {
         const inst = store.state.instances[id];
         return {
           instanceId: id,
@@ -2527,7 +2527,7 @@ function openPileBrowser(
   });
 }
 function reserveCount(seat: Seat): number {
-  const z = view.value.seats[seat].reserve;
+  const z = view.value.seats[seat]?.reserve;
   return !z ? 0 : z.kind === "count" ? z.count : z.instances.length;
 }
 
@@ -3366,7 +3366,9 @@ const activeCombatLinks = ref<CombatLink[]>([]);
 // En fin de tour ou lors du changement de tour : suppression de toutes les déclarations et animations
 watch(
   () => [store.turn.number, store.turn.active, store.turn.phase] as const,
-  ([num, active, phase], [oldNum, oldActive, _oldPhase] = []) => {
+  ([num, active, phase], old) => {
+    const oldNum = old?.[0];
+    const oldActive = old?.[1];
     if (phase === "fin" || num !== oldNum || active !== oldActive) {
       if (pendingAttackerIds.value.length > 0) {
         pendingAttackerIds.value.forEach((id) =>
@@ -3611,7 +3613,7 @@ function heroCounters(seat: Seat): CardCounters {
   return heroInst(seat)?.counters ?? {};
 }
 function bumpHero(seat: Seat, counter: string, delta: number): void {
-  const id = view.value.seats[seat].heroInstanceId;
+  const id = view.value.seats[seat]?.heroInstanceId;
   if (!id) return;
   if (counter === "level") {
     store.toggleFlip(id);

@@ -314,7 +314,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
      * PROPRIÉTAIRE de la pile où l'on choisit. Absent = `seat` (l'acteur — cas
      * historique : on pioche/recycle/défausse dans SES propres piles). Posé à
      * l'adversaire pour « … de la Défausse d'un adversaire » (banishFromZone) :
-     * le pick lit alors `seats[owner][zone]`, et la carte choisie va en EXIL de
+     * le pick lit alors `seats[owner]![zone]`, et la carte choisie va en EXIL de
      * son propriétaire (= owner).
      */
     owner?: Seat;
@@ -406,7 +406,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   function enforceHandLimit(seat: Seat): void {
     if (!deps.isAssist() || deps.getMatchPhase() !== "playing") return;
     if (effectPicking.value || effectTargeting.value) return; // re-vérifié après
-    const excess = deps.getState().seats[seat].main.length - deps.paOf(seat);
+    const excess = deps.getState().seats[seat]!.main.length - deps.paOf(seat);
     if (excess <= 0) return;
     deps.dispatch(
       say(
@@ -520,7 +520,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
   const effectPickIds = computed(() => {
     const p = effectPicking.value;
     if (!p) return [];
-    const zoneIds = deps.getState().seats[p.owner ?? p.seat][p.zone];
+    const zoneIds = deps.getState().seats[p.owner ?? p.seat]![p.zone];
     // LOOK-N : candidats EXPLICITES (les N du dessus à l'ouverture), restreints
     // aux cartes encore dans la zone.
     const ids = p.candidates
@@ -629,7 +629,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     p: NonNullable<typeof effectPicking.value>,
   ): void {
     if (p.restAction !== "recycle" || !p.candidates) return;
-    const zoneIds = new Set(deps.getState().seats[p.owner ?? p.seat][p.zone]);
+    const zoneIds = new Set(deps.getState().seats[p.owner ?? p.seat]![p.zone]);
     const rest = p.candidates.filter((id) => zoneIds.has(id));
     for (const id of rest)
       deps.moveTo(id, { zone: "pioche", owner: p.seat }, { at: "bottom" });
@@ -821,7 +821,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
       case "heroInZone": {
         // « si votre Héros se trouve dans son Havre-Sac / dans le Monde » : zone
         // courante du Héros de l'acteur.
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         const hero = heroId ? deps.getState().instances[heroId] : null;
         return !!hero && hero.location.zone === cond.zone;
       }
@@ -829,7 +829,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // « vous venez de jouer une Quête ou un Parchemin » : jeton de récence du
         // Héros (posé par playFromHand). Sert de restriction de POUVOIR (Fécaline,
         // évaluée à l'activation) ; ce cas couvre aussi un usage en `conditional`.
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         const hero = heroId ? deps.getState().instances[heroId] : null;
         return (hero?.counters.tokens?.recentQuestParch ?? 0) > 0;
       }
@@ -841,7 +841,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // RÉCENCE PAR CATÉGORIE — miroir du gate de legality (playConditionOk) :
         // who:"self" lit le Héros de l'acteur, who:"other" le Héros adverse.
         const whoSeat = cond.who === "other" ? otherSeat(seat) : seat;
-        const heroId = deps.getState().seats[whoSeat].heroInstanceId;
+        const heroId = deps.getState().seats[whoSeat]!.heroInstanceId;
         const hero = heroId ? deps.getState().instances[heroId] : null;
         return cond.kinds.some(
           (k) => (hero?.counters.tokens?.[RECENT_PLAY_TOKENS[k]] ?? 0) > 0,
@@ -1195,7 +1195,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           .getState()
           .seats[
             seat
-          ][fromZone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+          ]![fromZone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
         if (!hasMatch) {
           deps.dispatch(
             say(
@@ -1235,7 +1235,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           .getState()
           .seats[
             seat
-          ][op.from].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+          ]![op.from].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
         if (!hasMatch) {
           deps.dispatch(
             say(
@@ -1268,7 +1268,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           .getState()
           .seats[
             seat
-          ][zone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+          ]![zone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
         if (!hasMatch) {
           deps.dispatch(
             say(
@@ -1304,7 +1304,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           .getState()
           .seats[
             owner
-          ][op.from].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+          ]![op.from].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
         if (!hasMatch) {
           deps.dispatch(
             say(
@@ -1334,7 +1334,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // (toujours payée ; boundCount = nombre réellement défaussé, lu par les
         // ops `fromCount`). Sans `max` : défausse IMPOSÉE de `n` (abandon si la
         // main n'a pas assez — le corps ne s'exécute pas).
-        const hand = deps.getState().seats[seat].main;
+        const hand = deps.getState().seats[seat]!.main;
         if (op.max) {
           if (hand.length === 0) {
             holdRest(frame, [...ops.slice(i + 1)]);
@@ -1392,7 +1392,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // — mill DÉTERMINISTE du SOMMET (pioche[0..n-1]) vers la Défausse, AUCUN
         // choix. Impayable si la Pioche a < n cartes → frame abandonnée (corps non
         // exécuté), comme les autres coûts payés.
-        const pioche = deps.getState().seats[seat].pioche;
+        const pioche = deps.getState().seats[seat]!.pioche;
         if (pioche.length < op.n) {
           deps.dispatch(
             say(
@@ -1511,7 +1511,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           .getState()
           .seats[
             seat
-          ][zone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
+          ]![zone].some((id) => matchesPickFilter(deps.getCard(deps.getState().instances[id]?.cardId ?? null), filter));
         // « Recyclez JUSQU'À N … » (max) : recyclage OPTIONNEL 0..N. Le coût est
         // TOUJOURS payé (« jusqu'à » admet 0) ; si rien n'est recyclable, on lie
         // boundCount = 0 et le CORPS tourne (magnitude 0, no-op fidèle) — pas
@@ -1607,7 +1607,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           deps.dispatch(incCounterVerb(seat, sourceId!, op.counter, 1, true));
       } else if (op.op === "incHeroTurnToken") {
         // Marqueur flottant sur le HÉROS de l'acteur (Glyphe : `glypheDamage`).
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId)
           deps.dispatch(incCounterVerb(seat, heroId, op.token, op.n, true));
       } else if (op.op === "grantKeywordSelf") {
@@ -1802,17 +1802,17 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // « Votre Héros regagne X PV » (X = nombre recyclé, costRecycle{max}) →
         // magnitude dynamique via opMagnitude (recyclé 0 → +0 PV, no-op fidèle).
         // PLAFONNÉ au PV max (regagner = récupérer les PV perdus, pas dépasser).
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         const amount = opMagnitude(op, frame);
         if (heroId && amount) {
           const heal = cappedHeal(deps.rulesCtx(), heroId, amount);
           if (heal) deps.adjustCounter(heroId, "hp", heal);
         }
       } else if (op.op === "heroLosePv") {
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId) deps.adjustCounter(heroId, "hp", -op.n);
       } else if (op.op === "damageOppHero") {
-        const oppHeroId = deps.getState().seats[otherSeat(seat)].heroInstanceId;
+        const oppHeroId = deps.getState().seats[otherSeat(seat)]!.heroInstanceId;
         // PORTÉE 508.x : le Héros adverse protégé dans son Havre-Sac est
         // INJOIGNABLE (no-op fidèle) ; il ne prend des Dommages qu'EXPOSÉ dans le
         // Monde (sorti attaquer, ou expulsé à la destruction du Havre-Sac 410.7).
@@ -1849,7 +1849,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           }
         }
       } else if (op.op === "havreSacGainResistance") {
-        const sacId = deps.getState().seats[seat].havreSacInstanceId;
+        const sacId = deps.getState().seats[seat]!.havreSacInstanceId;
         if (sacId) deps.adjustCounter(sacId, "resistance", op.n);
       } else if (op.op === "tapSelf") {
         const src = sourceId ? deps.getState().instances[sourceId] : null;
@@ -1913,7 +1913,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           ),
         );
       } else if (op.op === "loseStatTurn") {
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId) {
           deps.dispatch(
             incCounterVerb(
@@ -1931,7 +1931,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         }
       } else if (op.op === "oppLoseStatTurn") {
         // « Tous vos adversaires perdent N PA/PM » — en 1v1, le Héros adverse.
-        const oppHeroId = deps.getState().seats[otherSeat(seat)].heroInstanceId;
+        const oppHeroId = deps.getState().seats[otherSeat(seat)]!.heroInstanceId;
         if (oppHeroId) {
           deps.dispatch(
             incCounterVerb(
@@ -1949,7 +1949,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         }
       } else if (op.op === "buffForceHeroSelf") {
         // « Votre Héros gagne +N en Force » — jeton forceMod (fin de tour).
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId) {
           deps.dispatch(
             incCounterVerb(seat, heroId, "forceMod", op.n, true),
@@ -1964,7 +1964,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // subissent −N Dommages » : jeton teamDmgRedCombatMod sur le Héros (suffixe
         // *CombatMod → purgé en fin de tour ; reduceDamage le lit pour les cibles
         // en rôle de combat de ce siège). CUMUL si joué plusieurs fois (incCounter).
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId) {
           deps.dispatch(
             incCounterVerb(seat, heroId, "teamDmgRedCombatMod", op.n, true),
@@ -1976,7 +1976,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         }
       } else if (op.op === "untapHeroSelf") {
         // « Redressez votre Héros » — SET_ORIENTATION upright (no-op si déjà dressé).
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         const hero = heroId ? deps.getState().instances[heroId] : null;
         if (heroId && hero && hero.orientation === "tapped") {
           deps.dispatch(
@@ -2041,7 +2041,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
           );
         }
       } else if (op.op === "buffForceAlliesMondeTurn") {
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId) {
           // 812.3b — jeton de SIÈGE sur le Héros (ensemble dynamique) : tout
           // Allié du Monde du siège en profite. "heroLevel" est figé au Niveau
@@ -2062,7 +2062,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // teamPowerDmgMod sur le Héros (cumulatif — deux Gumas = +2 ; purgé en
         // fin de tour, TURN_TOKENS), lu par allyPowerDamageBonus au point de
         // résolution des Dommages d'effet.
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId) {
           deps.dispatch(
             incCounterVerb(seat, heroId, "teamPowerDmgMod", op.n, true),
@@ -2077,7 +2077,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // entièrement DÉTERMINISTE (aucune interaction) :
         //  - discardDraw : la carte part en Défausse ; Élément matche → +1 pioche.
         //  - takeElse : type matche → en main ; sinon recycle / Défausse.
-        const pioche = deps.getState().seats[seat].pioche;
+        const pioche = deps.getState().seats[seat]!.pioche;
         if (!pioche.length) {
           deps.dispatch(say(seat, `${cardName} : Pioche vide, effet passé.`));
           continue;
@@ -2134,7 +2134,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // (mainType + Niveau exact) → toMonde ; le reste recyclé SOUS la
         // Pioche à la clôture — y compris si le joueur passe (effectPickSkip
         // recycle aussi le reste des candidats).
-        const pioche = deps.getState().seats[seat].pioche;
+        const pioche = deps.getState().seats[seat]!.pioche;
         if (!pioche.length) {
           deps.dispatch(say(seat, `${cardName} : Pioche vide, effet passé.`));
           continue;
@@ -2169,7 +2169,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         // choix IMPOSÉ (mandatory — on prend une carte), le RESTE recyclé sous
         // la Pioche à la clôture (restAction). Pioche vide → effet passé ; une
         // seule carte → le joueur la voit et la prend (rien à recycler).
-        const pioche = deps.getState().seats[seat].pioche;
+        const pioche = deps.getState().seats[seat]!.pioche;
         if (!pioche.length) {
           deps.dispatch(say(seat, `${cardName} : Pioche vide, effet passé.`));
           continue;
@@ -2187,7 +2187,7 @@ export function createEffectEngine(deps: EffectEngineDeps) {
         holdRest(frame, ops.slice(i + 1));
         return true;
       } else if (op.op === "globalDamageShield") {
-        const heroId = deps.getState().seats[seat].heroInstanceId;
+        const heroId = deps.getState().seats[seat]!.heroInstanceId;
         if (heroId) {
           // « jusqu'au début de votre prochain tour » : actif pendant le tour
           // adverse, purgé à l'entrée de votre tour suivant (numéro + 2).
@@ -2588,8 +2588,8 @@ export function createEffectEngine(deps: EffectEngineDeps) {
     const state = deps.getState();
     const inPlayIds = [
       ...state.monde,
-      ...state.seats.A.havreSac,
-      ...state.seats.B.havreSac,
+      ...state.seats.A!.havreSac,
+      ...state.seats.B!.havreSac,
     ];
     for (const watcherId of inPlayIds) {
       if (watcherId === appearedId) continue; // pas de veille sur sa propre apparition

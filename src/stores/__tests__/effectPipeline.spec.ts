@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import { otherSeat } from "@/game";
 import {
   makeEffectSandbox,
@@ -15,12 +15,12 @@ describe("pipeline d'effets — ops self / non-interactives", () => {
       cardName: "T",
       ops: [{ op: "draw", n: 2 }],
     });
-    expect(store.state.seats.A.main.length).toBe(2);
+    expect(store.state.seats.A!.main.length).toBe(2);
   });
 
   it("heroGainPv / heroLosePv : ajuste les PV du Héros actif (soin plafonné au max)", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     const base = store.state.instances[heroId].counters.hp ?? 0; // = PV max au départ
     // heroLosePv : perte directe.
     store.enqueueEffect({
@@ -47,7 +47,7 @@ describe("pipeline d'effets — ops self / non-interactives", () => {
 
   it("damageOppHero : retire des PV au Héros adverse", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const oppHero = store.state.seats[otherSeat("A")].heroInstanceId!;
+    const oppHero = store.state.seats[otherSeat("A")]!.heroInstanceId!;
     // Le Héros adverse doit être EXPOSÉ dans le Monde (protégé au Havre-Sac, 508.x).
     store.moveTo(oppHero, { zone: "monde" });
     const base = store.state.instances[oppHero].counters.hp ?? 0;
@@ -61,7 +61,7 @@ describe("pipeline d'effets — ops self / non-interactives", () => {
 
   it("havreSacGainResistance : ajoute de la Résistance au Havre-Sac", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const sacId = store.state.seats.A.havreSacInstanceId!;
+    const sacId = store.state.seats.A!.havreSacInstanceId!;
     const base = store.state.instances[sacId].counters.resistance ?? 0;
     store.enqueueEffect({
       seat: "A",
@@ -73,7 +73,7 @@ describe("pipeline d'effets — ops self / non-interactives", () => {
 
   it("loseStatTurn : pose un modificateur négatif de PA/PM sur le Héros", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
@@ -84,13 +84,13 @@ describe("pipeline d'effets — ops self / non-interactives", () => {
 
   it("shuffleDeck : mélange la Pioche sans en changer la taille", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const before = store.state.seats.A.pioche.length;
+    const before = store.state.seats.A!.pioche.length;
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
       ops: [{ op: "shuffleDeck" }],
     });
-    expect(store.state.seats.A.pioche.length).toBe(before);
+    expect(store.state.seats.A!.pioche.length).toBe(before);
   });
 
   it("gainXp : accorde de l'XP au Héros (effet résolu, file vidée)", () => {
@@ -150,7 +150,7 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
       sourceId: id,
       ops: [{ op: "destroySelf" }],
     });
-    expect(store.state.seats.A.defausse).toContain(id);
+    expect(store.state.seats.A!.defausse).toContain(id);
     // `monde` est une zone PARTAGÉE au niveau racine (pas par siège).
     expect(store.state.monde).not.toContain(id);
   });
@@ -182,7 +182,7 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
         },
       },
     ];
-    const mainBefore = store.state.seats.A.main.length;
+    const mainBefore = store.state.seats.A!.main.length;
     const ok = store.activateTapPower(src);
     expect(ok).toBe(true);
     // la SOURCE n'est ni inclinée ni détruite : c'est le coût (au choix) qui paie
@@ -195,7 +195,7 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
     expect(store.state.monde).not.toContain(payer); // détruit
     expect(store.state.monde).toContain(src); // source intacte
     // le corps a tourné : +1 carte en main
-    expect(store.state.seats.A.main.length).toBe(mainBefore + 1);
+    expect(store.state.seats.A!.main.length).toBe(mainBefore + 1);
   });
 
   it("activateTapPower (cost paidOps) : coût NON payable → le corps ne tourne pas", () => {
@@ -227,12 +227,12 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
         },
       },
     ];
-    const mainBefore = store.state.seats.A.main.length;
+    const mainBefore = store.state.seats.A!.main.length;
     const ok = store.activateTapPower(src);
     expect(ok).toBe(true);
     // pas de pause (rien à cibler) et le corps n'a PAS tourné
     expect(store.effectTargeting).toBeNull();
-    expect(store.state.seats.A.main.length).toBe(mainBefore);
+    expect(store.state.seats.A!.main.length).toBe(mainBefore);
     expect(store.state.instances[src].orientation).toBe("upright"); // source intacte
   });
 
@@ -264,15 +264,15 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
     expect(ok).toBe(true);
     // la SOURCE est BANNIE : en Exil de son propriétaire, jamais la Défausse.
     const srcOwner = store.state.instances[src].owner;
-    expect(store.state.seats[srcOwner].exil).toContain(src);
-    expect(store.state.seats[srcOwner].defausse).not.toContain(src);
+    expect(store.state.seats[srcOwner]!.exil).toContain(src);
+    expect(store.state.seats[srcOwner]!.defausse).not.toContain(src);
     expect(store.state.monde).not.toContain(src);
     // le corps a tourné : on est en pause sur le ciblage banishTarget…
     expect(store.effectTargeting?.op.op).toBe("banishTarget");
     store.effectTargetChoose(victim);
     // …la cible choisie est bannie elle aussi (Exil de SON propriétaire).
-    expect(store.state.seats[victimOwner].exil).toContain(victim);
-    expect(store.state.seats[victimOwner].defausse).not.toContain(victim);
+    expect(store.state.seats[victimOwner]!.exil).toContain(victim);
+    expect(store.state.seats[victimOwner]!.defausse).not.toContain(victim);
     expect(store.state.monde).not.toContain(victim);
   });
 
@@ -297,8 +297,8 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
         },
       },
     ];
-    const heroA = store.state.seats.A.heroInstanceId!;
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     const xpABefore = store.state.instances[heroA].counters.xp ?? 0;
     const xpBBefore = store.state.instances[heroB].counters.xp ?? 0;
     store.activateTapPower(src);
@@ -327,7 +327,7 @@ describe("pipeline d'effets — ops self gardées (source en jeu)", () => {
 describe("pipeline d'effets — jetons posés sur le Héros", () => {
   it("buffForceAlliesMondeTurn : pose teamForceMod sur le Héros (valeur fixe)", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
@@ -338,7 +338,7 @@ describe("pipeline d'effets — jetons posés sur le Héros", () => {
 
   it("globalDamageShield : pose treveUntilTurn = turn.number + 2 sur le Héros", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     const expected = store.state.turn.number + 2;
     store.enqueueEffect({
       seat: "A",
@@ -364,7 +364,7 @@ describe("pipeline d'effets — piles (effectPicking)", () => {
     expect(store.effectPicking?.zone).toBe("main");
     const pick = store.effectPickIds[0];
     store.effectPick(pick);
-    expect(store.state.seats.A.defausse).toContain(pick);
+    expect(store.state.seats.A!.defausse).toContain(pick);
     expect(store.effectPicking).toBeNull();
   });
 
@@ -379,13 +379,13 @@ describe("pipeline d'effets — piles (effectPicking)", () => {
     expect(store.effectPicking).not.toBeNull();
     store.effectPickSkip();
     expect(store.effectPicking).toBeNull();
-    expect(store.state.seats.A.defausse.length).toBe(0);
+    expect(store.state.seats.A!.defausse.length).toBe(0);
   });
 
   it("recycleFromDiscard n>1 : le picker reste ouvert jusqu'à épuiser remaining", () => {
     const { store } = makeEffectSandbox({ first: "A" });
     store.draw("A", 3);
-    for (const id of [...store.state.seats.A.main])
+    for (const id of [...store.state.seats.A!.main])
       store.moveTo(id, { zone: "defausse", owner: "A" });
     store.enqueueEffect({
       seat: "A",
@@ -407,7 +407,7 @@ describe("pipeline d'effets — piles (effectPicking)", () => {
       deck.havreSac!,
       ...deck.cards.map((dc) => dc.card),
     ];
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
@@ -415,7 +415,7 @@ describe("pipeline d'effets — piles (effectPicking)", () => {
     });
     expect(store.effectPicking?.zone).toBe("pioche");
     store.effectPick(store.effectPickIds[0]);
-    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 1);
     expect(store.effectPicking).toBeNull();
   });
 
@@ -491,12 +491,12 @@ describe("pipeline d'effets — ciblage (effectTargeting)", () => {
     store.effectTargetChoose(target);
     expect(store.effectTargeting).toBeNull();
     expect(store.state.monde).not.toContain(target);
-    expect(store.state.seats[otherSeat("A")].defausse).toContain(target);
+    expect(store.state.seats[otherSeat("A")]!.defausse).toContain(target);
   });
 
   it("healHeroTarget : le clic soigne le Héros ciblé (plafonné au max)", () => {
     const { store } = makeEffectSandbox({ first: "A" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
     const base = store.state.instances[heroId].counters.hp ?? 0;
     // Blesser d'abord : au PV max, le soin (plafonné) ne serait pas observable.
     store.enqueueEffect({
@@ -567,7 +567,7 @@ describe("pipeline d'effets — orchestration de file", () => {
   it("holdRest : une op interactive suspend la frame, le reste s'exécute après résolution", () => {
     const { store } = makeEffectSandbox({ first: "A" });
     store.draw("A", 2);
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     // discardFromHand (pause) PUIS draw 1 (reste de la frame)
     store.enqueueEffect({
       seat: "A",
@@ -579,11 +579,11 @@ describe("pipeline d'effets — orchestration de file", () => {
     });
     expect(store.effectPicking).not.toBeNull();
     // le draw du reste ne s'est PAS encore produit (frame suspendue)
-    expect(store.state.seats.A.main.length).toBe(handBefore);
+    expect(store.state.seats.A!.main.length).toBe(handBefore);
     store.effectPick(store.effectPickIds[0]);
     // pick (−1 main) puis reprise du reste : draw (+1 main) → net inchangé
     expect(store.effectPicking).toBeNull();
-    expect(store.state.seats.A.main.length).toBe(handBefore);
+    expect(store.state.seats.A!.main.length).toBe(handBefore);
   });
 
   it("FIFO : deux effets enfilés s'exécutent dans l'ordre d'enfilement", () => {
@@ -598,7 +598,7 @@ describe("pipeline d'effets — orchestration de file", () => {
       cardName: "E2",
       ops: [{ op: "draw", n: 1 }],
     });
-    expect(store.state.seats.A.main.length).toBe(2);
+    expect(store.state.seats.A!.main.length).toBe(2);
   });
 
   it("effectChoiceResolve(true) : l'effet d'arrivée OPTIONNEL ouvre un choix, accepter l'exécute", () => {
@@ -627,10 +627,10 @@ describe("pipeline d'effets — orchestration de file", () => {
     store.effectPick(store.effectPickIds[0]);
     // la carte mise en jeu propose son effet d'arrivée optionnel
     expect(store.effectChoice).not.toBeNull();
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     store.effectChoiceResolve(true);
     expect(store.effectChoice).toBeNull();
-    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 1);
   });
 
   it("effectChoiceResolve(false) : décliner ne joue pas l'effet optionnel", () => {
@@ -656,10 +656,10 @@ describe("pipeline d'effets — orchestration de file", () => {
     });
     store.effectPick(store.effectPickIds[0]);
     expect(store.effectChoice).not.toBeNull();
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     store.effectChoiceResolve(false);
     expect(store.effectChoice).toBeNull();
-    expect(store.state.seats.A.main.length).toBe(handBefore);
+    expect(store.state.seats.A!.main.length).toBe(handBefore);
   });
 });
 
@@ -732,11 +732,11 @@ describe("pipeline d'effets — putInPlay (mise en jeu depuis main / Défausse)"
     expect(store.effectPicking?.zone).toBe("main");
     expect(store.effectPicking?.action).toBe("toMonde");
     const picked = store.effectPickIds[0];
-    expect(store.state.seats.A.main).toContain(picked);
+    expect(store.state.seats.A!.main).toContain(picked);
     store.effectPick(picked);
     expect(store.state.monde).toContain(picked);
     expect(store.state.monde.length).toBe(mondeBefore + 1);
-    expect(store.state.seats.A.main).not.toContain(picked);
+    expect(store.state.seats.A!.main).not.toContain(picked);
     expect(store.effectPicking).toBeNull();
   });
 
@@ -772,7 +772,7 @@ describe("pipeline d'effets — putInPlay (mise en jeu depuis main / Défausse)"
       ...deck.cards.map((dc) => dc.card),
     ];
     // main vidée
-    store.state.seats.A.main = [];
+    store.state.seats.A!.main = [];
     store.enqueueEffect({
       seat: "A",
       cardName: "T",
@@ -804,7 +804,7 @@ describe("pipeline d'effets — putInPlay (mise en jeu depuis main / Défausse)"
     expect(store.effectPickIds).toContain(inDiscard);
     store.effectPick(inDiscard);
     expect(store.state.monde).toContain(inDiscard);
-    expect(store.state.seats.A.defausse).not.toContain(inDiscard);
+    expect(store.state.seats.A!.defausse).not.toContain(inDiscard);
     expect(store.effectPicking).toBeNull();
   });
 

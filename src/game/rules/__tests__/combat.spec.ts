@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { autoGeantAssign, resolveCombat, whyBadGeantAssign } from "../combat";
 import {
   HERO_A,
@@ -227,8 +227,8 @@ describe("rules/combat — résolution", () => {
       [instId("A", 0), instId("B", 0)].sort(),
     );
     // chacun va dans la défausse de son propriétaire
-    expect(state.seats.A.defausse).toContain(instId("A", 0));
-    expect(state.seats.B.defausse).toContain(instId("B", 0));
+    expect(state.seats.A!.defausse).toContain(instId("A", 0));
+    expect(state.seats.B!.defausse).toContain(instId("B", 0));
     // XP croisés : A gagne l'XP du bloqueur (2), B celui de l'attaquant (1)
     expect(state.instances[HERO_A].counters.xp).toBe(2);
     expect(state.instances[HERO_B].counters.xp).toBe(1);
@@ -353,9 +353,9 @@ describe("rules/combat — pouvoirs continus en combat (805.1)", () => {
     // À la Fin de Combat le bonus cesse (708.1) : la létalité différée des
     // 4 Dommages relève alors des destructions d'état du store (3019).
     expect(result.destroyed).toEqual([instId("A", 0)]);
-    expect(state.seats.A.defausse).toContain(instId("A", 0));
+    expect(state.seats.A!.defausse).toContain(instId("A", 0));
     expect(state.instances[instId("B", 0)].counters.damage).toBe(4);
-    expect(state.seats.B.defausse).not.toContain(instId("B", 0));
+    expect(state.seats.B!.defausse).not.toContain(instId("B", 0));
     // 415.1 : seul B gagne l'XP de l'attaquant détruit
     expect(state.instances[HERO_B].counters.xp).toBe(1);
   });
@@ -378,7 +378,7 @@ describe("rules/combat — riposte de la Cible (707.1)", () => {
     });
     // l'attaquant (F1) prend la riposte 3 ≥ 1 → détruit ; la cible prend 1 < 3 → survit
     expect(result.destroyed).toContain(instId("A", 0));
-    expect(state.seats.B.defausse).not.toContain(instId("B", 0));
+    expect(state.seats.B!.defausse).not.toContain(instId("B", 0));
     expect(state.instances[instId("B", 0)].counters.damage).toBe(1);
   });
 

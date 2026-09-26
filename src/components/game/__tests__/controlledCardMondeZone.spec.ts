@@ -15,7 +15,7 @@ describe("GameBoard — Carte adverse sous contrôle et affichage dans la zone M
     const opp = me === "A" ? "B" : "A";
 
     // On récupère une carte appartenant à l'adversaire (opp) et on la met dans le Monde
-    const oppCardId = store.state.seats[opp].pioche[0];
+    const oppCardId = store.state.seats[opp]!.pioche[0];
     store.moveTo(oppCardId, { zone: "monde" });
 
     // Initialement, elle appartient à opp et est contrôlée par opp
@@ -53,7 +53,7 @@ describe("GameBoard — Carte adverse sous contrôle et affichage dans la zone M
     const me = store.perspective;
     const opp = me === "A" ? "B" : "A";
 
-    const oppCardId = store.state.seats[opp].pioche[0];
+    const oppCardId = store.state.seats[opp]!.pioche[0];
     store.moveTo(oppCardId, { zone: "monde" });
     store.transferControl(oppCardId, me);
 

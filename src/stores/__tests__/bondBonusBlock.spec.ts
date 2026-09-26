@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vague W65 (deck-driven, starter Incarnam Bond) — BLOQUEUR BONUS.
  *
  * Bond : « Placez l'un de vos Alliés ou Héros en bloqueur devant l'Allié ou Héros
@@ -35,7 +35,7 @@ describe("Bond — bloqueur bonus au-delà des PM", () => {
     const atk = placeInZone(store, "A", { zone: "monde" });
     const blk1 = placeInZone(store, "B", { zone: "monde" });
     const blk2 = placeInZone(store, "B", { zone: "monde" });
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     // limite le défenseur B à 1 PM (1 bloqueur).
     store.state.instances[heroB].counters.pm = 1;
     store.combat = declaredCombat([atk], heroB);

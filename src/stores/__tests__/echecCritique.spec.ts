@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W74) — ÉCHEC CRITIQUE : fenêtre d'annulation (pile de
  * résolution profondeur 1). Quand un joueur joue une Action/pouvoir à effets et
  * que l'adversaire tient Échec Critique (local), les effets sont mis EN ATTENTE ;
@@ -58,7 +58,7 @@ function setup(opponentHasEchec = true) {
     extraCards: [BOLT, ECHEC, TAPPER],
   });
   store.state.turn.number = 3;
-  const heroA = store.state.seats.A.heroInstanceId!;
+  const heroA = store.state.seats.A!.heroInstanceId!;
   const xp = () => store.state.instances[heroA].counters.xp ?? 0;
   const boltId = placeInZone(store, "A", { zone: "main", owner: "A" });
   store.state.instances[boltId].cardId = "bolt-test";

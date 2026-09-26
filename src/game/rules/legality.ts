@@ -99,7 +99,7 @@ function combatPlayWindow(ctx: RulesCtx, seat: Seat, card: Card): boolean {
   if (kw.defense && seat === defender) return true;
   // Renfort : le contrôleur doit être l'attaquant ET son Héros doit attaquer.
   if (kw.renfort && seat === combat.attackerSeat) {
-    const heroId = ctx.state.seats[seat].heroInstanceId;
+    const heroId = ctx.state.seats[seat]!.heroInstanceId;
     if (heroId && combat.attackers.includes(heroId)) return true;
   }
   return false;
@@ -128,7 +128,7 @@ function playConditionOk(
   // pour une carte JOUÉE de la main (aucune exclusion pertinente).
   sourceId?: string,
 ): boolean {
-  const heroId = ctx.state.seats[seat].heroInstanceId;
+  const heroId = ctx.state.seats[seat]!.heroInstanceId;
   const hero = heroId ? ctx.state.instances[heroId] : null;
   if (pc?.cond === "heroInZone")
     return !!hero && hero.location.zone === pc.zone;
@@ -141,7 +141,7 @@ function playConditionOk(
   // Héros ADVERSE (en 1v1, « un adversaire / un autre joueur » = l'adversaire).
   if (pc?.cond === "recentlyPlayedKind") {
     const whoSeat = pc.who === "other" ? otherSeat(seat) : seat;
-    const hid = ctx.state.seats[whoSeat].heroInstanceId;
+    const hid = ctx.state.seats[whoSeat]!.heroInstanceId;
     const h = hid ? ctx.state.instances[hid] : null;
     return pc.kinds.some(
       (k) => (h?.counters.tokens?.[RECENT_PLAY_TOKENS[k]] ?? 0) > 0,
@@ -289,7 +289,7 @@ export function whyCannotCraft(
   if (!hasArtisan)
     return `Il faut incliner un Artisan ${recette.metier} dressé (401.4a).`;
   // 418.6 — N cartes de l'Élément requis dans SA Défausse.
-  const have = state.seats[seat].defausse.filter((id) => {
+  const have = state.seats[seat]!.defausse.filter((id) => {
     const c = ctx.getCard(state.instances[id]?.cardId ?? null);
     return c?.stats?.niveau?.element === recette.element;
   }).length;
@@ -373,7 +373,7 @@ export function whyCannotPlay(
   // Puissance d'Ogrest) : jeton par NOM sur VOTRE Héros, posé au jeu, purgé au
   // tour. Les rééditions du même nom partagent la limite.
   if ((card.effects ?? []).some((e) => e.compiled?.onceNamePerTurn)) {
-    const hid = state.seats[seat].heroInstanceId;
+    const hid = state.seats[seat]!.heroInstanceId;
     const h = hid ? state.instances[hid] : null;
     if ((h?.counters.tokens?.[onceNameToken(card.name)] ?? 0) > 0)
       return `Vous ne pouvez jouer qu'une seule ${card.name} par tour.`;
@@ -449,7 +449,7 @@ export function whyCannotMoveHero(
   if (turn.active !== seat) return "Ce n'est pas votre tour.";
   if (turn.phase !== "principale")
     return "On déplace le Héros en Phase Principale.";
-  const heroId = ctx.state.seats[seat].heroInstanceId;
+  const heroId = ctx.state.seats[seat]!.heroInstanceId;
   const hero = heroId ? ctx.state.instances[heroId] : undefined;
   return whyCannotMoveCommon(ctx, seat, hero, to, true);
 }
@@ -508,7 +508,7 @@ export function eligibleAttackers(ctx: RulesCtx, seat: Seat): InstanceId[] {
 /** Cibles légales (702.2/702.3) : Héros adverse, Allié adverse du Monde, Havre-Sac adverse. */
 export function eligibleTargets(ctx: RulesCtx, seat: Seat): CombatTarget[] {
   const def = otherSeat(seat);
-  const board = ctx.state.seats[def];
+  const board = ctx.state.seats[def]!;
   const out: CombatTarget[] = [];
   // Le Héros adverse n'est CIBLABLE qu'exposé dans le Monde (protégé au Havre-Sac,
   // 508.x) ; il s'y expose en sortant attaquer ou à l'expulsion (410.7).
@@ -589,7 +589,7 @@ export function eligibleBlockers(
  * Allié ou Salle dans la zone. `null` si la Taille est inconnue (mode libre).
  */
 export function havreSacCapacity(ctx: RulesCtx, seat: Seat): number | null {
-  const id = ctx.state.seats[seat].havreSacInstanceId;
+  const id = ctx.state.seats[seat]!.havreSacInstanceId;
   const inst = id ? ctx.state.instances[id] : null;
   const card = inst ? ctx.getCard(inst.cardId) : null;
   const taille = card?.stats?.taille;
@@ -599,7 +599,7 @@ export function havreSacCapacity(ctx: RulesCtx, seat: Seat): number | null {
 /** Occupation actuelle du Havre-Sac (Héros + Alliés + Salles, 4781). */
 export function havreSacOccupancy(ctx: RulesCtx, seat: Seat): number {
   let n = 0;
-  for (const id of ctx.state.seats[seat].havreSac) {
+  for (const id of ctx.state.seats[seat]!.havreSac) {
     const card = ctx.getCard(ctx.state.instances[id]?.cardId ?? null);
     if (!card) continue;
     if (
@@ -622,7 +622,7 @@ export function havreSacHasRoom(ctx: RulesCtx, seat: Seat): boolean {
 /** PM effectifs d'un siège (plafond attaquants/bloqueurs, 703/704) :
  *  compteur + modificateurs temporaires (pmMod, purgés en fin de tour). */
 export function pmOf(ctx: RulesCtx, seat: Seat): number {
-  const id = ctx.state.seats[seat].heroInstanceId;
+  const id = ctx.state.seats[seat]!.heroInstanceId;
   const inst = id ? ctx.state.instances[id] : null;
   const mod = inst?.counters.tokens?.pmMod ?? 0;
   if (inst?.counters.pm !== undefined)

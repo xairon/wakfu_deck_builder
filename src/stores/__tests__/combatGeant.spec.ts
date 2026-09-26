@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Store — 6135 : la répartition de Force d'un attaquant GÉANT bloqué est un
  * CHOIX du joueur (étape « geant » du combat), préremplie avec la politique
  * automatique et éditable (façon MTGA), validée par whyBadGeantAssign.
@@ -63,7 +63,7 @@ function setup() {
   while (store.state.turn.number < 3 || store.state.turn.active !== "A") {
     store.nextTurn();
   }
-  const sacB = store.state.seats.B.havreSacInstanceId!;
+  const sacB = store.state.seats.B!.havreSacInstanceId!;
   return { gid, b1id, b2id, sacB };
 }
 

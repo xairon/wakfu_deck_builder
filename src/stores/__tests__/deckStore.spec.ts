@@ -909,6 +909,8 @@ describe("deckStore", () => {
           havreSac: null,
           cards: [],
           reserve: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ];
 

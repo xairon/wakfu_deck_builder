@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BANNISSEMENT (« Bannir » = retirer de la partie, zone Exil) — sous-système
  * banishTarget + cost:banishSelf / banishSelfFromDiscard.
  *
@@ -53,8 +53,8 @@ describe("banish — règles pures (resolveBanishTarget / éligibilité)", () =>
     dispatch(f, ...res.events);
     const s = ctxOf(f).state;
     // EXIL du propriétaire (B), jamais la Défausse.
-    expect(s.seats.B.exil).toContain(instId("B", 0));
-    expect(s.seats.B.defausse).not.toContain(instId("B", 0));
+    expect(s.seats.B!.exil).toContain(instId("B", 0));
+    expect(s.seats.B!.defausse).not.toContain(instId("B", 0));
     expect(s.monde).not.toContain(instId("B", 0));
     // AUCUN XP accordé au Héros de A (contraste direct avec la destruction).
     expect(s.instances[HERO_A].counters.xp ?? 0).toBe(0);
@@ -430,7 +430,7 @@ describe("banish — reducer (jeton banni → Exil → cesse d'exister)", () => 
     );
     // banni hors-jeu : ni en Exil, ni dans les instances → a cessé d'exister.
     expect(s.instances["tok_A_1"]).toBeUndefined();
-    expect(s.seats.A.exil).not.toContain("tok_A_1");
+    expect(s.seats.A!.exil).not.toContain("tok_A_1");
     expect(s.monde).not.toContain("tok_A_1");
   });
 });

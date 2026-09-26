@@ -12,7 +12,7 @@ describe("VictoryDefeatOverlay", () => {
     const store = useGameStore();
     store.startSandbox(createMockDeck(), createMockDeck());
     const me = store.perspective;
-    const heroId = store.state.seats[me].heroInstanceId!;
+    const heroId = store.state.seats[me]!.heroInstanceId!;
 
     const wrapper = mount(VictoryDefeatOverlay);
     expect(wrapper.find('[data-testid="victory-defeat-overlay"]').exists()).toBe(false);

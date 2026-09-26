@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W45) — coût « payer une Ressource » (costTapResource) :
  * le pouvoir met en pause sur le ciblage d'un PRODUCTEUR (carte contrôlée
  * dressée), l'incline au paiement (SET_ORIENTATION), puis exécute le corps
@@ -31,20 +31,20 @@ describe("costTapResource — payer une Ressource en inclinant un producteur", (
     expect(store.effectTargeting?.op.op).toBe("costTapResource");
     expect([...store.effectTargetIdsList]).toContain(smareId);
 
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     store.effectTargetChoose(smareId);
 
     // le Smare s'est incliné (production) …
     expect(store.state.instances[smareId].orientation).toBe("tapped");
     // … puis le corps a pioché 1 carte.
-    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 1);
     expect(store.effectTargeting).toBeNull();
   });
 
   it("peut payer avec un AUTRE producteur (le Héros), pas seulement soi-même", () => {
     const { store } = makeEffectSandbox({ first: "A", allAllies: true });
     const smareId = placeInZone(store, "A", { zone: "monde" });
-    const heroId = store.state.seats.A.heroInstanceId!;
+    const heroId = store.state.seats.A!.heroInstanceId!;
 
     store.enqueueEffect({
       seat: "A",
@@ -55,13 +55,13 @@ describe("costTapResource — payer une Ressource en inclinant un producteur", (
     // le Héros (producteur) est une cible valide du coût
     expect([...store.effectTargetIdsList]).toContain(heroId);
 
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     store.effectTargetChoose(heroId);
 
     expect(store.state.instances[heroId].orientation).toBe("tapped");
     // le Smare, lui, reste dressé (ce n'est pas lui qu'on a incliné)
     expect(store.state.instances[smareId].orientation).toBe("upright");
-    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 1);
   });
 
   it("DÉCLINER (skip) : « vous pouvez payer » → si on ne paie pas, pas de pioche", () => {
@@ -76,12 +76,12 @@ describe("costTapResource — payer une Ressource en inclinant un producteur", (
     });
     expect(store.effectTargeting).not.toBeNull();
 
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     store.effectTargetSkip();
 
     // aucun producteur incliné, aucune carte piochée
     expect(store.state.instances[smareId].orientation).toBe("upright");
-    expect(store.state.seats.A.main.length).toBe(handBefore);
+    expect(store.state.seats.A!.main.length).toBe(handBefore);
     expect(store.effectTargeting).toBeNull();
   });
 });

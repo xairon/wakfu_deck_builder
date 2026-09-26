@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Intégration store (W76) — Fouet : destroyTarget nonUnique + recentlyAppeared
  * + noXp. Le Monstre non Unique qui VIENT d'apparaître est détruit ; le
  * lanceur NE gagne PAS l'XP de la destruction (415.1 suspendu pour « vous »
@@ -42,7 +42,7 @@ describe("Fouet — destruction sans XP du Monstre non Unique apparu", () => {
     });
     const tid = placeInZone(store, "B", { zone: "monde" });
     store.state.instances[tid].cardId = "monstre-banal-test";
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const xpBefore = store.state.instances[heroA].counters.xp ?? 0;
 
     store.enqueueEffect({ seat: "A", cardName: "Fouet", ops: [FOUET_OP] });

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+﻿import { describe, it, expect, beforeEach } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useGameStore } from "@/stores/gameStore";
 import { useCardStore } from "@/stores/cardStore";
@@ -103,7 +103,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.botAggressive = false;
 
     // Une carte du bot en main, injouable (coût non payable).
-    const bAllyId = store.state.seats.B.pioche.find(
+    const bAllyId = store.state.seats.B!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "B-ally",
     )!;
     store.moveTo(bAllyId, { zone: "main", owner: "B" });
@@ -128,7 +128,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.botAggressive = false; // pas d'attaque → on atteint l'étape des pouvoirs
 
     // Un Allié (sans pouvoir) dans le Monde du bot.
-    const bAllyId = store.state.seats.B.pioche.find(
+    const bAllyId = store.state.seats.B!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "B-ally",
     )!;
     store.moveTo(bAllyId, { zone: "monde" });
@@ -158,7 +158,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
 
     // Un Allié du bot dans le Monde ; le Héros A reste embagé, aucun Allié A au
     // Monde → aucune cible adverse légale (508.x).
-    const bAllyId = store.state.seats.B.pioche.find(
+    const bAllyId = store.state.seats.B!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "B-ally",
     )!;
     store.moveTo(bAllyId, { zone: "monde" });
@@ -178,7 +178,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
       ],
     });
     expect(store.effectTargeting?.op.op).toBe("damageTarget");
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     const hpBefore = store.state.instances[heroB].counters.hp ?? 0;
 
     botStep(store, new Set());
@@ -205,7 +205,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.botAggressive = false; // pas d'attaque → on atteint l'étape des pouvoirs
     store.perspective = "B";
 
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     // Plusieurs battements : le bot ne doit jamais incliner son Héros pour rien.
     const tried = new Set<string>();
     for (let i = 0; i < 5; i++) botStep(store, tried);
@@ -243,16 +243,16 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.botAggressive = false;
 
     // Salle + Allié-Monde en main de B.
-    const salleId = store.state.seats.B.pioche.find(
+    const salleId = store.state.seats.B!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "b-salle",
     )!;
-    const mondeId = store.state.seats.B.pioche.find(
+    const mondeId = store.state.seats.B!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "b-monde",
     )!;
     store.moveTo(salleId, { zone: "main", owner: "B" });
     store.moveTo(mondeId, { zone: "main", owner: "B" });
     store.perspective = "B";
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
 
     const tried = new Set<string>();
     for (let i = 0; i < 10; i++) botStep(store, tried);
@@ -273,7 +273,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.assistEffects = true;
 
     // A place un attaquant et déclare une attaque à son tour (tour 3).
-    const aAtkId = store.state.seats.A.pioche.find(
+    const aAtkId = store.state.seats.A!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "A-ally",
     )!;
     store.moveTo(aAtkId, { zone: "monde" });
@@ -281,12 +281,12 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.nextTurn(); // 3 (A)
     store.perspective = "A";
     expect(store.beginCombat(aAtkId)).toBe(true);
-    store.combatChooseTarget(store.state.seats.B.havreSacInstanceId!);
+    store.combatChooseTarget(store.state.seats.B!.havreSacInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true); // step blockers, B défenseur
 
     // Vue côté bot le temps d'agir (comme le driver useBotOpponent).
     store.perspective = "B";
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     // L'attaquant de A (Monde) est une cible adverse légale → le bot réagit.
     expect(botReactInCombat(store, "B", new Set())).toBe(true);
     expect(store.state.instances[heroB].orientation).toBe("tapped");
@@ -299,7 +299,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     const store = useGameStore();
     store.startSandbox(a.deck, b.deck, "A");
     store.assistEffects = true;
-    const aAtkId = store.state.seats.A.pioche.find(
+    const aAtkId = store.state.seats.A!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "A-ally",
     )!;
     store.moveTo(aAtkId, { zone: "monde" });
@@ -307,7 +307,7 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.nextTurn();
     store.perspective = "A";
     store.beginCombat(aAtkId);
-    store.combatChooseTarget(store.state.seats.B.havreSacInstanceId!);
+    store.combatChooseTarget(store.state.seats.B!.havreSacInstanceId!);
     store.combatConfirmAttackers();
     store.perspective = "B";
     expect(botReactInCombat(store, "B", new Set())).toBe(false);
@@ -326,12 +326,12 @@ describe("botPolicy — le bot ne pollue pas le joueur avec ses sondages", () =>
     store.perspective = "B";
 
     // Un Allié adverse (A) exposé dans le Monde → cible légale du pouvoir.
-    const aAllyId = store.state.seats.A.pioche.find(
+    const aAllyId = store.state.seats.A!.pioche.find(
       (id) => store.state.instances[id]?.cardId === "A-ally",
     )!;
     store.moveTo(aAllyId, { zone: "monde" });
 
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     const tried = new Set<string>();
     for (let i = 0; i < 5; i++) botStep(store, tried);
 

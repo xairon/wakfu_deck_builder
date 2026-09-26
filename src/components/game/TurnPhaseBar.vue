@@ -124,7 +124,9 @@ const localSubPhase = ref<string | null>(null);
 // Réinitialisation des sous-phases en fin de tour ou lors du changement de tour
 watch(
   () => [store.turn.number, store.turn.active, store.turn.phase] as const,
-  ([num, active, phase], [oldNum, oldActive] = []) => {
+  ([num, active, phase], old) => {
+    const oldNum = old?.[0];
+    const oldActive = old?.[1];
     if (phase === "fin" || num !== oldNum || active !== oldActive) {
       localSubPhase.value = null;
     }

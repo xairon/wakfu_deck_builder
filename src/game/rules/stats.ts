@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles — statistiques effectives d'une instance en jeu.
  * La Force effective (204.4, 812.2) compose, dans l'ordre :
  *   base imprimée (face courante) OU définie par un pouvoir continu
@@ -89,7 +89,7 @@ export function effectiveForce(
   const statics = staticAbilitiesOf(card, side);
   // 812.2 — base : imprimée, ou définie par un pouvoir continu (Vrombyx)
   let force = statics.some((s) => s.kind === "forceEqualsHandSize")
-    ? ctx.state.seats[inst.controller].main.length
+    ? ctx.state.seats[inst.controller]!.main.length
     : forceValue(card, side);
   if (inst.location.zone === "monde" && card.mainType === "Allié") {
     // 805.2 — auras des AUTRES cartes du Monde, même contrôleur.
@@ -103,7 +103,7 @@ export function effectiveForce(
     // 812.3b — modificateur de SIÈGE (Stratégie de Groupe) : posé sur le
     // Héros du contrôleur, il profite à TOUT Allié du Monde de ce siège,
     // y compris arrivé après la résolution (ensemble dynamique).
-    const heroId = ctx.state.seats[inst.controller].heroInstanceId;
+    const heroId = ctx.state.seats[inst.controller]!.heroInstanceId;
     const hero = heroId ? ctx.state.instances[heroId] : null;
     force += hero?.counters.tokens?.teamForceMod ?? 0;
   } else if (card.mainType === "Héros") {

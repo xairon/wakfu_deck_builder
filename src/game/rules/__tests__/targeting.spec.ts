@@ -75,7 +75,7 @@ describe("rules/effects — ciblage", () => {
     const res = resolveDestroyTarget(ctxOf(f), "A", instId("B", 0));
     dispatch(f, ...res.events);
     const s = ctxOf(f).state;
-    expect(s.seats.B.defausse).toContain(instId("B", 0));
+    expect(s.seats.B!.defausse).toContain(instId("B", 0));
     expect(s.instances[HERO_A].counters.xp).toBe(2);
   });
 
@@ -96,7 +96,7 @@ describe("rules/effects — ciblage", () => {
     // 3 sur le frêle (force 2) → détruit
     const r2 = resolveDamageTarget(ctxOf(f), "A", instId("B", 1), 3, "Feu");
     dispatch(f, ...r2.events);
-    expect(ctxOf(f).state.seats.B.defausse).toContain(instId("B", 1));
+    expect(ctxOf(f).state.seats.B!.defausse).toContain(instId("B", 1));
   });
 
   it("dommages ciblés sur un Héros : perte de PV, jamais de compteur damage", () => {
@@ -148,7 +148,7 @@ describe("rules/effects — ciblage", () => {
     // 3 Dommages < Force effective 4 → survit (sans le buff il mourrait)
     const r = resolveDamageTarget(ctxOf(f), "A", instId("B", 0), 3, "Feu");
     dispatch(f, ...r.events);
-    expect(ctxOf(f).state.seats.B.defausse).not.toContain(instId("B", 0));
+    expect(ctxOf(f).state.seats.B!.defausse).not.toContain(instId("B", 0));
     expect(ctxOf(f).state.instances[instId("B", 0)].counters.damage).toBe(3);
   });
 

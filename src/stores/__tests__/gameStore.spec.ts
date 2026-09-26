@@ -1,4 +1,4 @@
-import { setActivePinia, createPinia } from "pinia";
+﻿import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import type { Card, Deck } from "@/types/cards";
 import type {
@@ -28,8 +28,8 @@ describe("gameStore — table locale (bac à sable)", () => {
     store.startSandbox(deck, deck);
     expect(store.started).toBe(true);
     expect(store.state.monde.length).toBe(2);
-    expect(store.state.seats.A.pioche.length).toBe(48);
-    expect(store.state.seats.B.pioche.length).toBe(48);
+    expect(store.state.seats.A!.pioche.length).toBe(48);
+    expect(store.state.seats.B!.pioche.length).toBe(48);
   });
 
   it("piocher déplace une carte Pioche → Main", () => {
@@ -37,8 +37,8 @@ describe("gameStore — table locale (bac à sable)", () => {
     const deck = createMockDeck();
     store.startSandbox(deck, deck);
     store.draw("A");
-    expect(store.state.seats.A.main.length).toBe(1);
-    expect(store.state.seats.A.pioche.length).toBe(47);
+    expect(store.state.seats.A!.main.length).toBe(1);
+    expect(store.state.seats.A!.pioche.length).toBe(47);
   });
 
   it("passer le tour change le joueur actif et incrémente le numéro", () => {
@@ -56,16 +56,16 @@ describe("gameStore — table locale (bac à sable)", () => {
     const deck = createMockDeck();
     store.startSandbox(deck, deck);
     store.draw("A");
-    expect(store.state.seats.A.main.length).toBe(1);
+    expect(store.state.seats.A!.main.length).toBe(1);
     store.undoLast();
-    expect(store.state.seats.A.main.length).toBe(0);
+    expect(store.state.seats.A!.main.length).toBe(0);
   });
 
   it("incliner puis redresser une carte", () => {
     const store = useGameStore();
     const deck = createMockDeck();
     store.startSandbox(deck, deck);
-    const havre = store.state.seats.A.havreSacInstanceId!;
+    const havre = store.state.seats.A!.havreSacInstanceId!;
     store.toggleTap(havre);
     expect(store.state.instances[havre].orientation).toBe("tapped");
     store.toggleTap(havre);
@@ -82,9 +82,9 @@ describe("gameStore — table locale (bac à sable)", () => {
     useCardStore().cards = deck.cards.map((dc) => dc.card);
     store.startSandbox(deck, deck, "A");
     store.draw("A", 2);
-    for (const id of [...store.state.seats.A.main])
+    for (const id of [...store.state.seats.A!.main])
       store.moveTo(id, { zone: "defausse", owner: "A" });
-    expect(store.state.seats.A.defausse.length).toBe(2);
+    expect(store.state.seats.A!.defausse.length).toBe(2);
     // aucune carte Terre dans la défausse → l'effet est passé sans picker
     store.enqueueEffect({
       seat: "A",
@@ -92,7 +92,7 @@ describe("gameStore — table locale (bac à sable)", () => {
       ops: [{ op: "recycleFromDiscard", n: 1, element: "Terre" }],
     });
     expect(store.effectPicking).toBeNull();
-    expect(store.state.seats.A.defausse.length).toBe(2);
+    expect(store.state.seats.A!.defausse.length).toBe(2);
     // l'élément correspond → picker ouvert, filtré sur les 2 cartes Feu
     store.enqueueEffect({
       seat: "A",
@@ -102,7 +102,7 @@ describe("gameStore — table locale (bac à sable)", () => {
     expect(store.effectPicking).not.toBeNull();
     expect(store.effectPickIds.length).toBe(2);
     store.effectPick(store.effectPickIds[0]);
-    expect(store.state.seats.A.defausse.length).toBe(1);
+    expect(store.state.seats.A!.defausse.length).toBe(1);
     expect(store.effectPicking).toBeNull();
   });
 
@@ -112,7 +112,7 @@ describe("gameStore — table locale (bac à sable)", () => {
     store.startSandbox(deck, deck, "A");
     // PA = 6 ; piocher 8 → excédent de 2 → choix OBLIGATOIRE ouvert
     store.draw("A", 8);
-    expect(store.state.seats.A.main.length).toBe(8);
+    expect(store.state.seats.A!.main.length).toBe(8);
     expect(store.effectPicking?.mandatory).toBe(true);
     expect(store.effectPicking?.remaining).toBe(2);
     // impossible de passer le choix ni de finir le tour
@@ -123,9 +123,9 @@ describe("gameStore — table locale (bac à sable)", () => {
     // défausser 2 cartes → main à 6, choix fermé, le tour peut finir
     store.effectPick(store.effectPickIds[0]);
     store.effectPick(store.effectPickIds[0]);
-    expect(store.state.seats.A.main.length).toBe(6);
+    expect(store.state.seats.A!.main.length).toBe(6);
     expect(store.effectPicking).toBeNull();
-    expect(store.state.seats.A.defausse.length).toBe(2);
+    expect(store.state.seats.A!.defausse.length).toBe(2);
     store.endTurn();
     expect(store.turn.number).toBe(2);
   });
@@ -141,9 +141,9 @@ describe("gameStore — flux de match (lobby/mulligan/tour)", () => {
     expect(store.matchPhase).toBe("mulligan");
     expect(store.passPending).toBe(true);
     expect(store.perspective).toBe("A");
-    expect(store.state.seats.A.main.length).toBe(6);
-    expect(store.state.seats.B.main.length).toBe(6);
-    expect(store.state.seats.A.pioche.length).toBe(42);
+    expect(store.state.seats.A!.main.length).toBe(6);
+    expect(store.state.seats.B!.main.length).toBe(6);
+    expect(store.state.seats.A!.pioche.length).toBe(42);
   });
 
   it("reveal lève l'écran de passation", () => {
@@ -158,11 +158,11 @@ describe("gameStore — flux de match (lobby/mulligan/tour)", () => {
     const store = useGameStore();
     const deck = createMockDeck();
     store.startMatch(deck, deck, { first: "A" });
-    expect(store.state.seats.A.main.length).toBe(6);
+    expect(store.state.seats.A!.main.length).toBe(6);
     store.mulligan("A"); // 1er mulligan gratuit → 6 cartes
-    expect(store.state.seats.A.main.length).toBe(6);
+    expect(store.state.seats.A!.main.length).toBe(6);
     store.mulligan("A"); // 2e mulligan → 5 cartes
-    expect(store.state.seats.A.main.length).toBe(5);
+    expect(store.state.seats.A!.main.length).toBe(5);
   });
 
   it("keepHand enchaîne joueur 2 puis lance la partie", () => {
@@ -183,7 +183,7 @@ describe("gameStore — flux de match (lobby/mulligan/tour)", () => {
     store.startSandbox(deck, deck, "A"); // partie directe, main vide
     expect(store.turn.active).toBe("A");
     store.endTurn();
-    expect(store.state.seats.A.main.length).toBe(6); // pioche fin de tour = PA
+    expect(store.state.seats.A!.main.length).toBe(6); // pioche fin de tour = PA
     expect(store.turn.active).toBe("B");
     expect(store.perspective).toBe("B");
     expect(store.passPending).toBe(true);
@@ -237,8 +237,8 @@ describe("gameStore — pouvoirs continus & destructions d'état (lot B)", () =>
     expect(store.effectiveForceOf(vId)).toEqual({ value: 1, delta: 1 });
     // main vidée : destruction d'état immédiate + XP à l'adversaire (415.1)
     store.moveTo(fId, { zone: "defausse", owner: "A" });
-    expect(store.state.seats.A.defausse).toContain(vId);
-    const heroB = store.state.seats.B.heroInstanceId!;
+    expect(store.state.seats.A!.defausse).toContain(vId);
+    const heroB = store.state.seats.B!.heroInstanceId!;
     expect(store.state.instances[heroB].counters.xp).toBe(2);
     expect(store.matchPhase).toBe("playing"); // le point fixe s'arrête
   });
@@ -272,8 +272,8 @@ describe("gameStore — pouvoirs continus & destructions d'état (lot B)", () =>
     store.nextTurn(); // tour 3 (A) — l'attaque devient légale
     expect(store.beginCombat()).toBe(true);
     store.combatToggleAttacker(atkId);
-    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
-    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.moveTo(store.state.seats.B!.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
+    store.combatChooseTarget(store.state.seats.B!.heroInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true);
     // clic sur Jicé : refus EXPLIQUÉ, pas silencieux
     store.combatToggleBlock(jiceId);
@@ -330,8 +330,8 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.nextTurn(); // tour 3 (A) — l'attaque devient légale
     expect(store.beginCombat()).toBe(true);
     store.combatToggleAttacker(id);
-    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
-    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.moveTo(store.state.seats.B!.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
+    store.combatChooseTarget(store.state.seats.B!.heroInstanceId!);
     expect(store.combatConfirmAttackers()).toBe(true);
     // Attaquant reste dressé à la déclaration (incliné à la résolution)
     expect(store.state.instances[id].orientation).toBe("upright");
@@ -347,7 +347,7 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
       cardName: "Trêve",
       ops: [{ op: "globalDamageShield" }],
     });
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const tok = () =>
       store.state.instances[heroA].counters.tokens?.treveUntilTurn ?? 0;
     expect(tok()).toBe(3); // tour 1 + 2
@@ -384,12 +384,12 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     expect(store.eligibleAttackerIds).toContain(ready); // prêt depuis le tour 1
     expect(store.eligibleAttackerIds).toContain(sick); // les alliés arrivés ce tour peuvent aussi attaquer
     expect(store.eligibleAttackerIds).not.toContain(
-      store.state.seats.A.havreSacInstanceId, // pas un combattant
+      store.state.seats.A!.havreSacInstanceId, // pas un combattant
     );
     // après avoir attaqué : plus déclarable ce tour (1/tour)
     store.beginCombat(ready);
-    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
-    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.moveTo(store.state.seats.B!.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
+    store.combatChooseTarget(store.state.seats.B!.heroInstanceId!);
     store.combatConfirmAttackers();
     store.combatResolve();
     expect(store.canDeclareAttack).toBe(false);
@@ -460,8 +460,8 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.nextTurn(); // tour 3 (A)
     store.beginCombat(a1);
     store.combatToggleAttacker(a2);
-    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
-    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.moveTo(store.state.seats.B!.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
+    store.combatChooseTarget(store.state.seats.B!.heroInstanceId!);
     store.combatConfirmAttackers();
     // 2 attaquants → cliquer le bloqueur l'arme sans l'assigner
     store.combatToggleBlock(b);
@@ -514,8 +514,8 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     store.nextTurn();
     store.nextTurn(); // tour 3 (A)
     store.beginCombat(a);
-    store.moveTo(store.state.seats.B.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
-    store.combatChooseTarget(store.state.seats.B.heroInstanceId!);
+    store.moveTo(store.state.seats.B!.heroInstanceId!, { zone: "monde" }); // Héros B exposé → cible légale (508.x)
+    store.combatChooseTarget(store.state.seats.B!.heroInstanceId!);
     store.combatConfirmAttackers(); // étape blockers
     // l'attaquant cède la main au défenseur
     store.combatOfferReaction();
@@ -551,16 +551,16 @@ describe("gameStore — combat, bus & Trêve (lot C)", () => {
     const store = useGameStore();
     store.startSandbox(smallDeck(cards), smallDeck(cards), "A");
     // vider la Pioche de A vers la Défausse
-    const pioche = [...store.state.seats.A.pioche];
+    const pioche = [...store.state.seats.A!.pioche];
     expect(pioche.length).toBe(3);
     for (const id of pioche) store.moveTo(id, { zone: "defausse", owner: "A" });
-    expect(store.state.seats.A.pioche.length).toBe(0);
-    expect(store.state.seats.A.defausse.length).toBe(3);
+    expect(store.state.seats.A!.pioche.length).toBe(0);
+    expect(store.state.seats.A!.defausse.length).toBe(3);
     // piocher 1 → remélange Défausse→Pioche puis pioche
     store.draw("A", 1);
-    expect(store.state.seats.A.main.length).toBe(1);
-    expect(store.state.seats.A.defausse.length).toBe(0);
-    expect(store.state.seats.A.pioche.length).toBe(2);
+    expect(store.state.seats.A!.main.length).toBe(1);
+    expect(store.state.seats.A!.defausse.length).toBe(0);
+    expect(store.state.seats.A!.pioche.length).toBe(2);
   });
 });
 
@@ -600,7 +600,7 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     for (const ev of events) emit!(ev);
     expect(store.state.monde.length).toBe(2); // les 2 Havre-Sac
     // une action manuelle applique l'effet de manière optimiste immédiatement
-    const havre = store.state.seats.A.havreSacInstanceId!;
+    const havre = store.state.seats.A!.havreSacInstanceId!;
     store.toggleTap(havre);
     // Immédiatement orienté de façon optimiste (0 ms)
     expect(store.state.instances[havre].orientation).toBe("tapped");
@@ -639,7 +639,7 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     store.connectOnline("g-online", "A", transport); // siège A = joueur actif
     for (const ev of events) emit!(ev);
 
-    const havre = store.state.seats.A.havreSacInstanceId!;
+    const havre = store.state.seats.A!.havreSacInstanceId!;
     store.toggleTap(havre); // upright → intention TAP
     // Application optimiste locale immédiate (0 ms de latence)
     expect(store.state.instances[havre].orientation).toBe("tapped");
@@ -679,7 +679,7 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     store.connectOnline("g-online", "A", transport);
     for (const ev of events) emit!(ev);
 
-    const havre = store.state.seats.A.havreSacInstanceId!;
+    const havre = store.state.seats.A!.havreSacInstanceId!;
     store.toggleTap(havre);
     // Avant la réponse du serveur, l'action est optimiste
     expect(store.state.instances[havre].orientation).toBe("tapped");
@@ -721,8 +721,8 @@ describe("gameStore — jeu en ligne (clients de confiance)", () => {
     for (const ev of events) emit!(ev);
 
     // L'attaquant A déclare une attaque (event diffusé) sur le Héros de B.
-    const heroB = store.state.seats.B.heroInstanceId!;
-    const attacker = store.state.seats.A.havreSacInstanceId!; // une instance A quelconque
+    const heroB = store.state.seats.B!.heroInstanceId!;
+    const attacker = store.state.seats.A!.havreSacInstanceId!; // une instance A quelconque
     const lastSeq = events[events.length - 1].seq;
     emit!({
       gameId: "g-online",
@@ -997,7 +997,7 @@ describe("victoire en ligne (dérivée de l'état partagé)", () => {
 
   it("PV d'un Héros ≤ 0 ⇒ matchPhase 'finished' + l'adversaire l'emporte", () => {
     const { store, nextSeq } = startedOnlineGame();
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     // le serveur diffuse les dégâts létaux portés au Héros B (résolution
     // manuelle : un joueur a fixé ses PV à 0) → victoire dérivée de l'état.
     store.applyServerEvent(counterEv("B", heroB, "hp", 0, nextSeq()));
@@ -1007,7 +1007,7 @@ describe("victoire en ligne (dérivée de l'état partagé)", () => {
 
   it("Héros blessé mais vivant ⇒ la partie continue (pas de fin prématurée)", () => {
     const { store, nextSeq } = startedOnlineGame();
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.applyServerEvent(counterEv("B", heroB, "hp", 5, nextSeq()));
     expect(store.matchPhase).toBe("playing");
     expect(store.winner).toBeNull();
@@ -1015,8 +1015,8 @@ describe("victoire en ligne (dérivée de l'état partagé)", () => {
 
   it("la fin est TERMINALE : un echo ultérieur ne « dé-finit » pas la partie", () => {
     const { store, nextSeq } = startedOnlineGame();
-    const heroA = store.state.seats.A.heroInstanceId!;
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     // morts SÉQUENTIELLES : A tombe le premier (B encore vivant) → B l'emporte.
     store.applyServerEvent(counterEv("A", heroA, "hp", 0, nextSeq()));
     expect(store.matchPhase).toBe("finished");
@@ -1030,8 +1030,8 @@ describe("victoire en ligne (dérivée de l'état partagé)", () => {
 
   it("double 0 PV dans la MÊME mise à jour d'état ⇒ aucun vainqueur (103.3)", () => {
     const { store, nextSeq } = startedOnlineGame();
-    const heroA = store.state.seats.A.heroInstanceId!;
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     const seqA = nextSeq();
     const seqB = nextSeq();
     // livraison hors-ordre : l'event B (postérieur) arrive d'abord et reste en
@@ -1251,7 +1251,7 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     const deck = createMockDeck();
     store.startSandbox(deck, deck);
     const me = store.perspective;
-    const heroId = store.state.seats[me].heroInstanceId!;
+    const heroId = store.state.seats[me]!.heroInstanceId!;
 
     // Infliger des dégâts létaux au héros
     store.adjustCounter(heroId, "hp", -20);

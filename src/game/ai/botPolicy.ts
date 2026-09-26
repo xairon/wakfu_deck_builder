@@ -18,10 +18,9 @@
  *    buff/soin sur sa meilleure créature).
  */
 import type { useGameStore } from "@/stores/gameStore";
+import { otherSeat as other, type Seat } from "@/game/types/zones";
 
 type Store = ReturnType<typeof useGameStore>;
-type Seat = "A" | "B";
-const other = (s: Seat): Seat => (s === "A" ? "B" : "A");
 const CHIFUMI = ["pierre", "feuille", "ciseaux"] as const;
 
 // ── lecteurs d'état ───────────────────────────────────────────────────────────

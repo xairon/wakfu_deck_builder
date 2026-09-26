@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 506.3 / 303.1 — PARITÉ STARTER en TABLE LIBRE (bug playtesters : « le premier
  * joueur ne peut rien poser dans le Monde / Alliés refusés au 1er tour »).
  *
@@ -60,7 +60,7 @@ function setup(): { state: GameState; inHand: string } {
   const s0 = deriveState(events);
   events = [...events, ...sequence([drawTop(s0, "A")], "tl-t1", s0.seq + 1)];
   const state = deriveState(events);
-  const main = state.seats.A.main;
+  const main = state.seats.A!.main;
   return { state, inHand: main[main.length - 1] };
 }
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Régression (bugs #1 + #2 signalés en jeu) — Agression est une ACTION dont le
  * SEUL effet est un pouvoir à coût payé « Inclinez l'un de vos Alliés ou Héros :
  * il inflige sa Force … » qui se compile en `trigger: "onTap"` (cost paidOps,
@@ -118,7 +118,7 @@ describe("Agression — Action à coût payé (onTap paidOps)", () => {
 
   it("se résout par le ciblage protégé : le Héros adverse embagé n'est pas ciblable", () => {
     const { store, agrId, bftId, cibId } = setup(true);
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
 
     expect(store.playFromHand(agrId)).toBe(true);
     // 1) fenêtre de coût : « Inclinez l'un de vos Alliés ou Héros »
@@ -136,7 +136,7 @@ describe("Agression — Action à coût payé (onTap paidOps)", () => {
     expect(store.state.instances[heroB].counters.hp).toBe(20);
 
     // 4) l'Action part en Défausse (ne reste pas sur la table dans le Monde)
-    expect(store.state.seats.A.defausse).toContain(agrId);
+    expect(store.state.seats.A!.defausse).toContain(agrId);
     expect(store.state.monde).not.toContain(agrId);
   });
 });

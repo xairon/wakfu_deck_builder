@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   createMockDeck,
   createMockHeroCard,
@@ -62,7 +62,7 @@ function playingState() {
 describe("resolveIntent — non-combat (autorité partagée)", () => {
   it("PLAY_CARD hors tour → erreur, aucun event", () => {
     const { state, getCard } = playingState(); // active A
-    const bHandCard = state.seats.B.main[0];
+    const bHandCard = state.seats.B!.main[0];
     expect(bHandCard).toBeDefined();
     const r = resolveIntent(
       state,
@@ -77,7 +77,7 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
 
   it("MOVE_CARD hors tour → erreur", () => {
     const { state, getCard } = playingState();
-    const bCard = state.seats.B.havreSac[0]; // Héros de B, dans le Havre-Sac
+    const bCard = state.seats.B!.havreSac[0]; // Héros de B, dans le Havre-Sac
     expect(bCard).toBeDefined();
     const r = resolveIntent(
       state,
@@ -104,7 +104,7 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
 
     // draws = PA du Héros (6) - cartes en main (3) = 3 ; re-dérivé par submit_event.
     expect("draws" in r).toBe(true);
-    expect("draws" in r && r.draws).toBe(6 - state.seats.A.main.length);
+    expect("draws" in r && r.draws).toBe(6 - state.seats.A!.main.length);
     // END_TURN n'émet AUCUN drawTop lui-même (laissé à la re-dérivation serveur).
     expect(r.events.some((e) => e.type === "MOVE")).toBe(false);
   });
@@ -118,7 +118,7 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
 
   it("END_TURN redresse les cartes en jeu du joueur ENTRANT + efface leurs dégâts", () => {
     const { events, getCard } = playingState(); // active A → entrant = B
-    const bHero = deriveState(events).seats.B.heroInstanceId!;
+    const bHero = deriveState(events).seats.B!.heroInstanceId!;
     // Force le Héros de B (dans son Havre-Sac, donc en jeu) incliné + 3 dégâts.
     const forged = sequence(
       [
@@ -164,7 +164,7 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
       events.length + 1,
     );
     const state = deriveState([...events, ...toT2]);
-    const bCard = state.seats.B.main[0];
+    const bCard = state.seats.B!.main[0];
     expect(bCard).toBeDefined();
 
     const r = resolveIntent(
@@ -195,7 +195,7 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
       events.length + 1,
     );
     const state = deriveState([...events, ...toT2]);
-    const bCard = state.seats.B.main[0];
+    const bCard = state.seats.B!.main[0];
     expect(bCard).toBeDefined();
 
     const r = resolveIntent(
@@ -226,7 +226,7 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
       working = [...working, p];
     }
     const state = deriveState(working);
-    expect(state.seats.A.main.length).toBeGreaterThan(6);
+    expect(state.seats.A!.main.length).toBeGreaterThan(6);
     const r = resolveIntent(state, getCard, { kind: "END_TURN" }, "A");
     expect("error" in r).toBe(true);
     expect("error" in r && r.error).toContain("Main pleine");
@@ -246,7 +246,7 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
 
   it("TAP hors tour → erreur ; TAP par le joueur actif → SET_ORIENTATION", () => {
     const { state, getCard } = playingState(); // active A
-    const aHavre = state.seats.A.havreSac[0];
+    const aHavre = state.seats.A!.havreSac[0];
 
     const rejected = resolveIntent(
       state,

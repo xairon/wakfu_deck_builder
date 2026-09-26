@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles — passe UNIQUE de modificateurs de Dommages (A2).
  *
  * `reduceDamage` est le seul point de prévention : toute infliction de
@@ -50,7 +50,7 @@ export function allyPowerDamageBonus(
     (card.mainType !== "Allié" && card.mainType !== "Allié Élémentaire")
   )
     return 0;
-  const heroId = ctx.state.seats[inst.controller].heroInstanceId;
+  const heroId = ctx.state.seats[inst.controller]!.heroInstanceId;
   const hero = heroId ? ctx.state.instances[heroId] : null;
   return hero?.counters.tokens?.teamPowerDmgMod ?? 0;
 }
@@ -68,7 +68,7 @@ function preventionApplies(
 ): boolean {
   if (a.to.kind === "controllerHero") {
     return (
-      targetId === ctx.state.seats[auraController as "A" | "B"].heroInstanceId
+      targetId === ctx.state.seats[auraController as "A" | "B"]!.heroInstanceId
     );
   }
   // controlledAllies : un de VOS Alliés (Famille `sub` éventuelle).
@@ -158,7 +158,7 @@ export function reduceDamage(
     // sur le Héros du CONTRÔLEUR de la cible ; s'applique à toute cible de ce
     // siège en rôle de combat.
     if (inst) {
-      const heroId = ctx.state.seats[inst.controller].heroInstanceId;
+      const heroId = ctx.state.seats[inst.controller]!.heroInstanceId;
       const hero = heroId ? ctx.state.instances[heroId] : null;
       amount -= hero?.counters.tokens?.teamDmgRedCombatMod ?? 0;
     }
@@ -195,7 +195,7 @@ export function reduceDamage(
 export function activeGlobalMods(ctx: RulesCtx): DamageMod[] {
   const mods: DamageMod[] = [];
   for (const seat of ["A", "B"] as const) {
-    const id = ctx.state.seats[seat].heroInstanceId;
+    const id = ctx.state.seats[seat]!.heroInstanceId;
     const hero = id ? ctx.state.instances[id] : null;
     const until = hero?.counters.tokens?.treveUntilTurn ?? 0;
     if (until > ctx.state.turn.number) {

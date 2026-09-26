@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles R1 — Ressources & coûts (4261/4316/4356/4381/4398).
  * Une carte en jeu redressée (Monde ou Havre-Sac, sauf Protecteur) produit en
  * s'inclinant 1 Ressource de son Élément. Coût de lancement = Niveau ; un
@@ -30,7 +30,7 @@ import { isUniqueCard } from "../../utils/cardRules.ts";
 export function havreSacBonusAvailable(ctx: RulesCtx, seat: Seat): boolean {
   if (seat === ctx.state.turn.firstPlayer || ctx.state.turn.number !== 2)
     return false;
-  const sacId = ctx.state.seats[seat].havreSacInstanceId;
+  const sacId = ctx.state.seats[seat]!.havreSacInstanceId;
   const sac = sacId ? ctx.state.instances[sacId] : null;
   return (
     !!sac &&
@@ -50,7 +50,7 @@ export function resourceProducers(
   // redresse après sa première inclinaison → il vaut DEUX Ressources pour le
   // même coût (une seule inclinaison réelle au paiement). Dispo centralisée.
   const sacBonus = havreSacBonusAvailable(ctx, seat);
-  const sacId = ctx.state.seats[seat].havreSacInstanceId;
+  const sacId = ctx.state.seats[seat]!.havreSacInstanceId;
   for (const inst of Object.values(ctx.state.instances)) {
     if (inst.controller !== seat) continue;
     const zone = inst.location.zone;
@@ -75,7 +75,7 @@ export function resourceProducers(
 /** Classe du Héros de `seat` (heroCard.class), normalisée, ou null. Exporté :
  *  lu aussi par le gate d'activation heroClass (legality/engine — Gzenah). */
 export function heroClassOf(ctx: RulesCtx, seat: Seat): string | null {
-  const id = ctx.state.seats[seat].heroInstanceId;
+  const id = ctx.state.seats[seat]!.heroInstanceId;
   const inst = id ? ctx.state.instances[id] : null;
   const card = inst ? ctx.getCard(inst.cardId) : null;
   const klass =

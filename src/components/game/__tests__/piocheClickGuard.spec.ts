@@ -18,7 +18,7 @@ async function clickMyPioche(assist: boolean) {
   store.assist = assist;
   store.assistEffects = assist;
   const wrapper = mount(GameBoard, { attachTo: document.body });
-  const handBefore = store.state.seats.A.main.length;
+  const handBefore = store.state.seats.A!.main.length;
   // MA Pioche = celle du siège du bas (dernière dans le DOM).
   const piles = wrapper
     .findAll("button.gpile")
@@ -28,7 +28,7 @@ async function clickMyPioche(assist: boolean) {
   // → assistant de règles → clearRuleError) dès le tick suivant.
   const err = store.ruleError;
   await clicked;
-  const drew = store.state.seats.A.main.length - handBefore;
+  const drew = store.state.seats.A!.main.length - handBefore;
   wrapper.unmount();
   return { drew, err };
 }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Moteur de règles — destructions D'ÉTAT (1414 / 3019), une passe pure :
  * tout Allié en jeu dont la Force effective est 0 (1414) ou dont les
  * Dommages posés atteignent sa Force effective (3019 — la perte d'une aura
@@ -35,7 +35,14 @@ export function stateBasedDestroyEvents(
   const events: DraftEvent[] = [];
   const log: string[] = [];
   const destroyed: InstanceId[] = [];
-  const xpBySeat: Record<Seat, number> = { A: 0, B: 0 };
+  const xpBySeat: Record<Seat, number> = {
+    A: 0,
+    B: 0,
+    A1: 0,
+    B1: 0,
+    A2: 0,
+    B2: 0,
+  };
   for (const inst of Object.values(ctx.state.instances)) {
     const zone = inst.location.zone;
     if (zone !== "monde" && zone !== "havreSac") continue;
@@ -101,7 +108,7 @@ export function havreSacBanishEvents(ctx: RulesCtx): StateBasedDestruction {
   const log: string[] = [];
   const destroyed: InstanceId[] = [];
   for (const seat of ["A", "B"] as const) {
-    const sacId = ctx.state.seats[seat].havreSacInstanceId;
+    const sacId = ctx.state.seats[seat]!.havreSacInstanceId;
     const sac = sacId ? ctx.state.instances[sacId] : null;
     if (!sac || sac.location.zone === "exil") continue;
     const res = sac.counters.resistance;

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vague W68 (deck-driven, starter Incarnam Fécaline la Sage) — RÉCENCE DE JEU.
  *
  * Fécaline : « [Incliner] : Gagnez 1 XP. Ne jouez ce pouvoir que lorsque vous
@@ -53,7 +53,7 @@ function setup() {
   store.state.turn.number = 3;
   const fecalineId = placeInZone(store, "A", { zone: "monde" });
   store.state.instances[fecalineId].cardId = "fecaline-test";
-  const heroId = store.state.seats.A.heroInstanceId!;
+  const heroId = store.state.seats.A!.heroInstanceId!;
   const xp = () => store.state.instances[heroId].counters.xp ?? 0;
   // deux cartes en main : un Parchemin + une Action neutre.
   const parchId = placeInZone(store, "A", { zone: "main", owner: "A" });
@@ -143,7 +143,7 @@ describe("gate de CLASSE du Héros (heroClass — Gzenah)", () => {
 describe("récence PAR CATÉGORIE (recentPlay<Kind>) — écrivain + gate", () => {
   it("jouer une Action pose recentPlayAction=1 (et parchemin selon le subType), écrasés au jeu suivant", () => {
     const { store, parchId, autreId } = setup();
-    const heroA = store.state.seats.A.heroInstanceId!;
+    const heroA = store.state.seats.A!.heroInstanceId!;
     const tok = (name: string) =>
       store.state.instances[heroA].counters.tokens?.[name] ?? 0;
     store.playFromHand(parchId); // Action au subType Parchemin
@@ -187,13 +187,13 @@ describe("récence PAR CATÉGORIE (recentPlay<Kind>) — écrivain + gate", () =
     expect(store.ruleError).toContain("adversaire");
     store.clearRuleError();
     // On simule « B vient de jouer une Action » (jeton sur SON Héros).
-    const heroB = store.state.seats.B.heroInstanceId!;
+    const heroB = store.state.seats.B!.heroInstanceId!;
     store.state.instances[heroB].counters.tokens = {
       ...(store.state.instances[heroB].counters.tokens ?? {}),
       recentPlayAction: 1,
     };
-    const handBefore = store.state.seats.A.main.length;
+    const handBefore = store.state.seats.A!.main.length;
     expect(store.activateTapPower(bebeId)).toBe(true);
-    expect(store.state.seats.A.main.length).toBe(handBefore + 1);
+    expect(store.state.seats.A!.main.length).toBe(handBefore + 1);
   });
 });

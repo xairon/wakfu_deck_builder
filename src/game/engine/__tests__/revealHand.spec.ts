@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   createMockDeck,
   createMockHeroCard,
@@ -58,18 +58,18 @@ describe("TL5 — révéler sa main à l'adversaire (Filouterie)", () => {
   it("avant révélation : B voit la main de A comme un simple compteur", () => {
     const { state } = play((s) => [drawTop(s, "A"), drawTop(s, "A")]);
     const viewB = redactStateFor(state, "B");
-    expect(viewB.seats.A.main.kind).toBe("count");
+    expect(viewB.seats.A!.main.kind).toBe("count");
   });
 
   it("après revealHand vers B : B voit les cartes de la main de A (cardId dévoilé)", () => {
     const { state } = play(
       (s) => [drawTop(s, "A"), drawTop(s, "A")],
-      (s) => [revealHand("A", s.seats.A.main, ["B"])],
+      (s) => [revealHand("A", s.seats.A!.main, ["B"])],
     );
     const viewB = redactStateFor(state, "B");
-    expect(viewB.seats.A.main.kind).toBe("full");
-    if (viewB.seats.A.main.kind !== "full") throw new Error("attendu full");
-    const cardIds = viewB.seats.A.main.instances.map((i) => i.cardId);
+    expect(viewB.seats.A!.main.kind).toBe("full");
+    if (viewB.seats.A!.main.kind !== "full") throw new Error("attendu full");
+    const cardIds = viewB.seats.A!.main.instances.map((i) => i.cardId);
     expect(cardIds.length).toBeGreaterThan(0);
     expect(cardIds.every((id) => id !== null)).toBe(true);
   });
@@ -77,18 +77,18 @@ describe("TL5 — révéler sa main à l'adversaire (Filouterie)", () => {
   it("la révélation de A à B ne dévoile PAS la main de A à un spectateur", () => {
     const { state } = play(
       (s) => [drawTop(s, "A"), drawTop(s, "A")],
-      (s) => [revealHand("A", s.seats.A.main, ["B"])],
+      (s) => [revealHand("A", s.seats.A!.main, ["B"])],
     );
     const viewSpec = redactStateFor(state, "spectator");
-    expect(viewSpec.seats.A.main.kind).toBe("count");
+    expect(viewSpec.seats.A!.main.kind).toBe("count");
   });
 
   it("main de B non révélée : reste cachée pour A même après que A révèle la sienne", () => {
     const { state } = play(
       (s) => [drawTop(s, "A"), drawTop(s, "B")],
-      (s) => [revealHand("A", s.seats.A.main, ["B"])],
+      (s) => [revealHand("A", s.seats.A!.main, ["B"])],
     );
     const viewA = redactStateFor(state, "A");
-    expect(viewA.seats.B.main.kind).toBe("count"); // B n'a rien révélé
+    expect(viewA.seats.B!.main.kind).toBe("count"); // B n'a rien révélé
   });
 });
