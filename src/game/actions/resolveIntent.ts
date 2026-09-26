@@ -569,7 +569,10 @@ export function resolveIntent(
           : toPublic
             ? { faceDown: false, visibleTo: "all" }
             : { faceDown: false, visibleTo: [inst.owner] },
-        preservesIdentity: false,
+        preservesIdentity:
+          (fromZone === destZone &&
+            (destZone === "monde" || destZone === "havreSac")) ||
+          state.seats[inst.owner]?.heroInstanceId === intent.instanceId,
         orientationOnArrival:
           destZone === "monde" || destZone === "havreSac" ? "upright" : null,
       };

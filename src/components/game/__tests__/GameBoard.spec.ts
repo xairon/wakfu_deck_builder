@@ -8,6 +8,7 @@ import { useCardStore } from "@/stores/cardStore";
 import { useBoardDnd } from "@/composables/useBoardDnd";
 import {
   createMockDeck,
+  createMockHeroCard,
   createMockHavreSacCard,
   createMockEquipmentCard,
 } from "tests/factories/card";
@@ -650,6 +651,51 @@ describe("GameBoard — Regard & Recyclage du cimetière", () => {
     // shufflePioche a été appelé
     expect(shuffleSpy).toHaveBeenCalledWith(me);
   });
+
+  it("garantit que les compteurs de Héros (PV, PA, PM, XP) ne deviennent jamais '-' même après déplacements ou compteurs vides", async () => {
+    const store = useGameStore();
+    const heroCard = createMockHeroCard({
+      id: "hero-test",
+      name: "Goultard",
+      stats: { pv: 32, pa: 7, pm: 4 },
+    });
+    const deckA = createMockDeck({ hero: heroCard });
+    store.startSandbox(deckA, createMockDeck());
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    const huds = wrapper.findAllComponents({ name: "SeatHud" });
+    expect(huds.length).toBe(2);
+
+    // Vérifier les valeurs du HUD
+    const hudA = huds[1]; // joueur 'me' (A)
+    const counters = hudA.props("counters");
+    expect(counters.hp).toBeDefined();
+    expect(counters.hp).toBeGreaterThan(0);
+    expect(counters.pa).toBeDefined();
+    expect(counters.pm).toBeDefined();
+    expect(counters.xp).toBeDefined();
+
+    // Vérifier que le texte du DOM pour PV ne contient pas '—'
+    const pvStat = hudA.find(".ghud__stat--hp .ghud__v");
+    expect(pvStat.text()).not.toBe("—");
+    expect(pvStat.text()).toBe(String(counters.hp));
+
+    // Déplacer le héros dans le monde
+    const heroId = store.state.seats.A!.heroInstanceId!;
+    store.moveTo(heroId, { zone: "monde" });
+    await flushPromises();
+
+    // Les compteurs restent intacts
+    const countersAfterMove = hudA.props("counters");
+    expect(countersAfterMove.hp).toBe(counters.hp);
+    expect(countersAfterMove.pa).toBe(counters.pa);
+    expect(countersAfterMove.pm).toBe(counters.pm);
+    expect(countersAfterMove.xp).toBe(counters.xp);
+  });
 });
+
 
 

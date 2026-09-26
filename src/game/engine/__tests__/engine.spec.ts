@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   createMockDeck,
   createMockHeroCard,
@@ -16,6 +16,7 @@ import {
   canSeeCardId,
   drawTop,
   discard,
+  move,
   worldHavenSwap,
   setCounter,
   undo,
@@ -268,6 +269,25 @@ describe("reducer — frontière de zone (501.5)", () => {
       () => [discard("A", heroA, { zone: "monde" })], // Monde → Défausse
     );
     expect(purge.state.instances[heroA].counters.damage).toBeUndefined();
+    // Les compteurs fondamentaux du Héros (hp, level, pa, pm, xp) ne sont JAMAIS purgés
+    expect(purge.state.instances[heroA].counters.level).toBe(1);
+    expect(purge.state.instances[heroA].counters.hp).toBeDefined();
+
+    // Déplacement intra-zone (Monde → Monde ou Havre-Sac → Havre-Sac) conserve les compteurs
+    const sameZone = play(
+      (_s) => [setCounter("A", heroA, "damage", 3)],
+      () => [
+        move("A", {
+          instanceId: heroA,
+          from: { zone: "havreSac", owner: "A" },
+          to: { zone: "havreSac", owner: "A" },
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: "all" },
+          preservesIdentity: false,
+        }),
+      ],
+    );
+    expect(sameZone.state.instances[heroA].counters.damage).toBe(3);
   });
 });
 

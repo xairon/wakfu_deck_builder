@@ -181,12 +181,34 @@ function applyMove(s: GameState, p: MovePayload): void {
     return;
   }
 
+  const isSameInPlayZone =
+    (p.from.zone === "monde" && p.to.zone === "monde") ||
+    (p.from.zone === "havreSac" && p.to.zone === "havreSac");
+
   const isWorldHavenSwap =
     (p.from.zone === "monde" && p.to.zone === "havreSac") ||
     (p.from.zone === "havreSac" && p.to.zone === "monde");
 
-  // 501.5 : seuls les échanges Monde↔Havre-Sac conservent compteurs/marqueurs.
-  if (!(p.preservesIdentity && isWorldHavenSwap)) {
+  const isHero =
+    s.seats[inst.owner]?.heroInstanceId === inst.instanceId ||
+    inst.counters.hp !== undefined ||
+    inst.counters.level !== undefined;
+
+  // 501.5 : seuls les échanges Monde↔Havre-Sac (ou déplacements au sein de la même zone) conservent compteurs/marqueurs.
+  // Les Héros ne perdent JAMAIS leurs caractéristiques fondamentales (PV, XP, PA, PM, Niveau)
+  // même lors d'un déplacement. Seuls les marqueurs temporaires seraient purgés s'il quittait le jeu.
+  if (isHero) {
+    if (!isWorldHavenSwap && !isSameInPlayZone && !p.preservesIdentity) {
+      const { hp, xp, level, pa, pm } = inst.counters;
+      inst.counters = {
+        ...(hp !== undefined ? { hp } : {}),
+        ...(xp !== undefined ? { xp } : {}),
+        ...(level !== undefined ? { level } : {}),
+        ...(pa !== undefined ? { pa } : {}),
+        ...(pm !== undefined ? { pm } : {}),
+      };
+    }
+  } else if (!(p.preservesIdentity && (isWorldHavenSwap || isSameInPlayZone))) {
     inst.counters = {};
   }
 

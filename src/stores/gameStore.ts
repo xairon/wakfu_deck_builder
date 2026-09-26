@@ -2324,9 +2324,14 @@ export const useGameStore = defineStore("game", () => {
       dest.zone === "defausse" ||
       dest.zone === "fileAttente" ||
       dest.zone === "exil";
+    const sameInPlay =
+      inst.location.zone === dest.zone &&
+      (dest.zone === "monde" || dest.zone === "havreSac");
     const swap =
       (inst.location.zone === "monde" && dest.zone === "havreSac") ||
       (inst.location.zone === "havreSac" && dest.zone === "monde");
+    const isHero = state.value.seats[inst.owner]?.heroInstanceId === instanceId;
+    const preservesIdentity = swap || sameInPlay || isHero;
     const drafts: DraftEvent[] = [
       move(inst.controller, {
         instanceId,
@@ -2338,18 +2343,21 @@ export const useGameStore = defineStore("game", () => {
           : toPublic
             ? { faceDown: false, visibleTo: "all" }
             : { faceDown: false, visibleTo: [inst.owner] },
-        preservesIdentity: swap,
+        preservesIdentity,
         orientationOnArrival:
           dest.zone === "monde" || dest.zone === "havreSac"
-            ? swap
-              ? inst.orientation // 501.5 échange Monde↔Havre-Sac : conserve l'orientation
+            ? swap || sameInPlay
+              ? inst.orientation // 501.5 échange Monde↔Havre-Sac ou même zone : conserve l'orientation
               : "upright"
             : null,
       }),
     ];
-    // entrée en jeu (hors échange Monde↔Havre-Sac) : tour d'arrivée, pour le
+    // entrée en jeu (hors échange Monde↔Havre-Sac ou même zone) : tour d'arrivée, pour le
     // mal d'invocation (1821). Préservé par l'échange qui garde les compteurs.
-    const entersPlay = (dest.zone === "monde" || dest.zone === "havreSac") && !swap;
+    const entersPlay =
+      (dest.zone === "monde" || dest.zone === "havreSac") &&
+      !swap &&
+      !sameInPlay;
     if (entersPlay) {
       drafts.push(
         setCounterVerb(
@@ -5650,6 +5658,7 @@ export const useGameStore = defineStore("game", () => {
     endTurnPending,
     concede,
     quitMatch,
+    activeDecks,
     // présence adverse + fenêtre de grâce (déconnexion)
     opponentPresent,
     canClaimVictory,

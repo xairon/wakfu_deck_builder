@@ -3592,42 +3592,88 @@ function zoomInst(instanceId: string): void {
 // ── HUD de siège ─────────────────────────────────────────────────────────────
 function heroInst(seat: Seat) {
   const s = view.value.seats[seat];
-  const id = s?.heroInstanceId;
-  return id ? (store.state.instances[id] ?? null) : null;
+  const id = s?.heroInstanceId ?? store.state.seats[seat]?.heroInstanceId;
+  if (id && store.state.instances[id]) return store.state.instances[id];
+
+  // Recherche résiliente dans store.state.instances si id manquant ou introuvable
+  if (store.state.instances) {
+    for (const inst of Object.values(store.state.instances)) {
+      if (inst.owner === seat) {
+        if (id && inst.instanceId === id) return inst;
+        const card = resolveCard(inst.cardId);
+        if (card?.mainType === "Héros") return inst;
+        if (inst.instanceId === `ci_${seat}_001`) return inst;
+      }
+    }
+  }
+
+  // Recherche dans les zones en jeu de la vue
+  const inPlay = [
+    ...instancesOf(view.value.seats[seat]?.havreSac),
+    ...instancesOf(view.value.monde).filter((i) => i.owner === seat),
+  ];
+  for (const inst of inPlay) {
+    if (id && inst.instanceId === id) {
+      return store.state.instances[inst.instanceId] ?? (inst as any);
+    }
+    const card = resolveCard(inst.cardId);
+    if (card?.mainType === "Héros") {
+      return store.state.instances[inst.instanceId] ?? (inst as any);
+    }
+  }
+  return null;
 }
 function heroPortrait(seat: Seat): string | null {
   const inst = heroInst(seat);
-  if (!inst?.cardId) return null;
-  const cleanId = inst.cardId.replace(/_(recto|verso)$/, "");
-  const xp = inst.counters.xp ?? 0;
-  const isVerso = xp >= 6 ? true : (xp < 6 ? false : inst.face === "verso");
+  const cardId = inst?.cardId ?? store.activeDecks?.[seat]?.hero?.id ?? null;
+  if (!cardId) return null;
+  const cleanId = cardId.replace(/_(recto|verso)$/, "");
+  const xp = inst?.counters?.xp ?? 0;
+  const isVerso = xp >= 6 ? true : (xp < 6 ? false : inst?.face === "verso");
   const faceSuffix = isVerso ? "verso" : "recto";
   return getThumbPath(`/images/cards/${cleanId}_${faceSuffix}.webp`);
 }
 function heroName(seat: Seat): string | null {
-  return resolveCard(heroInst(seat)?.cardId ?? null)?.name ?? null;
+  const inst = heroInst(seat);
+  return (
+    resolveCard(inst?.cardId ?? null)?.name ??
+    store.activeDecks?.[seat]?.hero?.name ??
+    null
+  );
 }
 function heroAccent(seat: Seat): string {
-  const card = resolveCard(heroInst(seat)?.cardId ?? null);
+  const inst = heroInst(seat);
+  const card =
+    resolveCard(inst?.cardId ?? null) ?? store.activeDecks?.[seat]?.hero;
   return elementColor(card?.stats?.niveau?.element);
 }
 function heroCounters(seat: Seat): CardCounters {
   const inst = heroInst(seat);
-  if (!inst) return {};
-  const xp = inst.counters.xp ?? 0;
-  const level =
-    (inst.counters.level ?? 1) >= 3
-      ? inst.counters.level
-      : xp >= 6
-        ? 2
-        : 1;
+  const deckHero = store.activeDecks?.[seat]?.hero;
+  const heroCard = resolveCard(inst?.cardId ?? null) ?? deckHero;
+  const basePv = heroCard?.stats?.pv ?? (heroCard as any)?.pv;
+  const basePa = heroCard?.stats?.pa ?? (heroCard as any)?.pa ?? 6;
+  const basePm = heroCard?.stats?.pm ?? (heroCard as any)?.pm ?? 3;
+
+  const xp = inst?.counters?.xp ?? 0;
+  const currentLvl = inst?.counters?.level ?? (xp >= 6 ? 2 : 1);
+  const level = currentLvl >= 3 ? currentLvl : (xp >= 6 ? 2 : 1);
+
   return {
-    ...inst.counters,
+    ...inst?.counters,
+    hp: inst?.counters?.hp ?? basePv ?? 30,
+    pa: inst?.counters?.pa ?? basePa,
+    pm: inst?.counters?.pm ?? basePm,
+    xp,
     level,
   };
 }
 function bumpHero(seat: Seat, counter: string, delta: number): void {
-  const id = view.value.seats[seat]?.heroInstanceId;
+  const inst = heroInst(seat);
+  const id =
+    inst?.instanceId ??
+    view.value.seats[seat]?.heroInstanceId ??
+    store.state.seats[seat]?.heroInstanceId;
   if (!id) return;
   if (counter === "level") {
     return;
