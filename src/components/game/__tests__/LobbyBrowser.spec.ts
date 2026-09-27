@@ -29,7 +29,7 @@ describe("LobbyBrowser.vue", () => {
 
     expect(wrapper.text()).toContain("OPEN99");
     expect(wrapper.text()).toContain("Ruel");
-    expect(wrapper.text()).toContain("Enutrof Richesse");
+    expect(wrapper.text()).not.toContain("Enutrof Richesse");
     expect(wrapper.text()).toContain("Rejoindre");
   });
 

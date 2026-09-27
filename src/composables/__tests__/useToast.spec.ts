@@ -309,4 +309,22 @@ describe("useToast", () => {
       expect(toast2.toasts.value).toHaveLength(toast1.toasts.value.length);
     });
   });
+
+  describe("Interactivité (onClick & actionLabel)", () => {
+    it("devrait enregistrer le callback onClick et le libellé actionLabel", () => {
+      const { info, toasts } = useToast();
+      const handleClick = vi.fn();
+
+      info("Nouveau message", {
+        onClick: handleClick,
+        actionLabel: "Ouvrir",
+      });
+
+      expect(toasts.value[0].actionLabel).toBe("Ouvrir");
+      expect(typeof toasts.value[0].onClick).toBe("function");
+
+      toasts.value[0].onClick?.();
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+  });
 });

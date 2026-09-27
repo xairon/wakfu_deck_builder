@@ -541,7 +541,7 @@
               <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
                 <div>
                   <p class="font-semibold">{{ active2v2Lobby.slots.A1?.userName || "Joueur 1 (Hôte)" }} <span class="badge badge-xs">J1</span></p>
-                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.A1?.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                  <p class="text-xs text-base-content/60">Deck sélectionné (masqué)</p>
                 </div>
                 <button
                   v-if="my2v2Seat === 'A1'"
@@ -560,7 +560,7 @@
               <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
                 <div v-if="active2v2Lobby.slots.A2">
                   <p class="font-semibold">{{ active2v2Lobby.slots.A2.userName }} <span class="badge badge-xs">J3</span></p>
-                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.A2.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                  <p class="text-xs text-base-content/60">Deck sélectionné (masqué)</p>
                 </div>
                 <div v-else class="text-xs text-base-content/50 italic">
                   En attente du Joueur 3…
@@ -607,7 +607,7 @@
               <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
                 <div v-if="active2v2Lobby.slots.B1">
                   <p class="font-semibold">{{ active2v2Lobby.slots.B1.userName }} <span class="badge badge-xs">J2</span></p>
-                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.B1.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                  <p class="text-xs text-base-content/60">Deck sélectionné (masqué)</p>
                 </div>
                 <div v-else class="text-xs text-base-content/50 italic">
                   En attente du Joueur 2…
@@ -642,7 +642,7 @@
               <div class="flex items-center justify-between rounded bg-base-200/60 p-2 text-sm">
                 <div v-if="active2v2Lobby.slots.B2">
                   <p class="font-semibold">{{ active2v2Lobby.slots.B2.userName }} <span class="badge badge-xs">J4</span></p>
-                  <p class="text-xs text-base-content/60">{{ (active2v2Lobby.slots.B2.deck as Deck)?.name || "Deck sélectionné" }}</p>
+                  <p class="text-xs text-base-content/60">Deck sélectionné (masqué)</p>
                 </div>
                 <div v-else class="text-xs text-base-content/50 italic">
                   En attente du Joueur 4…
@@ -1176,7 +1176,6 @@
             :players="[
               {
                 name: pseudonym,
-                deckName: onlineDeck?.name,
                 isHost: true,
                 ready: true,
               },
@@ -2450,7 +2449,6 @@ async function onlineCreate(): Promise<void> {
       hostName: myName,
       hostUserId: authStore.userId || undefined,
       mode: "1v1",
-      deckName: deck.name,
       currentPlayers: 1,
       maxPlayers: 2,
       createdAt: Date.now(),

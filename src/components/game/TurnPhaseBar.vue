@@ -65,7 +65,6 @@
             :title="sub.description"
             @click="selectSubPhase(sub.id)"
           >
-            <span class="phase-sub__num">{{ sub.num }}</span>
             <span class="phase-sub__label">{{ sub.label }}</span>
           </button>
         </div>
@@ -470,13 +469,6 @@ function endTurn(): void {
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-.phase-sub__num {
-  font-size: 0.55rem;
-  font-weight: 700;
-  color: rgba(239, 68, 68, 0.5);
-  font-family: "Space Mono", ui-monospace, monospace;
-}
-
 .phase-sub__label {
   font-size: 0.55rem;
   font-weight: 600;
@@ -491,10 +483,6 @@ function endTurn(): void {
   background: rgba(239, 68, 68, 0.25);
   border-color: rgba(239, 68, 68, 0.6);
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
-}
-
-.phase-sub--active .phase-sub__num {
-  color: #f87171;
 }
 
 .phase-sub--active .phase-sub__label {

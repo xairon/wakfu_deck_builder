@@ -177,8 +177,8 @@ const isFull = computed(() => props.currentPlayers >= props.maxPlayers);
               <span class="font-semibold text-sm">{{ p.name }}</span>
               <span v-if="p.isHost" class="badge badge-xs badge-primary">Hôte</span>
             </div>
-            <p v-if="p.deckName" class="text-xs text-base-content/60 truncate max-w-[160px]">
-              {{ p.deckName }}
+            <p class="text-xs text-base-content/50 italic">
+              Deck masqué
             </p>
           </div>
         </div>

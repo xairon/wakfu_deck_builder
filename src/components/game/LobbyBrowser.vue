@@ -65,8 +65,7 @@ const filteredLobbies = computed(() => {
   return lobbies.value.filter(
     (l) =>
       l.code.toLowerCase().includes(q) ||
-      l.hostName.toLowerCase().includes(q) ||
-      (l.deckName && l.deckName.toLowerCase().includes(q)),
+      l.hostName.toLowerCase().includes(q),
   );
 });
 </script>
@@ -121,9 +120,6 @@ const filteredLobbies = computed(() => {
             </div>
             <p class="text-sm font-semibold text-base-content/90">
               Hôte : {{ lobby.hostName }}
-            </p>
-            <p v-if="lobby.deckName" class="text-xs text-base-content/60">
-              Deck : {{ lobby.deckName }}
             </p>
           </div>
 

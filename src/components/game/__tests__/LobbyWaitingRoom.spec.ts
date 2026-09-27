@@ -19,7 +19,20 @@ describe("LobbyWaitingRoom.vue", () => {
     expect(wrapper.text()).toContain("1 / 2");
     expect(wrapper.text()).toContain("Yugo");
     expect(wrapper.text()).toContain("Hôte");
+    expect(wrapper.text()).toContain("Deck masqué");
     expect(wrapper.text()).toContain("Copier le lien d'invitation");
+  });
+
+  it("ne montre pas le nom du deck même s'il est fourni dans les données du slot", () => {
+    const wrapper = mount(LobbyWaitingRoom, {
+      props: {
+        code: "WAK123",
+        players: [{ name: "Yugo", deckName: "Deck Secret Cra", isHost: true }],
+      },
+    });
+
+    expect(wrapper.text()).not.toContain("Deck Secret Cra");
+    expect(wrapper.text()).toContain("Deck masqué");
   });
 
   it("émet l'événement leave quand l'utilisateur clique sur Quitter le salon", async () => {

@@ -2,6 +2,14 @@ import { ref, readonly } from "vue";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
+export interface ToastOptions {
+  title?: string;
+  type?: ToastType;
+  duration?: number;
+  onClick?: () => void;
+  actionLabel?: string;
+}
+
 export interface Toast {
   id: number;
   message: string;
@@ -9,6 +17,8 @@ export interface Toast {
   type: ToastType;
   duration: number;
   show: boolean;
+  onClick?: () => void;
+  actionLabel?: string;
 }
 
 // Singleton pour gérer les toasts à travers toute l'application
@@ -22,11 +32,7 @@ export function useToast() {
   // Ajouter un nouveau toast
   function addToast(
     message: string,
-    options?: {
-      title?: string;
-      type?: ToastType;
-      duration?: number;
-    },
+    options?: ToastOptions,
   ): number {
     const defaults = {
       type: "info" as ToastType,
@@ -60,6 +66,8 @@ export function useToast() {
       type,
       duration,
       show: true,
+      onClick: options?.onClick,
+      actionLabel: options?.actionLabel,
     };
 
     toasts.value.push(toast);
@@ -80,7 +88,7 @@ export function useToast() {
   // Ajouter un toast de succès
   function success(
     message: string,
-    options?: { title?: string; duration?: number },
+    options?: Omit<ToastOptions, "type">,
   ): number {
     return addToast(message, { ...options, type: "success" });
   }
@@ -88,7 +96,7 @@ export function useToast() {
   // Ajouter un toast d'erreur
   function error(
     message: string,
-    options?: { title?: string; duration?: number },
+    options?: Omit<ToastOptions, "type">,
   ): number {
     return addToast(message, { ...options, type: "error" });
   }
@@ -96,7 +104,7 @@ export function useToast() {
   // Ajouter un toast d'information
   function info(
     message: string,
-    options?: { title?: string; duration?: number },
+    options?: Omit<ToastOptions, "type">,
   ): number {
     return addToast(message, { ...options, type: "info" });
   }
@@ -104,7 +112,7 @@ export function useToast() {
   // Ajouter un toast d'avertissement
   function warning(
     message: string,
-    options?: { title?: string; duration?: number },
+    options?: Omit<ToastOptions, "type">,
   ): number {
     return addToast(message, { ...options, type: "warning" });
   }

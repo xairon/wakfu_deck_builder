@@ -101,7 +101,7 @@
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            class="border-b-2 pb-0.5 font-display text-[17px] transition-colors"
+            class="border-b-2 pb-0.5 font-display text-[17px] transition-colors inline-flex items-center gap-1.5"
             :class="
               isActive(item)
                 ? 'border-primary text-base-content'
@@ -109,7 +109,15 @@
             "
             :aria-current="isActive(item) ? 'page' : undefined"
           >
-            {{ item.label }}
+            <span>{{ item.label }}</span>
+            <span
+              v-if="item.to === '/communaute' && communityStore.totalUnreadPrivate > 0"
+              class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-error rounded-full animate-pulse"
+              title="Messages privés non lus"
+              data-testid="unread-community-badge"
+            >
+              {{ communityStore.totalUnreadPrivate }}
+            </span>
           </router-link>
         </nav>
 
@@ -157,8 +165,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, ref, computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import ToastContainer from "./components/ui/ToastContainer.vue";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt.vue";
 import PWAUpdatePrompt from "./components/ui/PWAUpdatePrompt.vue";
@@ -169,15 +177,62 @@ import { useTheme } from "./composables/useTheme";
 import { useCardStore } from "./stores/cardStore";
 import { useDeckStore } from "./stores/deckStore";
 import { useAuthStore } from "./stores/authStore";
+import { useCommunityStore } from "./stores/communityStore";
 import { useToast } from "./composables/useToast";
 import { isSupabaseConfigured } from "./services/supabase";
 
 const { initTheme } = useTheme();
 const route = useRoute();
+const router = useRouter();
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
 const authStore = useAuthStore();
+const communityStore = useCommunityStore();
 const toast = useToast();
+
+watch(
+  () => authStore.isAuthenticated,
+  (isAuth) => {
+    if (isAuth) {
+      void communityStore.initialize();
+    } else {
+      communityStore.reset();
+    }
+  },
+  { immediate: true },
+);
+
+// Notification globale pour les messages privés reçus hors de la conversation en cours
+watch(
+  () => communityStore.lastIncomingPrivateMessage,
+  (msg) => {
+    if (!msg || msg.sender_id === authStore.userId) return;
+
+    const isViewingThisChat =
+      communityStore.isCommunityViewActive &&
+      communityStore.activeTab === "private" &&
+      communityStore.selectedUserId === msg.sender_id;
+
+    if (!isViewingThisChat) {
+      const sender =
+        msg.sender_name || communityStore.getUsername(msg.sender_id);
+      const preview =
+        msg.content.length > 55 ? msg.content.slice(0, 52) + "…" : msg.content;
+      toast.info(`✉️ ${sender} : "${preview}"`, {
+        title: "Message privé reçu",
+        duration: 7000,
+        actionLabel: "Ouvrir la missive",
+        onClick: () => {
+          void router.push({
+            path: "/communaute",
+            query: { user: msg.sender_id },
+          });
+          void communityStore.openPrivateChat(msg.sender_id, sender);
+        },
+      });
+    }
+  },
+);
 
 const loadingAttempt = ref(1);
 const isLoading = computed(() => cardStore.loading);
@@ -214,6 +269,7 @@ const navItems = computed(() => {
     { to: "/decks", label: "Decks", match: ["/decks", "/deck"] },
     { to: "/custom-card-creator", label: "Créateur", match: ["/custom-card-creator"] },
     { to: "/play/table", label: "Partie", match: ["/play"] },
+    { to: "/communaute", label: "Communauté", match: ["/communaute"] },
     { to: "/regles", label: "Règles", match: ["/regles"] },
     { to: "/errata", label: "Errata", match: ["/errata"] },
   ];
@@ -257,6 +313,9 @@ onMounted(async () => {
   initTheme();
   if (isBackendMissing.value) return;
   await authStore.initialize();
+  if (authStore.isAuthenticated) {
+    void communityStore.initialize();
+  }
   await initializeApp();
 });
 </script>
