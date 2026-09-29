@@ -1602,10 +1602,10 @@ export const useGameStore = defineStore("game", () => {
    * pour que le serveur mette à jour autoritairement state.turn.firstPlayer et active.
    */
   function chooseFirstPlayer(seat: Seat): void {
-    setFirstPlayer(seat);
     if (online.value && gameId.value) {
       void pushIntent({ kind: "CHOOSE_FIRST_PLAYER", firstPlayer: seat });
     }
+    setFirstPlayer(seat);
   }
 
   /**

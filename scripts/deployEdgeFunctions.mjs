@@ -24,20 +24,22 @@ import { dirname, resolve } from "node:path";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
-let projectRef = "hrtaviahtritcbtuyuim";
+function getProjectRefFromEnv() {
+  try {
+    const envContent = readFileSync(resolve(root, ".env"), "utf8");
+    const match = envContent.match(/VITE_SUPABASE_URL=https:\/\/([^.]+)\.supabase\.co/);
+    if (match?.[1]) return match[1];
+  } catch {}
+  return "ehqalhzvmgkepgbaxbzu";
+}
+
+let projectRef = getProjectRefFromEnv();
 const slugs = [];
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--ref") projectRef = argv[++i];
   else slugs.push(argv[i]);
 }
 if (slugs.length === 0) slugs.push("create_game", "join_game", "submit_event");
-
-if (!process.env.SUPABASE_ACCESS_TOKEN) {
-  console.error(
-    "ERREUR : SUPABASE_ACCESS_TOKEN manquant dans l'environnement.",
-  );
-  process.exit(1);
-}
 
 const bundleFn = (slug) =>
   build({

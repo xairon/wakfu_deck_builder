@@ -340,5 +340,53 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
         expect(errT2.error).toContain("premier tour");
       }
     });
+
+    it("permet au joueur B (si B a gagné l'initiative) de choisir de faire jouer A en premier", () => {
+      const { state, getCard } = playingState();
+      state.turn.active = "B";
+      state.turn.firstPlayer = "B";
+
+      // B choisit A en premier
+      const r = resolveIntent(
+        state,
+        getCard,
+        { kind: "CHOOSE_FIRST_PLAYER", firstPlayer: "A" },
+        "B",
+      );
+      expect("events" in r).toBe(true);
+      if (!("events" in r)) throw new Error("attendu events");
+      expect(r.events[0].payload).toEqual({
+        active: "A",
+        firstPlayer: "A",
+        number: 1,
+        phase: "principale",
+      });
+
+      // Après application, A peut finir son tour et B ne le peut pas
+      state.turn = { ...state.turn, ...(r.events[0].payload as object) };
+      expect(state.turn.active).toBe("A");
+
+      const endA = resolveIntent(state, getCard, { kind: "END_TURN" }, "A");
+      expect("events" in endA).toBe(true);
+
+      const endB = resolveIntent(state, getCard, { kind: "END_TURN" }, "B");
+      expect("error" in endB).toBe(true);
+      if ("error" in endB) expect(endB.error).toBe("Ce n'est pas votre tour.");
+    });
+
+    it("accepte CHOOSE_FIRST_PLAYER même si l'état local a déjà été mis à jour avec le firstPlayer ciblé", () => {
+      const { state, getCard } = playingState();
+      // Simule le cas où setFirstPlayer("B") a déjà modifié turn.firstPlayer localement
+      state.turn.firstPlayer = "B";
+      state.turn.active = "B";
+
+      const r = resolveIntent(
+        state,
+        getCard,
+        { kind: "CHOOSE_FIRST_PLAYER", firstPlayer: "B" },
+        "A",
+      );
+      expect("events" in r).toBe(true);
+    });
   });
 });

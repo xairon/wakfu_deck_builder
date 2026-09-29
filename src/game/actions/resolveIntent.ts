@@ -202,7 +202,11 @@ export function resolveIntent(
       if (!state.seats[intent.firstPlayer]) {
         return { error: "Siège invalide pour le premier joueur." };
       }
-      if (seat !== state.turn.firstPlayer && seat !== state.turn.active) {
+      if (
+        seat !== state.turn.firstPlayer &&
+        seat !== state.turn.active &&
+        state.turn.firstPlayer !== intent.firstPlayer
+      ) {
         return { error: "Seul le joueur ayant l'initiative peut choisir l'ordre de jeu." };
       }
       const events: DraftEvent[] = [

@@ -100,8 +100,8 @@ Deno.serve(async (req) => {
 
     // On garde le tableau d'events mappé pour que la mémoïsation de deriveState
     // reconnaisse `post` comme une extension de `state` (sinon re-dérivation O(N)).
-    const rowEvents = (rows ?? []).map(rowToEvent);
-    const state = deriveState(rowEvents);
+    let rowEvents = (rows ?? []).map(rowToEvent);
+    let state = deriveState(rowEvents);
 
     // Partie déjà terminée : aucun event ne peut plus être appendé (sauf RESET_TABLE, CONTINUE_GAME
     // ou ajustements manuels en table libre si les joueurs restent dans la partie).
@@ -447,7 +447,7 @@ Deno.serve(async (req) => {
     if (appendErr || !ev) return json({ error: appendErr?.message || "APPEND_FAILED" }, 409); // OUT_OF_ORDER → resync client
 
     // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
-    const post = deriveState([...rowEvents, ev]);
+    post = deriveState([...rowEvents, ev]);
     for (const seat of ["A", "B"] as const) {
       // Canal PRIVÉ : le client s'abonne avec { private: true } ; l'émetteur doit
       // l'être aussi, sinon le message part sur le topic public et n'est pas reçu.

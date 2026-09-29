@@ -1516,6 +1516,124 @@ describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
     expect(store.turn.active).toBe("B");
   });
 
+  it("en ligne, quand le joueur A gagne le dé et choisit de faire jouer B en premier, B peut mettre fin à son tour sans erreur", async () => {
+    const store = useGameStore();
+    const intents: any[] = [];
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+      submitIntent: vi.fn(async (_id: string, intent: any) => {
+        intents.push(intent);
+      }),
+    };
+
+    // Client B se connecte
+    store.connectOnline("g-test", "B", transport as any);
+    store.applyServerEvent(startedWithHands(1)); // Initialement A a l'initiative
+
+    // Le joueur A a choisi de faire jouer B en premier -> le serveur émet SET_PHASE avec active=B, firstPlayer=B
+    store.applyServerEvent({
+      gameId: "g-test",
+      seq: 2,
+      parentSeq: 1,
+      actor: "system",
+      type: "SET_PHASE",
+      payload: { active: "B", firstPlayer: "B", number: 1, phase: "principale" },
+      ts: Date.now(),
+    });
+
+    // B est bien le joueur actif au Tour 1
+    expect(store.mySeat).toBe("B");
+    expect(store.turn.active).toBe("B");
+    expect(store.turn.firstPlayer).toBe("B");
+    expect(store.ruleError).toBeNull();
+
+    // B clique sur "Fin de tour"
+    store.endTurn();
+
+    await Promise.resolve();
+    // L'intention END_TURN est envoyée sans erreur
+    expect(transport.submitIntent).toHaveBeenCalledWith("g-test", { kind: "END_TURN" });
+    expect(store.ruleError).toBeNull();
+
+    // Le serveur émet l'événement de passage au Tour 2 avec le joueur A actif
+    store.applyServerEvent({
+      gameId: "g-test",
+      seq: 3,
+      parentSeq: 2,
+      actor: "system",
+      type: "SET_PHASE",
+      payload: { active: "A", number: 2, phase: "principale" },
+      ts: Date.now(),
+    });
+
+    // Le tour est bien passé à A, sans erreur et le verrou est levé
+    expect(store.turn.number).toBe(2);
+    expect(store.turn.active).toBe("A");
+    expect(store.endTurnPending).toBe(false);
+    expect(store.ruleError).toBeNull();
+  });
+
+  it("en ligne, quand le joueur B gagne le dé et choisit de faire jouer A en premier, A peut mettre fin à son tour sans erreur", async () => {
+    const store = useGameStore();
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+      submitIntent: vi.fn(async () => {}),
+    };
+
+    // Client A se connecte
+    store.connectOnline("g-test", "A", transport as any);
+    // GAME_STARTED avec B ayant initialement l'initiative
+    const startedB = startedWithHands(1);
+    (startedB.payload as any).state.turn.firstPlayer = "B";
+    (startedB.payload as any).state.turn.active = "B";
+    store.applyServerEvent(startedB);
+
+    // Le joueur B a choisi de faire jouer A en premier -> SET_PHASE avec active=A, firstPlayer=A
+    store.applyServerEvent({
+      gameId: "g-test",
+      seq: 2,
+      parentSeq: 1,
+      actor: "system",
+      type: "SET_PHASE",
+      payload: { active: "A", firstPlayer: "A", number: 1, phase: "principale" },
+      ts: Date.now(),
+    });
+
+    // A est actif au Tour 1
+    expect(store.mySeat).toBe("A");
+    expect(store.turn.active).toBe("A");
+    expect(store.turn.firstPlayer).toBe("A");
+
+    // A met fin à son tour
+    store.endTurn();
+
+    await Promise.resolve();
+    expect(transport.submitIntent).toHaveBeenCalledWith("g-test", { kind: "END_TURN" });
+    expect(store.ruleError).toBeNull();
+
+    // Le serveur émet l'écho Tour 2 pour B
+    store.applyServerEvent({
+      gameId: "g-test",
+      seq: 3,
+      parentSeq: 2,
+      actor: "system",
+      type: "SET_PHASE",
+      payload: { active: "B", number: 2, phase: "principale" },
+      ts: Date.now(),
+    });
+
+    expect(store.turn.number).toBe(2);
+    expect(store.turn.active).toBe("B");
+    expect(store.endTurnPending).toBe(false);
+    expect(store.ruleError).toBeNull();
+  });
+
   it("passe le héros au niveau 2 (verso) automatiquement à 6 XP et revient au niveau 1 (recto) en dessous", () => {
     const store = useGameStore();
     const deck = createMockDeck();
