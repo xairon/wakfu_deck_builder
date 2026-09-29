@@ -376,6 +376,12 @@ Deno.serve(async (req) => {
         const rescue = equalityRescueEvents({ state: batch.state(), getCard });
         for (const d of rescue) batch.add(d);
         await commitBatch(db, gameId, startSeq, batch.resolved);
+        if ((intent as { kind?: string })?.kind === "CHOOSE_FIRST_PLAYER") {
+          const fp = (intent as { firstPlayer?: string })?.firstPlayer;
+          if (fp) {
+            await db.from("games").update({ first_player: fp }).eq("id", gameId);
+          }
+        }
       } catch (e) {
         return json({ error: String(e) }, 409); // rollback → journal cohérent
       }

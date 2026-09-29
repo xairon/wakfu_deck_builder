@@ -1,6 +1,8 @@
 import type { Card, CardMainType, CardRarity, CardElement } from './cards'
 
 export interface CustomCardStats {
+  xp?: number
+  /** @deprecated Les cartes Wakfu TCG n'ont pas de coût en Kamas */
   cost?: number
   hp?: number
   ap?: number

@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   createMockDeck,
   createMockHeroCard,
@@ -269,5 +269,76 @@ describe("resolveIntent — non-combat (autorité partagée)", () => {
     expect((ok.events[0].payload as { orientation: string }).orientation).toBe(
       "tapped",
     );
+  });
+
+  describe("CHOOSE_FIRST_PLAYER (choix d'initiative et d'ordre de jeu)", () => {
+    it("permet au joueur ayant l'initiative de choisir de jouer 2e (donc premier joueur = B), permettant ensuite à B de faire END_TURN", () => {
+      const { state, getCard } = playingState(); // active = A, firstPlayer = A, number = 1
+      expect(state.turn.active).toBe("A");
+      expect(state.turn.firstPlayer).toBe("A");
+
+      // Le joueur A (initiative) choisit de jouer 2e -> firstPlayer devient B
+      const r = resolveIntent(
+        state,
+        getCard,
+        { kind: "CHOOSE_FIRST_PLAYER", firstPlayer: "B" },
+        "A",
+      );
+      expect("events" in r).toBe(true);
+      if (!("events" in r)) throw new Error("attendu events");
+      expect(r.events).toHaveLength(1);
+      expect(r.events[0].type).toBe("SET_PHASE");
+      expect(r.events[0].payload).toEqual({
+        active: "B",
+        firstPlayer: "B",
+        number: 1,
+        phase: "principale",
+      });
+
+      // Appliquer l'événement à l'état (comme le ferait le reducer/deriveState)
+      state.turn = { ...state.turn, ...(r.events[0].payload as object) };
+      expect(state.turn.active).toBe("B");
+      expect(state.turn.firstPlayer).toBe("B");
+
+      // B peut désormais valider END_TURN avec succès au Tour 1
+      const endB = resolveIntent(state, getCard, { kind: "END_TURN" }, "B");
+      expect("events" in endB).toBe(true);
+
+      // Tandis que A se voit refuser END_TURN car ce n'est plus son tour
+      const endA = resolveIntent(state, getCard, { kind: "END_TURN" }, "A");
+      expect("error" in endA).toBe(true);
+      if ("error" in endA) {
+        expect(endA.error).toBe("Ce n'est pas votre tour.");
+      }
+    });
+
+    it("rejette CHOOSE_FIRST_PLAYER si le joueur n'a pas l'initiative ou si le tour n'est pas le tour 1", () => {
+      const { state, getCard } = playingState(); // active = A, firstPlayer = A, number = 1
+
+      // B n'a pas l'initiative
+      const errB = resolveIntent(
+        state,
+        getCard,
+        { kind: "CHOOSE_FIRST_PLAYER", firstPlayer: "B" },
+        "B",
+      );
+      expect("error" in errB).toBe(true);
+      if ("error" in errB) {
+        expect(errB.error).toContain("initiative");
+      }
+
+      // Tour 2 : trop tard pour choisir
+      state.turn.number = 2;
+      const errT2 = resolveIntent(
+        state,
+        getCard,
+        { kind: "CHOOSE_FIRST_PLAYER", firstPlayer: "B" },
+        "A",
+      );
+      expect("error" in errT2).toBe(true);
+      if ("error" in errT2) {
+        expect(errT2.error).toContain("premier tour");
+      }
+    });
   });
 });

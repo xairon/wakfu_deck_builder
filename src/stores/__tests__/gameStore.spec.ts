@@ -1475,6 +1475,47 @@ describe("Gestion du choix 'Jouer 2e' et ordre du Tour 1 en ligne", () => {
     expect(store.perspective).toBe("A");
   });
 
+  it("en ligne, chooseFirstPlayer soumet l'intention CHOOSE_FIRST_PLAYER et SET_PHASE synchronise le premier joueur", async () => {
+    const store = useGameStore();
+    const intents: any[] = [];
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      subscribe: () => () => {},
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+      submitIntent: vi.fn(async (_id: string, intent: any) => {
+        intents.push(intent);
+      }),
+    };
+    store.connectOnline("g-test", "A", transport as any);
+    store.applyServerEvent(startedWithHands(1));
+
+    // A choisit de jouer 2e -> firstPlayer devient B
+    store.chooseFirstPlayer("B");
+    expect(store.firstPlayer).toBe("B");
+    expect(store.turn.firstPlayer).toBe("B");
+    expect(store.turn.active).toBe("B");
+    await Promise.resolve();
+    expect(intents).toHaveLength(1);
+    expect(intents[0]).toEqual({ kind: "CHOOSE_FIRST_PLAYER", firstPlayer: "B" });
+
+    // Le serveur émet l'écho SET_PHASE confirmant le premier joueur B
+    store.applyServerEvent({
+      gameId: "g-test",
+      seq: 2,
+      parentSeq: 1,
+      actor: "system",
+      type: "SET_PHASE",
+      payload: { active: "B", firstPlayer: "B", number: 1, phase: "principale" },
+      ts: Date.now(),
+    });
+
+    expect(store.firstPlayer).toBe("B");
+    expect(store.priorityChosenFirst).toBe("B");
+    expect(store.turn.firstPlayer).toBe("B");
+    expect(store.turn.active).toBe("B");
+  });
+
   it("passe le héros au niveau 2 (verso) automatiquement à 6 XP et revient au niveau 1 (recto) en dessous", () => {
     const store = useGameStore();
     const deck = createMockDeck();

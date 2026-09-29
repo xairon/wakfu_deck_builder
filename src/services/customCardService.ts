@@ -33,7 +33,6 @@ export function buildCanonicalCardFromInput(
   const element = input.element || 'Neutre'
   
   const stats: Record<string, unknown> = {}
-  if (input.stats?.cost !== undefined) stats.cost = input.stats.cost
   if (input.stats?.hp !== undefined) stats.pv = input.stats.hp
   if (input.stats?.ap !== undefined) stats.pa = input.stats.ap
   if (input.stats?.mp !== undefined) stats.pm = input.stats.mp
@@ -44,6 +43,9 @@ export function buildCanonicalCardFromInput(
   if (input.stats?.strength !== undefined) {
     stats.force = { value: input.stats.strength, element }
   }
+
+  const isAlly = input.mainType === 'Allié' || input.mainType === 'Allié Élémentaire'
+  const experience = isAlly && input.stats?.xp !== undefined ? input.stats.xp : undefined
 
   const baseCard: Record<string, unknown> = {
     id,
@@ -57,6 +59,7 @@ export function buildCanonicalCardFromInput(
     rarity: input.rarity || 'Commune',
     element,
     stats,
+    experience,
     effects: (input.effects || []).map((eff) => ({
       description: eff.description,
       cost: eff.cost,

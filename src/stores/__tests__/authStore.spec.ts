@@ -23,6 +23,7 @@ vi.mock("@/services/supabase", () => ({
 let mockRole: UserRole = "user";
 vi.mock("@/services/profileService", () => ({
   getMyRole: () => Promise.resolve(mockRole),
+  getMyProfile: () => Promise.resolve(null),
 }));
 
 // hydrateForUser importe ces stores : on les neutralise pour isoler l'auth.

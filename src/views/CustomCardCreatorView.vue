@@ -101,18 +101,103 @@
             </div>
           </div>
 
-          <!-- Image URL Externe -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-semibold">URL de l'image (Illustration externe)</span>
-              <span class="label-text-alt opacity-70">PNG, JPG, WebP</span>
-            </label>
-            <input
-              v-model="form.imageUrl"
-              type="url"
-              placeholder="https://images.unsplash.com/... ou lien direct vers image"
-              class="input input-bordered w-full"
-            />
+          <!-- Image de l'illustration (Fichier local ou URL) -->
+          <div class="form-control space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="label p-0">
+                <span class="label-text font-semibold">Illustration de la carte</span>
+              </label>
+              <div class="join">
+                <button
+                  type="button"
+                  class="btn btn-xs join-item"
+                  :class="imageSourceMode === 'local' ? 'btn-primary' : 'btn-ghost'"
+                  @click="imageSourceMode = 'local'"
+                >
+                  📁 Fichier PC
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-xs join-item"
+                  :class="imageSourceMode === 'url' ? 'btn-primary' : 'btn-ghost'"
+                  @click="imageSourceMode = 'url'"
+                >
+                  🌐 Lien URL
+                </button>
+              </div>
+            </div>
+
+            <!-- Mode 1 : Fichier local sécurisé -->
+            <div v-if="imageSourceMode === 'local'" class="space-y-2">
+              <div
+                class="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors"
+                :class="isDragging ? 'border-primary bg-primary/10' : 'border-base-content/20 hover:border-primary/50 bg-base-100/50'"
+                @dragover.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                @drop.prevent="handleFileDrop"
+                @click="triggerFileInput"
+              >
+                <input
+                  ref="fileInputRef"
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp,.gif,.avif"
+                  class="hidden"
+                  @change="handleFileInputChange"
+                />
+
+                <div v-if="isProcessingImage" class="flex flex-col items-center py-2 space-y-1">
+                  <span class="loading loading-spinner loading-md text-primary"></span>
+                  <span class="text-xs text-base-content/70">Analyse de sécurité et assainissement de l'image…</span>
+                </div>
+
+                <div v-else-if="form.imageUrl && form.imageUrl.startsWith('data:')" class="flex items-center justify-between gap-3 text-left">
+                  <div class="flex items-center gap-3">
+                    <img :src="form.imageUrl" alt="Aperçu" class="w-12 h-12 rounded object-cover border border-base-content/20" />
+                    <div>
+                      <p class="text-xs font-semibold text-success flex items-center gap-1">
+                        <span>✓</span> Image locale assainie et sécurisée
+                      </p>
+                      <p class="text-[11px] text-base-content/60">
+                        {{ uploadedFileInfo || 'Prête à être utilisée' }}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-ghost btn-xs text-error"
+                    @click.stop="clearLocalImage"
+                  >
+                    ✕ Retirer
+                  </button>
+                </div>
+
+                <div v-else class="flex flex-col items-center py-2 text-base-content/70">
+                  <span class="text-2xl mb-1">🖼️</span>
+                  <p class="text-xs font-semibold">
+                    Clique pour parcourir ou glisse-dépose une image depuis ton PC
+                  </p>
+                  <p class="text-[11px] text-base-content/50 mt-0.5">
+                    Formats acceptés : PNG, JPG, WebP, GIF, AVIF (Max 5 Mo) · SVG & scripts bloqués
+                  </p>
+                </div>
+              </div>
+              <p v-if="imageSecurityError" class="text-xs text-error font-medium">
+                ⚠️ {{ imageSecurityError }}
+              </p>
+            </div>
+
+            <!-- Mode 2 : URL Externe -->
+            <div v-else class="space-y-1">
+              <input
+                v-model="form.imageUrl"
+                type="url"
+                placeholder="https://images.unsplash.com/... ou lien direct vers image"
+                class="input input-bordered w-full text-xs font-mono"
+              />
+              <span class="text-[11px] text-base-content/50 block">
+                Formats acceptés : PNG, JPG, WebP
+              </span>
+            </div>
           </div>
         </div>
 
@@ -126,9 +211,38 @@
               <input v-model.number="form.stats.level" type="number" min="0" max="10" class="input input-bordered w-full font-mono" />
             </div>
 
+            <!-- XP : Gain lors de la destruction d'un Allié (Wakfu TCG : pas de coût en Kamas) -->
             <div class="form-control">
-              <label class="label"><span class="label-text font-semibold">Coût (Kamas)</span></label>
-              <input v-model.number="form.stats.cost" type="number" min="0" max="20" class="input input-bordered w-full font-mono" />
+              <div v-if="isAllyType">
+                <label class="label">
+                  <span class="label-text font-semibold text-amber-500">Gain d'XP (Allié)</span>
+                </label>
+                <input
+                  v-model.number="form.stats.xp"
+                  type="number"
+                  min="0"
+                  max="20"
+                  class="input input-bordered input-warning w-full font-mono font-bold"
+                  placeholder="1"
+                />
+                <p class="text-[10px] text-base-content/60 mt-1">
+                  XP donnée à l'adversaire quand cet Allié est détruit
+                </p>
+              </div>
+              <div v-else class="opacity-50">
+                <label class="label">
+                  <span class="label-text font-semibold">Gain d'XP</span>
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value="—"
+                  class="input input-bordered w-full font-mono text-center cursor-not-allowed"
+                />
+                <p class="text-[10px] text-base-content/50 mt-1">
+                  Seuls les Alliés rapportent de l'XP
+                </p>
+              </div>
             </div>
 
             <div class="form-control">
@@ -314,6 +428,7 @@ import {
   deleteCustomCard,
   getCustomCardsByUser,
 } from '@/services/customCardService'
+import { validateAndSanitizeImageFile } from '@/utils/safeImageUpload'
 import { useAuthStore } from '@/stores/authStore'
 import type { CustomCardInput, CustomCardRecord } from '@/types/customCards'
 import type { CardMainType, CardRarity, CardElement } from '@/types/cards'
@@ -341,7 +456,7 @@ const form = reactive<{
   imageUrl: string
   stats: {
     level?: number
-    cost?: number
+    xp?: number
     hp?: number
     strength?: number
     ap?: number
@@ -359,7 +474,7 @@ const form = reactive<{
   imageUrl: '',
   stats: {
     level: 1,
-    cost: 1,
+    xp: 1,
     hp: 5,
     strength: 2,
     ap: 0,
@@ -372,6 +487,65 @@ const form = reactive<{
   flavorText: '',
   isPublic: true,
 })
+
+const isAllyType = computed(() => {
+  return form.mainType === 'Allié' || form.mainType === 'Allié Élémentaire'
+})
+
+// Gestion sécurisée des illustrations (Upload local PC vs URL)
+const imageSourceMode = ref<'local' | 'url'>('local')
+const isDragging = ref(false)
+const isProcessingImage = ref(false)
+const imageSecurityError = ref('')
+const uploadedFileInfo = ref('')
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+function triggerFileInput() {
+  fileInputRef.value?.click()
+}
+
+async function processImageFile(file: File) {
+  isProcessingImage.value = true
+  imageSecurityError.value = ''
+  try {
+    const res = await validateAndSanitizeImageFile(file)
+    if (res.ok && res.dataUrl) {
+      form.imageUrl = res.dataUrl
+      uploadedFileInfo.value = `${file.name} (${res.width}x${res.height} px, ${(file.size / 1024).toFixed(0)} Ko)`
+      imageSecurityError.value = ''
+    } else {
+      imageSecurityError.value = res.error || "Erreur de sécurité lors de l'analyse du fichier."
+    }
+  } catch {
+    imageSecurityError.value = "Impossible de traiter l'image sélectionnée."
+  } finally {
+    isProcessingImage.value = false
+    if (fileInputRef.value) fileInputRef.value.value = ''
+  }
+}
+
+function handleFileInputChange(e: Event) {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    void processImageFile(file)
+  }
+}
+
+function handleFileDrop(e: DragEvent) {
+  isDragging.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (file) {
+    void processImageFile(file)
+  }
+}
+
+function clearLocalImage() {
+  form.imageUrl = ''
+  uploadedFileInfo.value = ''
+  imageSecurityError.value = ''
+  if (fileInputRef.value) fileInputRef.value.value = ''
+}
 
 const subTypesInput = ref('')
 const isSubmitting = ref(false)
@@ -390,7 +564,10 @@ const previewCard = computed<CustomCardInput>(() => ({
   subTypes: subTypesInput.value
     ? subTypesInput.value.split(',').map((s) => s.trim()).filter(Boolean)
     : [],
-  stats: { ...form.stats },
+  stats: {
+    ...form.stats,
+    xp: isAllyType.value ? (form.stats.xp ?? 0) : undefined,
+  },
   effects: form.effects.map((e) => ({ ...e })),
   flavorText: form.flavorText,
   isPublic: form.isPublic,
@@ -409,8 +586,8 @@ function resetForm() {
   form.mainType = 'Allié'
   form.element = 'Neutre'
   form.rarity = 'Commune'
-  form.imageUrl = ''
-  form.stats = { level: 1, cost: 1, hp: 5, strength: 2, ap: 0, mp: 0, resistance: 0 }
+  clearLocalImage()
+  form.stats = { level: 1, xp: 1, hp: 5, strength: 2, ap: 0, mp: 0, resistance: 0 }
   form.effects = [{ trigger: 'Entrée en jeu', cost: '', description: 'Inflige 1 dommage à une cible adverse.' }]
   form.flavorText = ''
   form.isPublic = true
@@ -432,10 +609,16 @@ function loadCardForEdit(rec: CustomCardRecord) {
   form.element = (rec.card_data.element as CardElement) || 'Neutre'
   form.rarity = (rec.card_data.rarity as CardRarity) || 'Commune'
   form.imageUrl = rec.image_url || rec.card_data.imageUrl || ''
+  if (form.imageUrl && form.imageUrl.startsWith('data:')) {
+    imageSourceMode.value = 'local'
+    uploadedFileInfo.value = 'Image chargée'
+  } else if (form.imageUrl) {
+    imageSourceMode.value = 'url'
+  }
   subTypesInput.value = (rec.card_data.subTypes || []).join(', ')
   form.stats = {
     level: rec.card_data.stats?.niveau?.value,
-    cost: rec.card_data.stats?.cost,
+    xp: rec.card_data.experience ?? 0,
     hp: rec.card_data.stats?.pv,
     strength: rec.card_data.stats?.force?.value,
     ap: rec.card_data.stats?.pa,
@@ -486,7 +669,10 @@ async function handleSave() {
       subTypes: subTypesInput.value
         ? subTypesInput.value.split(',').map((s) => s.trim()).filter(Boolean)
         : [],
-      stats: { ...form.stats },
+      stats: {
+        ...form.stats,
+        xp: isAllyType.value ? (form.stats.xp ?? 0) : undefined,
+      },
       effects: form.effects.filter((e) => e.description.trim().length > 0),
       flavorText: form.flavorText,
       isPublic: form.isPublic,

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Verbes — sucre au-dessus de la primitive MOVE + events d'état (L1). Réf. §4.1.
  * Chaque verbe construit un `DraftEvent` ; `sequence()` leur assigne seq/ts.
  */
@@ -300,7 +300,7 @@ export function lookCards(
 /** Met à jour le tour (joueur actif, numéro, phase) — assistance non bloquante. */
 export function setPhase(
   actor: Seat | "system",
-  turn: { active?: Seat; number?: number; phase?: TurnPhase },
+  turn: { active?: Seat; number?: number; phase?: TurnPhase; firstPlayer?: Seat },
 ): DraftEvent {
   return { actor, type: "SET_PHASE", payload: turn };
 }

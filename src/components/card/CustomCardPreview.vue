@@ -18,9 +18,14 @@
       <h4 class="font-display font-bold text-base leading-tight truncate text-primary">
         {{ card.name || 'Nom de la carte' }}
       </h4>
-      <span v-if="levelOrCost !== null" class="font-mono font-bold text-sm bg-base-300 px-1.5 py-0.5 rounded border border-base-content/20">
-        {{ levelOrCost }}
-      </span>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <span v-if="levelText !== null" class="font-mono font-bold text-sm bg-base-300 px-1.5 py-0.5 rounded border border-base-content/20">
+          {{ levelText }}
+        </span>
+        <span v-if="isAlly && card.stats?.xp !== undefined" class="font-mono font-bold text-xs bg-amber-500/20 text-amber-500 px-1.5 py-0.5 rounded border border-amber-500/30" title="XP obtenue lors de la destruction de cet allié">
+          {{ card.stats.xp }} XP
+        </span>
+      </div>
     </div>
 
     <!-- Image Artwork -->
@@ -135,12 +140,13 @@ const elementBadgeClass = computed(() => {
   }
 })
 
-const levelOrCost = computed(() => {
+const isAlly = computed(() => {
+  return props.card.mainType === 'Allié' || props.card.mainType === 'Allié Élémentaire'
+})
+
+const levelText = computed(() => {
   if (props.card.stats?.level !== undefined && props.card.stats.level > 0) {
     return `Niv. ${props.card.stats.level}`
-  }
-  if (props.card.stats?.cost !== undefined && props.card.stats.cost > 0) {
-    return `${props.card.stats.cost} Kamas`
   }
   return null
 })

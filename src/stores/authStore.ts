@@ -21,6 +21,8 @@ export const useAuthStore = defineStore("auth", () => {
   const passwordRecovery = ref(false);
   /** Rôle du compte courant. Repli initial « user » (cf. setSession). */
   const role = ref<UserRole>("user");
+  /** Pseudo public du compte courant (provenant de `profiles.username`). */
+  const username = ref<string | null>(null);
 
   let unsubscribe: (() => void) | null = null;
   let initPromise: Promise<void> | null = null;
@@ -36,10 +38,12 @@ export const useAuthStore = defineStore("auth", () => {
   /** Affichage UI uniquement — la sécurité réelle est la RLS côté serveur. */
   const isOwner = computed(() => role.value === "owner");
 
-  /** Charge le rôle depuis `profiles`. Silencieux : le repli est déjà « user ». */
+  /** Charge le rôle et le profil public depuis `profiles`. */
   async function loadRole() {
-    const { getMyRole } = await import("@/services/profileService");
-    role.value = await getMyRole();
+    const { getMyRole, getMyProfile } = await import("@/services/profileService");
+    const [r, p] = await Promise.all([getMyRole(), getMyProfile()]);
+    role.value = r;
+    username.value = p?.username ?? null;
   }
 
   function setSession(next: AuthSession | null) {
@@ -48,6 +52,7 @@ export const useAuthStore = defineStore("auth", () => {
     // Le rôle suit la session. Repli IMMÉDIAT sur « user » : aucun privilège tant
     // que le rôle réel n'est pas revenu, et remise à zéro à la déconnexion.
     role.value = "user";
+    username.value = null;
     if (next) void loadRole();
   }
 
@@ -226,6 +231,7 @@ export const useAuthStore = defineStore("auth", () => {
     error,
     passwordRecovery,
     role,
+    username,
     isAuthenticated,
     userEmail,
     userId,

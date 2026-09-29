@@ -95,4 +95,5 @@ export type GameIntent =
       geantAssign?: Record<InstanceId, Record<InstanceId, number>>;
     }
   | { kind: "CANCEL_COMBAT" }
-  | { kind: "CONTINUE_GAME" };
+  | { kind: "CONTINUE_GAME" }
+  | { kind: "CHOOSE_FIRST_PLAYER"; firstPlayer: import("./zones").Seat };

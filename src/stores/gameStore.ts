@@ -1053,7 +1053,14 @@ export const useGameStore = defineStore("game", () => {
       }
       events.value = [...events.value, ...toAppend];
       for (const e of toAppend) {
-        if (e.type === "MULLIGAN_DONE") {
+        if (e.type === "GAME_STARTED") {
+          const p = e.payload as { state?: { turn?: { firstPlayer?: Seat; active?: Seat } } };
+          const fp = p?.state?.turn?.firstPlayer;
+          if (fp) {
+            firstPlayer.value = fp;
+            priorityChosenFirst.value = fp;
+          }
+        } else if (e.type === "MULLIGAN_DONE") {
           const seat = (e.payload as { seat: Seat })?.seat;
           if (seat) {
             mulliganDone.value = { ...mulliganDone.value, [seat]: true };
@@ -1073,6 +1080,11 @@ export const useGameStore = defineStore("game", () => {
           mulliganCounts.value = { ...mulliganCounts.value, [s]: current + 1 };
         } else if (e.type === "SET_PHASE") {
           endTurnPending.value = false;
+          const p = e.payload as { firstPlayer?: Seat; active?: Seat };
+          if (p?.firstPlayer) {
+            firstPlayer.value = p.firstPlayer;
+            priorityChosenFirst.value = p.firstPlayer;
+          }
         } else if (e.type === "SAID") {
           const p = e.payload as SaidPayload;
           if (p?.kind === "activate_effect") {
@@ -1582,6 +1594,17 @@ export const useGameStore = defineStore("game", () => {
         (gc.payload as any).state.turn.firstPlayer = seat;
         (gc.payload as any).state.turn.active = seat;
       }
+    }
+  }
+
+  /**
+   * Enregistre le choix du premier joueur et soumet l'intention au serveur en ligne
+   * pour que le serveur mette à jour autoritairement state.turn.firstPlayer et active.
+   */
+  function chooseFirstPlayer(seat: Seat): void {
+    setFirstPlayer(seat);
+    if (online.value && gameId.value) {
+      void pushIntent({ kind: "CHOOSE_FIRST_PLAYER", firstPlayer: seat });
     }
   }
 
@@ -5646,6 +5669,7 @@ export const useGameStore = defineStore("game", () => {
     // cycle
     startMatch,
     setFirstPlayer,
+    chooseFirstPlayer,
     startSandbox,
     continueMatch,
     mulligan,

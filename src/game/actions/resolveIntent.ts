@@ -38,6 +38,7 @@ import {
   flipLevel,
   setCombat,
   say,
+  setPhase,
 } from "../engine/verbs.ts";
 import { eligibleBearers, requiresBearer } from "../rules/bearer.ts";
 import { nextTurnEvents, turnEndDestroyEvents } from "../engine/turn.ts";
@@ -194,6 +195,26 @@ export function resolveIntent(
   }
 
   switch (intent.kind) {
+    case "CHOOSE_FIRST_PLAYER": {
+      if (state.turn.number !== 1) {
+        return { error: "L'ordre de jeu ne peut être choisi qu'au premier tour." };
+      }
+      if (!state.seats[intent.firstPlayer]) {
+        return { error: "Siège invalide pour le premier joueur." };
+      }
+      if (seat !== state.turn.firstPlayer && seat !== state.turn.active) {
+        return { error: "Seul le joueur ayant l'initiative peut choisir l'ordre de jeu." };
+      }
+      const events: DraftEvent[] = [
+        setPhase(seat, {
+          active: intent.firstPlayer,
+          firstPlayer: intent.firstPlayer,
+          number: 1,
+          phase: "principale",
+        }),
+      ];
+      return { events };
+    }
     case "CONTINUE_GAME": {
       return {
         events: [say("system", "La partie continue en jeu libre.")],

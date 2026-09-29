@@ -26,7 +26,7 @@ function mapUser(user: SupabaseUser | null | undefined): AuthUser | null {
     displayName:
       (user.user_metadata?.display_name as string) ||
       (user.user_metadata?.name as string) ||
-      user.email?.split("@")[0] ||
+      (user.user_metadata?.username as string) ||
       null,
   };
 }

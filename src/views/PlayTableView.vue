@@ -114,35 +114,7 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Carte 1: Seul contre soi-même (Sandbox) -->
-        <div
-          class="card bg-base-200 border-2 cursor-pointer transition-all hover:scale-[1.01] p-5 flex flex-col justify-between"
-          :class="selectedGameMode === 'solo' ? 'border-accent shadow-lg shadow-accent/10 bg-accent/[0.04]' : 'border-base-content/10 hover:border-base-content/30'"
-          @click="selectedGameMode = 'solo'"
-        >
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="text-2xl">⚔️</span>
-              <span v-if="selectedGameMode === 'solo'" class="badge badge-accent badge-sm font-semibold">Actif</span>
-            </div>
-            <h3 class="font-display font-bold text-lg mt-3">Seul contre soi-même</h3>
-            <p class="text-xs text-base-content/70 mt-1">
-              Prenez le contrôle des deux joueurs en local pour tester vos decks, vos combos et vos stratégies librement.
-            </p>
-          </div>
-          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
-            <label class="label cursor-pointer justify-start gap-2 p-0">
-              <input
-                v-model="customCardsAllowed.solo"
-                type="checkbox"
-                class="checkbox checkbox-xs checkbox-accent"
-              />
-              <span class="label-text text-xs">Autoriser les Custom Cards</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Carte 2: 1v1 En Ligne -->
+        <!-- Carte 1: 1v1 En Ligne -->
         <div
           class="card bg-base-200 border-2 cursor-pointer transition-all hover:scale-[1.01] p-5 flex flex-col justify-between"
           :class="selectedGameMode === 'online1v1' ? 'border-primary shadow-lg shadow-primary/10 bg-primary/[0.04]' : 'border-base-content/10 hover:border-base-content/30'"
@@ -164,6 +136,34 @@
                 v-model="customCardsAllowed.online1v1"
                 type="checkbox"
                 class="checkbox checkbox-xs checkbox-primary"
+              />
+              <span class="label-text text-xs">Autoriser les Custom Cards</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Carte 2: Seul contre soi-même (Sandbox) -->
+        <div
+          class="card bg-base-200 border-2 cursor-pointer transition-all hover:scale-[1.01] p-5 flex flex-col justify-between"
+          :class="selectedGameMode === 'solo' ? 'border-accent shadow-lg shadow-accent/10 bg-accent/[0.04]' : 'border-base-content/10 hover:border-base-content/30'"
+          @click="selectedGameMode = 'solo'"
+        >
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">⚔️</span>
+              <span v-if="selectedGameMode === 'solo'" class="badge badge-accent badge-sm font-semibold">Actif</span>
+            </div>
+            <h3 class="font-display font-bold text-lg mt-3">Seul contre soi-même</h3>
+            <p class="text-xs text-base-content/70 mt-1">
+              Prenez le contrôle des deux joueurs en local pour tester vos decks, vos combos et vos stratégies librement.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
+            <label class="label cursor-pointer justify-start gap-2 p-0">
+              <input
+                v-model="customCardsAllowed.solo"
+                type="checkbox"
+                class="checkbox checkbox-xs checkbox-accent"
               />
               <span class="label-text text-xs">Autoriser les Custom Cards</span>
             </label>
@@ -1553,7 +1553,7 @@ import { validateDeck } from "@/validators/deck";
 import { validateTeamDecks } from "@/validators/teamDeck";
 import { useToast } from "@/composables/useToast";
 import { useAuthStore } from "@/stores/authStore";
-import { usePlayerPseudonym } from "@/composables/usePlayerPseudonym";
+import { usePlayerPseudonym, generateRandomFallback } from "@/composables/usePlayerPseudonym";
 import { useNetworkStatus } from "@/composables/useNetworkStatus";
 import LobbyWaitingRoom from "@/components/game/LobbyWaitingRoom.vue";
 import LobbyBrowser from "@/components/game/LobbyBrowser.vue";
@@ -1598,7 +1598,7 @@ function savePseudonym() {
 }
 const network = useNetworkStatus();
 const onlineTab = ref<"browse" | "host" | "join">("browse");
-const selectedGameMode = ref<"solo" | "online1v1" | "multi2v2" | "tutorial">("solo");
+const selectedGameMode = ref<"solo" | "online1v1" | "multi2v2" | "tutorial">("online1v1");
 const customCardsAllowed = ref<{
   solo: boolean;
   online1v1: boolean;
@@ -1842,10 +1842,10 @@ function startSandboxGame(): void {
   if (!d1 || !d2 || !canStartSandbox.value) return;
   const user = authStore.user;
   const defaultP1 =
+    pseudonym.value ||
     user?.displayName ||
-    user?.email?.split("@")[0] ||
     d1.name ||
-    "Joueur 1";
+    generateRandomFallback(user?.id);
   const p1 = sandboxPlayer1Name.value.trim() || defaultP1;
   const p2 = sandboxPlayer2Name.value.trim() || d2.name || "Joueur 2";
   store.startMatch(d1, d2, {
@@ -1889,7 +1889,7 @@ function create2v2OnlineLobby(): void {
   const code = generate2v2Code();
   my2v2Seat.value = "A1";
   const user = authStore.user;
-  const userName = user?.email?.split("@")[0] || "Joueur 1 (Hôte)";
+  const userName = pseudonym.value || generateRandomFallback(user?.id);
 
   const initialLobby: Lobby2v2State = {
     code,
@@ -1969,7 +1969,7 @@ function join2v2OnlineLobby(): void {
   }
   online2v2Error.value = "";
   const user = authStore.user;
-  const userName = user?.email?.split("@")[0] || "Joueur";
+  const userName = pseudonym.value || generateRandomFallback(user?.id);
 
   let assignedSeat: Seat2v2 = "A2";
 
@@ -2020,7 +2020,7 @@ function select2v2Slot(seat: Seat2v2): void {
   if (!active2v2Lobby.value || !lobby2v2Handle) return;
   const d = online2v2Deck.value;
   const user = authStore.user;
-  const userName = user?.email?.split("@")[0] || "Joueur";
+  const userName = pseudonym.value || generateRandomFallback(user?.id);
   my2v2Seat.value = seat;
 
   const slotData: Lobby2v2Slot = {
@@ -2289,9 +2289,9 @@ const onlineTransport = {
   ) => {
     const user = authStore.user;
     const myName =
+      pseudonym.value ||
       user?.displayName ||
-      user?.email?.split("@")[0] ||
-      (seat === "A" ? "Joueur A" : "Joueur B");
+      generateRandomFallback(user?.id);
     return subscribeToGame(
       id,
       seat,
@@ -2337,9 +2337,9 @@ function resumeGame(): void {
   resumable.value = null;
   const user = authStore.user;
   const myName =
+    pseudonym.value ||
     user?.displayName ||
-    user?.email?.split("@")[0] ||
-    `Joueur ${g.seat}`;
+    generateRandomFallback(user?.id);
   store.connectOnline(
     g.gameId,
     g.seat,
@@ -2440,7 +2440,7 @@ async function onlineCreate(): Promise<void> {
     // CADRE : une seule expérience en ligne — plus de mode assisté à la création.
     const { gameId, code } = await createOnlineGame(deck, false);
     createdCode.value = code;
-    const myName = pseudonym.value || "Joueur A";
+    const myName = pseudonym.value || generateRandomFallback(authStore.userId);
     store.connectOnline(gameId, "A", onlineTransport, deck, myName);
     unpublishLobby?.();
     unpublishLobby = publishHostedLobby({
@@ -2481,8 +2481,7 @@ async function onlineJoin(): Promise<void> {
     const myName =
       pseudonym.value ||
       user?.displayName ||
-      user?.email?.split("@")[0] ||
-      "Joueur B";
+      generateRandomFallback(user?.id);
     // 1. Rejoindre la partie d'abord côté serveur afin que le joueur B soit inséré
     // dans `game_players` (requis par la RLS Supabase Realtime Authorization et pull_events).
     const joinRes = await joinGame(code, deck);
@@ -2849,8 +2848,16 @@ function applyPriorityChoice(choice: "1er" | "2e"): void {
 
 function onChoosePriority(choice: "1er" | "2e"): void {
   if (!rollWinnerSeat.value || !isMyRollChoice.value) return;
+  const winner = rollWinnerSeat.value;
+  const is2v2 = store.mode === "2v2";
+  const other = is2v2
+    ? (winner === "A1" ? "B1" : "A1")
+    : (winner === "A" ? "B" : "A");
+  const chosenFirst: Seat = choice === "1er" ? winner : other;
+
   if (store.online && store.gameId() && store.mySeat) {
     broadcastPriorityChoice(store.gameId(), store.mySeat, choice);
+    store.chooseFirstPlayer(chosenFirst);
   }
   applyPriorityChoice(choice);
 }
