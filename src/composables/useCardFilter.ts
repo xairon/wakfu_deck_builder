@@ -80,15 +80,21 @@ function cardEffectTexts(card: Card): string[] {
 
 /**
  * Clé de mémoïsation COMPACTE et CORRECTE pour le filtrage.
- * `filterCards` reçoit toujours le catalogue complet (statique) → on l'identifie
- * par sa taille au lieu de sérialiser ~1585 cartes à chaque appel. Surtout,
- * `ownedIds` (un Set) se sérialise en `{}` via la clé JSON par défaut : on
- * l'aplatit en liste triée pour que « masquer les non possédées » ne renvoie
- * pas de résultat périmé quand la collection change.
+ * `filterCards` reçoit le catalogue complet → on l'identifie par sa taille ET
+ * par les ids de première/dernière carte pour éviter les collisions entre le
+ * catalogue standard et le catalogue augmenté des cartes custom (même taille
+ * possible si une carte est ajoutée ET une autre retirée). `ownedIds` (un Set)
+ * se sérialise en `{}` via la clé JSON par défaut : on l'aplatit en liste
+ * triée pour que « masquer les non possédées » ne renvoie pas de résultat
+ * périmé quand la collection change.
  */
 function filterKey(cards: Card[], c: FilterCriteria): string {
   return JSON.stringify({
+    // Discriminant du catalogue : taille + ids de sentinelle (début et fin)
+    // pour détecter l'ajout/suppression de cartes custom sans sérialiser tout.
     n: cards.length,
+    f: cards[0]?.id ?? "",
+    l: cards[cards.length - 1]?.id ?? "",
     q: c.query,
     x: c.extension,
     mt: c.mainType,
@@ -106,6 +112,7 @@ function filterKey(cards: Card[], c: FilterCriteria): string {
     own: c.hideNotOwned ? [...c.ownedIds].sort() : [],
   });
 }
+
 
 // ── Filtrage mémoïsé ──────────────────────────────────────────────────────────
 

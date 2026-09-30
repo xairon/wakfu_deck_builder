@@ -216,9 +216,15 @@ const preview = useCardPreview();
 watch(
   () => cardStore.includeCustomCards,
   (active) => {
-    if (active && cardStore.customCards.length === 0) {
+    if (active) {
+      // Toujours recharger quand on active le toggle pour refléter les cartes
+      // créées depuis le dernier chargement (ex: retour du CustomCardCreator).
       void cardStore.loadCustomCards(authStore.user?.id);
     }
+    // Purger le cache mémoïsé et réinitialiser la pagination pour que le pool
+    // reflète immédiatement le changement d'ensemble de cartes.
+    poolLimit.value = 60;
+    pruneFilterCaches();
   },
   { immediate: true },
 );
@@ -323,6 +329,8 @@ watch(
     filterHideNotOwned,
     filterSortField,
     filterSortDesc,
+    // Invalider le cache quand l'ensemble de cartes change (custom cards chargées)
+    () => cardStore.customCards.length,
   ],
   () => {
     poolLimit.value = 60; // repart du début quand le filtre change
