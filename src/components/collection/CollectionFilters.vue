@@ -19,13 +19,29 @@
         @change="emitSelectedExtension"
       >
         <option value="">Toutes les extensions</option>
-        <option
-          v-for="extension in extensions"
-          :key="extension"
-          :value="extension"
-        >
-          {{ extension }}
-        </option>
+        <!-- Extension custom en tête dans son propre groupe -->
+        <optgroup v-if="customExtension" label="✨ Créations">
+          <option :value="customExtension">{{ customExtension }}</option>
+        </optgroup>
+        <optgroup v-if="customExtension" label="Extensions officielles">
+          <option
+            v-for="extension in extensions"
+            :key="extension"
+            :value="extension"
+          >
+            {{ extension }}
+          </option>
+        </optgroup>
+        <!-- Mode sans custom : liste plate -->
+        <template v-else>
+          <option
+            v-for="extension in extensions"
+            :key="extension"
+            :value="extension"
+          >
+            {{ extension }}
+          </option>
+        </template>
       </select>
       <label class="flex cursor-pointer items-center gap-2.5">
         <input
@@ -242,6 +258,8 @@ const props = defineProps<{
   subTypes: string[];
   rarities: string[];
   elements: string[];
+  /** Extension custom à afficher en tête dans un groupe séparé (optionnel). */
+  customExtension?: string;
 
   // État initial des filtres
   searchQuery: string;

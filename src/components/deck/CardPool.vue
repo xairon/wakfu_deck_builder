@@ -1,6 +1,7 @@
 <template>
   <CollectionFilters
     :extensions="filterExtensions"
+    :custom-extension="CUSTOM_EXTENSION_NAME"
     :main-types="filterMainTypes"
     :sub-types="filterSubTypes"
     :rarities="filterRarities"
@@ -213,6 +214,9 @@ const deckStore = useDeckStore();
 const authStore = useAuthStore();
 const preview = useCardPreview();
 
+/** Nom d'extension des cartes custom (identique à buildCanonicalCardFromInput). */
+const CUSTOM_EXTENSION_NAME = "Cartes Personnalisées";
+
 watch(
   () => cardStore.includeCustomCards,
   (active) => {
@@ -260,9 +264,34 @@ const filterSortDesc = ref(false);
 const dimUnowned = ref(false);
 const poolLimit = ref(60);
 
+// Quand l'utilisateur sélectionne l'extension "Cartes Personnalisées" via le
+// filtre, activer automatiquement le toggle custom cards et charger les cartes.
+// Quand il la désélectionne, couper le toggle si c'était le seul déclencheur.
+watch(filterExtension, (ext, prev) => {
+  if (ext === CUSTOM_EXTENSION_NAME) {
+    if (!cardStore.includeCustomCards) {
+      cardStore.includeCustomCards = true;
+      // Le watch sur includeCustomCards se chargera du loadCustomCards.
+    } else {
+      // Toggle déjà actif : recharger quand même pour fraîcheur.
+      void cardStore.loadCustomCards(authStore.user?.id);
+    }
+  } else if (prev === CUSTOM_EXTENSION_NAME && cardStore.includeCustomCards) {
+    // On quitte l'extension custom : désactiver le toggle pour ne pas
+    // encombrer le pool par défaut (l'utilisateur peut le réactiver).
+    cardStore.includeCustomCards = false;
+  }
+});
+
 // ── Filter option lists ───────────────────────────────────────────────────────
 const filterExtensions = computed(() => {
-  const set = new Set(cardStore.allCards.map((c) => c.extension.name));
+  // "Cartes Personnalisées" est gérée séparément via la prop customExtension
+  // de CollectionFilters (affichée dans un optgroup dédié ✨ Créations).
+  const set = new Set(
+    cardStore.allCards
+      .map((c) => c.extension.name)
+      .filter((n) => n !== CUSTOM_EXTENSION_NAME),
+  );
   return Array.from(set).sort();
 });
 const filterMainTypes = computed(() => {
