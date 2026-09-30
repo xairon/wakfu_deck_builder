@@ -54,8 +54,22 @@ export function createSupabaseAuthProvider(): AuthProvider {
     supportsPasswordReset: true,
 
     async getSession(): Promise<AuthSession | null> {
+      // getSession() lit uniquement le cache local et ne rafraîchit pas le token
+      // si celui-ci a expiré. On tente d'abord getSession() pour la rapidité ;
+      // si la session existe mais que le token est expiré (ou proche de l'être),
+      // on appelle refreshSession() pour obtenir de nouveaux tokens valides.
       const { data } = await client.auth.getSession();
-      return mapSession(data.session);
+      const session = data.session;
+      if (!session) return null;
+
+      const now = Math.floor(Date.now() / 1000);
+      const expiresAt = session.expires_at ?? 0;
+      // Rafraîchir si le token expire dans moins de 5 minutes
+      if (expiresAt - now < 300) {
+        const { data: refreshed } = await client.auth.refreshSession();
+        return mapSession(refreshed.session);
+      }
+      return mapSession(session);
     },
 
     onAuthStateChange(cb): () => void {

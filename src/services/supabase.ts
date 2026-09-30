@@ -41,8 +41,8 @@ if (typeof window !== "undefined" && supabase) {
       if (data?.session) {
         const expiresAt = data.session.expires_at;
         const now = Math.floor(nowMs / 1000);
-        // Si le token expire dans moins de 15 minutes, rafraîchir proactivement
-        if (expiresAt && expiresAt - now < 900) {
+        // Si le token expire dans moins de 30 minutes, rafraîchir proactivement
+        if (expiresAt && expiresAt - now < 1800) {
           await supabase.auth.refreshSession();
         }
       }
