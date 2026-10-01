@@ -61,70 +61,173 @@
   <div class="h-px w-full bg-base-content/15"></div>
 
   <!-- Slots héros / havre-sac : puits papier, filet d'encre central -->
-  <div class="grid grid-cols-2 divide-x divide-base-content/15">
-    <div class="relative bg-base-100 p-3">
+  <div
+    class="grid divide-base-content/15"
+    :class="isExpanded ? 'grid-cols-2 divide-x p-4 gap-4' : 'grid-cols-2 divide-x'"
+  >
+    <!-- Héros -->
+    <div class="relative bg-base-100" :class="isExpanded ? 'p-0' : 'p-3'">
       <span class="eyebrow text-base-content/50">Héros</span>
-      <div v-if="currentDeck?.hero" class="mt-2 flex items-center gap-2.5">
+      <div v-if="currentDeck?.hero" class="mt-2">
+        <!-- Rendu étendu : Tuile image avec informations superposées -->
         <div
-          class="plate-frame w-10 shrink-0 cursor-pointer transition-transform hover:scale-105"
+          v-if="isExpanded"
+          class="group relative select-none rounded-[3px] overflow-hidden border border-base-content/25 bg-base-300 shadow-sm max-w-[200px]"
           :style="{ '--spine': elementColor(currentDeck.hero) }"
-          :title="`Agrandir ${currentDeck.hero.name}`"
-          @click="$emit('open-zoom', currentDeck.hero)"
         >
-          <img
-            :src="cardImg(currentDeck.hero)"
-            :alt="currentDeck.hero.name"
-            class="aspect-[7/10] object-cover"
-            @error="onImgError"
-          />
-        </div>
-        <div class="min-w-0">
-          <p
-            class="truncate font-display text-sm leading-tight cursor-pointer hover:text-primary transition-colors"
+          <div
+            class="relative aspect-[7/10] w-full cursor-pointer bg-base-200 overflow-hidden"
+            :title="`Agrandir ${currentDeck.hero.name}`"
             @click="$emit('open-zoom', currentDeck.hero)"
           >
-            {{ currentDeck.hero.name }}
-          </p>
-          <button
-            class="mt-1 font-mono text-[10px] font-bold uppercase tracking-wider text-error hover:underline"
-            @click="deckStore.removeHero()"
+            <img
+              :src="cardImg(currentDeck.hero)"
+              :alt="currentDeck.hero.name"
+              class="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+              @error="onImgError"
+            />
+            <div
+              class="absolute left-0 top-0 bottom-0 w-1 pointer-events-none z-10"
+              :style="{ backgroundColor: elementColor(currentDeck.hero) }"
+            ></div>
+            <div class="absolute left-2 top-2 z-20">
+              <span class="rounded-[2px] bg-primary px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-primary-content shadow">
+                Héros
+              </span>
+            </div>
+            <div class="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/95 via-black/75 to-transparent pt-6 pb-2 px-2 flex flex-col justify-end">
+              <p class="truncate font-display text-xs font-bold leading-tight text-white drop-shadow-sm">
+                {{ currentDeck.hero.name }}
+              </p>
+              <div class="mt-1 flex items-center justify-between border-t border-white/15 pt-1">
+                <span class="text-[9px] font-mono text-white/70 uppercase">
+                  {{ currentDeck.hero.rarity || 'Leader' }}
+                </span>
+                <button
+                  type="button"
+                  class="font-mono text-[10px] font-bold uppercase tracking-wider text-error hover:underline"
+                  @click.stop="deckStore.removeHero()"
+                >
+                  Retirer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rendu standard compact -->
+        <div v-else class="flex items-center gap-2.5">
+          <div
+            class="plate-frame w-10 shrink-0 cursor-pointer transition-transform hover:scale-105"
+            :style="{ '--spine': elementColor(currentDeck.hero) }"
+            :title="`Agrandir ${currentDeck.hero.name}`"
+            @click="$emit('open-zoom', currentDeck.hero)"
           >
-            Retirer
-          </button>
+            <img
+              :src="cardImg(currentDeck.hero)"
+              :alt="currentDeck.hero.name"
+              class="aspect-[7/10] object-cover"
+              @error="onImgError"
+            />
+          </div>
+          <div class="min-w-0">
+            <p
+              class="truncate font-display text-sm leading-tight cursor-pointer hover:text-primary transition-colors"
+              @click="$emit('open-zoom', currentDeck.hero)"
+            >
+              {{ currentDeck.hero.name }}
+            </p>
+            <button
+              class="mt-1 font-mono text-[10px] font-bold uppercase tracking-wider text-error hover:underline"
+              @click="deckStore.removeHero()"
+            >
+              Retirer
+            </button>
+          </div>
         </div>
       </div>
       <p v-else class="mt-2 text-xs text-base-content/40">Cliquez un héros</p>
     </div>
 
-    <div class="relative bg-base-100 p-3">
+    <!-- Havre-Sac -->
+    <div class="relative bg-base-100" :class="isExpanded ? 'p-0 pl-4' : 'p-3'">
       <span class="eyebrow text-base-content/50">Havre-Sac</span>
-      <div v-if="currentDeck?.havreSac" class="mt-2 flex items-center gap-2.5">
+      <div v-if="currentDeck?.havreSac" class="mt-2">
+        <!-- Rendu étendu : Tuile image avec informations superposées -->
         <div
-          class="plate-frame w-10 shrink-0 cursor-pointer transition-transform hover:scale-105"
+          v-if="isExpanded"
+          class="group relative select-none rounded-[3px] overflow-hidden border border-base-content/25 bg-base-300 shadow-sm max-w-[200px]"
           :style="{ '--spine': elementColor(currentDeck.havreSac) }"
-          :title="`Agrandir ${currentDeck.havreSac.name}`"
-          @click="$emit('open-zoom', currentDeck.havreSac)"
         >
-          <img
-            :src="cardImg(currentDeck.havreSac)"
-            :alt="currentDeck.havreSac.name"
-            class="aspect-[7/10] object-cover"
-            @error="onImgError"
-          />
-        </div>
-        <div class="min-w-0">
-          <p
-            class="truncate font-display text-sm leading-tight cursor-pointer hover:text-primary transition-colors"
+          <div
+            class="relative aspect-[7/10] w-full cursor-pointer bg-base-200 overflow-hidden"
+            :title="`Agrandir ${currentDeck.havreSac.name}`"
             @click="$emit('open-zoom', currentDeck.havreSac)"
           >
-            {{ currentDeck.havreSac.name }}
-          </p>
-          <button
-            class="mt-1 font-mono text-[10px] font-bold uppercase tracking-wider text-error hover:underline"
-            @click="deckStore.removeHavreSac()"
+            <img
+              :src="cardImg(currentDeck.havreSac)"
+              :alt="currentDeck.havreSac.name"
+              class="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+              @error="onImgError"
+            />
+            <div
+              class="absolute left-0 top-0 bottom-0 w-1 pointer-events-none z-10"
+              :style="{ backgroundColor: elementColor(currentDeck.havreSac) }"
+            ></div>
+            <div class="absolute left-2 top-2 z-20">
+              <span class="rounded-[2px] bg-base-900/90 text-white border border-white/20 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider shadow">
+                Havre-Sac
+              </span>
+            </div>
+            <div class="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/95 via-black/75 to-transparent pt-6 pb-2 px-2 flex flex-col justify-end">
+              <p class="truncate font-display text-xs font-bold leading-tight text-white drop-shadow-sm">
+                {{ currentDeck.havreSac.name }}
+              </p>
+              <div class="mt-1 flex items-center justify-between border-t border-white/15 pt-1">
+                <span class="text-[9px] font-mono text-white/70 uppercase">
+                  {{ currentDeck.havreSac.rarity || 'Havre-Sac' }}
+                </span>
+                <button
+                  type="button"
+                  class="font-mono text-[10px] font-bold uppercase tracking-wider text-error hover:underline"
+                  @click.stop="deckStore.removeHavreSac()"
+                >
+                  Retirer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rendu standard compact -->
+        <div v-else class="flex items-center gap-2.5">
+          <div
+            class="plate-frame w-10 shrink-0 cursor-pointer transition-transform hover:scale-105"
+            :style="{ '--spine': elementColor(currentDeck.havreSac) }"
+            :title="`Agrandir ${currentDeck.havreSac.name}`"
+            @click="$emit('open-zoom', currentDeck.havreSac)"
           >
-            Retirer
-          </button>
+            <img
+              :src="cardImg(currentDeck.havreSac)"
+              :alt="currentDeck.havreSac.name"
+              class="aspect-[7/10] object-cover"
+              @error="onImgError"
+            />
+          </div>
+          <div class="min-w-0">
+            <p
+              class="truncate font-display text-sm leading-tight cursor-pointer hover:text-primary transition-colors"
+              @click="$emit('open-zoom', currentDeck.havreSac)"
+            >
+              {{ currentDeck.havreSac.name }}
+            </p>
+            <button
+              class="mt-1 font-mono text-[10px] font-bold uppercase tracking-wider text-error hover:underline"
+              @click="deckStore.removeHavreSac()"
+            >
+              Retirer
+            </button>
+          </div>
         </div>
       </div>
       <p v-else class="mt-2 text-xs text-base-content/40">
@@ -175,7 +278,7 @@
   </div>
   <div v-if="cardCount > 0" class="h-px w-full bg-base-content/15"></div>
 
-  <!-- Liste des cartes : grand-livre à conduite de points -->
+  <!-- Liste des cartes : grand-livre ou grille de tuiles -->
   <div class="p-4">
     <div class="mb-3 flex items-center justify-between gap-3">
       <p class="section-rule eyebrow grow">Cartes du deck</p>
@@ -194,13 +297,35 @@
     >
       Cliquez des cartes à gauche pour les ajouter.
     </div>
-    <ul v-else :class="isExpanded ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2' : 'max-h-[34vh] overflow-y-auto'">
+
+    <!-- Mode Grand Deck : Grille de cartes optimisée pleine image -->
+    <div
+      v-else-if="isExpanded"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-3"
+    >
+      <DeckCardTile
+        v-for="dc in mainDeckCards"
+        :key="dc.card.id"
+        :dc="dc"
+        :spine-color="elementColor(dc.card)"
+        @open-zoom="(card) => $emit('open-zoom', card)"
+        @move-to-reserve="moveToReserve"
+        @remove="(id) => deckStore.removeCard(id, 1)"
+        @add="(card) => $emit('add-to-deck', card)"
+        @set-edition="
+          (id, printing) => deckStore.setEntryEdition(id, false, printing)
+        "
+      />
+    </div>
+
+    <!-- Mode Standard : Liste compacte en lignes -->
+    <ul v-else class="max-h-[34vh] overflow-y-auto">
       <DeckCardRow
         v-for="dc in mainDeckCards"
         :key="dc.card.id"
         :dc="dc"
         :spine-color="elementColor(dc.card)"
-        :is-expanded="isExpanded"
+        :is-expanded="false"
         @open-zoom="(card) => $emit('open-zoom', card)"
         @move-to-reserve="moveToReserve"
         @remove="(id) => deckStore.removeCard(id, 1)"
@@ -238,21 +363,46 @@
         ></span
       >
     </div>
-    <ul v-if="reserveDeckCards.length" :class="isExpanded ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2' : 'max-h-[22vh] overflow-y-auto'">
-      <ReserveRow
-        v-for="dc in reserveDeckCards"
-        :key="'r-' + dc.card.id"
-        :dc="dc"
-        :spine-color="elementColor(dc.card)"
-        @open-zoom="(card) => $emit('open-zoom', card)"
-        @move-to-main="moveToMain"
-        @remove="(id) => deckStore.removeCard(id, 1, true)"
-        @add="(card) => addToReserve(card)"
-        @set-edition="
-          (id, printing) => deckStore.setEntryEdition(id, true, printing)
-        "
-      />
-    </ul>
+
+    <div v-if="reserveDeckCards.length">
+      <!-- Mode Grand Deck : Tuiles pleine image pour la réserve -->
+      <div
+        v-if="isExpanded"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-3"
+      >
+        <DeckCardTile
+          v-for="dc in reserveDeckCards"
+          :key="'r-' + dc.card.id"
+          :dc="dc"
+          :spine-color="elementColor(dc.card)"
+          :is-reserve="true"
+          @open-zoom="(card) => $emit('open-zoom', card)"
+          @move-to-main="moveToMain"
+          @remove="(id) => deckStore.removeCard(id, 1, true)"
+          @add="(card) => addToReserve(card)"
+          @set-edition="
+            (id, printing) => deckStore.setEntryEdition(id, true, printing)
+          "
+        />
+      </div>
+
+      <!-- Mode Standard : Liste compacte -->
+      <ul v-else class="max-h-[22vh] overflow-y-auto">
+        <ReserveRow
+          v-for="dc in reserveDeckCards"
+          :key="'r-' + dc.card.id"
+          :dc="dc"
+          :spine-color="elementColor(dc.card)"
+          @open-zoom="(card) => $emit('open-zoom', card)"
+          @move-to-main="moveToMain"
+          @remove="(id) => deckStore.removeCard(id, 1, true)"
+          @add="(card) => addToReserve(card)"
+          @set-edition="
+            (id, printing) => deckStore.setEntryEdition(id, true, printing)
+          "
+        />
+      </ul>
+    </div>
     <p v-else class="py-3 text-xs text-base-content/40">
       Réserve vide — déplacez-y des cartes du deck avec le bouton ↓.
     </p>
@@ -359,6 +509,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { validateDeck } from "@/validators/deck";
 import DeckCardRow from "@/components/deck/DeckCardRow.vue";
+import DeckCardTile from "@/components/deck/DeckCardTile.vue";
 import ReserveRow from "@/components/deck/ReserveRow.vue";
 import { cardCost } from "@/utils/cardDisplay";
 import type { Card, Deck } from "@/types/cards";

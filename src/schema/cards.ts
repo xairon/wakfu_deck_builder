@@ -47,6 +47,10 @@ export const baseCardSchema = z.object({
     .optional(),
   imageUrl: z.string().optional(),
   url: z.string().optional(),
+  // Métadonnées cartes personnalisées
+  isCustom: z.boolean().optional(),
+  authorId: z.string().optional(),
+  isPublic: z.boolean().optional(),
 });
 
 // `.strict()` (Zod v4) sur chaque membre rejette les clés top-level inconnues :

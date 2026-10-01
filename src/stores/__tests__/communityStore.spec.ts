@@ -234,4 +234,33 @@ describe("communityStore", () => {
     expect(communityStore.unreadPrivateCounts["u-2"]).toBe(0);
     expect(communityStore.totalUnreadPrivate).toBe(0);
   });
+
+  it("ignore totalement les messages privés entre tiers (ne fuitent pas vers les autres utilisateurs)", async () => {
+    const authStore = useAuthStore();
+    authStore.user = { id: "u-me", email: "yugo@elias.com" } as any;
+
+    const communityStore = useCommunityStore();
+    await communityStore.initialize();
+
+    // Message privé entre u-2 (Amalia) et u-3 (Dally) — u-me n'est ni sender ni recipient
+    chatSubCb({
+      id: "priv-msg-leak",
+      sender_id: "u-2",
+      sender_name: "Amalia",
+      recipient_id: "u-3",
+      channel: "private",
+      content: "Message secret pour Dally",
+      created_at: new Date().toISOString(),
+    });
+
+    // 1. Ne doit pas créer ou alimenter une conversation privée pour u-2 ou u-3 chez u-me
+    expect(communityStore.privateConversations["u-2"] || []).toHaveLength(0);
+    expect(communityStore.privateConversations["u-3"] || []).toHaveLength(0);
+
+    // 2. Ne doit pas générer de non-lu
+    expect(communityStore.totalUnreadPrivate).toBe(0);
+
+    // 3. Ne doit pas déclencher la notification lastIncomingPrivateMessage (qui déclenche les toasts)
+    expect(communityStore.lastIncomingPrivateMessage).toBeNull();
+  });
 });

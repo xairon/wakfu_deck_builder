@@ -279,6 +279,14 @@ export const useCommunityStore = defineStore("community", () => {
           generalMessages.value.push(msg);
         }
       } else if (msg.channel === "private") {
+        // Sécurité stricte : un message privé ne doit être traité QUE si on en est l'émetteur ou le destinataire
+        if (
+          msg.sender_id !== currentUserId.value &&
+          msg.recipient_id !== currentUserId.value
+        ) {
+          return;
+        }
+
         const otherId =
           msg.sender_id === currentUserId.value
             ? msg.recipient_id
