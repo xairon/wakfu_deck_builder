@@ -185,6 +185,7 @@ function targetedIds(draft: DraftEvent): InstanceId[] {
       return [(p as unknown as DetachPayload).equipmentId];
     case "LOOK":
     case "REVEAL":
+    case "UNREVEAL":
       return (p as unknown as LookRevealPayload).instanceIds ?? [];
     default:
       return [];

@@ -1907,7 +1907,7 @@
             <div class="gpilebrowser__pos">#{{ idx + 1 }}</div>
             <GameCard
               :instance="inst"
-              :card="resolveCard(inst.instanceId) || resolveCard(inst.cardId)"
+              :card="store.resolveInstanceCard(inst.instanceId) || resolveCard(inst.cardId) || resolveCard(inst.instanceId)"
               @select="zoomInst(inst.instanceId)"
               @zoom="zoomInst(inst.instanceId)"
             />
@@ -2392,9 +2392,10 @@ const regardInstances = computed<RedactedInstance[]>(() => {
     .map((id) => {
       const inst = store.state.instances[id];
       if (!inst) return null;
+      const cardId = inst.cardId || store.revealedCardId(id) || null;
       return {
         instanceId: id,
-        cardId: inst.cardId ?? null,
+        cardId,
         owner: me.value,
         controller: me.value,
         face: "recto",
@@ -2417,6 +2418,7 @@ function triggerRegard(): void {
     return;
   }
   regardCardIds.value = [...regardCardIds.value, nextTopId];
+  store.regardCard(nextTopId);
   regardModalOpen.value = true;
   nextTick(() => {
     (

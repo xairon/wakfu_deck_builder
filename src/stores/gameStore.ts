@@ -3045,6 +3045,15 @@ export const useGameStore = defineStore("game", () => {
     return true;
   }
 
+  /** Regard : consulter une carte de sa pioche (révélée pour son siège uniquement). */
+  function regardCard(instanceId: string): boolean {
+    const seat = online.value && mySeat.value ? mySeat.value : perspective.value;
+    const inst = state.value.instances[instanceId];
+    if (!inst || inst.owner !== seat) return false;
+    dispatch(lookCards(seat, [instanceId], [seat]));
+    return true;
+  }
+
   /** Mélange de SA Pioche (fin de recherche — 507.4). En ligne, la permutation
    *  cliente est IGNORÉE et re-dérivée de la graine serveur (resolveDraft). */
   function shuffleMyDeck(): void {
@@ -5816,6 +5825,7 @@ export const useGameStore = defineStore("game", () => {
     toggleRevealMyDeck,
     isMyDeckRevealed,
     isOpponentDeckRevealed,
+    regardCard,
     cannotPlayReason,
     // A19 — légalité de FABRICATION (Recette) du point de vue du siège affiché.
     whyCannotCraft: whyCannotCraftFromHand,
