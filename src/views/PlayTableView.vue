@@ -368,6 +368,7 @@
         <div v-if="onlineTab === 'browse'">
           <LobbyBrowser
             @join="joinHostedLobby"
+            @spectate="spectateHostedLobby"
             @host="onlineTab = 'host'"
           />
         </div>
@@ -935,27 +936,50 @@
   <!-- ═══════════ EN MATCH (mulligan / playing) ═══════════ -->
   <div v-else class="gfull">
     <div class="gtopbar" tabindex="0" title="Cliquer ou survoler pour afficher la barre complète">
-      <!-- Vignette minimale repliée sur écran <= 1366px -->
+      <!-- Vignette minimale repliée sur écran <= 1366px (extensible avec spectateurs) -->
       <div class="gtopbar__mini-badge" aria-hidden="true">
         <span class="text-sm">⚔️</span>
         <span v-if="store.matchPhase === 'playing'" class="gtopbar__mini-turn">T{{ store.turn.number }}</span>
+        <span
+          v-if="store.spectatorCount > 0 || store.isSpectator"
+          class="gtopbar__mini-spectator"
+          :title="store.spectatorCount + ' spectateur(s)'"
+        >
+          👁️<span class="gtopbar__mini-spec-num">{{ store.spectatorCount }}</span>
+        </span>
       </div>
 
       <div class="gtopbar__content">
         <div class="gtopbar__group">
           <span class="gtopbar__title">La Table des Douze</span>
+          <span
+            v-if="store.spectatorCount > 0 || store.isSpectator"
+            class="badge badge-info badge-sm gap-1 py-2 px-2.5 font-medium shadow-sm transition-all"
+            data-testid="topbar-spectator-badge"
+          >
+            <span>👁️</span>
+            <template v-if="store.isSpectator">
+              Mode Spectateur ({{ store.spectatorCount }} en direct)
+            </template>
+            <template v-else>
+              {{ store.spectatorCount }} spectateur{{ store.spectatorCount > 1 ? 's' : '' }} en direct
+            </template>
+          </span>
           <span v-if="store.matchPhase === 'playing'" class="gtopbar__turn">
             Tour {{ store.turn.number }} · ⏱️ {{ formattedDuration }} ·
-            <template v-if="store.online">
+            <template v-if="store.online && !store.isSpectator">
               <span :class="myTurn ? 'gturn--you' : 'gturn--wait'">{{
                 myTurn ? "🟢 À toi de jouer" : "⏳ Au tour de l'adversaire"
               }}</span>
+            </template>
+            <template v-else-if="store.isSpectator">
+              <span>Tour de {{ store.activeName }}</span>
             </template>
             <template v-else>{{ store.activeName }}</template>
           </span>
           <span v-else class="gtopbar__turn">Mise en place</span>
           <span
-            v-if="store.online && tabHidden"
+            v-if="store.online && !store.isSpectator && tabHidden"
             class="gtopbar__turn"
             data-testid="tab-hidden-hint"
           >
@@ -969,9 +993,9 @@
         </div>
 
         <div class="gtopbar__group">
-          <!-- Bascule manuelle de vue (mode local / sandbox) -->
+          <!-- Bascule manuelle de vue (mode local / sandbox / spectateur) -->
           <button
-            v-if="!store.online && store.matchPhase === 'playing'"
+            v-if="(!store.online || store.isSpectator) && store.matchPhase === 'playing'"
             class="gtop-btn gtop-btn--view"
             data-testid="topbar-toggle-perspective"
             :title="'Vue actuelle : ' + (store.players[store.perspective]?.name ?? store.perspective) + ' (cliquer pour basculer)'"
@@ -2286,6 +2310,7 @@ const onlineTransport = {
     onOpponentTarget?: (t: string | null) => void,
     onPlayerName?: (seat: Seat, name: string) => void,
     onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
+    onSpectatorCount?: (count: number) => void,
   ) => {
     const user = authStore.user;
     const myName =
@@ -2301,6 +2326,7 @@ const onlineTransport = {
       myName,
       onPlayerName,
       onPriorityChoice,
+      onSpectatorCount,
     );
   },
   pull: pullEvents,
@@ -2529,6 +2555,70 @@ async function joinHostedLobby(lobby: HostedLobbyInfo): Promise<void> {
   }
 }
 
+async function spectateHostedLobby(lobby: HostedLobbyInfo): Promise<void> {
+  const code = lobby.code;
+  onlineBusy.value = true;
+  try {
+    const is2v2 = lobby.mode === "2v2";
+    if (is2v2) {
+      const transport = create2v2OnlineTransport(
+        code,
+        "spectator" as Seat,
+        () => store.lastSeq(),
+      );
+      store.connectOnline(code, "spectator" as Seat, transport);
+      store.isSpectator = true;
+      store.perspective = "A1";
+      store.mode = "2v2";
+      store.matchPhase = "playing";
+      toast.info(`Connexion au match 2v2 (${code}) en mode spectateur…`);
+    } else {
+      const g = await findGameByCode(code);
+      const targetId = g?.id || lobby.gameId || code;
+      const spectatorTransport = {
+        ...onlineTransport,
+        submit: async () => ({ seq: 0 }),
+        submitIntent: async () => {},
+        subscribe: (
+          id: string,
+          _seat: Seat,
+          onEvent: (e: any) => void,
+          onPresence?: (p: boolean) => void,
+          onOpponentTarget?: (t: string | null) => void,
+          onPlayerName?: (seat: Seat, name: string) => void,
+          onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
+          onSpectatorCount?: (count: number) => void,
+        ) => {
+          return subscribeToGame(
+            id,
+            "spectator" as Seat,
+            onEvent,
+            onPresence,
+            onOpponentTarget,
+            "Spectateur",
+            onPlayerName,
+            onPriorityChoice,
+            onSpectatorCount,
+          );
+        },
+      };
+      store.connectOnline(targetId, "spectator" as Seat, spectatorTransport);
+      store.isSpectator = true;
+      store.perspective = "A";
+      store.mode = "1v1";
+      store.matchPhase = "playing";
+      await store.resyncOnline();
+      toast.info(`Connexion au match (${code}) en mode spectateur…`);
+    }
+  } catch (e) {
+    store.disconnectOnline();
+    onlineError.value = await fnErrorMessage(e);
+    toast.error(`Impossible d'observer la partie : ${onlineError.value}`);
+  } finally {
+    onlineBusy.value = false;
+  }
+}
+
 // En ligne : tant que la mise en place (GAME_STARTED) n'est pas arrivée, écran
 // d'attente avec le code de salon (l'hôte le partage à l'adversaire).
 const onlineWaiting = computed(
@@ -2616,6 +2706,7 @@ const oppMulliganDone = computed(() => {
  *  hors écran de passation. */
 const mulliganDecisionVisible = computed(
   () =>
+    !store.isSpectator &&
     store.matchPhase === "mulligan" &&
     !diceVisible.value &&
     !rollPriorityChoicePending.value &&
@@ -2624,6 +2715,7 @@ const mulliganDecisionVisible = computed(
 /** En ligne : j'ai tranché, j'attends l'adversaire. */
 const mulliganWaiting = computed(
   () =>
+    !store.isSpectator &&
     store.online &&
     store.matchPhase === "mulligan" &&
     myMulliganDone.value &&
@@ -2759,6 +2851,7 @@ function pipsFor(face: number): number[] {
 }
 
 const isMyRollChoice = computed(() => {
+  if (store.isSpectator) return false;
   if (!rollWinnerSeat.value) return false;
   if (store.botSeat) {
     return rollWinnerSeat.value !== store.botSeat;
@@ -3279,10 +3372,10 @@ onUnmounted(() => {
     top: 8px;
     left: 8px;
     z-index: 80;
-    width: 38px;
+    width: auto;
     height: 38px;
     min-width: 38px;
-    padding: 0;
+    padding: 0 6px;
     border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
@@ -3293,13 +3386,33 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    width: 38px;
+    gap: 5px;
+    width: auto;
     height: 38px;
     font-family: "Space Mono", monospace;
     font-size: 11px;
     font-weight: 700;
     color: #f0a62b;
+  }
+  .gtopbar__mini-spectator {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    padding: 1px 5px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    animation: specPulse 2s infinite ease-in-out;
+  }
+  .gtopbar__mini-spec-num {
+    font-size: 10px;
+  }
+  @keyframes specPulse {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 0.55; }
   }
   .gtopbar__content {
     display: none;

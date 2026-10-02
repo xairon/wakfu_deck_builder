@@ -75,11 +75,10 @@ export function subscribeToHostedLobbies(
     for (const items of Object.values(stateMap)) {
       if (items && items.length > 0) {
         const item = items[0];
-        // Ne garder que les salons en attente ou prêts qui ne sont pas expirés (> 1h)
+        // Garder les salons en attente, prêts ou en cours qui ne sont pas expirés (> 1h)
         if (
           item &&
           item.code &&
-          item.status !== "started" &&
           Date.now() - (item.createdAt || 0) < 3600000
         ) {
           lobbies.push(item);

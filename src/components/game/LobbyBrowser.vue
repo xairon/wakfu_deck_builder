@@ -8,6 +8,7 @@ import {
 
 const emit = defineEmits<{
   (e: "join", lobby: HostedLobbyInfo): void;
+  (e: "spectate", lobby: HostedLobbyInfo): void;
   (e: "host"): void;
 }>();
 
@@ -134,16 +135,32 @@ const filteredLobbies = computed(() => {
         </div>
 
         <div class="flex items-center justify-between pt-2 border-t border-base-content/10">
-          <span class="text-xs text-success flex items-center gap-1">
+          <span v-if="lobby.status === 'started'" class="text-xs text-info flex items-center gap-1">
+            <span class="h-1.5 w-1.5 rounded-full bg-info animate-pulse"></span>
+            Partie en cours
+          </span>
+          <span v-else class="text-xs text-success flex items-center gap-1">
             <span class="h-1.5 w-1.5 rounded-full bg-success"></span>
             En attente d'adversaire
           </span>
-          <button
-            class="btn btn-primary btn-xs px-4"
-            @click="emit('join', lobby)"
-          >
-            Rejoindre
-          </button>
+
+          <div class="flex items-center gap-2">
+            <button
+              v-if="lobby.status === 'started'"
+              class="btn btn-info btn-xs px-3 gap-1"
+              @click="emit('spectate', lobby)"
+            >
+              <span>👁️</span>
+              Observer
+            </button>
+            <button
+              v-else
+              class="btn btn-primary btn-xs px-4"
+              @click="emit('join', lobby)"
+            >
+              Rejoindre
+            </button>
+          </div>
         </div>
       </div>
     </div>

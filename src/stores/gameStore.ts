@@ -204,6 +204,7 @@ export interface OnlineTransport {
     onOpponentTarget?: (targetId: string | null) => void,
     onPlayerName?: (seat: Seat, name: string) => void,
     onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
+    onSpectatorCount?: (count: number) => void,
   ): () => void;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
   /**
@@ -377,6 +378,8 @@ export const useGameStore = defineStore("game", () => {
   const winner = ref<Seat | null>(null);
   const continuedMatch = ref(false);
   const isSandbox = ref(false);
+  const isSpectator = ref(false);
+  const spectatorCount = ref(0);
 
   const teamXp = computed<{ team1: number; team2: number }>(() => {
     let t1 = 0;
@@ -1298,6 +1301,9 @@ export const useGameStore = defineStore("game", () => {
       (remoteSeat, choice) => {
         remotePriorityChoice.value = { seat: remoteSeat, choice };
       },
+      (count) => {
+        spectatorCount.value = count;
+      },
     );
     void resyncFrom(0); // rattrape tout event émis avant que l'abonnement soit vivant
   }
@@ -1327,6 +1333,8 @@ export const useGameStore = defineStore("game", () => {
     pending.clear();
     pulling = false;
     clearResyncTimer();
+    isSpectator.value = false;
+    spectatorCount.value = 0;
     document.removeEventListener("visibilitychange", onVisibility);
     revealed.value = {};
     gameId.value = "local";
@@ -1747,7 +1755,7 @@ export const useGameStore = defineStore("game", () => {
 
   /** Bascule manuellement la vue / perspective entre Joueur 1 (A) et Joueur 2 (B). */
   function togglePerspective(): void {
-    if (online.value) return;
+    if (online.value && !isSpectator.value) return;
     perspective.value = otherSeat(perspective.value);
   }
 
@@ -5718,6 +5726,8 @@ export const useGameStore = defineStore("game", () => {
     online,
     manualTable,
     mySeat,
+    isSpectator,
+    spectatorCount,
     botSeat,
     botAggressive,
     gameId: () => gameId.value,

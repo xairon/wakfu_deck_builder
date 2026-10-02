@@ -222,6 +222,8 @@ export const useAuthStore = defineStore("auth", () => {
       unsubscribe();
       unsubscribe = null;
     }
+    initPromise = null;
+    currentUserId = null;
   }
 
   return {

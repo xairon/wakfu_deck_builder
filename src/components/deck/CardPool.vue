@@ -217,6 +217,9 @@ const preview = useCardPreview();
 /** Nom d'extension des cartes custom (identique à buildCanonicalCardFromInput). */
 const CUSTOM_EXTENSION_NAME = "Cartes Personnalisées";
 
+const dimUnowned = ref(false);
+const poolLimit = ref(60);
+
 watch(
   () => cardStore.includeCustomCards,
   (active) => {
@@ -260,9 +263,6 @@ const filterEffectQuery = ref("");
 const filterHideNotOwned = ref(false);
 const filterSortField = ref("number");
 const filterSortDesc = ref(false);
-
-const dimUnowned = ref(false);
-const poolLimit = ref(60);
 
 // Quand l'utilisateur sélectionne l'extension "Cartes Personnalisées" via le
 // filtre, activer automatiquement le toggle custom cards et charger les cartes.

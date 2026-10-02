@@ -269,6 +269,7 @@ export function subscribeToGame(
   userName?: string,
   onPlayerName?: (seat: Seat, name: string) => void,
   onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
+  onSpectatorCount?: (count: number) => void,
 ): () => void {
   const c = client();
   const channel = c
@@ -298,7 +299,7 @@ export function subscribeToGame(
               : "A2";
 
   let presence: ReturnType<typeof c.channel> | null = null;
-  if (onPresence || onOpponentTarget || onPlayerName) {
+  if (onPresence || onOpponentTarget || onPlayerName || onSpectatorCount) {
     presence = c.channel(`game:${gameId}:presence`, {
       config: { presence: { key: seat } },
     });
@@ -306,7 +307,7 @@ export function subscribeToGame(
       if (presence) {
         const stateMap = presence.presenceState() as Record<
           string,
-          { userName?: string }[]
+          { userName?: string; seat?: string }[]
         >;
         if (onPresence) {
           onPresence(!!stateMap[other]?.length);
@@ -316,6 +317,17 @@ export function subscribeToGame(
             const name = list?.[0]?.userName;
             if (name) onPlayerName(s as Seat, name);
           }
+        }
+        if (onSpectatorCount) {
+          let specCount = 0;
+          for (const [key, entries] of Object.entries(stateMap)) {
+            if (key === "spectator") {
+              specCount += entries.length;
+            } else {
+              specCount += entries.filter((e) => e.seat === "spectator").length;
+            }
+          }
+          onSpectatorCount(specCount);
         }
       }
     };
@@ -550,6 +562,9 @@ export function create2v2OnlineTransport(
     onEvent: (e: RedactedEvent) => void,
     onPresence?: (present: boolean) => void,
     onOpponentTarget?: (instanceId: string | null) => void,
+    onPlayerName?: (seat: Seat, name: string) => void,
+    onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
+    onSpectatorCount?: (count: number) => void,
   ): () => void;
 } {
   const c = client();
@@ -602,9 +617,41 @@ export function create2v2OnlineTransport(
       onEvent: (e: RedactedEvent) => void,
       onPresence?: (present: boolean) => void,
       onOpponentTarget?: (instanceId: string | null) => void,
+      onPlayerName?: (seat: Seat, name: string) => void,
       onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
+      onSpectatorCount?: (count: number) => void,
     ) {
+      const computePresence = (): void => {
+        const stateMap = channel.presenceState() as Record<
+          string,
+          { userName?: string; seat?: string }[]
+        >;
+        if (onPresence) {
+          onPresence(true);
+        }
+        if (onPlayerName) {
+          for (const [s, list] of Object.entries(stateMap)) {
+            const name = list?.[0]?.userName;
+            if (name) onPlayerName(s as Seat, name);
+          }
+        }
+        if (onSpectatorCount) {
+          let specCount = 0;
+          for (const [key, entries] of Object.entries(stateMap)) {
+            if (key === "spectator") {
+              specCount += entries.length;
+            } else {
+              specCount += entries.filter((e) => e.seat === "spectator").length;
+            }
+          }
+          onSpectatorCount(specCount);
+        }
+      };
+
       channel
+        .on("presence", { event: "sync" }, computePresence)
+        .on("presence", { event: "join" }, computePresence)
+        .on("presence", { event: "leave" }, computePresence)
         .on("broadcast", { event: "game_event" }, (msg) => {
           const ev = msg.payload as RedactedEvent;
           if (ev && typeof ev.seq === "number") {
@@ -633,8 +680,8 @@ export function create2v2OnlineTransport(
         .subscribe((status) => {
           if (status === "SUBSCRIBED") {
             isReady = true;
+            void channel.track({ seat });
             if (onPresence) {
-              void channel.track({ seat });
               onPresence(true);
             }
           }

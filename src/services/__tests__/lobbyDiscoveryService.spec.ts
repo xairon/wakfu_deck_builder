@@ -81,4 +81,60 @@ describe("lobbyDiscoveryService", () => {
     expect(untrackMock).toHaveBeenCalled();
     expect(removeChannelMock).toHaveBeenCalledWith(channelMock);
   });
+
+  it("conserve les salons en cours (started) lors de la découverte", () => {
+    let presenceCallback: any = null;
+    const channelMock: any = {
+      presenceState: vi.fn().mockReturnValue({
+        "ROOM-WAIT": [
+          {
+            code: "ROOM-WAIT",
+            hostName: "Amalia",
+            mode: "1v1",
+            currentPlayers: 1,
+            maxPlayers: 2,
+            createdAt: Date.now() - 5000,
+            status: "waiting",
+          },
+        ],
+        "ROOM-LIVE": [
+          {
+            code: "ROOM-LIVE",
+            hostName: "Goultard",
+            mode: "1v1",
+            currentPlayers: 2,
+            maxPlayers: 2,
+            createdAt: Date.now() - 10000,
+            status: "started",
+          },
+        ],
+      }),
+      on: vi.fn((event, filterOrCb, cb) => {
+        if (event === "presence" && filterOrCb?.event === "sync") {
+          presenceCallback = cb;
+        }
+        return channelMock;
+      }),
+      subscribe: vi.fn(),
+    };
+
+    supabaseStub = {
+      channel: vi.fn().mockReturnValue(channelMock),
+      removeChannel: vi.fn(),
+    };
+
+    let discovered: any[] = [];
+    subscribeToHostedLobbies((list) => {
+      discovered = list;
+    });
+
+    // Simule la synchro presence
+    if (presenceCallback) {
+      presenceCallback();
+    }
+
+    expect(discovered.length).toBe(2);
+    expect(discovered.map((l) => l.code)).toEqual(["ROOM-WAIT", "ROOM-LIVE"]);
+    expect(discovered.find((l) => l.code === "ROOM-LIVE")?.status).toBe("started");
+  });
 });

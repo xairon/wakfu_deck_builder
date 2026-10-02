@@ -48,9 +48,29 @@ function createMockSupabase(overrides: Record<string, any> = {}) {
   const callbacks: Array<(...args: any[]) => void> = [];
   return {
     auth: {
-      getSession: vi.fn().mockResolvedValue({
-        data: { session: overrides.session ?? null },
-        error: null,
+      getSession: vi.fn().mockImplementation(() => {
+        const s = overrides.session;
+        if (!s) return Promise.resolve({ data: { session: null }, error: null });
+        return Promise.resolve({
+          data: {
+            session: {
+              expires_at: Math.floor(Date.now() / 1000) + 3600,
+              ...s,
+            },
+          },
+          error: null,
+        });
+      }),
+      refreshSession: vi.fn().mockImplementation(() => {
+        const s = overrides.session;
+        return Promise.resolve({
+          data: {
+            session: s
+              ? { expires_at: Math.floor(Date.now() / 1000) + 3600, ...s }
+              : null,
+          },
+          error: null,
+        });
       }),
       signUp: vi.fn().mockResolvedValue({
         data: overrides.signUpData ?? {
@@ -88,6 +108,7 @@ describe("authStore (cloud-only)", () => {
   let store: ReturnType<typeof useAuthStore>;
 
   beforeEach(() => {
+    store?.dispose();
     setActivePinia(createPinia());
     mockSupabaseInstance = createMockSupabase();
     mockRole = "user";

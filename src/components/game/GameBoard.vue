@@ -513,7 +513,7 @@
         >
           <HandFan
             mine
-            draggable
+            :draggable="!store.isSpectator"
             :items="handList(me)"
             :resolve-card="resolveCard"
             :selected-id="selectedId"
@@ -798,6 +798,7 @@
          joueur actif le voit. -->
     <button
       v-show="
+        !store.isSpectator &&
         (store.online ? store.turn.active === store.mySeat : store.turn.active === store.perspective) &&
         !store.endTurnPending &&
         !store.pendingChifumi &&
@@ -2134,7 +2135,7 @@ const actionbarRef = ref<HTMLElement | null>(null);
 let lastSelectedTrigger: HTMLElement | null = null;
 
 const me = computed(() =>
-  store.online && store.mySeat ? store.mySeat : store.perspective,
+  store.online && store.mySeat && !store.isSpectator ? store.mySeat : store.perspective,
 );
 const opp = computed(() => otherSeat(me.value));
 
@@ -2552,6 +2553,7 @@ function zoneCls(id: string): Record<string, boolean> {
 }
 onMounted(() => {
   dnd.setDropHandler((instanceId, spec) => {
+    if (store.isSpectator) return;
     // EN LIGNE pendant un COMBAT : tryIntent refuse les MOVE/PLAY (combat en
     // cours), et le drop retomberait sur une mutation LOCALE non soumise au
     // serveur → désync. On refuse explicitement (le combat se joue via le HUD).

@@ -1246,6 +1246,61 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     expect(store.canClaimVictory).toBe(false);
   });
 
+  it("gère le mode spectateur et autorise la bascule de perspective entre A et B", () => {
+    const store = useGameStore();
+    const transport = {
+      submit: vi.fn(),
+      pull: vi.fn().mockResolvedValue([]),
+      subscribe: vi.fn(() => vi.fn()),
+    };
+
+    store.connectOnline("live-spec-game", "spectator" as any, transport as any);
+    store.isSpectator = true;
+    store.perspective = "A";
+
+    expect(store.online).toBe(true);
+    expect(store.isSpectator).toBe(true);
+    expect(store.perspective).toBe("A");
+
+    // En spectateur, togglePerspective fonctionne même si online === true
+    store.togglePerspective();
+    expect(store.perspective).toBe("B");
+
+    store.togglePerspective();
+    expect(store.perspective).toBe("A");
+
+    // disconnectOnline réinitialise isSpectator et spectatorCount
+    store.disconnectOnline();
+    expect(store.isSpectator).toBe(false);
+    expect(store.spectatorCount).toBe(0);
+    expect(store.online).toBe(false);
+  });
+
+  it("met à jour spectatorCount via le callback onSpectatorCount du transport", () => {
+    const store = useGameStore();
+    let onSpectatorCountCb: ((count: number) => void) | undefined;
+    const transport = {
+      submit: vi.fn(),
+      pull: vi.fn().mockResolvedValue([]),
+      subscribe: vi.fn((_id, _seat, _onEv, _onPres, _onTarget, _onName, _onChoice, onSpec) => {
+        onSpectatorCountCb = onSpec;
+        return vi.fn();
+      }),
+    };
+
+    expect(store.spectatorCount).toBe(0);
+    store.connectOnline("game-with-specs", "A", transport as any);
+    expect(transport.subscribe).toHaveBeenCalled();
+
+    // Callback invoqué avec 3 spectateurs
+    onSpectatorCountCb?.(3);
+    expect(store.spectatorCount).toBe(3);
+
+    // Déconnexion réinitialise à 0
+    store.disconnectOnline();
+    expect(store.spectatorCount).toBe(0);
+  });
+
   it("continueMatch repasse matchPhase en 'playing' et permet de continuer la partie", () => {
     const store = useGameStore();
     const deck = createMockDeck();

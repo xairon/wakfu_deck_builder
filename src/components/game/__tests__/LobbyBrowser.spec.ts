@@ -47,4 +47,40 @@ describe("LobbyBrowser.vue", () => {
       hostName: "Ruel",
     });
   });
+
+  it("affiche le badge 'Partie en cours' et le bouton 'Observer' pour un match démarré", async () => {
+    const { subscribeToHostedLobbies } = await import("@/services/lobbyDiscoveryService");
+    vi.mocked(subscribeToHostedLobbies).mockImplementationOnce((cb) => {
+      cb([
+        {
+          code: "LIVE42",
+          hostName: "Yugo",
+          mode: "1v1",
+          currentPlayers: 2,
+          maxPlayers: 2,
+          createdAt: Date.now(),
+          status: "started",
+        },
+      ]);
+      return vi.fn();
+    });
+
+    const wrapper = mount(LobbyBrowser);
+    await nextTick();
+
+    expect(wrapper.text()).toContain("LIVE42");
+    expect(wrapper.text()).toContain("Yugo");
+    expect(wrapper.text()).toContain("Partie en cours");
+
+    const spectateBtn = wrapper.findAll("button").find((b) => b.text().includes("Observer"));
+    expect(spectateBtn).toBeTruthy();
+    await spectateBtn!.trigger("click");
+
+    expect(wrapper.emitted("spectate")).toBeTruthy();
+    expect(wrapper.emitted("spectate")![0][0]).toMatchObject({
+      code: "LIVE42",
+      hostName: "Yugo",
+      status: "started",
+    });
+  });
 });
