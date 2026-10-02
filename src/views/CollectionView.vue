@@ -99,6 +99,15 @@
       >
         Sélection multiple
       </button>
+      <button
+        class="btn btn-outline btn-sm gap-1.5"
+        :class="{ 'btn-active': showQuantities }"
+        @click="showQuantities = !showQuantities"
+        :title="showQuantities ? 'Masquer les quantités possédées' : 'Afficher les quantités possédées sur chaque carte'"
+      >
+        <span>🔢</span>
+        {{ showQuantities ? "Masquer quantités" : "Afficher quantités" }}
+      </button>
       <select
         v-model="ownershipFilter"
         class="select select-bordered select-sm"
@@ -150,6 +159,7 @@
         :dim-unowned="dimUnowned && isAuthenticated"
         :selection-mode="isAuthenticated && selectionMode"
         :selected-ids="selectedIds"
+        :show-quantities="showQuantities"
         @update-quantity="updateCardQuantity"
         @select-card="selectCard"
         @toggle-select="handleToggleSelect"
@@ -725,6 +735,8 @@ const hideNotOwned = ref(false);
 const ownershipFilter = ref<"all" | "missing" | "dupes">("all");
 // Option : griser les cartes non possédées (désactivé par défaut).
 const dimUnowned = ref(false);
+// Option : afficher les quantités possédées sur les cartes (désactivé par défaut).
+const showQuantities = ref(false);
 const showProgress = ref(false);
 const showQuickAdd = ref(false);
 const isModalOpen = ref(false);

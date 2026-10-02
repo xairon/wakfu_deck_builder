@@ -69,4 +69,22 @@ describe("CollectionCardItem — mode sélection multiple", () => {
     });
     expect(w.text()).not.toContain("3/3");
   });
+
+  it("masque la pastille de possession lorsque showQuantities vaut false", () => {
+    const w = mountItem({
+      quantity: 3,
+      foilQuantity: 0,
+      showQuantities: false,
+    });
+    expect(w.text()).not.toContain("3/3");
+  });
+
+  it("affiche la pastille de possession lorsque showQuantities vaut true", () => {
+    const w = mountItem({
+      quantity: 3,
+      foilQuantity: 0,
+      showQuantities: true,
+    });
+    expect(w.text()).toContain("3/3");
+  });
 });

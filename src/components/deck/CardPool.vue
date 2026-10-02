@@ -134,14 +134,6 @@
               class="absolute left-[5px] top-[5px] z-10 bg-primary px-1.5 py-0.5 font-mono text-[11px] font-bold tabular text-primary-content"
               >{{ inDeckQty(card) }}</span
             >
-            <!-- Quantité possédée : mono tabulaire -->
-            <span
-              class="absolute right-[5px] top-[5px] z-10 bg-base-100/90 px-1 py-0.5 font-mono text-[10px] font-bold tabular"
-              :class="
-                ownedQty(card.id) > 0 ? 'text-success' : 'text-base-content/40'
-              "
-              >{{ ownedQty(card.id) }}</span
-            >
             <!-- Badge « Erraté » : signal visible sans ouvrir la fiche -->
             <ErrataBadge
               :card-id="card.id"

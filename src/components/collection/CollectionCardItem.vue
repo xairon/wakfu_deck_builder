@@ -32,7 +32,7 @@
 
         <!-- Étiquette brillante : tag mono 'F×N' -->
         <span
-          v-if="foilQuantity > 0"
+          v-if="showQuantities && foilQuantity > 0"
           class="absolute right-1 top-1 bg-base-100/90 px-1 py-0.5 font-mono text-[10px] font-bold uppercase text-base-content"
           style="letter-spacing: 0.06em"
         >
@@ -74,9 +74,9 @@
           </svg>
         </button>
 
-        <!-- Pastille de possession / playset (permanente, lisible au tactile) -->
+        <!-- Pastille de possession / playset (affichée seulement si showQuantities est actif) -->
         <span
-          v-if="!selectionMode && authStore.isAuthenticated && isOwned"
+          v-if="showQuantities && !selectionMode && authStore.isAuthenticated && isOwned"
           class="absolute left-1 top-1 z-10 border px-1 py-0.5 font-mono text-[10px] font-bold tabular"
           :class="
             playsetComplete
@@ -241,9 +241,16 @@ interface Props {
   selectionMode?: boolean;
   /** Carte sélectionnée (pertinent seulement si `selectionMode`). */
   selected?: boolean;
+  /** Afficher les quantités possédées sur la carte (désactivé par défaut en recherche). */
+  showQuantities?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  dimUnowned: false,
+  selectionMode: false,
+  selected: false,
+  showQuantities: true,
+});
 
 const authStore = useAuthStore();
 

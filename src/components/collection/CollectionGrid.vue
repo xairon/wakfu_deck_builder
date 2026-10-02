@@ -33,6 +33,7 @@
             :dim-unowned="dimUnowned"
             :selection-mode="selectionMode"
             :selected="selectedIds?.has(cardItem.card.id) ?? false"
+            :show-quantities="showQuantities"
             @update-quantity="handleQuantityUpdate"
             @select-card="handleCardSelect"
             @add-to-deck="handleAddToDeck"
@@ -101,7 +102,7 @@
  * Grille paginée de la collection : une page de cartes à la fois (DOM borné,
  * collection complète parcourable sans plafond).
  */
-import { computed, ref, watch, nextTick, withDefaults } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 import { useCardStore } from "@/stores/cardStore";
 import CollectionCardItem from "./CollectionCardItem.vue";
 import type { Card } from "@/types/cards";
@@ -115,6 +116,8 @@ interface Props {
   selectionMode?: boolean;
   /** Ids des cartes actuellement sélectionnées (mode sélection). */
   selectedIds?: Set<string>;
+  /** Afficher les quantités possédées sur les cartes. */
+  showQuantities?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -123,6 +126,7 @@ const props = withDefaults(defineProps<Props>(), {
   dimUnowned: false,
   selectionMode: false,
   selectedIds: undefined,
+  showQuantities: true,
 });
 
 const emit = defineEmits<{
