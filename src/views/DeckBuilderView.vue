@@ -237,7 +237,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useToast } from "@/composables/useToast";
 import { isSupabaseConfigured } from "@/services/supabase";
-import { generateShareUrl } from "@/utils/deckSharing";
+import { generateShareUrlAsync } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import CardHoverPreview from "@/components/card/CardHoverPreview.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
@@ -512,7 +512,8 @@ function requestSetHavreSac(card: Card) {
 async function shareDeck() {
   if (!currentDeck.value) return;
   try {
-    await navigator.clipboard.writeText(generateShareUrl(currentDeck.value));
+    const url = await generateShareUrlAsync(currentDeck.value);
+    await navigator.clipboard.writeText(url);
     toast.success("Lien de partage copié !", { duration: 2500 });
   } catch {
     toast.error("Impossible de copier le lien");

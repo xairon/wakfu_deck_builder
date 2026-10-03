@@ -82,8 +82,105 @@ export function decodeDeck(encoded: string): DecodedDeckData | null {
   }
 }
 
+import { supabase } from "@/services/supabase";
+
 /**
- * Genere une URL complete de partage avec le deck encode en query param.
+ * Génère un identifiant court aléatoire (8 caractères).
+ */
+export function generateShortId(length = 8): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+/**
+ * Enregistre le deck dans Supabase (table deck_shares) et renvoie son ID court.
+ * En cas d'échec ou d'absence de Supabase, renvoie null.
+ */
+export async function createDeckShare(deck: Deck): Promise<string | null> {
+  if (!supabase) return null;
+  const id = generateShortId();
+  const payload = {
+    id,
+    name: deck.name,
+    hero_id: deck.hero?.id ?? null,
+    havre_sac_id: deck.havreSac?.id ?? null,
+    cards: deck.cards.map((dc) => ({
+      cardId: dc.card.id,
+      quantity: dc.quantity,
+      ...(dc.isReserve ? { isReserve: true } : {}),
+    })),
+  };
+
+  const { error } = await supabase.from("deck_shares").insert(payload);
+  if (error) {
+    console.error("Erreur lors de la création du partage de deck:", error);
+    return null;
+  }
+  return id;
+}
+
+/**
+ * Récupère un deck partagé depuis Supabase par son ID court.
+ */
+export async function fetchDeckShare(id: string): Promise<DecodedDeckData | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("deck_shares")
+    .select("name, hero_id, havre_sac_id, cards")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+
+  const rawCards = Array.isArray(data.cards) ? data.cards : [];
+  return {
+    name: data.name,
+    heroId: data.hero_id ?? null,
+    havreSacId: data.havre_sac_id ?? null,
+    cards: rawCards.map((c: any) => ({
+      cardId: c.cardId,
+      quantity: c.quantity,
+      ...(c.isReserve ? { isReserve: true } : {}),
+    })),
+  };
+}
+
+/**
+ * Génère l'URL de partage optimisée pour Discord et compacte.
+ * Utilise la passerelle Edge Function pour les métadonnées OpenGraph (rich embeds sur Discord)
+ * qui redirige ensuite automatiquement vers la vue du deck.
+ */
+export function buildShortShareUrl(id: string): string {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  if (supabaseUrl) {
+    return `${supabaseUrl}/functions/v1/share_preview?id=${encodeURIComponent(id)}`;
+  }
+  return `${window.location.origin}/deck/share?id=${encodeURIComponent(id)}`;
+}
+
+/**
+ * Génère une URL de partage pour un deck.
+ * Tente d'abord de créer un partage court (Edge Function + Discord Embed).
+ * Si indisponible ou en échec, repli transparent sur l'URL avec deck encodé en base64.
+ */
+export async function generateShareUrlAsync(deck: Deck): Promise<string> {
+  try {
+    const shareId = await createDeckShare(deck);
+    if (shareId) {
+      return buildShortShareUrl(shareId);
+    }
+  } catch (err) {
+    console.warn("Échec génération lien court, repli URL base64:", err);
+  }
+  return generateShareUrl(deck);
+}
+
+/**
+ * Genere une URL complete de partage avec le deck encode en query param (synchrone / offline).
  */
 export function generateShareUrl(deck: Deck): string {
   const encoded = encodeDeck(deck);
@@ -91,7 +188,7 @@ export function generateShareUrl(deck: Deck): string {
 }
 
 /**
- * Parse une URL de partage et retourne les donnees du deck.
+ * Parse une URL de partage et retourne les donnees du deck (synchrone pour le paramètre 'deck').
  * Retourne null si le parsing echoue.
  */
 export function parseShareUrl(url: string): DecodedDeckData | null {
@@ -99,7 +196,6 @@ export function parseShareUrl(url: string): DecodedDeckData | null {
     const urlObj = new URL(url);
     const deckParam = urlObj.searchParams.get("deck");
     if (!deckParam) return null;
-    // URLSearchParams.get() already decodes the percent-encoding
     return decodeDeck(deckParam);
   } catch {
     // Fallback: essayer de parser juste le parametre
@@ -113,3 +209,4 @@ export function parseShareUrl(url: string): DecodedDeckData | null {
     }
   }
 }
+

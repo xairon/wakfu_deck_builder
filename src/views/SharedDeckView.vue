@@ -377,7 +377,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
-import { decodeDeck } from "@/utils/deckSharing";
+import { decodeDeck, fetchDeckShare } from "@/utils/deckSharing";
 import CardZoomModal from "@/components/card/CardZoomModal.vue";
 import type { DecodedDeckData } from "@/utils/deckSharing";
 import type { Card } from "@/types/cards";
@@ -517,25 +517,35 @@ onMounted(async () => {
     }
     deckStore.initialize();
 
-    // Recuperer le parametre 'deck' de l'URL
+    // Récupérer le paramètre 'id' (lien court) ou 'deck' (base64) de l'URL
+    const idParam = route.query.id as string | undefined;
     const deckParam = route.query.deck as string | undefined;
-    if (!deckParam) {
+
+    if (idParam) {
+      const fetched = await fetchDeckShare(idParam);
+      if (!fetched) {
+        errorMessage.value =
+          "Ce deck partagé est introuvable ou le lien a expiré.";
+        loading.value = false;
+        return;
+      }
+      decodedData.value = fetched;
+    } else if (deckParam) {
+      // Décoder le deck base64
+      const decoded = decodeDeck(deckParam);
+      if (!decoded) {
+        errorMessage.value =
+          "Le lien de partage est invalide ou corrompu. Impossible de décoder les données du deck.";
+        loading.value = false;
+        return;
+      }
+      decodedData.value = decoded;
+    } else {
       errorMessage.value =
-        'Aucun deck specifie dans le lien. Le parametre "deck" est manquant.';
+        'Aucun deck spécifié dans le lien. Le paramètre "id" ou "deck" est manquant.';
       loading.value = false;
       return;
     }
-
-    // Decoder le deck
-    const decoded = decodeDeck(deckParam);
-    if (!decoded) {
-      errorMessage.value =
-        "Le lien de partage est invalide ou corrompu. Impossible de decoder les donnees du deck.";
-      loading.value = false;
-      return;
-    }
-
-    decodedData.value = decoded;
   } catch (err) {
     console.error("Erreur lors du chargement du deck partage:", err);
     errorMessage.value =

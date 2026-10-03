@@ -551,7 +551,7 @@ import {
 import { elementColors } from "@/config/elementColors";
 import type { Deck } from "@/types/cards";
 import { validateDeck } from "@/validators/deck";
-import { generateShareUrl } from "@/utils/deckSharing";
+import { generateShareUrlAsync } from "@/utils/deckSharing";
 import { publishDeck, unpublishDeck } from "@/services/publicDeckService";
 
 const deckStore = useDeckStore();
@@ -813,7 +813,8 @@ async function confirmImportDeck() {
 
 async function shareDeck(deck: Deck) {
   try {
-    await navigator.clipboard.writeText(generateShareUrl(deck));
+    const url = await generateShareUrlAsync(deck);
+    await navigator.clipboard.writeText(url);
     toast.success("Lien de partage copié !", { duration: 2500 });
   } catch {
     toast.error("Impossible de copier le lien");

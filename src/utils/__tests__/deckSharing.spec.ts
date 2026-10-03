@@ -4,7 +4,13 @@ import {
   decodeDeck,
   generateShareUrl,
   parseShareUrl,
+  generateShortId,
+  buildShortShareUrl,
+  createDeckShare,
+  fetchDeckShare,
+  generateShareUrlAsync,
 } from "../deckSharing";
+import * as supabaseModule from "@/services/supabase";
 import type { Deck, DeckCard, Card } from "@/types/cards";
 
 // --- Helpers pour construire des mocks ---
@@ -404,4 +410,85 @@ describe("deckSharing", () => {
       expect(result!.havreSacId).toBeNull();
     });
   });
+
+  describe("Liens courts & Prévisualisation Discord", () => {
+    it("generateShortId devrait produire un identifiant de la longueur demandée", () => {
+      const id8 = generateShortId();
+      expect(id8).toHaveLength(8);
+      expect(typeof id8).toBe("string");
+      expect(generateShortId(12)).toHaveLength(12);
+    });
+
+    it("buildShortShareUrl devrait pointer vers l'Edge Function share_preview", () => {
+      const url = buildShortShareUrl("abc12345");
+      expect(url).toContain("functions/v1/share_preview?id=abc12345");
+    });
+
+    it("createDeckShare et fetchDeckShare devraient créer et relire un partage avec Supabase", async () => {
+      const deck = createMockDeck();
+      const insertFn = vi.fn().mockResolvedValue({ error: null });
+      const maybeSingleFn = vi.fn().mockResolvedValue({
+        data: {
+          name: deck.name,
+          hero_id: deck.hero?.id,
+          havre_sac_id: deck.havreSac?.id,
+          cards: [
+            { cardId: "card-1", quantity: 3 },
+            { cardId: "card-2", quantity: 2 },
+          ],
+        },
+        error: null,
+      });
+      const eqFn = vi.fn().mockReturnValue({ maybeSingle: maybeSingleFn });
+      const selectFn = vi.fn().mockReturnValue({ eq: eqFn });
+
+      vi.spyOn(supabaseModule, "supabase", "get").mockReturnValue({
+        from: vi.fn((table: string) => {
+          if (table === "deck_shares") {
+            return {
+              insert: insertFn,
+              select: selectFn,
+            };
+          }
+          return {};
+        }),
+      } as any);
+
+      const id = await createDeckShare(deck);
+      expect(id).toHaveLength(8);
+      expect(insertFn).toHaveBeenCalled();
+
+      const fetched = await fetchDeckShare(id!);
+      expect(fetched).not.toBeNull();
+      expect(fetched!.name).toBe("Mon Deck");
+      expect(fetched!.heroId).toBe("hero-1");
+      expect(fetched!.cards).toHaveLength(2);
+    });
+
+    it("generateShareUrlAsync devrait renvoyer une URL courte quand Supabase répond", async () => {
+      const deck = createMockDeck();
+      vi.spyOn(supabaseModule, "supabase", "get").mockReturnValue({
+        from: vi.fn(() => ({
+          insert: vi.fn().mockResolvedValue({ error: null }),
+        })),
+      } as any);
+
+      const url = await generateShareUrlAsync(deck);
+      expect(url).toContain("functions/v1/share_preview?id=");
+    });
+
+    it("generateShareUrlAsync devrait retomber sur l'URL de base si Supabase échoue", async () => {
+      const deck = createMockDeck();
+      vi.spyOn(supabaseModule, "supabase", "get").mockReturnValue({
+        from: vi.fn(() => ({
+          insert: vi.fn().mockResolvedValue({ error: new Error("DB Error") }),
+        })),
+      } as any);
+
+      const url = await generateShareUrlAsync(deck);
+      expect(url).toContain("/deck/share?deck=");
+    });
+  });
 });
+
+

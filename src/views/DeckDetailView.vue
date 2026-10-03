@@ -595,7 +595,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useDeckStore } from "@/stores/deckStore";
 import { validateDeck } from "@/validators/deck";
 import { useToast } from "@/composables/useToast";
-import { generateShareUrl } from "@/utils/deckSharing";
+import { generateShareUrlAsync } from "@/utils/deckSharing";
 import {
   publishDeck,
   unpublishDeck,
@@ -811,7 +811,8 @@ function onDuplicate() {
 async function shareDeck() {
   if (!deck.value) return;
   try {
-    await navigator.clipboard.writeText(generateShareUrl(deck.value));
+    const url = await generateShareUrlAsync(deck.value);
+    await navigator.clipboard.writeText(url);
     toast.success("Lien de partage copié !", { duration: 2500 });
   } catch {
     toast.error("Impossible de copier le lien");
