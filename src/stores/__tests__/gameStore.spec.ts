@@ -129,6 +129,100 @@ describe("gameStore — table locale (bac à sable)", () => {
     store.endTurn();
     expect(store.turn.number).toBe(2);
   });
+
+  it("limite de main = PA (4873) : défausse obligatoire en ligne pour le joueur connecté", async () => {
+    let emit: ((e: PersistedEvent) => void) | null = null;
+    let lastIntent: any = null;
+    const transport = {
+      submit: async () => ({ seq: 0 }),
+      submitIntent: async (_id: string, i: any) => {
+        lastIntent = i;
+      },
+      subscribe: (
+        _id: string,
+        _seat: Seat,
+        cb: (e: PersistedEvent) => void,
+      ) => {
+        emit = cb;
+        return () => {};
+      },
+      pull: async () => [] as RedactedEvent[],
+      concede: async () => {},
+    };
+    const deck = createMockDeck();
+    useCardStore().cards = deck.cards.map((dc) => dc.card);
+    const { events } = createGame(
+      "g-online",
+      { A: deck, B: deck },
+      { firstPlayer: "A", seedA: "a", seedB: "b" },
+    );
+    const store = useGameStore();
+    store.connectOnline("g-online", "A", transport, deck);
+    for (const ev of events) emit!(ev);
+    const baseSeq = events[events.length - 1].seq;
+    emit!({
+      gameId: "g-online",
+      seq: baseSeq + 1,
+      parentSeq: baseSeq,
+      actor: "A",
+      type: "MULLIGAN_DONE",
+      payload: { seat: "A" },
+      ts: 0,
+    } as any);
+    emit!({
+      gameId: "g-online",
+      seq: baseSeq + 2,
+      parentSeq: baseSeq + 1,
+      actor: "B",
+      type: "MULLIGAN_DONE",
+      payload: { seat: "B" },
+      ts: 0,
+    } as any);
+    expect(store.matchPhase).toBe("playing");
+    expect(store.online).toBe(true);
+
+    const toDraw = store.state.seats.A!.pioche.slice(0, 8);
+    let curSeq = baseSeq + 3;
+    for (const cid of toDraw) {
+      emit!({
+        gameId: "g-online",
+        seq: curSeq,
+        parentSeq: curSeq - 1,
+        actor: "A",
+        type: "MOVE",
+        payload: {
+          instanceId: cid,
+          from: { zone: "pioche", owner: "A" },
+          to: { zone: "main", owner: "A" },
+          position: { at: "any" },
+          visibility: { faceDown: false, visibleTo: ["A"] },
+        },
+        ts: 0,
+      } as any);
+      curSeq++;
+    }
+    expect(store.state.seats.A!.main.length).toBe(8);
+    // Dès la réception des cartes au-delà des 6 PA, la défausse obligatoire s'ouvre automatiquement
+    expect(store.effectPicking).not.toBeNull();
+    expect(store.effectPicking?.seat).toBe("A");
+    expect(store.effectPicking?.action).toBe("discard");
+    expect(store.effectPicking?.remaining).toBe(2);
+
+    // Tenter de finir le tour en ligne avec un effet/défausse en cours est également rejeté
+    store.endTurn();
+    expect(store.ruleError).toContain("Résous d'abord l'effet en cours");
+
+    // Défausser via effectPick soumet bien l'intention MOVE_CARD vers la défausse
+    const pickId = store.effectPickIds[0];
+    store.effectPick(pickId);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(lastIntent).toEqual({
+      kind: "MOVE_CARD",
+      instanceId: pickId,
+      to: { zone: "defausse", owner: "A" },
+      position: { at: "top" },
+    });
+  });
 });
 
 describe("gameStore — flux de match (lobby/mulligan/tour)", () => {

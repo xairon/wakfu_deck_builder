@@ -205,4 +205,26 @@ describe("gameStore — Mode Entraînement Solo (Sandbox / Hot-seat)", () => {
     store.moveTo(oppCardId, { zone: "havreSac", owner: "B" });
     expect(store.state.instances[oppCardId]?.location).toEqual({ zone: "havreSac", owner: "B" });
   });
+
+  it("garantit que l'automatisation des effets est désactivée en mode sandbox (assistEffects = false)", () => {
+    const store = useGameStore();
+    const deckA = createMockDeck({ id: "deck-a", name: "Deck Test A" });
+    const deckB = createMockDeck({ id: "deck-b", name: "Deck Test B" });
+
+    store.startMatch(deckA, deckB, {
+      first: "A",
+      isSandbox: true,
+    });
+    store.assist = true;
+    store.assistEffects = false;
+
+    expect(store.isSandbox).toBe(true);
+    expect(store.assistEffects).toBe(false);
+
+    // Mettre fin au tour ne déclenche aucun effet automatique début de tour
+    store.keepHand();
+    store.keepHand();
+    expect(store.matchPhase).toBe("playing");
+    expect(store.effectPicking).toBeNull();
+  });
 });

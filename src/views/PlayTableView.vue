@@ -1320,7 +1320,15 @@
 
     <!-- Choix de carte dans une pile (recycler / défausser) -->
     <Transition name="ovl">
-      <div v-if="store.effectPicking" class="overlay">
+      <div
+        v-if="
+          store.effectPicking &&
+          (!store.online ||
+            store.effectPicking.seat === store.mySeat ||
+            (store.isSpectator && store.effectPicking.seat === store.perspective))
+        "
+        class="overlay"
+      >
         <div class="overlay__card overlay__card--wide">
           <p class="eyebrow text-primary">
             {{
@@ -1879,7 +1887,7 @@ function startSandboxGame(): void {
     nameB: p2,
   });
   store.assist = true;
-  store.assistEffects = true;
+  store.assistEffects = false;
 }
 
 // ── Mode 2v2 Multijoueur en équipe (En Ligne & Local) ────────────────────────
@@ -2268,7 +2276,7 @@ function start2v2Game(): void {
     },
   });
   store.assist = true;
-  store.assistEffects = true;
+  store.assistEffects = false;
 }
 // Driver IA : actif dès que store.botSeat est renseigné (gate interne).
 // `hold` : le bot NE JOUE PAS pendant le jet de dé d'entame (l'overlay est

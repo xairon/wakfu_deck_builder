@@ -1113,6 +1113,14 @@ export const useGameStore = defineStore("game", () => {
       }
       deriveOnlineOutcome();
       reconcileCombat();
+      if (
+        matchPhase.value === "playing" &&
+        mySeat.value &&
+        Array.isArray(state.value.seats?.[mySeat.value]?.main) &&
+        state.value.seats[mySeat.value]!.main.length > paOf(mySeat.value)
+      ) {
+        engine.enforceHandLimit(mySeat.value);
+      }
     }
     if (pending.size && !pulling) void resyncFrom(lastSeq()); // trou → combler
   }
@@ -1894,7 +1902,7 @@ export const useGameStore = defineStore("game", () => {
       return;
     }
     // 4873 : on ne passe pas la main avec un excédent — défausse d'abord
-    if (assist.value && boardOf(active).main.length > paOf(active)) {
+    if ((assist.value || online.value) && boardOf(active).main.length > paOf(active)) {
       engine.enforceHandLimit(active);
       rejectMove("Main pleine : défausse l'excédent avant de finir le tour.");
       return;
@@ -3500,6 +3508,7 @@ export const useGameStore = defineStore("game", () => {
     getCard,
     isAssist: () => assist.value,
     isAssistEffects: () => assistEffects.value,
+    isOnline: () => online.value,
     getMatchPhase: () => matchPhase.value,
     playerName: (s) => playerName(s),
     paOf,

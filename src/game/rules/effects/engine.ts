@@ -193,6 +193,7 @@ export interface EffectEngineDeps {
   getCard: (cardId: string | null) => Card | null;
   isAssist: () => boolean;
   isAssistEffects: () => boolean;
+  isOnline?: () => boolean;
   getMatchPhase: () => "lobby" | "mulligan" | "playing" | "finished";
   playerName: (seat: Seat) => string;
   paOf: (seat: Seat) => number;
@@ -404,10 +405,21 @@ export function createEffectEngine(deps: EffectEngineDeps) {
    * doit être défaussé. Ouvre un choix OBLIGATOIRE dans la main.
    */
   function enforceHandLimit(seat: Seat): void {
-    if (!deps.isAssist() || deps.getMatchPhase() !== "playing") return;
-    if (effectPicking.value || effectTargeting.value) return; // re-vérifié après
+    if ((!deps.isAssist() && !deps.isOnline?.()) || deps.getMatchPhase() !== "playing") return;
+    if (effectTargeting.value) return; // re-vérifié après
     const excess = deps.getState().seats[seat]!.main.length - deps.paOf(seat);
-    if (excess <= 0) return;
+    if (excess <= 0) {
+      if (effectPicking.value?.cardName === "Limite de main" && effectPicking.value?.seat === seat) {
+        effectPicking.value = null;
+      }
+      return;
+    }
+    if (effectPicking.value) {
+      if (effectPicking.value.cardName === "Limite de main" && effectPicking.value.seat === seat) {
+        effectPicking.value.remaining = excess;
+      }
+      return;
+    }
     deps.dispatch(
       say(
         seat,

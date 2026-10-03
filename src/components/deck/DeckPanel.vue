@@ -312,9 +312,6 @@
         @move-to-reserve="moveToReserve"
         @remove="(id) => deckStore.removeCard(id, 1)"
         @add="(card) => $emit('add-to-deck', card)"
-        @set-edition="
-          (id, printing) => deckStore.setEntryEdition(id, false, printing)
-        "
       />
     </div>
 
@@ -330,9 +327,6 @@
         @move-to-reserve="moveToReserve"
         @remove="(id) => deckStore.removeCard(id, 1)"
         @add="(card) => $emit('add-to-deck', card)"
-        @set-edition="
-          (id, printing) => deckStore.setEntryEdition(id, false, printing)
-        "
       />
     </ul>
   </div>
@@ -380,9 +374,6 @@
           @move-to-main="moveToMain"
           @remove="(id) => deckStore.removeCard(id, 1, true)"
           @add="(card) => addToReserve(card)"
-          @set-edition="
-            (id, printing) => deckStore.setEntryEdition(id, true, printing)
-          "
         />
       </div>
 
@@ -397,9 +388,6 @@
           @move-to-main="moveToMain"
           @remove="(id) => deckStore.removeCard(id, 1, true)"
           @add="(card) => addToReserve(card)"
-          @set-edition="
-            (id, printing) => deckStore.setEntryEdition(id, true, printing)
-          "
         />
       </ul>
     </div>

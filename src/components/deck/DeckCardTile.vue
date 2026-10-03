@@ -40,52 +40,6 @@
         <ErrataBadge :card-id="dc.card.id" />
       </div>
 
-      <!-- Badge Coût PA (Haut droite) -->
-      <div
-        v-if="cardPa !== null"
-        class="absolute right-2 top-2 z-20 flex items-center shadow-md"
-      >
-        <span
-          class="rounded-[2px] bg-base-900/85 backdrop-blur-xs px-1.5 py-0.5 font-mono text-[11px] font-bold text-amber-300 border border-white/10"
-          :title="`Coût : ${cardPa} PA`"
-        >
-          {{ cardPa }} PA
-        </span>
-      </div>
-
-      <!-- Sélecteur d'édition si multiples impressions (Haut droite sous les PA) -->
-      <div
-        v-if="hasMultipleEditions"
-        class="absolute right-2 top-8 z-20"
-        @mouseenter="preview.hide()"
-        @click.stop
-      >
-        <select
-          class="select select-bordered select-xs h-6 min-h-0 bg-base-900/90 text-white border-white/20 font-mono text-[9px] uppercase tracking-wider px-1 shadow-md max-w-[5.5rem] truncate"
-          :value="dc.card.id"
-          :title="`Édition : ${dc.card.extension.name}`"
-          :aria-label="`Édition de ${dc.card.name}`"
-          @change="
-            $emit(
-              'set-edition',
-              dc.card.id,
-              editions.find(
-                (e) => e.id === ($event.target as HTMLSelectElement).value,
-              )!,
-            )
-          "
-        >
-          <option
-            v-for="e in editions"
-            :key="e.id"
-            :value="e.id"
-            class="bg-base-900 text-white"
-          >
-            {{ e.extension.name }}
-          </option>
-        </select>
-      </div>
-
       <!-- Overlay bas : Nom + Type + Actions (+ / - / Réserve) -->
       <div
         class="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/95 via-black/75 to-transparent pt-6 pb-2 px-2 flex flex-col justify-end"
@@ -175,13 +129,10 @@
 import type { Card, DeckCard } from "@/types/cards";
 import { computed } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
-import { useCardStore } from "@/stores/cardStore";
-import { cardCost } from "@/utils/cardDisplay";
 import { getCardThumbPath } from "@/utils/imagePaths";
 import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 const preview = useCardPreview();
-const cardStore = useCardStore();
 
 const props = withDefaults(
   defineProps<{
@@ -200,12 +151,8 @@ defineEmits<{
   remove: [id: string];
   add: [card: Card];
   "open-zoom": [card: Card];
-  "set-edition": [cardId: string, printing: Card];
 }>();
 
-const editions = computed(() => cardStore.printingsOf(props.dc.card));
-const hasMultipleEditions = computed(() => editions.value.length > 1);
-const cardPa = computed(() => cardCost(props.dc.card));
 const cardThumb = computed(() => getCardThumbPath(props.dc.card));
 
 function onImgFallback(e: Event) {
