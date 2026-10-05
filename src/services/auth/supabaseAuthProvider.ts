@@ -66,8 +66,14 @@ export function createSupabaseAuthProvider(): AuthProvider {
       const expiresAt = session.expires_at ?? 0;
       // Rafraîchir si le token expire dans moins de 5 minutes
       if (expiresAt - now < 300) {
-        const { data: refreshed } = await client.auth.refreshSession();
-        return mapSession(refreshed.session);
+        try {
+          const { data: refreshed, error } = await client.auth.refreshSession();
+          if (!error && refreshed?.session) {
+            return mapSession(refreshed.session);
+          }
+        } catch {
+          // Repli sur la session existante si l'appel réseau échoue
+        }
       }
       return mapSession(session);
     },

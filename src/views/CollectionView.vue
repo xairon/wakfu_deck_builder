@@ -1070,7 +1070,9 @@ const getSelectedCardImage = computed(() => {
   // Chemin normal
   let imagePath = "";
 
-  if (isSelectedCardHero.value) {
+  if (selectedCard.value.imageUrl) {
+    imagePath = selectedCard.value.imageUrl;
+  } else if (isSelectedCardHero.value) {
     imagePath = showVerso.value
       ? `/images/cards/${selectedCard.value.id}_verso.webp`
       : `/images/cards/${selectedCard.value.id}_recto.webp`;
