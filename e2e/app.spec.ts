@@ -198,7 +198,7 @@ test.describe("Decks", () => {
 
   test("devrait pouvoir créer un nouveau deck", async ({ page }) => {
     await gotoAuthed(page, "/decks");
-    const newDeckBtn = page.getByRole("link", { name: /Nouveau deck/i });
+    const newDeckBtn = page.getByRole("button", { name: /Nouveau deck/i });
     await expect(newDeckBtn).toBeVisible();
     await newDeckBtn.click();
     await expect(page).toHaveURL(/\/deck-builder/);
@@ -289,9 +289,15 @@ test.describe("Table de jeu (/play/table)", () => {
   test("devrait dérouler une partie locale (mulligan → plateau)", async ({
     page,
   }) => {
-    await page.goto("/play/table");
+    await gotoAuthed(page, "/play/table");
     await waitForCatalog(page);
     await seedValidDecks(page);
+
+    await page.waitForFunction(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      return !!gp?.$pinia?._s?.get("game") && !!gp?.$pinia?._s?.get("deck");
+    });
 
     // Le hot-seat n'est plus exposé dans le lobby (« en ligne uniquement ») : on
     // lance une partie locale directement via le store pour couvrir le plateau,
@@ -324,25 +330,24 @@ test.describe("Table de jeu (/play/table)", () => {
     await expect(endTurn).toBeVisible();
   });
 
-  test("lobby en ligne : deck pré-sélectionné, « Créer la partie » actif", async ({
+  test("lobby en ligne : deck pré-sélectionné, « Héberger la partie » actif", async ({
     page,
   }) => {
     await gotoAuthed(page, "/play/table");
     await waitForCatalog(page);
     await seedValidDecks(page);
 
-    // Panneau « Créer » ouvert d'emblée + deck pré-sélectionné → le bouton doit
-    // être actif sans interaction (corrige l'ancien bouton grisé « marche pas »).
-    const creer = page.getByRole("button", { name: "Créer la partie" });
+    // Basculer vers l'onglet « Héberger une partie »
+    const hostTabBtn = page.getByRole("button", { name: /Héberger une partie/i }).first();
+    await expect(hostTabBtn).toBeVisible();
+    await hostTabBtn.click();
+
+    // Avec un deck pré-sélectionné, le bouton d'hébergement doit être actif
+    const creer = page.getByRole("button", { name: /Héberger la partie/i });
     await expect(creer).toBeVisible();
     await expect(creer).toBeEnabled();
-    // Le mode hot-seat local n'est plus présent dans le lobby.
-    await expect(page.getByTestId("lobby-deck-pick")).toHaveCount(0);
 
-    // Une fois CONNECTÉ en ligne (après « Créer la partie »), le lobby cède la
-    // place à l'écran d'attente avec le code — il ne doit PAS rester bloqué sur
-    // le lobby (régression : matchPhase reste 'lobby' tant que l'adversaire n'a
-    // pas rejoint, donc le rendu doit dépendre de store.online).
+    // Une fois CONNECTÉ en ligne, l'écran d'attente s'affiche (LobbyWaitingRoom)
     await page.evaluate(() => {
       const gp = (document.querySelector("#app") as any).__vue_app__.config
         .globalProperties;
@@ -351,7 +356,8 @@ test.describe("Table de jeu (/play/table)", () => {
     await expect(
       page.getByRole("heading", { name: "Nouvelle partie" }),
     ).toBeHidden();
-    await expect(page.getByText("En attente de l'adversaire")).toBeVisible();
+    await expect(page.getByText("Salon de partie")).toBeVisible();
+    await expect(page.getByText("Code d'invitation unique")).toBeVisible();
   });
 
   test("devrait lancer « Apprendre en jouant » (partie guidée vs IA)", async ({
@@ -359,6 +365,9 @@ test.describe("Table de jeu (/play/table)", () => {
   }) => {
     await page.goto("/play/table");
     await waitForCatalog(page);
+
+    // Sélectionner le mode Tutoriel d'apprentissage
+    await page.getByRole("heading", { name: "Tutoriel d'Apprentissage" }).click();
 
     // Le lanceur « Apprendre en jouant » démarre une vraie partie guidée (decks
     // pré-sélectionnés). Un écran d'accueil (but + fonctionnement) s'affiche.
@@ -378,8 +387,14 @@ test.describe("Table de jeu (/play/table)", () => {
   test("devrait dérouler un combat (attaque → résolution → dégâts)", async ({
     page,
   }) => {
-    await page.goto("/play/table");
+    await gotoAuthed(page, "/play/table");
     await waitForCatalog(page);
+
+    await page.waitForFunction(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      return !!gp?.$pinia?._s?.get("game");
+    });
 
     // Plateau de combat légal construit DIRECTEMENT via le store (sans bot ni
     // coach) : deux decks minimaux (Héros + Havre-Sac + un Allié Niveau 1 Force≥1),

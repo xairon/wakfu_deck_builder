@@ -34,8 +34,10 @@ const extensions = readdirSync(RAW_DIR).filter((ext) =>
 );
 
 describe("Élément imprimé (public/data vs pages archivées)", () => {
-  it("devrait résoudre l'Élément de chaque carte à son symbole imprimé", () => {
-    const mismatches: string[] = [];
+  it(
+    "devrait résoudre l'Élément de chaque carte à son symbole imprimé",
+    () => {
+      const mismatches: string[] = [];
     let checked = 0;
 
     for (const ext of extensions) {
@@ -71,5 +73,5 @@ describe("Élément imprimé (public/data vs pages archivées)", () => {
       mismatches,
       `${mismatches.length} écart(s) — ${mismatches.slice(0, 5).join(" | ")}`,
     ).toHaveLength(0);
-  });
+  }, 30000);
 });

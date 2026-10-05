@@ -61,6 +61,7 @@ test.describe("Custom Cards E2E Workflow", () => {
       'input[placeholder*="Eliatrope, Tofu"]',
       "Iop, Demi-Dieu",
     );
+    await page.getByRole("button", { name: "🌐 Lien URL" }).click();
     await page.fill(
       'input[placeholder*="https://images.unsplash.com"]',
       "https://example.com/goultard.webp",

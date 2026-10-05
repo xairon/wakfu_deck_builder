@@ -193,7 +193,7 @@ export async function validateAndSanitizeImageFile(
       ? await file.arrayBuffer()
       : await new Response(file).arrayBuffer();
     headerBytes = new Uint8Array(buffer.slice(0, 512));
-  } catch (err) {
+  } catch {
     return {
       ok: false,
       error: "Impossible de lire le contenu du fichier sélectionné.",
@@ -278,7 +278,7 @@ export async function validateAndSanitizeImageFile(
           width: targetWidth,
           height: targetHeight,
         });
-      } catch (err) {
+      } catch {
         resolve({
           ok: false,
           error: "Échec de l'assainissement de l'image.",

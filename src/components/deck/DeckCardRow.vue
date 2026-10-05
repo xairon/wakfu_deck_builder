@@ -91,13 +91,11 @@
 import type { Card, DeckCard } from "@/types/cards";
 import { computed } from "vue";
 import { useCardPreview } from "@/composables/useCardPreview";
-import { useCardStore } from "@/stores/cardStore";
 import { cardCost } from "@/utils/cardDisplay";
 import { getCardThumbPath } from "@/utils/imagePaths";
 import ErrataBadge from "@/components/card/ErrataBadge.vue";
 
 const preview = useCardPreview();
-const cardStore = useCardStore();
 
 const props = withDefaults(
   defineProps<{
