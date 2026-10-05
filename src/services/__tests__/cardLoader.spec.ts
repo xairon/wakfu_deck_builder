@@ -429,14 +429,14 @@ describe("cardLoader", () => {
   // =========================================================================
 
   describe("loadAllCards - integration", () => {
-    it("should load all 11 extensions in parallel via fetch", async () => {
+    it("should load all 12 extensions in parallel via fetch", async () => {
       (localStorage.getItem as Mock).mockReturnValue(null);
       mockFetchSuccess();
 
       await loadAllCards();
 
-      // 11 extensions should cause 11 fetch calls
-      expect(global.fetch).toHaveBeenCalledTimes(11);
+      // 12 extensions should cause 12 fetch calls
+      expect(global.fetch).toHaveBeenCalledTimes(12);
     });
 
     it("should fetch from correct paths for each extension", async () => {
@@ -457,6 +457,7 @@ describe("cardLoader", () => {
         "otomai",
         "pandala",
         "draft",
+        "reveil-des-dragons",
       ];
       for (const ext of expectedExtensions) {
         expect(global.fetch).toHaveBeenCalledWith(`/data/${ext}.json`);
@@ -608,8 +609,8 @@ describe("cardLoader", () => {
       });
 
       const result = await loadAllCards();
-      // amakna returns empty, but other 10 extensions each return 1 card
-      expect(result.length).toBe(10);
+      // amakna returns empty, but other 11 extensions each return 1 card
+      expect(result.length).toBe(11);
     });
 
     it('should handle response text "[]" as empty extension', async () => {

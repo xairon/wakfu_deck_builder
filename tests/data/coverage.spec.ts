@@ -17,6 +17,7 @@ const EXTENSION_FILES = [
   "incarnam.json",
   "otomai.json",
   "pandala.json",
+  "reveil-des-dragons.json",
 ];
 
 interface RawEffect {

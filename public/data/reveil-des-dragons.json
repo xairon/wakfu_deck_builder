@@ -1,0 +1,74 @@
+[
+  {
+    "id": "grougaloragran-reveil-des-dragons",
+    "name": "Grougaloragran",
+    "mainType": "Allié",
+    "subTypes": ["Monstre", "Dragon Primordial", "Unique"],
+    "extension": {
+      "name": "Réveil des dragons",
+      "number": "",
+      "shortUrl": ""
+    },
+    "rarity": "Légendaire",
+    "stats": {
+      "niveau": {
+        "value": 20,
+        "element": "Neutre"
+      },
+      "force": {
+        "value": 18,
+        "element": "Neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Géant",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "keyword"
+      },
+      {
+        "description": "Agressivité",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "keyword"
+      },
+      {
+        "description": "Indestructible",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "uncovered"
+      },
+      {
+        "description": "Apparition Monde. Détruisez toutes les autres cartes dans le monde.",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "uncovered"
+      },
+      {
+        "description": "Au début de votre tour, vous perdez la partie.",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "uncovered"
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Géant",
+        "description": "Répartit sa Force entre tous ses bloqueurs (6135)."
+      },
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
+    "experience": 3,
+    "artists": ["Jonoo Takeshi", "Ankama"],
+    "notes": [],
+    "flavor": {
+      "text": "Et ils se rendormirent, loin dur regard des hommes, emportant avec eux leurs secrets et le peuple Eliatrope."
+    },
+    "race": "Monstre",
+    "tribe": "Dragon Primordial"
+  }
+]

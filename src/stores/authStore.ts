@@ -47,13 +47,21 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function setSession(next: AuthSession | null) {
+    const previousUserId = user.value?.id;
     session.value = next;
     user.value = next?.user ?? null;
-    // Le rôle suit la session. Repli IMMÉDIAT sur « user » : aucun privilège tant
-    // que le rôle réel n'est pas revenu, et remise à zéro à la déconnexion.
-    role.value = "user";
-    username.value = null;
-    if (next) void loadRole();
+
+    if (!next) {
+      // Déconnexion complète
+      role.value = "user";
+      username.value = null;
+    } else if (next.user.id !== previousUserId) {
+      // Nouvel utilisateur : réinitialisation et rechargement du rôle
+      role.value = "user";
+      username.value = null;
+      void loadRole();
+    }
+    // Si c'est le même utilisateur (ex: TOKEN_REFRESHED), on conserve le rôle et le username sans clignotement.
   }
 
   function messageFrom(err: unknown, fallback: string): string {

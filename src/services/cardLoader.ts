@@ -18,6 +18,7 @@ const EXTENSION_FILES = [
   "otomai",
   "pandala",
   "draft",
+  "reveil-des-dragons",
 ];
 
 interface CacheData {

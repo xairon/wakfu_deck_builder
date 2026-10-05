@@ -53,4 +53,5 @@ export const EXTENSION_LEVELS = {
   "Ankama Convention 5": 9,
   "Île des Wabbits": 10,
   Draft: 11,
+  "Réveil des dragons": 12,
 } as const;

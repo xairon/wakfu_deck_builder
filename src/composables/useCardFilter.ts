@@ -280,6 +280,7 @@ export const sortCards = useMemoize(
           "Ankama Convention 5": 8,
           "Île des Wabbits": 9,
           Draft: 10,
+          "Réveil des dragons": 11,
         };
 
         const getCardNumber = (card: Card) => {
