@@ -35,6 +35,7 @@
           Projet de fan <strong>non-officiel</strong>, hommage au Wakfu TCG.
           Wakfu TCG © Ankama. Illustrations et listes de cartes grâce au
           travail de <strong>Safranil</strong> — wtcg-return.fr.
+          <span class="inline-block ml-1 font-mono text-xs opacity-75">· v{{ APP_VERSION }}</span>
         </p>
         <a
           :href="DISCORD_INVITE_URL"
@@ -52,6 +53,7 @@
 
 <script setup lang="ts">
 import { DISCORD_INVITE_URL } from "@/config/links";
+import { APP_VERSION } from "@/config/constants";
 
 interface FooterLink {
   label: string;

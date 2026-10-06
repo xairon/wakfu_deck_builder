@@ -7,11 +7,18 @@
     >
       <!-- left copy -->
       <div class="relative z-[3] max-w-[600px]">
-        <div data-reveal class="mb-7 flex items-center gap-3">
+        <div data-reveal class="mb-7 flex flex-wrap items-center gap-3">
           <span class="h-px w-9 bg-ember"></span>
           <span class="font-mono text-xs uppercase tracking-[0.2em] text-ember"
             >Wakfu TCG — Constructeur de deck</span
           >
+          <span
+            class="inline-flex items-center gap-1 rounded-full border border-ember/30 bg-ember/10 px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wider text-ember shadow-sm"
+            data-testid="app-version-badge"
+            title="Version de l'application"
+          >
+            v{{ APP_VERSION }}
+          </span>
         </div>
         <h1
           data-reveal
@@ -461,6 +468,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useCardStore } from "@/stores/cardStore";
 import { ALL_OFFICIAL_DECKS } from "@/data/allOfficialDecks";
 import { distinctExtensionCount } from "@/utils/homeStats";
+import { APP_VERSION } from "@/config/constants";
 
 const authStore = useAuthStore();
 const cardStore = useCardStore();
@@ -495,7 +503,7 @@ const cartesLabel = computed(() =>
   ready.value ? fmt(cardStore.totalCards) : "1 585",
 );
 const extensionsLabel = computed(() =>
-  ready.value ? distinctExtensionCount(cardStore.cards) : 11,
+  ready.value ? distinctExtensionCount(cardStore.cards) : 12,
 );
 
 const stats = computed(() => [
