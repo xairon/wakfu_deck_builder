@@ -697,5 +697,109 @@ describe("GameBoard — Regard & Recyclage du cimetière", () => {
   });
 });
 
+describe("GameBoard — Création de jeton (F4)", () => {
+  beforeEach(() => setActivePinia(createPinia()));
 
+  it("ouvre le dialogue de création de jeton et liste les 4 cartes jetons de Draft", async () => {
+    const cardStore = useCardStore();
+    cardStore.cards = [
+      {
+        id: "terra-draft",
+        name: "Terra",
+        mainType: "Allié Élémentaire",
+        extension: { name: "Draft", id: "draft" } as any,
+        stats: { force: { value: 1, element: "Terre" }, niveau: { value: 1, element: "Terre" } },
+      } as any,
+      {
+        id: "aero-draft",
+        name: "Aero",
+        mainType: "Allié Élémentaire",
+        extension: { name: "Draft", id: "draft" } as any,
+        stats: { force: { value: 1, element: "Air" }, niveau: { value: 1, element: "Air" } },
+      } as any,
+      {
+        id: "pyro-draft",
+        name: "Pyro",
+        mainType: "Allié Élémentaire",
+        extension: { name: "Draft", id: "draft" } as any,
+        stats: { force: { value: 1, element: "Feu" }, niveau: { value: 1, element: "Feu" } },
+      } as any,
+      {
+        id: "akwa-draft",
+        name: "Akwa",
+        mainType: "Allié Élémentaire",
+        extension: { name: "Draft", id: "draft" } as any,
+        stats: { force: { value: 1, element: "Eau" }, niveau: { value: 1, element: "Eau" } },
+      } as any,
+    ];
 
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Ouvrir le menu ⚙️ puis le dialogue jeton
+    const moreBtn = wrapper.find('[data-testid="action-more-menu"]');
+    expect(moreBtn.exists()).toBe(true);
+    await moreBtn.trigger("click");
+    await flushPromises();
+
+    const tokenBtn = wrapper.find('[data-testid="action-create-token"]');
+    expect(tokenBtn.exists()).toBe(true);
+    await tokenBtn.trigger("click");
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="token-dialog"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="token-draft-terra"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="token-draft-aero"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="token-draft-pyro"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="token-draft-akwa"]').exists()).toBe(true);
+  });
+
+  it("cliquer sur un jeton Draft pré-remplit le nom, la force et dérive l'élément implicitement", async () => {
+    const cardStore = useCardStore();
+    cardStore.cards = [
+      {
+        id: "pyro-draft",
+        name: "Pyro",
+        mainType: "Allié Élémentaire",
+        extension: { name: "Draft", id: "draft" } as any,
+        stats: { force: { value: 1, element: "Feu" }, niveau: { value: 1, element: "Feu" } },
+      } as any,
+    ];
+
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const createSpy = vi.spyOn(store, "createManualToken").mockReturnValue(true);
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Ouvrir le menu ⚙️ puis le dialogue
+    await wrapper.find('[data-testid="action-more-menu"]').trigger("click");
+    await flushPromises();
+    await wrapper.find('[data-testid="action-create-token"]').trigger("click");
+    await flushPromises();
+
+    // Sélectionner Pyro
+    await wrapper.find('[data-testid="token-draft-pyro"]').trigger("click");
+    await flushPromises();
+
+    // Vérifier que le sélecteur d'élément a disparu au profit de l'affichage implicite
+    expect(wrapper.find("select").exists()).toBe(false);
+    expect(wrapper.text()).toContain("Feu (implicite : Pyro)");
+
+    // Soumettre le formulaire
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+
+    expect(createSpy).toHaveBeenCalledWith({
+      name: "Pyro",
+      force: 1,
+      element: "Feu",
+    });
+  });
+});

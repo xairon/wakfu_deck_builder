@@ -1998,6 +1998,41 @@
           [Élément] ». Le jeton apparaît dans le Monde, avec le mal
           d'invocation.
         </p>
+        <!-- Sélection rapide parmi les cartes jetons Draft (Terra, Aero, Pyro, Akwa) -->
+        <div class="gtokendialog__draft-section">
+          <span class="gtokendialog__subtitle">Jetons élémentaires (Draft)</span>
+          <div class="gtokendialog__draft-grid" role="group" aria-label="Jetons élémentaires Draft">
+            <button
+              v-for="card in draftTokenCards"
+              :key="card.id"
+              type="button"
+              class="gtokendialog__draft-card"
+              :class="{
+                'gtokendialog__draft-card--selected': selectedDraftCard?.id === card.id,
+              }"
+              :data-testid="`token-draft-${card.name.toLowerCase()}`"
+              :style="{
+                borderColor: selectedDraftCard?.id === card.id ? elementColor(card.stats?.force?.element ?? '') : undefined,
+              }"
+              @click="selectDraftTokenCard(card)"
+            >
+              <img
+                :src="getThumbPath(card.id)"
+                :alt="card.name"
+                class="gtokendialog__draft-thumb"
+                loading="lazy"
+              />
+              <span class="gtokendialog__draft-name">{{ card.name }}</span>
+              <span
+                class="gtokendialog__draft-element"
+                :style="{ color: elementColor(card.stats?.force?.element ?? '') }"
+              >
+                {{ card.stats?.force?.element }}
+              </span>
+            </button>
+          </div>
+        </div>
+
         <form class="gtokendialog__form" @submit.prevent="submitToken">
           <label class="gtokendialog__field">
             <span>Nom</span>
@@ -2019,7 +2054,16 @@
               required
             />
           </label>
-          <label class="gtokendialog__field">
+          <div v-if="selectedDraftCard" class="gtokendialog__field">
+            <span>Élément</span>
+            <span
+              class="gtokendialog__element-badge"
+              :style="{ color: elementColor(tokenElement) }"
+            >
+              {{ tokenElement || "Neutre" }} (implicite : {{ selectedDraftCard.name }})
+            </span>
+          </div>
+          <label v-else class="gtokendialog__field">
             <span>Élément</span>
             <select v-model="tokenElement">
               <option value="">Neutre</option>
@@ -2029,13 +2073,23 @@
               <option value="Terre">Terre</option>
             </select>
           </label>
-          <button
-            class="gbtn gbtn--accent"
-            type="submit"
-            data-testid="token-create"
-          >
-            Mettre en jeu
-          </button>
+          <div class="gtokendialog__actions">
+            <button
+              v-if="selectedDraftCard"
+              type="button"
+              class="gbtn gbtn--ghost"
+              @click="clearDraftTokenSelection"
+            >
+              Personnalisé
+            </button>
+            <button
+              class="gbtn gbtn--accent"
+              type="submit"
+              data-testid="token-create"
+            >
+              Mettre en jeu
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -2503,6 +2557,28 @@ const tokenDialog = ref(false);
 const tokenName = ref("");
 const tokenForce = ref(1);
 const tokenElement = ref("");
+const selectedDraftCard = ref<Card | null>(null);
+
+/** Cartes jetons élémentaires officielles de l'extension Draft (Terra, Aero, Pyro, Akwa). */
+const draftTokenCards = computed<Card[]>(() => {
+  return cardStore.cards.filter(
+    (c) =>
+      c.extension?.name?.toLowerCase() === "draft" &&
+      c.mainType === "Allié Élémentaire",
+  );
+});
+
+function selectDraftTokenCard(card: Card): void {
+  selectedDraftCard.value = card;
+  tokenName.value = card.name;
+  tokenForce.value = card.stats?.force?.value ?? 1;
+  tokenElement.value = card.stats?.force?.element ?? "";
+}
+
+function clearDraftTokenSelection(): void {
+  selectedDraftCard.value = null;
+}
+
 function submitToken(): void {
   const ok = store.createManualToken({
     name: tokenName.value,
@@ -2514,6 +2590,7 @@ function submitToken(): void {
     tokenName.value = "";
     tokenForce.value = 1;
     tokenElement.value = "";
+    selectedDraftCard.value = null;
   }
 }
 
@@ -4888,6 +4965,73 @@ function manaBonus(seat: Seat): boolean {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.gtokendialog__subtitle {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(246, 245, 241, 0.6);
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+.gtokendialog__draft-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.gtokendialog__draft-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(246, 245, 241, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  color: inherit;
+}
+.gtokendialog__draft-card:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(246, 245, 241, 0.4);
+}
+.gtokendialog__draft-card--selected {
+  background: rgba(255, 255, 255, 0.12);
+  border-width: 2px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.gtokendialog__draft-thumb {
+  width: 100%;
+  aspect-ratio: 0.72;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.gtokendialog__draft-name {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.gtokendialog__draft-element {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.gtokendialog__element-badge {
+  font-size: 13px;
+  font-weight: 600;
+}
+.gtokendialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
 }
 .gtokendialog__field {
   display: flex;

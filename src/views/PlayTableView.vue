@@ -720,7 +720,7 @@
                     </option>
                   </optgroup>
                   <optgroup label="Decks officiels & Starters">
-                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-a1-' + d.id" :value="'official-' + d.id">
+                    <option v-for="d in sortedOfficialDecks" :key="'2v2-off-a1-' + d.id" :value="'official-' + d.id">
                       {{ d.name }}
                     </option>
                   </optgroup>
@@ -737,7 +737,7 @@
                     </option>
                   </optgroup>
                   <optgroup label="Decks officiels & Starters">
-                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-a2-' + d.id" :value="'official-' + d.id">
+                    <option v-for="d in sortedOfficialDecks" :key="'2v2-off-a2-' + d.id" :value="'official-' + d.id">
                       {{ d.name }}
                     </option>
                   </optgroup>
@@ -765,7 +765,7 @@
                     </option>
                   </optgroup>
                   <optgroup label="Decks officiels & Starters">
-                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-b1-' + d.id" :value="'official-' + d.id">
+                    <option v-for="d in sortedOfficialDecks" :key="'2v2-off-b1-' + d.id" :value="'official-' + d.id">
                       {{ d.name }}
                     </option>
                   </optgroup>
@@ -782,7 +782,7 @@
                     </option>
                   </optgroup>
                   <optgroup label="Decks officiels & Starters">
-                    <option v-for="d in ALL_OFFICIAL_DECKS" :key="'2v2-off-b2-' + d.id" :value="'official-' + d.id">
+                    <option v-for="d in sortedOfficialDecks" :key="'2v2-off-b2-' + d.id" :value="'official-' + d.id">
                       {{ d.name }}
                     </option>
                   </optgroup>
@@ -873,7 +873,7 @@
               </optgroup>
               <optgroup label="Decks officiels & Starters">
                 <option
-                  v-for="d in ALL_OFFICIAL_DECKS"
+                  v-for="d in sortedOfficialDecks"
                   :key="'off1-' + d.id"
                   :value="'official-' + d.id"
                 >
@@ -902,7 +902,7 @@
               </optgroup>
               <optgroup label="Decks officiels & Starters">
                 <option
-                  v-for="d in ALL_OFFICIAL_DECKS"
+                  v-for="d in sortedOfficialDecks"
                   :key="'off2-' + d.id"
                   :value="'official-' + d.id"
                 >
@@ -1751,12 +1751,22 @@ function concedeClick(): void {
   store.concede(store.perspective);
 }
 
-const decks = computed<Deck[]>(() => deckStore.decks ?? []);
+const decks = computed<Deck[]>(() =>
+  [...(deckStore.decks ?? [])].sort((a, b) =>
+    a.name.localeCompare(b.name, "fr", { sensitivity: "base" }),
+  ),
+);
+
+const sortedOfficialDecks = computed(() =>
+  [...ALL_OFFICIAL_DECKS].sort((a, b) =>
+    a.name.localeCompare(b.name, "fr", { sensitivity: "base" }),
+  ),
+);
 
 // ── Jouer contre l'ordinateur (mode LOCAL vs IA heuristique) ─────────────────
 const INCARNAM_STARTERS = OFFICIAL_DECKS.filter(
   (d) => d.extension === "incarnam",
-);
+).sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }));
 // Decks jouables : uniquement les starters Incarnam (les seuls dont TOUS les
 // effets sont automatisés) — valeur = id du deck officiel. « Apprendre en jouant »
 // tient ainsi sa promesse « tout est résolu pour toi » (cf. assistEffects=true).

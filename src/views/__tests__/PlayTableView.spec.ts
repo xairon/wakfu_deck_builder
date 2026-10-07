@@ -284,6 +284,68 @@ describe("PlayTableView — montage initial", () => {
     expect(store.priorityChosenFirst).toBe("B");
     expect(wrapper.text()).toContain("a choisi de jouer 2e");
   });
+
+  it("trie les decks personnalisés et officiels par ordre alphabétique dans les sélections", async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const router = createRouter({
+      history: createWebHistory(),
+      routes: [{ path: "/", component: PlayTableView }],
+    });
+
+    const { useDeckStore } = await import("@/stores/deckStore");
+    const deckStore = useDeckStore();
+    deckStore.decks = [
+      { id: "deck-z", name: "Zouave", hero: {} as any, havreSac: {} as any, cards: [], createdAt: "", updatedAt: "" },
+      { id: "deck-a", name: "Arachnée", hero: {} as any, havreSac: {} as any, cards: [], createdAt: "", updatedAt: "" },
+      { id: "deck-m", name: "Mulou", hero: {} as any, havreSac: {} as any, cards: [], createdAt: "", updatedAt: "" },
+    ];
+
+    const wrapper = mount(PlayTableView, {
+      global: {
+        plugins: [router],
+        stubs: {
+          GameBoard: true,
+          InGameChat: true,
+          VictoryDefeatOverlay: true,
+          DialogModal: true,
+          CardDetailModal: true,
+          CardZoomModal: true,
+          OnlineRoomModal: true,
+        },
+      },
+    });
+
+    await wrapper.vm.$nextTick();
+
+    (wrapper.vm as any).selectedGameMode = "solo";
+    await wrapper.vm.$nextTick();
+
+    // Vérifier les options du select sandbox 1
+    const sandboxSelect = wrapper.find('[data-testid="sandbox-deck-1"]');
+    expect(sandboxSelect.exists()).toBe(true);
+
+    const options = sandboxSelect.findAll("option").map((o) => o.text().trim());
+    // Le premier est l'option désactivée "Choisis un deck…"
+    const customDeckNames = options.filter(
+      (txt) => ["Zouave", "Arachnée", "Mulou"].some((n) => txt.startsWith(n)),
+    );
+    expect(customDeckNames.map((txt) => txt.split(" ")[0])).toEqual([
+      "Arachnée",
+      "Mulou",
+      "Zouave",
+    ]);
+
+    // Vérifier également que les starters Incarnam sont triés
+    const vsbotSelect = wrapper.find('[data-testid="vsbot-my-deck"]');
+    if (vsbotSelect.exists()) {
+      const vsbotOptions = vsbotSelect.findAll("option").map((o) => o.text().trim());
+      const sortedVsbotOptions = [...vsbotOptions].sort((a, b) =>
+        a.localeCompare(b, "fr", { sensitivity: "base" }),
+      );
+      expect(vsbotOptions).toEqual(sortedVsbotOptions);
+    }
+  });
 });
 
 
