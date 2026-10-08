@@ -269,7 +269,7 @@ export function subscribeToGame(
   userName?: string,
   onPlayerName?: (seat: Seat, name: string) => void,
   onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
-  onSpectatorCount?: (count: number) => void,
+  onSpectatorCount?: (count: number, names?: string[]) => void,
 ): () => void {
   const c = client();
   const channel = c
@@ -320,14 +320,22 @@ export function subscribeToGame(
         }
         if (onSpectatorCount) {
           let specCount = 0;
+          const specNames: string[] = [];
           for (const [key, entries] of Object.entries(stateMap)) {
             if (key === "spectator") {
               specCount += entries.length;
+              for (const e of entries) {
+                if (e.userName) specNames.push(e.userName);
+              }
             } else {
-              specCount += entries.filter((e) => e.seat === "spectator").length;
+              const matching = entries.filter((e) => e.seat === "spectator");
+              specCount += matching.length;
+              for (const e of matching) {
+                if (e.userName) specNames.push(e.userName);
+              }
             }
           }
-          onSpectatorCount(specCount);
+          onSpectatorCount(specCount, specNames);
         }
       }
     };
@@ -553,6 +561,7 @@ export function create2v2OnlineTransport(
   code: string,
   mySeat: Seat,
   getSeq: () => number = () => 0,
+  myUserName?: string,
 ): {
   submit(gameId: string, draft: DraftEvent): Promise<{ seq: number }>;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
@@ -564,7 +573,7 @@ export function create2v2OnlineTransport(
     onOpponentTarget?: (instanceId: string | null) => void,
     onPlayerName?: (seat: Seat, name: string) => void,
     onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
-    onSpectatorCount?: (count: number) => void,
+    onSpectatorCount?: (count: number, names?: string[]) => void,
   ): () => void;
 } {
   const c = client();
@@ -619,7 +628,7 @@ export function create2v2OnlineTransport(
       onOpponentTarget?: (instanceId: string | null) => void,
       onPlayerName?: (seat: Seat, name: string) => void,
       onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
-      onSpectatorCount?: (count: number) => void,
+      onSpectatorCount?: (count: number, names?: string[]) => void,
     ) {
       const computePresence = (): void => {
         const stateMap = channel.presenceState() as Record<
@@ -637,14 +646,22 @@ export function create2v2OnlineTransport(
         }
         if (onSpectatorCount) {
           let specCount = 0;
+          const specNames: string[] = [];
           for (const [key, entries] of Object.entries(stateMap)) {
             if (key === "spectator") {
               specCount += entries.length;
+              for (const e of entries) {
+                if (e.userName) specNames.push(e.userName);
+              }
             } else {
-              specCount += entries.filter((e) => e.seat === "spectator").length;
+              const matching = entries.filter((e) => e.seat === "spectator");
+              specCount += matching.length;
+              for (const e of matching) {
+                if (e.userName) specNames.push(e.userName);
+              }
             }
           }
-          onSpectatorCount(specCount);
+          onSpectatorCount(specCount, specNames);
         }
       };
 
@@ -680,7 +697,7 @@ export function create2v2OnlineTransport(
         .subscribe((status) => {
           if (status === "SUBSCRIBED") {
             isReady = true;
-            void channel.track({ seat });
+            void channel.track({ seat, userName: myUserName });
             if (onPresence) {
               onPresence(true);
             }

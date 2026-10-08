@@ -1370,9 +1370,9 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     expect(store.online).toBe(false);
   });
 
-  it("met à jour spectatorCount via le callback onSpectatorCount du transport", () => {
+  it("met à jour spectatorCount et spectatorNames via le callback onSpectatorCount du transport", () => {
     const store = useGameStore();
-    let onSpectatorCountCb: ((count: number) => void) | undefined;
+    let onSpectatorCountCb: ((count: number, names?: string[]) => void) | undefined;
     const transport = {
       submit: vi.fn(),
       pull: vi.fn().mockResolvedValue([]),
@@ -1383,16 +1383,19 @@ describe("présence adverse + fenêtre de grâce (déconnexion)", () => {
     };
 
     expect(store.spectatorCount).toBe(0);
+    expect(store.spectatorNames).toEqual([]);
     store.connectOnline("game-with-specs", "A", transport as any);
     expect(transport.subscribe).toHaveBeenCalled();
 
-    // Callback invoqué avec 3 spectateurs
-    onSpectatorCountCb?.(3);
+    // Callback invoqué avec 3 spectateurs et leurs pseudos
+    onSpectatorCountCb?.(3, ["Alice", "Bob", "Charlie"]);
     expect(store.spectatorCount).toBe(3);
+    expect(store.spectatorNames).toEqual(["Alice", "Bob", "Charlie"]);
 
-    // Déconnexion réinitialise à 0
+    // Déconnexion réinitialise à 0 et liste vide
     store.disconnectOnline();
     expect(store.spectatorCount).toBe(0);
+    expect(store.spectatorNames).toEqual([]);
   });
 
   it("continueMatch repasse matchPhase en 'playing' et permet de continuer la partie", () => {

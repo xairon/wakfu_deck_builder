@@ -60,29 +60,62 @@ onUnmounted(() => {
   }
 });
 
+const statusFilter = ref<"all" | "waiting" | "started">("all");
+
 const filteredLobbies = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return lobbies.value;
-  return lobbies.value.filter(
-    (l) =>
+  return lobbies.value.filter((l) => {
+    if (statusFilter.value !== "all" && l.status !== statusFilter.value) {
+      return false;
+    }
+    if (!q) return true;
+    return (
       l.code.toLowerCase().includes(q) ||
-      l.hostName.toLowerCase().includes(q),
-  );
+      l.hostName.toLowerCase().includes(q)
+    );
+  });
 });
 </script>
 
 <template>
   <div class="space-y-4">
-    <!-- Barre de recherche et statut en direct -->
+    <!-- Barre de recherche, filtres et statut en direct -->
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
-        <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
-        </span>
-        <span class="text-xs font-semibold uppercase tracking-wider text-base-content/70">
-          En direct · {{ filteredLobbies.length }} partie{{ filteredLobbies.length > 1 ? 's' : '' }} disponible{{ filteredLobbies.length > 1 ? 's' : '' }}
-        </span>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
+          </span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-base-content/70">
+            En direct · {{ filteredLobbies.length }} partie{{ filteredLobbies.length > 1 ? 's' : '' }}
+          </span>
+        </div>
+
+        <!-- Filtre des statuts : Toutes / En attente / En cours (Spectateur) -->
+        <div class="join">
+          <button
+            class="btn btn-xs join-item"
+            :class="statusFilter === 'all' ? 'btn-neutral font-semibold' : 'btn-ghost'"
+            @click="statusFilter = 'all'"
+          >
+            Toutes
+          </button>
+          <button
+            class="btn btn-xs join-item"
+            :class="statusFilter === 'waiting' ? 'btn-success font-semibold text-success-content' : 'btn-ghost'"
+            @click="statusFilter = 'waiting'"
+          >
+            En attente
+          </button>
+          <button
+            class="btn btn-xs join-item"
+            :class="statusFilter === 'started' ? 'btn-info font-semibold text-info-content' : 'btn-ghost'"
+            @click="statusFilter = 'started'"
+          >
+            👁️ En cours
+          </button>
+        </div>
       </div>
 
       <div class="flex items-center gap-2">
@@ -172,10 +205,20 @@ const filteredLobbies = computed(() => {
     >
       <div class="text-3xl">⚔️</div>
       <h3 class="font-display text-base font-semibold text-base-content/80">
-        Aucune partie publique en attente
+        {{
+          statusFilter === 'started'
+            ? 'Aucune partie en cours à observer'
+            : statusFilter === 'waiting'
+              ? 'Aucune partie en attente'
+              : 'Aucune partie disponible'
+        }}
       </h3>
       <p class="text-xs text-base-content/60 max-w-sm mx-auto">
-        Il n'y a actuellement aucun salon ouvert. Sois le premier à héberger une partie et invite un ami !
+        {{
+          statusFilter === 'started'
+            ? 'Toutes les parties sont actuellement en attente ou terminées. Reviens un peu plus tard pour encourager les combattants !'
+            : "Il n'y a actuellement aucun salon ouvert. Sois le premier à héberger une partie et invite un ami !"
+        }}
       </p>
       <button
         class="btn btn-outline btn-primary btn-sm mt-2"

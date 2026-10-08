@@ -241,6 +241,61 @@ describe("gameClient — appels Supabase (functions.invoke + query builder)", ()
     expect(removeChannel).toHaveBeenCalledWith("channel-handle");
   });
 
+  it("devrait extraire le nombre et les noms des spectateurs via le canal presence", () => {
+    let presenceSyncCb: (() => void) | undefined;
+    const presenceChannel: any = {
+      on: vi.fn((_ev, _filter, cb) => {
+        if (_ev === "presence" && _filter?.event === "sync") {
+          presenceSyncCb = cb;
+        }
+        return presenceChannel;
+      }),
+      subscribe: vi.fn((cb) => {
+        cb("SUBSCRIBED");
+        return presenceChannel;
+      }),
+      track: vi.fn(),
+      presenceState: vi.fn(() => ({
+        spectator: [
+          { userName: "Spectator1", seat: "spectator" },
+          { userName: "Spectator2", seat: "spectator" },
+        ],
+        A: [{ userName: "PlayerA", seat: "A" }],
+      })),
+    };
+
+    const privateChannel: any = {
+      on: vi.fn(() => privateChannel),
+      subscribe: vi.fn(() => privateChannel),
+    };
+
+    supabaseStub = {
+      channel: vi.fn((name) => {
+        if (name.includes(":presence")) return presenceChannel;
+        return privateChannel;
+      }),
+      removeChannel: vi.fn(),
+    };
+
+    const onSpectatorCount = vi.fn();
+    subscribeToGame(
+      "g1",
+      "A",
+      vi.fn(),
+      undefined,
+      undefined,
+      "PlayerA",
+      undefined,
+      undefined,
+      onSpectatorCount,
+    );
+
+    // Déclencher le sync de présence
+    presenceSyncCb?.();
+
+    expect(onSpectatorCount).toHaveBeenCalledWith(2, ["Spectator1", "Spectator2"]);
+  });
+
   // ── 2v2 Lobby & Matchmaking ───────────────────────────────────────────────
   it("devrait diffuser l'état du salon 2v2 via 'lobby_update'", () => {
     const send = vi.fn();

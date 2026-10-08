@@ -204,7 +204,7 @@ export interface OnlineTransport {
     onOpponentTarget?: (targetId: string | null) => void,
     onPlayerName?: (seat: Seat, name: string) => void,
     onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
-    onSpectatorCount?: (count: number) => void,
+    onSpectatorCount?: (count: number, names?: string[]) => void,
   ): () => void;
   pull(gameId: string, sinceSeq: number): Promise<RedactedEvent[]>;
   /**
@@ -380,6 +380,7 @@ export const useGameStore = defineStore("game", () => {
   const isSandbox = ref(false);
   const isSpectator = ref(false);
   const spectatorCount = ref(0);
+  const spectatorNames = ref<string[]>([]);
 
   const teamXp = computed<{ team1: number; team2: number }>(() => {
     let t1 = 0;
@@ -1309,8 +1310,9 @@ export const useGameStore = defineStore("game", () => {
       (remoteSeat, choice) => {
         remotePriorityChoice.value = { seat: remoteSeat, choice };
       },
-      (count) => {
+      (count, names) => {
         spectatorCount.value = count;
+        spectatorNames.value = names ?? [];
       },
     );
     void resyncFrom(0); // rattrape tout event émis avant que l'abonnement soit vivant
@@ -1343,6 +1345,7 @@ export const useGameStore = defineStore("game", () => {
     clearResyncTimer();
     isSpectator.value = false;
     spectatorCount.value = 0;
+    spectatorNames.value = [];
     document.removeEventListener("visibilitychange", onVisibility);
     revealed.value = {};
     gameId.value = "local";
@@ -2031,9 +2034,12 @@ export const useGameStore = defineStore("game", () => {
   }
 
   function quitMatch(): void {
-    // En ligne : quitter = abandonner (forfait) puis se déconnecter proprement.
+    // En ligne : si joueur, quitter = abandonner (forfait) puis se déconnecter proprement.
+    // Si spectateur : simple déconnexion sans abandonner la partie des autres.
     if (online.value) {
-      concede(mySeat.value);
+      if (!isSpectator.value) {
+        concede(mySeat.value);
+      }
       disconnectOnline();
     }
     events.value = [];
@@ -5737,6 +5743,7 @@ export const useGameStore = defineStore("game", () => {
     mySeat,
     isSpectator,
     spectatorCount,
+    spectatorNames,
     botSeat,
     botAggressive,
     gameId: () => gameId.value,

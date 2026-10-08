@@ -83,4 +83,56 @@ describe("LobbyBrowser.vue", () => {
       status: "started",
     });
   });
+
+  it("filtre les salons par statut (Toutes, En attente, En cours)", async () => {
+    const { subscribeToHostedLobbies } = await import("@/services/lobbyDiscoveryService");
+    vi.mocked(subscribeToHostedLobbies).mockImplementationOnce((cb) => {
+      cb([
+        {
+          code: "WAIT11",
+          hostName: "Amalia",
+          mode: "1v1",
+          currentPlayers: 1,
+          maxPlayers: 2,
+          createdAt: Date.now(),
+          status: "waiting",
+        },
+        {
+          code: "LIVE22",
+          hostName: "Tristepin",
+          mode: "1v1",
+          currentPlayers: 2,
+          maxPlayers: 2,
+          createdAt: Date.now(),
+          status: "started",
+        },
+      ]);
+      return vi.fn();
+    });
+
+    const wrapper = mount(LobbyBrowser);
+    await nextTick();
+
+    // Par défaut, "Toutes" affiche les deux
+    expect(wrapper.text()).toContain("WAIT11");
+    expect(wrapper.text()).toContain("LIVE22");
+
+    // Clic sur "En attente"
+    const waitingFilterBtn = wrapper.findAll("button").find((b) => b.text() === "En attente");
+    expect(waitingFilterBtn).toBeTruthy();
+    await waitingFilterBtn!.trigger("click");
+    await nextTick();
+
+    expect(wrapper.text()).toContain("WAIT11");
+    expect(wrapper.text()).not.toContain("LIVE22");
+
+    // Clic sur "👁️ En cours"
+    const liveFilterBtn = wrapper.findAll("button").find((b) => b.text().includes("En cours") && b.classes().includes("join-item"));
+    expect(liveFilterBtn).toBeTruthy();
+    await liveFilterBtn!.trigger("click");
+    await nextTick();
+
+    expect(wrapper.text()).not.toContain("WAIT11");
+    expect(wrapper.text()).toContain("LIVE22");
+  });
 });

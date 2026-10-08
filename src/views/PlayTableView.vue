@@ -952,19 +952,63 @@
       <div class="gtopbar__content">
         <div class="gtopbar__group">
           <span class="gtopbar__title">La Table des Douze</span>
+          <!-- Mode Spectateur : badge distinct avec bouton quitter dédié -->
           <span
-            v-if="store.spectatorCount > 0 || store.isSpectator"
-            class="badge badge-info badge-sm gap-1 py-2 px-2.5 font-medium shadow-sm transition-all"
+            v-if="store.isSpectator"
+            class="badge badge-info badge-sm gap-1 py-2 px-2.5 font-medium shadow-sm"
             data-testid="topbar-spectator-badge"
           >
             <span>👁️</span>
-            <template v-if="store.isSpectator">
-              Mode Spectateur ({{ store.spectatorCount }} en direct)
-            </template>
-            <template v-else>
-              {{ store.spectatorCount }} spectateur{{ store.spectatorCount > 1 ? 's' : '' }} en direct
-            </template>
+            Mode Spectateur ({{ store.spectatorCount }} en direct)
           </span>
+
+          <!-- Joueurs dans la partie : bouton interactif affiché quand il y a des spectateurs avec liste des pseudos au survol -->
+          <div
+            v-else-if="store.spectatorCount > 0"
+            class="relative group"
+            data-testid="spectator-button-container"
+          >
+            <button
+              type="button"
+              class="btn btn-xs btn-info btn-outline gap-1.5 font-medium shadow-sm hover:btn-info transition-all"
+              data-testid="spectators-button"
+              :aria-label="store.spectatorCount + ' spectateur(s) en direct'"
+            >
+              <span class="animate-pulse">👁️</span>
+              <span>{{ store.spectatorCount }} spectateur{{ store.spectatorCount > 1 ? 's' : '' }}</span>
+            </button>
+
+            <!-- Popover / Tooltip au survol affichant le nombre et la liste des pseudos -->
+            <div
+              class="absolute left-0 top-full mt-1.5 hidden group-hover:block group-focus-within:block z-50 w-64 p-3 rounded-xl bg-base-300/95 border border-info/40 shadow-2xl backdrop-blur-md pointer-events-none transition-all"
+              data-testid="spectators-tooltip"
+            >
+              <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-base-content/10">
+                <span class="text-xs font-bold text-info flex items-center gap-1.5">
+                  <span>👁️</span> En direct ({{ store.spectatorCount }})
+                </span>
+                <span class="badge badge-xs badge-info font-mono">{{ store.spectatorCount }}</span>
+              </div>
+              <p class="text-[11px] font-semibold text-base-content/70 mb-1">Spectateur{{ store.spectatorCount > 1 ? 's' : '' }} connecté{{ store.spectatorCount > 1 ? 's' : '' }} :</p>
+              <div class="max-h-36 overflow-y-auto space-y-1 pr-1">
+                <template v-if="store.spectatorNames.length > 0">
+                  <div
+                    v-for="(name, idx) in store.spectatorNames"
+                    :key="name + '-' + idx"
+                    class="text-xs text-base-content/90 flex items-center gap-1.5 py-0.5 px-1.5 rounded bg-base-200/60 font-medium"
+                  >
+                    <span class="h-1.5 w-1.5 rounded-full bg-info"></span>
+                    <span class="truncate">{{ name }}</span>
+                  </div>
+                </template>
+                <template v-else>
+                  <p class="text-xs text-base-content/60 italic">
+                    {{ store.spectatorCount }} spectateur{{ store.spectatorCount > 1 ? 's' : '' }} anonyme{{ store.spectatorCount > 1 ? 's' : '' }}
+                  </p>
+                </template>
+              </div>
+            </div>
+          </div>
           <span v-if="store.matchPhase === 'playing'" class="gtopbar__turn">
             Tour {{ store.turn.number }} · ⏱️ {{ formattedDuration }} ·
             <template v-if="store.online && !store.isSpectator">
@@ -1040,15 +1084,20 @@
             {{ showJournal ? "Masquer le journal" : "Journal" }}
           </button>
           <button
-            v-if="store.matchPhase === 'playing'"
+            v-if="store.matchPhase === 'playing' && !store.isSpectator"
             class="gtop-btn gtop-btn--quit"
             :class="{ 'gtop-btn--danger': concedeArmed }"
             @click="concedeClick"
           >
             {{ concedeArmed ? "Confirmer l'abandon ?" : "Abandonner" }}
           </button>
-          <button class="gtop-btn gtop-btn--quit" @click="store.quitMatch()">
-            Quitter
+          <button
+            class="gtop-btn gtop-btn--quit"
+            :class="{ 'btn-info': store.isSpectator }"
+            data-testid="topbar-quit-btn"
+            @click="store.quitMatch()"
+          >
+            {{ store.isSpectator ? "Quitter le mode spectateur" : "Quitter" }}
           </button>
         </div>
       </div>
@@ -1946,6 +1995,18 @@ function create2v2OnlineLobby(): void {
   };
   active2v2Lobby.value = initialLobby;
 
+  unpublishLobby?.();
+  unpublishLobby = publishHostedLobby({
+    code,
+    hostName: userName,
+    hostUserId: user?.id,
+    mode: "2v2",
+    currentPlayers: 1,
+    maxPlayers: 4,
+    createdAt: Date.now(),
+    status: "waiting",
+  });
+
   lobby2v2Handle?.unsubscribe();
   lobby2v2Handle = subscribeTo2v2Lobby(code, "A1", {
     onUpdate: (updatedState) => {
@@ -2087,6 +2148,8 @@ function toggle2v2Ready(): void {
 }
 
 function leave2v2Lobby(): void {
+  unpublishLobby?.();
+  unpublishLobby = null;
   lobby2v2Handle?.unsubscribe();
   lobby2v2Handle = null;
   active2v2Lobby.value = null;
@@ -2328,7 +2391,7 @@ const onlineTransport = {
     onOpponentTarget?: (t: string | null) => void,
     onPlayerName?: (seat: Seat, name: string) => void,
     onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
-    onSpectatorCount?: (count: number) => void,
+    onSpectatorCount?: (count: number, names?: string[]) => void,
   ) => {
     const user = authStore.user;
     const myName =
@@ -2577,12 +2640,18 @@ async function spectateHostedLobby(lobby: HostedLobbyInfo): Promise<void> {
   const code = lobby.code;
   onlineBusy.value = true;
   try {
+    const user = authStore.user;
+    const myName =
+      pseudonym.value ||
+      user?.displayName ||
+      generateRandomFallback(user?.id);
     const is2v2 = lobby.mode === "2v2";
     if (is2v2) {
       const transport = create2v2OnlineTransport(
         code,
         "spectator" as Seat,
         () => store.lastSeq(),
+        myName,
       );
       store.connectOnline(code, "spectator" as Seat, transport);
       store.isSpectator = true;
@@ -2605,7 +2674,7 @@ async function spectateHostedLobby(lobby: HostedLobbyInfo): Promise<void> {
           onOpponentTarget?: (t: string | null) => void,
           onPlayerName?: (seat: Seat, name: string) => void,
           onPriorityChoice?: (seat: Seat, choice: "1er" | "2e") => void,
-          onSpectatorCount?: (count: number) => void,
+          onSpectatorCount?: (count: number, names?: string[]) => void,
         ) => {
           return subscribeToGame(
             id,
@@ -2613,7 +2682,7 @@ async function spectateHostedLobby(lobby: HostedLobbyInfo): Promise<void> {
             onEvent,
             onPresence,
             onOpponentTarget,
-            "Spectateur",
+            myName,
             onPlayerName,
             onPriorityChoice,
             onSpectatorCount,
@@ -3168,9 +3237,30 @@ watch(
 watch(
   () => store.matchPhase,
   (phase) => {
-    if (phase !== "lobby") {
+    if (phase === "finished") {
       unpublishLobby?.();
       unpublishLobby = null;
+    } else if (phase === "playing" || phase === "mulligan") {
+      // Si on héberge un salon (1v1 ou 2v2), mettre à jour la publication en cours
+      if (store.online && !store.isSpectator && unpublishLobby) {
+        const is2v2 = store.mode === "2v2";
+        const code = is2v2 ? (active2v2Lobby.value?.code ?? "") : createdCode.value;
+        const myName = pseudonym.value || authStore.user?.displayName || "Hôte";
+        if (code) {
+          unpublishLobby?.();
+          unpublishLobby = publishHostedLobby({
+            code,
+            gameId: is2v2 ? undefined : store.gameId(),
+            hostName: myName,
+            hostUserId: authStore.userId || undefined,
+            mode: is2v2 ? "2v2" : "1v1",
+            currentPlayers: is2v2 ? 4 : 2,
+            maxPlayers: is2v2 ? 4 : 2,
+            createdAt: Date.now(),
+            status: "started",
+          });
+        }
+      }
     }
   },
 );
