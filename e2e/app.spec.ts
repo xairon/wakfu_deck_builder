@@ -504,6 +504,80 @@ test.describe("Table de jeu (/play/table)", () => {
     expect(result.tapped || result.atkZone === "defausse").toBe(true);
     expect(result.dmg > target.dmgBefore || !result.inMonde).toBe(true);
   });
+
+  test("mode spectateur : affichage du bandeau spectateur et bouton pour quitter", async ({
+    page,
+  }) => {
+    await gotoAuthed(page, "/play/table");
+    await waitForCatalog(page);
+    await seedValidDecks(page);
+
+    await page.waitForFunction(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      return !!gp?.$pinia?._s?.get("game");
+    });
+
+    // Démarrer une partie en mode spectateur via le store
+    await page.evaluate(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      const pinia = gp?.$pinia;
+      const game = pinia?._s?.get("game");
+      const cards = pinia?._s?.get("cards")?.cards ?? [];
+      const hero = cards.find((c: any) => c.mainType === "Héros");
+      const sac = cards.find((c: any) => c.mainType === "Havre-Sac");
+      const ally = cards.find(
+        (c: any) =>
+          c.mainType === "Allié" &&
+          c.stats?.niveau?.value === 1 &&
+          (c.stats?.force?.value ?? 0) >= 1 &&
+          !(c.subTypes ?? []).includes("Unique"),
+      );
+      const mk = (id: string) => ({
+        id,
+        name: id,
+        hero,
+        havreSac: sac,
+        cards: [{ card: ally, quantity: 48 }],
+        createdAt: "",
+        updatedAt: "",
+      });
+
+      // Initialiser un match
+      game.startSandbox(mk("a"), mk("b"), "A");
+      game.online = true;
+      game.isSpectator = true;
+      game.spectatorCount = 2;
+      game.spectatorNames = ["Spectateur1", "Spectateur2"];
+    });
+
+    // Sur écran <= 1366px (le viewport par défaut de playwright est 1280x720),
+    // la topbar est repliée en mini-badge et s'ouvre au survol ou focus.
+    const topbar = page.locator(".gtopbar");
+    await topbar.hover();
+
+    // 1) Vérifier que le badge mode spectateur est visible
+    const specBadge = page.getByTestId("topbar-spectator-badge");
+    await expect(specBadge).toBeVisible();
+    await expect(specBadge).toContainText("Mode Spectateur");
+
+    // 2) Vérifier la présence du bouton « Quitter le mode spectateur »
+    const quitBtn = page.getByTestId("topbar-quit-btn");
+    await expect(quitBtn).toBeVisible();
+    await expect(quitBtn).toContainText("Quitter le mode spectateur");
+
+    // 3) Cliquer sur quitter ramène au lobby et réinitialise le mode spectateur
+    await quitBtn.click();
+    await expect(page.getByRole("heading", { name: "Nouvelle partie" })).toBeVisible();
+
+    const isSpectatorAfter = await page.evaluate(() => {
+      const gp = (document.querySelector("#app") as any)?.__vue_app__?.config
+        ?.globalProperties;
+      return gp.$pinia._s.get("game").isSpectator;
+    });
+    expect(isSpectatorAfter).toBe(false);
+  });
 });
 
 test.describe("PWA", () => {
