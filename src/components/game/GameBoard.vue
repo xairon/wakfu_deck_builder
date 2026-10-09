@@ -1677,7 +1677,7 @@
           <div
             v-for="(inst, idx) in myDeckCards"
             :key="inst.instanceId"
-            class="gpilebrowser__slot"
+            class="gpilebrowser__slot gpilebrowser__slot--hover-actions"
           >
             <div class="gpilebrowser__pos">
               #{{ idx + 1 }}
@@ -4978,6 +4978,37 @@ function manaBonus(seat: Seat): boolean {
   flex-wrap: wrap;
   gap: 3px;
   justify-content: center;
+}
+/* En mode recherche dans le deck : gain d'espace en révélant les actions uniquement au survol / focus */
+.gpilebrowser__slot--hover-actions {
+  position: relative;
+}
+.gpilebrowser__slot--hover-actions .gpilebrowser__actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin-top: 0;
+  padding: 6px 4px;
+  background: linear-gradient(
+    to top,
+    rgba(15, 12, 9, 0.96) 0%,
+    rgba(15, 12, 9, 0.88) 75%,
+    rgba(15, 12, 9, 0) 100%
+  );
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+}
+.gpilebrowser__slot--hover-actions:hover .gpilebrowser__actions,
+.gpilebrowser__slot--hover-actions:focus-within .gpilebrowser__actions {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 .gbtn--banish {
   background: rgba(147, 51, 234, 0.32);
