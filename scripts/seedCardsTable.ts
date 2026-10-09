@@ -48,6 +48,7 @@ const EXTENSION_FILES = [
   "otomai",
   "pandala",
   "draft",
+  "reveil-des-dragons",
 ];
 
 const dir = "public/data";

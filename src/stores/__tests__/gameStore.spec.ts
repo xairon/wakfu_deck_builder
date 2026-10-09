@@ -51,6 +51,25 @@ describe("gameStore — table locale (bac à sable)", () => {
     expect(store.turn.number).toBe(2);
   });
 
+  it("les compteurs custom ne disparaissent pas à la fin du tour", () => {
+    const store = useGameStore();
+    const deck = createMockDeck();
+    store.startSandbox(deck, deck, "A");
+    const heroId = store.state.seats.A!.heroInstanceId!;
+    store.adjustCounter(heroId, "custom", 3);
+    expect(store.state.instances[heroId].counters.custom).toBe(3);
+
+    store.nextTurn(); // tour 2
+    expect(store.state.instances[heroId].counters.custom).toBe(3);
+
+    store.nextTurn(); // tour 3
+    expect(store.state.instances[heroId].counters.custom).toBe(3);
+
+    // Décrémentation
+    store.adjustCounter(heroId, "custom", -1);
+    expect(store.state.instances[heroId].counters.custom).toBe(2);
+  });
+
   it("annuler revient sur le dernier coup du joueur", () => {
     const store = useGameStore();
     const deck = createMockDeck();

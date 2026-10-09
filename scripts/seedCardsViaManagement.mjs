@@ -12,9 +12,12 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const REF = process.env.PROJECT_REF ?? "ehqalhzvmgkepgbaxbzu";
-const TOKEN = process.env.SUPABASE_MGMT_TOKEN;
+const TOKEN = process.env.SUPABASE_MGMT_TOKEN ?? process.env.SUPABASE_ACCESS_TOKEN;
 if (!TOKEN) {
   console.error("Erreur : SUPABASE_MGMT_TOKEN (token sbp_…) manquant.");
   process.exit(1);
@@ -34,6 +37,7 @@ const EXTENSION_FILES = [
   "otomai",
   "pandala",
   "draft",
+  "reveil-des-dragons",
 ];
 
 const dir = "public/data";

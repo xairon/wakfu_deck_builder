@@ -346,8 +346,67 @@ describe("PlayTableView — montage initial", () => {
       expect(vsbotOptions).toEqual(sortedVsbotOptions);
     }
   });
+
+  it("affiche correctement la partie en cours lorsqu'on clique sur Reprendre la partie", async () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const router = createRouter({
+      history: createWebHistory(),
+      routes: [{ path: "/", component: PlayTableView }],
+    });
+
+    const wrapper = mount(PlayTableView, {
+      global: {
+        plugins: [router],
+        stubs: {
+          GameBoard: true,
+          InGameChat: true,
+          VictoryDefeatOverlay: true,
+          DialogModal: true,
+          CardDetailModal: true,
+          CardZoomModal: true,
+          OnlineRoomModal: true,
+          LobbyWaitingRoom: true,
+        },
+      },
+    });
+
+    const { useGameStore } = await import("@/stores/gameStore");
+    const store = useGameStore();
+
+    // Simuler une partie active détectée
+    (wrapper.vm as any).resumable = {
+      gameId: "active-game-123",
+      seat: "A",
+      assisted: false,
+    };
+    await wrapper.vm.$nextTick();
+
+    const banner = wrapper.find('[data-testid="resume-banner"]');
+    expect(banner.exists()).toBe(true);
+
+    const resumeBtn = wrapper.find('[data-testid="resume-game"]');
+    expect(resumeBtn.exists()).toBe(true);
+
+    // Espionner connectOnline et resyncOnline
+    let connectedGameId = "";
+    store.connectOnline = ((id: string) => {
+      connectedGameId = id;
+      store.online = true;
+      (store.gameId as any).value = id;
+    }) as any;
+    store.resyncOnline = (async () => {}) as any;
+
+    await resumeBtn.trigger("click");
+    await wrapper.vm.$nextTick();
+
+    // La bannière doit avoir disparu, store.online doit être true et matchPhase playing
+    expect(connectedGameId).toBe("active-game-123");
+    expect(store.online).toBe(true);
+    expect(store.matchPhase).toBe("playing");
+    // L'écran d'attente LobbyWaitingRoom ne doit pas être affiché
+    expect((wrapper.vm as any).onlineWaiting).toBe(false);
+    // Le plateau (gfull) doit être affiché au lieu du lobby
+    expect(wrapper.find(".gfull").exists()).toBe(true);
+  });
 });
-
-
-
-

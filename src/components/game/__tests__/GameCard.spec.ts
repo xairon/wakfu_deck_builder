@@ -30,6 +30,13 @@ describe("GameCard — badges & interactions", () => {
     expect(w.find(".game-card__badge--lvl").text()).toBe("N3");
   });
 
+  it("devrait afficher le badge Compteur personnalisé", () => {
+    const w = mount(GameCard, {
+      props: { instance: baseInstance({ custom: 4 }), card: null },
+    });
+    expect(w.find(".game-card__badge--custom").text()).toBe("4");
+  });
+
   it("devrait masquer le badge Niveau au niveau 1", () => {
     const w = mount(GameCard, {
       props: { instance: baseInstance({ level: 1 }), card: null },

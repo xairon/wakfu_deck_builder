@@ -788,6 +788,11 @@ describe("GameBoard — Création de jeton (F4)", () => {
     await wrapper.find('[data-testid="token-draft-pyro"]').trigger("click");
     await flushPromises();
 
+    // Vérifier que l'image de vignette Draft utilise bien le chemin complet
+    const thumbImg = wrapper.find('[data-testid="token-draft-pyro"] img');
+    expect(thumbImg.exists()).toBe(true);
+    expect(thumbImg.attributes("src")).toBe("/images/cards/thumbs/pyro-draft.webp");
+
     // Vérifier que le sélecteur d'élément a disparu au profit de l'affichage implicite
     expect(wrapper.find("select").exists()).toBe(false);
     expect(wrapper.text()).toContain("Feu (implicite : Pyro)");
@@ -801,5 +806,35 @@ describe("GameBoard — Création de jeton (F4)", () => {
       force: 1,
       element: "Feu",
     });
+  });
+
+  it("permet d'incrémenter et décrémenter un compteur customisé sur n'importe quelle carte", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const adjustSpy = vi.spyOn(store, "adjustCounter");
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    // Sélectionner une carte
+    const firstCard = wrapper.find('[data-testid^="card-ci_"]');
+    expect(firstCard.exists()).toBe(true);
+    await firstCard.trigger("click");
+    await flushPromises();
+
+    // Boutons de compteurs
+    const bumpUp = wrapper.find('[data-testid="bump-custom-up"]');
+    const bumpDown = wrapper.find('[data-testid="bump-custom-down"]');
+    expect(bumpUp.exists()).toBe(true);
+    expect(bumpDown.exists()).toBe(true);
+
+    await bumpUp.trigger("click");
+    expect(adjustSpy).toHaveBeenCalledWith(expect.any(String), "custom", 1);
+
+    await firstCard.trigger("click");
+    await flushPromises();
+    await bumpDown.trigger("click");
+    expect(adjustSpy).toHaveBeenCalledWith(expect.any(String), "custom", -1);
   });
 });

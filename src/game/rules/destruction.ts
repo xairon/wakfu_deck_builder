@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Moteur de règles — destructions D'ÉTAT (1414 / 3019), une passe pure :
  * tout Allié en jeu dont la Force effective est 0 (1414) ou dont les
  * Dommages posés atteignent sa Force effective (3019 — la perte d'une aura
@@ -114,16 +114,23 @@ export function havreSacBanishEvents(ctx: RulesCtx): StateBasedDestruction {
     const res = sac.counters.resistance;
     if (res === undefined || res > 0) continue;
     // Intérieur du Havre-Sac (zone havreSac), 410.7 : « les cartes Salle sont
-    // détruites, les cartes Allié ou Héros sont EXPULSÉES dans le Monde ».
+    // détruites (au cimetière / défausse), toutes les autres cartes sont EXPULSÉES dans le Monde
+    // dans le même état (incliné ou redressé) ».
     for (const inst of Object.values(ctx.state.instances)) {
       if (inst.controller !== seat || inst.location.zone !== "havreSac")
         continue;
       const card = ctx.getCard(inst.cardId);
-      const expelledToMonde =
-        card?.mainType === "Héros" ||
-        card?.mainType === "Allié" ||
-        card?.mainType === "Allié Élémentaire";
-      if (expelledToMonde) {
+      const isSalle = card?.mainType === "Salle";
+      if (isSalle) {
+        // Les cartes Salle n'ont le droit d'exister que dans le Havre-Sac : envoyées au cimetière (défausse).
+        events.push(discard(inst.owner, inst.instanceId, inst.location));
+        destroyed.push(inst.instanceId);
+        log.push(
+          `${card?.name ?? "Une Salle"} est détruite et envoyée au cimetière (Havre-Sac banni, 410.7).`,
+        );
+      } else {
+        // Toutes les autres cartes (Héros, Alliés, Équipements, etc.) sont déplacées dans le Monde
+        // dans le même état dans lequel elles étaient (incliné ou redressé).
         events.push(
           move(seat, {
             instanceId: inst.instanceId,
@@ -131,19 +138,12 @@ export function havreSacBanishEvents(ctx: RulesCtx): StateBasedDestruction {
             to: { zone: "monde" },
             position: { at: "any" },
             visibility: { faceDown: false, visibleTo: "all" },
-            preservesIdentity: true, // 501.5 : conserve PV/XP/Niveau (Héros/Allié)
+            preservesIdentity: true, // 501.5 : conserve PV/XP/Niveau/compteurs
             orientationOnArrival: inst.orientation ?? "upright",
           }),
         );
         log.push(
-          `${card?.name ?? "Une créature"} est expulsé(e) au Monde (Havre-Sac banni, 410.7).`,
-        );
-      } else {
-        // Salles (et autres cartes de l'intérieur) : détruites.
-        events.push(discard(inst.owner, inst.instanceId, inst.location));
-        destroyed.push(inst.instanceId);
-        log.push(
-          `${card?.name ?? "Une Salle"} est détruite (Havre-Sac banni, 410.7).`,
+          `${card?.name ?? "Une carte"} est expulsée au Monde (Havre-Sac banni, 410.7).`,
         );
       }
     }

@@ -18,6 +18,8 @@ export interface CardCounters {
    *  effectiveForce pour que le combat serveur intègre les effets manuels. */
   force?: number;
   tokens?: Record<string, number>; // jetons génériques nommés
+  /** Compteur générique incrémentable posé à la main, persistant entre les tours. */
+  custom?: number;
   combatState?: "attacking" | "blocking" | null; // état de combat explicite (overlay attaquant / bloquant)
   combatTargetId?: string | null; // ID de la carte ciblée par l'attaquant / bloquant
   rotation?: number; // angle de rotation personnalisé en degrés (tilt multi-niveaux)

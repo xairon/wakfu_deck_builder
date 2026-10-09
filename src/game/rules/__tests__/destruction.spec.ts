@@ -1,10 +1,10 @@
-﻿/**
+/**
  * Lot B — destructions d'état (1414 / 3019) : `stateBasedDestroyEvents`
  * (une passe pure) + point fixe (cascade d'auras), XP à l'adversaire du
  * contrôleur (415.1), et garde « Force inconnue » des données scrapées.
  */
 import { describe, expect, it } from "vitest";
-import type { AllyCard, StaticAbility } from "@/types/cards";
+import type { AllyCard, Card, StaticAbility } from "@/types/cards";
 import { havreSacBanishEvents, stateBasedDestroyEvents } from "@/game/rules";
 import { incCounter, move, setCounter } from "@/game";
 import { createMockAllyCard } from "tests/factories/card";
@@ -186,5 +186,85 @@ describe("rules/destruction — Havre-Sac banni à 0 Résistance (410.7)", () =>
     // 410.7 : « les cartes Allié ou Héros … sont expulsées dans le Monde » (≠ Salle détruite).
     expect(st.instances[allyId].location.zone).toBe("monde");
     expect(hsb.destroyed).not.toContain(allyId);
+  });
+
+  it("expulse les cartes du Havre-Sac au Monde dans le même état (incliné ou redressé)", () => {
+    const allyTapped = makeAlly("interior-tapped", { niveau: 1, element: "Feu", force: 2 });
+    const allyUpright = makeAlly("interior-upright", { niveau: 1, element: "Terre", force: 2 });
+    const f = fixture([allyTapped, allyUpright]);
+    const tappedId = instId("A", 0);
+    const uprightId = instId("A", 1);
+
+    // Placer un allié incliné et un allié redressé dans le Havre-Sac
+    dispatch(
+      f,
+      move("A", {
+        instanceId: tappedId,
+        from: ctxOf(f).state.instances[tappedId].location,
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true,
+        orientationOnArrival: "tapped",
+      }),
+      move("A", {
+        instanceId: uprightId,
+        from: ctxOf(f).state.instances[uprightId].location,
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true,
+        orientationOnArrival: "upright",
+      }),
+    );
+
+    expect(ctxOf(f).state.instances[tappedId].orientation).toBe("tapped");
+    expect(ctxOf(f).state.instances[uprightId].orientation).toBe("upright");
+
+    dispatch(f, setCounter("A", SAC_A, "resistance", 0));
+    const hsb = havreSacBanishEvents(ctxOf(f));
+    dispatch(f, ...hsb.events);
+    const st = ctxOf(f).state;
+
+    // Doivent être dans le Monde en conservant leur orientation respective
+    expect(st.instances[tappedId].location.zone).toBe("monde");
+    expect(st.instances[tappedId].orientation).toBe("tapped");
+    expect(st.instances[uprightId].location.zone).toBe("monde");
+    expect(st.instances[uprightId].orientation).toBe("upright");
+  });
+
+  it("envoie les cartes Salle au cimetière (défausse) quand le Havre-Sac a 0 Résistance", () => {
+    const salle = {
+      ...makeAlly("salle-de-garde", { niveau: 0 }),
+      mainType: "Salle",
+      stats: { niveau: { value: 0, element: "Neutre" } },
+    } as unknown as Card;
+    const f = fixture([salle]);
+    const salleId = instId("A", 0);
+
+    // Placer la Salle dans le Havre-Sac
+    dispatch(
+      f,
+      move("A", {
+        instanceId: salleId,
+        from: ctxOf(f).state.instances[salleId].location,
+        to: { zone: "havreSac", owner: "A" },
+        position: { at: "any" },
+        visibility: { faceDown: false, visibleTo: "all" },
+        preservesIdentity: true,
+        orientationOnArrival: "upright",
+      }),
+    );
+
+    dispatch(f, setCounter("A", SAC_A, "resistance", 0));
+    const hsb = havreSacBanishEvents(ctxOf(f));
+    expect(hsb.destroyed).toContain(salleId);
+    dispatch(f, ...hsb.events);
+
+    const st = ctxOf(f).state;
+    // La Salle doit être dans la défausse (cimetière) et non dans le Monde
+    expect(st.instances[salleId].location.zone).toBe("defausse");
+    expect(st.instances[salleId].location).toEqual({ zone: "defausse", owner: "A" });
+    expect(st.seats.A!.defausse).toContain(salleId);
   });
 });

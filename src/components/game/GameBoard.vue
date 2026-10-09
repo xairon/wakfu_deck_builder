@@ -1458,6 +1458,22 @@
           </template>
           <!-- CADRE — effets « ±N Force » joués à la main : compteur nommé
                « force », public et LU PAR LE COMBAT SERVEUR (effectiveForce). -->
+          <button
+            class="gbtn gbtn--counter"
+            data-testid="bump-custom-up"
+            title="Ajouter un compteur (+1)"
+            @click="bumpCustomCounter(1)"
+          >
+            + Ctr
+          </button>
+          <button
+            class="gbtn gbtn--counter"
+            data-testid="bump-custom-down"
+            title="Retirer un compteur (−1)"
+            @click="bumpCustomCounter(-1)"
+          >
+            − Ctr
+          </button>
           <template v-if="store.manualTable">
             <button
               class="gbtn gbtn--counter"
@@ -2017,10 +2033,11 @@
               @click="selectDraftTokenCard(card)"
             >
               <img
-                :src="getThumbPath(card.id)"
+                :src="getCardThumbPath(card)"
                 :alt="card.name"
                 class="gtokendialog__draft-thumb"
                 loading="lazy"
+                @error="onTokenImgError"
               />
               <span class="gtokendialog__draft-name">{{ card.name }}</span>
               <span
@@ -2173,7 +2190,7 @@ import CardZoomModal from "@/components/card/CardZoomModal.vue";
 
 import { recetteOf } from "@/game/rules";
 import { chifumiActingSeat } from "@/game/ai/botPolicy";
-import { getThumbPath } from "@/utils/imagePaths";
+import { getThumbPath, getCardThumbPath } from "@/utils/imagePaths";
 import { elementColor } from "@/config/elementColors";
 import { useBoardDnd } from "@/composables/useBoardDnd";
 import { useAccessibility } from "@/composables/useAccessibility";
@@ -2577,6 +2594,15 @@ function selectDraftTokenCard(card: Card): void {
 
 function clearDraftTokenSelection(): void {
   selectedDraftCard.value = null;
+}
+
+function onTokenImgError(e: Event): void {
+  const img = e.target as HTMLImageElement;
+  if (img.src.includes("/thumbs/")) {
+    img.src = img.src.replace("/thumbs/", "/");
+  } else if (!img.src.endsWith("/images/card-back.webp")) {
+    img.src = "/images/card-back.webp";
+  }
 }
 
 function submitToken(): void {
@@ -3655,6 +3681,13 @@ function bumpSelectedResistance(delta: number): void {
 function bumpForce(delta: number): void {
   if (selectedInst.value)
     store.adjustCounter(selectedInst.value.instanceId, "force", delta);
+  selectedId.value = null;
+}
+
+// Compteur incrémentable générique persistant sur n'importe quelle carte.
+function bumpCustomCounter(delta: number): void {
+  if (selectedInst.value)
+    store.adjustCounter(selectedInst.value.instanceId, "custom", delta);
   selectedId.value = null;
 }
 

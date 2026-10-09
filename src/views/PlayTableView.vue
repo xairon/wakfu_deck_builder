@@ -2438,22 +2438,35 @@ const resumable = ref<{
 } | null>(null);
 
 /** Reprend la partie en cours détectée (reconnexion + reconstruction du plateau). */
-function resumeGame(): void {
+async function resumeGame(): Promise<void> {
   const g = resumable.value;
   if (!g) return;
   resumable.value = null;
-  const user = authStore.user;
-  const myName =
-    pseudonym.value ||
-    user?.displayName ||
-    generateRandomFallback(user?.id);
-  store.connectOnline(
-    g.gameId,
-    g.seat,
-    onlineTransport,
-    onlineDeck.value,
-    myName,
-  );
+  onlineBusy.value = true;
+  createdCode.value = ""; // Ne pas afficher l'écran d'attente d'hébergement lors d'une reprise
+  try {
+    const user = authStore.user;
+    const myName =
+      pseudonym.value ||
+      user?.displayName ||
+      generateRandomFallback(user?.id);
+    store.connectOnline(
+      g.gameId,
+      g.seat,
+      onlineTransport,
+      onlineDeck.value,
+      myName,
+    );
+    // On bascule la phase de match vers playing immédiatement pour afficher le plateau
+    store.matchPhase = "playing";
+    await store.resyncOnline();
+  } catch (e) {
+    store.disconnectOnline();
+    onlineError.value = await fnErrorMessage(e);
+    toast.error(`Impossible de reprendre la partie : ${onlineError.value}`);
+  } finally {
+    onlineBusy.value = false;
+  }
 }
 
 /** Abandonne la partie en cours détectée (forfait serveur) sans s'y reconnecter. */
@@ -2707,9 +2720,13 @@ async function spectateHostedLobby(lobby: HostedLobbyInfo): Promise<void> {
 }
 
 // En ligne : tant que la mise en place (GAME_STARTED) n'est pas arrivée, écran
-// d'attente avec le code de salon (l'hôte le partage à l'adversaire).
+// d'attente avec le code de salon (l'hôte qui attend un adversaire).
 const onlineWaiting = computed(
-  () => store.online && store.state.monde.length === 0,
+  () =>
+    store.online &&
+    !store.isSpectator &&
+    Boolean(createdCode.value) &&
+    store.state.monde.length === 0,
 );
 
 // Adversaire absent en pleine partie : on affiche le bandeau de grâce. Une fois

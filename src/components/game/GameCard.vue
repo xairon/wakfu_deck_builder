@@ -84,6 +84,14 @@
     >
       🛡{{ resistance }}
     </span>
+    <span
+      v-if="customCounter"
+      :key="`custom-${customCounter}`"
+      class="game-card__badge game-card__badge--custom"
+      title="Compteurs"
+    >
+      {{ customCounter }}
+    </span>
 
     <!-- ── Overlay de combat (Attaquant / Bloquant semi-transparent) ── -->
     <div
@@ -223,6 +231,7 @@ const resistance = computed(() => {
 });
 /** Force EFFECTIVE (auras, Vrombyx, jetons) — pas le jeton forceMod brut. */
 const force = computed(() => game.effectiveForceOf(props.instance.instanceId));
+const customCounter = computed(() => props.instance.counters.custom || 0);
 
 const label = computed(() => props.card?.name ?? "Carte");
 const spine = computed(() => elementColor(props.card?.stats?.niveau?.element));
@@ -290,6 +299,7 @@ const ariaLabel = computed(() => {
   const parts = [label.value];
   if (tapped.value) parts.push("inclinée");
   if (damage.value) parts.push(`${damage.value} dommage(s)`);
+  if (customCounter.value) parts.push(`${customCounter.value} compteur(s)`);
   if (combatRole.value) parts.push(combatRole.value);
   if (willDie.value) parts.push("sera détruite si le combat est résolu");
   return parts.join(", ");
@@ -455,6 +465,14 @@ const ariaLabel = computed(() => {
   color: #fff;
   font-size: 0.65rem;
   letter-spacing: 0.5px;
+}
+.game-card__badge--custom {
+  top: 26px;
+  right: 3px;
+  background: linear-gradient(180deg, #0ea5e9, #0284c7);
+  border: 1px solid #38bdf8;
+  color: #fff;
+  font-size: 0.75rem;
 }
 
 /* ── Overlays de combat (Attaquant / Bloquant) ── */
