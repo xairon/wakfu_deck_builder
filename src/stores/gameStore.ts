@@ -117,6 +117,7 @@ import {
   getTokenCard,
   ensureTokenCard,
   tokenCardId,
+  isTokenCardId,
 } from "@/game/rules/effects/tokens";
 
 function rndSeed(): string {
@@ -1467,17 +1468,17 @@ export const useGameStore = defineStore("game", () => {
       }
     }
     const inst = state.value?.instances?.[instanceId];
-    const cardId = inst?.cardId ?? null;
+    const cardId = inst?.cardId ?? (isTokenCardId(instanceId) ? instanceId : null);
     if (cardId) {
-      return (
-        cardStore.cards.find(
-          (c) =>
-            String(c.id) === String(cardId) ||
-            String((c as any).code) === String(cardId),
-        ) ?? null
+      const found = cardStore.cards.find(
+        (c) =>
+          String(c.id) === String(cardId) ||
+          String((c as any).code) === String(cardId),
       );
+      if (found) return found;
+      return getTokenCard(cardId);
     }
-    return null;
+    return isTokenCardId(instanceId) ? getTokenCard(instanceId) : null;
   }
 
   // ── Cycle de match ───────────────────────────────────────────────────────

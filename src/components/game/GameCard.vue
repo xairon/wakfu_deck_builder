@@ -130,6 +130,7 @@ import { elementColor } from "@/config/elementColors";
 import { useCardPreview } from "@/composables/useCardPreview";
 import { useBoardDnd } from "@/composables/useBoardDnd";
 import { useGameStore } from "@/stores/gameStore";
+import { getTokenCard, isTokenCardId } from "@/game";
 
 const props = defineProps<{
   instance: RedactedInstance;
@@ -282,10 +283,21 @@ const willDie = computed(
   () => game.combatPreview?.lethal.includes(props.instance.instanceId) ?? false,
 );
 
+const tokenCard = computed(() => {
+  if (props.card && isTokenCardId(props.card.id)) return props.card;
+  const id = props.instance.cardId;
+  if (isTokenCardId(id)) return getTokenCard(id);
+  const instId = props.instance.instanceId;
+  if (isTokenCardId(instId)) return getTokenCard(instId);
+  return null;
+});
+
 const imgSrc = computed(() => {
   if (hidden.value) return "/images/card-back.webp";
   if (props.card?.imageUrl) return props.card.imageUrl;
+  if (tokenCard.value?.imageUrl) return tokenCard.value.imageUrl;
   const id = props.instance.cardId as string;
+  if (!id) return "/images/card-back.webp";
   const isHero = props.card?.mainType === "Héros";
   const cleanId = id.replace(/_(recto|verso)$/, "");
   const base = isHero

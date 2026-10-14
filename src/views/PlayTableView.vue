@@ -158,15 +158,9 @@
               Prenez le contrôle des deux joueurs en local pour tester vos decks, vos combos et vos stratégies librement.
             </p>
           </div>
-          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
-            <label class="label cursor-pointer justify-start gap-2 p-0">
-              <input
-                v-model="customCardsAllowed.solo"
-                type="checkbox"
-                class="checkbox checkbox-xs checkbox-accent"
-              />
-              <span class="label-text text-xs">Autoriser les Custom Cards</span>
-            </label>
+          <div class="mt-4 pt-3 border-t border-base-content/10 flex items-center justify-between text-xs text-base-content/60">
+            <span>Mode Sandbox local</span>
+            <span class="badge badge-ghost badge-xs">Customs autorisées</span>
           </div>
         </div>
 
@@ -214,33 +208,25 @@
               Partie guidée pas à pas contre l'ordinateur avec les decks officiels d'Incarnam entièrement automatisés.
             </p>
           </div>
-          <div class="mt-4 pt-3 border-t border-base-content/10" @click.stop>
-            <label class="label cursor-pointer justify-start gap-2 p-0">
-              <input
-                v-model="customCardsAllowed.tutorial"
-                type="checkbox"
-                class="checkbox checkbox-xs checkbox-secondary"
-              />
-              <span class="label-text text-xs">Autoriser les Custom Cards</span>
-            </label>
+          <div class="mt-4 pt-3 border-t border-base-content/10 flex items-center justify-between text-xs text-base-content/60">
+            <span>Apprentissage interactif</span>
+            <span class="badge badge-ghost badge-xs">Customs autorisées</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Apprendre en jouant (partie guidée-puis-libre contre l'IA locale) -->
-    <section v-if="selectedGameMode === 'tutorial'" class="border border-secondary/30 bg-secondary/[0.04] p-5 rounded-xl">
+    <section v-if="selectedGameMode === 'tutorial'" class="border border-secondary/30 bg-secondary/[0.04] p-5 rounded-xl space-y-3">
       <div>
         <p class="eyebrow text-secondary">Apprendre en jouant</p>
-        <p class="mt-1 text-sm text-base-content/65">
-          Une partie complète contre l'ordinateur, guidée pas à pas au début
-          (mulligan, jouer, attaquer, défendre) puis libre.
-          <span class="font-semibold text-base-content/80"
-            >Ici, tout est automatisé pour toi : coûts, combat, victoire — et
-            les effets des cartes.</span
-          >
-          C'est pourquoi seuls les decks starter d'Incarnam sont proposés : ce
-          sont les seuls dont chaque effet est programmé.
+        <p class="mt-1 text-sm text-base-content/80">
+          Une partie complète contre l'ordinateur qui <strong>guide et automatise toutes tes premières actions</strong>
+          (mulligan, première pose d'Allié, gestion des Ressources et attaques).
+        </p>
+        <p class="mt-2 text-xs text-base-content/70">
+          <span class="font-semibold text-secondary">À noter :</span> Dans ce mode tutoriel, les coûts, le combat, la victoire et les effets des cartes Incarnam sont entièrement automatisés pour faciliter l'apprentissage. 
+          <strong>En revanche, les autres modes de jeu (Seul contre soi-même, 1v1 En Ligne, 2v2) ne sont pas automatisés de la même manière</strong> : ils se jouent comme sur une vraie table de jeu avec gestion manuelle et libre des effets et des règles du TCG Wakfu.
         </p>
       </div>
       <div class="mt-4 flex flex-wrap items-end gap-4">
@@ -1207,22 +1193,21 @@
         <div class="overlay__card overlay__card--wide">
           <p class="eyebrow text-primary">Apprendre en jouant</p>
           <h2 class="mt-2 font-display text-3xl">Une vraie partie, guidée</h2>
-          <div class="welcome-body">
+          <div class="welcome-body space-y-3">
             <p>
-              <strong>But :</strong> réduire les PV du Héros adverse à 0, ou
-              faire monter ton Héros au Niveau 3 (18 XP). Tu joues en bas ; le
-              premier joueur est tiré au sort.
+              <strong>Bienvenue dans le tutoriel d'apprentissage !</strong> Toutes tes premières actions sont guidées et automatisées pas à pas : le choix de garder ou refaire ta main de départ (mulligan), le paiement automatique des Ressources pour poser tes cartes, la résolution des effets, ainsi que les règles de combat et de victoire.
             </p>
             <p>
-              <strong>Tout est automatisé pour toi</strong> — coûts en
-              Ressources, combat, victoire et effets des cartes. Un encart en
-              haut du plateau (l'assistant de règles) te dit à tout moment ce
-              que tu peux faire et pourquoi un coup est refusé.
+              <strong>Objectif :</strong> Réduire les PV du Héros adverse à 0, ou faire monter ton Héros au Niveau 3 (18 XP). Tu joues toujours le camp du bas.
             </p>
-            <p>
-              On commence par ta <strong>main de départ</strong> : garde-la, ou
-              refais-la (une carte de moins). Ensuite, à toi de jouer —
-              librement.
+            <div class="p-3 rounded-lg bg-base-200/80 border border-primary/30 text-xs">
+              <span class="font-bold text-primary">⚠️ Fonctionnement des autres modes :</span>
+              <p class="mt-1 text-base-content/75">
+                Seul ce <strong>Tutoriel d'Apprentissage</strong> dispose d'une automatisation complète des effets. Les autres modes de jeu (<em>Seul contre soi-même</em>, <em>1v1 En Ligne</em> et <em>2v2 En Équipe</em>) se jouent comme une véritable table de jeu en direct où les effets des cartes et les compteurs se gèrent manuellement par les joueurs.
+              </p>
+            </div>
+            <p class="text-xs text-base-content/70">
+              L'assistant de règles en haut de l'écran t'indiquera en temps réel les actions possibles et les conseils pour chaque phase.
             </p>
           </div>
           <button
@@ -1689,7 +1674,7 @@ const customCardsAllowed = ref<{
   solo: true,
   online1v1: true,
   multi2v2: true,
-  tutorial: false,
+  tutorial: true,
 });
 
 watch(
@@ -1697,9 +1682,10 @@ watch(
     customCardsAllowed.value.solo,
     customCardsAllowed.value.online1v1,
     customCardsAllowed.value.multi2v2,
+    customCardsAllowed.value.tutorial,
   ],
-  ([soloAllowed, onlineAllowed, multiAllowed]) => {
-    if ((soloAllowed || onlineAllowed || multiAllowed) && cardStore.customCards.length === 0) {
+  ([soloAllowed, onlineAllowed, multiAllowed, tutorialAllowed]) => {
+    if ((soloAllowed || onlineAllowed || multiAllowed || tutorialAllowed) && cardStore.customCards.length === 0) {
       void cardStore.loadCustomCards();
     }
   },
@@ -3252,18 +3238,18 @@ watch(
 );
 
 watch(
-  () => store.matchPhase,
-  (phase) => {
+  () => [store.matchPhase, store.events.length],
+  ([phase]) => {
     if (phase === "finished") {
       unpublishLobby?.();
       unpublishLobby = null;
     } else if (phase === "playing" || phase === "mulligan") {
       // Si on héberge un salon (1v1 ou 2v2), mettre à jour la publication en cours
-      if (store.online && !store.isSpectator && unpublishLobby) {
+      if (store.online && !store.isSpectator) {
         const is2v2 = store.mode === "2v2";
         const code = is2v2 ? (active2v2Lobby.value?.code ?? "") : createdCode.value;
         const myName = pseudonym.value || authStore.user?.displayName || "Hôte";
-        if (code) {
+        if (code && (unpublishLobby || createdCode.value || is2v2)) {
           unpublishLobby?.();
           unpublishLobby = publishHostedLobby({
             code,

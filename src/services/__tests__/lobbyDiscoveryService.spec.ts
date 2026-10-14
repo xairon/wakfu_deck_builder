@@ -137,4 +137,52 @@ describe("lobbyDiscoveryService", () => {
     expect(discovered.map((l) => l.code)).toEqual(["ROOM-WAIT", "ROOM-LIVE"]);
     expect(discovered.find((l) => l.code === "ROOM-LIVE")?.status).toBe("started");
   });
+
+  it("détecte les parties en cours depuis la base (fetchHostedLobbiesFromDb) pour le mode spectateur", async () => {
+    const mockGames = [
+      {
+        id: "game-uuid-1",
+        code: "LIVE99",
+        status: "active",
+        seat_a: "user-1",
+        seat_b: "user-2",
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: "game-uuid-2",
+        code: "WAIT88",
+        status: "lobby",
+        seat_a: "user-3",
+        seat_b: null,
+        created_at: new Date().toISOString(),
+      },
+    ];
+
+    const selectBuilder: any = {
+      select: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+      gt: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue({ data: mockGames, error: null }),
+    };
+
+    supabaseStub = {
+      from: vi.fn().mockReturnValue(selectBuilder),
+    };
+
+    const lobbies = await fetchHostedLobbiesFromDb();
+    expect(supabaseStub.from).toHaveBeenCalledWith("games");
+    expect(lobbies.length).toBe(2);
+
+    const liveGame = lobbies.find((l) => l.code === "LIVE99");
+    expect(liveGame).toBeDefined();
+    expect(liveGame?.status).toBe("started");
+    expect(liveGame?.currentPlayers).toBe(2);
+    expect(liveGame?.gameId).toBe("game-uuid-1");
+
+    const waitGame = lobbies.find((l) => l.code === "WAIT88");
+    expect(waitGame).toBeDefined();
+    expect(waitGame?.status).toBe("waiting");
+    expect(waitGame?.currentPlayers).toBe(1);
+  });
 });

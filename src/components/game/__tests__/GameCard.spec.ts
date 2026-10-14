@@ -80,4 +80,21 @@ describe("GameCard — badges & interactions", () => {
     // toggleTap appelé sur l'instance de test
     expect(w.emitted()).toBeDefined();
   });
+
+  it("devrait afficher l'image du jeton plutôt qu'un dos de carte quand un jeton est en jeu", () => {
+    const tokenCardId = "__token__:Pyro:1:Feu:";
+    const w = mount(GameCard, {
+      props: {
+        instance: {
+          ...baseInstance(),
+          cardId: tokenCardId,
+        },
+        card: null,
+      },
+    });
+    expect(w.find(".game-card__img").attributes("src")).toBe(
+      "/images/cards/pyro-draft.webp",
+    );
+  });
 });
+

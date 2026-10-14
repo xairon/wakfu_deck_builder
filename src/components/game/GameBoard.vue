@@ -2240,7 +2240,7 @@ function resolveCard(cardId: string | null): Card | null {
       }
     }
   }
-  return null;
+  return store.resolveInstanceCard(cardId);
 }
 
 onMounted(() => {

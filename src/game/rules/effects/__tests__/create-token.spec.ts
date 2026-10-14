@@ -194,6 +194,12 @@ describe("registre de jetons", () => {
 
     const neutro = ensureTokenCard({ name: "Neutro", force: 1, element: "Neutre" });
     expect(neutro.imageUrl).toBe("/images/cards/neutro-draft.webp");
+
+    const arakne = ensureTokenCard({ name: "Monstre - Arakne", force: 1, element: "Terre", sub: "Arakne" });
+    expect(arakne.imageUrl).toBe("/images/cards/arakne-incarnam.webp");
+
+    const vampyre = ensureTokenCard({ name: "Monstre - Vampyre", force: 1, sub: "Vampyre" });
+    expect(vampyre.imageUrl).toBe("/images/cards/chauve-souris-vampyre-incarnam.webp");
   });
 
   it("idempotent : même gabarit → MÊME entrée (cardId déterministe)", () => {

@@ -55,3 +55,11 @@ export {
 export { buildInitialLayout, setupEvents, createGame } from "./engine/setup";
 export { nextTurnEvents, turnEndDestroyEvents } from "./engine/turn";
 export { resolveIntent, type IntentResult } from "./actions/resolveIntent";
+export {
+  isTokenCardId,
+  ensureTokenCard,
+  getTokenCard,
+  tokenCardId,
+  parseTokenCardId,
+  defaultTokenImageUrl,
+} from "./rules/effects/tokens";

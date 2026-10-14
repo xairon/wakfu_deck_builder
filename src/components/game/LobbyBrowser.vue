@@ -32,10 +32,20 @@ async function refresh() {
     const dbLobbies = await fetchHostedLobbiesFromDb();
     if (dbLobbies.length > 0) {
       // Fusionner avec les lobbies Realtime existants
-      const existingCodes = new Set(lobbies.value.map((l) => l.code));
+      const map = new Map(lobbies.value.map((l) => [l.code, l]));
       for (const d of dbLobbies) {
-        if (!existingCodes.has(d.code)) {
+        const existing = map.get(d.code);
+        if (existing) {
+          if (d.status === "started" && existing.status !== "started") {
+            existing.status = "started";
+            existing.currentPlayers = Math.max(existing.currentPlayers, 2);
+          }
+          if (d.gameId && !existing.gameId) {
+            existing.gameId = d.gameId;
+          }
+        } else {
           lobbies.value.push(d);
+          map.set(d.code, d);
         }
       }
     }

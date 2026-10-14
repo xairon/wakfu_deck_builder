@@ -98,7 +98,69 @@ export function defaultTokenImageUrl(name: string, element?: string): string {
   if (norm === "neutro" || (norm.includes("neutro") && el === "Neutre")) {
     return "/images/cards/neutro-draft.webp";
   }
-  return "";
+
+  // Jetons de monstres / créatures fréquents (Abraknyde, Vampyro, etc.)
+  if (norm.includes("arakne")) {
+    return "/images/cards/arakne-incarnam.webp";
+  }
+  if (norm.includes("vampyr")) {
+    return "/images/cards/chauve-souris-vampyre-incarnam.webp";
+  }
+  if (norm.includes("bouftou")) {
+    return "/images/cards/bouftou-incarnam.webp";
+  }
+  if (norm.includes("tofu")) {
+    return "/images/cards/tofu-incarnam.webp";
+  }
+  if (norm.includes("chafer")) {
+    return "/images/cards/chafer-incarnam.webp";
+  }
+  if (norm.includes("craqueleur")) {
+    return "/images/cards/craqueleur-incarnam.webp";
+  }
+  if (norm.includes("corbac")) {
+    return "/images/cards/corbac-incarnam.webp";
+  }
+  if (norm.includes("larve")) {
+    return "/images/cards/larve-verte-incarnam.webp";
+  }
+  if (norm.includes("prespic")) {
+    return "/images/cards/prespic-incarnam.webp";
+  }
+  if (norm.includes("bwork")) {
+    return "/images/cards/bwork-incarnam.webp";
+  }
+  if (norm.includes("gobelin")) {
+    return "/images/cards/gobelinet-incarnam.webp";
+  }
+  if (norm.includes("piou")) {
+    return "/images/cards/piou-incarnam.webp";
+  }
+  if (norm.includes("wabbit") || norm.includes("lapin")) {
+    return "/images/cards/wabbit-incarnam.webp";
+  }
+  if (norm.includes("flaqueux")) {
+    return "/images/cards/flaqueux-incarnam.webp";
+  }
+  if (norm.includes("aiguille")) {
+    return "/images/cards/aiguille-chercheuse-amakna.webp";
+  }
+  if (norm.includes("coffre")) {
+    return "/images/cards/coffre-malveillant-incarnam.webp";
+  }
+  if (norm.includes("epee") || norm.includes("épée")) {
+    return "/images/cards/epee-volante-amakna.webp";
+  }
+  if (norm.includes("dragonnet")) {
+    return "/images/cards/invocation-de-dragonnet-otomai.webp";
+  }
+
+  // Repli intelligent par élément si aucun monstre spécifique n'est reconnu
+  if (el === "Feu") return "/images/cards/pyro-draft.webp";
+  if (el === "Air") return "/images/cards/aero-draft.webp";
+  if (el === "Terre") return "/images/cards/terra-draft.webp";
+  if (el === "Eau") return "/images/cards/akwa-draft.webp";
+  return "/images/cards/neutro-draft.webp";
 }
 
 /**

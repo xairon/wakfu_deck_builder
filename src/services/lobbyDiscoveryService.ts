@@ -107,10 +107,47 @@ export function subscribeToHostedLobbies(
 
 /**
  * Récupère les salons hébergés depuis la base de données.
- * La découverte en temps réel des salons ouverts repose sur le canal Realtime Presence
- * `lobbies:discovery` (via `subscribeToHostedLobbies`). La RPC `list_open_games` n'étant
- * pas déployée sur la base distante, on évite tout appel réseau 404.
+ * Interroge directement la table `games` pour trouver les parties en attente ('lobby')
+ * ou en cours ('active') créées récemment, ce qui permet aux spectateurs de détecter
+ * immédiatement les parties en ligne même sans synchronisation Realtime préalable.
  */
 export async function fetchHostedLobbiesFromDb(): Promise<HostedLobbyInfo[]> {
-  return [];
+  if (!supabase) return [];
+  const c = client();
+  try {
+    const twoHoursAgo = new Date(Date.now() - 2 * 3600 * 1000).toISOString();
+    const { data, error } = await c
+      .from("games")
+      .select("id, code, status, seat_a, seat_b, created_at")
+      .in("status", ["lobby", "active"])
+      .gt("created_at", twoHoursAgo)
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (error || !data) return [];
+
+    return (data as Array<{
+      id: string;
+      code: string;
+      status: string;
+      seat_a: string | null;
+      seat_b: string | null;
+      created_at: string;
+    }>).map((row) => {
+      const isStarted = row.status === "active" || Boolean(row.seat_b);
+      return {
+        code: row.code,
+        gameId: row.id,
+        hostName: "Joueur",
+        hostUserId: row.seat_a ?? undefined,
+        mode: "1v1",
+        currentPlayers: isStarted ? 2 : 1,
+        maxPlayers: 2,
+        createdAt: new Date(row.created_at).getTime(),
+        status: isStarted ? "started" : "waiting",
+      };
+    });
+  } catch {
+    return [];
+  }
 }
