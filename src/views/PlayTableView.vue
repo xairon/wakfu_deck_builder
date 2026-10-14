@@ -1094,6 +1094,9 @@
          mode d'apprentissage (plus de coach à étapes forcées). -->
     <RuleAssistant />
 
+    <!-- Objectifs et guide pas à pas du Tutoriel d'Apprentissage -->
+    <TutorialObjectiveBar />
+
     <!-- Sons de table (repères discrets — pioche, pose, combat, fin de partie).
          Sans rendu ; coupable via le bouton « Son » du bandeau. -->
     <GameSoundLayer />
@@ -1182,8 +1185,7 @@
     <ManualEffectReminders />
     <InGameChat v-if="store.matchPhase !== 'lobby'" />
 
-    <!-- Accueil « Apprendre en jouant » : but + fonctionnement, une seule fois au
-         démarrage — affiché AU-DESSUS du mulligan, qu'il révèle en se fermant. -->
+    <!-- Accueil « Apprendre en jouant » : début didactique et immersif du tutoriel -->
     <Transition name="ovl">
       <div
         v-if="tutorial.welcomeVisible"
@@ -1191,31 +1193,43 @@
         data-testid="tutorial-welcome"
       >
         <div class="overlay__card overlay__card--wide">
-          <p class="eyebrow text-primary">Apprendre en jouant</p>
-          <h2 class="mt-2 font-display text-3xl">Une vraie partie, guidée</h2>
-          <div class="welcome-body space-y-3">
+          <p class="eyebrow text-primary">Tutoriel d'Apprentissage — Wakfu TCG</p>
+          <h2 class="mt-2 font-display text-3xl">Bienvenue dans le Monde des Douze !</h2>
+          <div class="welcome-body space-y-3.5 text-sm">
             <p>
-              <strong>Bienvenue dans le tutoriel d'apprentissage !</strong> Toutes tes premières actions sont guidées et automatisées pas à pas : le choix de garder ou refaire ta main de départ (mulligan), le paiement automatique des Ressources pour poser tes cartes, la résolution des effets, ainsi que les règles de combat et de victoire.
+              Ce tutoriel va t'apprendre à jouer au jeu de cartes à collectionner <strong>Wakfu TCG</strong> au travers d'une véritable partie pas à pas. Chaque point important des règles te sera expliqué au fil de tes actions !
             </p>
-            <p>
-              <strong>Objectif :</strong> Réduire les PV du Héros adverse à 0, ou faire monter ton Héros au Niveau 3 (18 XP). Tu joues toujours le camp du bas.
-            </p>
-            <div class="p-3 rounded-lg bg-base-200/80 border border-primary/30 text-xs">
-              <span class="font-bold text-primary">⚠️ Fonctionnement des autres modes :</span>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div class="p-2.5 rounded-lg bg-base-200/90 border border-primary/20">
+                <span class="font-bold text-primary">👑 Deux conditions de Victoire :</span>
+                <p class="text-base-content/80 mt-1">
+                  • Terrasser le Héros adverse en amenant ses <strong>PV à 0</strong>.<br>
+                  • OU faire monter ton Héros au <strong>Niveau 3 (18 XP)</strong>.
+                </p>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-base-200/90 border border-secondary/20">
+                <span class="font-bold text-secondary">🎯 Déroulement guidé :</span>
+                <p class="text-base-content/80 mt-1">
+                  Une bannière en haut du plateau t'accompagnera avec une <strong>action demandée</strong> pour chaque règle clé (Mulligan, PA & Ressources, Mal d'invocation, Déplacement, Combat & Blocage).
+                </p>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-lg bg-base-200/80 border border-warning/30 text-xs">
+              <span class="font-bold text-warning">⚠️ Note sur les autres modes de jeu :</span>
               <p class="mt-1 text-base-content/75">
-                Seul ce <strong>Tutoriel d'Apprentissage</strong> dispose d'une automatisation complète des effets. Les autres modes de jeu (<em>Seul contre soi-même</em>, <em>1v1 En Ligne</em> et <em>2v2 En Équipe</em>) se jouent comme une véritable table de jeu en direct où les effets des cartes et les compteurs se gèrent manuellement par les joueurs.
+                Seul ce <strong>Tutoriel d'Apprentissage</strong> dispose d'un accompagnement guidé et d'une automatisation complète. Les autres modes (<em>Seul contre soi-même</em>, <em>1v1 En Ligne</em> et <em>2v2 En Équipe</em>) se jouent comme une véritable table de jeu physique où les joueurs gèrent librement leurs cartes et leurs effets.
               </p>
             </div>
-            <p class="text-xs text-base-content/70">
-              L'assistant de règles en haut de l'écran t'indiquera en temps réel les actions possibles et les conseils pour chaque phase.
-            </p>
           </div>
           <button
-            class="btn btn-primary mt-6"
+            class="btn btn-primary mt-6 w-full sm:w-auto px-8"
             data-testid="tutorial-welcome-start"
             @click="tutorial.dismissWelcome()"
           >
-            Commencer
+            Prêt ? Commencer le tutoriel ! 🚀
           </button>
         </div>
       </div>
@@ -1580,6 +1594,9 @@
 
     <!-- Fin de partie : animation plein écran Victoire / Défaite -->
     <VictoryDefeatOverlay />
+
+    <!-- Fin du tutoriel : bilan didactique et félicitations -->
+    <TutorialCompletionModal />
   </div>
 </template>
 
@@ -1604,6 +1621,8 @@ import EffectSpotlight from "@/components/game/EffectSpotlight.vue";
 import TurnBanner from "@/components/game/TurnBanner.vue";
 import EffectActivationBanner from "@/components/game/EffectActivationBanner.vue";
 import VictoryDefeatOverlay from "@/components/game/VictoryDefeatOverlay.vue";
+import TutorialObjectiveBar from "@/components/game/TutorialObjectiveBar.vue";
+import TutorialCompletionModal from "@/components/game/TutorialCompletionModal.vue";
 import RuleAssistant from "@/components/game/RuleAssistant.vue";
 import GameSoundLayer from "@/components/game/GameSoundLayer.vue";
 import { useGameSounds } from "@/composables/useGameSounds";
