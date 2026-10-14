@@ -756,6 +756,7 @@ describe("GameBoard — Création de jeton (F4)", () => {
     expect(wrapper.find('[data-testid="token-draft-aero"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="token-draft-pyro"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="token-draft-akwa"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="token-draft-neutro"]').exists()).toBe(true);
   });
 
   it("cliquer sur un jeton Draft pré-remplit le nom, la force et dérive l'élément implicitement", async () => {
@@ -805,6 +806,39 @@ describe("GameBoard — Création de jeton (F4)", () => {
       name: "Pyro",
       force: 1,
       element: "Feu",
+    });
+  });
+
+  it("cliquer sur le jeton Neutro pré-remplit le nom Neutro et l'élément Neutre", async () => {
+    const store = useGameStore();
+    store.startSandbox(createMockDeck(), createMockDeck());
+    const createSpy = vi.spyOn(store, "createManualToken").mockReturnValue(true);
+
+    const wrapper = mount(GameBoard, {
+      global: { stubs: { CardZoomModal: true } },
+    });
+
+    await wrapper.find('[data-testid="action-more-menu"]').trigger("click");
+    await flushPromises();
+    await wrapper.find('[data-testid="action-create-token"]').trigger("click");
+    await flushPromises();
+
+    // Sélectionner Neutro
+    await wrapper.find('[data-testid="token-draft-neutro"]').trigger("click");
+    await flushPromises();
+
+    const thumbImg = wrapper.find('[data-testid="token-draft-neutro"] img');
+    expect(thumbImg.exists()).toBe(true);
+    expect(thumbImg.attributes("src")).toBe("/images/cards/thumbs/neutro-draft.webp");
+    expect(wrapper.text()).toContain("Neutre (implicite : Neutro)");
+
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+
+    expect(createSpy).toHaveBeenCalledWith({
+      name: "Neutro",
+      force: 1,
+      element: "Neutre",
     });
   });
 

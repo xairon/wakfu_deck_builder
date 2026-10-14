@@ -234,9 +234,28 @@ const statRows = computed(() => {
     rows.push({ label: "Élément", value: props.card.element });
   if (s?.force)
     rows.push({ label: "Force", value: `${s.force.value} ${s.force.element}` });
-  if (s?.pa !== undefined) rows.push({ label: "PA", value: String(s.pa) });
-  if (s?.pm !== undefined) rows.push({ label: "PM", value: String(s.pm) });
-  if (s?.pv !== undefined) rows.push({ label: "PV", value: String(s.pv) });
+  const isHero = props.card?.mainType === "Héros";
+  if (s?.pa !== undefined) {
+    const isBonus = !isHero;
+    rows.push({
+      label: isBonus ? "Bonus PA" : "PA",
+      value: isBonus && s.pa > 0 ? `+${s.pa}` : String(s.pa),
+    });
+  }
+  if (s?.pm !== undefined) {
+    const isBonus = !isHero;
+    rows.push({
+      label: isBonus ? "Bonus PM" : "PM",
+      value: isBonus && s.pm > 0 ? `+${s.pm}` : String(s.pm),
+    });
+  }
+  if (s?.pv !== undefined) {
+    const isBonus = !isHero;
+    rows.push({
+      label: isBonus ? "Bonus PV" : "PV",
+      value: isBonus && s.pv > 0 ? `+${s.pv}` : String(s.pv),
+    });
+  }
   return rows;
 });
 </script>

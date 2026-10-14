@@ -35,7 +35,7 @@ const groups: DeckGalleryGroup[] = [
           id: "c",
           name: "Carte C",
           mainType: "Action",
-          stats: { pa: 3, niveau: { value: 1, element: "Feu" } },
+          stats: { niveau: { value: 3, element: "Feu" } },
         } as Card,
       },
     ],

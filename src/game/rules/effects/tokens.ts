@@ -79,6 +79,28 @@ export function tokenCardId(spec: TokenSpec): string {
 // Registre process-wide : cardId synthétique → Card synthétique.
 const registry = new Map<string, Card>();
 
+/** URL d'image déduite pour un jeton connu (ex. jetons élémentaires Draft). */
+export function defaultTokenImageUrl(name: string, element?: string): string {
+  const norm = name.trim().toLowerCase();
+  const el = canonElement(element);
+  if (norm === "aero" || norm === "aéro" || (norm.includes("aero") && el === "Air")) {
+    return "/images/cards/aero-draft.webp";
+  }
+  if (norm === "pyro" || (norm.includes("pyro") && el === "Feu")) {
+    return "/images/cards/pyro-draft.webp";
+  }
+  if (norm === "terra" || (norm.includes("terra") && el === "Terre")) {
+    return "/images/cards/terra-draft.webp";
+  }
+  if (norm === "akwa" || (norm.includes("akwa") && el === "Eau")) {
+    return "/images/cards/akwa-draft.webp";
+  }
+  if (norm === "neutro" || (norm.includes("neutro") && el === "Neutre")) {
+    return "/images/cards/neutro-draft.webp";
+  }
+  return "";
+}
+
 /**
  * Construit (si absente) et renvoie la carte SYNTHÉTIQUE d'un gabarit de jeton.
  * mainType "Allié", subTypes ["Monstre", <Famille>] (« jeton "Monstre - X" »),
@@ -92,6 +114,7 @@ export function ensureTokenCard(spec: TokenSpec): Card {
   if (existing) return existing;
   const element = canonElement(spec.element);
   const subTypes = ["Monstre", ...(spec.sub ? [spec.sub] : [])];
+  const imageUrl = defaultTokenImageUrl(spec.name, element);
   const card: AllyCard = {
     id,
     name: spec.name,
@@ -104,7 +127,7 @@ export function ensureTokenCard(spec: TokenSpec): Card {
     keywords: [],
     artists: [],
     notes: [],
-    imageUrl: "",
+    imageUrl,
   } as AllyCard;
   registry.set(id, card);
   return card;

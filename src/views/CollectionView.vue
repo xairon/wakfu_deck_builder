@@ -389,21 +389,27 @@
                   </p>
                 </div>
                 <div v-if="displayedStats.pa">
-                  <p class="eyebrow">PA</p>
+                  <p class="eyebrow">
+                    {{ isSelectedCardHero ? "PA" : "Bonus PA" }}
+                  </p>
                   <p class="mt-1 font-mono text-2xl tabular">
-                    {{ displayedStats.pa }}
+                    {{ !isSelectedCardHero && displayedStats.pa > 0 ? `+${displayedStats.pa}` : displayedStats.pa }}
                   </p>
                 </div>
                 <div v-if="displayedStats.pm">
-                  <p class="eyebrow">PM</p>
+                  <p class="eyebrow">
+                    {{ isSelectedCardHero ? "PM" : "Bonus PM" }}
+                  </p>
                   <p class="mt-1 font-mono text-2xl tabular">
-                    {{ displayedStats.pm }}
+                    {{ !isSelectedCardHero && displayedStats.pm > 0 ? `+${displayedStats.pm}` : displayedStats.pm }}
                   </p>
                 </div>
                 <div v-if="displayedStats.pv">
-                  <p class="eyebrow">PV</p>
+                  <p class="eyebrow">
+                    {{ isSelectedCardHero ? "PV" : "Bonus PV" }}
+                  </p>
                   <p class="mt-1 font-mono text-2xl tabular">
-                    {{ displayedStats.pv }}
+                    {{ !isSelectedCardHero && displayedStats.pv > 0 ? `+${displayedStats.pv}` : displayedStats.pv }}
                   </p>
                 </div>
               </div>

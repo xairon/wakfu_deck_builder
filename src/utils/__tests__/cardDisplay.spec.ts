@@ -56,14 +56,26 @@ describe("cardDisplay — cardCost & cardPaLabel", () => {
     expect(cardCost(ally)).toBe(4);
   });
 
-  it("cardCost résout stats.pa en priorité si présent", () => {
+  it("cardCost résout stats.niveau en priorité même si stats.pa est présent (équipement donnant des PA)", () => {
+    // Un équipement comme le Gelano (Niveau 3, PA +1) coûte 3 PA à jouer, pas 1 PA
+    const equipment = createMockEquipmentCard({
+      stats: {
+        niveau: { value: 3, element: "Neutre" },
+        pa: 1,
+      },
+    });
+    expect(cardCost(equipment)).toBe(3);
+    expect(cardPaLabel(equipment)).toBe("3 PA · Neutre");
+  });
+
+  it("cardCost résout stats.pa en repli si niveau absent", () => {
     const card = createMockActionCard({
       stats: {
         pa: 6,
-        niveau: { value: 2, element: "Neutre" },
       },
     });
     expect(cardCost(card)).toBe(6);
+    expect(cardPaLabel(card)).toBe("6 PA · Neutre");
   });
 
   it("cardCost renvoie 0 si aucun coût n'est défini", () => {

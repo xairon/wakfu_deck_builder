@@ -1,4 +1,4 @@
-﻿/**
+/**
  * JETONS DE CRÉATURE — op `createToken` (« Mettez en jeu un jeton "Monstre - X"
  * de Force N [Élément] », Abraknyde / Vampyro).
  *
@@ -177,6 +177,23 @@ describe("registre de jetons", () => {
     expect(card.subTypes).toEqual(["Monstre", "Arakne"]);
     expect(card.name).toBe("Monstre - Arakne");
     expect(card.stats?.force).toEqual({ value: 1, element: "Terre" });
+  });
+
+  it("associe l'image appropriée aux jetons connus (Draft élémentaires et Neutre)", () => {
+    const pyro = ensureTokenCard({ name: "Pyro", force: 1, element: "Feu" });
+    expect(pyro.imageUrl).toBe("/images/cards/pyro-draft.webp");
+
+    const aero = ensureTokenCard({ name: "Aero", force: 1, element: "Air" });
+    expect(aero.imageUrl).toBe("/images/cards/aero-draft.webp");
+
+    const terra = ensureTokenCard({ name: "Terra", force: 1, element: "Terre" });
+    expect(terra.imageUrl).toBe("/images/cards/terra-draft.webp");
+
+    const akwa = ensureTokenCard({ name: "Akwa", force: 1, element: "Eau" });
+    expect(akwa.imageUrl).toBe("/images/cards/akwa-draft.webp");
+
+    const neutro = ensureTokenCard({ name: "Neutro", force: 1, element: "Neutre" });
+    expect(neutro.imageUrl).toBe("/images/cards/neutro-draft.webp");
   });
 
   it("idempotent : même gabarit → MÊME entrée (cardId déterministe)", () => {

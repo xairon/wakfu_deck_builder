@@ -2576,13 +2576,53 @@ const tokenForce = ref(1);
 const tokenElement = ref("");
 const selectedDraftCard = ref<Card | null>(null);
 
-/** Cartes jetons élémentaires officielles de l'extension Draft (Terra, Aero, Pyro, Akwa). */
+/** Cartes jetons élémentaires officielles de l'extension Draft (Terra, Aero, Pyro, Akwa) + Jeton Neutre (Neutro). */
 const draftTokenCards = computed<Card[]>(() => {
-  return cardStore.cards.filter(
+  const cards = [...cardStore.cards.filter(
     (c) =>
       c.extension?.name?.toLowerCase() === "draft" &&
       c.mainType === "Allié Élémentaire",
-  );
+  )];
+  // Si Neutro n'est pas déjà dans le catalogue, on ajoute sa carte synthétique
+  if (!cards.some((c) => c.id === "neutro-draft")) {
+    cards.push({
+      id: "neutro-draft",
+      name: "Neutro",
+      mainType: "Allié Élémentaire",
+      subTypes: [],
+      extension: {
+        name: "Draft",
+        id: "draft",
+        number: "5/5",
+        shortUrl: "",
+      },
+      rarity: "Commune",
+      elements: [],
+      stats: {
+        niveau: { value: 1, element: "Neutre" },
+        force: { value: 1, element: "Neutre" },
+      },
+      effects: [
+        {
+          description: "Le Neutro ne peut ni attaquer, ni bloquer.",
+          isOncePerTurn: false,
+          requiresIncline: false,
+          coverage: "auto",
+        },
+        {
+          description: "Le Neutro ne peut pas porter d’Équipement.",
+          isOncePerTurn: false,
+          requiresIncline: false,
+          coverage: "auto",
+        },
+      ],
+      keywords: [],
+      artists: ["Ankama"],
+      notes: [],
+      imageUrl: "/images/cards/neutro-draft.webp",
+    } as Card);
+  }
+  return cards;
 });
 
 function selectDraftTokenCard(card: Card): void {
@@ -5042,7 +5082,7 @@ function manaBonus(seat: Seat): boolean {
 }
 .gtokendialog__draft-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
 }
 .gtokendialog__draft-card {
