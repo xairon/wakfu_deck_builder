@@ -7,6 +7,7 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import type { Deck } from "@/types/cards";
 import { useGameStore } from "@/stores/gameStore";
+import { useCardStore } from "@/stores/cardStore";
 
 const DONE_KEY = "wakfu-tutorial-done";
 /** Tour à partir duquel le bot « doux » (aucune attaque, le temps de développer)
@@ -34,9 +35,12 @@ export const useTutorialStore = defineStore("tutorial", () => {
   /** Index de l'étape courante */
   const currentStepIndex = ref(0);
 
+  /** Indique si la démonstration automatisée de début de partie est en cours. */
+  const demoInProgress = ref(false);
+
   /**
    * Étapes scénarisées du tutoriel expliquant chaque point important des règles
-   * du jeu Wakfu TCG au travers d'actions demandées au joueur.
+   * du jeu Wakfu TCG au travers d'une démonstration automatisée puis d'actions guidées.
    */
   const steps: TutorialStep[] = [
     {
@@ -47,10 +51,24 @@ export const useTutorialStore = defineStore("tutorial", () => {
       isComplete: (g) => g.matchPhase !== "mulligan",
     },
     {
+      id: "auto_demo",
+      title: "Démonstration Automatisée : Déploiement & Impact en Jeu",
+      actionPrompt: "Observe la table ! Une démonstration automatique joue le premier tour de chaque joueur pour te montrer comment les cartes arrivent en jeu, comment les PA sont générés et quel est leur impact.",
+      ruleDetail: "Au tour 1 et 2, chaque joueur incline son Havre-Sac ou ses Ressources pour générer des PA et poser son premier Allié. Regarde bien l'impact sur le plateau avant de prendre le contrôle !",
+      isComplete: (g) => {
+        // L'étape de démo est terminée dès que les tours automatisés de démo sont finis (Tour 3 atteint ou au moins un Allié de chaque côté)
+        const boardA = g.state.seats.A;
+        const boardB = g.state.seats.B;
+        const allyA = (boardA?.havreSac.length ?? 0) > 0 || g.state.monde.some((id) => g.state.instances[id]?.controller === "A" && id !== boardA?.havreSacInstanceId && id !== boardA?.heroInstanceId);
+        const allyB = (boardB?.havreSac.length ?? 0) > 0 || g.state.monde.some((id) => g.state.instances[id]?.controller === "B" && id !== boardB?.havreSacInstanceId && id !== boardB?.heroInstanceId);
+        return g.turn.number >= 3 || (allyA && allyB && g.turn.number >= 2);
+      },
+    },
+    {
       id: "resources",
       title: "Ressources & Coût en Points d'Action (PA)",
-      actionPrompt: "Pour jouer une carte, tu as besoin de PA. Incline une carte redressée (Ressource ou Havre-Sac) pour produire des PA, ou glisse une carte Allié/Équipement en jeu.",
-      ruleDetail: "Règle 426.1. Le Niveau d'une carte indique son coût en PA. Dans Wakfu TCG, on incline des cartes en jeu (comme le Havre-Sac ou des Ressources) pour générer des PA et payer les cartes.",
+      actionPrompt: "À ton tour de jouer ! Pour poser une carte, tu as besoin de PA : incline une carte redressée (Ressource ou Havre-Sac) pour produire des PA, ou glisse une carte Allié/Équipement en jeu. Astuce : un clic droit sur n'importe quelle carte te permet aussi de l'incliner ou la redresser manuellement !",
+      ruleDetail: "Règle 426.1. Le Niveau d'une carte indique son coût en PA. Dans Wakfu TCG, on incline des cartes en jeu (comme le Havre-Sac ou des Ressources) pour générer des PA et payer les cartes. Le clic droit te donne le contrôle direct pour incliner/redresser une carte.",
       isComplete: (g) => {
         const mySeat = g.mySeat ?? "A";
         const hasTappedCard = Object.values(g.state.instances).some(
@@ -75,7 +93,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
         const hasAlly = (myBoard?.havreSac.length ?? 0) > 0 || g.state.monde.some(
           (id) => g.state.instances[id]?.controller === mySeat && g.state.instances[id]?.cardId && id !== myBoard?.havreSacInstanceId
         );
-        return hasAlly || g.turn.number > 2;
+        return hasAlly || g.turn.number > 3;
       },
     },
     {
@@ -88,22 +106,22 @@ export const useTutorialStore = defineStore("tutorial", () => {
         const heroId = g.state.seats[mySeat]?.heroInstanceId;
         if (!heroId) return false;
         const hero = g.state.instances[heroId];
-        return hero?.location?.zone === "monde" || g.turn.number >= 3;
+        return hero?.location?.zone === "monde" || g.turn.number >= 4;
       },
     },
     {
       id: "combat_attack",
       title: "Déclaration d'Attaque & Points de Mouvement (PM)",
-      actionPrompt: "Déclare une attaque contre l'adversaire : sélectionne tes attaquants redressés (hors mal d'invocation) puis choisis une cible adverse.",
-      ruleDetail: "Règles 603 & 703. Tu ne peux déclarer qu'UNE SEULE attaque par tour ! Le nombre maximum d'attaquants que tu peux engager est limité par les PM (Points de Mouvement) disponibles de ton groupe.",
-      isComplete: (g) => g.combat !== null || (g.state.lastAttackTurn?.["A"] ?? 0) > 0 || g.turn.number >= 4,
+      actionPrompt: "Déclare une attaque contre l'adversaire : fais Ctrl + Clic sur tes attaquants redressés (hors mal d'invocation), puis Ctrl + Clic sur la cible adverse (Héros, Allié ou Havre-Sac) !",
+      ruleDetail: "Règles 603 & 703. Tu ne peux déclarer qu'UNE SEULE attaque par tour ! Utilise Ctrl+Clic pour sélectionner tes attaquants, puis Ctrl+Clic sur la cible d'attaque. Le nombre maximum d'attaquants engagés dépend des PM disponibles de ton groupe.",
+      isComplete: (g) => g.combat !== null || (g.state.lastAttackTurn?.["A"] ?? 0) > 0 || g.turn.number >= 5,
     },
     {
       id: "block_and_damage",
       title: "Blocage, Riposte & Dégâts",
-      actionPrompt: "Résous le combat en cours ou termine ton tour pour voir l'adversaire agir.",
-      ruleDetail: "Règle 704 & 706. Le défenseur peut incliner ses Alliés redressés pour bloquer les attaquants dans des duels de Force. Les attaquants non bloqués infligent leurs dégâts directement à la cible !",
-      isComplete: (g) => (g.turn.number >= 4 && g.combat === null) || g.matchPhase === "finished",
+      actionPrompt: "En défense, fais Ctrl + Clic sur un de tes défenseurs redressés, puis Ctrl + Clic sur l'attaquant adverse pour le bloquer ! Résous le combat en cours ou termine ton tour pour voir l'adversaire agir.",
+      ruleDetail: "Règle 704 & 706. Pour bloquer, fais Ctrl+Clic sur ton défenseur redressé puis Ctrl+Clic sur l'attaquant à bloquer. Les deux créatures s'affrontent alors en duel de Force. Les attaquants non bloqués infligent leurs dégâts directement à leur cible !",
+      isComplete: (g) => (g.turn.number >= 5 && g.combat === null) || g.matchPhase === "finished",
     },
     {
       id: "victory_condition",
@@ -197,6 +215,70 @@ export const useTutorialStore = defineStore("tutorial", () => {
     }
   }
 
+  let demoTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Exécute automatiquement le premier tour du joueur A (incline Havre-Sac, pose un Allié, termine le tour)
+   * pour montrer au nouveau joueur la dynamique de jeu et l'impact sur le plateau.
+   * Le bot B enchaînera ensuite son tour automatiquement via useBotOpponent.
+   */
+  function runAutomatedDemoTurn(): void {
+    if (!active.value || demoInProgress.value) return;
+    if (game.matchPhase !== "playing") return;
+    if (game.turn.number > 1 || game.state.turn.active !== "A") return;
+
+    demoInProgress.value = true;
+
+    // Étape 1 : temporisation légère pour que le joueur observe la table
+    demoTimer = setTimeout(() => {
+      if (!active.value || game.matchPhase !== "playing" || game.state.turn.active !== "A") {
+        demoInProgress.value = false;
+        return;
+      }
+
+      const boardA = game.state.seats.A;
+      const sacId = boardA?.havreSacInstanceId;
+
+      // Incline le Havre-Sac pour illustrer visuellement la génération de ressources / PA
+      if (sacId && game.state.instances[sacId]?.orientation !== "tapped") {
+        game.toggleTap(sacId);
+      }
+
+      // Étape 2 : Déploiement d'une première carte Allié depuis la main
+      demoTimer = setTimeout(() => {
+        if (!active.value || game.matchPhase !== "playing" || game.state.turn.active !== "A") {
+          demoInProgress.value = false;
+          return;
+        }
+
+        const handIds = game.state.seats.A?.main ?? [];
+        const cardStore = useCardStore();
+        // Trouve un Allié ou équipement posable
+        const allyId = handIds.find((id) => {
+          const inst = game.state.instances[id];
+          if (!inst || !inst.cardId) return false;
+          const c = cardStore.getCardByIdSync(inst.cardId);
+          return c?.mainType === "Allié" || c?.mainType === "Allié Élémentaire" || c?.mainType === "Équipement";
+        }) ?? handIds[0];
+
+        if (allyId) {
+          game.playFromHand(allyId);
+        }
+
+        // Étape 3 : Fin du tour 1 de démonstration pour passer la main à l'ordinateur
+        demoTimer = setTimeout(() => {
+          if (!active.value || game.matchPhase !== "playing" || game.state.turn.active !== "A") {
+            demoInProgress.value = false;
+            return;
+          }
+
+          game.endTurn();
+          demoInProgress.value = false;
+        }, 1200);
+      }, 1000);
+    }, 1200);
+  }
+
   // Surveillance active des actions pour faire avancer les étapes
   watch(
     () => [
@@ -209,6 +291,16 @@ export const useTutorialStore = defineStore("tutorial", () => {
     ],
     () => {
       checkProgress();
+      if (
+        active.value &&
+        currentStep.value?.id === "auto_demo" &&
+        game.matchPhase === "playing" &&
+        game.turn.number === 1 &&
+        game.state.turn.active === "A" &&
+        !demoInProgress.value
+      ) {
+        runAutomatedDemoTurn();
+      }
     },
     { deep: true },
   );
@@ -228,9 +320,13 @@ export const useTutorialStore = defineStore("tutorial", () => {
     (phase) => {
       if (!active.value) return;
       if (phase === "finished") {
+        if (demoTimer) clearTimeout(demoTimer);
+        demoInProgress.value = false;
         completionModalVisible.value = true;
         stop(true);
       } else if (phase === "lobby") {
+        if (demoTimer) clearTimeout(demoTimer);
+        demoInProgress.value = false;
         stop(false);
       }
     },
@@ -244,6 +340,8 @@ export const useTutorialStore = defineStore("tutorial", () => {
     currentStep,
     steps,
     totalSteps,
+    demoInProgress,
+    runAutomatedDemoTurn,
     startGuidedGame,
     dismissWelcome,
     closeCompletionModal,
@@ -253,3 +351,4 @@ export const useTutorialStore = defineStore("tutorial", () => {
     stop,
   };
 });
+

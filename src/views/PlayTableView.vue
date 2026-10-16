@@ -1210,17 +1210,32 @@
               </div>
 
               <div class="p-2.5 rounded-lg bg-base-200/90 border border-secondary/20">
-                <span class="font-bold text-secondary">🎯 Déroulement guidé :</span>
+                <span class="font-bold text-secondary">🎯 Déroulement automatisé & guidé :</span>
                 <p class="text-base-content/80 mt-1">
-                  Une bannière en haut du plateau t'accompagnera avec une <strong>action demandée</strong> pour chaque règle clé (Mulligan, PA & Ressources, Mal d'invocation, Déplacement, Combat & Blocage).
+                  Au début, <strong>un tour de chaque joueur est joué automatiquement</strong> pour te montrer comment poser les cartes et leur impact ! Ensuite, une bannière d'objectifs te guidera pas à pas.
                 </p>
               </div>
+            </div>
+
+            <!-- Commandes et raccourcis essentiels -->
+            <div class="p-3 rounded-lg bg-base-200/95 border border-info/30 text-xs space-y-1.5">
+              <span class="font-bold text-info flex items-center gap-1.5">
+                <span>🎮</span> Commandes rapides indispensables :
+              </span>
+              <ul class="space-y-1 text-base-content/85 pl-1">
+                <li>
+                  • <strong>Ctrl + Clic</strong> : En attaque, sélectionne tes attaquants puis <strong>Ctrl + Clic</strong> sur la cible adverse (Héros, Allié ou Havre-Sac). En défense, <strong>Ctrl + Clic</strong> sur ton bloqueur puis <strong>Ctrl + Clic</strong> sur l'attaquant adverse à intercepter.
+                </li>
+                <li>
+                  • <strong>Clic Droit</strong> : Permet d'<strong>incliner ou redresser</strong> instantanément n'importe quelle carte en jeu pour produire des ressources ou modifier son état.
+                </li>
+              </ul>
             </div>
 
             <div class="p-3 rounded-lg bg-base-200/80 border border-warning/30 text-xs">
               <span class="font-bold text-warning">⚠️ Note sur les autres modes de jeu :</span>
               <p class="mt-1 text-base-content/75">
-                Seul ce <strong>Tutoriel d'Apprentissage</strong> dispose d'un accompagnement guidé et d'une automatisation complète. Les autres modes (<em>Seul contre soi-même</em>, <em>1v1 En Ligne</em> et <em>2v2 En Équipe</em>) se jouent comme une véritable table de jeu physique où les joueurs gèrent librement leurs cartes et leurs effets.
+                Seul ce <strong>Tutoriel d'Apprentissage</strong> est automatisé et scénarisé étape par étape. Les autres modes de l'application (<em>Seul contre soi-même</em>, <em>1v1 En Ligne</em> et <em>2v2 En Équipe</em>) ne sont <strong>pas automatisés</strong> : ils fonctionnent comme une véritable table de jeu physique où les joueurs manipulent librement leurs cartes, résolvent leurs effets et appliquent leurs règles.
               </p>
             </div>
           </div>
@@ -1229,7 +1244,7 @@
             data-testid="tutorial-welcome-start"
             @click="tutorial.dismissWelcome()"
           >
-            Prêt ? Commencer le tutoriel ! 🚀
+            Prêt ? Lancer le tutoriel ! 🚀
           </button>
         </div>
       </div>

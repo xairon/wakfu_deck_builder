@@ -80,13 +80,14 @@ describe("tutorialStore — « Apprendre en jouant » (guide et étapes didactiq
     await nextTick();
     t.checkProgress();
 
-    // Doit passer à l'étape suivante (ressources / pose de carte)
-    expect(t.currentStepIndex).toBeGreaterThan(0);
-    expect(t.currentStep?.id).toBe("resources");
+    // Doit passer à l'étape suivante (démonstration automatisée des 1ers tours)
+    expect(t.currentStepIndex).toBe(1);
+    expect(t.currentStep?.id).toBe("auto_demo");
 
     // Possibilité de sauter une étape manuellement
     t.skipCurrentStep();
     expect(t.currentStepIndex).toBe(2);
+    expect(t.currentStep?.id).toBe("resources");
   });
 
   it("tire le premier joueur au SORT (n'impose plus l'ordinateur)", () => {

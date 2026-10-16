@@ -92,9 +92,19 @@ function onContinuePlaying(): void {
           <div class="p-3 rounded-xl bg-base-200/60 border border-base-content/10 flex items-start gap-3">
             <span class="text-xl">⚔️</span>
             <div>
-              <h3 class="text-xs font-bold text-primary">5. Combat, PM & Blocage</h3>
+              <h3 class="text-xs font-bold text-primary">5. Combat, PM & Blocage (Ctrl + Clic)</h3>
               <p class="text-xs text-base-content/75 mt-0.5">
-                Une seule attaque par tour ! Le nombre d'attaquants est limité par tes PM. Le défenseur peut incliner ses Alliés redressés pour bloquer.
+                Une seule attaque par tour ! Fais <strong>Ctrl + Clic</strong> sur tes attaquants puis la cible. En défense, fais <strong>Ctrl + Clic</strong> sur ton bloqueur puis l'attaquant adverse.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-base-200/60 border border-base-content/10 flex items-start gap-3">
+            <span class="text-xl">🔄</span>
+            <div>
+              <h3 class="text-xs font-bold text-primary">6. Inclinaison Manuelle (Clic Droit)</h3>
+              <p class="text-xs text-base-content/75 mt-0.5">
+                Un <strong>clic droit</strong> sur n'importe quelle carte en jeu permet de l'incliner ou la redresser à tout moment pour gérer tes ressources et tes états.
               </p>
             </div>
           </div>
@@ -102,7 +112,7 @@ function onContinuePlaying(): void {
           <div class="p-3 rounded-xl bg-base-200/60 border border-base-content/10 flex items-start gap-3">
             <span class="text-xl">🏆</span>
             <div>
-              <h3 class="text-xs font-bold text-primary">6. Deux façons de gagner</h3>
+              <h3 class="text-xs font-bold text-primary">7. Deux façons de gagner</h3>
               <p class="text-xs text-base-content/75 mt-0.5">
                 1) Réduire les PV du Héros adverse à 0.<br>
                 2) Faire monter ton Héros au <strong>Niveau 3</strong> en accumulant <strong>18 XP</strong> !
@@ -112,13 +122,12 @@ function onContinuePlaying(): void {
         </div>
 
         <!-- Rappel important sur les autres modes de jeu -->
-        <div class="mt-4 p-3 rounded-xl bg-primary/10 border border-primary/30 text-xs">
+        <div class="mt-4 p-3 rounded-xl bg-primary/10 border border-primary/30 text-xs space-y-1">
           <p class="font-bold text-primary flex items-center gap-1.5">
             <span>ℹ️</span> Prêt pour la suite ?
           </p>
-          <p class="text-base-content/80 mt-1">
-            Les autres modes de jeu (<strong>Seul contre soi-même</strong>, <strong>1v1 En Ligne</strong> et <strong>2v2</strong>) 
-            ne sont pas assistés au clic par clic : ils fonctionnent comme une vraie table de jeu physique où tu as la totale liberté d'appliquer tes stratégies et gérer tes cartes.
+          <p class="text-base-content/80 leading-relaxed">
+            Seul ce <strong>Tutoriel d'Apprentissage</strong> est automatisé et assisté. Les autres modes (<strong>Seul contre soi-même</strong>, <strong>1v1 En Ligne</strong> et <strong>2v2 En Équipe</strong>) fonctionnent comme une <strong>vraie table de jeu physique</strong> : les joueurs y jouent librement sans assistance automatique au clic.
           </p>
         </div>
 
