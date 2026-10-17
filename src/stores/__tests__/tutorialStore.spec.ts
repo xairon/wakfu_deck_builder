@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { nextTick } from "vue";
 import { setActivePinia, createPinia } from "pinia";
 import { useTutorialStore } from "../tutorialStore";
@@ -90,31 +90,17 @@ describe("tutorialStore — « Apprendre en jouant » (guide et étapes didactiq
     expect(t.currentStep?.id).toBe("resources");
   });
 
-  it("tire le premier joueur au SORT (n'impose plus l'ordinateur)", () => {
+  it("garantit que le joueur (siège A) commence en premier pour une démonstration fluide", () => {
     const a = makeDeck("A");
     const b = makeDeck("B");
     useCardStore().cards = [...a.cards, ...b.cards];
     const game = useGameStore();
     const t = useTutorialStore();
 
-    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.1);
     t.startGuidedGame(a.deck, b.deck);
     expect(game.firstPlayer).toBe("A");
     expect(game.perspective).toBe("A");
     expect(game.botSeat).toBe("B");
-    rnd.mockRestore();
-  });
-
-  it("le tirage peut aussi désigner l'ordinateur (siège B)", () => {
-    const a = makeDeck("A");
-    const b = makeDeck("B");
-    useCardStore().cards = [...a.cards, ...b.cards];
-    const game = useGameStore();
-    const t = useTutorialStore();
-    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.9);
-    t.startGuidedGame(a.deck, b.deck);
-    expect(game.firstPlayer).toBe("B");
-    rnd.mockRestore();
   });
 
   it("dismissWelcome() ferme l'écran d'accueil sans toucher à la partie", () => {

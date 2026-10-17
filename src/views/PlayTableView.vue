@@ -229,46 +229,23 @@
           <strong>En revanche, les autres modes de jeu (Seul contre soi-même, 1v1 En Ligne, 2v2) ne sont pas automatisés de la même manière</strong> : ils se jouent comme sur une vraie table de jeu avec gestion manuelle et libre des effets et des règles du TCG Wakfu.
         </p>
       </div>
-      <div class="mt-4 flex flex-wrap items-end gap-4">
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-base-content/60">Ton deck</span>
-          <select
-            v-model="botMyDeckId"
-            class="select select-bordered select-sm w-56 bg-base-200"
-            data-testid="vsbot-my-deck"
-          >
-            <option
-              v-for="d in INCARNAM_STARTERS"
-              :key="'s' + d.id"
-              :value="d.id"
-            >
-              {{ d.name }}
-            </option>
-          </select>
-        </label>
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="text-base-content/60">Deck de l'ordinateur</span>
-          <select
-            v-model="botOppDeckId"
-            class="select select-bordered select-sm w-56 bg-base-200"
-            data-testid="vsbot-opp-deck"
-          >
-            <option
-              v-for="d in INCARNAM_STARTERS"
-              :key="'o' + d.id"
-              :value="d.id"
-            >
-              {{ d.name }}
-            </option>
-          </select>
-        </label>
+      <div class="mt-4 flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-2 px-3 py-2 bg-base-200/80 rounded-lg border border-base-content/10 text-sm">
+          <span class="text-base-content/60">Ton deck :</span>
+          <span class="font-semibold text-primary">Iop (Bruss Ouilis)</span>
+        </div>
+        <div class="text-base-content/40 font-bold text-xs uppercase tracking-wider">VS</div>
+        <div class="flex items-center gap-2 px-3 py-2 bg-base-200/80 rounded-lg border border-base-content/10 text-sm">
+          <span class="text-base-content/60">Adversaire :</span>
+          <span class="font-semibold text-secondary">Féca (Poum Ondacié)</span>
+        </div>
         <button
           class="btn btn-secondary btn-sm"
-          :disabled="!cardStore.cards.length || !botMyDeckId || !botOppDeckId"
+          :disabled="!cardStore.cards.length"
           data-testid="vsbot-start"
           @click="startVsBot"
         >
-          🎓 Apprendre en jouant
+          🎓 Commencer le tutoriel
         </button>
       </div>
     </section>
@@ -1788,10 +1765,9 @@ onUnmounted(() => {
 });
 const route = useRoute();
 // Deep-link `?tutorial=1` : lance « Apprendre en jouant » avec deux starters par
-// défaut (le joueur pourra rejouer avec le deck de son choix via le lobby).
 function startTutorial(): void {
-  const mine = starterToDeck(INCARNAM_STARTERS[0]?.id ?? "");
-  const opp = starterToDeck(INCARNAM_STARTERS[1]?.id ?? "");
+  const mine = starterToDeck(TUTORIAL_PLAYER_DECK_ID);
+  const opp = starterToDeck(TUTORIAL_OPPONENT_DECK_ID);
   if (!mine || !opp) {
     toast.addToast(
       "Impossible de préparer le tutoriel (cartes indisponibles).",
@@ -1836,15 +1812,107 @@ const sortedOfficialDecks = computed(() =>
 const INCARNAM_STARTERS = OFFICIAL_DECKS.filter(
   (d) => d.extension === "incarnam",
 ).sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }));
-// Decks jouables : uniquement les starters Incarnam (les seuls dont TOUS les
-// effets sont automatisés) — valeur = id du deck officiel. « Apprendre en jouant »
-// tient ainsi sa promesse « tout est résolu pour toi » (cf. assistEffects=true).
-const botMyDeckId = ref<string>(INCARNAM_STARTERS[0]?.id ?? "");
-const botOppDeckId = ref<string>(INCARNAM_STARTERS[1]?.id ?? "");
+
+// Decks du tutoriel : deux listes calibrées, fiables et 100 % automatisables sans erreur
+// (Joueur : Iop / Bruss Ouilis avec 18 Alliés niveau 1 et 4 Actions ;
+//  Ordinateur : Féca / Poum Ondacié avec 18 Alliés niveau 1 et 4 Actions).
+const TUTORIAL_PLAYER_DECK_ID = "tutorial-player-iop";
+const TUTORIAL_OPPONENT_DECK_ID = "tutorial-ai-feca";
+
+const TUTORIAL_PLAYER_CONFIG = {
+  id: TUTORIAL_PLAYER_DECK_ID,
+  name: "Iop (Bruss Ouilis)",
+  hero: "Bruss Ouilis",
+  havreSac: "Havre Sac du Bouftou",
+  cards: [
+    // 18 Alliés Niveau 1 (Terre / Neutre sans effet ou ressource)
+    { name: "Boufton Blanc", quantity: 3 },
+    { name: "Tomla Klass", quantity: 3 },
+    { name: "Demi Moon", quantity: 3 },
+    { name: "Larve Verte", quantity: 3 },
+    { name: "Arakne", quantity: 3 },
+    { name: "Piou Vert", quantity: 3 },
+    // 12 Alliés Niveau 2 (simples et directs)
+    { name: "Bouftou", quantity: 3 },
+    { name: "Berger Porkass", quantity: 3 },
+    { name: "L'Homme Ours", quantity: 3 },
+    { name: "Jicé Aouaire", quantity: 3 },
+    // 6 Alliés Niveau 3
+    { name: "Craqueleur", quantity: 3 },
+    { name: "Chef de Guerre Bouftou", quantity: 3 },
+    // 4 Actions
+    { name: "Charge", quantity: 2 },
+    { name: "Parchemin de Force", quantity: 2 },
+    // 8 Terrains & Équipements
+    { name: "Forêts d'Astrub", quantity: 3 },
+    { name: "Temple Iop", quantity: 1 },
+    { name: "Marteau du Bouftou", quantity: 2 },
+    { name: "Scaranneau Blanc", quantity: 2 },
+  ],
+};
+
+const TUTORIAL_AI_CONFIG = {
+  id: TUTORIAL_OPPONENT_DECK_ID,
+  name: "Féca (Poum Ondacié)",
+  hero: "Poum Ondacié",
+  havreSac: "Havre Sac du Prespic",
+  cards: [
+    // 18 Alliés Niveau 1 (Feu / Neutre sans effet ou ressource)
+    { name: "Larve Orange", quantity: 3 },
+    { name: "Gobelinet", quantity: 3 },
+    { name: "Chevaucheur Gobelin", quantity: 3 },
+    { name: "Shiffer Van Brushing", quantity: 3 },
+    { name: "Fofy Fafié", quantity: 3 },
+    { name: "Piou Rouge", quantity: 3 },
+    // 12 Alliés Niveau 2 & 3 (simples)
+    { name: "Dragodinde Rousse Sauvage", quantity: 3 },
+    { name: "Amal Odoua", quantity: 3 },
+    { name: "Bwork", quantity: 3 },
+    { name: "Bwork Mage", quantity: 3 },
+    // 4 Actions
+    { name: "Parchemin d'Intelligence", quantity: 2 },
+    { name: "Parchemin Blanc", quantity: 2 },
+    // 14 Terrains & Équipements
+    { name: "Mines d'Astrub", quantity: 3 },
+    { name: "Temple Féca", quantity: 1 },
+    { name: "Dora", quantity: 2 },
+    { name: "Ceinture du Prespic", quantity: 3 },
+    { name: "Cape du Prespic", quantity: 3 },
+    { name: "Anneau du Prespic", quantity: 2 },
+  ],
+};
+
 function resolveCardByName(name: string): Card | null {
   return cardStore.cards.find((c) => c.name === name) ?? null;
 }
+
+function buildCustomTutorialDeck(config: typeof TUTORIAL_PLAYER_CONFIG): Deck | null {
+  const heroCard = resolveCardByName(config.hero);
+  const havreSacCard = resolveCardByName(config.havreSac);
+  if (!heroCard || !havreSacCard) return null;
+
+  const deckCards: { card: Card; quantity: number }[] = [];
+  for (const item of config.cards) {
+    const card = resolveCardByName(item.name);
+    if (!card) return null;
+    deckCards.push({ card, quantity: item.quantity });
+  }
+
+  return {
+    id: "vsbot-" + config.id,
+    name: config.name,
+    hero: heroCard as any,
+    havreSac: havreSacCard as any,
+    cards: deckCards,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 function starterToDeck(id: string): Deck | null {
+  if (id === TUTORIAL_PLAYER_DECK_ID) return buildCustomTutorialDeck(TUTORIAL_PLAYER_CONFIG);
+  if (id === TUTORIAL_OPPONENT_DECK_ID) return buildCustomTutorialDeck(TUTORIAL_AI_CONFIG);
+
   const od = INCARNAM_STARTERS.find((d) => d.id === id);
   if (!od) return null;
   const b = buildOfficialDeck(od, resolveCardByName);
@@ -1859,12 +1927,9 @@ function starterToDeck(id: string): Deck | null {
     updatedAt: new Date().toISOString(),
   };
 }
-function resolveMyBotDeck(): Deck | null {
-  return starterToDeck(botMyDeckId.value);
-}
 function startVsBot(): void {
-  const mine = resolveMyBotDeck();
-  const opp = starterToDeck(botOppDeckId.value);
+  const mine = starterToDeck(TUTORIAL_PLAYER_DECK_ID);
+  const opp = starterToDeck(TUTORIAL_OPPONENT_DECK_ID);
   if (!mine || !opp) {
     toast.addToast("Deck indisponible (cartes non chargées ?).", {
       type: "warning",

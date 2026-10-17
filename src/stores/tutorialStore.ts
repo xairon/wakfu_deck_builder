@@ -8,6 +8,7 @@ import { ref, computed, watch } from "vue";
 import type { Deck } from "@/types/cards";
 import { useGameStore } from "@/stores/gameStore";
 import { useCardStore } from "@/stores/cardStore";
+import { levelCost } from "@/game/rules/cardAttrs";
 
 const DONE_KEY = "wakfu-tutorial-done";
 /** Tour à partir duquel le bot « doux » (aucune attaque, le temps de développer)
@@ -165,6 +166,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
    * Démarre « Apprendre en jouant » : partie complète (mulligan inclus) contre
    * l'IA. Deck du joueur = `deckA`, de l'ordinateur = `deckB`. Règles + effets
    * assistés forcés ; bot « doux » les premiers tours (voir SOFT_UNTIL_TURN).
+   * Le joueur A commence systématiquement pour assurer une démonstration fluide.
    */
   function startGuidedGame(deckA: Deck, deckB: Deck): void {
     currentStepIndex.value = 0;
@@ -174,6 +176,7 @@ export const useTutorialStore = defineStore("tutorial", () => {
     game.botAggressive = false; // doux le temps que le joueur développe
 
     game.startMatch(deckA, deckB, {
+      first: "A", // Le joueur commence toujours pour garantir la démo automatisée au tour 1
       nameA: "Toi",
       nameB: "L'ordinateur",
     });
@@ -195,6 +198,11 @@ export const useTutorialStore = defineStore("tutorial", () => {
   }
 
   function stop(markDone: boolean): void {
+    if (demoTimer) {
+      clearTimeout(demoTimer);
+      demoTimer = null;
+    }
+    demoInProgress.value = false;
     active.value = false;
     welcomeVisible.value = false;
     game.botAggressive = true; // fin du mode guidé → vrai adversaire
@@ -236,47 +244,55 @@ export const useTutorialStore = defineStore("tutorial", () => {
         return;
       }
 
+      // Étape 2 : Déploiement d'une première carte Allié depuis la main
+      // On cherche en priorité un Allié de niveau 1 (ex: Tofu, Boufton Blanc, Piou...)
+      const handIds = game.state.seats.A?.main ?? [];
+      const cardStore = useCardStore();
       const boardA = game.state.seats.A;
       const sacId = boardA?.havreSacInstanceId;
 
-      // Incline le Havre-Sac pour illustrer visuellement la génération de ressources / PA
-      if (sacId && game.state.instances[sacId]?.orientation !== "tapped") {
-        game.toggleTap(sacId);
+      let chosenAllyId: string | null = null;
+      let lowestLevel = Infinity;
+
+      for (const id of handIds) {
+        const inst = game.state.instances[id];
+        if (!inst?.cardId) continue;
+        const c = cardStore.getCardByIdSync(inst.cardId);
+        if (!c) continue;
+        if (c.mainType === "Allié" || c.mainType === "Allié Élémentaire") {
+          const lvl = levelCost(c);
+          if (lvl < lowestLevel) {
+            lowestLevel = lvl;
+            chosenAllyId = id;
+          }
+        }
       }
 
-      // Étape 2 : Déploiement d'une première carte Allié depuis la main
+      // Repli si aucun Allié trouvé : première carte disponible
+      const playCardId = chosenAllyId ?? handIds[0];
+
+      if (playCardId) {
+        // En mode assisté, si un producteur (comme le Havre-Sac) est requis,
+        // on fournit explicitement le sacId comme producteur ou on laisse playFromHand gérer
+        const producers = sacId ? [sacId] : undefined;
+        game.playFromHand(playCardId, undefined, "havreSac", false, producers);
+        // Si une invite pendingPayment s'est ouverte malgré tout, la valider immédiatement en auto
+        if (game.pendingPayment) {
+          game.payAuto();
+        }
+      }
+
+      // Étape 3 : Fin du tour 1 de démonstration pour passer la main à l'ordinateur
       demoTimer = setTimeout(() => {
         if (!active.value || game.matchPhase !== "playing" || game.state.turn.active !== "A") {
           demoInProgress.value = false;
           return;
         }
 
-        const handIds = game.state.seats.A?.main ?? [];
-        const cardStore = useCardStore();
-        // Trouve un Allié ou équipement posable
-        const allyId = handIds.find((id) => {
-          const inst = game.state.instances[id];
-          if (!inst || !inst.cardId) return false;
-          const c = cardStore.getCardByIdSync(inst.cardId);
-          return c?.mainType === "Allié" || c?.mainType === "Allié Élémentaire" || c?.mainType === "Équipement";
-        }) ?? handIds[0];
-
-        if (allyId) {
-          game.playFromHand(allyId);
-        }
-
-        // Étape 3 : Fin du tour 1 de démonstration pour passer la main à l'ordinateur
-        demoTimer = setTimeout(() => {
-          if (!active.value || game.matchPhase !== "playing" || game.state.turn.active !== "A") {
-            demoInProgress.value = false;
-            return;
-          }
-
-          game.endTurn();
-          demoInProgress.value = false;
-        }, 1200);
-      }, 1000);
-    }, 1200);
+        game.endTurn();
+        demoInProgress.value = false;
+      }, 1500);
+    }, 1500);
   }
 
   // Surveillance active des actions pour faire avancer les étapes
