@@ -18,6 +18,7 @@ const EXTENSION_FILES = [
   "otomai.json",
   "pandala.json",
   "reveil-des-dragons.json",
+  "cadeau-de-nowel.json",
 ];
 
 interface RawEffect {

@@ -281,6 +281,7 @@ export const sortCards = useMemoize(
           "Île des Wabbits": 9,
           Draft: 10,
           "Réveil des dragons": 11,
+          "Cadeau de Nowel": 12,
         };
 
         const getCardNumber = (card: Card) => {

@@ -54,4 +54,5 @@ export const EXTENSION_LEVELS = {
   "Île des Wabbits": 10,
   Draft: 11,
   "Réveil des dragons": 12,
+  "Cadeau de Nowel": 13,
 } as const;

@@ -1,0 +1,193 @@
+[
+  {
+    "id": "et-bonne-annee-cadeau-de-nowel",
+    "name": "Et Bonne Année !",
+    "mainType": "Action",
+    "subTypes": [
+      "Unique"
+    ],
+    "extension": {
+      "name": "Cadeau de Nowel",
+      "number": "1/4",
+      "shortUrl": ""
+    },
+    "rarity": "Rare",
+    "element": "Neutre",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Neutre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Chaque joueur peut jouer un Allié de sa main et le mettre sous le contrôle de l'adversaire de son choix, puis piocher un nombre de cartes égal au Niveau de cet Allié.",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "uncovered"
+      }
+    ],
+    "keywords": [],
+    "artists": [
+      "Franho"
+    ],
+    "notes": []
+  },
+  {
+    "id": "papa-nowel-cadeau-de-nowel",
+    "name": "Papa Nowel",
+    "mainType": "Allié",
+    "subTypes": [
+      "Papa",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Cadeau de Nowel",
+      "number": "2/4",
+      "shortUrl": ""
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 5,
+        "element": "Feu"
+      },
+      "force": {
+        "value": 4,
+        "element": "Feu"
+      }
+    },
+    "effects": [
+      {
+        "description": "Inclinez Papa Nowel : Le Papa Nowel inflige 3 Dommages Feu à l'Allié de votre choix. Si cet Allié est détruit de cette façon, vous pouvez piocher un nombre de cartes égal à sa valeur d'XP.",
+        "elements": [
+          "Feu"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true,
+        "coverage": "uncovered"
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Franho"
+    ],
+    "notes": [],
+    "race": "Papa",
+    "tribe": "Unique"
+  },
+  {
+    "id": "nicolas-nowel-cadeau-de-nowel",
+    "name": "Nicolas Nowel",
+    "mainType": "Allié",
+    "subTypes": [
+      "Papy",
+      "Unique"
+    ],
+    "extension": {
+      "name": "Cadeau de Nowel",
+      "number": "3/4",
+      "shortUrl": ""
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 4,
+        "element": "Eau"
+      },
+      "force": {
+        "value": 4,
+        "element": "Eau"
+      }
+    },
+    "effects": [
+      {
+        "description": "Inclinez Nicolas Nowel, payez X : Le joueur de votre choix vous offre une carte de Niveau X qu'il contrôle dans le Monde (Vous devenez le propriétaire de cette carte jusqu'à la fin de la partie). N'utilisez ce pouvoir que si Nicolas Nowel est dans le Monde.",
+        "elements": [
+          "Eau"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": true,
+        "coverage": "uncovered"
+      }
+    ],
+    "keywords": [],
+    "experience": 1,
+    "artists": [
+      "Charlène Le Scanff"
+    ],
+    "notes": [],
+    "race": "Papy",
+    "tribe": "Unique"
+  },
+  {
+    "id": "glutin-de-nowel-cadeau-de-nowel",
+    "name": "Glutin de Nowel",
+    "mainType": "Allié",
+    "subTypes": [
+      "Monstre",
+      "Glutin"
+    ],
+    "extension": {
+      "name": "Cadeau de Nowel",
+      "number": "4/4",
+      "shortUrl": ""
+    },
+    "rarity": "Rare",
+    "stats": {
+      "niveau": {
+        "value": 2,
+        "element": "Terre"
+      },
+      "force": {
+        "value": 4,
+        "element": "Terre"
+      }
+    },
+    "effects": [
+      {
+        "description": "Agressivité",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "keyword"
+      },
+      {
+        "description": "Le Glutin de Nowel ne peut pas bloquer.",
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "compiled": {
+          "trigger": "static",
+          "static": {
+            "kind": "cannotBlock"
+          },
+          "ops": []
+        },
+        "coverage": "auto"
+      },
+      {
+        "description": "Payez 2 Ressources Terre : Mettez le Glutin de Nowel en jeu sous votre contrôle depuis la Défausse. Chaque joueur peut utiliser ce pouvoir.",
+        "elements": [
+          "Terre"
+        ],
+        "isOncePerTurn": false,
+        "requiresIncline": false,
+        "coverage": "uncovered"
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Agressivité",
+        "description": "Un Allié possédant Agressivité peut être déclaré comme attaquant le tour où il apparaît dans le Monde ou dans un Havre Sac, sous réserve que son contrôleur puisse déclarer une attaque ce tour ci."
+      }
+    ],
+    "experience": 1,
+    "artists": [
+      "Charlène Le Scanff"
+    ],
+    "notes": [],
+    "race": "Monstre",
+    "tribe": "Glutin"
+  }
+]
+
