@@ -150,15 +150,9 @@ export async function fetchDeckShare(id: string): Promise<DecodedDeckData | null
 }
 
 /**
- * Génère l'URL de partage optimisée pour Discord et compacte.
- * Utilise la passerelle Edge Function pour les métadonnées OpenGraph (rich embeds sur Discord)
- * qui redirige ensuite automatiquement vers la vue du deck.
+ * Génère l'URL de partage compacte pointant directement vers l'application frontend.
  */
 export function buildShortShareUrl(id: string): string {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  if (supabaseUrl) {
-    return `${supabaseUrl}/functions/v1/share_preview?id=${encodeURIComponent(id)}`;
-  }
   return `${window.location.origin}/deck/share?id=${encodeURIComponent(id)}`;
 }
 

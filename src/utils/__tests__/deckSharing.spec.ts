@@ -419,9 +419,9 @@ describe("deckSharing", () => {
       expect(generateShortId(12)).toHaveLength(12);
     });
 
-    it("buildShortShareUrl devrait pointer vers l'Edge Function share_preview", () => {
+    it("buildShortShareUrl devrait pointer vers /deck/share?id=", () => {
       const url = buildShortShareUrl("abc12345");
-      expect(url).toContain("functions/v1/share_preview?id=abc12345");
+      expect(url).toBe("https://wakfu-deck.vercel.app/deck/share?id=abc12345");
     });
 
     it("createDeckShare et fetchDeckShare devraient créer et relire un partage avec Supabase", async () => {
@@ -474,7 +474,7 @@ describe("deckSharing", () => {
       } as any);
 
       const url = await generateShareUrlAsync(deck);
-      expect(url).toContain("functions/v1/share_preview?id=");
+      expect(url).toContain("/deck/share?id=");
     });
 
     it("generateShareUrlAsync devrait retomber sur l'URL de base si Supabase échoue", async () => {
