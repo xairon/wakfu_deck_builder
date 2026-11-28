@@ -2843,7 +2843,7 @@ function resolveCard(cardId: string | null): Card | null {
 }
 
 const currentMulliganSeat = computed<Seat>(() => {
-  if (store.online) return store.mySeat;
+  if (store.online) return store.isSpectator ? (store.perspective as Seat) : store.mySeat;
   return (store.mulliganSeat ?? store.perspective) as Seat;
 });
 
@@ -2879,7 +2879,7 @@ const mulliganItems = computed<HandItem[]>(() =>
 
 // ── Mulligan en ligne : décision indépendante par siège (pas de passation) ─────
 const myMulliganDone = computed(
-  () => store.online && (store.mulliganDone?.[store.mySeat] ?? false),
+  () => store.online && !store.isSpectator && (store.mulliganDone?.[store.mySeat] ?? false),
 );
 const oppMulliganDone = computed(() => {
   if (!store.online) return false;

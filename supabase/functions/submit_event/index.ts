@@ -148,13 +148,13 @@ Deno.serve(async (req) => {
       });
       if (error) throw new Error(error.message);
       const post = deriveState([...baseEvents, ev]);
-      for (const s of ["A", "B"] as const) {
+      for (const s of ["A", "B", "spectator"] as const) {
         await db
           .channel(`game:${gameId}:${s}`, { config: { private: true } })
           .send({
             type: "broadcast",
             event: "game_event",
-            payload: redactEventForSeat(ev, s, pre, post),
+            payload: redactEventForSeat(ev, s as any, pre, post),
           });
       }
       await db
@@ -220,13 +220,13 @@ Deno.serve(async (req) => {
       });
       if (rollErr) return json({ error: rollErr.message }, 409);
       const postRoll = deriveState([...rowEvents, ev]);
-      for (const seat of ["A", "B"] as const) {
+      for (const seat of ["A", "B", "spectator"] as const) {
         await db
           .channel(`game:${gameId}:${seat}`, { config: { private: true } })
           .send({
             type: "broadcast",
             event: "game_event",
-            payload: redactEventForSeat(ev, seat, state, postRoll),
+            payload: redactEventForSeat(ev, seat as any, state, postRoll),
           });
       }
       return json({ seq: ev.seq });
@@ -448,7 +448,7 @@ Deno.serve(async (req) => {
 
     // Diffusion REDACTÉE par siège, sur des canaux privés distincts.
     post = deriveState([...rowEvents, ev]);
-    for (const seat of ["A", "B"] as const) {
+    for (const seat of ["A", "B", "spectator"] as const) {
       // Canal PRIVÉ : le client s'abonne avec { private: true } ; l'émetteur doit
       // l'être aussi, sinon le message part sur le topic public et n'est pas reçu.
       await db
@@ -458,7 +458,7 @@ Deno.serve(async (req) => {
         .send({
           type: "broadcast",
           event: "game_event",
-          payload: redactEventForSeat(ev, seat, state, post),
+          payload: redactEventForSeat(ev, seat as any, state, post),
         });
     }
 

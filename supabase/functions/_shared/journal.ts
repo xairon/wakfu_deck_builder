@@ -81,13 +81,13 @@ export async function commitBatch(
   // Diffusion APRÈS commit : un échec de broadcast laisse le journal intact
   // (le client comblera le trou via resync).
   for (const { ev, pre, post } of resolved) {
-    for (const seat of ["A", "B"] as const) {
+    for (const seat of ["A", "B", "spectator"] as const) {
       await db
         .channel(`game:${gameId}:${seat}`, { config: { private: true } })
         .send({
           type: "broadcast",
           event: "game_event",
-          payload: redactEventForSeat(ev, seat, pre, post),
+          payload: redactEventForSeat(ev, seat as any, pre, post),
         });
     }
   }

@@ -35,8 +35,21 @@ Deno.serve(async (req) => {
       .select("seat")
       .eq("game_id", gameId)
       .eq("user_id", uid)
-      .single();
-    if (!me) return json({ error: "PAS_JOUEUR_DE_CETTE_PARTIE" }, 403);
+      .maybeSingle();
+
+    let viewerSeat: "A" | "B" | "spectator";
+    if (me) {
+      viewerSeat = me.seat as "A" | "B";
+    } else {
+      // Spectateur : vérifier que la partie existe
+      const { data: game } = await db
+        .from("games")
+        .select("id")
+        .eq("id", gameId)
+        .maybeSingle();
+      if (!game) return json({ error: "PARTIE_INTROUVABLE" }, 404);
+      viewerSeat = "spectator";
+    }
 
     const rows = await fetchAllGameEvents(db, gameId);
 
@@ -46,7 +59,7 @@ Deno.serve(async (req) => {
     let pre = deriveState(acc);
     for (const ev of all) {
       const post = deriveState([...acc, ev]);
-      if (ev.seq > since) out.push(redactEventForSeat(ev, me.seat, pre, post));
+      if (ev.seq > since) out.push(redactEventForSeat(ev, viewerSeat as any, pre, post));
       acc.push(ev);
       pre = post;
     }

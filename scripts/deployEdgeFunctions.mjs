@@ -79,6 +79,7 @@ for (const slug of slugs) {
         slug,
         "--project-ref",
         projectRef,
+        "--yes",
       ],
       { cwd: root, stdio: "inherit", shell: process.platform === "win32" },
     );
